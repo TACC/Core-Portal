@@ -3,7 +3,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   jobs as jobsReducer,
   jobDetail as jobDetailReducer,
-  initialState as jobsInitalState
+  initialState as jobsInitalState,
 } from '../reducers/jobs.reducers';
 
 import {
@@ -11,7 +11,7 @@ import {
   getJobDetails,
   postSubmitJobUtil,
   watchJobDetails,
-  submitJob
+  submitJob,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import executionSystemDetailFixture from './fixtures/executionsystemdetail.fixture';
@@ -29,7 +29,7 @@ const initialJobDetail = {
   display: null,
   loading: false,
   loadingError: false,
-  loadingErrorMessage: ''
+  loadingErrorMessage: '',
 };
 
 describe('getJobDetails Saga', () => {
@@ -38,7 +38,7 @@ describe('getJobDetails Saga', () => {
       .withReducer(jobDetailReducer)
       .provide([
         [matchers.call.fn(fetchJobDetailsUtil), jobDetailFixture],
-        [matchers.call.fn(fetchAppDefinitionUtil), appDetailFixture]
+        [matchers.call.fn(fetchAppDefinitionUtil), appDetailFixture],
       ])
       .put({ type: 'JOB_DETAILS_FETCH_STARTED', payload: 'job_id' })
       .call(fetchJobDetailsUtil, 'job_id')
@@ -50,14 +50,14 @@ describe('getJobDetails Saga', () => {
         type: 'JOB_DETAILS_FETCH_SUCCESS',
         payload: {
           app: appDetailFixture,
-          job: jobDetailFixture
-        }
+          job: jobDetailFixture,
+        },
       })
       .put({
         type: 'JOBS_LIST_UPDATE_JOB',
         payload: {
-          job: jobDetailFixture
-        }
+          job: jobDetailFixture,
+        },
       })
 
       .hasFinalState({
@@ -67,7 +67,7 @@ describe('getJobDetails Saga', () => {
         loadingError: false,
         loadingErrorMessage: '',
         job: jobDetailFixture,
-        display: jobDetailDisplayFixture
+        display: jobDetailDisplayFixture,
       })
       .run());
 });
@@ -83,21 +83,21 @@ test('Effect Creators should dispatch sagas', () => {
 describe('submitJob Saga', () => {
   it('should submit a job', () =>
     expectSaga(submitJob, {
-      payload: jobSubmitFixture
+      payload: jobSubmitFixture,
     })
       .withReducer(jobsReducer)
       .provide([
         [
           matchers.call.fn(postSubmitJobUtil),
-          { response: jobDetailFixture } /* TODO: fix response */
-        ]
+          { response: jobDetailFixture } /* TODO: fix response */,
+        ],
       ])
       .put({ type: 'FLUSH_SUBMIT' })
       .put({ type: 'TOGGLE_SUBMITTING' })
       .call(postSubmitJobUtil, jobSubmitFixture)
       .put({
         type: 'SUBMIT_JOB_SUCCESS',
-        payload: jobDetailFixture
+        payload: jobDetailFixture,
       })
       .hasFinalState({
         ...jobsInitalState,
@@ -106,20 +106,20 @@ describe('submitJob Saga', () => {
           error: false,
           response: jobDetailFixture,
           submitting: true /* submitting stays `true` after successful submission as AppForm.js scrolls user to top of
-           page before dispatching TOGGLE_SUBMITTING */
-        }
+           page before dispatching TOGGLE_SUBMITTING */,
+        },
       })
       .run());
   it('should open a push-key modal when submitting a job for system requiring keys', () =>
     expectSaga(submitJob, {
-      payload: jobSubmitFixture
+      payload: jobSubmitFixture,
     })
       .withReducer(jobsReducer)
       .provide([
         [
           matchers.call.fn(postSubmitJobUtil),
-          { response: { execSys: executionSystemDetailFixture } }
-        ]
+          { response: { execSys: executionSystemDetailFixture } },
+        ],
       ])
       .put({ type: 'FLUSH_SUBMIT' })
       .put({ type: 'TOGGLE_SUBMITTING' })
@@ -131,19 +131,19 @@ describe('submitJob Saga', () => {
           props: {
             onSuccess: {
               type: 'SUBMIT_JOB',
-              payload: jobSubmitFixture
+              payload: jobSubmitFixture,
             },
-            system: executionSystemDetailFixture
-          }
-        }
+            system: executionSystemDetailFixture,
+          },
+        },
       })
       .put({ type: 'TOGGLE_SUBMITTING' })
       .hasFinalState({
         ...jobsInitalState,
         submit: {
           ...jobsInitalState.submit,
-          submitting: false
-        }
+          submitting: false,
+        },
       })
       .run());
 });

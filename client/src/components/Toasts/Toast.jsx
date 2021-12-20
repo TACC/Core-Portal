@@ -16,7 +16,7 @@ const NotificationToast = () => {
   const [transition, setTransition] = React.useState(undefined);
 
   const { toasts } = useSelector(
-    state => state.notifications.list,
+    (state) => state.notifications.list,
     shallowEqual
   );
 
@@ -24,7 +24,7 @@ const NotificationToast = () => {
     if (toasts.length && !notification) {
       // Set a new toast when we don't have an active one
       setNotification({ ...toasts[0] });
-      setTransition(() => props => <Slide {...props} direction="right" />);
+      setTransition(() => (props) => <Slide {...props} direction="right" />);
       setOpen(true);
     } else if (toasts.length && notification && open) {
       // Close an active toast when a new one is added
@@ -35,7 +35,7 @@ const NotificationToast = () => {
   const handleExited = () => {
     dispatch({
       type: 'NOTIFICATIONS_DISCARD_TOAST',
-      payload: { pk: notification.pk }
+      payload: { pk: notification.pk },
     });
     setNotification(undefined);
   };
@@ -52,21 +52,21 @@ const NotificationToast = () => {
       key={notification ? notification.pk : undefined}
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'left'
+        horizontal: 'left',
       }}
       TransitionComponent={transition}
       open={open}
       autoHideDuration={3500}
       onClose={handleClose}
-      TransitionProps={{onExited: handleExited}}
+      TransitionProps={{ onExited: handleExited }}
       classes={{
-        anchorOriginBottomLeft: 'notification-toast-container'
+        anchorOriginBottomLeft: 'notification-toast-container',
       }}
       ContentProps={{
         classes: {
           root: 'notification-toast',
-          message: 'notification-toast-body'
-        }
+          message: 'notification-toast-body',
+        },
       }}
       message={<ToastMessage notification={notification} />}
     />
@@ -74,8 +74,10 @@ const NotificationToast = () => {
 };
 
 export const ToastMessage = ({ notification }) => {
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectList = useSelector(state => state.projects.listing.projects);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
+  const projectList = useSelector((state) => state.projects.listing.projects);
   return (
     <>
       {notification && (
@@ -100,11 +102,11 @@ export const ToastMessage = ({ notification }) => {
 };
 ToastMessage.propTypes = {
   notification: PropTypes.shape({
-    status: PropTypes.string
-  })
+    status: PropTypes.string,
+  }),
 };
 ToastMessage.defaultProps = {
-  notification: undefined
+  notification: undefined,
 };
 
 /**
@@ -155,17 +157,17 @@ export const getToastMessage = (
 getToastMessage.propTypes = {
   extra: PropTypes.shape({
     name: PropTypes.string,
-    status: PropTypes.string
+    status: PropTypes.string,
   }),
   event_type: PropTypes.string.isRequired,
   message: PropTypes.string,
   status: PropTypes.string,
   operation: PropTypes.string,
-  systemList: PropTypes.list
+  systemList: PropTypes.list,
 };
 getToastMessage.defaultProps = {
   extra: {},
-  message: ''
+  message: '',
 };
 
 export default NotificationToast;

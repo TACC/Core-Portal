@@ -16,9 +16,9 @@ const initialMockState = {
   projects: projectsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
-  }
+      pushKeys: false,
+    },
+  },
 };
 
 describe('DataFilesCopyModal', () => {
@@ -65,9 +65,9 @@ describe('DataFilesCopyModal', () => {
           system: 'test.system',
           path: '/',
           dirname: 'abc123',
-          reloadCallback: expect.any(Function)
-        }
-      }
+          reloadCallback: expect.any(Function),
+        },
+      },
     ]);
   });
 

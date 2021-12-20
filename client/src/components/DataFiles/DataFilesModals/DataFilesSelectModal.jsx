@@ -9,14 +9,16 @@ import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsLis
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const systems = useSelector(
-    state => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
-  const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const { showProjects } = useSelector(state => state.files.modalProps.select);
+  const files = useSelector((state) => state.files.listing.modal, shallowEqual);
+  const { showProjects } = useSelector(
+    (state) => state.files.modalProps.select
+  );
   const dispatch = useDispatch();
   const modalParams = useSelector(
-    state => state.files.params.modal,
+    (state) => state.files.params.modal,
     shallowEqual
   );
   const selectRef = React.useRef();
@@ -24,18 +26,18 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     const systemParams = {
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system
+      system: systems[0].system,
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...systemParams, section: 'modal' }
+      payload: { ...systemParams, section: 'modal' },
     });
     dispatch({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation: 'select',
-        props: {}
-      }
+        props: {},
+      },
     });
   };
   const selectCallback = (system, path) => {
@@ -100,7 +102,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
 DataFilesSelectModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired
+  onSelect: PropTypes.func.isRequired,
 };
 
 export default DataFilesSelectModal;

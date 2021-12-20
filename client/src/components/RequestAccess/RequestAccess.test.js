@@ -15,7 +15,7 @@ describe('RequestAccess', () => {
       requestAccess,
       workbench: {
         ...workbench,
-        portalName: 'Test Portal'
+        portalName: 'Test Portal',
       },
     });
 

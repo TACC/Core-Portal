@@ -9,7 +9,7 @@ import {
   Form,
   FormGroup,
   Label,
-  FormText
+  FormText,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, TextCopyField, InlineMessage } from '_common';
@@ -20,7 +20,7 @@ const statusPropType = PropTypes.shape({
   error: PropTypes.string,
   url: PropTypes.string,
   method: PropTypes.string,
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
 });
 
 const DataFilesLinkActions = ({ status, onClick }) => {
@@ -32,14 +32,14 @@ const DataFilesLinkActions = ({ status, onClick }) => {
         <Button
           disabled={disabled}
           className={`data-files-btn ${styles.action}`}
-          onClick={e => onClick('delete')}
+          onClick={(e) => onClick('delete')}
         >
           Delete
         </Button>
         <Button
           disabled={disabled}
           className="data-files-btn"
-          onClick={e => onClick('put')}
+          onClick={(e) => onClick('put')}
         >
           Replace Link
         </Button>
@@ -51,7 +51,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
     <Button
       disabled={disabled}
       className="data-files-btn"
-      onClick={e => onClick('post')}
+      onClick={(e) => onClick('post')}
     >
       Generate Link
     </Button>
@@ -60,7 +60,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
 
 DataFilesLinkActions.propTypes = {
   status: statusPropType,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
 };
 
 DataFilesLinkActions.defaultProps = {
@@ -68,8 +68,8 @@ DataFilesLinkActions.defaultProps = {
     error: null,
     url: '',
     method: null,
-    loading: false
-  }
+    loading: false,
+  },
 };
 
 const DataFilesLinkStatus = ({ status }) => {
@@ -99,21 +99,21 @@ const DataFilesLinkStatus = ({ status }) => {
 };
 
 DataFilesLinkStatus.propTypes = {
-  status: statusPropType
+  status: statusPropType,
 };
 
 DataFilesLinkStatus.defaultProps = {
-  status: null
+  status: null,
 };
 
 const DataFilesLinkModal = () => {
-  const isOpen = useSelector(state => state.files.modals.link);
-  const status = useSelector(state => state.files.operationStatus.link);
-  const { scheme } = useSelector(state => state.files.params.FilesListing);
+  const isOpen = useSelector((state) => state.files.modals.link);
+  const status = useSelector((state) => state.files.operationStatus.link);
+  const { scheme } = useSelector((state) => state.files.params.FilesListing);
   const [confirming, setConfirming] = useState(false);
   const [method, setMethod] = useState('');
   const [message, setMessage] = useState(null);
-  const file = useSelector(state => {
+  const file = useSelector((state) => {
     if (!state.files.modalProps.link) {
       return {};
     }
@@ -124,7 +124,7 @@ const DataFilesLinkModal = () => {
   const toggle = useCallback(() => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'link', props: {} }
+      payload: { operation: 'link', props: {} },
     });
     setMethod('');
     setMessage(null);
@@ -134,7 +134,7 @@ const DataFilesLinkModal = () => {
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'link' }
+      payload: { status: null, operation: 'link' },
     });
   };
 
@@ -146,13 +146,13 @@ const DataFilesLinkModal = () => {
   const onConfirm = useCallback(() => {
     dispatch({
       type: 'DATA_FILES_LINK',
-      payload: { file, scheme, method }
+      payload: { file, scheme, method },
     });
     setConfirming(false);
   }, [method, setConfirming, file, scheme]);
 
   const onActionClick = useCallback(
-    actionMethod => {
+    (actionMethod) => {
       setMethod(actionMethod);
       switch (actionMethod) {
         case 'post':
@@ -168,7 +168,7 @@ const DataFilesLinkModal = () => {
       if (actionMethod === 'post') {
         dispatch({
           type: 'DATA_FILES_LINK',
-          payload: { file, scheme, method: 'post' }
+          payload: { file, scheme, method: 'post' },
         });
       } else {
         setConfirming(true);

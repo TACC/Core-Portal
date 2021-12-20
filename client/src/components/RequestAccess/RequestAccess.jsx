@@ -6,12 +6,12 @@ import BrowserChecker from '../_common/BrowserChecker';
 import styles from './RequestAccess.module.scss';
 
 function RequestAccess() {
-  const portalName = useSelector(state => state.workbench.portalName);
+  const portalName = useSelector((state) => state.workbench.portalName);
   return (
     <>
-      <Navbar className={styles["request-access-title"]}>Request Access</Navbar>
-      <div className={styles["request-access-wrapper"]}>
-        <h2 className={styles["request-access-h2"]}>
+      <Navbar className={styles['request-access-title']}>Request Access</Navbar>
+      <div className={styles['request-access-wrapper']}>
+        <h2 className={styles['request-access-h2']}>
           Request Access to the {portalName} Portal Platform
         </h2>
         <h4>
@@ -25,7 +25,7 @@ function RequestAccess() {
           <li>
             Visit{' '}
             <a
-              className={styles["request-access-link"]}
+              className={styles['request-access-link']}
               href="https://portal.tacc.utexas.edu/account-request"
             >
               https://portal.tacc.utexas.edu/account-request
@@ -51,7 +51,7 @@ function RequestAccess() {
             a verification e-mail. You must click the link provided in the
             e-mail and login to{' '}
             <a
-              className={styles["request-access-link"]}
+              className={styles['request-access-link']}
               href="https://portal.tacc.utexas.edu"
             >
               portal.tacc.utexas.edu
@@ -67,7 +67,7 @@ function RequestAccess() {
           After accessing the {portalName} portal, configure{' '}
           <b>
             <a
-              className={styles["request-access-link"]}
+              className={styles['request-access-link']}
               href="https://portal.tacc.utexas.edu/account-profile/-/mfa"
             >
               Multifactor Authentication (MFA)

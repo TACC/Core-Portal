@@ -70,10 +70,10 @@ SiteSearchSidebar.propTypes = {
   authenticated: PropTypes.bool.isRequired,
   results: PropTypes.objectOf(
     PropTypes.shape({
-      count: PropTypes.number
+      count: PropTypes.number,
     })
   ).isRequired,
-  schemes: PropTypes.arrayOf(PropTypes.string).isRequired
+  schemes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default SiteSearchSidebar;

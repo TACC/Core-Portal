@@ -15,26 +15,26 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
     // eslint-disable-next-line camelcase
     query_string,
     page,
-    filter: filetypeFilter
+    filter: filetypeFilter,
   } = queryStringParser.parse(location.search);
 
   const { loading, error, completed, results } = useSelector(
-    state => state.siteSearch
+    (state) => state.siteSearch
   );
-  const { user } = useSelector(state => state.authenticatedUser);
+  const { user } = useSelector((state) => state.authenticatedUser);
 
   /* eslint-disable camelcase */
   useEffect(() => {
     dispatch({
       type: 'FETCH_SITE_SEARCH',
-      payload: { page, query_string, filter: filetypeFilter }
+      payload: { page, query_string, filter: filetypeFilter },
     });
   }, [query_string, page, filetypeFilter]);
   /* eslint-disable camelcase */
 
   useEffect(() => {
     if (completed && !filter) {
-      const activeFilter = filterPriorityList.find(f => results[f].count > 0);
+      const activeFilter = filterPriorityList.find((f) => results[f].count > 0);
       history.push(
         `/search/${activeFilter || filterPriorityList[0]}/${location.search}`
       );
@@ -46,7 +46,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
       <div className="col-md-2">
         <SiteSearchSidebar
           queryString={query_string}
-          schemes={Object.keys(results).filter(key => results[key].include)}
+          schemes={Object.keys(results).filter((key) => results[key].include)}
           authenticated={Boolean(user)}
           results={results}
         />
@@ -64,19 +64,19 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   );
 };
 SiteSearchComponent.propTypes = {
-  filterPriorityList: PropTypes.arrayOf(PropTypes.string).isRequired
+  filterPriorityList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const SiteSearch = () => {
   const location = useLocation();
   const { filter } = useParams();
   const history = useHistory();
-  const systems = useSelector(state => state.systems.storage.configuration);
+  const systems = useSelector((state) => state.systems.storage.configuration);
 
   const searchSystems = systems
-    .filter(s => s.siteSearchPriority !== undefined)
+    .filter((s) => s.siteSearchPriority !== undefined)
     .sort((a, b) => a.siteSearchPriority - b.siteSearchPriority)
-    .map(s => s.scheme);
+    .map((s) => s.scheme);
   const filterPriorityList = ['cms'].concat(searchSystems);
 
   if (!filter || !filterPriorityList.includes(filter)) {

@@ -18,29 +18,29 @@ function FileInputDropZone({
   maxSize,
   maxSizeMessage,
   onRemoveFile,
-  isSubmitted
+  isSubmitted,
 }) {
   const [rejectedFiles, setRejectedFiles] = useState([]);
 
   const { getRootProps, open, getInputProps } = useDropzone({
     noClick: true,
     maxSize,
-    onDrop: accepted => {
+    onDrop: (accepted) => {
       onSetFiles(accepted);
     },
-    onDropRejected: rejected => {
+    onDropRejected: (rejected) => {
       if (onRejectedFiles) {
         onRejectedFiles(rejected);
       } else {
         const newRejectedFiles = rejected.filter(
-          f => rejectedFiles.filter(rf => rf.path === f.path).length === 0
+          (f) => rejectedFiles.filter((rf) => rf.path === f.path).length === 0
         );
         setRejectedFiles([...rejectedFiles, ...newRejectedFiles]);
       }
-    }
+    },
   });
 
-  const removeFile = fileIndex => {
+  const removeFile = (fileIndex) => {
     if (onRemoveFile) {
       onRemoveFile(fileIndex);
     }
@@ -109,14 +109,14 @@ FileInputDropZone.propTypes = {
   onRemoveFile: PropTypes.func,
   isSubmitted: PropTypes.bool,
   maxSizeMessage: PropTypes.string.isRequired,
-  maxSize: PropTypes.number.isRequired
+  maxSize: PropTypes.number.isRequired,
 };
 
 FileInputDropZone.defaultProps = {
   files: null,
   isSubmitted: false,
   onRejectedFiles: null,
-  onRemoveFile: null
+  onRemoveFile: null,
 };
 
 export default FileInputDropZone;

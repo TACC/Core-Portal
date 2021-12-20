@@ -20,7 +20,7 @@ it('Renders index', () => {
         workbench,
         notifications,
         ticketCreate,
-        authenticatedUser
+        authenticatedUser,
       })}
     >
       <Router>

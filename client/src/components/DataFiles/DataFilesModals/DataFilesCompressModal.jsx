@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   Input,
-  InputGroupAddon
+  InputGroupAddon,
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -20,20 +20,20 @@ const DataFilesCompressModal = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const status = useSelector(
-    state => state.files.operationStatus.compress,
+    (state) => state.files.operationStatus.compress,
     shallowEqual
   );
 
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
 
-  const isOpen = useSelector(state => state.files.modals.compress);
+  const isOpen = useSelector((state) => state.files.modals.compress);
   const selectedFiles = useSelector(
     ({ files: { selected, listing } }) =>
-      selected.FilesListing.map(i => ({
-        ...listing.FilesListing[i]
+      selected.FilesListing.map((i) => ({
+        ...listing.FilesListing[i],
       })),
     shallowEqual
   );
@@ -42,13 +42,13 @@ const DataFilesCompressModal = () => {
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'compress', props: {} }
+      payload: { operation: 'compress', props: {} },
     });
 
   const onOpened = () => {
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
+      payload: { ...params, section: 'modal' },
     });
   };
 
@@ -57,7 +57,7 @@ const DataFilesCompressModal = () => {
     if (status) {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'compress' }
+        payload: { status: {}, operation: 'compress' },
       });
       history.push(location.pathname);
     }
@@ -68,7 +68,7 @@ const DataFilesCompressModal = () => {
     const filename = `${filenameDisplay}${filetype}`;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
-      payload: { filename, files: selected }
+      payload: { filename, files: selected },
     });
   };
 
@@ -85,14 +85,14 @@ const DataFilesCompressModal = () => {
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
         : '',
-    filetype: '.zip'
+    filetype: '.zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
       .string()
       .trim('The filename cannot include leading and trailing spaces')
       .strict(true)
-      .required('The filename is required')
+      .required('The filename is required'),
   });
 
   return (
@@ -113,7 +113,7 @@ const DataFilesCompressModal = () => {
         onSubmit={compressCallback}
       >
         {({ setFieldValue, values, isValid }) => {
-          const handleSelectChange = e => {
+          const handleSelectChange = (e) => {
             setFieldValue('filetype', e.target.value);
           };
           const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
@@ -128,14 +128,17 @@ const DataFilesCompressModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon addonType="append" className={styles['input-field']}>
+                    <InputGroupAddon
+                      addonType="append"
+                      className={styles['input-field']}
+                    >
                       <Input
                         type="select"
                         name="filetype"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
-                        className={styles["bg-color"]}
+                        className={styles['bg-color']}
                       >
                         <option value=".zip">.zip</option>
                         <option value=".tar.gz">.tar.gz</option>

@@ -17,7 +17,7 @@ const mockInitialState = {
   hosts: {},
   portal_alloc: '',
   loadingPage: false,
-  errors: {}
+  errors: {},
 };
 const mockStore = configureStore();
 describe('Allocations Table', () => {
@@ -26,10 +26,10 @@ describe('Allocations Table', () => {
     const utils = render(
       <Provider
         store={mockStore({
-          allocations: mockInitialState
+          allocations: mockInitialState,
         })}
       >
-        <MemoryRouter initialEntries={["/workbench/allocations"]}>
+        <MemoryRouter initialEntries={['/workbench/allocations']}>
           <AllocationsTable page="approved" />
         </MemoryRouter>
       </Provider>
@@ -39,7 +39,7 @@ describe('Allocations Table', () => {
     debug = utils.debug;
   });
 
-  it("should have relevant columns for data for the Allocations Table", () => {
+  it('should have relevant columns for data for the Allocations Table', () => {
     expect(getByText(/Title/)).toBeDefined();
     expect(getByText(/PI/));
     expect(getByText(/Team/)).toBeDefined();
@@ -53,12 +53,12 @@ describe('Allocations Table', () => {
     const storeWithError = mockStore({
       allocations: {
         ...mockInitialState,
-        errors: { listing: new Error("PC Load Letter") },
+        errors: { listing: new Error('PC Load Letter') },
       },
     });
     rerender(
       <Provider store={storeWithError}>
-        <MemoryRouter initialEntries={["/workbench/allocations"]}>
+        <MemoryRouter initialEntries={['/workbench/allocations']}>
           <AllocationsTable page="approved" />
         </MemoryRouter>
       </Provider>
@@ -69,7 +69,6 @@ describe('Allocations Table', () => {
     await waitFor(() => {
       const [reload] = storeWithError.getActions();
       expect(reload.type).toBe('GET_ALLOCATIONS');
-    })
-  })
-
+    });
+  });
 });

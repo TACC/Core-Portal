@@ -10,18 +10,18 @@ import './HistoryViews.scss';
 
 const JobHistory = ({ className }) => {
   const { notifs, loading } = useSelector(
-    state => ({
+    (state) => ({
       notifs: state.notifications.list.notifs,
-      loading: state.notifications.loading
+      loading: state.notifications.loading,
     }),
     shallowEqual
   );
   const unreadIds = notifs
-    .filter(n => !n.read && n.event_type === 'job')
-    .map(n => n.extra.id);
-  const rowProps = row => {
+    .filter((n) => !n.read && n.event_type === 'job')
+    .map((n) => n.extra.id);
+  const rowProps = (row) => {
     return {
-      className: unreadIds.includes(row.original.id) ? 'unread' : ''
+      className: unreadIds.includes(row.original.id) ? 'unread' : '',
     };
   };
 
@@ -42,10 +42,10 @@ const JobHistory = ({ className }) => {
 };
 JobHistory.propTypes = {
   /** Any additional className(s) for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 JobHistory.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default JobHistory;

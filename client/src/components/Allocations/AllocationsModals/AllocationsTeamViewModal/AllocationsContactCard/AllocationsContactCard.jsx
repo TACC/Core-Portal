@@ -19,7 +19,7 @@ const AllocationsContactCard = ({ listing }) => {
         className={styles.details}
         data={{
           Username: username,
-          Email: email
+          Email: email,
         }}
         direction="horizontal"
         density="compact"
@@ -35,8 +35,8 @@ AllocationsContactCard.propTypes = {
     lastName: string.isRequired,
     email: string.isRequired,
     username: string.isRequired,
-    usageData: arrayOf(shape({})).isRequired
-  })
+    usageData: arrayOf(shape({})).isRequired,
+  }),
 };
 AllocationsContactCard.defaultProps = { listing: {} };
 

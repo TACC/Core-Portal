@@ -8,7 +8,7 @@ const BrowserChecker = () => {
     'Chrome',
     'Firefox',
     'Safari',
-    'Microsoft Edge'
+    'Microsoft Edge',
   ].includes(browser.name);
 
   return (

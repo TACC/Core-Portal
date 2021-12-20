@@ -6,22 +6,22 @@ import { object as obj, string as str } from 'yup';
 import { LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
-export default function() {
+export default function () {
   const {
     data: { demographics },
     fields,
-    isEditing
-  } = useSelector(state => {
+    isEditing,
+  } = useSelector((state) => {
     return {
       ...state.profile,
-      isEditing: state.profile.editing
+      isEditing: state.profile.editing,
     };
   });
   const dispatch = useDispatch();
   const formSchema = obj().shape({
     orcidId: str(),
     bio: str(),
-    website: str()
+    website: str(),
   });
   const handleSubmit = (values, { setSubmitting }) => {
     dispatch({ type: 'EDIT_OPTIONAL_INFORMATION', values });
@@ -31,7 +31,7 @@ export default function() {
     website: demographics.website || '',
     bio: demographics.bio || '',
     orcidId: demographics.orcid_id || '',
-    professionalLevel: demographics.professional_level || ''
+    professionalLevel: demographics.professional_level || '',
   };
   if (!fields.professionalLevels) return <LoadingSpinner />;
   return (

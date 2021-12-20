@@ -6,7 +6,7 @@ import queryStringParser from 'query-string';
 import {
   InfiniteScrollTable,
   SectionMessage,
-  SectionTableWrapper
+  SectionTableWrapper,
 } from '_common';
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import styles from './DataFilesProjectsList.module.scss';
@@ -14,7 +14,7 @@ import './DataFilesProjectsList.scss';
 
 const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
-    state => state.projects.listing
+    (state) => state.projects.listing
   );
   const query = queryStringParser.parse(useLocation().search);
 
@@ -28,8 +28,8 @@ const DataFilesProjectsList = ({ modal }) => {
     dispatch({
       type: actionType,
       payload: {
-        queryString: modal ? null : query.query_string
-      }
+        queryString: modal ? null : query.query_string,
+      },
     });
   }, [dispatch, query.query_string]);
 
@@ -43,15 +43,15 @@ const DataFilesProjectsList = ({ modal }) => {
         system: el.row.original.id,
         scheme: 'projects',
         path: '',
-        section: 'modal'
-      }
+        section: 'modal',
+      },
     });
     dispatch({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation: modal,
-        props: { showProjects: false }
-      }
+        props: { showProjects: false },
+      },
     });
   };
 
@@ -60,31 +60,31 @@ const DataFilesProjectsList = ({ modal }) => {
       Header: 'Workspace Title',
       headerStyle: { textAlign: 'left' },
       accessor: 'description',
-      Cell: el => (
+      Cell: (el) => (
         <Link
           className="data-files-nav-link"
           to={`/workbench/data/tapis/projects/${el.row.original.id}`}
-          onClick={e => listingCallback(e, el)}
+          onClick={(e) => listingCallback(e, el)}
         >
           {el.value}
         </Link>
-      )
+      ),
     },
     {
       Header: 'Owner',
       accessor: 'owner',
-      Cell: el => (
+      Cell: (el) => (
         <span>
           {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
         </span>
-      )
+      ),
     },
     {
       Header: 'ID',
       headerStyle: { textAlign: 'left' },
       accessor: 'name',
-      Cell: el => <span>{el.value.split('-').slice(-1)[0]}</span>
-    }
+      Cell: (el) => <span>{el.value.split('-').slice(-1)[0]}</span>,
+    },
   ];
 
   const noDataText = query.query_string
@@ -118,7 +118,7 @@ const DataFilesProjectsList = ({ modal }) => {
       {!modal && <DataFilesProjectsSearchbar />}
       <ConditionalWrapper
         condition={!modal}
-        wrapper={children => {
+        wrapper={(children) => {
           return <div className="o-flex-item-table-wrap">{children}</div>;
         }}
       >
@@ -135,10 +135,10 @@ const DataFilesProjectsList = ({ modal }) => {
   );
 };
 DataFilesProjectsList.propTypes = {
-  modal: PropTypes.string
+  modal: PropTypes.string,
 };
 DataFilesProjectsList.defaultProps = {
-  modal: null
+  modal: null,
 };
 
 export default DataFilesProjectsList;

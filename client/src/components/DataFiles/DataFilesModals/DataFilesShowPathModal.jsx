@@ -7,7 +7,7 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
 
@@ -15,40 +15,39 @@ const DataFilesShowPathModal = React.memo(() => {
     if (params.api === 'tapis' && params.system) {
       dispatch({
         type: 'FETCH_SYSTEM_DEFINITION',
-        payload: params.system
+        payload: params.system,
       });
     }
   }, [params, dispatch]);
 
-  const { file } = useSelector(state => state.files.modalProps.showpath);
+  const { file } = useSelector((state) => state.files.modalProps.showpath);
 
-  const definition = useSelector(state => {
+  const definition = useSelector((state) => {
     if (!file) {
       return null;
     }
     const matching = state.systems.definitions.list.find(
-      sys => sys.id === file.system
+      (sys) => sys.id === file.system
     );
     return matching;
   });
 
   const isOpen = useSelector(
-    state => state.files.modals.showpath && Boolean(definition)
+    (state) => state.files.modals.showpath && Boolean(definition)
   );
 
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'showpath', props: {} }
+      payload: { operation: 'showpath', props: {} },
     });
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
   };
 
-
-
-  if (file) return (
+  if (file)
+    return (
       <Modal
         isOpen={isOpen}
         onClosed={onClosed}
@@ -89,7 +88,7 @@ const DataFilesShowPathModal = React.memo(() => {
         </ModalBody>
       </Modal>
     );
-  else return <></>
+  else return <></>;
 });
 
 export default DataFilesShowPathModal;

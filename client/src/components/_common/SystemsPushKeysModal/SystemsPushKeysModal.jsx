@@ -11,9 +11,9 @@ import LoadingSpinner from '../LoadingSpinner';
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
   const onOpen = () => {};
-  const isOpen = useSelector(state => state.pushKeys.modals.pushKeys);
+  const isOpen = useSelector((state) => state.pushKeys.modals.pushKeys);
   const { error, onSuccess, system, submitting, onCancel } = useSelector(
-    state => state.pushKeys.modalProps.pushKeys
+    (state) => state.pushKeys.modalProps.pushKeys
   );
 
   const history = useHistory();
@@ -27,7 +27,7 @@ const SystemsPushKeysModal = () => {
   const toggle = () => {
     dispatch({
       type: 'SYSTEMS_TOGGLE_MODAL',
-      payload: { operation: 'pushKeys', props: {} }
+      payload: { operation: 'pushKeys', props: {} },
     });
     if (onCancel) {
       dispatch(onCancel);
@@ -38,7 +38,7 @@ const SystemsPushKeysModal = () => {
     const hostnames = system.login
       ? [system.login.host, system.storage.host]
       : [system.storage.host];
-    [...new Set(hostnames)].forEach(hostname => {
+    [...new Set(hostnames)].forEach((hostname) => {
       dispatch({
         type: 'SYSTEMS_PUSH_KEYS',
         payload: {
@@ -48,24 +48,20 @@ const SystemsPushKeysModal = () => {
           token,
           type: system.type,
           reloadCallback: reloadPage,
-          onSuccess
-        }
+          onSuccess,
+        },
       });
     });
   };
 
   const validationSchema = Yup.object().shape({
-    password: Yup.string()
-      .min(1)
-      .required('Please enter your TACC password.'),
-    token: Yup.string()
-      .min(1)
-      .required('Please provide a valid TACC token.')
+    password: Yup.string().min(1).required('Please enter your TACC password.'),
+    token: Yup.string().min(1).required('Please provide a valid TACC token.'),
   });
 
   const initialValues = {
     password: '',
-    token: ''
+    token: '',
   };
 
   let buttonIcon;

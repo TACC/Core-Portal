@@ -42,6 +42,6 @@ const JobsSessionModal = ({ isOpen, toggle, interactiveSessionLink }) => {
 JobsSessionModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  interactiveSessionLink: string.isRequired
+  interactiveSessionLink: string.isRequired,
 };
 export default JobsSessionModal;

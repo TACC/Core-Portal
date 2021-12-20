@@ -16,7 +16,9 @@ describe('Paginator', () => {
   });
 
   it('renders 2 pages only', () => {
-    const { getAllByText, queryByText } = render(<Paginator pages={2} current={1} spread={5} />);
+    const { getAllByText, queryByText } = render(
+      <Paginator pages={2} current={1} spread={5} />
+    );
     expect(getAllByText('1').length).toEqual(1);
     expect(getAllByText('2').length).toEqual(1);
     expect(queryByText('0')).toBeFalsy();

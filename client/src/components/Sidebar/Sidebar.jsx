@@ -22,7 +22,9 @@ const SidebarItem = ({ to, label, iconName, children, disabled }) => {
         disabled={disabled}
       >
         <div
-          className={`${disabled && styles['disabled']} ${styles['content']} nav-content`}
+          className={`${disabled && styles['disabled']} ${
+            styles['content']
+          } nav-content`}
         >
           <Icon name={iconName} />
           <span className={styles['text']}>{label}</span>
@@ -38,12 +40,12 @@ SidebarItem.propTypes = {
   label: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
   children: PropTypes.node,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 SidebarItem.defaultProps = {
   children: null,
-  disabled: false
+  disabled: false,
 };
 
 /** A navigation list for the application */
@@ -51,10 +53,10 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
-  const unread = useSelector(state => state.notifications.list.unread);
-  const hideApps = useSelector(state => state.workbench.config.hideApps);
+  const unread = useSelector((state) => state.notifications.list.unread);
+  const hideApps = useSelector((state) => state.workbench.config.hideApps);
   const hideDataFiles = useSelector(
-    state => state.workbench.config.hideDataFiles
+    (state) => state.workbench.config.hideDataFiles
   );
 
   return (
@@ -119,13 +121,13 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
 Sidebar.propTypes = {
   disabled: PropTypes.bool,
   showUIPatterns: PropTypes.bool,
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
 };
 
 Sidebar.defaultProps = {
   disabled: false,
   showUIPatterns: false,
-  loading: true
+  loading: true,
 };
 
 export default Sidebar;

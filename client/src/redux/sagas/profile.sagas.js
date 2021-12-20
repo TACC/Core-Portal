@@ -4,8 +4,8 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 const ROOT_SLUG = '/accounts/api/profile';
 
-export const getPasswordStatus = h => {
-  const passwordChanged = h.filter(entry =>
+export const getPasswordStatus = (h) => {
+  const passwordChanged = h.filter((entry) =>
     entry.comment.includes('Password changed')
   );
   if (isEmpty(passwordChanged)) return '';
@@ -18,12 +18,12 @@ export function* getProfileData(action) {
   yield put({ type: 'GET_FORM_FIELDS' });
   try {
     const response = yield call(fetchUtil, {
-      url: `${ROOT_SLUG}/data/`
+      url: `${ROOT_SLUG}/data/`,
     });
     const passwordLastChanged = getPasswordStatus(response.history);
     yield put({
       type: 'ADD_DATA',
-      payload: { ...omit(response, 'history'), passwordLastChanged }
+      payload: { ...omit(response, 'history'), passwordLastChanged },
     });
   } catch (error) {
     yield put({ type: 'ADD_DATA_ERROR', payload: error });
@@ -45,7 +45,7 @@ export function* changePassword(action) {
     yield call(fetchUtil, {
       url: `${ROOT_SLUG}/change-password/`,
       method: 'PUT',
-      body: JSON.stringify(action.values)
+      body: JSON.stringify(action.values),
     });
     yield put({ type: 'CHECKED_PASSWORD' });
     yield put({ type: 'CHANGED_PASSWORD' });
@@ -63,12 +63,12 @@ export function* editRequiredInformation(action) {
       method: 'PUT',
       body: JSON.stringify({
         flag: 'Required',
-        ...action.values
-      })
+        ...action.values,
+      }),
     });
     yield put({
       type: 'EDIT_INFORMATION_SUCCESS',
-      payload: { required: true }
+      payload: { required: true },
     });
   } catch (error) {
     yield put({ type: 'EDIT_INFORMATION_ERROR', payload: { required: error } });
@@ -87,12 +87,12 @@ export function* editOptionalInformation(action) {
         professional_level: professionalLevel,
         orcid_id: orcidId,
         website,
-        bio
-      })
+        bio,
+      }),
     });
     yield put({
       type: 'EDIT_INFORMATION_SUCCESS',
-      payload: { optional: true }
+      payload: { optional: true },
     });
   } catch (error) {
     yield put({ type: 'EDIT_INFORMATION_ERROR', payload: { optional: error } });
@@ -120,5 +120,5 @@ export default [
   watchEditOptional(),
   watchChangePassword(),
   watchFormFields(),
-  watchProfileData()
+  watchProfileData(),
 ];

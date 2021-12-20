@@ -15,7 +15,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  Spinner
+  Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
 
@@ -26,14 +26,14 @@ import {
   LoadingSpinner,
   Message,
   InfiniteScrollTable,
-  Icon
+  Icon,
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 
 const formSchema = Yup.object().shape({
-  reply: Yup.string().required('Required')
+  reply: Yup.string().required('Required'),
 });
 const Attachments = ({ attachments, ticketId }) => {
   const infiniteScrollCallback = useCallback(() => {});
@@ -41,7 +41,7 @@ const Attachments = ({ attachments, ticketId }) => {
   const json = attachments.map(function attachmentAcessor(x) {
     return {
       attachment_id: x[0],
-      attachment_name: x[1]
+      attachment_name: x[1],
     };
   });
 
@@ -50,7 +50,7 @@ const Attachments = ({ attachments, ticketId }) => {
       Header: 'Attached Files',
       accessor: 'attachment_name',
       className: 'attachment-title',
-      Cell: el => (
+      Cell: (el) => (
         <span
           title={el.value}
           id={`attachment${el.row.index}`}
@@ -58,13 +58,13 @@ const Attachments = ({ attachments, ticketId }) => {
         >
           {el.value}
         </span>
-      )
+      ),
     },
     {
       Header: '',
       className: 'link',
       accessor: 'attachment_id',
-      Cell: el => (
+      Cell: (el) => (
         <a
           href={`/api/tickets/${ticketId}/attachment/${el.value}`}
           className="link"
@@ -74,8 +74,8 @@ const Attachments = ({ attachments, ticketId }) => {
         >
           Download
         </a>
-      )
-    }
+      ),
+    },
   ];
   return (
     <div>
@@ -92,18 +92,18 @@ const Attachments = ({ attachments, ticketId }) => {
 };
 Attachments.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
-  ticketId: PropTypes.string.isRequired
+  ticketId: PropTypes.string.isRequired,
 };
 
 Attachments.propTypes = {
-  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
 };
 
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
       reply: '',
-      attachments: []
+      attachments: [],
     }),
     []
   );
@@ -111,14 +111,14 @@ function TicketHistoryReply({ ticketId }) {
   const dispatch = useDispatch();
 
   const gettingTicketHistory = useSelector(
-    state => state.ticketDetailedView.loading
+    (state) => state.ticketDetailedView.loading
   );
   const loadingError = useSelector(
-    state => state.ticketDetailedView.loadingError
+    (state) => state.ticketDetailedView.loadingError
   );
-  const isReplying = useSelector(state => state.ticketDetailedView.replying);
+  const isReplying = useSelector((state) => state.ticketDetailedView.replying);
   const replyingError = useSelector(
-    state => state.ticketDetailedView.replyingError
+    (state) => state.ticketDetailedView.replyingError
   );
   return (
     <Formik
@@ -127,9 +127,9 @@ function TicketHistoryReply({ ticketId }) {
       validationSchema={formSchema}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
-        Object.keys(values).forEach(key => formData.append(key, values[key]));
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
         if (values.attachments) {
-          values.attachments.forEach(attach =>
+          values.attachments.forEach((attach) =>
             formData.append('attachments', attach)
           );
         }
@@ -139,8 +139,8 @@ function TicketHistoryReply({ ticketId }) {
           payload: {
             ticketId,
             formData,
-            resetSubmittedForm: resetForm
-          }
+            resetSubmittedForm: resetForm,
+          },
         });
       }}
     >
@@ -187,7 +187,7 @@ function TicketHistoryReply({ ticketId }) {
 }
 
 TicketHistoryReply.propTypes = {
-  ticketId: PropTypes.number.isRequired
+  ticketId: PropTypes.number.isRequired,
 };
 
 const TicketHistoryCard = ({
@@ -197,10 +197,10 @@ const TicketHistoryCard = ({
   ticketCreator,
   content,
   attachments,
-  ticketId
+  ticketId,
 }) => {
   const dispatch = useDispatch();
-  const isOpen = useSelector(state =>
+  const isOpen = useSelector((state) =>
     state.ticketDetailedView.showItems.includes(historyId)
   );
 
@@ -215,22 +215,22 @@ const TicketHistoryCard = ({
     ? 'ticket-creator'
     : 'ticket-responder';
   const attachmentTitles = (attachments || []).filter(
-    a => !a[1].toString().startsWith('untitled (')
+    (a) => !a[1].toString().startsWith('untitled (')
   );
 
   const onClick = () => {
     dispatch({
       type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-      payload: { index: historyId }
+      payload: { index: historyId },
     });
   };
 
-  const onKeyDown = useCallback(e => {
+  const onKeyDown = useCallback((e) => {
     if (e.key === ' ') {
       e.preventDefault();
       dispatch({
         type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-        payload: { index: historyId }
+        payload: { index: historyId },
       });
     }
   });
@@ -281,14 +281,14 @@ TicketHistoryCard.propTypes = {
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
-  ticketId: PropTypes.string.isRequired
+  ticketId: PropTypes.string.isRequired,
 };
 
 export const TicketHistory = () => {
-  const loading = useSelector(state => state.ticketDetailedView.loading);
-  const history = useSelector(state => state.ticketDetailedView.content);
+  const loading = useSelector((state) => state.ticketDetailedView.loading);
+  const history = useSelector((state) => state.ticketDetailedView.content);
   const loadingError = useSelector(
-    state => state.ticketDetailedView.loadingError
+    (state) => state.ticketDetailedView.loadingError
   );
   const ticketHistoryEndRef = useRef();
 
@@ -305,7 +305,7 @@ export const TicketHistory = () => {
           Something went wrong.
         </Message>
       )}
-      {history.map(d => (
+      {history.map((d) => (
         <TicketHistoryCard
           key={d.id}
           historyId={Number(d.id)}
@@ -324,9 +324,9 @@ export const TicketHistory = () => {
 
 function TicketModal({ history }) {
   const modalAlwaysOpen = true;
-  const ticketId = useSelector(state => state.ticketDetailedView.ticketId);
+  const ticketId = useSelector((state) => state.ticketDetailedView.ticketId);
   const ticketSubject = useSelector(
-    state => state.ticketDetailedView.ticketSubject
+    (state) => state.ticketDetailedView.ticketSubject
   );
 
   const close = () => {
@@ -362,7 +362,7 @@ function TicketModal({ history }) {
 
 TicketModal.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
 };
 
 export default withRouter(TicketModal);

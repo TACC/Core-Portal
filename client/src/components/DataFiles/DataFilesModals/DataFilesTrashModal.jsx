@@ -16,25 +16,24 @@ const DataFilesTrashModal = React.memo(() => {
 
   const dispatch = useDispatch();
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
 
-  const isOpen = useSelector(state => state.files.modals.trash);
-  const selectedFiles = useSelector(
-    state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      }))
+  const isOpen = useSelector((state) => state.files.modals.trash);
+  const selectedFiles = useSelector((state) =>
+    state.files.selected.FilesListing.map((i) => ({
+      ...state.files.listing.FilesListing[i],
+      id: uuidv4(),
+    }))
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.trash);
+  const status = useSelector((state) => state.files.operationStatus.trash);
   const [disabled, setDisabled] = useState(false);
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: {} }
+      payload: { operation: 'trash', props: {} },
     });
 
   const onClosed = () => {
@@ -42,19 +41,19 @@ const DataFilesTrashModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'trash', status: {} }
+      payload: { operation: 'trash', status: {} },
     });
   };
 
   const trashCallback = useCallback(() => {
     setDisabled(true);
-    const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredSelected = selected.filter((f) => status[f.id] !== 'SUCCESS');
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
         src: filteredSelected,
-        reloadCallback: reloadPage
-      }
+        reloadCallback: reloadPage,
+      },
     });
   }, [selected, reloadPage]);
 

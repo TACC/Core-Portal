@@ -51,7 +51,7 @@ export const LAYOUT_CLASS_MAP = {
    * @see https://stackoverflow.com/a/29156418/11817077
    * @tutorial SectionContent.layouts.unequalColumns
    */
-  multiColumnUnequal: `${layoutStyles['multi-column']} ${layoutStyles['with-unequal-columns']}`
+  multiColumnUnequal: `${layoutStyles['multi-column']} ${layoutStyles['with-unequal-columns']}`,
 };
 export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
@@ -81,7 +81,7 @@ function SectionContent({
   children,
   layoutName,
   shouldScroll,
-  tagName
+  tagName,
 }) {
   let styleName = '';
   const styleNameList = [styles['root'], layoutStyles['root']];
@@ -94,11 +94,7 @@ function SectionContent({
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
-  return (
-    <TagName className={`${className} ${styleName}`}>
-      {children}
-    </TagName>
-  );
+  return <TagName className={`${className} ${styleName}`}>{children}</TagName>;
 }
 SectionContent.propTypes = {
   /** Any additional className(s) for the root element */
@@ -110,12 +106,12 @@ SectionContent.propTypes = {
   /** Whether to allow root element to scroll */
   shouldScroll: PropTypes.bool,
   /** Override tag of the root element */
-  tagName: PropTypes.string
+  tagName: PropTypes.string,
 };
 SectionContent.defaultProps = {
   className: '',
   shouldScroll: false,
-  tagName: 'div'
+  tagName: 'div',
 };
 
 export default SectionContent;

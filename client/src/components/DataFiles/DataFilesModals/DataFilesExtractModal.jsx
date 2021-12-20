@@ -10,19 +10,19 @@ const DataFilesExtractModal = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const status = useSelector(
-    state => state.files.operationStatus.extract,
+    (state) => state.files.operationStatus.extract,
     shallowEqual
   );
 
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
 
-  const isOpen = useSelector(state => state.files.modals.extract);
+  const isOpen = useSelector((state) => state.files.modals.extract);
   const selectedFiles = useSelector(({ files: { selected, listing } }) =>
-    selected.FilesListing.map(i => ({
-      ...listing.FilesListing[i]
+    selected.FilesListing.map((i) => ({
+      ...listing.FilesListing[i],
     }))
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
@@ -30,13 +30,13 @@ const DataFilesExtractModal = () => {
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'extract', props: {} }
+      payload: { operation: 'extract', props: {} },
     });
 
   const onOpened = () => {
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
+      payload: { ...params, section: 'modal' },
     });
   };
 
@@ -45,7 +45,7 @@ const DataFilesExtractModal = () => {
     if (status) {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'extract' }
+        payload: { status: {}, operation: 'extract' },
       });
       history.push(location.pathname);
     }
@@ -53,7 +53,7 @@ const DataFilesExtractModal = () => {
   const extractCallback = () => {
     dispatch({
       type: 'DATA_FILES_EXTRACT',
-      payload: { file: selected[0] }
+      payload: { file: selected[0] },
     });
   };
 

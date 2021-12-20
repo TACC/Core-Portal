@@ -12,7 +12,7 @@ const mockStore = configureStore();
 const initialMockState = {
   files: DataFilesShowPathModalFixture,
   systems: systemsFixture,
-  projects: projectsFixture
+  projects: projectsFixture,
 };
 
 describe('DataFilesShowPathModal', () => {
@@ -27,8 +27,6 @@ describe('DataFilesShowPathModal', () => {
       history
     );
     // Check the description
-    expect(
-      getAllByText(/testfile/)
-    ).toBeDefined();
+    expect(getAllByText(/testfile/)).toBeDefined();
   });
 });

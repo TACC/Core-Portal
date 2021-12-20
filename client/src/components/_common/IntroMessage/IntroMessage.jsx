@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
  * @param {String} messageName - The name of the message to check
  */
 export function isKnownMessage(messageName) {
-  const introMessages = useSelector(state => state.introMessages);
+  const introMessages = useSelector((state) => state.introMessages);
 
   return introMessages && introMessages[messageName];
 }
@@ -29,13 +29,13 @@ export function isKnownMessage(messageName) {
  */
 function IntroMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
-  const introMessages = useSelector(state => state.introMessages);
+  const introMessages = useSelector((state) => state.introMessages);
   const shouldShow = isKnownMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {
       ...introMessages,
-      [name]: false
+      [name]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
   }
@@ -57,10 +57,10 @@ IntroMessage.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** A unique identifier for the message */
-  messageName: PropTypes.string.isRequired
+  messageName: PropTypes.string.isRequired,
 };
 IntroMessage.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default IntroMessage;

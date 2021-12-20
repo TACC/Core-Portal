@@ -39,22 +39,22 @@ const appDetailFixture = {
           required: true,
           order: 0,
           enquote: false,
-          default: 'agave://cep.storage.default/'
+          default: 'agave://cep.storage.default/',
         },
         details: {
           label: 'Target Path to be Compressed',
           description: 'The directory or file to be compressed.',
           argument: null,
           showArgument: false,
-          repeatArgument: false
+          repeatArgument: false,
         },
         semantics: {
           minCardinality: 1,
           maxCardinality: 1,
           ontology: ['xsd:string'],
-          fileTypes: ['raw-0']
-        }
-      }
+          fileTypes: ['raw-0'],
+        },
+      },
     ],
     parameters: [
       {
@@ -68,12 +68,12 @@ const appDetailFixture = {
           default: 'tgz',
           enum_values: [
             {
-              tgz: 'tar.gz'
+              tgz: 'tar.gz',
             },
             {
-              zip: 'zip'
-            }
-          ]
+              zip: 'zip',
+            },
+          ],
         },
         details: {
           label: 'Compression Type',
@@ -81,46 +81,41 @@ const appDetailFixture = {
             'Select the type of compressed file, either a Gzipped TAR file (.tar.gz) or a Zip file (.zip).',
           argument: null,
           showArgument: false,
-          repeatArgument: false
+          repeatArgument: false,
         },
         semantics: {
           minCardinality: 1,
           maxCardinality: 1,
-          ontology: ['xs:enumeration', 'xs:string']
-        }
-      }
+          ontology: ['xs:enumeration', 'xs:string'],
+        },
+      },
     ],
     outputs: [],
     _links: {
       self: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0'
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0',
       },
       executionSystem: {
-        href:
-          'https://portals-api.tacc.utexas.edu/systems/v2/username.FORK.exec.stampede2.CLI'
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/username.FORK.exec.stampede2.CLI',
       },
       storageSystem: {
-        href: 'https://portals-api.tacc.utexas.edu/systems/v2/cep.home.username'
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/cep.home.username',
       },
       history: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0/history'
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0/history',
       },
       metadata: {
-        href:
-          'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%222934015787566109161-242ac11a-0001-005%22%7D'
+        href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%222934015787566109161-242ac11a-0001-005%22%7D',
       },
       owner: {
-        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
       },
       permissions: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0/pems'
-      }
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0/pems',
+      },
     },
     resource: 'stampede2.tacc.utexas.edu',
-    scheduler: 'FORK'
+    scheduler: 'FORK',
   },
   systemHasKeys: false,
   pushKeysSystem: {},
@@ -149,9 +144,9 @@ const appDetailFixture = {
         type: 'SSHKEYS',
         username: '',
         publicKey: '',
-        privateKey: ''
+        privateKey: '',
       },
-      host: 'stampede2.tacc.utexas.edu'
+      host: 'stampede2.tacc.utexas.edu',
     },
     queues: [
       {
@@ -163,8 +158,8 @@ const appDetailFixture = {
         maxMemoryPerNode: 1,
         customDirectives: null,
         default: true,
-        maxRequestedTime: '999:59:59'
-      }
+        maxRequestedTime: '999:59:59',
+      },
     ],
     storage: {
       proxy: null,
@@ -179,20 +174,20 @@ const appDetailFixture = {
         type: 'SSHKEYS',
         username: '',
         publicKey: '',
-        privateKey: ''
-      }
+        privateKey: '',
+      },
     },
     workDir: '/work/04004/username/',
     revision: 1,
     default: false,
     public: false,
     globalDefault: false,
-    lastModified: '2019-03-26T15:59:45-05:00'
+    lastModified: '2019-03-26T15:59:45-05:00',
   },
   license: {
-    type: null
+    type: null,
   },
-  appListing: {}
+  appListing: {},
 };
 
 export default appDetailFixture;

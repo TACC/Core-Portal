@@ -26,9 +26,9 @@ export function getStatusText(status) {
 
 function TicketsView() {
   const dispatch = useDispatch();
-  const isLoading = useSelector(state => state.ticketList.loading);
-  const tickets = useSelector(state => state.ticketList.content);
-  const loadingError = useSelector(state => state.ticketList.loadingError);
+  const isLoading = useSelector((state) => state.ticketList.loading);
+  const tickets = useSelector((state) => state.ticketList.content);
+  const loadingError = useSelector((state) => state.ticketList.loadingError);
   const noDataText = (
     <>
       No tickets. You can add a ticket{' '}
@@ -58,56 +58,56 @@ function TicketsView() {
     {
       Header: 'Number',
       accessor: 'id',
-      Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>
+      Cell: (el) => <span id={`ticketID${el.index}`}>{el.value}</span>,
     },
     {
       Header: 'Subject',
       accessor: 'Subject',
-      Cell: el => (
+      Cell: (el) => (
         <Link
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.row.original.id}`}
           className="wb-link"
         >
           <span title={el.value}>{el.value}</span>
         </Link>
-      )
+      ),
     },
     {
       Header: 'Date Added',
       headerStyle: { textAlign: 'left' },
-      accessor: d => new Date(d.Created),
-      Cell: el => (
+      accessor: (d) => new Date(d.Created),
+      Cell: (el) => (
         <span id={`ticketDate${el.row.index}`}>{`${formatDate(
           el.value
         )}`}</span>
       ),
-      id: 'ticketDateCol'
+      id: 'ticketDateCol',
     },
     {
       Header: 'Ticket Status',
       headerStyle: { textAlign: 'left' },
-      accessor: d => {
+      accessor: (d) => {
         try {
           return { text: getStatusText(d.Status), unknownStatusText: false };
         } catch {
           return { text: d.Status, unknownStatusText: true };
         }
       },
-      Cell: el => (
+      Cell: (el) => (
         <span
           className={el.value.unknownStatusText ? 'ticket-unknown-status' : ''}
         >
           {el.value.text}
         </span>
       ),
-      id: 'ticketStatusCol'
-    }
+      id: 'ticketStatusCol',
+    },
   ];
 
-  const rowProps = row => {
+  const rowProps = (row) => {
     return {
       className:
-        row.original.Status === 'user_wait' ? 'ticket-reply-required' : ''
+        row.original.Status === 'user_wait' ? 'ticket-reply-required' : '',
     };
   };
 

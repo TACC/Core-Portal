@@ -16,7 +16,7 @@ export default function systemAccessor(arr, header) {
             ? Math.round(allocation.computeAllocated)
             : Math.round(allocation.storageAllocated),
         type,
-        id: allocation.id
+        id: allocation.id,
       }));
     case 'Remaining':
       return arr.map(({ allocation, type }) => {
@@ -30,18 +30,18 @@ export default function systemAccessor(arr, header) {
           id: allocation.id,
           remaining,
           ratio,
-          type
+          type,
         };
       });
     case 'Expires':
       return arr.map(({ allocation: { end, id } }) => ({
         id,
-        date: formatDate(new Date(end))
+        date: formatDate(new Date(end)),
       }));
     default:
       return arr.map(({ name, allocation: { id } }) => ({
         name,
-        id
+        id,
       }));
   }
 }

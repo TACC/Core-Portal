@@ -7,8 +7,10 @@ import TicketCreateForm from './TicketCreateForm';
 import './TicketStandaloneCreate.scss';
 
 function TicketStandaloneCreate() {
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
-  const introMessages = useSelector(state => state.introMessages);
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user
+  );
+  const introMessages = useSelector((state) => state.introMessages);
   return (
     <>
       <Navbar className="ticket-unauthenticated-title">Add Ticket</Navbar>

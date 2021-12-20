@@ -41,7 +41,7 @@ function SectionHeader({
   className,
   isForForm,
   isForTable,
-  isForList
+  isForList,
 }) {
   let styleName = '';
   const styleNameList = [styles['root']];
@@ -57,7 +57,9 @@ function SectionHeader({
   return (
     <header className={`${className} ${styleName}`}>
       {children && (
-        <HeadingTagName className={styles['heading']}>{children}</HeadingTagName>
+        <HeadingTagName className={styles['heading']}>
+          {children}
+        </HeadingTagName>
       )}
       {actions}
     </header>
@@ -75,7 +77,7 @@ SectionHeader.propTypes = {
   /** Whether this header is for a table */
   isForTable: PropTypes.bool,
   /** Whether this header is for a list */
-  isForList: PropTypes.bool
+  isForList: PropTypes.bool,
 };
 SectionHeader.defaultProps = {
   actions: '',
@@ -83,7 +85,7 @@ SectionHeader.defaultProps = {
   children: '',
   isForForm: false,
   isForTable: false,
-  isForList: false
+  isForList: false,
 };
 
 export default SectionHeader;

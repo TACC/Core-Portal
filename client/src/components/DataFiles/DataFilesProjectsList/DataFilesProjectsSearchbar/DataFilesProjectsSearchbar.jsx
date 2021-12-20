@@ -18,19 +18,19 @@ const DataFilesProjectsSearchbar = () => {
     history.push(`${baseUrl}/${qs}`);
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     routeSearch();
     e.preventDefault();
   };
 
-  const onChange = e => setQuery(e.target.value);
+  const onChange = (e) => setQuery(e.target.value);
 
   return (
     <form aria-label="search" className={styles.container} onSubmit={onSubmit}>
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
           <Button type="submit" className={styles['submit-button']}>
-            <Icon name="search" className={styles['button__icon']}/>
+            <Icon name="search" className={styles['button__icon']} />
             <span className={styles['button__text']}>Search</span>
           </Button>
         </div>

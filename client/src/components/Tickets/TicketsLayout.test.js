@@ -11,7 +11,7 @@ const initialMockState = {
   content: [],
   loading: false,
   loadingError: false,
-  loadingErrorMessage: ''
+  loadingErrorMessage: '',
 };
 
 const exampleTicketContent = [
@@ -19,14 +19,14 @@ const exampleTicketContent = [
     id: '1',
     Subject: 'Some subject',
     Status: 'resolved',
-    Created: 'Fri Mar 22 09:17:27 2019'
+    Created: 'Fri Mar 22 09:17:27 2019',
   },
   {
     id: '2',
     Subject: 'Another subject',
     Status: 'open',
-    Created: 'Fri Mar 23 10:17:00 2019'
-  }
+    Created: 'Fri Mar 23 10:17:00 2019',
+  },
 ];
 
 function renderTicketsComponent(store) {
@@ -44,8 +44,8 @@ describe('TicketLayout', () => {
     const store = mockStore({
       ticketList: {
         ...initialMockState,
-        content: exampleTicketContent
-      }
+        content: exampleTicketContent,
+      },
     });
 
     const { getAllByRole } = renderTicketsComponent(store);
@@ -60,24 +60,22 @@ describe('TicketLayout', () => {
   it('renders message when no tickets to show', () => {
     const store = mockStore({
       ticketList: {
-        ...initialMockState
-      }
+        ...initialMockState,
+      },
     });
     const { getByText } = renderTicketsComponent(store);
     expect(getByText(/No tickets. You can add a ticket/)).toBeDefined();
-    expect(
-      getByText(/here/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual('/workbench/dashboard/tickets/create/');
+    expect(getByText(/here/).closest('a').getAttribute('href')).toEqual(
+      '/workbench/dashboard/tickets/create/'
+    );
   });
 
   it('renders when loading tickets', () => {
     const store = mockStore({
       ticketList: {
         ...initialMockState,
-        loading: true
-      }
+        loading: true,
+      },
     });
 
     const { getByTestId } = renderTicketsComponent(store);
@@ -97,12 +95,12 @@ describe('TicketLayout', () => {
     }).toThrow(RangeError);
   });
 
-  it ('renders an error message when unable to load tickets', () => {
+  it('renders an error message when unable to load tickets', () => {
     const store = mockStore({
       ticketList: {
         ...initialMockState,
-        loadingError: true
-      }
+        loadingError: true,
+      },
     });
     const { getByText } = renderTicketsComponent(store);
     expect(getByText(/unable to retrieve/)).toBeDefined();

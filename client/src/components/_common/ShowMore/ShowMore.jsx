@@ -20,7 +20,9 @@ const ShowMore = ({ className, children }) => {
     <>
       {
         <div
-          className={`${className} ${expanded ? styles.expanded : styles.clamped}`}
+          className={`${className} ${
+            expanded ? styles.expanded : styles.clamped
+          }`}
           ref={ref}
         >
           {children}
@@ -37,11 +39,11 @@ const ShowMore = ({ className, children }) => {
 
 ShowMore.propTypes = {
   className: PropTypes.string,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 ShowMore.defaultProps = {
-  className: ''
+  className: '',
 };
 
 export default ShowMore;

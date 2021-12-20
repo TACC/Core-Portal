@@ -85,7 +85,7 @@ function SectionTableWrapper({
   headerClassName,
   manualContent,
   manualHeader,
-  tagName
+  tagName,
 }) {
   let styleName = '';
   const styleNameList = [styles['root']];
@@ -172,7 +172,7 @@ SectionTableWrapper.propTypes = {
   /** The section header (built by user) element */
   manualHeader: PropTypes.element,
   /** Override tag of the root element */
-  tagName: PropTypes.string
+  tagName: PropTypes.string,
 };
 SectionTableWrapper.defaultProps = {
   children: '',
@@ -185,7 +185,7 @@ SectionTableWrapper.defaultProps = {
   headerClassName: '',
   manualHeader: undefined,
   manualContent: undefined,
-  tagName: 'article'
+  tagName: 'article',
 };
 
 export default SectionTableWrapper;

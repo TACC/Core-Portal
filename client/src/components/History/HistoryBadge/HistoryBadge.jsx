@@ -15,11 +15,11 @@ const HistoryBadge = ({ unread, disabled }) => {
 };
 HistoryBadge.propTypes = {
   unread: number.isRequired,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 HistoryBadge.defaultProps = {
-  disabled: false
+  disabled: false,
 };
 
 export default HistoryBadge;

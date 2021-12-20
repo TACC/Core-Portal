@@ -12,7 +12,7 @@ import {
   ModalBody,
   ModalFooter,
   Row,
-  Spinner
+  Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
 import { FileInputDropZoneFormField, FormField } from '_common';
@@ -48,27 +48,29 @@ function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
 
 CreatedTicketInformation.propTypes = {
   provideDashBoardLinkOnSuccess: PropTypes.bool.isRequired,
-  ticketId: PropTypes.number.isRequired
+  ticketId: PropTypes.number.isRequired,
 };
 
 function TicketCreateForm({
   authenticatedUser,
   initialSubject,
-  provideDashBoardLinkOnSuccess
+  provideDashBoardLinkOnSuccess,
 }) {
-  const creating = useSelector(state => state.ticketCreate.creating);
-  const creatingError = useSelector(state => state.ticketCreate.creatingError);
+  const creating = useSelector((state) => state.ticketCreate.creating);
+  const creatingError = useSelector(
+    (state) => state.ticketCreate.creatingError
+  );
   const creatingErrorMessage = useSelector(
-    state => state.ticketCreate.creatingErrorMessage
+    (state) => state.ticketCreate.creatingErrorMessage
   );
   const creatingSuccess = useSelector(
-    state => state.ticketCreate.creatingSuccess
+    (state) => state.ticketCreate.creatingSuccess
   );
   const createdTicketId = useSelector(
-    state => state.ticketCreate.createdTicketId
+    (state) => state.ticketCreate.createdTicketId
   );
   const recaptchaSiteKey = useSelector(
-    state => state.workbench.recaptchaSiteKey
+    (state) => state.workbench.recaptchaSiteKey
   );
 
   const defaultValues = useMemo(
@@ -80,7 +82,7 @@ function TicketCreateForm({
       email: authenticatedUser ? authenticatedUser.email : '',
       cc: '',
       attachments: [],
-      recaptchaResponse: ''
+      recaptchaResponse: '',
     }),
     [authenticatedUser, initialSubject]
   );
@@ -94,22 +96,15 @@ function TicketCreateForm({
     problem_description: Yup.string().required('Required'),
     first_name: Yup.string().required('Required'),
     last_name: Yup.string().required('Required'),
-    email: Yup.string()
-      .email('Invalid email')
-      .required('Required'),
+    email: Yup.string().email('Invalid email').required('Required'),
     cc: Yup.array()
       .transform((value, originalValue) => {
-        if (
-          Yup.string()
-            .email()
-            .isType(value) &&
-          value !== null
-        ) {
+        if (Yup.string().email().isType(value) && value !== null) {
           return value;
         }
         return originalValue ? originalValue.split(/[\s,]+/) : [];
       })
-      .of(Yup.string().email('Invalid email'))
+      .of(Yup.string().email('Invalid email')),
   };
 
   if (!isAuthenticated && recaptchaSiteKey) {
@@ -126,9 +121,9 @@ function TicketCreateForm({
       validationSchema={formSchema}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
-        Object.keys(values).forEach(key => formData.append(key, values[key]));
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
         if (values.attachments) {
-          values.attachments.forEach(attach =>
+          values.attachments.forEach((attach) =>
             formData.append('attachments', attach)
           );
         }
@@ -138,8 +133,8 @@ function TicketCreateForm({
           payload: {
             formData,
             resetSubmittedForm: resetForm,
-            refreshTickets: isAuthenticated
-          }
+            refreshTickets: isAuthenticated,
+          },
         });
       }}
     >
@@ -205,7 +200,7 @@ function TicketCreateForm({
                     <ReCAPTCHA
                       name="recaptcha"
                       sitekey={recaptchaSiteKey}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('recaptchaResponse', e);
                       }}
                     />
@@ -263,13 +258,13 @@ TicketCreateForm.propTypes = {
     last_name: PropTypes.string,
     email: PropTypes.string,
     isStaff: PropTypes.bool,
-    oauth: PropTypes.shape({})
-  })
+    oauth: PropTypes.shape({}),
+  }),
 };
 
 TicketCreateForm.defaultProps = {
   authenticatedUser: null,
-  initialSubject: ''
+  initialSubject: '',
 };
 
 export default TicketCreateForm;

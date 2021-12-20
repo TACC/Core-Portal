@@ -11,7 +11,9 @@ import SiteSearch from '../SiteSearch';
 
 function AppRouter() {
   const dispatch = useDispatch();
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user
+  );
 
   useEffect(() => {
     if (authenticatedUser) {

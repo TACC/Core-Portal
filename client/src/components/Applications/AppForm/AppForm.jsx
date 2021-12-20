@@ -8,7 +8,7 @@ import {
   FormField,
   Icon,
   LoadingSpinner,
-  SectionMessage
+  SectionMessage,
 } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
@@ -23,7 +23,7 @@ import {
   createMaxRunTimeRegex,
   getNodeCountValidation,
   getProcessorsOnEachNodeValidation,
-  getQueueValidation
+  getQueueValidation,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -41,22 +41,22 @@ const appShape = PropTypes.shape({
     parallelism: PropTypes.string,
     defaultProcessorsPerNode: PropTypes.number,
     defaultMaxRunTime: PropTypes.string,
-    tags: PropTypes.arrayOf(PropTypes.string)
+    tags: PropTypes.arrayOf(PropTypes.string),
   }),
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
     login: PropTypes.shape({
-      host: PropTypes.string
+      host: PropTypes.string,
     }),
     scheduler: PropTypes.string,
-    queues: PropTypes.arrayOf(PropTypes.shape({}))
+    queues: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   license: PropTypes.shape({
     type: PropTypes.string,
-    enabled: PropTypes.bool
+    enabled: PropTypes.bool,
   }),
-  appListing: PropTypes.arrayOf(PropTypes.shape({}))
+  appListing: PropTypes.arrayOf(PropTypes.shape({})),
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -72,21 +72,21 @@ export const AppPlaceholder = ({ apps }) => {
   );
 };
 AppPlaceholder.propTypes = {
-  apps: PropTypes.bool.isRequired
+  apps: PropTypes.bool.isRequired,
 };
 
 export const AppDetail = () => {
   const { app, allocationsLoading } = useSelector(
-    state => ({
+    (state) => ({
       app: state.app,
-      allocationsLoading: state.allocations.loading
+      allocationsLoading: state.allocations.loading,
     }),
     shallowEqual
   );
 
-  const categoryDict = useSelector(state => state.apps.categoryDict);
+  const categoryDict = useSelector((state) => state.apps.categoryDict);
   const hasApps = Object.keys(categoryDict).some(
-    category => categoryDict[category] && categoryDict[category].length > 0
+    (category) => categoryDict[category] && categoryDict[category].length > 0
   );
 
   if (app.error.isError) {
@@ -149,7 +149,7 @@ const AppInfo = ({ app }) => {
   );
 };
 AppInfo.propTypes = {
-  app: appShape.isRequired
+  app: appShape.isRequired,
 };
 
 export const AppSchemaForm = ({ app }) => {
@@ -165,17 +165,17 @@ export const AppSchemaForm = ({ app }) => {
     defaultStorageHost,
     hasStorageSystems,
     downSystems,
-    execSystem
-  } = useSelector(state => {
+    execSystem,
+  } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-      host =>
+      (host) =>
         app.exec_sys.login.host === host ||
         app.exec_sys.login.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =
       configuration.length &&
-      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some(s =>
+      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
         defaultHost.endsWith(s)
       );
     return {
@@ -193,25 +193,25 @@ export const AppSchemaForm = ({ app }) => {
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
         ? state.systemMonitor.list
-            .filter(currSystem => !currSystem.is_operational)
-            .map(downSys => downSys.hostname)
+            .filter((currSystem) => !currSystem.is_operational)
+            .map((downSys) => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.login.host : ''
+      execSystem: state.app ? state.app.exec_sys.login.host : '',
     };
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
   const missingLicense = app.license.type && !app.license.enabled;
-  const pushKeys = e => {
+  const pushKeys = (e) => {
     e.preventDefault();
     dispatch({
       type: 'SYSTEMS_TOGGLE_MODAL',
       payload: {
         operation: 'pushKeys',
         props: {
-          system: pushKeysSystem
-        }
-      }
+          system: pushKeysSystem,
+        },
+      },
     });
   };
 
@@ -223,8 +223,10 @@ export const AppSchemaForm = ({ app }) => {
     name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
     batchQueue: (
       (app.definition.defaultQueue
-        ? app.exec_sys.queues.find(q => q.name === app.definition.defaultQueue)
-        : app.exec_sys.queues.find(q => q.default === true)) ||
+        ? app.exec_sys.queues.find(
+            (q) => q.name === app.definition.defaultQueue
+          )
+        : app.exec_sys.queues.find((q) => q.default === true)) ||
       app.exec_sys.queues[0]
     ).name,
     nodeCount: app.definition.defaultNodeCount,
@@ -239,7 +241,7 @@ export const AppSchemaForm = ({ app }) => {
     archivePath: '',
     archive: true,
     archiveOnAppError: true,
-    appId: app.definition.id
+    appId: app.definition.id,
   };
 
   let missingAllocation = false;
@@ -254,7 +256,7 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
           defaultStorageHost
-        )} to run this application.`
+        )} to run this application.`,
       };
       missingAllocation = true;
     } else if (!allocations.length) {
@@ -262,7 +264,7 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
           app.exec_sys.login.host
-        )} to run this application.`
+        )} to run this application.`,
       };
       missingAllocation = true;
     }
@@ -362,16 +364,16 @@ export const AppSchemaForm = ({ app }) => {
         validateOnMount
         initialValues={initialValues}
         initialTouched={initialValues}
-        validationSchema={props => {
+        validationSchema={(props) => {
           if (jobSubmission.submitting) {
             /* to to avoid a strange error where values are valid but yup returns invalid,
             we stop invalidating during submission. This occurs only when validateOnMount is set.
              */
             return Yup.mixed().notRequired();
           }
-          return Yup.lazy(values => {
+          return Yup.lazy((values) => {
             const queue = app.exec_sys.queues.find(
-              q => q.name === values.batchQueue
+              (q) => q.name === values.batchQueue
             );
             const maxQueueRunTime = getMaxQueueRunTime(app, values.batchQueue);
             const schema = Yup.object({
@@ -395,7 +397,7 @@ export const AppSchemaForm = ({ app }) => {
                 .oneOf(
                   allocations.concat([app.exec_sys.scheduler]),
                   'Please select an allocation from the dropdown.'
-                )
+                ),
             });
             return schema;
           });
@@ -433,7 +435,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           dispatch({
             type: 'SUBMIT_JOB',
-            payload: job
+            payload: job,
           });
         }}
       >
@@ -444,7 +446,7 @@ export const AppSchemaForm = ({ app }) => {
           isSubmitting,
           handleReset,
           resetForm,
-          setSubmitting
+          setSubmitting,
         }) => {
           if (
             jobSubmission.response &&
@@ -489,7 +491,7 @@ export const AppSchemaForm = ({ app }) => {
                         key={`parameters.${id}`}
                       >
                         {field.options
-                          ? field.options.map(item => {
+                          ? field.options.map((item) => {
                               let val = item;
                               if (val instanceof String) {
                                 const tmp = {};
@@ -519,9 +521,9 @@ export const AppSchemaForm = ({ app }) => {
                     required
                   >
                     {app.exec_sys.queues
-                      .map(q => q.name)
+                      .map((q) => q.name)
                       .filter(
-                        q =>
+                        (q) =>
                           /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
                           !(
                             getSystemName(app.exec_sys.login.host) ===
@@ -531,7 +533,7 @@ export const AppSchemaForm = ({ app }) => {
                           )
                       )
                       .sort()
-                      .map(queue => (
+                      .map((queue) => (
                         <option key={queue} value={queue}>
                           {queue}
                         </option>
@@ -578,7 +580,7 @@ export const AppSchemaForm = ({ app }) => {
                       <option hidden disabled>
                         {' '}
                       </option>
-                      {allocations.sort().map(projectId => (
+                      {allocations.sort().map((projectId) => (
                         <option key={projectId} value={projectId}>
                           {projectId}
                         </option>
@@ -632,5 +634,5 @@ export const AppSchemaForm = ({ app }) => {
   );
 };
 AppSchemaForm.propTypes = {
-  app: appShape.isRequired
+  app: appShape.isRequired,
 };

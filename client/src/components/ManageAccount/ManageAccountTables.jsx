@@ -16,9 +16,9 @@ export const TableTemplate = ({ attributes }) => {
       striped
     >
       <tbody>
-        {rows.map(row => {
+        {rows.map((row) => {
           prepareRow(row);
-          return row.cells.map(cell => {
+          return row.cells.map((cell) => {
             const className =
               cell.column.Header === 'Research Bio' ? 'research-bio' : null;
             return (
@@ -42,23 +42,23 @@ TableTemplate.propTypes = {
     columns: arrayOf(shape({})).isRequired,
     data: arrayOf(shape({})).isRequired,
     initialState: shape({
-      hiddenColumns: arrayOf(string)
-    })
-  }).isRequired
+      hiddenColumns: arrayOf(string),
+    }),
+  }).isRequired,
 };
 
 export const RequiredInformation = () => {
   const dispatch = useDispatch();
   const {
     data: { demographics },
-    errors
-  } = useSelector(state => state.profile);
+    errors,
+  } = useSelector((state) => state.profile);
   const columns = useMemo(
     () => [
       {
         Header: 'Full Name',
         accessor: ({ firstName, lastName }) =>
-          `${firstName || ''} ${lastName || ''}`
+          `${firstName || ''} ${lastName || ''}`,
       },
       { Header: 'Phone No.', accessor: 'phone' },
       { Header: 'Email', accessor: 'email' },
@@ -67,7 +67,7 @@ export const RequiredInformation = () => {
       { Header: 'Country of Residence', accessor: 'country' },
       { Header: 'Country of Citizenship', accessor: 'citizenship' },
       { Header: 'Ethnicity', accessor: 'ethnicity' },
-      { Header: 'Gender', accessor: 'gender' }
+      { Header: 'Gender', accessor: 'gender' },
     ],
     []
   );
@@ -75,7 +75,7 @@ export const RequiredInformation = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
   const hiddenColumns = Object.keys(demographics).filter(
-    key => !demographics[key]
+    (key) => !demographics[key]
   );
   return (
     <SectionTableWrapper
@@ -103,8 +103,8 @@ export const RequiredInformation = () => {
           columns,
           data,
           initialState: {
-            hiddenColumns
-          }
+            hiddenColumns,
+          },
         }}
       />
     </SectionTableWrapper>
@@ -120,7 +120,7 @@ const LicenseCell = ({ cell: { value } }) => {
     <div
       style={{
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
       }}
     >
       <Button
@@ -147,8 +147,8 @@ const LicenseCell = ({ cell: { value } }) => {
               dispatch({
                 type: 'TICKET_CREATE_OPEN_MODAL',
                 payload: {
-                  subject: `${type} Activation`
-                }
+                  subject: `${type} Activation`,
+                },
               })
             }
             color="link"
@@ -165,21 +165,21 @@ LicenseCell.propTypes = {
   cell: shape({
     value: shape({
       license_type: string.isRequired,
-      template_html: string.isRequired
-    })
-  }).isRequired
+      template_html: string.isRequired,
+    }),
+  }).isRequired,
 };
 /* eslint-enable react/no-danger */
 export const Licenses = () => {
-  const { licenses } = useSelector(state => state.profile.data);
+  const { licenses } = useSelector((state) => state.profile.data);
 
   const columns = useMemo(
     () =>
-      licenses.map(license => {
+      licenses.map((license) => {
         return {
           Header: license.license_type,
           accessor: () => license,
-          Cell: LicenseCell
+          Cell: LicenseCell,
         };
       }),
     []
@@ -203,7 +203,7 @@ export const IntegrationCell = ({ cell: { value } }) => {
     <div
       style={{
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
       }}
     >
       {activated ? (
@@ -239,19 +239,19 @@ IntegrationCell.propTypes = {
       activated: bool.isRequired,
       label: string.isRequired,
       disconnect: string.isRequired,
-      connect: string.isRequired
-    })
-  }).isRequired
+      connect: string.isRequired,
+    }),
+  }).isRequired,
 };
 
 export const Integrations = () => {
-  const { integrations } = useSelector(state => state.profile.data);
+  const { integrations } = useSelector((state) => state.profile.data);
   const columns = useMemo(
     () =>
-      integrations.map(app => ({
+      integrations.map((app) => ({
         Header: app.label,
         accessor: () => app,
-        Cell: IntegrationCell
+        Cell: IntegrationCell,
       })),
     []
   );
@@ -266,7 +266,7 @@ export const Integrations = () => {
   );
 };
 export const ChangePassword = () => {
-  const lastChanged = useSelector(state => {
+  const lastChanged = useSelector((state) => {
     const { data } = state.profile;
     return data.passwordLastChanged;
   });
@@ -280,7 +280,7 @@ export const ChangePassword = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          margin: '1rem'
+          margin: '1rem',
         }}
       >
         <Button onClick={openModal} className="manage-account-submit-button">
@@ -293,7 +293,7 @@ export const ChangePassword = () => {
               /* FAQ: `14px` is part of normalization of "table" font sizes */
               fontSize: '0.875rem' /* 14px (assumed deviation from design) */,
               marginLeft: '1rem',
-              color: '#707070'
+              color: '#707070',
             }}
           >
             Last Changed {lastChanged}
@@ -318,7 +318,7 @@ const WebsiteCell = ({ cell: { value } }) => {
   return null;
 };
 WebsiteCell.propTypes = {
-  cell: shape({ value: string })
+  cell: shape({ value: string }),
 };
 WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
@@ -336,26 +336,26 @@ OrcidCell.defaultProps = WebsiteCell.defaultProps;
 export const OptionalInformation = () => {
   const {
     data: { demographics },
-    errors
-  } = useSelector(state => state.profile);
+    errors,
+  } = useSelector((state) => state.profile);
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
       {
         Header: 'My Website',
         accessor: 'website',
-        Cell: WebsiteCell
+        Cell: WebsiteCell,
       },
       {
         Header: 'Orcid ID',
         accessor: 'orcid_id',
-        Cell: OrcidCell
+        Cell: OrcidCell,
       },
       { Header: 'Professional Level', accessor: 'professional_level' },
       {
         Header: 'Research Bio',
-        accessor: 'bio'
-      }
+        accessor: 'bio',
+      },
     ],
     []
   );

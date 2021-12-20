@@ -7,20 +7,22 @@ import * as Yup from 'yup';
 import styles from './FeedbackForm.module.scss';
 
 const formSchema = Yup.object().shape({
-  problem_description: Yup.string().required('Required')
+  problem_description: Yup.string().required('Required'),
 });
 
 const defaultValues = {
-  problem_description: ''
+  problem_description: '',
 };
 
 const FeedbackForm = () => {
   const dispatch = useDispatch();
-  const portalName = useSelector(state => state.workbench.portalName);
-  const creating = useSelector(state => state.ticketCreate.creating);
-  const creatingError = useSelector(state => state.ticketCreate.creatingError);
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const creating = useSelector((state) => state.ticketCreate.creating);
+  const creatingError = useSelector(
+    (state) => state.ticketCreate.creatingError
+  );
   const creatingErrorMessage = useSelector(
-    state => state.ticketCreate.creatingErrorMessage
+    (state) => state.ticketCreate.creatingErrorMessage
   );
 
   return (
@@ -30,15 +32,15 @@ const FeedbackForm = () => {
       validationSchema={formSchema}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
-        Object.keys(values).forEach(key => formData.append(key, values[key]));
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
         formData.append('subject', `Feedback for ${portalName}`);
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
             formData,
             resetSubmittedForm: resetForm,
-            refreshTickets: true
-          }
+            refreshTickets: true,
+          },
         });
       }}
     >

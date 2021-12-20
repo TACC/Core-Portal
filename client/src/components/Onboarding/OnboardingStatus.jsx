@@ -4,7 +4,7 @@ import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingStatus.module.scss';
 import './OnboardingStatus.scss';
 
-const getContents = step => {
+const getContents = (step) => {
   let type = '';
   switch (step.state) {
     case 'processing':
@@ -67,7 +67,7 @@ const OnboardingStatus = ({ step }) => {
 };
 
 OnboardingStatus.propTypes = {
-  step: stepPropType.isRequired
+  step: stepPropType.isRequired,
 };
 
 OnboardingStatus.defaultProps = {};

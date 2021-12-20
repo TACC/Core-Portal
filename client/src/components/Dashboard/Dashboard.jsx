@@ -11,7 +11,7 @@ import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
-  const hideApps = useSelector(state => state.workbench.config.hideApps);
+  const hideApps = useSelector((state) => state.workbench.config.hideApps);
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -48,7 +48,7 @@ function DashboardRoutes() {
         path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
         render={() => {
           dispatch({
-            type: 'TICKET_CREATE_OPEN_MODAL'
+            type: 'TICKET_CREATE_OPEN_MODAL',
           });
         }}
       />
@@ -57,7 +57,7 @@ function DashboardRoutes() {
         render={({ match: { params } }) => {
           dispatch({
             type: 'TICKET_DETAILED_VIEW_OPEN',
-            payload: { ticketId: Number(params.ticketId) }
+            payload: { ticketId: Number(params.ticketId) },
           });
           return <TicketModal />;
         }}

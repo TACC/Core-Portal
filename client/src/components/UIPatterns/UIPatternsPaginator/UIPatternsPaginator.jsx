@@ -4,7 +4,7 @@ import { Paginator } from '_common';
 function UIPatternsPaginator() {
   const [current, setCurrent] = useState(11);
   const callback = useCallback(
-    page => {
+    (page) => {
       setCurrent(page);
     },
     [setCurrent]

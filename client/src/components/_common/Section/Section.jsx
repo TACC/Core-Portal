@@ -15,7 +15,7 @@ import styles from './Section.module.css';
 function getLayoutClass(contentLayoutName) {
   let classNames = LAYOUT_CLASS_MAP[contentLayoutName].split(' ');
 
-  classNames = classNames.map(className => {
+  classNames = classNames.map((className) => {
     return `c-section--has-content-layout-${className}`;
   });
 
@@ -113,7 +113,7 @@ function Section({
   messages,
   messagesClassName,
   introMessageName,
-  introMessageText
+  introMessageText,
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
   const layoutClass = getLayoutClass(contentLayoutName);
@@ -234,7 +234,7 @@ Section.propTypes = {
   /** Any additional className(s) for the sidebar list */
   // sidebarClassName: '',
   /** Custom intro text (can overwrite message from `introMessageName`) */
-  introMessageText: PropTypes.string
+  introMessageText: PropTypes.string,
 };
 Section.defaultProps = {
   bodyClassName: '',
@@ -253,7 +253,7 @@ Section.defaultProps = {
   messagesClassName: '',
   introMessageName: '',
   // sidebarClassName: '',
-  introMessageText: ''
+  introMessageText: '',
 };
 
 export default Section;

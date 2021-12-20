@@ -7,7 +7,7 @@ import './InfiniteScrollTable.scss';
 const rowContentPropType = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.element,
-  PropTypes.oneOf([React.Fragment])
+  PropTypes.oneOf([React.Fragment]),
 ]);
 
 const InfiniteScrollLoadingRow = ({ isLoading }) => {
@@ -24,7 +24,7 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
   );
 };
 InfiniteScrollLoadingRow.propTypes = {
-  isLoading: PropTypes.bool.isRequired
+  isLoading: PropTypes.bool.isRequired,
 };
 
 const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
@@ -42,7 +42,7 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
 };
 InfiniteScrollNoDataRow.propTypes = {
   display: PropTypes.bool.isRequired,
-  noDataText: rowContentPropType.isRequired
+  noDataText: rowContentPropType.isRequired,
 };
 
 const InfiniteScrollTable = ({
@@ -53,18 +53,13 @@ const InfiniteScrollTable = ({
   className,
   noDataText,
   getRowProps,
-  columnMemoProps
+  columnMemoProps,
 }) => {
   const columns = React.useMemo(() => tableColumns, columnMemoProps);
   const data = React.useMemo(() => tableData, [tableData]);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable({ columns, data });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data });
 
   const onScroll = ({ target }) => {
     const bottom =
@@ -80,20 +75,20 @@ const InfiniteScrollTable = ({
       className={`${className} InfiniteScrollTable o-fixed-header-table`}
     >
       <thead>
-        {headerGroups.map(headerGroup => (
+        {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
+            {headerGroup.headers.map((column) => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()} onScroll={onScroll}>
-        {rows.map(row => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
             <tr {...row.getRowProps()} {...getRowProps(row)}>
-              {row.cells.map(cell => {
+              {row.cells.map((cell) => {
                 return (
                   <td
                     {...cell.getCellProps({ className: cell.column.className })}
@@ -123,15 +118,15 @@ InfiniteScrollTable.propTypes = {
   className: PropTypes.string,
   noDataText: rowContentPropType,
   getRowProps: PropTypes.func,
-  columnMemoProps: PropTypes.arrayOf(PropTypes.any)
+  columnMemoProps: PropTypes.arrayOf(PropTypes.any),
 };
 InfiniteScrollTable.defaultProps = {
-  onInfiniteScroll: offset => {},
+  onInfiniteScroll: (offset) => {},
   isLoading: false,
   className: '',
   noDataText: '',
-  getRowProps: row => {},
-  columnMemoProps: []
+  getRowProps: (row) => {},
+  columnMemoProps: [],
 };
 
 export default InfiniteScrollTable;

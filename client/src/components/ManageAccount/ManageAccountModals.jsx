@@ -5,21 +5,24 @@ import { bool, func, string } from 'prop-types';
 import {
   EditRequiredInformationForm,
   ChangePasswordForm,
-  EditOptionalInformationForm
+  EditOptionalInformationForm,
 } from './ManageAccountForms';
 import GoogleDrivePrivacyPolicy from './GoogleDrivePrivacyPolicy';
 
 export const EditRequiredInformationModal = () => {
-  const { required: open, success, error, isEditing } = useSelector(
-    ({ profile }) => {
-      return {
-        ...profile.modals,
-        isEditing: profile.editing,
-        success: profile.success.required,
-        error: profile.errors.required
-      };
-    }
-  );
+  const {
+    required: open,
+    success,
+    error,
+    isEditing,
+  } = useSelector(({ profile }) => {
+    return {
+      ...profile.modals,
+      isEditing: profile.editing,
+      success: profile.success.required,
+      error: profile.errors.required,
+    };
+  });
   const dispatch = useDispatch();
   const messageRef = useRef(null);
   useEffect(() => {
@@ -44,7 +47,7 @@ export const EditRequiredInformationModal = () => {
       <ModalBody
         style={{
           maxHeight: '90vh',
-          overflowY: 'auto'
+          overflowY: 'auto',
         }}
       >
         <div ref={messageRef}>
@@ -61,11 +64,15 @@ export const EditRequiredInformationModal = () => {
   );
 };
 export const EditOptionalInformationModal = () => {
-  const { optional: open, success, error } = useSelector(({ profile }) => {
+  const {
+    optional: open,
+    success,
+    error,
+  } = useSelector(({ profile }) => {
     return {
       ...profile.modals,
       success: profile.success.optional,
-      error: profile.errors.optional
+      error: profile.errors.optional,
     };
   });
   const dispatch = useDispatch();
@@ -97,11 +104,15 @@ export const EditOptionalInformationModal = () => {
   );
 };
 export const ChangePasswordModal = () => {
-  const { password: open, error, success } = useSelector(state => {
+  const {
+    password: open,
+    error,
+    success,
+  } = useSelector((state) => {
     return {
       ...state.profile.modals,
       error: state.profile.errors.password,
-      success: state.profile.success.password
+      success: state.profile.success.password,
     };
   });
   const dispatch = useDispatch();
@@ -140,7 +151,7 @@ export const IntegrationPolicy = ({ label }) => {
   }
 };
 IntegrationPolicy.propTypes = {
-  label: string.isRequired
+  label: string.isRequired,
 };
 
 export const IntegrationModal = ({ active, toggle, connect, label }) => {
@@ -168,5 +179,5 @@ IntegrationModal.propTypes = {
   active: bool.isRequired,
   toggle: func.isRequired,
   connect: string.isRequired,
-  label: string.isRequired
+  label: string.isRequired,
 };

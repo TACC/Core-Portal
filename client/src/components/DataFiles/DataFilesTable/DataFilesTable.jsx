@@ -3,7 +3,7 @@ import React, {
   useRef,
   useEffect,
   useState,
-  useMemo
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,20 +19,20 @@ import styles from './DataFilesTable.module.scss';
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const dispatch = useDispatch();
   const currentListing = useSelector(
-    state => state.files.params.FilesListing.api
+    (state) => state.files.params.FilesListing.api
   );
-  const scheme = useSelector(state => state.files.params.FilesListing.scheme);
-  const system = useSelector(state => state.pushKeys.target);
-  let currSystemHost = useSelector(state =>
+  const scheme = useSelector((state) => state.files.params.FilesListing.scheme);
+  const system = useSelector((state) => state.pushKeys.target);
+  let currSystemHost = useSelector((state) =>
     state.systems.definitions.list.find(
-      sysDef => sysDef.id === state.files.params.FilesListing.system
+      (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
   currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
-  const loading = useSelector(state => state.files.loading[section]);
-  const err = useSelector(state => state.files.error[section]);
-  const modalRefs = useSelector(state => state.files.refs);
-  const systemDefErr = useSelector(state => state.systems.definitions.error);
+  const loading = useSelector((state) => state.files.loading[section]);
+  const err = useSelector((state) => state.files.error[section]);
+  const modalRefs = useSelector((state) => state.files.refs);
+  const systemDefErr = useSelector((state) => state.systems.definitions.error);
 
   const filesLength = data.length;
   const isGDrive = currentListing === 'googledrive';
@@ -40,18 +40,18 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
-  const downSystems = useSelector(state =>
+  const downSystems = useSelector((state) =>
     state.systemMonitor
       ? state.systemMonitor.list
-          .filter(currSystem => !currSystem.is_operational)
-          .map(downSys => downSys.hostname)
+          .filter((currSystem) => !currSystem.is_operational)
+          .map((downSys) => downSys.hostname)
       : []
   );
-  const pushKeys = e => {
+  const pushKeys = (e) => {
     e.preventDefault();
     const props = {
       onSuccess: {},
-      system
+      system,
     };
     if (modalRefs.FileSelector) {
       props.callback = () => {
@@ -64,8 +64,8 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       type: 'SYSTEMS_TOGGLE_MODAL',
       payload: {
         operation: 'pushKeys',
-        props
-      }
+        props,
+      },
     });
   };
   if (loading) {
@@ -110,7 +110,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         );
       }
       if (scheme === 'private') {
-        const link = strings => (
+        const link = (strings) => (
           <a
             className="data-files-nav-link"
             type="button"
@@ -200,7 +200,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 };
 DataFilesTablePlaceholder.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
 };
 
 const DataFilesTableRow = ({
@@ -210,20 +210,20 @@ const DataFilesTableRow = ({
   row,
   section,
   rowSelectCallback,
-  shadeEvenRows
+  shadeEvenRows,
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
-  const onKeyDown = useCallback(e => {
+  const onKeyDown = useCallback((e) => {
     if (e.key === ' ') {
       rowSelectCallback(index);
       e.preventDefault();
     }
   });
   const loadingScroll = useSelector(
-    state => state.files.loadingScroll[section]
+    (state) => state.files.loadingScroll[section]
   );
 
-  const selected = useSelector(state =>
+  const selected = useSelector((state) =>
     state.files.selected[section]
       ? state.files.selected[section].includes(index)
       : false
@@ -233,8 +233,9 @@ const DataFilesTableRow = ({
     return (
       <div
         style={style}
-        className={`tr ${isShaded && 'tr-background-shading'} ${selected &&
-          'tr-selected'}`}
+        className={`tr ${isShaded && 'tr-background-shading'} ${
+          selected && 'tr-selected'
+        }`}
         role="row"
         tabIndex={-1}
         index={row.index}
@@ -242,7 +243,7 @@ const DataFilesTableRow = ({
         onKeyDown={onKeyDown}
         data-testid="file-listing-item"
       >
-        {row.cells.map(cell => {
+        {row.cells.map((cell) => {
           return (
             <div className="td" {...cell.getCellProps()}>
               {cell.render('Cell')}
@@ -267,11 +268,11 @@ DataFilesTableRow.propTypes = {
   rowCount: PropTypes.number.isRequired,
   row: PropTypes.shape({
     index: PropTypes.number,
-    cells: PropTypes.arrayOf(PropTypes.shape({}))
+    cells: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   section: PropTypes.string.isRequired,
   rowSelectCallback: PropTypes.func.isRequired,
-  shadeEvenRows: PropTypes.bool.isRequired
+  shadeEvenRows: PropTypes.bool.isRequired,
 };
 DataFilesTableRow.defaultProps = { row: {} };
 
@@ -282,7 +283,7 @@ const DataFilesTable = ({
   scrollBottomCallback,
   section,
   hideHeader,
-  shadeEvenRows
+  shadeEvenRows,
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -302,26 +303,21 @@ const DataFilesTable = ({
     setTableHeight(height);
   };
 
-  const reachedEnd = useSelector(state => state.files.reachedEnd[section]);
+  const reachedEnd = useSelector((state) => state.files.reachedEnd[section]);
 
   const sizedColumns = useMemo(
-    () => columns.map(col => ({ ...col, width: col.width * tableWidth })),
+    () => columns.map((col) => ({ ...col, width: col.width * tableWidth })),
     [columns, tableWidth]
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable(
-    {
-      columns: sizedColumns,
-      data
-    },
-    useBlockLayout
-  );
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable(
+      {
+        columns: sizedColumns,
+        data,
+      },
+      useBlockLayout
+    );
 
   // handle scroll to bottom
   const rowHeight = 45;
@@ -367,14 +363,14 @@ const DataFilesTable = ({
       {({ width, height }) => (
         <div {...getTableProps()}>
           <div ref={tableHeader}>
-            {headerGroups.map(headerGroup => {
+            {headerGroups.map((headerGroup) => {
               return hideHeader ? null : (
                 <div
                   {...headerGroup.getHeaderGroupProps()}
                   className="tr tr-header"
                   style={{ width }}
                 >
-                  {headerGroup.headers.map(column => (
+                  {headerGroup.headers.map((column) => (
                     <div {...column.getHeaderProps()} className="td">
                       {column.render('Header')}
                     </div>
@@ -387,7 +383,7 @@ const DataFilesTable = ({
           <div
             style={{
               width,
-              height: itemCount === 0 ? (height || 500) - headerHeight : 0
+              height: itemCount === 0 ? (height || 500) - headerHeight : 0,
             }}
           >
             <DataFilesTablePlaceholder section={section} data={data} />
@@ -419,12 +415,12 @@ DataFilesTable.propTypes = {
   scrollBottomCallback: PropTypes.func.isRequired,
   section: PropTypes.string.isRequired,
   hideHeader: PropTypes.bool,
-  shadeEvenRows: PropTypes.bool
+  shadeEvenRows: PropTypes.bool,
 };
 
 DataFilesTable.defaultProps = {
   hideHeader: false,
-  shadeEvenRows: false
+  shadeEvenRows: false,
 };
 
 export default DataFilesTable;

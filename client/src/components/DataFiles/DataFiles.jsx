@@ -4,7 +4,7 @@ import {
   Route,
   useRouteMatch,
   useHistory,
-  useLocation
+  useLocation,
 } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
@@ -16,7 +16,7 @@ import {
   Section,
   SectionTableWrapper,
   SectionMessage,
-  LoadingSpinner
+  LoadingSpinner,
 } from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
@@ -28,7 +28,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
-    state => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
   const history = useHistory();
@@ -61,8 +61,8 @@ const DataFilesSwitch = React.memo(() => {
               scheme: 'projects',
               queryString,
               filter,
-              section: 'FilesListing'
-            }
+              section: 'FilesListing',
+            },
           });
           return (
             <DataFilesProjectFileListing
@@ -81,8 +81,8 @@ const DataFilesSwitch = React.memo(() => {
               ...params,
               queryString,
               filter,
-              section: 'FilesListing'
-            }
+              section: 'FilesListing',
+            },
           });
           return (
             <SectionTableWrapper className={styles['content']} manualContent>
@@ -108,12 +108,12 @@ const DataFilesSwitch = React.memo(() => {
 
 const DataFiles = () => {
   const listingParams = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
-  const loading = useSelector(state => state.systems.storage.loading);
-  const error = useSelector(state => state.systems.storage.error);
-  const systems = useSelector(state => state.systems.storage.configuration);
+  const loading = useSelector((state) => state.systems.storage.loading);
+  const error = useSelector((state) => state.systems.storage.error);
+  const systems = useSelector((state) => state.systems.storage.configuration);
 
   const readOnly =
     listingParams.scheme === 'projects' &&

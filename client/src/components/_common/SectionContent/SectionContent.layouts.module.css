@@ -4,10 +4,6 @@
   /* FAQ: No styles necessary, but defining class to avoid build error */
 }
 
-
-
-
-
 /* Debug */
 /* FAQ: To color-code panels, ucncomment the code in this section */
 
@@ -21,10 +17,6 @@
 .root::after           { background-color: gray; }
 */
 
-
-
-
-
 /* Has Sidebar */
 
 /* CAVEAT: No sidebar styles provided (until a <SectionSidebar> exists) */
@@ -34,10 +26,6 @@
   flex-wrap: nowrap;
 }
 
-
-
-
-
 /* 1 Column */
 
 .one-column {
@@ -46,13 +34,7 @@
   flex-wrap: nowrap;
 }
 
-
-
-
-
 /* 2 Columns */
-
-
 
 /* Always */
 .two-column,
@@ -96,8 +78,7 @@
     /* To make small column ⪅40% of `.panels` intrinsic width */
     /* FAQ: The percentage and divisor are magic numbers */
     --column-width--small: calc(
-      ( 66.67% - var(--global-space--section-right) )
-      - ( var(--column-gap) / 4 )
+      (66.67% - var(--global-space--section-right)) - (var(--column-gap) / 4)
     );
   }
   /* To hide the expected overflow from `.panels` expanded width */

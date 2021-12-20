@@ -7,34 +7,34 @@ import { Display, Operational, Load } from './SystemMonitorCells';
 import styles from './SystemMonitor.module.scss';
 
 const SystemsList = () => {
-  const systemList = useSelector(state => state.systemMonitor.list);
-  const loadingError = useSelector(state => state.systemMonitor.error);
+  const systemList = useSelector((state) => state.systemMonitor.list);
+  const loadingError = useSelector((state) => state.systemMonitor.error);
   const data = useMemo(() => systemList, []);
   const columns = useMemo(
     () => [
       {
         accessor: 'display_name',
         Header: 'Name',
-        Cell: Display
+        Cell: Display,
       },
       {
         accessor: 'is_operational',
         Header: 'Status',
-        Cell: Operational
+        Cell: Operational,
       },
       {
         accessor: 'load_percentage',
         Header: 'Load',
-        Cell: Load
+        Cell: Load,
       },
       {
         accessor: ({ jobs }) => (jobs ? jobs.running : '--'),
-        Header: 'Running'
+        Header: 'Running',
       },
       {
         accessor: ({ jobs }) => (jobs ? jobs.queued : '--'),
-        Header: 'Queued'
-      }
+        Header: 'Queued',
+      },
     ],
     []
   );
@@ -47,16 +47,11 @@ const SystemsList = () => {
     );
   }
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    prepareRow,
-    headerGroups
-  } = useTable({
-    columns,
-    data
-  });
+  const { getTableProps, getTableBodyProps, rows, prepareRow, headerGroups } =
+    useTable({
+      columns,
+      data,
+    });
   return (
     <table
       {...getTableProps()}
@@ -65,9 +60,12 @@ const SystemsList = () => {
       className={`multi-system InfiniteScrollTable o-fixed-header-table ${styles['root']}`}
     >
       <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()} className={styles['header']}>
-            {headerGroup.headers.map(column => (
+        {headerGroups.map((headerGroup) => (
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className={styles['header']}
+          >
+            {headerGroup.headers.map((column) => (
               <th key={column.Header}>{column.render('Header')}</th>
             ))}
           </tr>
@@ -79,7 +77,7 @@ const SystemsList = () => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
+                {row.cells.map((cell) => (
                   <td {...cell.getCellProps({ test: cell.column.testProp })}>
                     {cell.render('Cell')}
                   </td>
@@ -98,7 +96,7 @@ const SystemsList = () => {
 };
 
 const SystemMonitorView = () => {
-  const { loading } = useSelector(state => state.systemMonitor);
+  const { loading } = useSelector((state) => state.systemMonitor);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });

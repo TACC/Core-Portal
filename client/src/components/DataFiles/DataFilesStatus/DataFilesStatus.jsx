@@ -17,8 +17,9 @@ const OPERATION_MAP = {
         case 'makepublic':
           return 'Copy to Public Data failed';
         default:
-          return `${operation.charAt(0).toUpperCase() +
-            operation.slice(1)} failed`;
+          return `${
+            operation.charAt(0).toUpperCase() + operation.slice(1)
+          } failed`;
       }
     }
 
@@ -37,10 +38,7 @@ const OPERATION_MAP = {
       case 'upload':
       case 'move':
       case 'copy': {
-        const destPath = response.path
-          .split('/')
-          .slice(0, -1)
-          .join('/');
+        const destPath = response.path.split('/').slice(0, -1).join('/');
         const projectName = findProjectTitle(projectList, response.systemId);
 
         let op = mappedOp;
@@ -75,7 +73,7 @@ const OPERATION_MAP = {
       default:
         return `${mappedOp}`;
     }
-  }
+  },
 };
 
 export function getOperationText(operation) {

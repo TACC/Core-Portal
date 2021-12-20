@@ -14,9 +14,9 @@ describe('AppRouter', () => {
           username: 'username',
           first_name: 'User',
           last_name: 'Name',
-          email: 'user@name.com'
-        }
-      }
+          email: 'user@name.com',
+        },
+      },
     });
 
     renderComponent(<AppRouter />, store);
@@ -24,7 +24,7 @@ describe('AppRouter', () => {
       { type: 'FETCH_INTRO' },
       { type: 'FETCH_AUTHENTICATED_USER' },
       { type: 'FETCH_WORKBENCH' },
-      { type: 'FETCH_SYSTEMS' }
+      { type: 'FETCH_SYSTEMS' },
     ]);
   });
 });

@@ -6,7 +6,7 @@ import {
   ShowMore,
   LoadingSpinner,
   SectionMessage,
-  SectionTableWrapper
+  SectionTableWrapper,
 } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
@@ -16,22 +16,22 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
-      payload: system
+      payload: system,
     });
   }, [system]);
 
-  const metadata = useSelector(state => state.projects.metadata);
+  const metadata = useSelector((state) => state.projects.metadata);
 
-  const editable = useSelector(state => {
+  const editable = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
-      s => s.scheme === 'projects'
+      (s) => s.scheme === 'projects'
     );
 
     const privilegeRequired = projectSystem && projectSystem.privilegeRequired;
 
     return (
       !privilegeRequired ||
-      metadata.members.some(member => {
+      metadata.members.some((member) => {
         return (
           member.access === 'owner' &&
           member.user &&
@@ -44,17 +44,17 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'editproject', props: {} }
+      payload: { operation: 'editproject', props: {} },
     });
   };
 
   const onManage = () => {
     dispatch({
-      type: 'USERS_CLEAR_SEARCH'
+      type: 'USERS_CLEAR_SEARCH',
     });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'manageproject', props: {} }
+      payload: { operation: 'manageproject', props: {} },
     });
   };
 
@@ -116,7 +116,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
 DataFilesProjectFileListing.propTypes = {
   system: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+  path: PropTypes.string.isRequired,
 };
 
 export default DataFilesProjectFileListing;

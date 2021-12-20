@@ -15,12 +15,12 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
     return range;
   }, [currentPage, lastPageIndex]);
 
-  const pageHref = page => {
+  const pageHref = (page) => {
     const queryString = { ...queryStringParser.parse(search), page };
     return `${pathname}?${queryStringParser.stringify(queryString)}`;
   };
 
-  const disabledLinkCallback = e => {
+  const disabledLinkCallback = (e) => {
     e.stopPropagation();
     e.preventDefault();
   };
@@ -42,7 +42,7 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
               <span className="sr-only">Previous</span>
             </NavLink>
           </li>
-          {pageRange.map(i => (
+          {pageRange.map((i) => (
             <li key={i} className="page-item">
               <NavLink
                 to={pageHref(i)}
@@ -77,7 +77,7 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
   );
 };
 SiteSearchPaginator.propTypes = {
-  lastPageIndex: PropTypes.number.isRequired
+  lastPageIndex: PropTypes.number.isRequired,
 };
 
 export default SiteSearchPaginator;

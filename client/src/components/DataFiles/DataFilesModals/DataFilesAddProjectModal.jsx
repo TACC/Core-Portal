@@ -13,20 +13,20 @@ const DataFilesAddProjectModal = () => {
   const history = useHistory();
   const match = useRouteMatch();
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.authenticatedUser);
+  const { user } = useSelector((state) => state.authenticatedUser);
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
 
   useEffect(() => {
     setMembers([
-      ...members.filter(member => member.user.username !== user.username),
-      { user, access: 'owner' }
+      ...members.filter((member) => member.user.username !== user.username),
+      { user, access: 'owner' },
     ]);
   }, [user]);
 
-  const isOpen = useSelector(state => state.files.modals.addproject);
-  const isCreating = useSelector(state => {
+  const isOpen = useSelector((state) => state.files.modals.addproject);
+  const isCreating = useSelector((state) => {
     return (
       state.projects.operation &&
       state.projects.operation.name === 'create' &&
@@ -34,7 +34,7 @@ const DataFilesAddProjectModal = () => {
     );
   });
 
-  const error = useSelector(state => {
+  const error = useSelector((state) => {
     return (
       state.projects.operation &&
       state.projects.operation.name === 'create' &&
@@ -45,11 +45,11 @@ const DataFilesAddProjectModal = () => {
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'addproject', props: {} }
+      payload: { operation: 'addproject', props: {} },
     });
   };
 
-  const onCreate = system => {
+  const onCreate = (system) => {
     toggle();
     history.push(`${match.path}/tapis/projects/${system}`);
   };
@@ -59,22 +59,22 @@ const DataFilesAddProjectModal = () => {
       type: 'PROJECTS_CREATE',
       payload: {
         title,
-        members: members.map(member => ({
+        members: members.map((member) => ({
           username: member.user.username,
-          access: member.access
+          access: member.access,
         })),
-        onCreate
-      }
+        onCreate,
+      },
     });
   };
 
-  const onAdd = newUser => {
+  const onAdd = (newUser) => {
     setMembers([...members, newUser]);
   };
 
-  const onRemove = removedUser => {
+  const onRemove = (removedUser) => {
     setMembers(
-      members.filter(m => m.user.username !== removedUser.user.username)
+      members.filter((m) => m.user.username !== removedUser.user.username)
     );
   };
 
@@ -82,7 +82,7 @@ const DataFilesAddProjectModal = () => {
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
-      .required('Please enter a title.')
+      .required('Please enter a title.'),
   });
 
   return (

@@ -27,7 +27,7 @@ export const UI =
 /**
  * Error Messages
  */
-export const INTEGRATION_SETUP_ERROR = integration => (
+export const INTEGRATION_SETUP_ERROR = (integration) => (
   <span>
     An error occurred setting up {integration}. For help,{' '}
     <Link

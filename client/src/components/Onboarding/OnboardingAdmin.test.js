@@ -23,7 +23,7 @@ describe('Onboarding Admin View', () => {
   it('renders onboarding steps', () => {
     const store = mockStore({
       onboarding: {
-        ...onboardingAdminState
+        ...onboardingAdminState,
       },
     });
 

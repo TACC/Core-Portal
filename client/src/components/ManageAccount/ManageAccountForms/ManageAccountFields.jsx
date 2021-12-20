@@ -10,7 +10,7 @@ export const renderOptions = ([value, label], arr, _) => (
   </option>
 );
 
-export const useOptions = label => {
+export const useOptions = (label) => {
   switch (label) {
     case 'Institution':
       return 'institutions';
@@ -36,7 +36,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
 
   const select = type === 'select';
   const key = select ? useOptions(label) : '';
-  const options = useSelector(state => {
+  const options = useSelector((state) => {
     if (key) return state.profile.fields[key];
     return [];
   });
@@ -46,20 +46,20 @@ export const ManageAccountInput = ({ label, ...props }) => {
     inputProps.style = { marginTop: '0.5rem' };
   }
   React.useEffect(() => {
-    const initialValues = options.map(option => option[0]);
+    const initialValues = options.map((option) => option[0]);
     if (meta.value === 'Other' || !initialValues.includes(meta.value)) {
       setOther(true);
     }
   }, []);
 
   if (select && label === 'Professional Level') {
-    const handleOtherChange = e => {
+    const handleOtherChange = (e) => {
       if (!e.target.value.includes('Other')) {
         setOther(false);
         setValue(e.target.value);
       }
     };
-    const handleChange = e => {
+    const handleChange = (e) => {
       if (e.target.value === 'Other') {
         setOther(true);
         setValue('');
@@ -112,6 +112,6 @@ export const ManageAccountInput = ({ label, ...props }) => {
 ManageAccountInput.propTypes = {
   label: string.isRequired,
   name: string.isRequired,
-  type: string
+  type: string,
 };
 ManageAccountInput.defaultProps = { type: 'text' };

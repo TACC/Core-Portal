@@ -8,9 +8,9 @@ export async function fetchUserSearch(q) {
     method: 'GET',
     headers: {
       'X-CSRFToken': Cookies.get('csrftoken'),
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   });
   if (response.status === 404) {
     return [];
@@ -25,18 +25,18 @@ export async function fetchUserSearch(q) {
 export function* userSearch(action) {
   const { q } = action.payload;
   yield put({
-    type: 'USERS_SEARCH_STARTED'
+    type: 'USERS_SEARCH_STARTED',
   });
   try {
     const users = yield call(fetchUserSearch, q);
     yield put({
       type: 'USERS_SEARCH_SUCCESS',
-      payload: users
+      payload: users,
     });
   } catch (error) {
     yield put({
       type: 'USERS_SEARCH_FAILED',
-      payload: error
+      payload: error,
     });
   }
 }

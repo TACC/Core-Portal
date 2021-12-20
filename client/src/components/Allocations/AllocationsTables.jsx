@@ -8,8 +8,8 @@ import systemAccessor from './AllocationsUtils';
 
 import styles from './AllocationsTables.module.scss';
 
-export const useAllocations = page => {
-  const allocations = useSelector(state => {
+export const useAllocations = (page) => {
+  const allocations = useSelector((state) => {
     if (page === 'expired') return state.allocations.inactive;
     return state.allocations.active;
   });
@@ -18,49 +18,49 @@ export const useAllocations = page => {
       {
         Header: 'Title',
         accessor: 'projectName',
-        sortType: 'alphanumeric'
+        sortType: 'alphanumeric',
       },
       {
         Header: 'PI',
-        accessor: 'pi'
+        accessor: 'pi',
       },
       {
         Header: 'Team',
         // TODO: Refactor to Util
         accessor: ({ projectName, projectId, systems }) => ({
           name: projectName.toLowerCase(),
-          projectId
+          projectId,
         }),
-        Cell: Team
+        Cell: Team,
       },
       {
         Header: 'Systems',
         accessor: ({ systems }) => systemAccessor(systems, 'Systems'),
         id: 'name',
         Cell: Systems,
-        className: 'system-cell'
+        className: 'system-cell',
       },
       {
         Header: 'Awarded',
         accessor: ({ systems }) => systemAccessor(systems, 'Awarded'),
         id: 'awarded',
         Cell: Awarded,
-        className: 'system-cell'
+        className: 'system-cell',
       },
       {
         Header: 'Remaining',
         accessor: ({ systems }) => systemAccessor(systems, 'Remaining'),
         id: 'remaining',
         Cell: Remaining,
-        className: 'system-cell'
+        className: 'system-cell',
       },
       {
         Header: page === 'approved' ? 'Expires' : 'Expired',
         accessor: ({ systems }) => systemAccessor(systems, 'Expires'),
         id: 'expires',
         Cell: Expires,
-        className: 'system-cell'
-      }
+        className: 'system-cell',
+      },
     ],
     [allocations]
   );
@@ -69,9 +69,9 @@ export const useAllocations = page => {
     {
       columns,
       data,
-      initialState: { sortBy: [{ id: 'projectName' }] }
+      initialState: { sortBy: [{ id: 'projectName' }] },
     },
-    useSortBy
+    useSortBy,
   ];
 };
 
@@ -84,7 +84,7 @@ const ErrorMessage = () => {
       <a
         href="#"
         style={{ color: '#9d85ef' }}
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           dispatch({ type: 'GET_ALLOCATIONS' });
@@ -97,15 +97,10 @@ const ErrorMessage = () => {
 };
 
 export const AllocationsTable = ({ page }) => {
-  const { errors } = useSelector(state => state.allocations);
+  const { errors } = useSelector((state) => state.allocations);
   const tableAttributes = useAllocations(page);
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable(...tableAttributes);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable(...tableAttributes);
   return (
     <table
       {...getTableProps()}
@@ -114,9 +109,9 @@ export const AllocationsTable = ({ page }) => {
       className={`allocations-table InfiniteScrollTable o-fixed-header-table ${styles.root}`}
     >
       <thead>
-        {headerGroups.map(headerGroup => (
+        {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
+            {headerGroup.headers.map((column) => (
               <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                 {column.render('Header')}
               </th>
@@ -126,14 +121,14 @@ export const AllocationsTable = ({ page }) => {
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
-          rows.map(row => {
+          rows.map((row) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
+                {row.cells.map((cell) => (
                   <td
                     {...cell.getCellProps({
-                      className: cell.column.className
+                      className: cell.column.className,
                     })}
                   >
                     {cell.render('Cell')}
@@ -164,5 +159,5 @@ export const AllocationsTable = ({ page }) => {
   );
 };
 AllocationsTable.propTypes = {
-  page: string.isRequired
+  page: string.isRequired,
 };

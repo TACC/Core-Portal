@@ -10,14 +10,14 @@ import {
   Form,
   FormGroup,
   Input,
-  Label
+  Label,
 } from 'reactstrap';
 
 const DataFilesPushKeysModal = () => {
   const dispatch = useDispatch();
   const onOpen = () => {};
-  const isOpen = useSelector(state => state.files.modals.pushKeys);
-  const { system } = useSelector(state => state.files.params.FilesListing);
+  const isOpen = useSelector((state) => state.files.modals.pushKeys);
+  const { system } = useSelector((state) => state.files.params.FilesListing);
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
 
@@ -34,10 +34,10 @@ const DataFilesPushKeysModal = () => {
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'pushKeys', props: {} }
+      payload: { operation: 'pushKeys', props: {} },
     });
   };
-  const pushKeys = event => {
+  const pushKeys = (event) => {
     dispatch({
       type: 'DATA_FILES_PUSH_KEYS',
       payload: {
@@ -45,8 +45,8 @@ const DataFilesPushKeysModal = () => {
         password,
         token,
         type: 'STORAGE',
-        reloadCallback: reloadPage
-      }
+        reloadCallback: reloadPage,
+      },
     });
     event.preventDefault();
   };
@@ -69,13 +69,13 @@ const DataFilesPushKeysModal = () => {
               <Label>Password</Label>
               <Input
                 type="password"
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 value={password}
                 className="form-control"
               />
               <Label>TACC Token</Label>
               <Input
-                onChange={e => setToken(e.target.value)}
+                onChange={(e) => setToken(e.target.value)}
                 value={token}
                 className="form-control"
               />

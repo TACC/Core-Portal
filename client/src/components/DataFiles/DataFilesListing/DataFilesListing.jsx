@@ -10,7 +10,7 @@ import {
   FileLengthCell,
   LastModifiedCell,
   FileIconCell,
-  ViewPathCell
+  ViewPathCell,
 } from './DataFilesListingCells';
 import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
@@ -20,23 +20,23 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const dispatch = useDispatch();
   const { query_string: queryString, filter } = parse(useLocation().search);
   const { files, loading, error } = useSelector(
-    state => ({
+    (state) => ({
       files: state.files.listing.FilesListing,
       loading: state.files.loading.FilesListing,
-      error: state.files.error.FilesListing
+      error: state.files.error.FilesListing,
     }),
     shallowEqual
   );
   const systems = useSelector(
-    state => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
-  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
+  const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
   const isPortalProject = scheme === 'projects';
   const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
 
   const showViewPath = useSelector(
-    state =>
+    (state) =>
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
@@ -52,15 +52,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         offset: files.length,
         queryString,
         filter,
-        nextPageToken: files.nextPageToken
-      }
+        nextPageToken: files.nextPageToken,
+      },
     });
   }, [dispatch, files.length]);
 
-  const rowSelectCallback = useCallback(index => {
+  const rowSelectCallback = useCallback((index) => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_SELECT',
-      payload: { index, section: 'FilesListing' }
+      payload: { index, section: 'FilesListing' },
     });
   }, []);
 
@@ -102,7 +102,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         minWidth: 20,
         maxWidth: 40,
         Header: CheckboxHeaderCell,
-        Cell: checkboxCellCallback
+        Cell: checkboxCellCallback,
       },
       {
         id: 'icon',
@@ -110,31 +110,31 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         width: 0.05,
         minWidth: 20,
         maxWidth: 25,
-        Cell: FileIconCell
+        Cell: FileIconCell,
       },
       {
         Header: 'Name',
         accessor: 'name',
         width: 0.5,
-        Cell: fileNavCellCallback
+        Cell: fileNavCellCallback,
       },
       { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
       {
         Header: 'Last Modified',
         accessor: 'lastModified',
         Cell: LastModifiedCell,
-        width: 0.2
-      }
+        width: 0.2,
+      },
     ];
     if (showViewPath) {
       // Modify these column widths
-      ['Size', 'Last Modified'].forEach(header => {
-        cells.find(col => col.Header === header).width = 0.15;
+      ['Size', 'Last Modified'].forEach((header) => {
+        cells.find((col) => col.Header === header).width = 0.15;
       });
       cells.push({
         Header: 'Path',
         width: 0.1,
-        Cell: el => <ViewPathCell file={el.row.original} api={api} />
+        Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
       });
     }
     return cells;
@@ -169,10 +169,10 @@ DataFilesListing.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  isPublic: PropTypes.bool
+  isPublic: PropTypes.bool,
 };
 DataFilesListing.defaultProps = {
-  isPublic: false
+  isPublic: false,
 };
 
 export default DataFilesListing;

@@ -13,7 +13,7 @@ import styles from './DataFilesUploadModal.module.scss';
 
 export const LAYOUT_CLASS_MAP = {
   compact: 'is-compact',
-  default: 'is-normal'
+  default: 'is-normal',
 };
 export const DEFAULT_LAYOUT = 'default';
 export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
@@ -26,17 +26,19 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
 
-  const isOpen = useSelector(state => state.files.modals.upload);
-  const params = useSelector(state => state.files.params.FilesListing);
-  const status = useSelector(state => state.files.operationStatus.upload);
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
+  const isOpen = useSelector((state) => state.files.modals.upload);
+  const params = useSelector((state) => state.files.params.FilesListing);
+  const status = useSelector((state) => state.files.operationStatus.upload);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
+  const projectsList = useSelector((state) => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
     const filteredFiles = uploadedFiles.filter(
-      f => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
+      (f) => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
     );
     filteredFiles.length > 0 &&
       dispatch({
@@ -45,25 +47,27 @@ const DataFilesUploadModal = ({ className, layout }) => {
           system: params.system,
           path: params.path || '',
           files: filteredFiles,
-          reloadCallback
-        }
+          reloadCallback,
+        },
       });
   };
   const dropZoneDisabled =
-    Object.values(status).filter(s => s === 'UPLOADING').length > 0;
+    Object.values(status).filter((s) => s === 'UPLOADING').length > 0;
   const uploadButtonDisabled =
     dropZoneDisabled ||
     (!dropZoneDisabled &&
       uploadedFiles.length ===
         rejectedFiles.length +
-          Object.values(status).filter(s => s === 'SUCCESS').length);
+          Object.values(status).filter((s) => s === 'SUCCESS').length);
   const hasFilesToList = uploadedFiles.length > 0;
   const showListing = hasFilesToList || layout === 'default';
 
   const modifierClasses = [];
   if (hasFilesToList) modifierClasses.push('has-entries');
   modifierClasses.push(LAYOUT_CLASS_MAP[layout || DEFAULT_LAYOUT]);
-  const containerStyleNames = ['container', ...modifierClasses].map(s => styles[s]).join(' ');
+  const containerStyleNames = ['container', ...modifierClasses]
+    .map((s) => styles[s])
+    .join(' ');
 
   const systemDisplayName = findSystemOrProjectDisplayName(
     params.scheme,
@@ -77,41 +81,42 @@ const DataFilesUploadModal = ({ className, layout }) => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'upload', status: {} }
+      payload: { operation: 'upload', status: {} },
     });
   };
 
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'upload', props: {} }
+      payload: { operation: 'upload', props: {} },
     });
   };
 
-  const selectFiles = acceptedFiles => {
+  const selectFiles = (acceptedFiles) => {
     const newFiles = [];
     const newAcceptedFiles = acceptedFiles.filter(
-      af =>
+      (af) =>
         uploadedFiles.filter(
-          uf => uf.data.path === af.path && uf.data.size === af.size
+          (uf) => uf.data.path === af.path && uf.data.size === af.size
         ).length === 0
     );
-    newAcceptedFiles.forEach(file => {
+    newAcceptedFiles.forEach((file) => {
       newFiles.push({ data: file, id: uuidv4() });
     });
-    setUploadedFiles(files => [...files, ...newFiles]);
+    setUploadedFiles((files) => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = oversizedFiles => {
+  const onRejectedFiles = (oversizedFiles) => {
     const newFiles = [];
     const newRejectedFiles = oversizedFiles.filter(
-      of => rejectedFiles.filter(rf => rf.data.path === of.path).length === 0
+      (of) =>
+        rejectedFiles.filter((rf) => rf.data.path === of.path).length === 0
     );
-    newRejectedFiles.forEach(file => {
+    newRejectedFiles.forEach((file) => {
       newFiles.push({ data: file, id: uuidv4() });
     });
-    setUploadedFiles(files => [...files, ...newFiles]);
-    setRejectedFiles(files => [...files, ...newFiles]);
+    setUploadedFiles((files) => [...files, ...newFiles]);
+    setRejectedFiles((files) => [...files, ...newFiles]);
   };
 
   return (
@@ -164,11 +169,11 @@ DataFilesUploadModal.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Layout */
-  layout: PropTypes.oneOf(LAYOUTS)
+  layout: PropTypes.oneOf(LAYOUTS),
 };
 DataFilesUploadModal.defaultProps = {
   className: '',
-  layout: DEFAULT_LAYOUT
+  layout: DEFAULT_LAYOUT,
 };
 
 export default DataFilesUploadModal;
