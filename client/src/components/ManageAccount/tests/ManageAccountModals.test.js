@@ -81,7 +81,7 @@ describe('various valid input phone numbers and email addresses', () => {
     const submitButton = getByLabelText(/required-submit/);
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByText('Phone number is not valid')).toBeNull();
       expect(queryByText('Please enter a valid email address')).toBeNull();
       expect(clickSpy)
