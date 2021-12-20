@@ -7,7 +7,7 @@ def workbench_state(request):
     data = {
         'config': settings.WORKBENCH_SETTINGS,
         'portalName': settings.PORTAL_NAMESPACE,
-        'sitekey': settings.RECAPTCHA_SITE_KEY
+        'recaptchaSiteKey': settings.RECAPTCHA_SITE_KEY
     }
     if request.user.is_authenticated:
         data['setupComplete'] = request.user.profile.setup_complete

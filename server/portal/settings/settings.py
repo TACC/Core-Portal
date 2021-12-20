@@ -726,13 +726,9 @@ WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 """
 SETTINGS: RECAPTCHA
 """
-if hasattr(settings_secret, '_RECAPTCHA_SECRET_KEY'):
-    RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
-    RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
-else:
-    RECAPTCHA_SECRET_KEY = "no_key"
-    RECAPTCHA_SITE_KEY =  "no_key"
-    
+RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
+RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
+
 """
 SETTINGS: LOCAL OVERRIDES
 """

@@ -60,7 +60,7 @@ class TicketsView(BaseApiView):
             first_name = request.user.first_name
             last_name = request.user.last_name
         else:
-            if settings.RECAPTCHA_SECRET_KEY != 'no_key':
+            if settings.RECAPTCHA_SECRET_KEY:
                 recap_result = utils.get_recaptcha_verification(request)
                 if not recap_result.get('success', False):
                     raise ApiException('Invalid reCAPTCHA. Please try again.')
