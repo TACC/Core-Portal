@@ -29,7 +29,7 @@ const appDetailSlurmFixture = {
       'visualization',
       'appCategory:Visualization',
       'appIcon:qgis',
-      'cloneRevision:5'
+      'cloneRevision:5',
     ],
     ontology: [],
     executionType: 'HPC',
@@ -51,7 +51,7 @@ const appDetailSlurmFixture = {
           required: true,
           order: 0,
           enquote: false,
-          default: ''
+          default: '',
         },
         details: {
           label: 'Working Directory',
@@ -59,15 +59,15 @@ const appDetailSlurmFixture = {
             "The directory containing the files that you want to work on. This directory and its files will be copied to where your QGIS session runs. You can drag the link for the directory from the Data Browser on the left, or click the 'Select Input' button and then select the directory.",
           argument: null,
           showArgument: false,
-          repeatArgument: false
+          repeatArgument: false,
         },
         semantics: {
           minCardinality: 1,
           maxCardinality: 1,
           ontology: ['xsd:string'],
-          fileTypes: ['raw-0']
-        }
-      }
+          fileTypes: ['raw-0'],
+        },
+      },
     ],
     parameters: [
       {
@@ -85,8 +85,8 @@ const appDetailSlurmFixture = {
             { '1920x1080': '1920x1080' },
             { '1920x1200': '1920x1200' },
             { '1600x1200': '1600x1200' },
-            { '2560x1600': '2560x1600' }
-          ]
+            { '2560x1600': '2560x1600' },
+          ],
         },
         details: {
           label: 'Desktop Resolution',
@@ -94,13 +94,13 @@ const appDetailSlurmFixture = {
             'Set the desktop screen size for your visualization session (only used if VNC interactive session is created).',
           argument: null,
           showArgument: false,
-          repeatArgument: false
+          repeatArgument: false,
         },
         semantics: {
           minCardinality: 1,
           maxCardinality: 1,
-          ontology: ['xs:enumeration', 'xs:string']
-        }
+          ontology: ['xs:enumeration', 'xs:string'],
+        },
       },
       {
         id: '_webhook_base_url',
@@ -111,52 +111,46 @@ const appDetailSlurmFixture = {
           order: 1,
           enquote: false,
           default: null,
-          validator: null
+          validator: null,
         },
         details: {
           label: 'Base portal webhook url.',
           description: null,
           argument: null,
           showArgument: false,
-          repeatArgument: false
+          repeatArgument: false,
         },
         semantics: {
           minCardinality: 1,
           maxCardinality: 1,
-          ontology: ['xs:string']
-        }
-      }
+          ontology: ['xs:string'],
+        },
+      },
     ],
     outputs: [],
     _links: {
       self: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0'
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0',
       },
       executionSystem: {
-        href:
-          'https://portals-api.tacc.utexas.edu/systems/v2/maxmunstermann.TACC-ACI.exec.stampede2.HPC'
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/maxmunstermann.TACC-ACI.exec.stampede2.HPC',
       },
       storageSystem: {
-        href:
-          'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmunstermann'
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmunstermann',
       },
       history: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/history'
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/history',
       },
       metadata: {
-        href:
-          'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22713780412274774506-242ac115-0001-005%22%7D'
+        href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22713780412274774506-242ac115-0001-005%22%7D',
       },
       owner: {
-        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmunstermann'
+        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmunstermann',
       },
       permissions: {
-        href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/pems'
-      }
-    }
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/pems',
+      },
+    },
   },
   systemHasKeys: false,
   pushKeysSystem: {},
@@ -182,7 +176,7 @@ const appDetailSlurmFixture = {
       protocol: 'SSH',
       port: 22,
       auth: { type: 'SSHKEYS', username: '', publicKey: '', privateKey: '' },
-      host: 'stampede2.tacc.utexas.edu'
+      host: 'stampede2.tacc.utexas.edu',
     },
     queues: [
       {
@@ -194,7 +188,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 96,
         customDirectives: '-A TACC-ACI',
         default: true,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'skx-normal',
@@ -205,7 +199,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 192,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'development',
@@ -216,7 +210,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 96,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'flat-quadrant',
@@ -227,7 +221,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 96,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'large',
@@ -238,7 +232,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 96,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'skx-large',
@@ -249,7 +243,7 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 192,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
+        maxRequestedTime: '999:59:59',
       },
       {
         name: 'skx-dev',
@@ -260,8 +254,8 @@ const appDetailSlurmFixture = {
         maxMemoryPerNode: 192,
         customDirectives: '-A TACC-ACI',
         default: false,
-        maxRequestedTime: '999:59:59'
-      }
+        maxRequestedTime: '999:59:59',
+      },
     ],
     storage: {
       proxy: null,
@@ -272,17 +266,17 @@ const appDetailSlurmFixture = {
       host: 'stampede2.tacc.utexas.edu',
       rootDir: '/',
       homeDir: '/work/05724/maxmunstermann',
-      auth: { type: 'SSHKEYS', username: '', publicKey: '', privateKey: '' }
+      auth: { type: 'SSHKEYS', username: '', publicKey: '', privateKey: '' },
     },
     workDir: '/work/05724/maxmunstermann/',
     revision: 1,
     default: false,
     public: false,
     globalDefault: false,
-    lastModified: '2020-07-31T11:10:01-05:00'
+    lastModified: '2020-07-31T11:10:01-05:00',
   },
   license: { type: null },
-  appListing: {}
+  appListing: {},
 };
 
 export default appDetailSlurmFixture;

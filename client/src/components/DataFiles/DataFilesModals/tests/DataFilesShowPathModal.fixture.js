@@ -4,14 +4,14 @@ const DataFilesShowPathModalFixture = {
       api: 'tapis',
       scheme: 'private',
       system: 'frontera.home.username',
-      path: ''
+      path: '',
     },
     modal: {
       api: 'tapis',
       scheme: 'private',
       system: 'frontera.home.username',
-      path: ''
-    }
+      path: '',
+    },
   },
   modalProps: {
     showpath: {
@@ -24,13 +24,13 @@ const DataFilesShowPathModalFixture = {
         format: 'folder',
         system: 'frontera.home.username',
         mimeType: 'text/directory',
-        type: 'dir'
-      }
-    }
+        type: 'dir',
+      },
+    },
   },
   modals: {
-    showpath: true
-  }
+    showpath: true,
+  },
 };
 
 export default DataFilesShowPathModalFixture;

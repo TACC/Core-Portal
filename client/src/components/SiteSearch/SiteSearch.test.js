@@ -1,6 +1,6 @@
 import React from 'react';
 import { createMemoryHistory } from 'history';
-import SiteSearch from './SiteSearch';
+import { SiteSearchComponent } from './SiteSearch';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from './fixtures/siteSearch.fixture.json';
@@ -14,27 +14,29 @@ const mockState = {
     loading: false,
     error: null,
     completed: true,
-    results: siteSearchResults
+    results: siteSearchResults,
   },
   authenticatedUser: { user: null },
   files: {
     modals: {
-      preview: false
+      preview: false,
     },
     modalProps: {
-      preview: {}
+      preview: {},
     },
-    preview: {}
-  }
+    preview: {},
+  },
 };
 
-describe('SiteSearchListing', () => {
+describe('SiteSearchComponent', () => {
   it('dispatches action and redirects to filter', () => {
-    const history = createMemoryHistory();
+    const history = createMemoryHistory({
+      initialEntries: ['/search'],
+    });
     history.push('/search/?page=1&query_string=test');
     const store = mockStore(mockState);
     const { getAllByRole, getByText, getAllByTestId } = renderComponent(
-      <SiteSearch />,
+      <SiteSearchComponent filterPriorityList={['cms']} />,
       store,
       history
     );
@@ -42,8 +44,8 @@ describe('SiteSearchListing', () => {
     expect(store.getActions()).toEqual([
       {
         type: 'FETCH_SITE_SEARCH',
-        payload: { page: '1', query_string: 'test' }
-      }
+        payload: { page: '1', query_string: 'test' },
+      },
     ]);
 
     expect(history.location.pathname).toEqual('/search/cms/');

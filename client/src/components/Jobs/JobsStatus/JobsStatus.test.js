@@ -7,7 +7,7 @@ import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
 import JobsStatus, {
   getStatusText,
   getBadgeColor,
-  STATUS_TEXT_MAP
+  STATUS_TEXT_MAP,
 } from './JobsStatus';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 
@@ -21,7 +21,7 @@ function renderJobsStatus(store, props) {
   );
 }
 
-expect.extend({ toHaveClass });
+//expect.extend({ toHaveClass });
 describe('JobsStatus', () => {
   it('converts status to proper UI strings', () => {
     expect(getStatusText('ACCEPTED')).toEqual('Processing');
@@ -54,7 +54,7 @@ describe('JobsStatus', () => {
   it('renders Finished', () => {
     const { getByText } = renderJobsStatus(mockStore({ notifications }), {
       status: 'FINISHED',
-      fancy: false
+      fancy: false,
     });
     expect(getByText(/Finished/)).toBeDefined();
   });
@@ -62,47 +62,49 @@ describe('JobsStatus', () => {
   it('renders Finished with success badge', () => {
     const { getByText } = renderJobsStatus(mockStore({ notifications }), {
       status: 'FINISHED',
-      fancy: true
+      fancy: true,
     });
     expect(getByText(/Finished/)).toBeDefined();
     expect(getByText(/Finished/)).toHaveClass('badge badge-success');
   });
 
-  it.each(Object.keys(STATUS_TEXT_MAP))('correctly does or does not render interactive session button when status is %s', () => {
-    const jobConcluded = [
-      'CLEANING_UP',
-      'ARCHIVING',
-      'FINISHED',
-      'STOPPED',
-      'FAILED'
-    ];
+  it.each(Object.keys(STATUS_TEXT_MAP))(
+    'correctly does or does not render interactive session button when status is %s',
+    () => {
+      const jobConcluded = [
+        'CLEANING_UP',
+        'ARCHIVING',
+        'FINISHED',
+        'STOPPED',
+        'FAILED',
+      ];
 
-    const jobNotifs = {
-      notifications: {
-        ...notifications,
-        list: {
-          notifs: [
-            {
-              event_type: 'interactive_session_ready',
-              extra: { status, id: '1234-5678-90AZ' },
-              action_link: 'https://test'
-            }
-          ]
-        }
+      const jobNotifs = {
+        notifications: {
+          ...notifications,
+          list: {
+            notifs: [
+              {
+                event_type: 'interactive_session_ready',
+                extra: { status, id: '1234-5678-90AZ' },
+                action_link: 'https://test',
+              },
+            ],
+          },
+        },
+      };
+      const { getByTestId } = renderJobsStatus(mockStore(jobNotifs), {
+        status,
+        fancy: true,
+      });
+      const interactiveButton = getByTestId('interactive-session-button');
+      if (!jobConcluded.includes(status)) {
+        expect(interactiveButton).toBeDefined();
+        expect(interactiveButton).toHaveTextContent(/Open Session/);
+      } else {
+        expect(interactiveButton).not.toBeInTheDocument();
+        expect(interactiveButton).toBeUndefined();
       }
-    };
-    const { getByTestId } = renderJobsStatus(mockStore(jobNotifs), {
-      status,
-      fancy: true
-    });
-    const interactiveButton = getByTestId('interactive-session-button');
-    if (!jobConcluded.includes(status)) {
-      expect(interactiveButton).toBeDefined();
-      expect(interactiveButton).toHaveTextContent(/Open Session/);
-    } else {
-      expect(interactiveButton).not.toBeInTheDocument();
-      expect(interactiveButton).toBeUndefined();
     }
-
-  });
+  );
 });

@@ -1,47 +1,46 @@
-import React from "react";
-import { createMemoryHistory } from "history";
-import  DataFilesAddProjectModal  from "../DataFilesAddProjectModal";
-import configureStore from "redux-mock-store";
+import React from 'react';
+import { createMemoryHistory } from 'history';
+import DataFilesAddProjectModal from '../DataFilesAddProjectModal';
+import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
-import {fireEvent, waitForElement} from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import {
   projectsListingFixture,
-  projectMetadataFixture
+  projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
 const mockStore = configureStore();
 
 const initialMockState = {
   files: {
     modals: {
-      addproject: true
-    }
+      addproject: true,
+    },
   },
   users: {
     search: {
-      users: []
-    }
+      users: [],
+    },
   },
   projects: {
     listing: {
       project: projectsListingFixture,
       loading: false,
-      error: null
+      error: null,
     },
     metadata: projectMetadataFixture,
   },
   authenticatedUser: {
     user: {
-      username: "username",
-      first_name: "User",
-      last_name: "Name",
-      email: "user@name.com"
-    }
-  }
+      username: 'username',
+      first_name: 'User',
+      last_name: 'Name',
+      email: 'user@name.com',
+    },
+  },
 };
 
-
-describe("DataFilesAddProjectModal", () => {
-  it("renders the add project modal", () => {
+describe('DataFilesAddProjectModal', () => {
+  it('renders the add project modal', () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -49,14 +48,14 @@ describe("DataFilesAddProjectModal", () => {
       <DataFilesAddProjectModal />,
       store,
       history
-    )
+    );
 
     // Check that the authenticated user appears as the default owner
     // for a new project
     expect(getAllByText(/User Name/)).toBeDefined();
   });
 
-  it("disallows title input under 3 characters", async () => {
+  it('disallows title input under 3 characters', async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -64,21 +63,21 @@ describe("DataFilesAddProjectModal", () => {
       <DataFilesAddProjectModal />,
       store,
       history
-    )
+    );
 
-    const inputField = getByRole('textbox', {name: ''});
+    const inputField = getByRole('textbox', { name: '' });
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
-        value: 'a'
-      }
+        value: 'a',
+      },
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+    await waitFor(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it("disallows title input over 150 characters", async () => {
+  it('disallows title input over 150 characters', async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -86,17 +85,18 @@ describe("DataFilesAddProjectModal", () => {
       <DataFilesAddProjectModal />,
       store,
       history
-    )
+    );
 
-    const inputField = getByRole('textbox', {name: ''});
+    const inputField = getByRole('textbox', { name: '' });
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
-        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient.'
-      }
+        value:
+          'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient.',
+      },
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at most 150 characters/));
+    await waitFor(() => getAllByText(/Title must be at most 150 characters/));
   });
 });

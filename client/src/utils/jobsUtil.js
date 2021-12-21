@@ -13,11 +13,7 @@ export function isOutputState(status) {
 
 export function getOutputPathFromHref(href) {
   // get output path from href (i.e. _links.archiveData.href )
-  const path = href
-    .split('/')
-    .slice(7)
-    .filter(Boolean)
-    .join('/');
+  const path = href.split('/').slice(7).filter(Boolean).join('/');
   if (path === 'listings') {
     return null;
   }
@@ -31,7 +27,7 @@ export function getAllocatonFromDirective(directive) {
 
    */
   const parts = directive.split(' ');
-  const allocationArgIndex = parts.findIndex(obj => obj === '-A') + 1;
+  const allocationArgIndex = parts.findIndex((obj) => obj === '-A') + 1;
   if (allocationArgIndex !== 0 && allocationArgIndex < parts.length) {
     return parts[allocationArgIndex];
   }
@@ -49,16 +45,16 @@ export function getJobDisplayInformation(job, app) {
       .map(([key, val]) => ({
         label: key,
         id: key,
-        value: val
+        value: val,
       }))
-      .filter(obj => !obj.id.startsWith('_')),
+      .filter((obj) => !obj.id.startsWith('_')),
     parameters: Object.entries(job.parameters)
       .map(([key, val]) => ({
         label: key,
         id: key,
-        value: val
+        value: val,
       }))
-      .filter(obj => !obj.id.startsWith('_'))
+      .filter((obj) => !obj.id.startsWith('_')),
   };
 
   if (app) {
@@ -73,8 +69,8 @@ export function getJobDisplayInformation(job, app) {
       display.applicationName = app.definition.label;
 
       // Improve input/parameters
-      display.inputs.forEach(input => {
-        const matchingParameter = app.definition.inputs.find(obj => {
+      display.inputs.forEach((input) => {
+        const matchingParameter = app.definition.inputs.find((obj) => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -82,8 +78,8 @@ export function getJobDisplayInformation(job, app) {
           input.label = matchingParameter.details.label;
         }
       });
-      display.parameters.forEach(input => {
-        const matchingParameter = app.definition.parameters.find(obj => {
+      display.parameters.forEach((input) => {
+        const matchingParameter = app.definition.parameters.find((obj) => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -92,8 +88,8 @@ export function getJobDisplayInformation(job, app) {
         }
       });
       // filter non-visible
-      display.inputs.filter(input => {
-        const matchingParameter = app.definition.inputs.find(obj => {
+      display.inputs.filter((input) => {
+        const matchingParameter = app.definition.inputs.find((obj) => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -101,8 +97,8 @@ export function getJobDisplayInformation(job, app) {
         }
         return true;
       });
-      display.parameters.filter(input => {
-        const matchingParameter = app.definition.parameters.find(obj => {
+      display.parameters.filter((input) => {
+        const matchingParameter = app.definition.parameters.find((obj) => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -113,7 +109,7 @@ export function getJobDisplayInformation(job, app) {
 
       if (app.exec_sys.scheduler === 'SLURM') {
         const matchingQueue = app.exec_sys.queues.find(
-          queue => queue.name === job.remoteQueue
+          (queue) => queue.name === job.remoteQueue
         );
         const allocation = getAllocatonFromDirective(
           matchingQueue.customDirectives

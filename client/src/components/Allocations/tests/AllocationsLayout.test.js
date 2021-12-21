@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import {
   toHaveAttribute,
-  toHaveTextContent
+  toHaveTextContent,
 } from '@testing-library/jest-dom/dist/matchers';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -19,7 +19,7 @@ const mockInitialState = {
   loadingUsernames: true,
   hosts: {},
   portal_alloc: '',
-  loadingPage: false
+  loadingPage: false,
 };
 expect.extend({ toHaveAttribute, toHaveTextContent });
 describe('Allocations Page Layout', () => {
@@ -28,7 +28,7 @@ describe('Allocations Page Layout', () => {
     const { getByText, getAllByText } = render(
       <Provider
         store={mockStore({
-          allocations: mockInitialState
+          allocations: mockInitialState,
         })}
       >
         <MemoryRouter initialEntries={['/workbench/allocations/approved']}>
