@@ -24,7 +24,7 @@ export function getSystemName(host) {
  * @return {string} display name of system
  */
 export function findSystemDisplayName(systemList, system, isRoot) {
-  const matchingSystem = systemList.find(s => s.system === system);
+  const matchingSystem = systemList.find((s) => s.system === system);
   if (matchingSystem) {
     return matchingSystem.name;
   }
@@ -43,7 +43,7 @@ export function findSystemDisplayName(systemList, system, isRoot) {
  */
 
 export function findProjectTitle(projectsList, projectSystem, projectTitle) {
-  const matching = projectsList.find(project => project.id === projectSystem);
+  const matching = projectsList.find((project) => project.id === projectSystem);
   if (matching) {
     return matching.description;
   }

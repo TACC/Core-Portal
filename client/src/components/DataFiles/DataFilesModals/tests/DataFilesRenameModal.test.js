@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import DataFilesRenameModalFixture from './DataFilesRenameModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -14,9 +14,9 @@ const initialMockState = {
   systems: systemsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
-  }
+      pushKeys: false,
+    },
+  },
 };
 
 describe('DataFilesCopyModal', () => {
@@ -51,7 +51,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Rename');
       fireEvent.click(submitButton);
     });
@@ -69,18 +69,18 @@ describe('DataFilesCopyModal', () => {
             format: 'folder',
             system: 'test.system',
             mimeType: 'text/directory',
-            type: 'dir'
+            type: 'dir',
           },
           api: 'tapis',
           scheme: 'private',
           newName: 'abc123',
-          reloadCallback: expect.any(Function)
-        }
+          reloadCallback: expect.any(Function),
+        },
       },
       {
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { props: {}, operation: 'rename' }
-      }
+        payload: { props: {}, operation: 'rename' },
+      },
     ]);
   });
 
@@ -98,7 +98,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123?' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Rename');
       fireEvent.click(submitButton);
     });

@@ -14,10 +14,10 @@ const initialMockState = {
   systems: systemsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
+      pushKeys: false,
+    },
   },
-  projects: projectsFixture
+  projects: projectsFixture,
 };
 
 describe('DataFilesCopyModal', () => {
@@ -62,13 +62,13 @@ describe('DataFilesCopyModal', () => {
 
     expect(projectLink).toBeDefined();
     expect(store.getActions()).toEqual([
-      { type: 'GET_SYSTEM_MONITOR'},
-      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } }
+      { type: 'GET_SYSTEM_MONITOR' },
+      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } },
     ]);
     fireEvent.click(projectLink);
 
     expect(store.getActions()).toEqual([
-      { type: 'GET_SYSTEM_MONITOR'},
+      { type: 'GET_SYSTEM_MONITOR' },
       { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } },
       {
         type: 'FETCH_FILES',
@@ -77,16 +77,16 @@ describe('DataFilesCopyModal', () => {
           scheme: 'projects',
           system: 'test.site.project.PROJECT-3',
           path: '',
-          section: 'modal'
-        }
+          section: 'modal',
+        },
       },
       {
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation: 'copy',
-          props: { showProjects: false }
-        }
-      }
+          props: { showProjects: false },
+        },
+      },
     ]);
   });
 
@@ -104,18 +104,18 @@ describe('DataFilesCopyModal', () => {
     fireEvent.change(getByTestId('selector'), { target: { value: 'shared' } });
 
     expect(store.getActions()).toEqual([
-      { type: 'GET_SYSTEM_MONITOR'},
+      { type: 'GET_SYSTEM_MONITOR' },
       {
         type: 'PROJECTS_GET_LISTING',
-        payload: { queryString: null }
+        payload: { queryString: null },
       },
       {
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation: 'copy',
-          props: { showProjects: true }
-        }
-      }
+          props: { showProjects: true },
+        },
+      },
     ]);
   });
 });

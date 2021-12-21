@@ -3,7 +3,7 @@ export const initialState = {
   config: {},
   portalName: '',
   setupComplete: window.__INITIAL_SETUP_COMPLETE__,
-  recaptchaSiteKey: null
+  recaptchaSiteKey: null,
 };
 
 export default function workbench(state = initialState, action) {
@@ -11,13 +11,13 @@ export default function workbench(state = initialState, action) {
     case 'WORKBENCH_INIT':
       return {
         ...state,
-        loading: true
+        loading: true,
       };
     case 'WORKBENCH_SUCCESS':
       return {
         ...state,
         ...action.payload,
-        loading: false
+        loading: false,
       };
     case 'WORKBENCH_FAILURE':
       return initialState;

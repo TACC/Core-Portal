@@ -5,14 +5,12 @@
   flex-direction: column;
 }
 
-
 /* Elements */
 
 /* CAVEAT: This is only applied to automatically-built sub-components */
 .header {
   flex-shrink: 0;
 }
-
 
 /* Modifiers */
 

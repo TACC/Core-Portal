@@ -7,14 +7,14 @@ import {
   fetchOnboardingAdminIndividualUser,
   getOnboardingAdminIndividualUser,
   postOnboardingAction,
-  sendOnboardingAction
+  sendOnboardingAction,
 } from './onboarding.sagas';
 import {
   onboardingAdminFixture,
   onboardingUserFixture,
   onboardingAdminState,
   onboardingUserState,
-  onboardingActionState
+  onboardingActionState,
 } from './fixtures/onboarding.fixture';
 import { onboarding } from '../reducers/onboarding.reducers';
 
@@ -22,10 +22,12 @@ jest.mock('cross-fetch');
 
 describe('getOnboardingAdminList Saga', () => {
   it('should fetch list of onboarding users and transform state', () =>
-    expectSaga(getOnboardingAdminList, { payload: { offset: 0, limit: 25, query: 'query' } })
+    expectSaga(getOnboardingAdminList, {
+      payload: { offset: 0, limit: 25, query: 'query' },
+    })
       .withReducer(onboarding)
       .provide([
-        [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminFixture]
+        [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminFixture],
       ])
       .put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' })
       .call(fetchOnboardingAdminList, 0, 25, 'query')
@@ -36,8 +38,8 @@ describe('getOnboardingAdminList Saga', () => {
           offset: 0,
           limit: 25,
           query: 'query',
-          total: 1
-        }
+          total: 1,
+        },
       })
       .hasFinalState(onboardingAdminState)
       .run());
@@ -46,22 +48,22 @@ describe('getOnboardingAdminList Saga', () => {
 describe('getOnboardingAdminIndividualUser Saga', () => {
   it('should fetch sucessfully onboarded user and transform state', () =>
     expectSaga(getOnboardingAdminIndividualUser, {
-      payload: { user: 'username' }
+      payload: { user: 'username' },
     })
       .withReducer(onboarding)
       .provide([
         [
           matchers.call.fn(fetchOnboardingAdminIndividualUser),
-          onboardingUserFixture
-        ]
+          onboardingUserFixture,
+        ],
       ])
       .put({
-        type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING'
+        type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING',
       })
       .call(fetchOnboardingAdminIndividualUser, 'username')
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS',
-        payload: onboardingUserFixture
+        payload: onboardingUserFixture,
       })
       .hasFinalState(onboardingUserState)
       .run());
@@ -73,30 +75,30 @@ describe('postOnboarding Saga', () => {
       payload: {
         step: 'onboarding.step',
         action: 'user_confirm',
-        username: 'username'
-      }
+        username: 'username',
+      },
     })
       .withReducer(onboarding)
       .provide([
         [
           matchers.call.fn(sendOnboardingAction),
           {
-            response: 'OK'
-          }
-        ]
+            response: 'OK',
+          },
+        ],
       ])
       .put({
         type: 'POST_ONBOARDING_ACTION_PROCESSING',
         payload: {
           step: 'onboarding.step',
           action: 'user_confirm',
-          username: 'username'
-        }
+          username: 'username',
+        },
       })
       .call(sendOnboardingAction, 'username', 'onboarding.step', 'user_confirm')
       .put({
         type: 'POST_ONBOARDING_ACTION_SUCCESS',
-        payload: { response: 'OK' }
+        payload: { response: 'OK' },
       })
       .hasFinalState(onboardingActionState)
       .run());

@@ -6,7 +6,7 @@ export const initialState = {
     total: 0,
     query: null,
     loading: false,
-    error: null
+    error: null,
   },
   user: {
     username: null,
@@ -15,21 +15,21 @@ export const initialState = {
     setupComplete: false,
     steps: [],
     loading: false,
-    error: null
+    error: null,
   },
   action: {
     step: null,
     action: null,
     loading: false,
     username: null,
-    error: null
-  }
+    error: null,
+  },
 };
 
 export function updateAdminUsersFromEvent(adminUsers, event) {
   const result = [...adminUsers];
   const matchingIndex = adminUsers.findIndex(
-    user => user.username === event.username
+    (user) => user.username === event.username
   );
   if (matchingIndex > -1) {
     result[matchingIndex] = updateUserFromEvent(result[matchingIndex], event);
@@ -43,7 +43,7 @@ export function updateUserFromEvent(user, event) {
     if (event.step === 'portal.apps.onboarding.execute.execute_setup_steps') {
       result.setupComplete = event.data.setupComplete;
     }
-    const foundStep = result.steps.find(step => step.step === event.step);
+    const foundStep = result.steps.find((step) => step.step === event.step);
     if (foundStep) {
       foundStep.events.unshift(event);
       foundStep.state = event.state;
@@ -59,8 +59,8 @@ export function onboarding(state = initialState, action) {
         ...state,
         admin: {
           ...state.admin,
-          loading: true
-        }
+          loading: true,
+        },
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS':
       return {
@@ -68,8 +68,8 @@ export function onboarding(state = initialState, action) {
         admin: {
           ...action.payload,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_ERROR':
       return {
@@ -77,8 +77,8 @@ export function onboarding(state = initialState, action) {
         admin: {
           ...state.admin,
           error: action.payload,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING':
       return {
@@ -86,8 +86,8 @@ export function onboarding(state = initialState, action) {
         user: {
           ...state.user,
           error: null,
-          loading: true
-        }
+          loading: true,
+        },
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS':
       return {
@@ -95,8 +95,8 @@ export function onboarding(state = initialState, action) {
         user: {
           ...action.payload,
           error: null,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR':
       return {
@@ -104,8 +104,8 @@ export function onboarding(state = initialState, action) {
         user: {
           ...state.user,
           error: action.payload,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'ONBOARDING_EVENT':
       return {
@@ -115,9 +115,9 @@ export function onboarding(state = initialState, action) {
           users: updateAdminUsersFromEvent(
             state.admin.users,
             action.payload.setup_event
-          )
+          ),
         },
-        user: updateUserFromEvent(state.user, action.payload.setup_event)
+        user: updateUserFromEvent(state.user, action.payload.setup_event),
       };
     case 'POST_ONBOARDING_ACTION_PROCESSING':
       return {
@@ -127,8 +127,8 @@ export function onboarding(state = initialState, action) {
           action: action.payload.action,
           username: action.payload.username,
           loading: true,
-          error: null
-        }
+          error: null,
+        },
       };
     case 'POST_ONBOARDING_ACTION_SUCCESS':
       return {
@@ -136,8 +136,8 @@ export function onboarding(state = initialState, action) {
         action: {
           ...state.action,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       };
     case 'POST_ONBOARDING_ACTION_ERROR':
       return {
@@ -145,8 +145,8 @@ export function onboarding(state = initialState, action) {
         action: {
           ...state.action,
           loading: false,
-          error: action.payload.error
-        }
+          error: action.payload.error,
+        },
       };
     default:
       return state;

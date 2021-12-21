@@ -4,18 +4,18 @@ import { getNodeCountValidation, getQueueValidation } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue = namdAppFixture.exec_sys.queues.find(
-    q => q.name === 'normal'
+    (q) => q.name === 'normal'
   );
   const smallQueue = namdAppFixture.exec_sys.queues.find(
-    q => q.name === 'small'
+    (q) => q.name === 'small'
   );
 
   const serialFronteraApp = {
     ...namdAppFixture,
     definition: {
       ...namdAppFixture.definition,
-      parallelism: 'SERIAL'
-    }
+      parallelism: 'SERIAL',
+    },
   };
 
   it('handles node count validation on Frontera', () => {

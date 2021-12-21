@@ -4,7 +4,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 export async function getIntroMessages() {
   const result = await fetchUtil({
     url: `/api/intromessages/`,
-    method: 'get'
+    method: 'get',
   });
   return result.response;
 }
@@ -23,20 +23,20 @@ export function* fetchIntroMessages() {
       DATA: true,
       HISTORY: true,
       TICKETS: true,
-      UI: true
+      UI: true,
     };
 
-    introMessages.forEach(element => {
+    introMessages.forEach((element) => {
       messages[element.component] = element.unread;
     });
 
     yield put({
       type: 'INTRO_FETCH_SUCCESS',
-      payload: messages
+      payload: messages,
     });
   } catch (error) {
     yield put({
-      type: 'INTRO_FETCH_ERROR'
+      type: 'INTRO_FETCH_ERROR',
     });
   }
 }
@@ -52,19 +52,19 @@ export function* saveIntroMessages(action) {
     yield call(fetchUtil, {
       url: '/api/intromessages/',
       method: 'PUT',
-      body: JSON.stringify(action.payload)
+      body: JSON.stringify(action.payload),
     });
 
     yield put({
       type: 'INTRO_SAVE_SUCCESS',
-      payload: action.payload
+      payload: action.payload,
     });
   } catch (error) {
     // Return the intended state of intro messages
     // regardless of save success or failure
     yield put({
       type: 'INTRO_SAVE_ERROR',
-      payload: action.payload
+      payload: action.payload,
     });
   }
 }

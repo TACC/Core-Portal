@@ -122,7 +122,8 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, '../../client/dist')],
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -216,7 +217,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    ('build', os.path.join(BASE_DIR, '../../client/build')),
+    os.path.join(BASE_DIR, '../../client/dist'),
+    # Serve fonts using the cep.dev hostname in debug mode
+    ('src/fonts', os.path.join(BASE_DIR, '../../client/src/fonts'))
 ]
 
 STATICFILES_FINDERS = [

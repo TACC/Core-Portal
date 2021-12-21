@@ -13,7 +13,7 @@ describe('RequestAccessForm', () => {
   it('renders form', () => {
     const store = mockStore({
       requestAccess,
-      workbench
+      workbench,
     });
 
     const { getByText } = renderComponent(<RequestAccessForm />, store);
@@ -24,9 +24,9 @@ describe('RequestAccessForm', () => {
     const store = mockStore({
       requestAccess: {
         ...requestAccess,
-        loading: true
+        loading: true,
       },
-      workbench
+      workbench,
     });
 
     const { getByTestId } = renderComponent(<RequestAccessForm />, store);
@@ -37,9 +37,9 @@ describe('RequestAccessForm', () => {
     const store = mockStore({
       requestAccess: {
         ...requestAccess,
-        createdTicketId: '1234'
+        createdTicketId: '1234',
       },
-      workbench
+      workbench,
     });
 
     const { getByText } = renderComponent(<RequestAccessForm />, store);

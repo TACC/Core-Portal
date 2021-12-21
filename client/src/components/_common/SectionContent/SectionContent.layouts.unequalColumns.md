@@ -2,16 +2,16 @@
 
 ## Caveats
 
-1. This component can __not__ automatically make the right column small.\
-    _Section styles must define which panels are in the right column and set their width via `var(--column-width--small)`. Setting the width of left column panels via `var(--column-width--small)` is recommended but not required._
+1. This component can **not** automatically make the right column small.\
+   _Section styles must define which panels are in the right column and set their width via `var(--column-width--small)`. Setting the width of left column panels via `var(--column-width--small)` is recommended but not required._
 
-2. This component can __not__ automatically hide the expected column overflow.\
+2. This component can **not** automatically hide the expected column overflow.\
    (For automatic hiding, use this component via `<Section contentLayoutName>`.)
-    _Section styles must hide the overflow. , this component will automatically hide the overflow._
+   _Section styles must hide the overflow. , this component will automatically hide the overflow._
 
 ## Examples
 
-### Indirectly Via `<Section>` __← Recommended__
+### Indirectly Via `<Section>` **← Recommended**
 
 Markup:
 
@@ -39,19 +39,19 @@ Styles:
   /* Panels */
   /* FAQ: The first two panels could take up entire height of large left column
           (which would push the remaining panels to the next column over) */
-  .content > *:nth-child(-n+2) {
+  .content > *:nth-child(-n + 2) {
     height: 50%; /* WARNING: You may need `calc()` to subtract vert. margin */
-    /* width: var(--column-width--large); *//* (optional, implicit) */
+    /* width: var(--column-width--large); */ /* (optional, implicit) */
   }
   /* FAQ: 3rd & later panels are in second column which is given small width */
-  .content > *:nth-child(n+3) {
-    /* height: auto; *//* (optional, implicit) */
+  .content > *:nth-child(n + 3) {
+    /* height: auto; */ /* (optional, implicit) */
     width: var(--column-width--small);
   }
 }
 ```
 
-> __Note__: The variables come from `SectionContent.layouts.module.css`.
+> **Note**: The variables come from `SectionContent.layouts.module.css`.
 
 ### Directly Via `<SectionComponent>`
 
@@ -68,8 +68,8 @@ Styles:
 @media only screen and (min-width: 992px) {
   /* To hide the expected overflow from `.panels` expanded width */
   .root /* or whatever selects the parent of the panel container */ {
-  /* .global(.some-global-section-name) { */
-  /* .global(#some-global-section-id) { */
+    /* .global(.some-global-section-name) { */
+    /* .global(#some-global-section-id) { */
     overflow-x: hidden;
   }
 

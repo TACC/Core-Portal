@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, wait, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import {
   ChangePasswordModal,
   EditOptionalInformationModal,
   EditRequiredInformationModal,
-  IntegrationModal
+  IntegrationModal,
 } from '../ManageAccountModals';
 
 const dummyState = {
@@ -16,7 +16,7 @@ const dummyState = {
   success: {
     optional: false,
     required: false,
-    password: false
+    password: false,
   },
   data: {
     demographics: {
@@ -39,53 +39,56 @@ const dummyState = {
       bio: '',
       website: '',
       orcid_id: '',
-      professional_level: ''
-    }
+      professional_level: '',
+    },
   },
   errors: {},
   fields: {},
   modals: {
     required: false,
     optional: false,
-    password: true
-  }
+    password: true,
+  },
 };
 
 const mockStore = configureStore({});
-const validCases = [['223-043-3406', 'w@utexas.edu'],[ '1-541-754-3010', 'w@yahoo.com',],
-  ['(541) 754-3010','w@gmail.com']];
+const validCases = [
+  ['223-043-3406', 'w@utexas.edu'],
+  ['1-541-754-3010', 'w@yahoo.com'],
+  ['(541) 754-3010', 'w@gmail.com'],
+];
 describe('various valid input phone numbers and email addresses', () => {
-    const testState = { ...dummyState, modals: { required: true } };
+  const testState = { ...dummyState, modals: { required: true } };
   test.each(validCases)(
-    "given number and and emails should be valid",
+    'given number and and emails should be valid',
     async (phoneNumber, email) => {
-    const stateWithFields = {
-      ...testState,
-      fields: {
-        countries: [[230, 'United States']],
-        institutions: [[1, 'University of Texas at Austin']],
-        ethnicities: [['Decline', 'Decline to Identify']],
-        genders: [['Other', 'Other']],
-        professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']],
-      }
-    };
-    const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = (phoneNumber);
-    stateWithFields['data']['demographics']['email'] = (email);
-    const {getByLabelText ,queryByText} = render(
-      <Provider store={storeWithFields}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-    const submitButton = getByLabelText(/required-submit/);
-    const clickSpy = jest.spyOn(submitButton, 'click');
-    fireEvent.click(submitButton);
-    await wait(() => {
-      expect(queryByText('Phone number is not valid')).toBeNull();
-      expect(queryByText('Please enter a valid email address')).toBeNull();
-      expect(clickSpy)
-    });
+      const stateWithFields = {
+        ...testState,
+        fields: {
+          countries: [[230, 'United States']],
+          institutions: [[1, 'University of Texas at Austin']],
+          ethnicities: [['Decline', 'Decline to Identify']],
+          genders: [['Other', 'Other']],
+          professionalLevels: [['Other', 'Other']],
+          titles: [['Other User', 'Other User']],
+        },
+      };
+      const storeWithFields = mockStore({ profile: stateWithFields });
+      stateWithFields['data']['demographics']['phone'] = phoneNumber;
+      stateWithFields['data']['demographics']['email'] = email;
+      const { getByLabelText, queryByText } = render(
+        <Provider store={storeWithFields}>
+          <EditRequiredInformationModal />
+        </Provider>
+      );
+      const submitButton = getByLabelText(/required-submit/);
+      const clickSpy = jest.spyOn(submitButton, 'click');
+      fireEvent.click(submitButton);
+      await waitFor(() => {
+        expect(queryByText('Phone number is not valid')).toBeNull();
+        expect(queryByText('Please enter a valid email address')).toBeNull();
+        expect(clickSpy);
+      });
     }
   );
 });
@@ -94,17 +97,12 @@ describe('Change Password', () => {
   test('Change Password Form', async () => {
     // Render Modal
     const testStore = mockStore({ profile: dummyState });
-    const {
-      getAllByText,
-      getByText,
-      getByLabelText,
-      getByTestId,
-      rerender
-    } = render(
-      <Provider store={testStore}>
-        <ChangePasswordModal />
-      </Provider>
-    );
+    const { getAllByText, getByText, getByLabelText, getByTestId, rerender } =
+      render(
+        <Provider store={testStore}>
+          <ChangePasswordModal />
+        </Provider>
+      );
     // Check for Modal Header to Be Visible
     expect(getAllByText(/Change Password/)).toBeDefined();
 
@@ -124,21 +122,21 @@ describe('Change Password', () => {
 
     fireEvent.change(current, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
     fireEvent.change(newPassword, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
     fireEvent.change(confirm, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(/Your new password must be different from your old password/)
       ).toBeDefined();
@@ -147,23 +145,23 @@ describe('Change Password', () => {
     // Submit
     fireEvent.change(current, {
       target: {
-        value: 'testpassword'
-      }
+        value: 'testpassword',
+      },
     });
     fireEvent.change(newPassword, {
       target: {
-        value: 'Newpassword1'
-      }
+        value: 'Newpassword1',
+      },
     });
     fireEvent.change(confirm, {
       target: {
-        value: 'Newpassword1'
-      }
+        value: 'Newpassword1',
+      },
     });
 
     // Dispatch
     fireEvent.submit(submit);
-    await wait(() => {
+    await waitFor(() => {
       expect(testStore.getActions()).toHaveLength(1);
     });
 
@@ -173,8 +171,8 @@ describe('Change Password', () => {
         store={mockStore({
           profile: {
             ...dummyState,
-            checkingPassword: true
-          }
+            checkingPassword: true,
+          },
         })}
       >
         <ChangePasswordModal />
@@ -187,9 +185,9 @@ describe('Change Password', () => {
       profile: {
         ...dummyState,
         success: {
-          password: true
-        }
-      }
+          password: true,
+        },
+      },
     });
     rerender(
       <Provider store={successStore}>
@@ -203,7 +201,7 @@ describe('Change Password', () => {
     // Close Modal
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = successStore.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
@@ -217,8 +215,8 @@ describe('Edit Optional Information', () => {
     const testState = {
       ...dummyState,
       modals: {
-        optional: true
-      }
+        optional: true,
+      },
     };
     const testStore = mockStore({ profile: testState });
     const utils = render(
@@ -244,8 +242,8 @@ describe('Edit Optional Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
     rerender(
@@ -255,7 +253,7 @@ describe('Edit Optional Information', () => {
     );
 
     // Check for labels
-    ['Website', 'Orcid ID', 'Professional Level', 'Bio'].forEach(label => {
+    ['Website', 'Orcid ID', 'Professional Level', 'Bio'].forEach((label) => {
       expect(getByText(label)).toBeDefined();
     });
 
@@ -263,7 +261,7 @@ describe('Edit Optional Information', () => {
       /edit-optional-information-submit-button/
     );
     fireEvent.click(submitButton);
-    await wait(() => {
+    await waitFor(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
     });
   });
@@ -277,16 +275,16 @@ describe('Edit Optional Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     rerender(
       <Provider
         store={mockStore({
           profile: {
             ...stateWithFields,
-            editing: true
-          }
+            editing: true,
+          },
         })}
       >
         <EditOptionalInformationModal />
@@ -305,11 +303,11 @@ describe('Edit Optional Information', () => {
           ethnicities: [['Decline', 'Decline to Identify']],
           genders: [['Other', 'Other']],
           professionalLevels: [['Other', 'Other']],
-          titles: [['Other User', 'Other User']]
+          titles: [['Other User', 'Other User']],
         },
         editing: false,
-        success: { optional: true }
-      }
+        success: { optional: true },
+      },
     });
     rerender(
       <Provider store={store}>
@@ -319,7 +317,7 @@ describe('Edit Optional Information', () => {
     expect(getByText(/Successfully Edited/)).toBeDefined();
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
@@ -332,7 +330,7 @@ describe('Edit Required Information', () => {
   let getByText, rerender, getByLabelText;
   beforeEach(() => {
     const testStore = mockStore({
-      profile: testState
+      profile: testState,
     });
     const utils = render(
       <Provider store={testStore}>
@@ -358,8 +356,8 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -378,8 +376,8 @@ describe('Edit Required Information', () => {
       'Position/Title',
       'Residence',
       'Ethnicity',
-      'Gender'
-    ].forEach(label => {
+      'Gender',
+    ].forEach((label) => {
       expect(getByText(label)).toBeDefined();
     });
 
@@ -395,11 +393,11 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = '123'
+    stateWithFields['data']['demographics']['phone'] = '123';
     stateWithFields['data']['demographics']['email'] = 'email';
 
     rerender(
@@ -411,13 +409,12 @@ describe('Edit Required Information', () => {
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
 
-    await wait(() => {
-      expect(getByText('Phone number is not valid')).toBeDefined();;
+    await waitFor(() => {
+      expect(getByText('Phone number is not valid')).toBeDefined();
       expect(getByText('Please enter a valid email address')).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
-  });  
-
+  });
 
   it('should render a loading spinner when the form data is being sent to the back-end', () => {
     const stateWithFields = {
@@ -429,8 +426,8 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -452,11 +449,11 @@ describe('Edit Required Information', () => {
           ethnicities: [['Decline', 'Decline to Identify']],
           genders: [['Other', 'Other']],
           professionalLevels: [['Other', 'Other']],
-          titles: [['Other User', 'Other User']]
+          titles: [['Other User', 'Other User']],
         },
         editing: false,
-        success: { required: true }
-      }
+        success: { required: true },
+      },
     });
     // Mock scrollIntoView (not a part of jsdom)
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
@@ -468,7 +465,7 @@ describe('Edit Required Information', () => {
     expect(getByText(/Successfully Edited/)).toBeDefined();
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
@@ -479,7 +476,12 @@ describe('Edit Required Information', () => {
 describe('connect google drive', () => {
   it('should render privacy policy and link', () => {
     const { getByText, getByRole } = render(
-      <IntegrationModal active={true} toggle={() => {}} connect={'/accounts/applications/googledrive/initialize/'} label={'Google Drive'}/>
+      <IntegrationModal
+        active={true}
+        toggle={() => {}}
+        connect={'/accounts/applications/googledrive/initialize/'}
+        label={'Google Drive'}
+      />
     );
     expect(getByText(/Google Drive Privacy Policy/)).toBeDefined();
     const expectedHref = `${window.location.href}accounts/applications/googledrive/initialize/`;

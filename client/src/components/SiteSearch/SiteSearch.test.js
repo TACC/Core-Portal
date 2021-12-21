@@ -14,24 +14,24 @@ const mockState = {
     loading: false,
     error: null,
     completed: true,
-    results: siteSearchResults
+    results: siteSearchResults,
   },
   authenticatedUser: { user: null },
   files: {
     modals: {
-      preview: false
+      preview: false,
     },
     modalProps: {
-      preview: {}
+      preview: {},
     },
-    preview: {}
-  }
+    preview: {},
+  },
 };
 
 describe('SiteSearchComponent', () => {
   it('dispatches action and redirects to filter', () => {
     const history = createMemoryHistory({
-      initialEntries: ['/search']
+      initialEntries: ['/search'],
     });
     history.push('/search/?page=1&query_string=test');
     const store = mockStore(mockState);
@@ -44,8 +44,8 @@ describe('SiteSearchComponent', () => {
     expect(store.getActions()).toEqual([
       {
         type: 'FETCH_SITE_SEARCH',
-        payload: { page: '1', query_string: 'test' }
-      }
+        payload: { page: '1', query_string: 'test' },
+      },
     ]);
 
     expect(history.location.pathname).toEqual('/search/cms/');

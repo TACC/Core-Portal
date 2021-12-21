@@ -10,7 +10,7 @@ import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 import {
   initialTicketList as ticketList,
   initialTicketCreateState as ticketCreate,
-  initialTicketCreateModalState as ticketCreateModal
+  initialTicketCreateModalState as ticketCreateModal,
 } from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
@@ -31,7 +31,7 @@ const state = {
   ticketList,
   systems,
   ticketCreate,
-  ticketCreateModal
+  ticketCreateModal,
 };
 
 describe('workbench', () => {
@@ -43,8 +43,8 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: false,
-        loading: false
-      }
+        loading: false,
+      },
     });
     const { getByText } = renderComponent(<Workbench />, store, history);
     expect(
@@ -60,8 +60,8 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: true,
-        loading: false
-      }
+        loading: false,
+      },
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
@@ -75,9 +75,9 @@ describe('workbench', () => {
         ...systems,
         storage: {
           ...systems.storage,
-          loading: true
-        }
-      }
+          loading: true,
+        },
+      },
     });
     const { getByTestId } = renderComponent(<Workbench />, store, history);
     expect(getByTestId(/loading-spinner/)).toBeDefined();

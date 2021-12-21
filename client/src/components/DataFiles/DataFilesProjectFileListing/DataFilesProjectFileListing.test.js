@@ -5,7 +5,7 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import {
   projectsFixture,
-  projectMetadataFixture
+  projectMetadataFixture,
 } from '../../../redux/sagas/fixtures/projects.fixture';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing';
 
@@ -17,7 +17,7 @@ beforeEach(() => {
   window.ResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
-    disconnect: jest.fn()
+    disconnect: jest.fn(),
   }));
 });
 
@@ -28,38 +28,37 @@ afterEach(() => {
 
 // Mock Resize Detector
 jest.mock('react-resize-detector', () => ({
-  useResizeDetector: () =>
-  {
+  useResizeDetector: () => {
     return {
       height: 10,
       ref: {
         current: {
-          scrollHeight: 50
-        }
-      }
+          scrollHeight: 50,
+        },
+      },
     };
-  }
+  },
 }));
 
 const mockStore = configureStore();
 const initialMockState = {
   projects: {
     ...projectsFixture,
-    metadata: projectMetadataFixture
+    metadata: projectMetadataFixture,
   },
   files: filesFixture,
   systems: systemsFixture,
   pushKeys: {
     modals: filesFixture.modals,
-    modalProps: filesFixture.modalProps
+    modalProps: filesFixture.modalProps,
   },
   authenticatedUser: {
     user: {
       email: 'user@username.com',
       first_name: 'Firstname',
       last_name: 'Lastname',
-      username: 'username'
-    }
+      username: 'username',
+    },
   },
 };
 
@@ -86,9 +85,9 @@ describe('DataFilesProjectFileListing', () => {
         ...initialMockState.projects,
         metadata: {
           ...initialMockState.projects.metadata,
-          members: [{ access: 'owner', user: null }]
-        }
-      }
+          members: [{ access: 'owner', user: null }],
+        },
+      },
     };
     const store = mockStore(initialMockStateUnknownUser);
     const { queryByText } = renderComponent(

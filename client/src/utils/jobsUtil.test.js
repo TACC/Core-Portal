@@ -3,7 +3,7 @@ import {
   getJobDisplayInformation,
   getOutputPathFromHref,
   isTerminalState,
-  isOutputState
+  isOutputState,
 } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';

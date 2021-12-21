@@ -1,120 +1,116 @@
 {
-    "cms": {
-        "count": 208,
-        "listing": [
-            {
-                "id": "cms.page.2388",
-                "django_ct": "cms.page",
-                "django_id": "2388",
-                "text": "Content 1",
-                "body": "Content 1",
-                "url": "https://lehigh.designsafe-ci.org/facility/test-beds",
-                "slug": "test-beds",
-                "page_id": null,
-                "title": "Test Beds",
-                "highlight": {
-                    "body": [
-                        "Lateral Load Resisting System Testbed\n\n\u00a0Perform experiments on <b>test</b> frame specimens:\n\n\n\tUp to 45 ft height"
-                    ],
-                    "title": [
-                        "<b>Test</b> Beds"
-                    ]
-                }
-            },
-            {
-                "body": "Content 2",
-                "django_id": "2156",
-                "title": "Test Page",
-                "url": "https://simcenter.designsafe-ci.org/about/test-page",
-                "text": "Content 2",
-                "slug": "test-page",
-                "django_ct": "cms.page",
-                "page_id": null,
-                "id": "cms.page.2156",
-                "highlight": {
-                    "title": [
-                        "<b>Test</b> Page"
-                    ]
-                }
-            }
-        ],
-        "type": "cms",
-        "include": true
-    },
-    "public": {
-        "count": 3,
-        "listing": [
-            {
-                "name": "Test data",
-                "path": "/Test data",
-                "lastModified": "2019-02-25T12:11:07-06:00",
-                "length": 4096,
-                "permissions": "ALL",
-                "format": "folder",
-                "system": "cep.storage.community",
-                "mimeType": "text/directory",
-                "type": "dir",
-                "_links": {
-                    "self": {
-                        "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//Test%20data"
-                    },
-                    "system": {
-                        "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
-                    }
-                },
-                "lastUpdated": "2020-12-10T18:57:42.316477",
-                "basePath": "/"
-            },
-            {
-                "name": "test.txt",
-                "path": "/test.txt",
-                "lastModified": "2018-12-20T14:27:44-06:00",
-                "length": 0,
-                "permissions": "READ_WRITE",
-                "format": "raw",
-                "system": "cep.storage.community",
-                "mimeType": "text/plain",
-                "type": "file",
-                "_links": {
-                    "self": {
-                        "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//test.txt"
-                    },
-                    "system": {
-                        "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
-                    }
-                },
-                "lastUpdated": "2020-12-10T18:57:42.316540",
-                "basePath": "/"
-            },
-            {
-                "name": "test space.txt",
-                "path": "/test space.txt",
-                "lastModified": "2019-01-30T16:08:53-06:00",
-                "length": 20,
-                "permissions": "READ_WRITE",
-                "format": "raw",
-                "system": "cep.storage.community",
-                "mimeType": "text/plain",
-                "type": "file",
-                "_links": {
-                    "self": {
-                        "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//test%20space.txt"
-                    },
-                    "system": {
-                        "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
-                    }
-                },
-                "lastUpdated": "2020-12-10T18:57:42.316514",
-                "basePath": "/"
-            }
-        ],
+  "cms": {
+    "count": 208,
+    "listing": [
+      {
+        "id": "cms.page.2388",
+        "django_ct": "cms.page",
+        "django_id": "2388",
+        "text": "Content 1",
+        "body": "Content 1",
+        "url": "https://lehigh.designsafe-ci.org/facility/test-beds",
+        "slug": "test-beds",
+        "page_id": null,
+        "title": "Test Beds",
+        "highlight": {
+          "body": [
+            "Lateral Load Resisting System Testbed\n\n\u00a0Perform experiments on <b>test</b> frame specimens:\n\n\n\tUp to 45 ft height"
+          ],
+          "title": ["<b>Test</b> Beds"]
+        }
+      },
+      {
+        "body": "Content 2",
+        "django_id": "2156",
+        "title": "Test Page",
+        "url": "https://simcenter.designsafe-ci.org/about/test-page",
+        "text": "Content 2",
+        "slug": "test-page",
+        "django_ct": "cms.page",
+        "page_id": null,
+        "id": "cms.page.2156",
+        "highlight": {
+          "title": ["<b>Test</b> Page"]
+        }
+      }
+    ],
+    "type": "cms",
+    "include": true
+  },
+  "public": {
+    "count": 3,
+    "listing": [
+      {
+        "name": "Test data",
+        "path": "/Test data",
+        "lastModified": "2019-02-25T12:11:07-06:00",
+        "length": 4096,
+        "permissions": "ALL",
+        "format": "folder",
+        "system": "cep.storage.community",
+        "mimeType": "text/directory",
+        "type": "dir",
+        "_links": {
+          "self": {
+            "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//Test%20data"
+          },
+          "system": {
+            "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
+          }
+        },
+        "lastUpdated": "2020-12-10T18:57:42.316477",
+        "basePath": "/"
+      },
+      {
+        "name": "test.txt",
+        "path": "/test.txt",
+        "lastModified": "2018-12-20T14:27:44-06:00",
+        "length": 0,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "cep.storage.community",
+        "mimeType": "text/plain",
         "type": "file",
-        "include": true
-    },
-    "community": {
-        "count": 0,
-        "listing": [],
+        "_links": {
+          "self": {
+            "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//test.txt"
+          },
+          "system": {
+            "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
+          }
+        },
+        "lastUpdated": "2020-12-10T18:57:42.316540",
+        "basePath": "/"
+      },
+      {
+        "name": "test space.txt",
+        "path": "/test space.txt",
+        "lastModified": "2019-01-30T16:08:53-06:00",
+        "length": 20,
+        "permissions": "READ_WRITE",
+        "format": "raw",
+        "system": "cep.storage.community",
+        "mimeType": "text/plain",
         "type": "file",
-        "include": true
-    }
+        "_links": {
+          "self": {
+            "href": "https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//test%20space.txt"
+          },
+          "system": {
+            "href": "https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.community"
+          }
+        },
+        "lastUpdated": "2020-12-10T18:57:42.316514",
+        "basePath": "/"
+      }
+    ],
+    "type": "file",
+    "include": true
+  },
+  "community": {
+    "count": 0,
+    "listing": [],
+    "type": "file",
+    "include": true
+  }
 }
