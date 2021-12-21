@@ -23,6 +23,8 @@ export const TICKETS =
   'This page allows you to submit a help request via an RT Ticket.';
 export const UI =
   'This hidden page allows developers to review UI components in isolation.';
+export const UNPROTECTED =
+  'Note: this area is not authorized for protected data (i.e. PHI files). Please do not place any confidential/protected data in this space.';
 
 /**
  * Error Messages

@@ -114,6 +114,9 @@ const DataFiles = () => {
   const loading = useSelector((state) => state.systems.storage.loading);
   const error = useSelector((state) => state.systems.storage.error);
   const systems = useSelector((state) => state.systems.storage.configuration);
+  const noPHISystem = useSelector(
+    (state) => state.workbench.config.noPHISystem
+  );
 
   const readOnly =
     listingParams.scheme === 'projects' &&
@@ -146,7 +149,9 @@ const DataFiles = () => {
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      introMessageName="DATA"
+      introMessageName={
+        listingParams.system === noPHISystem ? 'UNPROTECTED' : 'DATA'
+      }
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}
