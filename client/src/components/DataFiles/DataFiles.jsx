@@ -119,7 +119,6 @@ const DataFiles = () => {
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
-  let label = 'DATA';
 
   if (error) {
     return (
@@ -144,15 +143,11 @@ const DataFiles = () => {
       </div>
     );
   }
-
-  if (listingParams.system === noPHI) {
-    label = 'UNPROTECTED';
-  }
   
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      introMessageName={label}
+      introMessageName={listingParams.system === noPHI ? "UNPROTECTED" : "DATA"}
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}
