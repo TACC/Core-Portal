@@ -7,8 +7,8 @@ export const createNotificationsSocket = () =>
   new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
 
 export function socketEmitter(socket) {
-  return eventChannel(emit => {
-    socket.addEventListener('message', e => {
+  return eventChannel((emit) => {
+    socket.addEventListener('message', (e) => {
       emit(JSON.parse(e.data));
     });
     return () => socket.close();
@@ -26,15 +26,15 @@ export function* handleSocket(action) {
   switch (eventType) {
     case 'job': {
       // parse current jobs list for job event
-      const jobsList = yield select(state => state.jobs.list);
+      const jobsList = yield select((state) => state.jobs.list);
       // notification event contains job id and new status
       const event = action.extra;
-      const jobIds = jobsList.map(job => job.id);
+      const jobIds = jobsList.map((job) => job.id);
       if (jobIds.includes(event.id)) {
         // if event is in current state, update
         yield put({
           type: 'UPDATE_JOBS_FROM_NOTIFICATIONS',
-          payload: [action]
+          payload: [action],
         });
       } else {
         // otherwise, refresh job list
@@ -62,11 +62,11 @@ export function* fetchNotifications(action) {
   try {
     const res = yield call(fetchUtil, {
       url: `/api/notifications/${queryString ? `?${queryString}` : ''}`,
-      params
+      params,
     });
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_SUCCESS',
-      payload: res
+      payload: res,
     });
     if (onSuccess) {
       yield put(onSuccess);
@@ -75,7 +75,7 @@ export function* fetchNotifications(action) {
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -89,8 +89,8 @@ export function* readNotifications(action) {
       body: JSON.stringify({
         id: 'all',
         read: true,
-        ...body
-      })
+        ...body,
+      }),
     });
     if (onSuccess) {
       yield put(onSuccess);
@@ -98,7 +98,7 @@ export function* readNotifications(action) {
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -107,23 +107,23 @@ export function* deleteNotifications(action) {
   try {
     yield call(fetchUtil, {
       url: `/api/notifications/${action.payload}`,
-      method: 'DELETE'
+      method: 'DELETE',
     });
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
-      payload: error
+      payload: error,
     });
   }
   yield put({
-    type: 'FETCH_NOTIFICATIONS'
+    type: 'FETCH_NOTIFICATIONS',
   });
 }
 
 export function* discardToast(action) {
   yield put({
     type: 'DISCARD_TOAST',
-    payload: action.payload
+    payload: action.payload,
   });
 }
 

@@ -1,22 +1,22 @@
 const filesFixture = {
   loading: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   operationStatus: {
     rename: null,
     move: {},
     copy: {},
     upload: {},
-    trash: {}
+    trash: {},
   },
   loadingScroll: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   error: {
     FilesListing: false,
-    modal: []
+    modal: [],
   },
   listing: {
     FilesListing: [
@@ -32,10 +32,9 @@ const filesFixture = {
         type: 'dir',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app0.js'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app0.js',
+          },
+        },
       },
       {
         name: '.local',
@@ -49,10 +48,9 @@ const filesFixture = {
         type: 'dir',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app1.js'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app1.js',
+          },
+        },
       },
       {
         name: '.Trash',
@@ -66,10 +64,9 @@ const filesFixture = {
         type: 'dir',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app2.js'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app2.js',
+          },
+        },
       },
       {
         name: 'archive',
@@ -83,10 +80,9 @@ const filesFixture = {
         type: 'dir',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app3.js'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app3.js',
+          },
+        },
       },
       {
         name: '.agave.log',
@@ -100,14 +96,12 @@ const filesFixture = {
         type: 'file',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/archive/.agave.log'
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/archive/.agave.log',
           },
           system: {
-            href:
-              'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
+          },
+        },
       },
       {
         name: 'test.txt',
@@ -121,14 +115,12 @@ const filesFixture = {
         type: 'file',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/test.txt'
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/test.txt',
           },
           system: {
-            href:
-              'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
+          },
+        },
       },
       {
         name: 'pic.png',
@@ -142,41 +134,39 @@ const filesFixture = {
         type: 'file',
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/pic.png'
+            href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username/pic.png',
           },
           system: {
-            href:
-              'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
-          }
-        }
-      }
+            href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
+          },
+        },
+      },
     ],
-    modal: []
+    modal: [],
   },
   params: {
     FilesListing: {
       api: 'tapis',
       scheme: 'private',
       system: 'frontera.home.username',
-      path: ''
+      path: '',
     },
     modal: {
       api: '',
       scheme: '',
       system: '',
-      path: ''
-    }
+      path: '',
+    },
   },
   selected: {
-    FilesListing: []
+    FilesListing: [],
   },
   selectAll: {
-    FilesListing: false
+    FilesListing: false,
   },
   reachedEnd: {
     FilesListing: true,
-    modal: true
+    modal: true,
   },
   modals: {
     preview: false,
@@ -186,7 +176,7 @@ const filesFixture = {
     mkdir: false,
     rename: false,
     pushKeys: false,
-    trash: false
+    trash: false,
   },
   modalProps: {
     preview: {},
@@ -198,12 +188,12 @@ const filesFixture = {
     pushKeys: {},
     showpath: {},
     makePublic: {},
-    select: {}
+    select: {},
   },
   preview: {
     href: '',
-    content: ''
-  }
+    content: '',
+  },
 };
 
 export default filesFixture;

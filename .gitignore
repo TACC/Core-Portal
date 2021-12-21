@@ -47,10 +47,6 @@ client/build/
 # no client side build
 /portal/static/build/
 
-# no webpack compiled templates
-server/portal/apps/workbench/templates/portal/apps/workbench/index.html
-server/portal/apps/workbench/templates/portal/apps/workbench/index.html.gz
-
 # in case you leave that here
 datadump.json
 

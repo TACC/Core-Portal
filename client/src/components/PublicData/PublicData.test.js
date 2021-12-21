@@ -18,10 +18,10 @@ const systems = {
         system: 'cep.storage.public',
         scheme: 'public',
         api: 'tapis',
-        icon: null
-      }
-    ]
-  }
+        icon: null,
+      },
+    ],
+  },
 };
 
 describe('PublicData', () => {
@@ -33,11 +33,11 @@ describe('PublicData', () => {
       files: filesFixture,
       projects: {
         listing: {
-          projects: []
+          projects: [],
         },
         metadata: {
-          title: ''
-        }
+          title: '',
+        },
       },
       pushKeys: { target: {} },
     });

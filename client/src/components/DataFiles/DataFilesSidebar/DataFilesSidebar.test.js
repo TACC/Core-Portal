@@ -11,11 +11,11 @@ const mockStore = configureStore();
 const initialMockState = {
   files: {
     error: {
-      FilesListing: false
+      FilesListing: false,
     },
     params: {
-      FilesListing: {}
-    }
+      FilesListing: {},
+    },
   },
   systems: systemsFixture,
   authenticatedUser: {
@@ -23,9 +23,9 @@ const initialMockState = {
       username: 'username',
       first_name: 'User',
       last_name: 'Name',
-      email: 'user@username.com'
-    }
-  }
+      email: 'user@username.com',
+    },
+  },
 };
 
 describe('DataFilesSidebar', () => {
@@ -34,7 +34,7 @@ describe('DataFilesSidebar', () => {
     history.push('/workbench/data/');
 
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
     const { getByText } = renderComponent(
@@ -79,9 +79,10 @@ describe('DataFilesSidebar', () => {
       history
     );
 
-    expect(Array.from(container.querySelectorAll('.dropdown-item'))
-      .find(el =>
-        el.textContent.includes('Shared Workspace'))
-      ).toBeUndefined();
+    expect(
+      Array.from(container.querySelectorAll('.dropdown-item')).find((el) =>
+        el.textContent.includes('Shared Workspace')
+      )
+    ).toBeUndefined();
   });
 });

@@ -5,37 +5,37 @@ export const initialIntroMessages = {
   ALLOCATIONS: true,
   HISTORY: true,
   ACCOUNT: true,
-  TICKETS: true
+  TICKETS: true,
 };
 
 function introMessages(state = initialIntroMessages, action) {
   switch (action.type) {
     case 'INTRO_FETCH_STARTED':
       return {
-        ...state
+        ...state,
       };
     case 'INTRO_FETCH_SUCCESS':
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     case 'INTRO_FETCH_ERROR':
       return {
-        ...state
+        ...state,
       };
     case 'INTRO_SAVE_STARTED':
       return {
-        ...state
+        ...state,
       };
     case 'INTRO_SAVE_SUCCESS':
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     case 'INTRO_SAVE_ERROR':
       return {
         ...state,
-        ...action.paylod
+        ...action.paylod,
       };
     default:
       return state;

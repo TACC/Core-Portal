@@ -3,10 +3,18 @@ import { render } from '@testing-library/react';
 
 import SectionTableWrapper from './SectionTableWrapper';
 
-const TABLE_MARKUP = <table><tbody><tr><td>Table Cell</td></tr></tbody></table>;
+const TABLE_MARKUP = (
+  <table>
+    <tbody>
+      <tr>
+        <td>Table Cell</td>
+      </tr>
+    </tbody>
+  </table>
+);
 
 export const PARAMETER_CLASS_MAP = {
-  contentShouldScroll: 'should-scroll'
+  contentShouldScroll: 'should-scroll',
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 
@@ -14,9 +22,7 @@ describe('SectionTableWrapper', () => {
   describe('elements', () => {
     it('renders passed children and header', () => {
       const { getByRole } = render(
-        <SectionTableWrapper
-          header="Header"
-        >
+        <SectionTableWrapper header="Header">
           {TABLE_MARKUP}
         </SectionTableWrapper>
       );
@@ -46,25 +52,28 @@ describe('SectionTableWrapper', () => {
     });
     it('renders conditional class names', () => {
       const { container } = render(
-        <SectionTableWrapper>
-          {TABLE_MARKUP}
-        </SectionTableWrapper>
+        <SectionTableWrapper>{TABLE_MARKUP}</SectionTableWrapper>
       );
       expect(container.querySelector('[class*="has-wrap"]')).not.toEqual(null);
     });
   });
 
   describe('parameter class names', () => {
-    it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
-      const parameterObj = {[parameter]: true};
-      const { container } = render(
-        <SectionTableWrapper {...parameterObj}>
-          {TABLE_MARKUP}
-        </SectionTableWrapper>
-      );
-      const className = PARAMETER_CLASS_MAP[parameter];
+    it.each(PARAMETERS)(
+      'renders accurate class for boolean parameter "%s"',
+      (parameter) => {
+        const parameterObj = { [parameter]: true };
+        const { container } = render(
+          <SectionTableWrapper {...parameterObj}>
+            {TABLE_MARKUP}
+          </SectionTableWrapper>
+        );
+        const className = PARAMETER_CLASS_MAP[parameter];
 
-      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
-    });
+        expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(
+          null
+        );
+      }
+    );
   });
 });

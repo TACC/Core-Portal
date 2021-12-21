@@ -5,14 +5,14 @@ import { fetchUtil } from 'utils/fetchUtil';
 export async function fetchProjectsListing(queryString) {
   const q = queryStringParser.stringify({ query_string: queryString });
   const result = await fetchUtil({
-    url: queryString ? `/api/projects/?${q}` : `/api/projects/`
+    url: queryString ? `/api/projects/?${q}` : `/api/projects/`,
   });
   return result.response;
 }
 
 export function* getProjectsListing(action) {
   yield put({
-    type: 'PROJECTS_GET_LISTING_STARTED'
+    type: 'PROJECTS_GET_LISTING_STARTED',
   });
   try {
     const projects = yield call(
@@ -22,12 +22,12 @@ export function* getProjectsListing(action) {
 
     yield put({
       type: 'PROJECTS_GET_LISTING_SUCCESS',
-      payload: projects
+      payload: projects,
     });
   } catch (error) {
     yield put({
       type: 'PROJECTS_GET_LISTING_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -35,14 +35,14 @@ export function* getProjectsListing(action) {
 export function* showSharedWorkspaces(action) {
   // Clear FileListing params to reset breadcrumbs
   yield put({
-    type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
+    type: 'DATA_FILES_CLEAR_PROJECT_SELECTION',
   });
   // Load projects list
   yield put({
     type: 'PROJECTS_GET_LISTING',
     payload: {
-      queryString: action.payload.queryString
-    }
+      queryString: action.payload.queryString,
+    },
   });
 }
 
@@ -51,53 +51,53 @@ export async function fetchCreateProject(project) {
     url: `/api/projects/`,
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(project)
+    body: JSON.stringify(project),
   });
   return result.response;
 }
 
 export function* createProject(action) {
   yield put({
-    type: 'PROJECTS_CREATE_STARTED'
+    type: 'PROJECTS_CREATE_STARTED',
   });
   try {
     const project = yield call(fetchCreateProject, action.payload);
     yield put({
       type: 'PROJECTS_CREATE_SUCCESS',
-      payload: project
+      payload: project,
     });
     action.payload.onCreate(project.id);
   } catch (error) {
     yield put({
       type: 'PROJECTS_CREATE_FAILED',
-      payload: error
+      payload: error,
     });
   }
 }
 
 export async function fetchMetadata(system) {
   const result = await fetchUtil({
-    url: `/api/projects/system/${system}/`
+    url: `/api/projects/system/${system}/`,
   });
   return result.response;
 }
 
 export function* getMetadata(action) {
   yield put({
-    type: 'PROJECTS_GET_METADATA_STARTED'
+    type: 'PROJECTS_GET_METADATA_STARTED',
   });
   try {
     const metadata = yield call(fetchMetadata, action.payload);
     yield put({
       type: 'PROJECTS_GET_METADATA_SUCCESS',
-      payload: metadata
+      payload: metadata,
     });
   } catch (error) {
     yield put({
       type: 'PROJECTS_GET_METADATA_FAILED',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -107,34 +107,34 @@ export async function setMemberUtil(projectId, data) {
     url: `/api/projects/${projectId}/members/`,
     method: 'PATCH',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return result.response;
 }
 
 export function* setMember(action) {
   yield put({
-    type: 'PROJECTS_SET_MEMBER_STARTED'
+    type: 'PROJECTS_SET_MEMBER_STARTED',
   });
   try {
     const { projectId, data } = action.payload;
     const metadata = yield call(setMemberUtil, projectId, data);
     yield put({
       type: 'PROJECTS_SET_MEMBER_SUCCESS',
-      payload: metadata
+      payload: metadata,
     });
     yield put({
       type: 'PROJECTS_GET_LISTING',
       payload: {
-        queryString: null
-      }
+        queryString: null,
+      },
     });
   } catch (error) {
     yield put({
       type: 'PROJECTS_SET_MEMBER_FAILED',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -144,38 +144,38 @@ export async function setTitleDescriptionUtil(projectId, data) {
     url: `/api/projects/${projectId}/`,
     method: 'PATCH',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return result.response;
 }
 
 export function* setTitleDescription(action) {
   yield put({
-    type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED'
+    type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED',
   });
   try {
     const { projectId, data } = action.payload;
     const metadata = yield call(setTitleDescriptionUtil, projectId, data);
     yield put({
       type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
-      payload: metadata
+      payload: metadata,
     });
     yield put({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'editproject', props: {} }
+      payload: { operation: 'editproject', props: {} },
     });
     yield put({
       type: 'PROJECTS_GET_LISTING',
       payload: {
-        queryString: null
-      }
+        queryString: null,
+      },
     });
   } catch (error) {
     yield put({
       type: 'PROJECTS_SET_TITLE_DESCRIPTION_FAILED',
-      payload: error
+      payload: error,
     });
   }
 }

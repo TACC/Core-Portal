@@ -16,7 +16,7 @@ describe('Allocations Routes', () => {
       <MemoryRouter initialEntries={[`${PATH}/fake`]}>
         <Provider
           store={mockStore({
-            allocations: { loading: true }
+            allocations: { loading: true },
           })}
         >
           <AllocationsRoutes />
