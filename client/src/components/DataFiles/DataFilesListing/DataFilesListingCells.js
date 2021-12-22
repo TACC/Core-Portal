@@ -35,11 +35,11 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index, trashInProgress }) => {
+export const CheckboxCell = React.memo(({ index, disabled }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return trashInProgress ? (
+  return disabled ? (
     <LoadingSpinner placement="inline" />
   ) : (
     <Checkbox isChecked={selected} />
@@ -47,22 +47,11 @@ export const CheckboxCell = React.memo(({ index, trashInProgress }) => {
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,
-  trashInProgress: PropTypes.bool.isRequired
+  disabled: PropTypes.bool.isRequired
 };
 
 export const FileNavCell = React.memo(
-  ({
-    system,
-    path,
-    name,
-    format,
-    api,
-    scheme,
-    href,
-    isPublic,
-    length,
-    trashInProgress
-  }) => {
+  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
@@ -84,22 +73,18 @@ export const FileNavCell = React.memo(
 
     return (
       <>
-        {trashInProgress ? (
-          <div styleName="disabled">{name}</div>
-        ) : (
-          <span className="data-files-name">
-            <Link
-              className="data-files-nav-link"
-              to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
-                /\/{2,}/g, // Replace duplicate slashes with single slash
-                '/'
-              )}
-              onClick={format !== 'folder' ? previewCallback : null}
-            >
-              {name}
-            </Link>
-          </span>
-        )}
+        <span className="data-files-name">
+          <Link
+            className="data-files-nav-link"
+            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
+              /\/{2,}/g, // Replace duplicate slashes with single slash
+              '/'
+            )}
+            onClick={format !== 'folder' ? previewCallback : null}
+          >
+            {name}
+          </Link>
+        </span>
       </>
     );
   }
@@ -113,42 +98,31 @@ FileNavCell.propTypes = {
   scheme: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
-  length: PropTypes.number.isRequired,
-  trashInProgress: PropTypes.bool.isRequired
+  length: PropTypes.number.isRequired
 };
 FileNavCell.defaultProps = {
   isPublic: false
 };
 
 export const FileLengthCell = ({ cell }) => {
-  const bytes = cell.value[0];
-  const trashInProgress = cell.value[1];
+  const bytes = cell.value;
 
-  return trashInProgress ? (
-    <div styleName="disabled">{formatSize(bytes)}</div>
-  ) : (
-    <span>{formatSize(bytes)}</span>
-  );
+  return <span>{formatSize(bytes)}</span>;
 };
 FileLengthCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.number }).isRequired
 };
 
 export const LastModifiedCell = ({ cell }) => {
-  const timeValue = cell.value[0];
-  const trashInProgress = cell.value[1];
+  const timeValue = cell.value;
 
-  return trashInProgress ? (
-    <div styleName="disabled">{formatDateTimeFromValue(timeValue)}</div>
-  ) : (
-    <span>{formatDateTimeFromValue(timeValue)}</span>
-  );
+  return <span>{formatDateTimeFromValue(timeValue)}</span>;
 };
 LastModifiedCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.string }).isRequired
 };
 
-export const FileIcon = ({ format, path, trashInProgress }) => {
+export const FileIcon = ({ format, path }) => {
   const isFolder = format === 'folder';
   const isTrash = path === '/.Trash';
   let iconName = 'file';
@@ -161,32 +135,30 @@ export const FileIcon = ({ format, path, trashInProgress }) => {
       iconLabel = 'Trash';
     }
   }
-  return (
-    <Icon name={iconName} styleName={trashInProgress ? 'disabled' : ''}>
-      {iconLabel}
-    </Icon>
-  );
+  return <Icon name={iconName}>{iconLabel}</Icon>;
 };
 FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
-  trashInProgress: PropTypes.bool.isRequired
+  path: PropTypes.string.isRequired
 };
 
 export const FileIconCell = ({ cell }) => {
   return (
-    <FileIcon
-      format={cell.value[0]}
-      path={cell.value[1]}
-      trashInProgress={cell.value[2]}
-    />
+    <FileIcon format={cell.row.original.format} path={cell.row.original.path} />
   );
 };
 FileIconCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
+  cell: PropTypes.shape({
+    row: PropTypes.shape({
+      original: PropTypes.shape({
+        format: PropTypes.string,
+        path: PropTypes.string
+      })
+    })
+  }).isRequired
 };
 
-export const ViewPathCell = ({ file, trashInProgress }) => {
+export const ViewPathCell = ({ file }) => {
   const dispatch = useDispatch();
   const onClick = e => {
     e.stopPropagation();
@@ -197,18 +169,12 @@ export const ViewPathCell = ({ file, trashInProgress }) => {
     });
   };
   return (
-    <Button
-      className="btn btn-sm"
-      color="link"
-      onClick={onClick}
-      disabled={trashInProgress}
-    >
+    <Button className="btn btn-sm" color="link" onClick={onClick}>
       View Path
     </Button>
   );
 };
 
 ViewPathCell.propTypes = {
-  file: PropTypes.shape({}).isRequired,
-  trashInProgress: PropTypes.bool.isRequired
+  file: PropTypes.shape({}).isRequired
 };

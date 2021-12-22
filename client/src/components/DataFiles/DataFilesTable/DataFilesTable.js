@@ -222,7 +222,7 @@ const DataFilesTableRow = ({
       <div
         style={style}
         className={`tr ${isShaded && 'tr-background-shading'} ${selected &&
-          'tr-selected'}`}
+          'tr-selected'} ${row.original.disabled && 'tr-disabled'}`}
         role="row"
         tabIndex={-1}
         index={row.index}
@@ -255,7 +255,10 @@ DataFilesTableRow.propTypes = {
   rowCount: PropTypes.number.isRequired,
   row: PropTypes.shape({
     index: PropTypes.number,
-    cells: PropTypes.arrayOf(PropTypes.shape({}))
+    cells: PropTypes.arrayOf(PropTypes.shape({})),
+    original: PropTypes.shape({
+      disabled: PropTypes.bool
+    })
   }),
   section: PropTypes.string.isRequired,
   rowSelectCallback: PropTypes.func.isRequired,

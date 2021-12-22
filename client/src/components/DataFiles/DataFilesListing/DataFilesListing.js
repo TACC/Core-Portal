@@ -21,7 +21,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const { query_string: queryString, filter } = parse(useLocation().search);
   const { files, loading, error } = useSelector(
     state => ({
-      files: state.files.listing.FilesListing,
+      files: state.files.listing.FilesListing.map(file => ({
+        ...file,
+        disabled:
+          state.files.operationStatus.trash[file.system + file.path] ===
+          'RUNNING'
+      })),
       loading: state.files.loading.FilesListing,
       error: state.files.error.FilesListing
     }),
@@ -34,9 +39,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
   const isPortalProject = scheme === 'projects';
   const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
-  const trashOperationStatusTable = useSelector(
-    state => state.files.operationStatus.trash
-  );
 
   const showViewPath = useSelector(
     state =>
@@ -67,23 +69,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     });
   }, []);
 
-  const checkboxCellCallback = useCallback(
-    ({ row }) => {
-      const trashInProgress =
-        trashOperationStatusTable[row.original.system + row.original.path] ===
-        'RUNNING';
-      return (
-        <CheckboxCell index={row.index} trashInProgress={trashInProgress} />
-      );
-    },
-    [trashOperationStatusTable]
-  );
+  const checkboxCellCallback = useCallback(({ row }) => {
+    return <CheckboxCell index={row.index} disabled={row.original.disabled} />;
+  }, []);
 
   const fileNavCellCallback = useCallback(
     ({ row }) => {
-      const trashInProgress =
-        trashOperationStatusTable[row.original.system + row.original.path] ===
-        'RUNNING';
       return (
         <FileNavCell
           system={row.original.system}
@@ -95,11 +86,10 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           href={row.original._links.self.href}
           isPublic={isPublic}
           length={row.original.length}
-          trashInProgress={trashInProgress}
         />
       );
     },
-    [api, scheme, trashOperationStatusTable]
+    [api, scheme]
   );
 
   const columns = useMemo(() => {
@@ -114,11 +104,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       },
       {
         id: 'icon',
-        accessor: row => [
-          row.format,
-          row.path,
-          trashOperationStatusTable[row.system + row.path] === 'RUNNING'
-        ],
+        accessor: row => row,
         width: 0.05,
         minWidth: 20,
         maxWidth: 25,
@@ -132,19 +118,13 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       },
       {
         Header: 'Size',
-        accessor: row => [
-          row.length,
-          trashOperationStatusTable[row.system + row.path] === 'RUNNING'
-        ],
+        accessor: 'length',
         Cell: FileLengthCell,
         width: 0.2
       },
       {
         Header: 'Last Modified',
-        accessor: row => [
-          row.lastModified,
-          trashOperationStatusTable[row.system + row.path] === 'RUNNING'
-        ],
+        accessor: 'lastModified',
         Cell: LastModifiedCell,
         width: 0.2
       }
@@ -157,21 +137,11 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       cells.push({
         Header: 'Path',
         width: 0.1,
-        Cell: el => (
-          <ViewPathCell
-            file={el.row.original}
-            api={api}
-            trashInProgress={
-              trashOperationStatusTable[
-                el.row.original.system + el.row.original.path
-              ] === 'RUNNING'
-            }
-          />
-        )
+        Cell: el => <ViewPathCell file={el.row.original} api={api} />
       });
     }
     return cells;
-  }, [api, showViewPath, fileNavCellCallback, trashOperationStatusTable]);
+  }, [api, showViewPath, fileNavCellCallback]);
 
   return (
     <>
