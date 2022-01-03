@@ -176,7 +176,7 @@ DataFilesSearchbar.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   resultCount: PropTypes.number,
-  /** Additional `className` (or transpiled `styleName`) for the root element */
+  /** Additional className(s) for the root element */
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
   disabled: PropTypes.bool,
