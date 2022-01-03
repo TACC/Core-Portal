@@ -25,7 +25,7 @@ function AppRouter() {
     if (authenticatedUser) {
       dispatch({ type: 'FETCH_INTRO' });
     }
-  }, [authenticatedUser])
+  }, [authenticatedUser]);
   return (
     <Router>
       <Route path="/search/:filter?" component={SiteSearch} />
