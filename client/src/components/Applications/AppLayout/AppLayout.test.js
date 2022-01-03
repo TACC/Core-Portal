@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
-import configureStore from "redux-mock-store";
-import AppsRoutes,{AppsLayout} from "./AppLayout";
+import configureStore from 'redux-mock-store';
+import AppsRoutes, { AppsLayout } from './AppLayout';
 import { MemoryRouter, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
@@ -19,8 +19,8 @@ function renderAppsRoutes(store, appId) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[`/applications/${appId}`]}>
-        <Route path='/:appId?'>
-          <AppsRoutes/>
+        <Route path="/:appId?">
+          <AppsRoutes />
         </Route>
       </MemoryRouter>
     </Provider>
@@ -29,16 +29,16 @@ function renderAppsRoutes(store, appId) {
 describe('AppsLayout', () => {
   it('should show a loading spinner while fetching data', () => {
     const store = mockStore({
-      apps: {...appTrayExpectedFixture, loading: true, categoryDict: {}}
+      apps: { ...appTrayExpectedFixture, loading: true, categoryDict: {} },
     });
-    const { getByText,getByTestId} = renderComponent(<AppsLayout/>, store);
+    const { getByText, getByTestId } = renderComponent(<AppsLayout />, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {
     const store = mockStore({
-      apps: {...appTrayExpectedFixture, error: {isError:true}}
+      apps: { ...appTrayExpectedFixture, error: { isError: true } },
     });
-    const { getByText} = renderComponent(<AppsLayout/>, store);
+    const { getByText } = renderComponent(<AppsLayout />, store);
     expect(getByText('Something went wrong.')).toBeDefined();
   });
 });
@@ -53,16 +53,16 @@ describe('AppsHeader', () => {
       allocations: allocationsFixture,
       app: {
         error: {
-          isError: false
+          isError: false,
         },
         ...namdAppFixture,
       },
       pushKeys: {
         modals: filesFixture.modals,
-        modalProps: filesFixture.modalProps
-      }
+        modalProps: filesFixture.modalProps,
+      },
     });
-    let {getByText} = renderAppsRoutes(store, 'arraytest-0.1');
+    let { getByText } = renderAppsRoutes(store, 'arraytest-0.1');
     expect(getByText(/Applications \/ Array Test/)).toBeDefined();
   });
 });

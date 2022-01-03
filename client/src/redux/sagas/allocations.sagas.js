@@ -19,7 +19,7 @@ export function* getAllocations() {
     yield put({ type: 'ADD_ALLOCATIONS', payload: json });
     yield put({
       type: 'POPULATE_TEAMS',
-      payload: populateTeamsUtil(json)
+      payload: populateTeamsUtil(json),
     });
   } catch (error) {
     yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
@@ -32,7 +32,7 @@ export function* getAllocations() {
  */
 export const getAllocationsUtil = async () => {
   const res = await fetchUtil({
-    url: '/api/users/allocations/'
+    url: '/api/users/allocations/',
   });
   const json = res.response;
   return json;
@@ -42,7 +42,7 @@ export const getAllocationsUtil = async () => {
  * Fetch user data for a project
  * @param {String} projectId - project id
  */
-export const getTeamsUtil = async projectId => {
+export const getTeamsUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
@@ -55,7 +55,7 @@ export const getTeamsUtil = async projectId => {
  * Allocations data
  * @returns {{teams: Object, loadingTeams: {}}}
  */
-export const populateTeamsUtil = data => {
+export const populateTeamsUtil = (data) => {
   const teams = data.active
     .concat(data.inactive)
     .reduce((obj, item) => ({ ...obj, [item.projectId]: {} }), {});
@@ -66,9 +66,9 @@ export const populateTeamsUtil = data => {
   return { teams, loadingTeams };
 };
 
-export const allocationsSelector = state => [
+export const allocationsSelector = (state) => [
   ...state.allocations.active,
-  ...state.allocations.inactive
+  ...state.allocations.inactive,
 ];
 
 export function* getUsernames(action) {
@@ -79,10 +79,10 @@ export function* getUsernames(action) {
       .filter({ projectId: action.payload.projectId })
       .map('systems')
       .flatten()
-      .map(s => ({ host: s.host, id: s.allocation.id }))
+      .map((s) => ({ host: s.host, id: s.allocation.id }))
       .value();
     const usage = yield all(
-      allocationIds.map(params => call(getUsageUtil, params))
+      allocationIds.map((params) => call(getUsageUtil, params))
     );
     const payload = teamPayloadUtil(
       action.payload.projectId,
@@ -93,12 +93,12 @@ export function* getUsernames(action) {
     );
     yield put({
       type: 'ADD_USERNAMES_TO_TEAM',
-      payload
+      payload,
     });
   } catch (error) {
     yield put({
       type: 'POPULATE_TEAMS_ERROR',
-      payload: teamPayloadUtil(action.payload.projectId, error, true)
+      payload: teamPayloadUtil(action.payload.projectId, error, true),
     });
   }
 }
@@ -110,15 +110,15 @@ export function* getUsernames(action) {
  * @param {{id: Number, host: String}} params
  * @returns {{user: Object, resource: String, allocationId: Number}[]} data
  */
-export const getUsageUtil = async params => {
+export const getUsageUtil = async (params) => {
   const res = await fetchUtil({
-    url: `/api/users/team/usage/${params.id}`
+    url: `/api/users/team/usage/${params.id}`,
   });
   const data = res.response
-    .map(user => ({
+    .map((user) => ({
       ...user,
       resource: params.host,
-      allocationId: params.id
+      allocationId: params.id,
     }))
     .filter(Boolean);
   return data;
@@ -147,7 +147,7 @@ export const teamPayloadUtil = (
   if (error) {
     return {
       errors: { [id]: obj },
-      loading
+      loading,
     };
   }
 
@@ -155,10 +155,10 @@ export const teamPayloadUtil = (
   const data = {
     [id]: obj
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
-      .map(user => {
+      .map((user) => {
         const { username } = user;
         const individualUsage = usageData.filter(
-          val => val.username === username
+          (val) => val.username === username
         );
         const currentSystems = chain(allocations)
           .filter({ projectId: id })
@@ -167,7 +167,7 @@ export const teamPayloadUtil = (
           .value();
         const userData = {
           ...user,
-          usageData: currentSystems.map(system => {
+          usageData: currentSystems.map((system) => {
             // Create empty entry for each resource
             return {
               type: system.type,
@@ -175,16 +175,16 @@ export const teamPayloadUtil = (
               resource: system.host,
               percentUsed: 0,
               status: system.allocation.status,
-              allocationId: system.allocation.id
+              allocationId: system.allocation.id,
             };
-          })
+          }),
         };
         if (isEmpty(individualUsage)) return userData;
         return {
           ...userData,
-          usageData: userData.usageData.map(entry => {
+          usageData: userData.usageData.map((entry) => {
             const current = individualUsage.filter(
-              d =>
+              (d) =>
                 d.resource === entry.resource &&
                 d.allocationId === entry.allocationId
             );
@@ -197,7 +197,7 @@ export const teamPayloadUtil = (
                 .map('allocation')
                 .filter({ projectId: id })
                 .filter({ id: entry.allocationId })
-                .filter(o => o.status === entry.status)
+                .filter((o) => o.status === entry.status)
                 .reduce(
                   (sum, { computeAllocated }) => sum + computeAllocated,
                   0
@@ -214,13 +214,13 @@ export const teamPayloadUtil = (
                 status: entry.status,
                 resource: entry.resource,
                 allocationId: entry.allocationId,
-                percentUsed: (totalUsed / totalAllocated) * 100
+                percentUsed: (totalUsed / totalAllocated) * 100,
               };
             }
             return entry;
-          })
+          }),
         };
-      })
+      }),
   };
   return { data, loading };
 };

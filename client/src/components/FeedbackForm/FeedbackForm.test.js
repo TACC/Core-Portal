@@ -13,7 +13,7 @@ describe('FeedbackForm', () => {
   it('renders form', () => {
     const store = mockStore({
       ticketCreate,
-      workbench
+      workbench,
     });
 
     const { getByText } = renderComponent(<FeedbackForm />, store);
@@ -25,9 +25,9 @@ describe('FeedbackForm', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate,
-        creating: true
+        creating: true,
       },
-      workbench
+      workbench,
     });
 
     const { getByTestId } = renderComponent(<FeedbackForm />, store);

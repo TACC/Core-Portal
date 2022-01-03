@@ -1,42 +1,42 @@
-import React from "react";
-import { render, fireEvent } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { AllocationsRequestModal, AllocationsTeamViewModal } from './index'
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
+import { AllocationsRequestModal, AllocationsTeamViewModal } from './index';
 
 const mockStore = configureStore();
 
-describe("New Allocations Request Modal", () => {
-  test("Allocations Request UI", () => {
+describe('New Allocations Request Modal', () => {
+  test('Allocations Request UI', () => {
     const { getByText, getAllByText } = render(
       <BrowserRouter>
         <AllocationsRequestModal isOpen toggle={() => null} />
       </BrowserRouter>
     );
-    const xrasLink = 'https://tacc-submit.xras.xsede.org/'
+    const xrasLink = 'https://tacc-submit.xras.xsede.org/';
     expect(getByText(/Manage Allocations/)).toBeDefined();
     expect(getAllByText(/You can manage your allocation/)).toBeDefined();
-    expect(getAllByText(/You can manage your allocation/)).toHaveLength(2)
+    expect(getAllByText(/You can manage your allocation/)).toHaveLength(2);
     expect(getByText(xrasLink)).toBeDefined();
     expect(getByText(xrasLink).href).toBe(xrasLink);
   });
 });
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useLocation: () => ({
-    pathname: "/allocations/approved"
-  })
+    pathname: '/allocations/approved',
+  }),
 }));
-describe("View Team Modal", () => {
+describe('View Team Modal', () => {
   const testProps = {
     isOpen: true,
     toggle: () => null,
     projectId: 1234,
   };
 
-  test("View Team Modal Loading", () => {
+  test('View Team Modal Loading', () => {
     const testStore = mockStore({
       allocations: {
         teams: {
@@ -59,48 +59,48 @@ describe("View Team Modal", () => {
     expect(getByText(/Loading user list./)).toBeDefined();
   });
 
-  test("View Team Modal Listing", () => {
+  test('View Team Modal Listing', () => {
     const testStore = mockStore({
       allocations: {
         teams: {
-          "1234": [
+          1234: [
             {
-              id: "123456",
-              username: "testuser1",
-              role: "Standard",
-              firstName: "Test",
-              lastName: "User1",
-              email: "user1@gmail.com",
+              id: '123456',
+              username: 'testuser1',
+              role: 'Standard',
+              firstName: 'Test',
+              lastName: 'User1',
+              email: 'user1@gmail.com',
               usageData: [],
             },
             {
-              id: "012345",
-              username: "testuser2",
-              role: "Standard",
-              firstName: "Test",
-              lastName: "User2",
-              email: "user2@gmail.com",
+              id: '012345',
+              username: 'testuser2',
+              role: 'Standard',
+              firstName: 'Test',
+              lastName: 'User2',
+              email: 'user2@gmail.com',
               usageData: [
                 {
                   usage: '0.5 SU',
-                  resource: "stampede2.tacc.utexas.edu",
+                  resource: 'stampede2.tacc.utexas.edu',
                   allocationId: 1,
                   percentUsed: 0.005,
-                  status: 'Active'
+                  status: 'Active',
                 },
                 {
                   usage: '10 SU',
-                  resource: "frontera.tacc.utexas.edu",
+                  resource: 'frontera.tacc.utexas.edu',
                   allocationId: 2,
                   percentUsed: 10,
-                  status: 'Active'
+                  status: 'Active',
                 },
               ],
             },
           ],
         },
         loadingUsernames: {
-          "1234": {
+          1234: {
             loading: false,
           },
         },
@@ -132,7 +132,7 @@ describe("View Team Modal", () => {
     expect(getByText(/Stampede 2/)).toBeDefined();
   });
 
-  test("View Team Modal Errors", () => {
+  test('View Team Modal Errors', () => {
     const testStore = mockStore({
       allocations: {
         teams: {
@@ -144,7 +144,7 @@ describe("View Team Modal", () => {
           },
         },
         errors: {
-          teams: { 1234: new Error('Unable to fetch') }
+          teams: { 1234: new Error('Unable to fetch') },
         },
       },
     });

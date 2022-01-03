@@ -1,6 +1,5 @@
 import { getOperationText } from './DataFilesStatus';
 
-
 describe('getOperationText', () => {
   it('converts operations to proper UI strings', () => {
     expect(getOperationText('mkdir')).toEqual('added');

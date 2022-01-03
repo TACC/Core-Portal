@@ -6,13 +6,13 @@ h2,
 h4,
 h5,
 h6 {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 h2 {
-    font-size: 1.125rem; /* 18px (16px design * 1.2 design-to-app ratio) */
+  font-size: 1.125rem; /* 18px (16px design * 1.2 design-to-app ratio) */
 }
 h3 {
-    font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
-    font-weight: bold;
+  font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
+  font-weight: bold;
 }

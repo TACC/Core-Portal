@@ -8,34 +8,34 @@ import {
   setMember,
   setMemberUtil,
   setTitleDescription,
-  setTitleDescriptionUtil
+  setTitleDescriptionUtil,
 } from './projects.sagas';
 import projectsReducer, { initialState } from '../reducers/projects.reducers';
 import {
   projectsFixture,
   projectMetadataFixture,
   projectMetadataResponse,
-  projectsListingFixture
+  projectsListingFixture,
 } from './fixtures/projects.fixture';
 
 jest.mock('cross-fetch');
 
 describe('Projects Sagas', () => {
   it('should get a listing of projects', () => {
-    return expectSaga(getProjectsListing, {payload: {queryString: null}})
+    return expectSaga(getProjectsListing, { payload: { queryString: null } })
       .withReducer(projectsReducer)
       .provide([
-        [matchers.call.fn(fetchProjectsListing), projectsListingFixture]
+        [matchers.call.fn(fetchProjectsListing), projectsListingFixture],
       ])
       .put({ type: 'PROJECTS_GET_LISTING_STARTED' })
       .call(fetchProjectsListing, null)
       .put({
         type: 'PROJECTS_GET_LISTING_SUCCESS',
-        payload: projectsListingFixture
+        payload: projectsListingFixture,
       })
       .hasFinalState({
         ...initialState,
-        ...projectsFixture
+        ...projectsFixture,
       })
       .run();
   });
@@ -47,11 +47,11 @@ describe('Projects Sagas', () => {
       .call(fetchMetadata, 'system')
       .put({
         type: 'PROJECTS_GET_METADATA_SUCCESS',
-        payload: projectMetadataResponse
+        payload: projectMetadataResponse,
       })
       .hasFinalState({
         ...initialState,
-        metadata: projectMetadataFixture
+        metadata: projectMetadataFixture,
       })
       .run();
   });
@@ -62,9 +62,9 @@ describe('Projects Sagas', () => {
         projectId: 'PRJ-123',
         data: {
           action: 'add_member',
-          username: 'username'
-        }
-      }
+          username: 'username',
+        },
+      },
     };
     return expectSaga(setMember, action)
       .withReducer(projectsReducer)
@@ -72,11 +72,11 @@ describe('Projects Sagas', () => {
       .put({ type: 'PROJECTS_SET_MEMBER_STARTED' })
       .call(setMemberUtil, 'PRJ-123', {
         action: 'add_member',
-        username: 'username'
+        username: 'username',
       })
       .put({
         type: 'PROJECTS_SET_MEMBER_SUCCESS',
-        payload: projectMetadataResponse
+        payload: projectMetadataResponse,
       })
       .hasFinalState({
         ...initialState,
@@ -85,8 +85,8 @@ describe('Projects Sagas', () => {
           name: 'member',
           loading: false,
           error: null,
-          result: projectMetadataResponse
-        }
+          result: projectMetadataResponse,
+        },
       })
       .run();
   });
@@ -97,42 +97,42 @@ describe('Projects Sagas', () => {
         projectId: 'PRJ-123',
         data: {
           title: 'new title',
-          description: 'new description'
-        }
-      }
+          description: 'new description',
+        },
+      },
     };
     const updatedProjectMetadataResponse = {
       ...projectMetadataResponse,
       title: action.payload.data.title,
-      description: action.payload.data.description
+      description: action.payload.data.description,
     };
     return expectSaga(setTitleDescription, action)
       .withReducer(projectsReducer)
       .provide([
         [
           matchers.call.fn(setTitleDescriptionUtil),
-          updatedProjectMetadataResponse
-        ]
+          updatedProjectMetadataResponse,
+        ],
       ])
       .put({ type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED' })
       .call(setTitleDescriptionUtil, 'PRJ-123', action.payload.data)
       .put({
         type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
-        payload: updatedProjectMetadataResponse
+        payload: updatedProjectMetadataResponse,
       })
       .hasFinalState({
         ...initialState,
         metadata: {
           ...projectMetadataFixture,
           title: 'new title',
-          description: 'new description'
+          description: 'new description',
         },
         operation: {
           name: 'titleDescription',
           loading: false,
           error: null,
-          result: updatedProjectMetadataResponse
-        }
+          result: updatedProjectMetadataResponse,
+        },
       })
       .run();
   });

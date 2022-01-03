@@ -7,7 +7,7 @@ describe('Onboarding Event Log Modal', () => {
   it('renders onboarding steps', () => {
     const params = {
       user: onboardingUserFixture,
-      step: onboardingUserFixture.steps[0]
+      step: onboardingUserFixture.steps[0],
     };
     const { getByText } = render(
       <OnboardingEventLogModal toggle={() => {}} params={params} />

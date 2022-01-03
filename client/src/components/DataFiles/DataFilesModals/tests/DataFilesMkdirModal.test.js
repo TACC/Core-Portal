@@ -6,7 +6,7 @@ import DataFilesMkdirModalFixture from './DataFilesMkdirModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
 import renderComponent from 'utils/testing';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -16,9 +16,9 @@ const initialMockState = {
   projects: projectsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
-  }
+      pushKeys: false,
+    },
+  },
 };
 
 describe('DataFilesCopyModal', () => {
@@ -51,7 +51,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Create Folder');
       fireEvent.click(submitButton);
     });
@@ -65,9 +65,9 @@ describe('DataFilesCopyModal', () => {
           system: 'test.system',
           path: '/',
           dirname: 'abc123',
-          reloadCallback: expect.any(Function)
-        }
-      }
+          reloadCallback: expect.any(Function),
+        },
+      },
     ]);
   });
 
@@ -85,7 +85,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123?' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Create Folder');
       fireEvent.click(submitButton);
     });

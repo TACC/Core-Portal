@@ -1,0 +1,42 @@
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Workbench from './Workbench';
+import * as ROUTES from '../../constants/routes';
+import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
+import PublicData from '../PublicData/PublicData';
+import RequestAccess from '../RequestAccess/RequestAccess';
+import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy';
+import SiteSearch from '../SiteSearch';
+
+function AppRouter() {
+  const dispatch = useDispatch();
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user
+  );
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      dispatch({ type: 'FETCH_INTRO' });
+    }
+    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    dispatch({ type: 'GET_PROFILE_DATA' });
+    dispatch({ type: 'FETCH_WORKBENCH' });
+    dispatch({ type: 'FETCH_SYSTEMS' });
+  }, []);
+  return (
+    <Router>
+      <Route path="/search/:filter?" component={SiteSearch} />
+      <Route path={ROUTES.WORKBENCH} component={Workbench} />
+      <Route path="/tickets/new" component={TicketStandaloneCreate} />
+      <Route path="/public-data" component={PublicData} />
+      <Route path="/request-access" component={RequestAccess} />
+      <Route
+        path="/googledrive-privacy-policy"
+        component={GoogleDrivePrivacyPolicy}
+      />
+    </Router>
+  );
+}
+
+export default AppRouter;

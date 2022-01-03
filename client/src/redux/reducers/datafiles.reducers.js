@@ -4,20 +4,19 @@ export const initialSystemState = {
     error: false,
     errorMessage: null,
     loading: false,
-    defaultHost: ''
+    defaultHost: '',
   },
   definitions: {
     list: [],
-    error: false,
-    errorMessage: null,
-    loading: true
-  }
+    error: {},
+    loading: true,
+  },
 };
 
 export const addSystemDefinition = (system, definitionList) => {
   return [
-    ...definitionList.filter(existing => existing.id !== system.id),
-    system
+    ...definitionList.filter((existing) => existing.id !== system.id),
+    system,
   ];
 };
 
@@ -31,8 +30,8 @@ export function systems(state = initialSystemState, action) {
           configuration: [],
           error: false,
           errorMessage: null,
-          loading: true
-        }
+          loading: true,
+        },
       };
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
@@ -41,8 +40,8 @@ export function systems(state = initialSystemState, action) {
           ...state.storage,
           configuration: action.payload.system_list,
           defaultHost: action.payload.default_host,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'FETCH_SYSTEMS_ERROR':
       return {
@@ -51,18 +50,17 @@ export function systems(state = initialSystemState, action) {
           ...state.storage,
           error: true,
           errorMessage: action.payload,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'FETCH_SYSTEM_DEFINITION_STARTED':
       return {
         ...state,
         definitions: {
           ...state.definitions,
-          error: false,
-          errorMessage: null,
-          loading: true
-        }
+          error: {},
+          loading: true,
+        },
       };
     case 'FETCH_SYSTEM_DEFINITION_SUCCESS':
       return {
@@ -70,20 +68,21 @@ export function systems(state = initialSystemState, action) {
         definitions: {
           ...state.definitions,
           list: addSystemDefinition(action.payload, state.definitions.list),
-          error: false,
-          errorMessage: null,
-          loading: false
-        }
+          error: {},
+          loading: false,
+        },
       };
     case 'FETCH_SYSTEM_DEFINITION_ERROR':
       return {
         ...state,
         definitions: {
           ...state.definitions,
-          error: true,
-          errorMessage: action.payload,
-          loading: false
-        }
+          error: {
+            message: action.payload.message,
+            status: action.payload.status,
+          },
+          loading: false,
+        },
       };
     default:
       return state;
@@ -93,7 +92,7 @@ export function systems(state = initialSystemState, action) {
 export const initialFilesState = {
   loading: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   operationStatus: {
     rename: null,
@@ -108,38 +107,38 @@ export const initialFilesState = {
       method: null,
       url: '',
       error: null,
-      loading: false
-    }
+      loading: false,
+    },
   },
   loadingScroll: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   error: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   listing: {
     FilesListing: [],
-    modal: []
+    modal: [],
   },
   params: {
     FilesListing: { api: '', scheme: '', system: '', path: '' },
-    modal: { api: '', scheme: '', system: '', path: '' }
+    modal: { api: '', scheme: '', system: '', path: '' },
   },
   selected: {
-    FilesListing: []
+    FilesListing: [],
   },
   selectAll: {
-    FilesListing: false
+    FilesListing: false,
   },
   reachedEnd: {
     FilesListing: true,
-    modal: true
+    modal: true,
   },
   nextPageToken: {
     FilesListing: null,
-    modal: null
+    modal: null,
   },
   modals: {
     addproject: false,
@@ -158,7 +157,7 @@ export const initialFilesState = {
     manageproject: false,
     editproject: false,
     makePublic: false,
-    downloadMessage: false
+    downloadMessage: false,
   },
   modalProps: {
     preview: {},
@@ -172,15 +171,15 @@ export const initialFilesState = {
     link: {},
     showpath: {},
     makePublic: {},
-    downloadMessage: {}
+    downloadMessage: {},
   },
   refs: {},
   preview: {
     href: null,
     content: null,
     error: null,
-    isLoading: true
-  }
+    isLoading: true,
+  },
 };
 
 let selectedSet, enabled, setValue;
@@ -195,20 +194,20 @@ export function files(state = initialFilesState, action) {
         listing: { ...state.listing, [action.payload.section]: [] },
         params: {
           ...state.params,
-          [action.payload.section]: action.payload.params
+          [action.payload.section]: action.payload.params,
         },
         selected: {
           ...state.selected,
-          [action.payload.section]: []
+          [action.payload.section]: [],
         },
         selectAll: {
           ...state.selectAll,
-          [action.payload.section]: false
+          [action.payload.section]: false,
         },
         nextPageToken: {
           ...state.nextPageToken,
-          [action.payload.section]: null
-        }
+          [action.payload.section]: null,
+        },
       };
     case 'FETCH_FILES_SUCCESS':
       return {
@@ -217,16 +216,16 @@ export function files(state = initialFilesState, action) {
         error: { ...state.error, [action.payload.section]: false },
         listing: {
           ...state.listing,
-          [action.payload.section]: [...action.payload.files]
+          [action.payload.section]: [...action.payload.files],
         },
         reachedEnd: {
           ...state.reachedEnd,
-          [action.payload.section]: action.payload.reachedEnd
+          [action.payload.section]: action.payload.reachedEnd,
         },
         nextPageToken: {
           ...state.nextPageToken,
-          [action.payload.section]: action.payload.nextPageToken
-        }
+          [action.payload.section]: action.payload.nextPageToken,
+        },
       };
     case 'FETCH_FILES_ERROR':
       return {
@@ -234,9 +233,9 @@ export function files(state = initialFilesState, action) {
         loading: { ...state.loading, [action.payload.section]: false },
         error: {
           ...state.error,
-          [action.payload.section]: action.payload.code
+          [action.payload.section]: action.payload.code,
         },
-        listing: { ...state.listing, [action.payload.section]: [] }
+        listing: { ...state.listing, [action.payload.section]: [] },
       };
 
     // Cases for fetching additional files to append to a listing
@@ -245,40 +244,40 @@ export function files(state = initialFilesState, action) {
         ...state,
         loadingScroll: {
           ...state.loadingScroll,
-          [action.payload.section]: true
+          [action.payload.section]: true,
         },
-        error: { ...state.error, [action.payload.section]: false }
+        error: { ...state.error, [action.payload.section]: false },
       };
     case 'SCROLL_FILES_SUCCESS':
       return {
         ...state,
         loadingScroll: {
           ...state.loadingScroll,
-          [action.payload.section]: false
+          [action.payload.section]: false,
         },
         error: { ...state.error, [action.payload.section]: false },
         listing: {
           ...state.listing,
           [action.payload.section]: [
             ...state.listing[action.payload.section],
-            ...action.payload.files
-          ]
+            ...action.payload.files,
+          ],
         },
         reachedEnd: {
           ...state.reachedEnd,
-          [action.payload.section]: action.payload.reachedEnd
+          [action.payload.section]: action.payload.reachedEnd,
         },
         nextPageToken: {
           ...state.nextPageToken,
-          [action.payload.section]: action.payload.nextPageToken
-        }
+          [action.payload.section]: action.payload.nextPageToken,
+        },
       };
     case 'SCROLL_FILES_ERR':
       return {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: true },
-        listing: { ...state.listing, [action.payload.section]: [] }
+        listing: { ...state.listing, [action.payload.section]: [] },
       };
 
     // Cases for selecting files.
@@ -301,8 +300,8 @@ export function files(state = initialFilesState, action) {
         ...state,
         selected: {
           ...state.selected,
-          [action.payload.section]: [...selectedSet.values()]
-        }
+          [action.payload.section]: [...selectedSet.values()],
+        },
       };
     case 'DATA_FILES_TOGGLE_SELECT_ALL':
       setValue = !state.selectAll[action.payload.section];
@@ -317,28 +316,28 @@ export function files(state = initialFilesState, action) {
         ...state,
         selected: {
           ...state.selected,
-          [action.payload.section]: [...selectedSet.values()]
+          [action.payload.section]: [...selectedSet.values()],
         },
         selectAll: {
           ...state.selectAll,
-          [action.payload.section]: setValue
-        }
+          [action.payload.section]: setValue,
+        },
       };
     case 'DATA_FILES_SET_LOADING':
       return {
         ...state,
         loading: {
           ...state.loading,
-          [action.payload.section]: action.payload.set
-        }
+          [action.payload.section]: action.payload.set,
+        },
       };
     case 'DATA_FILES_SET_OPERATION_STATUS':
       return {
         ...state,
         operationStatus: {
           ...state.operationStatus,
-          [action.payload.operation]: action.payload.status
-        }
+          [action.payload.operation]: action.payload.status,
+        },
       };
     case 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY':
       return {
@@ -347,37 +346,37 @@ export function files(state = initialFilesState, action) {
           ...state.operationStatus,
           [action.payload.operation]: {
             ...state.operationStatus[action.payload.operation],
-            [action.payload.key]: action.payload.status
-          }
-        }
+            [action.payload.key]: action.payload.status,
+          },
+        },
       };
     case 'DATA_FILES_SET_PREVIEW_CONTENT':
       return {
         ...state,
         preview: {
           ...state.preview,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
     case 'DATA_FILES_TOGGLE_MODAL':
       return {
         ...state,
         modals: {
           ...state.modals,
-          [action.payload.operation]: !state.modals[action.payload.operation]
+          [action.payload.operation]: !state.modals[action.payload.operation],
         },
         modalProps: {
           ...state.modalProps,
-          [action.payload.operation]: action.payload.props
-        }
+          [action.payload.operation]: action.payload.props,
+        },
       };
     case 'STORE_SELECTOR_REF':
       return {
         ...state,
         refs: {
           ...state.refs,
-          FileSelector: action.payload
-        }
+          FileSelector: action.payload,
+        },
       };
     case 'CLEAR_REFS':
       return { ...state, refs: {} };
@@ -386,15 +385,15 @@ export function files(state = initialFilesState, action) {
         ...state,
         modalProps: {
           ...state.modalProps,
-          [action.payload.operation]: action.payload.props
-        }
+          [action.payload.operation]: action.payload.props,
+        },
       };
     case 'DATA_FILES_CLEAR_PROJECT_SELECTION':
       return {
         ...state,
         error: {
           ...state.error,
-          FilesListing: false
+          FilesListing: false,
         },
         params: {
           ...state.params,
@@ -402,9 +401,9 @@ export function files(state = initialFilesState, action) {
             api: 'tapis',
             scheme: 'projects',
             system: '',
-            path: ''
-          }
-        }
+            path: '',
+          },
+        },
       };
     default:
       return state;

@@ -9,9 +9,9 @@ const allocationsFixture = {
     'stampede2.tacc.utexas.edu': ['TACC-ACI'],
     'maverick2.tacc.utexas.edu': ['TACC-ACI'],
     'longhorn.tacc.utexas.edu': ['TACC-ACI'],
-    'frontera.tacc.utexas.edu': ['TACC-ACI']
+    'frontera.tacc.utexas.edu': ['TACC-ACI'],
   },
-  portal_alloc: 'TACC-ACI'
+  portal_alloc: 'TACC-ACI',
 };
 
 export default allocationsFixture;

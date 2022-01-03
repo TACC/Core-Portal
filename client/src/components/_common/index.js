@@ -20,7 +20,7 @@ export { default as DropdownSelector } from './DropdownSelector';
 export { default as BrowserChecker } from './BrowserChecker';
 export {
   default as IntroMessage,
-  isKnownMessage as isKnownIntroMessage
+  isKnownMessage as isKnownIntroMessage,
 } from './IntroMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';

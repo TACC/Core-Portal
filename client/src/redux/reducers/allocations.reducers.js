@@ -31,7 +31,7 @@ export function allocations(state = initialState, action) {
       return {
         ...state,
         errors: { ...state.errors, listing: undefined },
-        loading: true
+        loading: true,
       };
     case 'ADD_ALLOCATIONS':
       return { ...state, ...action.payload, loading: false };
@@ -39,7 +39,7 @@ export function allocations(state = initialState, action) {
       return {
         ...state,
         errors: { ...state.errors, listing: action.payload },
-        loading: false
+        loading: false,
       };
     case 'POPULATE_TEAMS':
       return {
@@ -47,23 +47,23 @@ export function allocations(state = initialState, action) {
         teams: { ...state.teams, ...action.payload.teams },
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loadingTeams
-        }
+          ...action.payload.loadingTeams,
+        },
       };
     case 'POPULATE_TEAMS_ERROR':
       return {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading
+          ...action.payload.loading,
         },
         errors: {
           ...state.errors,
           teams: {
             ...state.errors.teams,
-            ...action.payload.errors
-          }
-        }
+            ...action.payload.errors,
+          },
+        },
       };
     case 'ADD_USERNAMES_TO_TEAM':
       return {
@@ -71,8 +71,8 @@ export function allocations(state = initialState, action) {
         teams: { ...state.teams, ...action.payload.data },
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading
-        }
+          ...action.payload.loading,
+        },
       };
     case 'MANAGE_USERS_INIT':
       return {

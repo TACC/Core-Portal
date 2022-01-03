@@ -13,10 +13,7 @@ describe('Section', () => {
     it('renders elements with appropriate roles', () => {
       const { getByRole } = render(
         <Provider store={store}>
-          <Section
-            header="Header"
-            content={<p>Content</p>}
-          />
+          <Section header="Header" content={<p>Content</p>} />
         </Provider>
       );
       // WARNING: Only one `main` is allowed per page
@@ -40,7 +37,12 @@ describe('Section', () => {
             contentClassName="content-test"
             // sidebar={<nav>Sidebar</nav>}
             // sidebarClassName="sidebar-test"
-            messages={<><strong>Message</strong><strong>List</strong></>}
+            messages={
+              <>
+                <strong>Message</strong>
+                <strong>List</strong>
+              </>
+            }
             messagesClassName="messages-test"
           />
         </Provider>
@@ -50,11 +52,15 @@ describe('Section', () => {
       expect(getByText('Header Actions')).not.toEqual(null);
       expect(container.getElementsByClassName('header-test').length).toEqual(1);
       expect(getByText('Content')).not.toEqual(null);
-      expect(container.getElementsByClassName('content-test').length).toEqual(1);
+      expect(container.getElementsByClassName('content-test').length).toEqual(
+        1
+      );
       // expect(getByText('Sidebar')).not.toEqual(null);
       // expect(container.getElementsByClassName('sidebar-test').length).toEqual(1);
       expect(container.querySelector(`[class*="messages"]`)).not.toEqual(null);
-      expect(container.getElementsByClassName('messages-test').length).toEqual(1);
+      expect(container.getElementsByClassName('messages-test').length).toEqual(
+        1
+      );
     });
   });
 });

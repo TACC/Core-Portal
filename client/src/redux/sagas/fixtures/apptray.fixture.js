@@ -9,9 +9,9 @@ export const appTrayFixture = {
           revision: 1,
           shortDescription: 'Test arrays of inputs',
           type: 'agave',
-          appId: 'arraytest-0.1'
-        }
-      ]
+          appId: 'arraytest-0.1',
+        },
+      ],
     },
     {
       title: 'Simulation',
@@ -22,9 +22,9 @@ export const appTrayFixture = {
           version: '2.1.3',
           revision: '2',
           type: 'agave',
-          appId: 'namd-frontera-2.1.3u2'
-        }
-      ]
+          appId: 'namd-frontera-2.1.3u2',
+        },
+      ],
     },
     {
       title: 'Data Processing',
@@ -35,7 +35,7 @@ export const appTrayFixture = {
           version: '1.0',
           revision: '11',
           type: 'agave',
-          appId: 'frontera-hpc-jupyter-1.0u11'
+          appId: 'frontera-hpc-jupyter-1.0u11',
         },
         {
           label: 'MATLAB R2018b',
@@ -43,7 +43,7 @@ export const appTrayFixture = {
           version: '9.5',
           revision: '7',
           type: 'agave',
-          appId: 'matlab-9.5u7'
+          appId: 'matlab-9.5u7',
         },
         {
           label: 'Rstudio',
@@ -51,9 +51,9 @@ export const appTrayFixture = {
           version: '1.1.423',
           revision: '1',
           type: 'agave',
-          appId: 'RStudio-S2-1.1.423u1'
-        }
-      ]
+          appId: 'RStudio-S2-1.1.423u1',
+        },
+      ],
     },
     {
       title: 'Visualization',
@@ -64,21 +64,20 @@ export const appTrayFixture = {
           version: '1.0',
           revision: '',
           type: 'html',
-          appId: 'vis-portal'
-        }
-      ]
-    }
+          appId: 'vis-portal',
+        },
+      ],
+    },
   ],
   definitions: {
     'vis-portal': {
       appType: 'html',
-      html:
-        '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
+      html: '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
       id: 'vis-portal',
       label: 'TACC Visualization Portal',
-      shortDescription: 'TACC Visualization Portal'
-    }
-  }
+      shortDescription: 'TACC Visualization Portal',
+    },
+  },
 };
 
 export const appTrayExpectedFixture = {
@@ -90,8 +89,8 @@ export const appTrayExpectedFixture = {
         revision: 1,
         shortDescription: 'Test arrays of inputs',
         type: 'agave',
-        appId: 'arraytest-0.1'
-      }
+        appId: 'arraytest-0.1',
+      },
     ],
     Simulation: [
       {
@@ -100,8 +99,8 @@ export const appTrayExpectedFixture = {
         version: '2.1.3',
         revision: '2',
         type: 'agave',
-        appId: 'namd-frontera-2.1.3u2'
-      }
+        appId: 'namd-frontera-2.1.3u2',
+      },
     ],
     'Data Processing': [
       {
@@ -110,7 +109,7 @@ export const appTrayExpectedFixture = {
         version: '1.0',
         revision: '11',
         type: 'agave',
-        appId: 'frontera-hpc-jupyter-1.0u11'
+        appId: 'frontera-hpc-jupyter-1.0u11',
       },
       {
         label: 'MATLAB R2018b',
@@ -118,7 +117,7 @@ export const appTrayExpectedFixture = {
         version: '9.5',
         revision: '7',
         type: 'agave',
-        appId: 'matlab-9.5u7'
+        appId: 'matlab-9.5u7',
       },
       {
         label: 'Rstudio',
@@ -126,8 +125,8 @@ export const appTrayExpectedFixture = {
         version: '1.1.423',
         revision: '1',
         type: 'agave',
-        appId: 'RStudio-S2-1.1.423u1'
-      }
+        appId: 'RStudio-S2-1.1.423u1',
+      },
     ],
     Visualization: [
       {
@@ -136,28 +135,27 @@ export const appTrayExpectedFixture = {
         version: '1.0',
         revision: '',
         type: 'html',
-        appId: 'vis-portal'
-      }
-    ]
+        appId: 'vis-portal',
+      },
+    ],
   },
   appDict: {
     'vis-portal': {
       appType: 'html',
-      html:
-        '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
+      html: '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
       id: 'vis-portal',
       label: 'TACC Visualization Portal',
-      shortDescription: 'TACC Visualization Portal'
-    }
+      shortDescription: 'TACC Visualization Portal',
+    },
   },
   appIcons: {
     'frontera-hpc-jupyter-1.0u11': 'jupyter',
     'matlab-9.5u7': 'matlab',
-    'vis-portal': 'vis-portal'
+    'vis-portal': 'vis-portal',
   },
   error: {
-    isError: false
+    isError: false,
   },
   loading: false,
-  defaultTab: ''
+  defaultTab: '',
 };

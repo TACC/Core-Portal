@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'portal.apps.googledrive_integration',
     'portal.apps.datafiles',
     'portal.apps.projects',
+    'portal.apps.intromessages',
 
 ]
 
@@ -313,7 +314,8 @@ SETTINGS: RECAPTCHA TESTING KEY
 provided by Google at https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do
 """
 RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-RECAPTCHA_SITE_KEY =  "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+
 """
 SETTINGS: LOGGING
 """
@@ -490,7 +492,8 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.community',
         'scheme': 'community',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 1
     },
     {
         'name': 'Shared Workspaces',
@@ -511,7 +514,8 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 0
     }
 ]
 
