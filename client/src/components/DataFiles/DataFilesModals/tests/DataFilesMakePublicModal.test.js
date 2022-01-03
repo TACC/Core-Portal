@@ -14,9 +14,9 @@ const initialMockState = {
   systems: systemsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
-  }
+      pushKeys: false,
+    },
+  },
 };
 
 describe('DataFilesMakePublicModal', () => {
@@ -51,16 +51,16 @@ describe('DataFilesMakePublicModal', () => {
         type: 'DATA_FILES_MAKE_PUBLIC',
         payload: {
           system: 'test.system',
-          path: '/testfile'
-        }
+          path: '/testfile',
+        },
       },
       {
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'makePublic',
-          props: {}
-        }
-      }
+          props: {},
+        },
+      },
     ]);
   });
 });

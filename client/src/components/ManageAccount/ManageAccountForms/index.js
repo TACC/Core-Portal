@@ -5,5 +5,5 @@ import EditOptionalInformationForm from './EditOptionalInformationForm';
 export {
   ChangePasswordForm,
   EditRequiredInformationForm,
-  EditOptionalInformationForm
+  EditOptionalInformationForm,
 };

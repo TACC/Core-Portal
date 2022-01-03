@@ -45,7 +45,7 @@ const multipleFilesFixture = {
   ],
   scheme: 'private',
   api: 'tapis',
-}
+};
 describe('getFilePermissions utility function', () => {
   it.each([
     'rename',
@@ -55,7 +55,7 @@ describe('getFilePermissions utility function', () => {
     'copy',
     'trash',
     'compress',
-    'areMultipleFilesOrFolderSelected'
+    'areMultipleFilesOrFolderSelected',
   ])('Correctly evaluate %s permission', (pem) => {
     if (!['compress', 'areMultipleFilesOrFolderSelected'].includes(pem)) {
       expect(getFilePermissions(pem, privateFixture)).toEqual(true);
@@ -67,7 +67,15 @@ describe('getFilePermissions utility function', () => {
     } else {
       expect(getFilePermissions(pem, publicFixture)).toEqual(false);
     }
-    if (['areMultipleFilesOrFolderSelected', 'compress', 'copy', 'move', 'trash'].includes(pem)) {
+    if (
+      [
+        'areMultipleFilesOrFolderSelected',
+        'compress',
+        'copy',
+        'move',
+        'trash',
+      ].includes(pem)
+    ) {
       expect(getFilePermissions(pem, multipleFilesFixture)).toEqual(true);
     } else {
       expect(getFilePermissions(pem, multipleFilesFixture)).toEqual(false);

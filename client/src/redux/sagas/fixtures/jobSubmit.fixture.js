@@ -10,7 +10,7 @@ const jobSubmitFixture = {
   archive: true,
   archiveOnAppError: true,
   appId: 'frontera-hpc-jupyter-1.0u12',
-  allocation: 'TACC-ACI'
+  allocation: 'TACC-ACI',
 };
 
 export default jobSubmitFixture;

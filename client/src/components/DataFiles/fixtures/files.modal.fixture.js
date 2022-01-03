@@ -1,18 +1,18 @@
 const filesModalFixture = {
   loading: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   operationStatus: {
-    copy: {}
+    copy: {},
   },
   loadingScroll: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   error: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   listing: {
     FilesListing: [
@@ -25,8 +25,8 @@ const filesModalFixture = {
         format: 'folder',
         system: 'test.system',
         mimeType: 'text/directory',
-        type: 'dir'
-      }
+        type: 'dir',
+      },
     ],
     modal: [
       {
@@ -39,43 +39,43 @@ const filesModalFixture = {
         system: 'test.system',
         mimeType: 'text/directory',
         type: 'dir',
-        isCurrentDirectory: false
-      }
-    ]
+        isCurrentDirectory: false,
+      },
+    ],
   },
   params: {
     FilesListing: {
       api: 'tapis',
       scheme: 'private',
       system: 'test.system',
-      path: ''
+      path: '',
     },
     modal: {
       api: 'tapis',
       scheme: 'private',
       system: 'test.system',
-      path: ''
-    }
+      path: '',
+    },
   },
   selected: {
     FilesListing: [0],
-    modal: []
+    modal: [],
   },
   selectAll: {
     FilesListing: false,
-    modal: false
+    modal: false,
   },
   reachedEnd: {
     FilesListing: true,
-    modal: true
+    modal: true,
   },
   modals: {
-    copy: true
+    copy: true,
   },
   modalProps: {
-    copy: {}
+    copy: {},
   },
-  previewHref: ''
+  previewHref: '',
 };
 
 export default filesModalFixture;

@@ -22,7 +22,7 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
           time: '2020-09-23 16:43:01.103968+00:00',
           message: 'Failure',
-          data: null
+          data: null,
         },
         {
           username: 'username',
@@ -30,7 +30,7 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
           time: '2020-09-23 16:42:51.110869+00:00',
           message: 'Beginning automated processing',
-          data: null
+          data: null,
         },
         {
           username: 'username',
@@ -38,9 +38,9 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
           time: '2020-09-23 16:42:37.884030+00:00',
           message: 'Pending',
-          data: null
-        }
-      ]
+          data: null,
+        },
+      ],
     },
     {
       data: null,
@@ -59,7 +59,7 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
           time: '2020-09-23 16:43:01.103968+00:00',
           message: 'Failure',
-          data: null
+          data: null,
         },
         {
           username: 'username',
@@ -67,7 +67,7 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
           time: '2020-09-23 16:42:51.110869+00:00',
           message: 'Beginning automated processing',
-          data: null
+          data: null,
         },
         {
           username: 'username',
@@ -75,14 +75,13 @@ export const onboardingUserFixture = {
           step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
           time: '2020-09-23 16:42:37.884030+00:00',
           message: 'Pending',
-          data: null
-        }
-      ]
+          data: null,
+        },
+      ],
     },
     {
       data: null,
-      step:
-        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+      step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
       displayName: 'Mock Processing Complete Step',
       description:
         'Long description of a mock step that automatically processes then completes',
@@ -95,31 +94,28 @@ export const onboardingUserFixture = {
         {
           username: 'username',
           state: 'completed',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
           time: '2020-09-23 16:42:51.069506+00:00',
           message: 'Completed',
-          data: null
+          data: null,
         },
         {
           username: 'username',
           state: 'processing',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
           time: '2020-09-23 16:42:41.029434+00:00',
           message: 'Beginning automated processing',
-          data: null
+          data: null,
         },
         {
           username: 'username',
           state: 'pending',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
           time: '2020-09-23 16:42:37.848371+00:00',
           message: 'Pending',
-          data: null
-        }
-      ]
+          data: null,
+        },
+      ],
     },
     {
       data: null,
@@ -135,35 +131,32 @@ export const onboardingUserFixture = {
         {
           username: 'username',
           state: 'failed',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
           time: '2020-09-23 16:43:01.103968+00:00',
           message: 'Failure',
-          data: null
+          data: null,
         },
         {
           username: 'username',
           state: 'processing',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
           time: '2020-09-23 16:42:51.110869+00:00',
           message: 'Beginning automated processing',
-          data: null
+          data: null,
         },
         {
           username: 'username',
           state: 'pending',
-          step:
-            'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
+          step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
           time: '2020-09-23 16:42:37.884030+00:00',
           message: 'Pending',
-          data: null
-        }
-      ]
-    }
+          data: null,
+        },
+      ],
+    },
   ],
   isStaff: true,
-  email: 'username@tacc.utexas.edu'
+  email: 'username@tacc.utexas.edu',
 };
 
 // Admin listing of all users (i.e. result of `api/onboarding/admin/`)
@@ -171,7 +164,7 @@ export const onboardingAdminFixture = {
   users: [{ ...onboardingUserFixture }],
   offset: 0,
   limit: 25,
-  total: 1
+  total: 1,
 };
 
 export const onboardingActionFixture = {
@@ -179,7 +172,7 @@ export const onboardingActionFixture = {
   action: null,
   username: null,
   loading: false,
-  error: null
+  error: null,
 };
 
 export const onboardingAdminState = {
@@ -190,7 +183,7 @@ export const onboardingAdminState = {
     total: 1,
     query: 'query',
     loading: false,
-    error: null
+    error: null,
   },
   user: {
     username: null,
@@ -199,9 +192,9 @@ export const onboardingAdminState = {
     setupComplete: false,
     steps: [],
     loading: false,
-    error: null
+    error: null,
   },
-  action: onboardingActionFixture
+  action: onboardingActionFixture,
 };
 
 export const onboardingUserState = {
@@ -212,14 +205,14 @@ export const onboardingUserState = {
     total: 0,
     query: null,
     loading: false,
-    error: null
+    error: null,
   },
   user: {
     ...onboardingUserFixture,
     loading: false,
-    error: null
+    error: null,
   },
-  action: onboardingActionFixture
+  action: onboardingActionFixture,
 };
 
 export const onboardingActionState = {
@@ -230,7 +223,7 @@ export const onboardingActionState = {
     total: 0,
     query: null,
     loading: false,
-    error: null
+    error: null,
   },
   user: {
     username: null,
@@ -239,13 +232,13 @@ export const onboardingActionState = {
     setupComplete: false,
     steps: [],
     loading: false,
-    error: null
+    error: null,
   },
   action: {
     step: 'onboarding.step',
     action: 'user_confirm',
     username: 'username',
     loading: false,
-    error: null
-  }
+    error: null,
+  },
 };

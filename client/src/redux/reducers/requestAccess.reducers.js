@@ -1,7 +1,7 @@
 export const initialRequestAccessState = {
   loading: false,
   error: null,
-  ticketId: null
+  ticketId: null,
 };
 
 export default function requestAccess(
@@ -14,19 +14,19 @@ export default function requestAccess(
     case 'REQUEST_ACCESS_STARTED':
       return {
         ...state,
-        loading: true
+        loading: true,
       };
     case 'REQUEST_ACCESS_FAILED':
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
       };
     case 'REQUEST_ACCESS_SUCCESS':
       return {
         ...state,
         loading: false,
-        createdTicketId: action.payload
+        createdTicketId: action.payload,
       };
     default:
       return state;

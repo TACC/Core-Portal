@@ -15,7 +15,6 @@ import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -123,7 +122,8 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, '../../client/dist')],
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -217,7 +217,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    ('build', os.path.join(BASE_DIR, '../../client/build')),
+    os.path.join(BASE_DIR, '../../client/dist'),
+    # Serve fonts using the cep.dev hostname in debug mode
+    ('src/fonts', os.path.join(BASE_DIR, '../../client/src/fonts'))
 ]
 
 STATICFILES_FINDERS = [
@@ -727,8 +729,8 @@ WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 """
 SETTINGS: RECAPTCHA
 """
-RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
-RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
+RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
+RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
 """
 SETTINGS: LOCAL OVERRIDES

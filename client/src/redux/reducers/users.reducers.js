@@ -2,8 +2,8 @@ export const initialState = {
   search: {
     users: [],
     loading: false,
-    error: null
-  }
+    error: null,
+  },
 };
 
 export function users(state = initialState, action) {
@@ -14,8 +14,8 @@ export function users(state = initialState, action) {
         search: {
           users: action.payload,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       };
     case 'USERS_SEARCH_FAILED':
       return {
@@ -23,8 +23,8 @@ export function users(state = initialState, action) {
         search: {
           ...state.search,
           loading: false,
-          error: action.payload
-        }
+          error: action.payload,
+        },
       };
     case 'USERS_SEARCH_STARTED':
       return {
@@ -32,13 +32,13 @@ export function users(state = initialState, action) {
         search: {
           ...state.search,
           loading: true,
-          error: null
-        }
+          error: null,
+        },
       };
     case 'USERS_CLEAR_SEARCH':
       return {
         ...state,
-        ...initialState
+        ...initialState,
       };
     default:
       return state;

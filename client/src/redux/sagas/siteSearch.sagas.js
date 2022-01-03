@@ -22,7 +22,7 @@ export async function fetchSiteSearchUtil(page, query_string, filter) {
 export function* fetchSiteSearch(action) {
   yield put({
     type: 'FETCH_SITE_SEARCH_START',
-    payload: {}
+    payload: {},
   });
   try {
     const response = yield call(
@@ -34,13 +34,13 @@ export function* fetchSiteSearch(action) {
     yield put({
       type: 'FETCH_SITE_SEARCH_SUCCESS',
       payload: {
-        results: response
-      }
+        results: response,
+      },
     });
   } catch (e) {
     yield put({
       type: 'FETCH_SITE_SEARCH_ERROR',
-      payload: { error: { status: e.status, message: e.message } }
+      payload: { error: { status: e.status, message: e.message } },
     });
   }
 }
