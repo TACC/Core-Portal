@@ -13,13 +13,13 @@ const DataFilesEmptyModal = React.memo(() => {
 
   const dispatch = useDispatch();
 
-  const isOpen = useSelector(state => state.files.modals.empty);
-  const trashedFiles = useSelector(state => state.files.listing.FilesListing);
+  const isOpen = useSelector((state) => state.files.modals.empty);
+  const trashedFiles = useSelector((state) => state.files.listing.FilesListing);
   const [disabled, setDisabled] = useState(false);
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'empty', props: {} }
+      payload: { operation: 'empty', props: {} },
     });
 
   const onClosed = () => {
@@ -27,7 +27,7 @@ const DataFilesEmptyModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'empty', status: {} }
+      payload: { operation: 'empty', status: {} },
     });
   };
 
@@ -37,8 +37,8 @@ const DataFilesEmptyModal = React.memo(() => {
       type: 'DATA_FILES_EMPTY',
       payload: {
         src: trashedFiles,
-        reloadCallback: reloadPage
-      }
+        reloadCallback: reloadPage,
+      },
     });
   }, [reloadPage, trashedFiles]);
 

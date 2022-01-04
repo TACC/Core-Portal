@@ -31,18 +31,20 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: "" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
           },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false},
+          operationStatus: { trash: false },
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
@@ -61,18 +63,20 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="community" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: "" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
           },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false},
+          operationStatus: { trash: false },
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
@@ -91,18 +95,20 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: "" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
           },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false},
+          operationStatus: { trash: false },
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
@@ -121,18 +127,20 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: "" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
           },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false},
+          operationStatus: { trash: false },
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
@@ -157,22 +165,24 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: ".Trash" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
           },
-          listing: { FilesListing: [ testFile ] },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '.Trash',
+            },
+          },
+          listing: { FilesListing: [testFile] },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false} 
-       },
+          operationStatus: { trash: false },
+        },
         //listing: {  } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -183,20 +193,22 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          params: { 
-            FilesListing: { 
-              path: ".Trash" 
-            }
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '.Trash',
+            },
           },
           listing: { FilesListing: [] },
           selected: { FilesListing: [] },
-          operationStatus: { trash: false},
-       },
+          operationStatus: { trash: false },
+        },
         //listing: {  } },
         systems: systemsFixture,
       }),

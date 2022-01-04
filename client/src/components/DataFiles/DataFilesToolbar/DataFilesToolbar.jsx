@@ -11,7 +11,7 @@ export const ToolbarButton = ({
   iconName,
   onClick,
   disabled,
-  buttonName
+  buttonName,
 }) => {
   const iconClassName = `icon-action icon-${iconName}`;
   const buttonClassName = `data-files-toolbar-button${buttonName}`;
@@ -25,14 +25,14 @@ export const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-  buttonName: ''
+  buttonName: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-  buttonName: PropTypes.string
+  buttonName: PropTypes.string,
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
@@ -44,20 +44,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
     history.push(location.pathname);
   };
 
-  const selectedFiles = useSelector(state =>
+  const selectedFiles = useSelector((state) =>
     state.files.selected.FilesListing.map(
       (i) => state.files.listing.FilesListing[i]
     )
   );
 
-  const inTrash = useSelector(state =>
+  const inTrash = useSelector((state) =>
     state.files.params.FilesListing.path.startsWith('.Trash')
   );
-  const trashedFiles = useSelector(state =>
+  const trashedFiles = useSelector((state) =>
     inTrash ? state.files.listing.FilesListing : []
   );
 
-  const status = useSelector(state => state.files.operationStatus.trash);
+  const status = useSelector((state) => state.files.operationStatus.trash);
 
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
@@ -168,21 +168,21 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const trash = useCallback(() => {
     const filteredSelected = selectedFiles.filter(
-      f => status[f.id] !== 'SUCCESS'
+      (f) => status[f.id] !== 'SUCCESS'
     );
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
         src: filteredSelected,
-        reloadCallback: reloadPage
-      }
+        reloadCallback: reloadPage,
+      },
     });
   }, [selectedFiles, reloadPage]);
 
   const empty = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'empty', props: {} }
+      payload: { operation: 'empty', props: {} },
     });
   };
 

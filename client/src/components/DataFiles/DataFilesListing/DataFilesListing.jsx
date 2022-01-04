@@ -20,12 +20,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const dispatch = useDispatch();
   const { query_string: queryString, filter } = parse(useLocation().search);
   const { files, loading, error } = useSelector(
-    state => ({
-      files: state.files.listing.FilesListing.map(file => ({
+    (state) => ({
+      files: state.files.listing.FilesListing.map((file) => ({
         ...file,
         disabled:
           state.files.operationStatus.trash[file.system + file.path] ===
-          'RUNNING'
+          'RUNNING',
       })),
       loading: state.files.loading.FilesListing,
       error: state.files.error.FilesListing,
@@ -112,7 +112,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       },
       {
         id: 'icon',
-        accessor: row => row,
+        accessor: (row) => row,
         width: 0.05,
         minWidth: 20,
         maxWidth: 25,
@@ -128,7 +128,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         Header: 'Size',
         accessor: 'length',
         Cell: FileLengthCell,
-        width: 0.2
+        width: 0.2,
       },
       {
         Header: 'Last Modified',

@@ -21,7 +21,7 @@ import {
   watchLink,
   watchTrash,
   watchEmpty,
-  watchMakePublic
+  watchMakePublic,
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';

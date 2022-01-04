@@ -58,7 +58,7 @@ CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired
+  disabled: PropTypes.bool.isRequired,
 };
 
 export const FileNavCell = React.memo(
@@ -150,7 +150,7 @@ export const FileIcon = ({ format, path }) => {
 };
 FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+  path: PropTypes.string.isRequired,
 };
 
 export const FileIconCell = ({ cell }) => {
@@ -163,10 +163,10 @@ FileIconCell.propTypes = {
     row: PropTypes.shape({
       original: PropTypes.shape({
         format: PropTypes.string,
-        path: PropTypes.string
-      })
-    })
-  }).isRequired
+        path: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
 };
 
 export const ViewPathCell = ({ file }) => {
