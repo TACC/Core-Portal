@@ -233,14 +233,8 @@ const DataFilesTableRow = ({
     return (
       <div
         style={style}
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesTable/DataFilesTable.js
         className={`tr ${isShaded && 'tr-background-shading'} ${selected &&
           'tr-selected'} ${row.original.disabled && 'tr-disabled'}`}
-=======
-        className={`tr ${isShaded && 'tr-background-shading'} ${
-          selected && 'tr-selected'
-        }`}
->>>>>>> main:client/src/components/DataFiles/DataFilesTable/DataFilesTable.jsx
         role="row"
         tabIndex={-1}
         index={row.index}
@@ -274,12 +268,9 @@ DataFilesTableRow.propTypes = {
   row: PropTypes.shape({
     index: PropTypes.number,
     cells: PropTypes.arrayOf(PropTypes.shape({})),
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesTable/DataFilesTable.js
     original: PropTypes.shape({
       disabled: PropTypes.bool
     })
-=======
->>>>>>> main:client/src/components/DataFiles/DataFilesTable/DataFilesTable.jsx
   }),
   section: PropTypes.string.isRequired,
   rowSelectCallback: PropTypes.func.isRequired,

@@ -31,7 +31,6 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-<<<<<<< HEAD
         workbench: { config: {
           extract: '',
           compress: ''
@@ -45,15 +44,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false},
         },
-=======
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-          },
-        },
-        files: { selected: { FilesListing: [] } },
->>>>>>> main
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
       }),
@@ -71,7 +61,6 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="community" api="tapis" />,
       mockStore({
-<<<<<<< HEAD
         workbench: { config: {
           extract: '',
           compress: ''
@@ -85,15 +74,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false},
         },
-=======
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-          },
-        },
-        files: { selected: { FilesListing: [] } },
->>>>>>> main
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
       }),
@@ -111,7 +91,6 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
       mockStore({
-<<<<<<< HEAD
         workbench: { config: {
           extract: '',
           compress: ''
@@ -125,15 +104,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false},
         },
-=======
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-          },
-        },
-        files: { selected: { FilesListing: [] } },
->>>>>>> main
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
       }),
@@ -151,7 +121,6 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
       mockStore({
-<<<<<<< HEAD
         workbench: { config: {
           extract: '',
           compress: ''
@@ -165,15 +134,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false},
         },
-=======
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-          },
-        },
-        files: { selected: { FilesListing: [] } },
->>>>>>> main
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
       }),
@@ -197,7 +157,6 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-<<<<<<< HEAD
         workbench: { config: {
           extract: '',
           compress: ''
@@ -238,18 +197,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false},
        },
-=======
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-          },
-        },
-        files: {
-          listing: { FilesListing: [testFile] },
-          selected: { FilesListing: [0] },
-        },
->>>>>>> main
         //listing: {  } },
         systems: systemsFixture,
       }),

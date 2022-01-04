@@ -25,26 +25,19 @@ export const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.js
   buttonName: ''
-=======
->>>>>>> main:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.jsx
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.js
   buttonName: PropTypes.string
-=======
->>>>>>> main:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.jsx
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.js
   const history = useHistory();
   const location = useLocation();
   const reloadPage = () => {
@@ -52,9 +45,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const selectedFiles = useSelector(state =>
-=======
-  const selectedFiles = useSelector((state) =>
->>>>>>> main:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.jsx
     state.files.selected.FilesListing.map(
       (i) => state.files.listing.FilesListing[i]
     )
@@ -192,11 +182,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const empty = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-<<<<<<< HEAD:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.js
       payload: { operation: 'empty', props: {} }
-=======
-      payload: { operation: 'trash', props: { selectedFiles } },
->>>>>>> main:client/src/components/DataFiles/DataFilesToolbar/DataFilesToolbar.jsx
     });
   };
 

@@ -5,10 +5,7 @@ const DataFilesCopyModalFixture = {
   },
   operationStatus: {
     copy: {},
-<<<<<<< HEAD
     trash: {}
-=======
->>>>>>> main
   },
   loadingScroll: {
     FilesListing: false,

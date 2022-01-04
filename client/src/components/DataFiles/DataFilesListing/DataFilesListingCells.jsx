@@ -37,7 +37,7 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index, name, format }) => {
+export const CheckboxCell = React.memo(({ index, name, format, disabled }) => {
   const selected = useSelector((state) =>
     state.files.selected.FilesListing.includes(index)
   );

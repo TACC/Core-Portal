@@ -43,16 +43,11 @@ const initialMockState = {
       FilesListing: false,
     },
     reachedEnd: {
-<<<<<<< HEAD
       FilesListing: true
     },
     operationStatus: {
       trash: false
     }
-=======
-      FilesListing: true,
-    },
->>>>>>> main
   },
   systems: systemsFixture,
 };
