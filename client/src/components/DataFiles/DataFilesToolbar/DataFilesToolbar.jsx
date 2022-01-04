@@ -168,7 +168,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const trash = useCallback(() => {
     const filteredSelected = selectedFiles.filter(
-      (f) => status[f.id] !== 'SUCCESS'
+      (f) => status[f.system + f.path] !== 'SUCCESS'
     );
     dispatch({
       type: 'DATA_FILES_TRASH',

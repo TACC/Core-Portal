@@ -803,7 +803,7 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path, file.id);
+    return call(trashFile, file.system, file.path);
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -826,7 +826,7 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, id) {
+export function* trashFile(system, path) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
@@ -867,7 +867,7 @@ export function* watchEmpty() {
 
 export function* emptyFiles(action) {
   const emptyCalls = action.payload.src.map((file) => {
-    return call(emptyFile, file.system, file.path, file.id);
+    return call(emptyFile, file.system, file.path);
   });
   const { result } = yield race({
     result: all(emptyCalls),
@@ -890,7 +890,7 @@ export function* emptyFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* emptyFile(system, path, id) {
+export function* emptyFile(system, path) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'empty' },
