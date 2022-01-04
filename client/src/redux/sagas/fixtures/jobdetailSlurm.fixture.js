@@ -29,7 +29,7 @@ const jobDetailSlurmFixture = {
   inputs: { workingDirectory: 'agave://frontera.home.maxmunstermann/5MB.txt' },
   parameters: {
     desktop_resolution: '1280x800',
-    _webhook_base_url: 'http://fcf24ba44251.ngrok.io/webhooks/'
+    _webhook_base_url: 'http://fcf24ba44251.ngrok.io/webhooks/',
   },
   remoteJobId: '6198008',
   schedulerJobId: null,
@@ -46,50 +46,41 @@ const jobDetailSlurmFixture = {
   visible: true,
   _links: {
     self: {
-      href:
-        'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007'
+      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007',
     },
     app: {
-      href:
-        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0'
+      href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0',
     },
     executionSystem: {
-      href:
-        'https://portals-api.tacc.utexas.edu/systems/v2/maxmunstermann.TACC-ACI.exec.stampede2.HPC'
+      href: 'https://portals-api.tacc.utexas.edu/systems/v2/maxmunstermann.TACC-ACI.exec.stampede2.HPC',
     },
     archiveSystem: {
-      href:
-        'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmunstermann'
+      href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmunstermann',
     },
     archiveData: {
-      href:
-        'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.maxmunstermann/archive/jobs/2020-08-06/qgis-3-48_2020-08-06t17-21-32-dcvserver-b5c4014b-31e7-47a0-954f-c9d404320904-007'
+      href: 'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.maxmunstermann/archive/jobs/2020-08-06/qgis-3-48_2020-08-06t17-21-32-dcvserver-b5c4014b-31e7-47a0-954f-c9d404320904-007',
     },
     owner: {
-      href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmunstermann'
+      href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmunstermann',
     },
     permissions: {
-      href:
-        'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007/pems'
+      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007/pems',
     },
     history: {
-      href:
-        'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007/history'
+      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/b5c4014b-31e7-47a0-954f-c9d404320904-007/history',
     },
     metadata: {
-      href:
-        'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22b5c4014b-31e7-47a0-954f-c9d404320904-007%22%7D'
+      href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22b5c4014b-31e7-47a0-954f-c9d404320904-007%22%7D',
     },
     notifications: {
-      href:
-        'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=b5c4014b-31e7-47a0-954f-c9d404320904-007'
-    }
+      href: 'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=b5c4014b-31e7-47a0-954f-c9d404320904-007',
+    },
   },
   _embedded: { metadata: [] },
   archiveUrl:
     '/workbench/data-depot/agave/frontera.home.maxmunstermann/archive/jobs/2020-08-06/qgis-3-48_2020-08-06t17-21-32-dcvserver-b5c4014b-31e7-47a0-954f-c9d404320904-007/',
   jupyterUrl:
-    'https://jupyter.tacc.cloud/user/maxmunstermann/tree/tacc-work/archive/jobs/2020-08-06/qgis-3-48_2020-08-06t17-21-32-dcvserver-b5c4014b-31e7-47a0-954f-c9d404320904-007'
+    'https://jupyter.tacc.cloud/user/maxmunstermann/tree/tacc-work/archive/jobs/2020-08-06/qgis-3-48_2020-08-06t17-21-32-dcvserver-b5c4014b-31e7-47a0-954f-c9d404320904-007',
 };
 
 export default jobDetailSlurmFixture;

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Workbench {% endblock %}
+{% block head_extra %}
+  <base href="{% url 'workbench:index' %}">
+{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="">
+  <link rel="stylesheet" href="">
+{% endblock %}
+{% block content %}
+  <div id="react-root"></div>
+{% endblock %}
+{% block scripts %}
+  <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
+  <script src="https://cep.dev:8080/build/vendors~main.bundle.js"></script>
+  <script src="https://cep.dev:8080/build/main.bundle.js"></script>
+{% endblock %}

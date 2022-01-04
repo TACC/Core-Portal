@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -17,8 +17,8 @@ describe('DataFilesSearchbar', () => {
       systems: systemsFixture,
       files: {
         error: {},
-        loading: {}
-      }
+        loading: {},
+      },
     });
     const { getByRole } = renderComponent(
       <DataFilesSearchbar
@@ -48,8 +48,8 @@ describe('DataFilesSearchbar', () => {
       systems: systemsFixture,
       files: {
         error: {},
-        loading: {}
-      }
+        loading: {},
+      },
     });
     const { getByTestId } = renderComponent(
       <DataFilesSearchbar
@@ -75,8 +75,8 @@ describe('DataFilesSearchbar', () => {
       systems: systemsFixture,
       files: {
         error: {},
-        loading: {}
-      }
+        loading: {},
+      },
     });
     const { getByRole, getByText, queryByText, debug } = renderComponent(
       <DataFilesSearchbar
@@ -91,7 +91,9 @@ describe('DataFilesSearchbar', () => {
     fireEvent.change(input, { target: { value: 'testquery' } });
     expect(input.value).toBe('testquery');
 
-    await wait(() => history.push('/workbench/data/api/scheme/system2/path/'));
+    await waitFor(() =>
+      history.push('/workbench/data/api/scheme/system2/path/')
+    );
 
     input = getByRole('searchbox');
     expect(input.value).toBe('');
@@ -106,8 +108,8 @@ describe('DataFilesSearchbar', () => {
       systems: systemsFixture,
       files: {
         error: {},
-        loading: {}
-      }
+        loading: {},
+      },
     });
     const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
       <DataFilesSearchbar

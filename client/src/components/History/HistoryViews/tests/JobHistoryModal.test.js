@@ -27,11 +27,12 @@ describe('Job History Modal', () => {
         <Provider
           store={mockStore({
             jobDetail: {
-              ...mockInitialState
+              ...mockInitialState,
             },
             workbench: {
-              ...workbench, config: {hideDataFiles: false}
-            }
+              ...workbench,
+              config: { hideDataFiles: false },
+            },
           })}
         >
           <JobHistoryModal jobId="job_id" />

@@ -107,14 +107,16 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.storage.community',
         'scheme': 'community',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
         'system': 'cep.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': 'publications'
+        'icon': 'publications',
+        'siteSearchPriority': 0
     },
     {
         'name': 'Shared Workspaces',
@@ -252,5 +254,6 @@ _WORKBENCH_SETTINGS = {
     "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
-    "onboardingCompleteRedirect": '/workbench/'
+    "onboardingCompleteRedirect": '/workbench/',
+    "noPHISystem": ""
 }

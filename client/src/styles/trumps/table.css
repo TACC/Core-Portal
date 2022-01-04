@@ -5,14 +5,14 @@
 /* TODO: Remove `padding: 0` for all specific instances that inherit this */
 td .btn-link,
 /* FAQ: Using [role="cell"] instead of <td> because DataFiles <div> table */
-div[role="cell"] .btn-link  {
+div[role="cell"] .btn-link {
   padding: 0;
 }
 
 /* To ensure small buttons in tables match the table font size */
 /* FAQ: Using [role="cell"] instead of <td> because DataFiles <div> table */
-div[role="cell"] .btn-sm,
-div[role="cell"] .btn-group-sm > .btn {
+div[role='cell'] .btn-sm,
+div[role='cell'] .btn-group-sm > .btn {
   /* Overwrite Bootstrap `_button.scss` */
   font-size: inherit;
 }

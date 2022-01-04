@@ -1,29 +1,29 @@
 .data-files-toolbar-button {
-    height: 2rem;
-    background-color: #F4F4F4;
-    color: var(--global-color-primary--xx-dark);
-    border-color: var(--global-color-primary--xx-dark);
-    border-radius: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    white-space: nowrap;
+  height: 2rem;
+  background-color: #f4f4f4;
+  color: var(--global-color-primary--xx-dark);
+  border-color: var(--global-color-primary--xx-dark);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
 
-    .icon-action {
-      display: flex;
-      padding-right: 5px;
-      font-size: 1.3em;
-    }
+  .icon-action {
+    display: flex;
+    padding-right: 5px;
+    font-size: 1.3em;
+  }
 }
 .workbench-content .data-files-toolbar-button.empty-button.btn-secondary {
   background-color: #7754E8; //!important;
   color: white;//!important;
 }
 .data-files-toolbar-button:not(.disabled):hover {
-    background-color: #AFAFAF;
-    color: var(--global-color-primary--xx-dark);
-    border-color: var(--global-color-primary--xx-dark);
-    border-radius: 0;
+  background-color: #afafaf;
+  color: var(--global-color-primary--xx-dark);
+  border-color: var(--global-color-primary--xx-dark);
+  border-radius: 0;
 }
 
 .toolbar-button-text {
@@ -41,10 +41,16 @@
   /* NOTE: Container <SectionHeader> already defines `align-items: flex-end` */
   align-self: flex-end;
   margin-bottom: -5px;
-  & > * { margin-bottom: 5px; }
+  & > * {
+    margin-bottom: 5px;
+  }
 
   /* Space between children should be static, and not exist at ends */
   /* FAQ: Using container flex values would not achieve static space */
-  & > * { margin-right: 5px; }
-  & > *:last-child { margin-right: 0; }
+  & > * {
+    margin-right: 5px;
+  }
+  & > *:last-child {
+    margin-right: 0;
+  }
 }

@@ -5,15 +5,15 @@ export function* fetchWorkbench(action) {
   yield put({ type: 'WORKBENCH_INIT' });
   try {
     const res = yield call(fetchUtil, {
-      url: `/api/workbench/`
+      url: `/api/workbench/`,
     });
     yield put({
       type: 'WORKBENCH_SUCCESS',
-      payload: res.response
+      payload: res.response,
     });
   } catch (error) {
     yield put({
-      type: 'WORKBENCH_FAILURE'
+      type: 'WORKBENCH_FAILURE',
     });
   }
 }
