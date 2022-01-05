@@ -16,11 +16,11 @@ export async function fetchUtil({ url, params, ...options }) {
 
   const fetchParams = {
     credentials: 'same-origin',
-    ...options
+    ...options,
   };
   fetchParams.headers = {
     'X-CSRFToken': Cookies.get('csrftoken'),
-    ...fetchParams.headers
+    ...fetchParams.headers,
   };
 
   const response = await fetch(request, fetchParams);

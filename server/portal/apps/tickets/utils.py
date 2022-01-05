@@ -41,7 +41,7 @@ def create_ticket(username, first_name, last_name, email, cc, subject,
 
 def get_recaptcha_verification(request):
     recaptcha_response = request.POST.get('recaptchaResponse')
-    secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
+    secret_key = settings.RECAPTCHA_SECRET_KEY
     data = {
         'secret': secret_key,
         'response': recaptcha_response

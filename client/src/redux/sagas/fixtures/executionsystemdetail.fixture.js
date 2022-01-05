@@ -23,9 +23,9 @@ const executionSystemDetailFixture = {
       type: 'SSHKEYS',
       username: '',
       publicKey: '',
-      privateKey: ''
+      privateKey: '',
     },
-    host: 'stampede2.tacc.utexas.edu'
+    host: 'stampede2.tacc.utexas.edu',
   },
   queues: [
     {
@@ -37,8 +37,8 @@ const executionSystemDetailFixture = {
       maxMemoryPerNode: 1,
       customDirectives: null,
       default: true,
-      maxRequestedTime: '999:59:59'
-    }
+      maxRequestedTime: '999:59:59',
+    },
   ],
   storage: {
     proxy: null,
@@ -53,15 +53,15 @@ const executionSystemDetailFixture = {
       type: 'SSHKEYS',
       username: '',
       publicKey: '',
-      privateKey: ''
-    }
+      privateKey: '',
+    },
   },
   workDir: '/work/05724/maxmunstermann/',
   revision: 1,
   default: false,
   public: false,
   globalDefault: false,
-  lastModified: '2019-06-25T12:24:38-05:00'
+  lastModified: '2019-06-25T12:24:38-05:00',
 };
 
 export default executionSystemDetailFixture;

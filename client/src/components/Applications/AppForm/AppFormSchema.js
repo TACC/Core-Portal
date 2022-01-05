@@ -1,14 +1,14 @@
 import * as Yup from 'yup';
 
-const FormSchema = app => {
+const FormSchema = (app) => {
   const appFields = {
     parameters: {},
     inputs: {},
     defaults: { inputs: {}, parameters: {} },
-    schema: { inputs: {}, parameters: {} }
+    schema: { inputs: {}, parameters: {} },
   };
 
-  (app.definition.parameters || []).forEach(parameter => {
+  (app.definition.parameters || []).forEach((parameter) => {
     const param = parameter;
     if (!param.value.visible || param.id.startsWith('_')) {
       return;
@@ -22,7 +22,7 @@ const FormSchema = app => {
     const field = {
       label: param.details.label,
       description: param.details.description,
-      required: param.value.required
+      required: param.value.required,
     };
 
     switch (param.value.type) {
@@ -37,7 +37,7 @@ const FormSchema = app => {
         field.type = 'select';
         field.options = param.value.enum_values;
         appFields.schema.parameters[param.id] = Yup.string().oneOf(
-          field.options.map(enumVal => {
+          field.options.map((enumVal) => {
             if (typeof enumVal === 'string') {
               return enumVal;
             }
@@ -69,9 +69,8 @@ const FormSchema = app => {
     }
 
     if (param.value.required) {
-      appFields.schema.parameters[param.id] = appFields.schema.parameters[
-        param.id
-      ].required('Required');
+      appFields.schema.parameters[param.id] =
+        appFields.schema.parameters[param.id].required('Required');
     }
     if (param.value.validator) {
       appFields.schema.parameters[param.id] = appFields.schema.parameters[
@@ -85,7 +84,7 @@ const FormSchema = app => {
         : param.value.default;
   });
 
-  (app.definition.inputs || []).forEach(i => {
+  (app.definition.inputs || []).forEach((i) => {
     const input = i;
     if (input.id.startsWith('_') || !input.value.visible) {
       return;
@@ -98,7 +97,7 @@ const FormSchema = app => {
     const field = {
       label: input.details.label,
       description: input.details.description,
-      required: input.value.required
+      required: input.value.required,
     };
     if (input.semantics.maxCardinality === 1) {
       field.type = 'text';
@@ -108,9 +107,8 @@ const FormSchema = app => {
     }
     appFields.schema.inputs[input.id] = Yup.string();
     if (input.value.required) {
-      appFields.schema.inputs[input.id] = appFields.schema.inputs[
-        input.id
-      ].required('Required');
+      appFields.schema.inputs[input.id] =
+        appFields.schema.inputs[input.id].required('Required');
     }
     if (input.value.validator) {
       appFields.schema.inputs[input.id] = appFields.schema.inputs[

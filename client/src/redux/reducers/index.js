@@ -6,7 +6,7 @@ import {
   ticketList,
   ticketDetailedView,
   ticketCreate,
-  ticketCreateModal
+  ticketCreateModal,
 } from './tickets.reducers';
 import requestAccess from './requestAccess.reducers';
 import systemMonitor from './systemMonitor.reducers';
@@ -45,5 +45,5 @@ export default combineReducers({
   onboarding,
   projects,
   users,
-  siteSearch
+  siteSearch,
 });

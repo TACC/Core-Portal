@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, wait } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -8,16 +8,16 @@ import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
 import {
   jobsFixture,
-  jobsSubmissionSuccessFixture
+  jobsSubmissionSuccessFixture,
 } from './fixtures/AppForm.jobs.fixture';
 import {
   appTrayFixture,
-  appTrayExpectedFixture
+  appTrayExpectedFixture,
 } from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
 import {
   namdAppFixture,
-  namdAppMissingKeysFixture
+  namdAppMissingKeysFixture,
 } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
@@ -31,18 +31,18 @@ const initialMockState = {
   projects: projectsFixture,
   files: {
     listing: {
-      modal: []
+      modal: [],
     },
     params: {
       modal: {
         api: '',
         path: '',
         scheme: '',
-        system: ''
-      }
+        system: '',
+      },
     },
-    modalProps: { select: {} }
-  }
+    modalProps: { select: {} },
+  },
 };
 
 function renderAppSchemaFormComponent(store, app) {
@@ -58,18 +58,18 @@ function renderAppSchemaFormComponent(store, app) {
 describe('AppSchemaForm', () => {
   it('renders the AppSchemaForm', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
 
   it('matches extended host names for apps', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppFixture,
@@ -77,18 +77,18 @@ describe('AppSchemaForm', () => {
         ...namdAppFixture.exec_sys,
         login: {
           ...namdAppFixture.exec_sys.login,
-          host: 'login1.frontera.tacc.utexas.edu'
-        }
-      }
+          host: 'login1.frontera.tacc.utexas.edu',
+        },
+      },
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
 
   it('does not match invalid hostnames', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppFixture,
@@ -96,11 +96,11 @@ describe('AppSchemaForm', () => {
         ...namdAppFixture.exec_sys,
         login: {
           ...namdAppFixture.exec_sys.login,
-          host: 'invalid_system_frontera.tacc.utexas.edu'
-        }
-      }
+          host: 'invalid_system_frontera.tacc.utexas.edu',
+        },
+      },
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Error/)).toBeDefined();
     });
   });
@@ -110,25 +110,25 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
       allocations: {
         hosts: {},
-        loading: false
-      }
+        loading: false,
+      },
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture
+      ...namdAppFixture,
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
     });
   });
 
   it('brings up the push keys message if there is an error listing frontera.tacc', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppMissingKeysFixture
+      ...namdAppMissingKeysFixture,
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(
           /There was a problem accessing your default My Data file system/
@@ -140,17 +140,17 @@ describe('AppSchemaForm', () => {
   it('renders the AppSchemaForm after job submission', async () => {
     const store = mockStore({
       ...initialMockState,
-      jobs: jobsSubmissionSuccessFixture
+      jobs: jobsSubmissionSuccessFixture,
     });
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
   });
 
   it('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
     const appFixture = {
@@ -158,15 +158,12 @@ describe('AppSchemaForm', () => {
       definition: {
         ...namdAppFixture.definition,
         defaultNodeCount: 1,
-        defaultQueue: 'normal'
-      }
+        defaultQueue: 'normal',
+      },
     };
 
-    const { getByText } = renderAppSchemaFormComponent(
-      store,
-      appFixture
-    );
-    await wait(() => {
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    await waitFor(() => {
       expect(
         getByText(
           /Node Count must be greater than or equal to 3 for the normal queue/
@@ -177,7 +174,7 @@ describe('AppSchemaForm', () => {
 
   it('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
     const appFixture = {
@@ -185,16 +182,13 @@ describe('AppSchemaForm', () => {
       definition: {
         ...namdAppFixture.definition,
         defaultNodeCount: 3,
-        defaultQueue: 'small'
-      }
+        defaultQueue: 'small',
+      },
     };
 
-    const { getByText } = renderAppSchemaFormComponent(
-      store,
-      appFixture
-    );
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(
           /Node Count must be less than or equal to 2 for the small queue/
@@ -212,29 +206,31 @@ describe('AppSchemaForm', () => {
           error: false,
           errorMessage: null,
           loading: false,
-          defaultHost: ''
+          defaultHost: '',
         },
         definitions: {
           list: [],
           error: false,
           errorMessage: null,
-          loading: false
+          loading: false,
         },
-      }
+      },
     });
 
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture
+      ...namdAppFixture,
     });
 
-    await wait(() => {
-      expect(getByText(/No storage systems enabled for this portal./)).toBeDefined();
+    await waitFor(() => {
+      expect(
+        getByText(/No storage systems enabled for this portal./)
+      ).toBeDefined();
     });
   });
 
   it('renders validation error for using normal queue for SERIAL apps on Frontera', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
     const appFixture = {
@@ -243,16 +239,13 @@ describe('AppSchemaForm', () => {
         ...namdAppFixture.definition,
         defaultNodeCount: 1,
         defaultQueue: 'normal',
-        parallelism: 'SERIAL'
-      }
+        parallelism: 'SERIAL',
+      },
     };
 
-    const { getByText } = renderAppSchemaFormComponent(
-      store,
-      appFixture
-    );
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(/The normal queue does not support serial apps/)
       ).toBeDefined();
@@ -261,15 +254,15 @@ describe('AppSchemaForm', () => {
 
   it('displays an error when license is missing', async () => {
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppFixture,
       license: {
-        type: 'Application Name'
-      }
+        type: 'Application Name',
+      },
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Activate your Application Name license/)).toBeDefined();
     });
   });
@@ -281,9 +274,9 @@ describe('AppDetail', () => {
       allocations: { loading: false },
       app: {
         ...initialAppState,
-        definition: { ...appTrayFixture.definitions['vis-portal'] }
+        definition: { ...appTrayFixture.definitions['vis-portal'] },
       },
-      apps: { ...appTrayExpectedFixture }
+      apps: { ...appTrayExpectedFixture },
     });
     const { getByText } = renderComponent(<AppDetail />, store);
     expect(
