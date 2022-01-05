@@ -13,6 +13,19 @@
 {% endblock %}
 {% block scripts %}
   <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
-  <script src="https://cep.dev:8080/build/vendors~main.bundle.js"></script>
-  <script src="https://cep.dev:8080/build/main.bundle.js"></script>
+
+  {% if DEBUG %}
+    <script type="module">
+      import RefreshRuntime from "https://cep.dev:3000/core/static/@react-refresh"
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    <script type="module" src="https://cep.dev:3000/core/static/@vite/client"></script>
+    <script type="module" src="https://cep.dev:3000/core/static/src/index.jsx"></script>
+  {% else %}
+    {% include "index.html" %}
+  {% endif %}
+
 {% endblock %}
