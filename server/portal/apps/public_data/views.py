@@ -10,6 +10,8 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
+        context['setup_complete'] = False if self.request.user.is_anonymous \
+            else self.request.user.profile.setup_complete
         context['DEBUG'] = settings.DEBUG
         return context
 
