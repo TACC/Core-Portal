@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2022-01-04: Vite Migration; Request Access Page; Relaunch Jobs; ARIA and other bugfixes
+
+### Fixed
+
+- FP-1447: handle anonymous users in data context (#580)
+
 ## [2.12.0] - 2022-01-04: Vite Migration; Request Access Page; Relaunch Jobs; ARIA and other bugfixes
 
 ### Added
