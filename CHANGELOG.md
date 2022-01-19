@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2022-01-18: Fix anonymous views
+
+### Fixed
+
+- FP-1447: handle anonymous users in data context (#580)
+
 ## [2.12.0] - 2022-01-04: Vite Migration; Request Access Page; Relaunch Jobs; ARIA and other bugfixes
 
 ### Added
@@ -572,7 +578,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.12.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.12.1...HEAD
+[2.12.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.1
 [2.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.0
 [2.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.1
 [2.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.0
