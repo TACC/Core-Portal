@@ -85,3 +85,38 @@ def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_
     )
     assert ProjectMetadata.objects.all().count() == 1
     assert ProjectMetadata.objects.last().pi == mock_owner
+
+
+def test_project_change_system_role(agave_client, mock_owner, mock_project_save_signal):
+    agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
+    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    sys.last_modified = '1234'
+    sys.description = 'PRJ-123'
+    prj = Project(
+        agave_client,
+        'PRJ-123',
+        storage=sys
+    )
+    prj.change_storage_system_role(mock_owner, 'USER')
+    agave_client.systems.updateRole.assert_called_with(
+        body={'role': 'USER', 'username': 'username'},
+        systemId='cep.test.PRJ-123')
+
+
+def test_project_change_project_role(agave_client, mock_owner, mock_project_save_signal, mocker):
+    mock_remove = mocker.patch('portal.apps.projects.models.base.Project.remove_co_pi')
+    mock_add = mocker.patch('portal.apps.projects.models.base.Project.add_member')
+
+    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    sys.last_modified = '1234'
+    sys.description = 'PRJ-123'
+
+    prj = Project(
+        agave_client,
+        'PRJ-123',
+        storage=sys
+    )
+
+    prj.change_project_role(mock_owner, 'co_pi', 'member')
+    mock_remove.assert_called_with(mock_owner)
+    mock_add.assert_called_with(mock_owner)

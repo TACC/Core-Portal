@@ -1,4 +1,5 @@
 
+from mock.mock import patch
 import pytest
 from portal.apps.projects.managers.base import ProjectsManager
 from mock import MagicMock
@@ -14,6 +15,8 @@ def mock_project_mgr(mocker):
     mocker.patch('portal.apps.projects.views.ProjectsManager.update_prj')
     mocker.patch('portal.apps.projects.views.ProjectsManager.add_member')
     mocker.patch('portal.apps.projects.views.ProjectsManager.remove_member')
+    mocker.patch('portal.apps.projects.views.ProjectsManager.change_project_role')
+    mocker.patch('portal.apps.projects.views.ProjectsManager.change_system_role')
     return ProjectsManager
 
 
@@ -110,6 +113,33 @@ def test_project_instance_patch(regular_user, client, mock_project_mgr):
         'response': {'projectId': 'PRJ-123'}
     }
 
+def test_project_change_role(regular_user, client, mock_project_mgr):
+    mock_project_mgr.change_project_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
+    client.force_login(regular_user)
+
+    patch_body = {'action': 'change_project_role', 'username': 'test_user', 'oldRole': 'co_pi', 'newRole': 'team_member'}
+
+    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
+
+    mock_project_mgr.change_project_role.assert_called_with('PRJ-123', 'test_user', 'co_pi', 'team_member')
+    assert response.json() == {
+        'status': 200,
+        'response': {'projectId': 'PRJ-123'}
+    }
+
+def test_project_change_system_role(regular_user, client, mock_project_mgr):
+    mock_project_mgr.change_system_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
+    client.force_login(regular_user)
+
+    patch_body = {'action': 'change_system_role', 'username': 'test_user', 'newRole': 'USER'}
+
+    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
+
+    mock_project_mgr.change_system_role.assert_called_with('PRJ-123', 'test_user', 'USER')
+    assert response.json() == {
+        'status': 200,
+        'response': {'projectId': 'PRJ-123'}
+    }
 
 def test_members_view_add(regular_user, client, mock_project_mgr):
     mock_project_mgr.add_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})

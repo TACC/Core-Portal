@@ -299,3 +299,38 @@ class ProjectMembersApiView(BaseApiView):
             },
             encoder=ProjectsManager.meta_serializer_cls
         )
+
+    def change_project_role(self, request, project_id, **data):
+        username = data.get('username')
+        old_role = data.get('oldRole')
+        new_role = data.get('newRole')
+        prj = ProjectsManager(request.user).change_project_role(
+            project_id,
+            username,
+            old_role,
+            new_role
+        )
+
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
+
+    def change_system_role(self, request, project_Id, **data):
+        username = data.get('username')
+        new_role = data.get('newRole')
+        prj = ProjectsManager(request.user).change_system_role(
+            project_Id,
+            username,
+            new_role)
+
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )

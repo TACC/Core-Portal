@@ -458,6 +458,12 @@ class Project(object):
         self.save_metadata()
         return self
 
+    def change_project_role(self, user, old_role, new_role):
+        add_new_role = getattr(self, "add_{}".format(new_role))
+        remove_old_role = getattr(self, "remove_{}".format(old_role))
+        remove_old_role(user)
+        add_new_role(user)
+
     def save_metadata(self):
         """Help method to save metadata object.
 
@@ -480,6 +486,13 @@ class Project(object):
         """
         set_storage_auth(self.storage)
         self.storage.update()
+
+    def change_storage_system_role(self, user, new_role):
+        self.storage.roles.add(
+            user.username,
+            new_role
+        )
+        self.storage.roles.save()
 
     def __repr__(self):
         """Repr."""
