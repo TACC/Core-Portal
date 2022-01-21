@@ -848,17 +848,12 @@ export function* trashFile(system, path) {
 
 export async function emptyUtil(api, scheme, system, path) {
   const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') }, //, 'X-HTTP-Method': 'DELETE' },
-    credentials: 'same-origin',
-    body: JSON.stringify({}),
+  const method = 'PUT';
+  return fetchUtil({
+    url,
+    method, 
+    body: JSON.stringify({})
   });
-
-  if (!request.ok) {
-    throw new Error(request.status);
-  }
-  return request;
 }
 
 export function* watchEmpty() {
@@ -873,20 +868,18 @@ export function* emptyFiles(action) {
     result: all(emptyCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE'),
   });
-  if (!result.includes('ERR')) {
-    yield put({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'empty', props: {} },
-    });
-    yield put({
-      type: 'ADD_TOAST',
-      payload: {
-        message: `${
-          result.length > 1 ? `${result.length} files` : 'File'
-        } deleted`,
-      },
-    });
-  }
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'empty', props: {} },
+  });
+  yield put({
+    type: 'ADD_TOAST',
+    payload: {
+      message: `${
+        result.length > 1 ? `${result.length} files` : 'File'
+      } ${!result.includes('ERR') ? 'deleted' : 'failed to delete'}`,
+    },
+  });
   yield call(action.payload.reloadCallback);
 }
 
