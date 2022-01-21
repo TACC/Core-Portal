@@ -18,6 +18,11 @@ const initialMockState = {
     },
   },
   projects: projectsFixture,
+  workbench: {
+    config: {
+      trashPath: '.Trash'
+    }
+  }
 };
 
 describe('DataFilesCopyModal', () => {

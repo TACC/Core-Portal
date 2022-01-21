@@ -2,7 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { SectionMessage } from '_common';
+import { LoadingSpinner, SectionMessage } from '_common';
+import styles from './DataFilesCompressModal.module.scss';
+import Icon from '_common/Icon';
 
 const DataFilesEmptyModal = React.memo(() => {
   const history = useHistory();
@@ -42,6 +44,15 @@ const DataFilesEmptyModal = React.memo(() => {
     });
   }, [reloadPage, trashedFiles]);
 
+  const status = useSelector(state => state.files.operationStatus.empty);
+  let buttonIcon;
+  if (Object.values(status).some(status => status==='RUNNING')) {
+    buttonIcon = <LoadingSpinner placement="inline"></LoadingSpinner>
+  }
+  else {
+    buttonIcon = null;
+  }
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -72,7 +83,8 @@ const DataFilesEmptyModal = React.memo(() => {
           onClick={emptyCallback}
           className="data-files-btn"
         >
-          Delete Files
+          {buttonIcon}
+          <span className={buttonIcon ? styles['with-icon'] : ''}>Delete Files</span>
         </Button>
       </ModalFooter>
     </Modal>
