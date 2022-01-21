@@ -15,7 +15,8 @@
     font-size: 1.3em;
   }
 }
-.workbench-content .data-files-toolbar-button.empty-button.btn-secondary {
+.data-files-toolbar-button, 
+#empty-button {
   background-color: #7754e8;
   color: white;
 }

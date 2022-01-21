@@ -11,12 +11,11 @@ export const ToolbarButton = ({
   iconName,
   onClick,
   disabled,
-  buttonName,
+  id,
 }) => {
   const iconClassName = `icon-action icon-${iconName}`;
-  const buttonClassName = `data-files-toolbar-button${buttonName}`;
   return (
-    <Button disabled={disabled} onClick={onClick} className={buttonClassName}>
+    <Button disabled={disabled} onClick={onClick} className="data-files-toolbar-button" id={id}>
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
@@ -25,14 +24,14 @@ export const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-  buttonName: '',
+  id:''
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-  buttonName: PropTypes.string,
+  id: PropTypes.string
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
@@ -51,7 +50,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const inTrash = useSelector((state) =>
-    state.files.params.FilesListing.path.startsWith('.Trash')
+    state.files.params.FilesListing.path.startsWith(state.workbench.config.trashPath)
   );
   const trashedFiles = useSelector((state) =>
     inTrash ? state.files.listing.FilesListing : []
@@ -265,7 +264,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="trash"
             onClick={!inTrash ? trash : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
-            buttonName={!inTrash ? '' : ' empty-button btn-secondary'}
+            id={!inTrash ? '' : 'empty-button'}
           />
         )}
       </div>
