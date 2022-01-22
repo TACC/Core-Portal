@@ -6,16 +6,15 @@ import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({
-  text,
-  iconName,
-  onClick,
-  disabled,
-  id,
-}) => {
+export const ToolbarButton = ({ text, iconName, onClick, disabled, id }) => {
   const iconClassName = `icon-action icon-${iconName}`;
   return (
-    <Button disabled={disabled} onClick={onClick} className="data-files-toolbar-button" id={id}>
+    <Button
+      disabled={disabled}
+      onClick={onClick}
+      className="data-files-toolbar-button"
+      id={id}
+    >
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
@@ -24,14 +23,14 @@ export const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-  id:''
+  id: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-  id: PropTypes.string
+  id: PropTypes.string,
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
@@ -50,7 +49,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const inTrash = useSelector((state) =>
-    state.files.params.FilesListing.path.startsWith(state.workbench.config.trashPath)
+    state.files.params.FilesListing.path.startsWith(
+      state.workbench.config.trashPath
+    )
   );
   const trashedFiles = useSelector((state) =>
     inTrash ? state.files.listing.FilesListing : []

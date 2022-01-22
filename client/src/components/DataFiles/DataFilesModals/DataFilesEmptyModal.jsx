@@ -44,15 +44,14 @@ const DataFilesEmptyModal = React.memo(() => {
     });
   }, [reloadPage, trashedFiles]);
 
-  const status = useSelector(state => state.files.operationStatus.empty);
+  const status = useSelector((state) => state.files.operationStatus.empty);
   let buttonIcon;
-  if (Object.values(status).some(status => status==='RUNNING')) {
-    buttonIcon = <LoadingSpinner placement="inline"></LoadingSpinner>
-  }
-  else {
+  if (Object.values(status).some((status) => status === 'RUNNING')) {
+    buttonIcon = <LoadingSpinner placement="inline"></LoadingSpinner>;
+  } else {
     buttonIcon = null;
   }
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -84,7 +83,9 @@ const DataFilesEmptyModal = React.memo(() => {
           className="data-files-btn"
         >
           {buttonIcon}
-          <span className={buttonIcon ? styles['with-icon'] : ''}>Delete Files</span>
+          <span className={buttonIcon ? styles['with-icon'] : ''}>
+            Delete Files
+          </span>
         </Button>
       </ModalFooter>
     </Modal>

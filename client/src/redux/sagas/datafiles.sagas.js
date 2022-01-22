@@ -851,8 +851,8 @@ export async function emptyUtil(api, scheme, system, path) {
   const method = 'PUT';
   return fetchUtil({
     url,
-    method, 
-    body: JSON.stringify({})
+    method,
+    body: JSON.stringify({}),
   });
 }
 
@@ -875,9 +875,9 @@ export function* emptyFiles(action) {
   yield put({
     type: 'ADD_TOAST',
     payload: {
-      message: `${
-        result.length > 1 ? `${result.length} files` : 'File'
-      } ${!result.includes('ERR') ? 'deleted' : 'failed to delete'}`,
+      message: `${result.length > 1 ? `${result.length} files` : 'File'} ${
+        !result.includes('ERR') ? 'deleted' : 'failed to delete'
+      }`,
     },
   });
   yield call(action.payload.reloadCallback);

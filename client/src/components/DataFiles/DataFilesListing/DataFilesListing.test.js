@@ -50,6 +50,11 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {
+      trashPath: '.Trash',
+    },
+  },
 };
 
 describe('CheckBoxCell', () => {

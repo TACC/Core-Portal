@@ -169,6 +169,7 @@ describe('DataFilesToolbar', () => {
           config: {
             extract: '',
             compress: '',
+            trashPath: '.Trash',
           },
         },
         files: {
@@ -181,7 +182,6 @@ describe('DataFilesToolbar', () => {
           selected: { FilesListing: [] },
           operationStatus: { trash: false },
         },
-        //listing: {  } },
         systems: systemsFixture,
       }),
       createMemoryHistory()
@@ -197,6 +197,7 @@ describe('DataFilesToolbar', () => {
           config: {
             extract: '',
             compress: '',
+            trashPath: '.Trash',
           },
         },
         files: {

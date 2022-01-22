@@ -135,7 +135,8 @@ LastModifiedCell.propTypes = {
 
 export const FileIcon = ({ format, path }) => {
   const isFolder = format === 'folder';
-  const isTrash = path === '/.Trash';
+  const isTrash =
+    path === '/' + useSelector((state) => state.workbench.config.trashPath);
   let iconName = 'file';
   let iconLabel = 'File';
   if (isFolder) {
@@ -150,7 +151,10 @@ export const FileIcon = ({ format, path }) => {
 };
 FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
+};
+FileIcon.defaultProps = {
+  path: '',
 };
 
 export const FileIconCell = ({ cell }) => {
