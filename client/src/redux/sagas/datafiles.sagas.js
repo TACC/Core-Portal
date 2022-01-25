@@ -864,21 +864,32 @@ export function* emptyFiles(action) {
   const emptyCalls = action.payload.src.map((file) => {
     return call(emptyFile, file.system, file.path);
   });
-  const { result } = yield race({
-    result: all(emptyCalls),
-    cancel: take('DATA_FILES_MODAL_CLOSE'),
-  });
+  try {
+    const { result } = yield race({
+      result: all(emptyCalls),
+      cancel: take('DATA_FILES_MODAL_CLOSE'),
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } deleted `,
+      },
+    });
+  } catch {
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } failed to delete `,
+      },
+    });
+  }
   yield put({
     type: 'DATA_FILES_TOGGLE_MODAL',
     payload: { operation: 'empty', props: {} },
-  });
-  yield put({
-    type: 'ADD_TOAST',
-    payload: {
-      message: `${result.length > 1 ? `${result.length} files` : 'File'} ${
-        !result.includes('ERR') ? 'deleted' : 'failed to delete'
-      }`,
-    },
   });
   yield call(action.payload.reloadCallback);
 }
