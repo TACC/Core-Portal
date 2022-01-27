@@ -881,9 +881,7 @@ export function* emptyFiles(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `${
-          result.length > 1 ? `${result.length} files` : 'File'
-        } failed to delete `,
+        message: 'File(s) failed to delete',
       },
     });
   }
