@@ -6,14 +6,14 @@ import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled, id }) => {
+export const ToolbarButton = ({ text, iconName, onClick, disabled, className }) => {
   const iconClassName = `icon-action icon-${iconName}`;
+  const buttonClassName = className ? `data-files-toolbar-button ${className}` : "data-files-toolbar-button";
   return (
     <Button
       disabled={disabled}
       onClick={onClick}
-      className="data-files-toolbar-button"
-      id={id}
+      className={buttonClassName}
     >
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
@@ -23,14 +23,14 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled, id }) => {
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-  id: '',
+  className: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-  id: PropTypes.string,
+  className: PropTypes.string,
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
@@ -265,7 +265,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="trash"
             onClick={!inTrash ? trash : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
-            id={!inTrash ? '' : 'empty-button'}
+            className={!inTrash ? '' : 'is-empty'}
           />
         )}
       </div>

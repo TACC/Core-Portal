@@ -15,8 +15,7 @@
     font-size: 1.3em;
   }
 }
-.data-files-toolbar-button,
-#empty-button {
+.data-files-toolbar-button.is-empty.btn.btn-secondary {
   background-color: #7754e8;
   color: white;
 }
