@@ -6,15 +6,19 @@ import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled, className }) => {
+export const ToolbarButton = ({
+  text,
+  iconName,
+  onClick,
+  disabled,
+  className,
+}) => {
   const iconClassName = `icon-action icon-${iconName}`;
-  const buttonClassName = className ? `data-files-toolbar-button ${className}` : "data-files-toolbar-button";
+  const buttonClassName = className
+    ? `data-files-toolbar-button ${className}`
+    : 'data-files-toolbar-button';
   return (
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      className={buttonClassName}
-    >
+    <Button disabled={disabled} onClick={onClick} className={buttonClassName}>
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
