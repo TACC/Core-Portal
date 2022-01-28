@@ -21,10 +21,10 @@ describe('AppRouter', () => {
 
     renderComponent(<AppRouter />, store);
     expect(store.getActions()).toEqual([
-      { type: 'FETCH_INTRO' },
       { type: 'FETCH_AUTHENTICATED_USER' },
       { type: 'FETCH_WORKBENCH' },
       { type: 'FETCH_SYSTEMS' },
+      { type: 'FETCH_INTRO' },
     ]);
   });
 });

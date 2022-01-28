@@ -16,14 +16,17 @@ function AppRouter() {
   );
 
   useEffect(() => {
-    if (authenticatedUser) {
-      dispatch({ type: 'FETCH_INTRO' });
-    }
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'GET_PROFILE_DATA' });
     dispatch({ type: 'FETCH_WORKBENCH' });
     dispatch({ type: 'FETCH_SYSTEMS' });
   }, []);
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      dispatch({ type: 'FETCH_INTRO' });
+    }
+  }, [authenticatedUser]);
   return (
     <Router>
       <Route path="/search/:filter?" component={SiteSearch} />
