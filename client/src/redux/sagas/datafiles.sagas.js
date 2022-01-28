@@ -872,9 +872,9 @@ export function* emptyFiles(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `${
-          result.length > 1 ? `${result.length} files` : 'File'
-        } deleted `,
+        message: `${result.length > 1 ? `${result.length} files` : 'File'} ${
+          !result.includes('ERR') ? 'deleted' : 'failed to delete'
+        }`,
       },
     });
   } catch {
