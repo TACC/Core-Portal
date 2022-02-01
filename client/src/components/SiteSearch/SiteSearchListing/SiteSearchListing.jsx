@@ -15,7 +15,7 @@ import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
   <article
-    className={styles['sitesearch-cms-item"']}
+    className={styles['sitesearch-cms-item']}
     data-testid="sitesearch-cms-item"
   >
     <a href={url}>{title}</a>
