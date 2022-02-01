@@ -21,7 +21,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const { query_string: queryString, filter } = parse(useLocation().search);
   const { files, loading, error } = useSelector(
     (state) => ({
-      files: state.files.listing.FilesListing,
+      files: state.files.listing.FilesListing.map((file) => ({
+        ...file,
+        disabled:
+          state.files.operationStatus.trash[file.system + file.path] ===
+          'RUNNING',
+      })),
       loading: state.files.loading.FilesListing,
       error: state.files.error.FilesListing,
     }),
@@ -70,6 +75,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         index={row.index}
         name={row.original.name}
         format={row.original.format}
+        disabled={row.original.disabled}
       />
     ),
     []
@@ -106,7 +112,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       },
       {
         id: 'icon',
-        accessor: 'format',
+        accessor: (row) => row,
         width: 0.05,
         minWidth: 20,
         maxWidth: 25,
@@ -118,7 +124,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         width: 0.5,
         Cell: fileNavCellCallback,
       },
-      { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
+      {
+        Header: 'Size',
+        accessor: 'length',
+        Cell: FileLengthCell,
+        width: 0.2,
+      },
       {
         Header: 'Last Modified',
         accessor: 'lastModified',
