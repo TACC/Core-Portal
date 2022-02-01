@@ -803,7 +803,7 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path, file.id);
+    return call(trashFile, file.system, file.path);
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -826,22 +826,88 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, id) {
+export function* trashFile(system, path) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'RUNNING', key: id, operation: 'trash' },
+    payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
     yield call(trashUtil, 'tapis', 'private', system, path);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: id, operation: 'trash' },
+      payload: { status: 'SUCCESS', key: system + path, operation: 'trash' },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: id, operation: 'trash' },
+      payload: { status: 'ERROR', key: system + path, operation: 'trash' },
+    });
+  }
+}
+
+export async function emptyUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const method = 'PUT';
+  return fetchUtil({
+    url,
+    method,
+    body: JSON.stringify({}),
+  });
+}
+
+export function* watchEmpty() {
+  yield takeLeading('DATA_FILES_EMPTY', emptyFiles);
+}
+
+export function* emptyFiles(action) {
+  const emptyCalls = action.payload.src.map((file) => {
+    return call(emptyFile, file.system, file.path);
+  });
+  try {
+    const { result } = yield race({
+      result: all(emptyCalls),
+      cancel: take('DATA_FILES_MODAL_CLOSE'),
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${result.length > 1 ? `${result.length} files` : 'File'} ${
+          !result.includes('ERR') ? 'deleted' : 'failed to delete'
+        }`,
+      },
+    });
+  } catch {
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: 'File(s) failed to delete',
+      },
+    });
+  }
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'empty', props: {} },
+  });
+  yield call(action.payload.reloadCallback);
+}
+
+export function* emptyFile(system, path) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'RUNNING', key: system + path, operation: 'empty' },
+  });
+  try {
+    yield call(emptyUtil, 'tapis', 'private', system, path);
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'SUCCESS', key: system + path, operation: 'empty' },
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'ERROR', key: system + path, operation: 'empty' },
     });
     return 'ERR';
   }

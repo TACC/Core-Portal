@@ -57,7 +57,7 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
   const tableColumns = [
     {
       id: 'icon',
-      accessor: 'format',
+      accessor: (row) => row,
       Cell: FileIconCell,
       className: 'site-search__icons',
     },
