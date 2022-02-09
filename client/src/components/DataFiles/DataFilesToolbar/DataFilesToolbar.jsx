@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+export const ToolbarButton = ({
+  text,
+  iconName,
+  onClick,
+  disabled,
+  className,
+}) => {
   const iconClassName = `icon-action icon-${iconName}`;
+  const buttonClassName = className
+    ? `data-files-toolbar-button ${className}`
+    : 'data-files-toolbar-button';
   return (
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      className="data-files-toolbar-button"
-    >
+    <Button disabled={disabled} onClick={onClick} className={buttonClassName}>
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
@@ -21,22 +27,42 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
+  className: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
+
+  const history = useHistory();
+  const location = useLocation();
+  const reloadPage = () => {
+    history.push(location.pathname);
+  };
 
   const selectedFiles = useSelector((state) =>
     state.files.selected.FilesListing.map(
       (i) => state.files.listing.FilesListing[i]
     )
   );
+
+  const inTrash = useSelector((state) =>
+    state.files.params.FilesListing.path.startsWith(
+      state.workbench.config.trashPath
+    )
+  );
+  const trashedFiles = useSelector((state) =>
+    inTrash ? state.files.listing.FilesListing : []
+  );
+
+  const status = useSelector((state) => state.files.operationStatus.trash);
+
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
@@ -144,10 +170,23 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
-  const trash = () => {
+  const trash = useCallback(() => {
+    const filteredSelected = selectedFiles.filter(
+      (f) => status[f.system + f.path] !== 'SUCCESS'
+    );
+    dispatch({
+      type: 'DATA_FILES_TRASH',
+      payload: {
+        src: filteredSelected,
+        reloadCallback: reloadPage,
+      },
+    });
+  }, [selectedFiles, reloadPage]);
+
+  const empty = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: { selectedFiles } },
+      payload: { operation: 'empty', props: {} },
     });
   };
 
@@ -165,6 +204,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
+  const canEmpty = trashedFiles.length > 0;
+
   return (
     <>
       <div id="data-files-toolbar-button-row">
@@ -224,10 +265,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
         )}
         {showTrash && (
           <ToolbarButton
-            text="Trash"
+            text={!inTrash ? 'Trash' : 'Empty'}
             iconName="trash"
-            onClick={trash}
-            disabled={!canTrash}
+            onClick={!inTrash ? trash : empty}
+            disabled={!inTrash ? !canTrash : !canEmpty}
+            className={!inTrash ? '' : 'is-empty'}
           />
         )}
       </div>
