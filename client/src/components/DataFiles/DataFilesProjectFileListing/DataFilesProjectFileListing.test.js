@@ -60,6 +60,11 @@ const initialMockState = {
       username: 'username',
     },
   },
+  workbench: {
+    config: {
+      trashPath: '.Trash',
+    },
+  },
 };
 
 describe('DataFilesProjectFileListing', () => {

@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Checkbox, Icon } from '_common';
+import { Checkbox, Icon, LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
+import '../../Onboarding/OnboardingStep.module.scss';
 
 import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
@@ -36,13 +37,15 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index, name, format }) => {
+export const CheckboxCell = React.memo(({ index, name, format, disabled }) => {
   const selected = useSelector((state) =>
     state.files.selected.FilesListing.includes(index)
   );
   const itemFormat = format === 'raw' ? 'file' : format;
 
-  return (
+  return disabled ? (
+    <LoadingSpinner placement="inline" />
+  ) : (
     <Checkbox
       isChecked={selected}
       id={`FileCheckbox_${index}`}
@@ -55,6 +58,7 @@ CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
 export const FileNavCell = React.memo(
@@ -129,22 +133,44 @@ LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
 };
 
-export const FileIcon = ({ format }) => {
+export const FileIcon = ({ format, path }) => {
   const isFolder = format === 'folder';
-  const iconName = isFolder ? 'folder' : 'file';
-  const iconLabel = isFolder ? 'Folder' : 'File';
-
+  const isTrash =
+    path === '/' + useSelector((state) => state.workbench.config.trashPath);
+  let iconName = 'file';
+  let iconLabel = 'File';
+  if (isFolder) {
+    iconName = 'folder';
+    iconLabel = 'Folder';
+    if (isTrash) {
+      iconName = 'trash';
+      iconLabel = 'Trash';
+    }
+  }
   return <Icon name={iconName}>{iconLabel}</Icon>;
 };
 FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
+  path: PropTypes.string,
+};
+FileIcon.defaultProps = {
+  path: '',
 };
 
 export const FileIconCell = ({ cell }) => {
-  return <FileIcon format={cell.value} />;
+  return (
+    <FileIcon format={cell.row.original.format} path={cell.row.original.path} />
+  );
 };
 FileIconCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
+  cell: PropTypes.shape({
+    row: PropTypes.shape({
+      original: PropTypes.shape({
+        format: PropTypes.string,
+        path: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
 };
 
 export const ViewPathCell = ({ file }) => {

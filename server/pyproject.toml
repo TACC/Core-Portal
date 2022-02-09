@@ -5,7 +5,7 @@ description = "Django backend for the core portal."
 authors = ["TACC-WMA <wma-portals@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
-Django = "^2.2.25"
+Django = "^2.2.26"
 python = "^3.6"
 elasticsearch-dsl = "^7.2.1"
 django-bootstrap4 = "^2.0.1"
@@ -24,7 +24,7 @@ cryptography = "^3.3"
 agavepy = "^0.9.5"
 pytz = "^2020.1"
 cached-property = "^1.5.1"
-ipython = "^7.15.0"
+ipython = "^7.16.3"
 pyOpenSSL = "^19.1.0"
 pycryptodome = "^3.9.7"
 elasticsearch = "^7.7.1"

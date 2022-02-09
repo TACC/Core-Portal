@@ -45,7 +45,7 @@ const DataFilesSelectedTable = ({ data, operation }) => {
     () => [
       {
         id: 'icon',
-        accessor: 'format',
+        accessor: (row) => row,
         width: 0.1,
         minWidth: 20,
         maxWidth: 30,
@@ -56,7 +56,12 @@ const DataFilesSelectedTable = ({ data, operation }) => {
         width: 0.5,
         Cell: DataFilesSelectedNameCell,
       },
-      { accessor: 'length', Cell: FileLengthCell, width: 0.25 },
+      {
+        id: 'Size',
+        accessor: 'length',
+        Cell: FileLengthCell,
+        width: 0.25,
+      },
       {
         id: 'status',
         width: 0.15,

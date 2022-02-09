@@ -40,6 +40,11 @@ describe('PublicData', () => {
         },
       },
       pushKeys: { target: {} },
+      workbench: {
+        config: {
+          trashPath: '.Trash',
+        },
+      },
     });
     const { getByText } = renderComponent(<PublicData />, store, history);
 
