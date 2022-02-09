@@ -1,40 +1,45 @@
+import React from 'react';
 import { Button } from '_common';
 
 function UIPatternsButton() {
-    return (
-        <dl>
-            <dt>Default Button</dt>
-            <dd>
-                <Button children='Button'></Button>
-            </dd>
-            <dt>Primary Button</dt>
-            <dd>
-                <Button children='Button' type='primary'></Button>
-                <Button children='Disabled' type='primary' disabled={true}></Button>
-            </dd>
-            <dt>Secondary Button</dt>
-            <dd>
-                <Button children='Button' type='secondary'></Button>
-                <Button children='Disabled' type='secondary' disabled={true}></Button>
-            </dd>
-            <dt>Button Sizes</dt>
-            <dd>
-                <Button children='s' size='small'></Button>
-                <Button children='short' size='short'></Button>
-                <Button children='medium' size='medium'></Button>
-                <Button children='large' size='large'></Button>
-            </dd>
-            <dt>Button with Icon</dt>
-            <dd>
-                <Button children='Button' iconNameBefore='trash'></Button>
-                <Button children='Button' iconNameAfter='trash'></Button>
-            </dd>
-            <dt>Button as Link</dt>
-            <dd>
-                <Button children='Link' type='link'></Button>
-            </dd>
-        </dl>
-    );
+  return (
+    <dl>
+      <dt>Default Button</dt>
+      <dd>
+        <Button>Button</Button>
+      </dd>
+      <dt>Primary Button</dt>
+      <dd>
+        <Button type="primary">Button</Button>
+        <Button type="primary" disabled={true}>
+          Disabled
+        </Button>
+      </dd>
+      <dt>Secondary Button</dt>
+      <dd>
+        <Button type="secondary">Button</Button>
+        <Button type="secondary" disabled={true}>
+          Disabled
+        </Button>
+      </dd>
+      <dt>Button Sizes</dt>
+      <dd>
+        <Button size="small">s</Button>
+        <Button size="short">short</Button>
+        <Button size="medium">medium</Button>
+        <Button size="large">large</Button>
+      </dd>
+      <dt>Button with Icon</dt>
+      <dd>
+        <Button iconNameBefore="trash">Button</Button>
+        <Button iconNameAfter="trash">Button</Button>
+      </dd>
+      <dt>Button as Link</dt>
+      <dd>
+        <Button type="link">Link</Button>
+      </dd>
+    </dl>
+  );
 }
 
 export default UIPatternsButton;

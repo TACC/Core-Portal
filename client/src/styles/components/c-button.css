@@ -50,7 +50,7 @@ Styleguide Components.Button
   /* FAQ: Vertical padding reduced by 1px each to near button height of design * 1.2 */
   padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
   border-radius: 0;
-  border-width: 1px;
+  border: 1px solid #afafaf;
   font-weight: 700;
   /* NOTE: Should set `font-size`, but `.icon`'s `em` adversely changes icon size */
 }
@@ -71,7 +71,7 @@ Styleguide Components.Button
 }
 .c-button--primary:not(:disabled):hover {
   color: white;
-  background-color: #5F6AC3;
+  background-color: #5f6ac3;
   border-color: var(--global-color-primary--x-dark);
 }
 .c-button--primary:not(:disabled):active {
@@ -133,6 +133,6 @@ Styleguide Components.Button
 .c-button__icon--after {
   margin-left: auto; /* this is how to "justify-self" on flex children */
 }
- .c-button__text {
+.c-button__text {
   /* … */
 }
