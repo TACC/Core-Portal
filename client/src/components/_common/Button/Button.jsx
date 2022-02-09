@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button as BootstrapButton } from 'reactstrap';
 import Icon from '../Icon';
 
-import '../../../styles/components/c-button.css';
+import styles from './Button.module.css';
 
 export const TYPES = [
     '',
@@ -23,43 +22,59 @@ export const SIZES = [
     'small'
 ]
 
-const Button = ({text, iconNameBefore, iconNameAfter, type, size, ...props}) => {
-    let buttonTypeClass = 'c-button--';
+const Button = ({children, iconNameBefore, iconNameAfter, type, size, disabled, onClick}) => {
+    function onclick(e) {
+        if (disabled) {
+            e.preventDefault();
+            return;
+        }
+        if (onClick) {
+            return onclick(e);
+        }
+    }
+
+    let buttonTypeClass;
     if (type === 'link') {
-            buttonTypeClass += 'as-link';
+            buttonTypeClass = styles['c-button--as-link'];
     } else if (type === 'primary' || type === 'secondary') {
-        buttonTypeClass += type;
+        buttonTypeClass = styles[`c-button--${type}`];
     } else if (type === '') {
         buttonTypeClass = type;
     }
-    let buttonSizeClass = 'c-button--';
-    if (size==='small') {
-        buttonSizeClass += 'size-small';
+    
+    let buttonSizeClass;
+    if (size === 'small') {
+        buttonSizeClass = styles['c-button--size-small'];
     } else {
-        buttonSizeClass += `width-${size}`;
+        buttonSizeClass = styles[`c-button--width-${size}`];
     }
+
     return (
-        <BootstrapButton {...props} className={`c-button ${ buttonTypeClass } ${ buttonSizeClass }`}>
-            <Icon name={ iconNameBefore } className={ iconNameBefore ? 'c-button__icon--before' : '' }></Icon>
-            <span className='button-text'>
-                { text }
+        <button className={`c-button ${ buttonTypeClass } ${ buttonSizeClass }`} disabled={disabled} type='button' onClick={onclick}>
+            <Icon name={ iconNameBefore } className={ iconNameBefore ? styles['c-button__icon--before'] : '' }></Icon>
+            <span className='c-button__text'>
+                { children }
             </span>
-            <Icon name={ iconNameAfter } className={ iconNameAfter ? 'c-button__icon--after' : '' }></Icon>
-        </BootstrapButton>
+            <Icon name={ iconNameAfter } className={ iconNameAfter ? styles['c-button__icon--after'] : '' }></Icon>
+        </button>
     )
 };
 Button.propTypes = {
-    text: PropTypes.string.isRequired,
+    children: PropTypes.string.isRequired,
     iconNameBefore: PropTypes.string,
     iconNameAfter: PropTypes.string,
     type: PropTypes.oneOf(TYPES),
-    size: PropTypes.oneOf(SIZES)
+    size: PropTypes.oneOf(SIZES),
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func
 };
-Button.defaultTypes = {
+Button.defaultProps = {
     iconNameBefore: '',
     iconNameAfter: '',
     type: '',
-    size: 'medium'
+    size: 'medium',
+    disabled: false,
+    onClick: null
 };
 
 export default Button;

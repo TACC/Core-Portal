@@ -1,0 +1,54 @@
+.c-button {
+    composes: c-button from '../../../styles/components/c-button.css';
+}
+.c-button:focus,
+[class*=c-button--]:focus {
+    outline: none;
+}
+
+.c-button--primary {
+    composes: c-button--primary from '../../../styles/components/c-button.css';
+    transition: 0.3s;
+}
+
+.c-button--secondary {
+    composes: c-button--secondary from '../../../styles/components/c-button.css';
+    transition: 0.3s;
+}
+.c-button--secondary:disabled {
+    color: var(--global-color-primary--light);
+    border: var(--global-color-primary--light);
+}
+.c-button--secondary:not(:disabled):active {
+    color: var(--global-color-primary--x-light);
+    background-color: var(--global-color-primary--x-dark);
+}
+
+.c-button--size-small {
+    composes: c-button--size-small from '../../../styles/components/c-button.css';
+}
+.c-button--width-short {
+    composes: c-button--width-short from '../../../styles/components/c-button.css';
+}
+.c-button--width-medium {
+    composes: c-button--width-medium from '../../../styles/components/c-button.css';
+}
+.c-button--width-large {
+    composes: c-button--width-large from '../../../styles/components/c-button.css';
+}
+
+.c-button--as-link {
+    composes: c-button--as-link from '../../../styles/components/c-button.css';
+    background-color: transparent;
+    border-color: transparent; 
+}
+.c-button--as-link:hover {
+    text-decoration: underline;
+}
+
+.c-button__icon--before {
+    composes: c-button__icon--before from '../../../styles/components/c-button.css'
+}
+.c-button__icon--after {
+    composes: c-button__icon--after from '../../../styles/components/c-button.css'
+}
