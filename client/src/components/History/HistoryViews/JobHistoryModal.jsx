@@ -149,7 +149,6 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
           <Button
             color="primary"
             type="submit"
-            styleName="submit-button"
             onClick={resubmitJob}
           >
             Resubmit Job
