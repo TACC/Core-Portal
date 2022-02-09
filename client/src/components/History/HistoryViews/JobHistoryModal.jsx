@@ -177,11 +177,6 @@ JobHistoryContent.defaultProps = {
 };
 
 function JobHistoryModal({ jobId }) {
-  const dispatch = useDispatch();
-  dispatch({
-    type: 'GET_JOB_DETAILS',
-    payload: { jobId },
-  });
   const loading = useSelector((state) => state.jobDetail.loading);
   const loadingError = useSelector((state) => state.jobDetail.loadingError);
   const { job, display } = useSelector((state) => state.jobDetail);
@@ -232,7 +227,7 @@ function JobHistoryModal({ jobId }) {
               Unable to retrieve job information.
             </Message>
           )}
-          {!loading && !loadingError && (
+          {!loading && !loadingError && job && (
             <JobHistoryContent
               jobName={jobName}
               jobDetails={job}
