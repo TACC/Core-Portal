@@ -4,18 +4,18 @@ import Icon from '../Icon';
 
 import styles from './Button.module.css';
 
-export const TYPES = [
-  '',
-  'primary',
-  'secondary',
-  'success',
-  'info',
-  'warning',
-  'danger',
-  'link',
-];
+export const TYPES = ['', 'primary', 'secondary', 'link'];
 
 export const SIZES = ['short', 'medium', 'large', 'small'];
+
+export const ATTRIBUTES = ['button', 'submit', 'reset'];
+
+function isNotEmptyString(props, propName, componentName) {
+  if (!props[propName] || props[propName].replace(/ /g, '') === '') {
+    return new Error(`No text passed to ${componentName}. Validation failed.`);
+  }
+  return null;
+}
 
 const Button = ({
   children,
@@ -25,6 +25,7 @@ const Button = ({
   size,
   disabled,
   onClick,
+  attr,
 }) => {
   function onclick(e) {
     if (disabled) {
@@ -38,47 +39,48 @@ const Button = ({
 
   let buttonTypeClass;
   if (type === 'link') {
-    buttonTypeClass = styles['c-button--as-link'];
+    buttonTypeClass = styles['as-link'];
   } else if (type === 'primary' || type === 'secondary') {
-    buttonTypeClass = styles[`c-button--${type}`];
+    buttonTypeClass = styles[`${type}`];
   } else if (type === '') {
     buttonTypeClass = type;
   }
 
   let buttonSizeClass;
   if (size === 'small') {
-    buttonSizeClass = styles['c-button--size-small'];
+    buttonSizeClass = styles['size-small'];
   } else {
-    buttonSizeClass = styles[`c-button--width-${size}`];
+    buttonSizeClass = styles[`width-${size}`];
   }
 
   return (
     <button
       className={`c-button ${buttonTypeClass} ${buttonSizeClass}`}
       disabled={disabled}
-      type="button"
+      type={attr}
       onClick={onclick}
     >
       <Icon
         name={iconNameBefore}
-        className={iconNameBefore ? styles['c-button__icon--before'] : ''}
+        className={iconNameBefore ? styles['icon--before'] : ''}
       ></Icon>
-      <span className="c-button__text">{children}</span>
+      <span>{children}</span>
       <Icon
         name={iconNameAfter}
-        className={iconNameAfter ? styles['c-button__icon--after'] : ''}
+        className={iconNameAfter ? styles['icon--after'] : ''}
       ></Icon>
     </button>
   );
 };
 Button.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: isNotEmptyString,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
   type: PropTypes.oneOf(TYPES),
   size: PropTypes.oneOf(SIZES),
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
+  attr: PropTypes.oneOf(ATTRIBUTES),
 };
 Button.defaultProps = {
   iconNameBefore: '',
@@ -87,6 +89,7 @@ Button.defaultProps = {
   size: 'medium',
   disabled: false,
   onClick: null,
+  attr: 'button',
 };
 
 export default Button;
