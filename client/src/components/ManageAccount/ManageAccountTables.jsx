@@ -324,7 +324,7 @@ WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
   <a
     className="wb-link"
-    href={`https://orchid.org/${value}`}
+    href={`https://orcid.org/${value}`}
     target="_blank"
     rel="noreferrer"
   >

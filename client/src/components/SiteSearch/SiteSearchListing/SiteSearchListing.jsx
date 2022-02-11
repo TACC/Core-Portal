@@ -15,7 +15,7 @@ import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
   <article
-    className={styles['sitesearch-cms-item"']}
+    className={styles['sitesearch-cms-item']}
     data-testid="sitesearch-cms-item"
   >
     <a href={url}>{title}</a>
@@ -57,7 +57,7 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
   const tableColumns = [
     {
       id: 'icon',
-      accessor: 'format',
+      accessor: (row) => row,
       Cell: FileIconCell,
       className: 'site-search__icons',
     },
