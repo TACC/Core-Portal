@@ -1,20 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Table, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, UserSearchbar, Message } from '_common';
-import PropTypes from 'prop-types';
-import './AllocationsManageTeamModal.module.scss';
+import styles from './AllocationsManageTeamModal.module.scss';
 
-export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
+const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();
-  const { removingUserOperation } = useSelector(state => state.allocations);
+  const { removingUserOperation } = useSelector((state) => state.allocations);
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'Members',
-        Cell: el => {
+        Cell: (el) => {
           const user = el.row.original;
           return (
             <span>
@@ -22,7 +21,7 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               {` ${user.username} (${user.email})`}
             </span>
           );
-        }
+        },
       },
       {
         Header: 'Role',
@@ -35,12 +34,12 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
             default:
               return 'Member';
           }
-        }
+        },
       },
       {
         Header: '',
         accessor: 'id',
-        Cell: el => {
+        Cell: (el) => {
           const deleteOperationOccuring =
             removingUserOperation.loading &&
             el.row.original.username === removingUserOperation.userName;
@@ -53,22 +52,20 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
           return (
             <>
               {deleteOperationFailed && (
-                <Message type="error">
-                  We were unable to delete the user.
-                </Message>
+                <Message type="error">Something went wrong.</Message>
               )}
               {deleteOperationOccuring && <LoadingSpinner placement="inline" />}
               {removable && (
                 <Button
                   color="link"
                   disabled={removingUserOperation.loading}
-                  onClick={e => {
+                  onClick={(e) => {
                     dispatch({
                       type: 'REMOVE_USER_FROM_TAS_PROJECT',
                       payload: {
                         projectId,
-                        id: el.row.original.username
-                      }
+                        id: el.row.original.username,
+                      },
                     });
                   }}
                 >
@@ -77,69 +74,58 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               )}
             </>
           );
-        }
-      }
+        },
+      },
     ],
     [rawData, removingUserOperation]
   );
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    prepareRow,
-    headerGroups
-  } = useTable({
-    columns,
-    data
-  });
+  const { getTableProps, getTableBodyProps, rows, prepareRow, headerGroups } =
+    useTable({
+      columns,
+      data,
+    });
   return (
-    <table styleName="manage-team-table" {...getTableProps()}>
+    <Table hover responsive borderless size="sm" {...getTableProps()}>
       <thead>
-        {headerGroups.map(headerGroup => (
+        {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
+            {headerGroup.headers.map((column) => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
             <tr>
-              {row.cells.map(cell => (
+              {row.cells.map((cell) => (
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
               ))}
             </tr>
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
-};
-AllocationsManageTeamTable.propTypes = {
-  rawData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  projectId: PropTypes.number.isRequired
 };
 
 const AllocationsManageTeamModal = ({
   isOpen,
   toggle,
   projectId,
-  projectName
+  viewToggle,
 }) => {
   const dispatch = useDispatch();
+
   const { teams, loadingUsernames, search } = useSelector(
-    state => state.allocations
+    (state) => state.allocations
   );
-  const addUserOperation = useSelector(
-    state => state.allocations.addUserOperation
-  );
-  const error = addUserOperation.error || search.error;
+
   useEffect(() => {
     dispatch({
-      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT'
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
     });
   }, [isOpen]);
 
@@ -147,50 +133,51 @@ const AllocationsManageTeamModal = ({
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
 
   const onAdd = useCallback(
-    newUser => {
+    (newUser) => {
       dispatch({
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
           id: newUser.user.username,
-          projectName
-        }
+        },
       });
     },
     [projectId, dispatch]
   );
 
   const onChange = useCallback(
-    query => {
+    (query) => {
       dispatch({
         type: 'GET_USERS_FROM_SEARCH',
         payload: {
-          term: query
-        }
+          term: query,
+        },
       });
     },
     [dispatch]
   );
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} styleName="root">
-      <ModalHeader>Manage Team</ModalHeader>
-      <ModalBody className="p-2">
-        <div styleName="search-bar-wrapper">
-          {error ? <Message type="error">Something went wrong.</Message> : null}
-          <UserSearchbar
-            members={isLoading ? [] : teams[projectId]}
-            onAdd={onAdd}
-            addDisabled={isLoading || addUserOperation.loading}
-            searchDisable={isLoading}
-            onChange={onChange}
-            searchResults={search.results}
-            placeholder="Search by username, email, or last name"
-            onAddLoading={addUserOperation.loading}
-            isSearching={search.loading}
-          />
+    <Modal isOpen={isOpen} toggle={toggle} className={styles.root}>
+      <ModalHeader>
+        Manage Team
+        <div>
+          <Button className="btn btn-sm p-0" color="link" onClick={viewToggle}>
+            View Team
+          </Button>
         </div>
-        <div styleName="listing-wrapper">
+      </ModalHeader>
+      <ModalBody className="p-2">
+        <UserSearchbar
+          members={teams[projectId]}
+          onAdd={onAdd}
+          addDisabled={isLoading}
+          searchDisable={isLoading}
+          onChange={onChange}
+          searchResults={search.results}
+          placeholder="Search by username, email, or last name"
+        />
+        <div className={styles.listingWrapper}>
           {isLoading ? (
             <LoadingSpinner />
           ) : (
@@ -201,17 +188,8 @@ const AllocationsManageTeamModal = ({
           )}
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button styleName="update-button">Close</Button>
-      </ModalFooter>
     </Modal>
   );
-};
-AllocationsManageTeamModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  toggle: PropTypes.func.isRequired,
-  projectId: PropTypes.number.isRequired,
-  projectName: PropTypes.string.isRequired
 };
 
 export default AllocationsManageTeamModal;

@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input } from 'reactstrap';
-import { LoadingSpinner } from '_common';
 
-import './UserSearchbar.module.scss';
+import styles from './UserSearchbar.module.scss';
 
 const UserSearchbar = ({
   members,
@@ -13,8 +12,6 @@ const UserSearchbar = ({
   searchDisabled,
   searchResults,
   placeholder,
-  onAddLoading,
-  isSearching
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -22,34 +19,34 @@ const UserSearchbar = ({
   const formatUser = ({ firstName, lastName, email, username }) =>
     `${firstName} ${lastName} (${username} | ${email})`;
 
-  const userSearch = e => {
+  const userSearch = (e) => {
     setInputUser(e.target.value);
     if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
-      searchResults.find(user => formatUser(user) === e.target.value)
+      searchResults.find((user) => formatUser(user) === e.target.value)
     );
     if (!selectedUser) {
       onChangeCallback(e.target.value);
     }
   };
 
-  const alreadyMember = user => {
+  const alreadyMember = (user) => {
     return members.some(
-      existingMember =>
+      (existingMember) =>
         existingMember && existingMember.username === user.username
     );
   };
 
   const onChangeCallback = useCallback(
-    query => {
+    (query) => {
       onChange(query);
     },
     [onChange]
   );
 
   const onAddCallback = useCallback(
-    user => {
+    (user) => {
       onAdd(user);
       setInputUser('');
     },
@@ -57,11 +54,11 @@ const UserSearchbar = ({
   );
 
   return (
-    <div styleName="root">
-      <div className="input-group" styleName="member-search-group">
+    <div className={styles.root}>
+      <div className={`input-group ${styles['member-search-group']}`}>
         <div className="input-group-prepend">
           <Button
-            styleName="add-button member-search"
+            className={`${styles['add-button']} ${styles['member-search']}`}
             onClick={() =>
               onAddCallback({ user: selectedUser, access: 'edit' })
             }
@@ -69,35 +66,31 @@ const UserSearchbar = ({
               !selectedUser || addDisabled || alreadyMember(selectedUser)
             }
           >
-            {onAddLoading ? <LoadingSpinner placement="inline" /> : 'Add'}
+            Add
           </Button>
         </div>
         <Input
           list="user-search-list"
           type="text"
-          onChange={e => userSearch(e)}
+          onChange={(e) => userSearch(e)}
           placeholder={placeholder}
-          styleName="member-search"
+          className={styles.memberSearch}
           disabled={searchDisabled}
           autoComplete="false"
           value={inputUser}
         />
         <datalist id="user-search-list">
-          {/* eslint-disable */
+          {
+            /* eslint-disable */
             // Need to replace this component with a generalized solution from FP-743
             searchResults
-              .filter(user => !alreadyMember(user))
-              .map(user => (
-              <option value={formatUser(user)} key={user.username} />
-            ))
+              .filter((user) => !alreadyMember(user))
+              .map((user) => (
+                <option value={formatUser(user)} key={user.username} />
+              ))
             /* eslint-enable */
           }
         </datalist>
-        {isSearching && (
-          <LoadingSpinner
-            placement="inline" /* Placeholder; need updated design https://jira.tacc.utexas.edu/browse/FP-1205 */
-          />
-        )}
       </div>
     </div>
   );
@@ -109,7 +102,7 @@ UserSearchbar.propTypes = {
       username: PropTypes.string,
       lastName: PropTypes.string,
       firstName: PropTypes.string,
-      email: PropTypes.string
+      email: PropTypes.string,
     })
   ).isRequired,
   onAdd: PropTypes.func.isRequired,
@@ -121,18 +114,15 @@ UserSearchbar.propTypes = {
       username: PropTypes.string,
       lastName: PropTypes.string,
       firstName: PropTypes.string,
-      email: PropTypes.string
+      email: PropTypes.string,
     })
   ).isRequired,
   placeholder: PropTypes.string,
-  onAddLoading: PropTypes.bool,
-  isSearching: PropTypes.bool.isRequired
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,
   searchDisabled: false,
   placeholder: 'Search by name',
-  onAddLoading: false
 };
 
 export default UserSearchbar;

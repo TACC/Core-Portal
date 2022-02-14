@@ -24,7 +24,7 @@ export async function fetchUtil({ url, params, ...options }) {
   };
   const response = await fetch(request, {
     fetchParams,
-    ...options.init
+    ...options.init,
   });
   const json = await response.json();
   if (!response.ok) {

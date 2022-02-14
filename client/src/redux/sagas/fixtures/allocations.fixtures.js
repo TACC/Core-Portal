@@ -7,7 +7,7 @@ export const teamFixture = [
     role: 'PI',
     firstName: 'doc',
     lastName: 'brown',
-    email: 'docbrown@gmail.com'
+    email: 'docbrown@gmail.com',
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const teamFixture = [
     role: 'Standard',
     firstName: 'marty',
     lastName: 'mcfly',
-    email: 'mcfly@gmail.com'
+    email: 'mcfly@gmail.com',
   },
   {
     id: 3,
@@ -23,8 +23,8 @@ export const teamFixture = [
     role: 'Standard',
     firstName: 'Jeff',
     lastName: 'Lebowski',
-    email: 'dude@gmail.com'
-  }
+    email: 'dude@gmail.com',
+  },
 ];
 
 export const allocationsFixture = [
@@ -49,8 +49,8 @@ export const allocationsFixture = [
           project: projectNameFixture,
           requestorId: 1,
           requestor: 'Maytal Dahan',
-          computeUsed: 136.746
-        }
+          computeUsed: 136.746,
+        },
       },
       {
         name: 'Longhorn',
@@ -67,11 +67,11 @@ export const allocationsFixture = [
           project: projectNameFixture,
           requestorId: 1,
           requestor: 'Maytal Dahan',
-          computeUsed: 0
-        }
-      }
-    ]
-  }
+          computeUsed: 0,
+        },
+      },
+    ],
+  },
 ];
 
 export const usageDataFixture = [
@@ -79,24 +79,24 @@ export const usageDataFixture = [
     username: 'doc',
     usage: 5,
     resource: 'frontera.tacc.utexas.edu',
-    allocationId: 1984
+    allocationId: 1984,
   },
   {
     username: 'chicken',
     usage: 55,
     resource: 'frontera.tacc.utexas.edu',
-    allocationId: 1984
+    allocationId: 1984,
   },
   {
     username: 'doc',
     usage: 20,
     resource: 'longhorn.tacc.utexas.edu',
-    allocationId: 1985
+    allocationId: 1985,
   },
   {
     username: 'chicken',
     usage: 25,
     resource: 'longhorn.tacc.utexas.edu',
-    allocationId: 1985
-  }
+    allocationId: 1985,
+  },
 ];

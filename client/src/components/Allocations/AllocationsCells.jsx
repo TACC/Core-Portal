@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   AllocationsTeamViewModal,
-  AllocationsManageTeamModal
+  AllocationsManageTeamModal,
 } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
@@ -18,7 +18,7 @@ export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [teamModal, setTeamModal] = useState(false);
   const [manageModal, setManageModal] = useState(false);
-  const { projectId, isPi } = value;
+  const { projectId } = value;
   return (
     <>
       <Button
@@ -39,31 +39,28 @@ export const Team = ({ cell: { value } }) => {
         isOpen={teamModal}
         projectId={projectId}
         toggle={() => setTeamModal(!teamModal)}
+        managementToggle={() => {
+          setTeamModal(!teamModal);
+          dispatch({
+            type: 'GET_MANAGE_TEAMS',
+            payload: { ...value },
+          });
+          setManageModal(true);
+        }}
       />
-      {isPi && (
-        <>
-          <span>&nbsp;|&nbsp;</span>
-          <Button
-            className="btn btn-sm"
-            color="link"
-            onClick={() => {
-              dispatch({
-                type: 'GET_MANAGE_TEAMS',
-                payload: { ...value }
-              });
-              setManageModal(true);
-            }}
-          >
-            Manage Team
-          </Button>
-          <AllocationsManageTeamModal
-            isOpen={manageModal}
-            projectId={projectId}
-            projectName={value.name}
-            toggle={() => setManageModal(!manageModal)}
-          />
-        </>
-      )}
+      <AllocationsManageTeamModal
+        isOpen={manageModal}
+        projectId={projectId}
+        toggle={() => setManageModal(!manageModal)}
+        viewToggle={() => {
+          dispatch({
+            type: 'GET_TEAMS',
+            payload: { ...value },
+          });
+          setTeamModal(true);
+          setManageModal(!manageModal);
+        }}
+      />
     </>
   );
 };

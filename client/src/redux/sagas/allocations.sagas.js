@@ -5,7 +5,7 @@ import {
   call,
   all,
   select,
-  debounce
+  debounce,
 } from 'redux-saga/effects';
 import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -229,16 +229,16 @@ export function* getUsernamesManage(action) {
   try {
     yield put({
       type: 'MANAGE_USERS_INIT',
-      payload: { loading: { [action.payload.projectId]: { loading: true } } }
+      payload: { loading: { [action.payload.projectId]: { loading: true } } },
     });
     const json = yield call(getTeamsUtil, action.payload.name);
     const payload = {
       data: { [action.payload.projectId]: json },
-      loading: { [action.payload.projectId]: { loading: false } }
+      loading: { [action.payload.projectId]: { loading: false } },
     };
     yield put({
       type: 'ADD_USERNAMES_TO_TEAM',
-      payload
+      payload,
     });
   } catch (error) {}
 }
@@ -247,11 +247,11 @@ export function* getUsernamesManage(action) {
  * @async
  * @returns {Array.<Object>}
  */
-export const searchUsersUtil = async term => {
+export const searchUsersUtil = async (term) => {
   const res = await fetchUtil({
     url: '/api/users/tas-users',
     params: { search: term },
-    init: { fetchParams: null }
+    init: { fetchParams: null },
   });
   const json = res.result;
   return json;
@@ -262,7 +262,7 @@ export function* searchUsers(action) {
     const result = yield call(searchUsersUtil, action.payload.term);
     yield put({
       type: 'ADD_SEARCH_RESULTS',
-      payload: { data: result }
+      payload: { data: result },
     });
   } catch (error) {
     yield put({ type: 'SEARCH_ERROR' });
@@ -272,7 +272,7 @@ export function* searchUsers(action) {
 export const manageUtil = async (pid, uid, add = true) => {
   const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: add ? 'POST' : 'DELETE'
+    method: add ? 'POST' : 'DELETE',
   });
   const json = r.json();
   return json;
@@ -288,8 +288,8 @@ export function* addUser(action) {
       type: 'GET_MANAGE_TEAMS',
       payload: {
         projectId,
-        name: projectName
-      }
+        name: projectName,
+      },
     });
   } catch (error) {
     yield put({
@@ -298,14 +298,14 @@ export function* addUser(action) {
         addUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id
-        }
-      }
+          userName: action.payload.id,
+        },
+      },
     });
   }
 }
 
-export const allocationsTeamSelector = state => state.allocations.teams;
+export const allocationsTeamSelector = (state) => state.allocations.teams;
 export function* removeUser(action) {
   try {
     yield put({
@@ -314,9 +314,9 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: true,
           error: false,
-          userName: action.payload.id
-        }
-      }
+          userName: action.payload.id,
+        },
+      },
     });
     yield call(manageUtil, action.payload.projectId, action.payload.id, false);
     // remove user from team state
@@ -324,13 +324,13 @@ export function* removeUser(action) {
     const updatedTeams = { ...teams };
     updatedTeams[action.payload.projectId] = teams[
       action.payload.projectId
-    ].filter(i => i.username !== action.payload.id);
+    ].filter((i) => i.username !== action.payload.id);
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
       payload: {
         teams: updatedTeams,
-        removingUserOperation: { loading: false, error: false, userName: '' }
-      }
+        removingUserOperation: { loading: false, error: false, userName: '' },
+      },
     });
   } catch (error) {
     yield put({
@@ -339,9 +339,9 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id
-        }
-      }
+          userName: action.payload.id,
+        },
+      },
     });
   }
 }
@@ -370,5 +370,5 @@ export default [
   watchManageTeams(),
   watchUserSearch(),
   watchAddUser(),
-  watchRemoveUser()
+  watchRemoveUser(),
 ];
