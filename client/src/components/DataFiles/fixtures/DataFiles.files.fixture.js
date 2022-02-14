@@ -9,6 +9,7 @@ const filesFixture = {
     copy: {},
     upload: {},
     trash: {},
+    empty: {},
   },
   loadingScroll: {
     FilesListing: false,
