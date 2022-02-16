@@ -24,7 +24,7 @@ def test_system_failure(requests_mock):
 
 
 def test_system_failure_with_json_response(requests_mock):
-    json_response = {"custon_error_response_key": "value"}
+    json_response = {"custom_error_response_key": "value"}
     requests_mock.get(SYSTEM_LISTING_URL, json=json_response, status_code=500)
     storage = StorageSystem(service_account(), id="systemId", load=False)
     success, result = storage.test()
