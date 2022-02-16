@@ -37,6 +37,8 @@ const Button = ({
     }
   }
 
+  const buttonRootClass = styles['root'];
+
   let buttonTypeClass;
   if (type === 'link') {
     buttonTypeClass = styles['as-link'];
@@ -55,7 +57,7 @@ const Button = ({
 
   return (
     <button
-      className={`c-button ${buttonTypeClass} ${buttonSizeClass}`}
+      className={`${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass}`}
       disabled={disabled}
       type={attr}
       onClick={onclick}

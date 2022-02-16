@@ -1,9 +1,5 @@
-.c-button {
+.root {
   composes: c-button from '../../../styles/components/c-button.css';
-}
-.c-button:focus,
-[class*='c-button--']:focus {
-  outline: none;
 }
 
 .primary {
