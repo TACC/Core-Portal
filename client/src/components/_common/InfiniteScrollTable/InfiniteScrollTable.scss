@@ -53,13 +53,13 @@
       }
     }
     tr:not(.-status) td {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgb(0 0 0 / 10%);
     }
     tr:nth-child(even):not(.-status) {
-      background-color: rgba(0, 0, 0, 0.03);
+      background-color: rgb(0 0 0 / 3%);
     }
     tr:hover:not(.-status) {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgb(0 0 0 / 5%);
     }
 
     tr:not(.-status) td {

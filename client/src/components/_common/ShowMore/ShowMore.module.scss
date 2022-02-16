@@ -2,7 +2,7 @@
 
 .clamped {
   overflow: hidden;
-  display: -webkit-box;
+  display: box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
