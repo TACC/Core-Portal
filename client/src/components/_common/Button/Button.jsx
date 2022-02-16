@@ -62,15 +62,19 @@ const Button = ({
       type={attr}
       onClick={onclick}
     >
+    {iconNameBefore ?
       <Icon
         name={iconNameBefore}
         className={iconNameBefore ? styles['icon--before'] : ''}
       ></Icon>
+    : ''}
       <span>{children}</span>
+    {iconNameAfter ?
       <Icon
         name={iconNameAfter}
         className={iconNameAfter ? styles['icon--after'] : ''}
       ></Icon>
+      : ''}
     </button>
   );
 };
