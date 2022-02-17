@@ -62,10 +62,7 @@ Styleguide Components.Button
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  transition: 0.3s;
-}
-.c-button:disabled span {
-  opacity: 0.5;
+  transition: 0.2s;
 }
 
 
@@ -87,6 +84,7 @@ Styleguide Components.Button
 .c-button--primary {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
 }
 .c-button--primary:disabled {
   color: var(--global-color-primary--x-dark);
@@ -95,7 +93,7 @@ Styleguide Components.Button
 }
 .c-button--primary:not(:disabled):hover {
   background-color: var(--global-color-accent-muted--dark);
-  border-color: var(--global-color-accent-muted--dark);
+  border-color: var(--global-color-primary--xx-light); /* as if half pressed */
 }
 .c-button--primary:not(:disabled):active {
   background-color: var(--global-color-accent-muted--x-dark);
@@ -105,21 +103,22 @@ Styleguide Components.Button
 .c-button--secondary {
   color: var(--global-color-primary--x-dark);
   background-color: var(--global-color-primary--x-light);
-  border-color: var(--global-border--normal);
+  border-color: var(--global-color-primary--normal);
 }
 .c-button--secondary:disabled {
   color: var(--global-color-primary--dark);
-  background-color: var(--global-color-primary--x-light);
-  border-color: var(--global-color-primary--light);
+  background-color: var(--global-color-primary--xx-light);
+  border-color: var(--global-color-primary--normal);
 }
 .c-button--secondary:not(:disabled):hover {
   color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--normal);
-  border-color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--light);
+  border-color: var(--global-color-primary--xx-light); /* as if half pressed */
 }
 .c-button--secondary:not(:disabled):active {
   color: var(--global-color-primary--x-light);
-  background-color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--dark);
+  border-color: var(--global-color-primary--xx-dark);
 }
 
 .c-button--as-link {
