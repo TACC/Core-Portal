@@ -6,6 +6,7 @@ import logging
 import os
 import json
 import copy
+from unittest import skip
 from mock import patch
 from django.test import TestCase
 from django.conf import settings
@@ -91,6 +92,7 @@ class TestAgaveFile(TestCase):
             agf.length
         )
 
+    @skip("Needs refactoring to not use AgaveAsyncResponse. Also not in use.")
     @patch('portal.libs.agave.models.files.AgaveAsyncResponse', autospec=True)
     @patch.object(BaseFile, 'listing')
     def test_file_import_data(self, bf_listing, async_response_cls):
