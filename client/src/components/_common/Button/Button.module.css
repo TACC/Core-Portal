@@ -4,20 +4,9 @@
 
 .primary {
   composes: c-button--primary from '../../../styles/components/c-button.css';
-  transition: 0.3s;
 }
-
 .secondary {
   composes: c-button--secondary from '../../../styles/components/c-button.css';
-  transition: 0.3s;
-}
-.secondary:disabled {
-  color: var(--global-color-primary--light);
-  border: var(--global-color-primary--light);
-}
-.secondary:not(:disabled):active {
-  color: var(--global-color-primary--x-light);
-  background-color: var(--global-color-primary--x-dark);
 }
 
 .size-small {
@@ -29,19 +18,12 @@
 .width-medium {
   composes: c-button--width-medium from '../../../styles/components/c-button.css';
 }
-.width-large {
-  composes: c-button--width-large from '../../../styles/components/c-button.css';
+.width-long {
+  composes: c-button--width-long from '../../../styles/components/c-button.css';
 }
 
 .as-link {
   composes: c-button--as-link from '../../../styles/components/c-button.css';
-  background-color: transparent;
-  border-color: transparent;
-  padding-left: 0;
-  padding-right: 0;
-}
-.as-link:hover {
-  text-decoration: underline;
 }
 
 .icon--before {

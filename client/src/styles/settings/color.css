@@ -18,6 +18,7 @@
             | #707070   "dark"       | #484848   "x-dark"
             | #484848   "x-dark"     | #222222   "xx-dark"
             | #9D85EF   old "normal" | #7754E8   new "normal"
+            | #7159E0   deviant      | #7754E8   new "normal"
             | #9D85EF20 old "weak"   | #7754E840 new "weak"
             | #DFDAF5   old "light"  | #7754E840 new "weak"
     */
@@ -31,11 +32,15 @@
   /* ¹ REQ: Use of this color for text may have result darker than design
               (designer approved for accessibile color contrast via FP-1082) */
 
-  /* Distinct Hues */
+  /* Accent Hues */
   --global-color-accent--normal: #7754e8;
-  --global-color-accent--weak: #7754e840; /* =25% opacity */
-  /* on white, eq. to #DFD7FA */
-  --global-color-accent--alt: #d2cce7;
+  --global-color-accent--weak: #7754e840; /* =25% opacity, =#dfd7fa on white */
+
+  --global-color-accent-muted--normal: #d2cce7;
+  --global-color-accent-muted--dark: #5f6ac3;
+  --global-color-accent-muted--x-dark: #232b66;
+
+  /* Other Hues */
   --global-color-info--normal: var(--global-color-primary--x-dark);
   --global-color-info--weak: var(--global-color-primary--x-light);
   --global-color-success--normal: #43d130;
