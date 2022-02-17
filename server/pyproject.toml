@@ -34,7 +34,7 @@ django-impersonate = "^1.5"
 channels = "^2.4.0"
 channels-redis = "^3.1.0"
 pytest-asyncio = "^0.14.0"
-twisted = "^20.3.0"
+twisted = "^22.1.0"
 pytas = {git = "https://bitbucket.org/taccaci/pytas.git", tag = "v1.6.0"}
 gevent = "^20.9.0"
 google-auth = "^1.23.0"
