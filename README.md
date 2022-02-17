@@ -13,7 +13,7 @@ The base Portal code for TACC WMA Workspace Portals
 
 * Docker 20.10.7
 * Docker Compose 1.29.2
-* Python 3.6.8
+* Python 3.7.12
 * Nodejs 12.x (LTS)
 
 The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
