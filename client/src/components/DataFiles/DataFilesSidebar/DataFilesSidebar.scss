@@ -6,7 +6,7 @@
   --min-width: 200px;
 
   margin-left: calc(var(--horizontal-buffer) * -1);
-  border-right: 1px solid rgba(112, 112, 112, 0.25);
+  border-right: 1px solid rgb(112 112 112 / 25%);
 
   padding-top: var(--vertical-buffer);
 }

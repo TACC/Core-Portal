@@ -119,7 +119,7 @@ module.exports = {
     // Disallow extra semicolons (Autofixable).
     // 'no-extra-semicolons': null,
     // Disallow double-slash comments (//...) which are not supported by CSS.
-    // 'no-invalid-double-slash-comments': null,
+    'no-invalid-double-slash-comments': null,
 
     //
     // LIMIT LANGUAGE FEATURES
@@ -171,7 +171,7 @@ module.exports = {
 
     // CUSTOM PROPERTY
     // Specify a pattern for custom properties.
-    // 'custom-property-pattern': null,
+    'custom-property-pattern': null,
 
     // PROPERTY
     // Specify a blacklist of disallowed properties.
@@ -205,13 +205,13 @@ module.exports = {
     // Specify a whitelist of allowed attribute operators.
     // 'selector-attribute-operator-whitelist': null,
     // Specify a pattern for class selectors.
-    // 'selector-class-pattern': null,
+    'selector-class-pattern': null,
     // Specify a blacklist of disallowed combinators.
     // 'selector-combinator-blacklist': null,
     // Specify a whitelist of allowed combinators.
     // 'selector-combinator-whitelist': null,
     // Specify a pattern for ID selectors.
-    // 'selector-id-pattern': null,
+    'selector-id-pattern': null,
     // Limit the number of attribute selectors in a selector.
     // 'selector-max-attribute': null,
     // Limit the number of classes in a selector.
@@ -331,7 +331,7 @@ module.exports = {
 
     // STRING
     // Specify single or double quotes around strings (Autofixable).
-    // 'string-quotes': 'single', // TODO: Uncomment later, to reduce scope of changes
+    'string-quotes': 'single',
 
     // LENGTH
     // Disallow units for zero lengths (Autofixable).
