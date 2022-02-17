@@ -1,0 +1,4 @@
+.primary td:nth-child(4),
+.link td {
+  text-align: center;
+}
