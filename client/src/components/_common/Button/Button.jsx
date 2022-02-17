@@ -6,7 +6,7 @@ import styles from './Button.module.css';
 
 export const TYPES = ['', 'primary', 'secondary', 'link'];
 
-export const SIZES = ['short', 'medium', 'large', 'small'];
+export const SIZES = ['', 'short', 'medium', 'long', 'small'];
 
 export const ATTRIBUTES = ['button', 'submit', 'reset'];
 
@@ -36,6 +36,27 @@ const Button = ({
       return onclick(e);
     }
   }
+
+  // Manage prop warnings
+  /* eslint-disable no-console */
+  if (type === 'link' && size) {
+    size = '';
+    // Component will work, except `size` is ineffectual
+    console.warn('A <Button> with `type="link"` ignores `size` prop.');
+  }
+  if (type === 'primary' && size === 'small') {
+    type = 'secondary';
+    // Component will work, except `type` is ineffectual
+    console.error('A <Button> may not be `type="primary"` and `size="small"`. '
+                  + 'Using `type="secondary" instead.');
+  }
+  if (type !== 'link' && ! size) {
+    size = 'short';
+    // Component will work, except `size` is auto-set
+    console.log('A <Button> that is not `type="link"` and has no `size`. '
+                  + 'is automatically assigned `size="short"`.');
+  }
+  /* eslint-enable no-console */
 
   const buttonRootClass = styles['root'];
 
@@ -91,8 +112,8 @@ Button.propTypes = {
 Button.defaultProps = {
   iconNameBefore: '',
   iconNameAfter: '',
-  type: '',
-  size: 'medium',
+  type: 'secondary',
+  size: '', // unless `type="link", defaults to `short` after `propTypes`
   disabled: false,
   onClick: null,
   attr: 'button',
