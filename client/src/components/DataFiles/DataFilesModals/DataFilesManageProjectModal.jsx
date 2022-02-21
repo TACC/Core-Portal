@@ -106,7 +106,7 @@ const DataFilesManageProjectModal = () => {
   return (
     <div className={styles.root}>
       <Modal
-        size="lg"
+        size="xl"
         isOpen={isOpen}
         toggle={toggle}
         className="dataFilesModal"
@@ -116,6 +116,7 @@ const DataFilesManageProjectModal = () => {
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
+            projectId={projectId}
             members={members}
             onAdd={onAdd}
             onRemove={onRemove}
