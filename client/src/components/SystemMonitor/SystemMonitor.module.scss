@@ -9,10 +9,10 @@
 
 .rows {
   tr:nth-child(even) {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgb(0 0 0 / 3%);
   }
   tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgb(0 0 0 / 5%);
   }
   td {
     padding: 5px 8px;

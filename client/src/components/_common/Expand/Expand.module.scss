@@ -27,6 +27,8 @@ dd .container {
 
 /* TODO: Wait for `details/summary` (supports `[open]`) to use border fix */
 /* FAQ: With `Collapse`, border fix is too much effort for too little reward */
-// .container:not([open]) .summary {
-//   border-bottom: 0;
-// }
+/*
+.container:not([open]) .summary {
+  border-bottom: 0;
+}
+*/

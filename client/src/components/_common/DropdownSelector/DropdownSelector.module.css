@@ -27,8 +27,6 @@
   font-style: italic;
   font-weight: 500;
 
-  -moz-appearance: none;
-  -webkit-appearance: none;
   appearance: none;
 }
 /* NOTE: CSS Modules does not support `.container.form-control`, but these overrides should be isolated */
