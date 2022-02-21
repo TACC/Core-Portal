@@ -1,4 +1,3 @@
-
 /* FP-546: Some styles are overridden/duplicated by `Workbench.scss` */
 /*
 Button
@@ -158,7 +157,7 @@ Styleguide Components.Button
 
 .c-button__icon--before,
 .c-button__icon--after {
-
+  /* … */
 }
 
 .c-button__icon--before {
