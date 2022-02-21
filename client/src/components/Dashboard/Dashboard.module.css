@@ -53,8 +53,7 @@
   .panels {
     /* FAQ: Flex is necessary to allow easy panel re-ordering */
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    flex-flow: column nowrap;
   }
 
   /* Panels */
