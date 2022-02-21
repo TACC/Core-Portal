@@ -227,7 +227,7 @@ function JobHistoryModal({ jobId }) {
               Unable to retrieve job information.
             </Message>
           )}
-          {!loading && !loadingError && (
+          {!loading && !loadingError && job && (
             <JobHistoryContent
               jobName={jobName}
               jobDetails={job}
