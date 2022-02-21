@@ -17,6 +17,7 @@ def mock_project_mgr(mocker):
     mocker.patch('portal.apps.projects.views.ProjectsManager.remove_member')
     mocker.patch('portal.apps.projects.views.ProjectsManager.change_project_role')
     mocker.patch('portal.apps.projects.views.ProjectsManager.change_system_role')
+    mocker.patch('portal.apps.projects.views.ProjectsManager.role_for_user')
     return ProjectsManager
 
 
@@ -151,7 +152,7 @@ def test_members_view_add(regular_user, client, mock_project_mgr):
     # All new members now have co_pi status since we no longer have distinctions
     # between members and co_pis, and an individual may not become a pi
     # until they have "edit" access (co_pi status)
-    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'co_pi', 'test_user')
+    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'team_member', 'test_user')
     assert response.json() == {
         'status': 200,
         'response': {'projectId': 'PRJ-123'}
@@ -160,6 +161,7 @@ def test_members_view_add(regular_user, client, mock_project_mgr):
 
 def test_members_view_remove(regular_user, client, mock_project_mgr):
     mock_project_mgr.remove_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
+    mock_project_mgr.role_for_user.return_value = 'co_pi'
     client.force_login(regular_user)
     patch_body = {'action': 'remove_member', 'username': 'test_user'}
 

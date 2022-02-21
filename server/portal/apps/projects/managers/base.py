@@ -364,3 +364,12 @@ class ProjectsManager(object):
         self._update_meta(prj, **data)
         self._update_storage(prj, **data)
         return prj
+
+    def role_for_user(self, project_id, username):
+        """
+        Get a user's role for a project.
+        returns one of 'pi', 'co_pi', 'team_member', None
+        """
+        prj = self.get_project(project_id)
+
+        return prj.get_project_role(username)

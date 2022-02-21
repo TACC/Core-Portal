@@ -352,7 +352,11 @@ class Project(object):
         return False
 
     def transfer_pi(self, old_pi, new_pi):
-        self.remove_co_pi(new_pi)
+        new_pi_role = self.get_project_role(new_pi)
+        if new_pi_role == 'team_member':
+            self.remove_member(new_pi)
+        elif new_pi_role == 'co_pi':
+            self.remove_co_pi(new_pi)
         self.add_pi(new_pi)
         self.add_co_pi(old_pi)
         return self
@@ -459,10 +463,40 @@ class Project(object):
         return self
 
     def change_project_role(self, user, old_role, new_role):
+        # account for difference between role name (team_member) and method
+        #  names (add_member, remove_member)
+        if old_role == 'team_member':
+            old_role = 'member'
+        if new_role == 'team_member':
+            new_role = 'member'
         add_new_role = getattr(self, "add_{}".format(new_role))
         remove_old_role = getattr(self, "remove_{}".format(old_role))
         remove_old_role(user)
         add_new_role(user)
+
+    def get_project_role(self, username):
+        """
+        Get a user's role for the project.
+        returns one of 'pi', 'co_pi', 'team_member', None
+        """
+        role = None
+
+        if self.metadata.pi.username == username:
+            role = 'pi'
+
+        try:
+            self.metadata.co_pis.get(username=username)
+            role = 'co_pi'
+        except get_user_model().DoesNotExist:
+            pass
+
+        try:
+            self.metadata.team_members.get(username=username)
+            role = 'team_member'
+        except get_user_model().DoesNotExist:
+            pass
+
+        return role
 
     def save_metadata(self):
         """Help method to save metadata object.

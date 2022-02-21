@@ -268,7 +268,7 @@ class ProjectMembersApiView(BaseApiView):
         username = data.get('username')
         res = ProjectsManager(request.user).add_member(
             project_id,
-            'co_pi',
+            'team_member',
             username
         )
         return JsonResponse(
@@ -287,9 +287,10 @@ class ProjectMembersApiView(BaseApiView):
         :param dict data: Data.
         """
         username = data.get('username')
+        role = ProjectsManager(request.user).role_for_user(project_id, username)
         prj = ProjectsManager(request.user).remove_member(
             project_id=project_id,
-            member_type='co_pi',
+            member_type=role,
             username=username
         )
         return JsonResponse(
@@ -334,3 +335,20 @@ class ProjectMembersApiView(BaseApiView):
             },
             encoder=ProjectsManager.meta_serializer_cls
         )
+
+
+@login_required
+def get_project_role(request, project_id, username):
+    role = None
+    mgr = ProjectsManager(request.user)
+    role = mgr.role_for_user(project_id, username) 
+
+    return JsonResponse({'username': username, 'role': role})
+
+
+@login_required
+def get_system_role(request, project_id, username):
+    mgr = ProjectsManager(request.user)
+    prj = mgr.get_project(project_id)
+    role = prj.storage.roles.for_user(username).role
+    return JsonResponse({'username': username, 'role': role})
