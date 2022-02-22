@@ -61,7 +61,7 @@ const DataFilesCopyModal = React.memo(() => {
     });
 
   const onOpened = () => {
-   const systemParams = {
+    const systemParams = {
       api: 'tapis',
       scheme: 'private',
       system: params.system,
