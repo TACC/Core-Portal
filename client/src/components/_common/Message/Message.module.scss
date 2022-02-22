@@ -5,12 +5,12 @@
 /* Root */
 
 .container {
-  // SEE: "Modifiers"
-  // --buffer-vert: 0;
-  // --buffer-horz: 0;
+  /* SEE: "Modifiers" */
+  /* --buffer-vert: 0; */
+  /* --buffer-horz: 0; */
 
   /* Vertically center child elements */
-  flex-direction: row;
+  flex-flow: row;
   align-items: start; /* FAQ: Effect visible only if text wraps */
 
   padding: var(--buffer-vert) var(--buffer-horz);
@@ -37,10 +37,6 @@ p.is-scope-section {
 .text a {
   white-space: nowrap;
 }
-// .type-icon,
-// .close-button {
-//   align-self: start;
-// }
 .type-icon {
   margin-right: 0.25em; /* ~4px */
   margin-top: 0.125em; /* HACK: Align better with 14px–17px sibling font */
@@ -53,7 +49,6 @@ p.is-scope-section {
   border: none;
   background: transparent;
 
-  -webkit-appearance: none;
   appearance: none;
   color: #222222;
 }

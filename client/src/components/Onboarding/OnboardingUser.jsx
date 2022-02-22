@@ -29,10 +29,7 @@ const OnboardingUser = () => {
         user: params.username || '',
       },
     });
-    dispatch({
-      type: 'FETCH_AUTHENTICATED_USER',
-    });
-  }, [dispatch, params]);
+  }, [params]);
 
   if (loading) {
     return (

@@ -19,6 +19,11 @@ const mockState = {
     },
     preview: {},
   },
+  workbench: {
+    config: {
+      trashPath: '.Trash',
+    },
+  },
 };
 
 describe('SiteSearchListing', () => {
