@@ -70,7 +70,7 @@ const DataFilesCopyModal = React.memo(() => {
       type: 'FETCH_FILES_MODAL',
       payload: {
         ...params,
-        path: "",
+        path: '',
         section: 'modal',
       },
     });
