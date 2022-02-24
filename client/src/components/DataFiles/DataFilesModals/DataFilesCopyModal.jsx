@@ -61,11 +61,6 @@ const DataFilesCopyModal = React.memo(() => {
     });
 
   const onOpened = () => {
-    const systemParams = {
-      api: 'tapis',
-      scheme: 'private',
-      system: params.system,
-    };
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: {
@@ -77,7 +72,7 @@ const DataFilesCopyModal = React.memo(() => {
   };
 
   const excludedSystems = systems
-    .filter((s) => s.scheme !== 'private')
+    .filter((s) => s.scheme !== 'private' && s.scheme !== 'projects')
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
     .map((s) => s.system);
 
@@ -169,7 +164,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemId={(systems[0] || params).system}
+                systemId={params.scheme === 'projects' ? 'shared' : params.system}
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
