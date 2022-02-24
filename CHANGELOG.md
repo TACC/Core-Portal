@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2022-02-24: Component Design Enhancements; Onboarding and other bugfixes
+
+### Changed
+
+- task/FP-200: Trash Modal: Official Design (#549)
+- FP-545: Create _common Button React Component (#584)
+
+### Fixed
+
+- FP-1479: Site Search WEB results should be purple (#587)
+- FP-1460: Resolve dependabot alerts (#588)
+- FP-1503: Fix onboarding; Remove unnecessary FETCH_AUTHENTICATED_USER dispatch (#595)
+- FP-1428: Fix job history error (#589)
+- FP-1514: Fix project membership step to handle allocation-less projects (#596)
+
 ## [2.12.1] - 2022-01-18: Fix anonymous views
 
 ### Fixed
@@ -578,7 +593,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.12.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.13.0
 [2.12.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.1
 [2.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.0
 [2.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.1
