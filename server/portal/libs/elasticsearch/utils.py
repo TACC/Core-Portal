@@ -75,7 +75,7 @@ def grouper(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
-def walk_children(system, path, include_parent=True, recurse=False):
+def walk_children(system, path, include_parent=False, recurse=False):
     """
     Yield an elasticsearch hit for each child of an indexed file.
 
@@ -131,7 +131,7 @@ def delete_recursive(system, path):
     Void
     """
     from portal.libs.elasticsearch.docs.base import IndexedFile
-    hits = walk_children(system, path, recurse=True)
+    hits = walk_children(system, path, include_parent=True, recurse=True)
     idx = IndexedFile.Index.name
     client = get_connection('default')
 
