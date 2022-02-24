@@ -69,7 +69,9 @@ const DataFilesSystemSelector = ({
     setSelectedSystem(systemId);
   }, []);
 
-  const dropdownSystems = systemList.filter(s => !excludedSystems.includes(s.system));
+  const dropdownSystems = systemList.filter(
+    (s) => !excludedSystems.includes(s.system)
+  );
 
   return (
     <>
@@ -79,7 +81,14 @@ const DataFilesSystemSelector = ({
         className={styles['system-select']}
         disabled={disabled || !dropdownSystems.length}
       >
-        {dropdownSystems.map(s => <option key={uuidv4()} value={s.scheme === 'projects' ? 'shared' : s.system}>{s.name}</option>)}
+        {dropdownSystems.map((s) => (
+          <option
+            key={uuidv4()}
+            value={s.scheme === 'projects' ? 'shared' : s.system}
+          >
+            {s.name}
+          </option>
+        ))}
       </DropdownSelector>
       {selectedSystem === 'shared' && !showProjects && (
         <button

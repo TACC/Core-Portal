@@ -164,7 +164,9 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemId={params.scheme === 'projects' ? 'shared' : params.system}
+                systemId={
+                  params.scheme === 'projects' ? 'shared' : params.system
+                }
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
