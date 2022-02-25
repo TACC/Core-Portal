@@ -11,9 +11,11 @@ import os
 def tas_client(mocker):
     with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_project.json')) as f:
         tas_project = json.load(f)
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_project_users.json')) as f:
+        tas_project_users = json.load(f)
     tas_client_mock = mocker.patch('portal.apps.onboarding.steps.project_membership.TASClient', autospec=True)
     tas_client_mock.return_value.project.return_value = tas_project
-    tas_client_mock.return_value.projects_for_user.return_value = [tas_project]
+    tas_client_mock.return_value.get_project_users.return_value = tas_project_users
     yield tas_client_mock
 
 
@@ -57,7 +59,7 @@ def project_membership_complete(mocker):
 
 def test_is_project_member(tas_client, project_membership_step):
     assert project_membership_step.is_project_member()
-    tas_client.return_value.projects_for_user.return_value = []
+    tas_client.return_value.get_project_users.return_value = []
     assert not project_membership_step.is_project_member()
 
 
