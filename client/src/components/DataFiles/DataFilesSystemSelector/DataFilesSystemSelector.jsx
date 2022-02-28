@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 import { DropdownSelector } from '_common';
 import styles from './DataFilesSystemSelector.module.scss';
 
@@ -83,7 +82,7 @@ const DataFilesSystemSelector = ({
       >
         {dropdownSystems.map((s) => (
           <option
-            key={uuidv4()}
+            key={s.system}
             value={s.scheme === 'projects' ? 'shared' : s.system}
           >
             {s.name}
