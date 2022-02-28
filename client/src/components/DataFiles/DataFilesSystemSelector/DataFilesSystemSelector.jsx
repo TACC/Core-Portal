@@ -60,7 +60,7 @@ const DataFilesSystemSelector = ({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation,
-        props: { showProjects: true },
+        props: { ...modalProps, showProjects: true },
       },
     });
   };
@@ -69,29 +69,26 @@ const DataFilesSystemSelector = ({
     setSelectedSystem(systemId);
   }, []);
 
+  const dropdownSystems = systemList.filter(
+    (s) => !excludedSystems.includes(s.system)
+  );
+
   return (
     <>
       <DropdownSelector
         onChange={openSystem}
         value={selectedSystem}
         className={styles['system-select']}
-        disabled={disabled}
+        disabled={disabled || !dropdownSystems.length}
       >
-        {systemList
-          .filter(
-            (s) =>
-              s.scheme !== 'projects' && !excludedSystems.includes(s.system)
-          )
-          .map((system) => (
-            <option key={uuidv4()} value={system.system}>
-              {system.name}
-            </option>
-          ))}
-        {systemList.find((s) => s.scheme === 'projects') ? (
-          <option value="shared">Shared Workspaces</option>
-        ) : (
-          <></>
-        )}
+        {dropdownSystems.map((s) => (
+          <option
+            key={uuidv4()}
+            value={s.scheme === 'projects' ? 'shared' : s.system}
+          >
+            {s.name}
+          </option>
+        ))}
       </DropdownSelector>
       {selectedSystem === 'shared' && !showProjects && (
         <button
