@@ -16,6 +16,7 @@ const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
     (state) => state.projects.listing
   );
+  const modalProps = useSelector((state) => state.files.modalProps[modal]);
   const query = queryStringParser.parse(useLocation().search);
 
   const infiniteScrollCallback = useCallback(() => {});
@@ -50,7 +51,7 @@ const DataFilesProjectsList = ({ modal }) => {
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation: modal,
-        props: { showProjects: false },
+        props: { ...modalProps, showProjects: false },
       },
     });
   };
