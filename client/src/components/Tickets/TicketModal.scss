@@ -104,13 +104,10 @@
     display: flex;
   }
   .attachment-download {
-    color: var(--global-color-accent--normal);
     text-align: right;
-    margin-right: 20px;
   }
   .link {
     color: var(--global-color-accent--normal);
-    text-align: right;
     margin-right: 20px;
     &:hover {
       color: var(--global-color-accent--normal);
