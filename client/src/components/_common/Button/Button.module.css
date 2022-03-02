@@ -40,9 +40,11 @@
 .as-link {
   composes: c-button--as-link from '../../../styles/components/c-button.css';
   background-color: transparent;
-  border-color: transparent !important;
   padding-left: 0;
   padding-right: 0;
+}
+button.as-link {
+  border-color: transparent;
 }
 .as-link:hover {
   text-decoration: underline;

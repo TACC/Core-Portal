@@ -3,7 +3,7 @@ import { Button } from '_common';
 
 function UIPatternsButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const clickFxn = (e) => {
+  const onClick = (e) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -49,7 +49,7 @@ function UIPatternsButton() {
       <dd>
         <Button
           type="primary"
-          onClick={clickFxn}
+          onClick={onClick}
           size="large"
           isLoading={isLoading}
         >
