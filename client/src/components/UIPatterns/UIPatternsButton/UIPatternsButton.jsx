@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Button} from '_common';
+import { Button } from '_common';
 
 function UIPatternsButton() {
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const clickFxn = (e) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  }
+  };
   return (
     <dl>
       <dt>Default Button</dt>
@@ -47,7 +47,14 @@ function UIPatternsButton() {
       </dd>
       <dt>Spinner over Button</dt>
       <dd>
-        <Button type='primary' onClick={clickFxn} size='large' isLoading={isLoading}>Click Me!</Button>
+        <Button
+          type="primary"
+          onClick={clickFxn}
+          size="large"
+          isLoading={isLoading}
+        >
+          Click Me!
+        </Button>
       </dd>
     </dl>
   );

@@ -27,8 +27,8 @@ const Button = ({
   disabled,
   onClick,
   attr,
-  isLoading
-}) => {  
+  isLoading,
+}) => {
   function onclick(e) {
     if (disabled) {
       e.preventDefault();
@@ -57,13 +57,18 @@ const Button = ({
 
   let loadingIcon = null;
   if (isLoading) {
-    loadingIcon = <LoadingSpinner placement={styles['over-text']} className={styles['loading-over-button']} />;
+    loadingIcon = (
+      <LoadingSpinner
+        placement={styles['over-text']}
+        className={styles['loading-over-button']}
+      />
+    );
   }
 
   return (
     <button
       className={`c-button ${buttonTypeClass} ${buttonSizeClass}`}
-      disabled={ disabled || isLoading }
+      disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
     >
@@ -72,7 +77,9 @@ const Button = ({
         name={iconNameBefore}
         className={iconNameBefore ? styles['icon--before'] : ''}
       ></Icon>
-      <span className={isLoading ? styles['loading-text'] : ''}>{children}</span>
+      <span className={isLoading ? styles['loading-text'] : ''}>
+        {children}
+      </span>
       <Icon
         name={iconNameAfter}
         className={iconNameAfter ? styles['icon--after'] : ''}
@@ -89,7 +96,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   attr: PropTypes.oneOf(ATTRIBUTES),
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
 };
 Button.defaultProps = {
   iconNameBefore: '',
@@ -99,7 +106,7 @@ Button.defaultProps = {
   disabled: false,
   onClick: null,
   attr: 'button',
-  isLoading: false
+  isLoading: false,
 };
 
 export default Button;
