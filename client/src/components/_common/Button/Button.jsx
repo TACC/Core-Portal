@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Icon from '../Icon';
 
 import styles from './Button.module.css';
+import LoadingSpinner from '_common/LoadingSpinner';
 
 export const TYPES = ['', 'primary', 'secondary', 'link'];
 
@@ -26,14 +27,15 @@ const Button = ({
   disabled,
   onClick,
   attr,
-}) => {
+  isLoading
+}) => {  
   function onclick(e) {
     if (disabled) {
       e.preventDefault();
       return;
     }
     if (onClick) {
-      return onclick(e);
+      return onClick(e);
     }
   }
 
@@ -53,18 +55,24 @@ const Button = ({
     buttonSizeClass = styles[`width-${size}`];
   }
 
+  let loadingIcon = null;
+  if (isLoading) {
+    loadingIcon = <LoadingSpinner placement={styles['over-text']} className={styles['loading-over-button']} />;
+  }
+
   return (
     <button
       className={`c-button ${buttonTypeClass} ${buttonSizeClass}`}
-      disabled={disabled}
+      disabled={ disabled || isLoading }
       type={attr}
       onClick={onclick}
     >
+      {loadingIcon}
       <Icon
         name={iconNameBefore}
         className={iconNameBefore ? styles['icon--before'] : ''}
       ></Icon>
-      <span>{children}</span>
+      <span className={isLoading ? styles['loading-text'] : ''}>{children}</span>
       <Icon
         name={iconNameAfter}
         className={iconNameAfter ? styles['icon--after'] : ''}
@@ -81,6 +89,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   attr: PropTypes.oneOf(ATTRIBUTES),
+  isLoading: PropTypes.bool
 };
 Button.defaultProps = {
   iconNameBefore: '',
@@ -90,6 +99,7 @@ Button.defaultProps = {
   disabled: false,
   onClick: null,
   attr: 'button',
+  isLoading: false
 };
 
 export default Button;

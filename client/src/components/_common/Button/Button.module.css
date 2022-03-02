@@ -40,7 +40,7 @@
 .as-link {
   composes: c-button--as-link from '../../../styles/components/c-button.css';
   background-color: transparent;
-  border-color: transparent;
+  border-color: transparent !important;
   padding-left: 0;
   padding-right: 0;
 }
@@ -53,4 +53,17 @@
 }
 .icon--after {
   composes: c-button__icon--after from '../../../styles/components/c-button.css';
+}
+
+.loading-text {
+  opacity: 0.3;
+}
+[class*=c-button] .loading-over-button {
+  position: relative;
+  left: 50%;
+}
+.over-text {
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
 }
