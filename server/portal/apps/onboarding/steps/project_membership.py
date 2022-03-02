@@ -61,12 +61,8 @@ class ProjectMembershipStep(AbstractStep):
     def is_project_member(self):
         username = self.user.username
         tas_client = self.get_tas_client()
-        projects = tas_client.projects_for_user(username)
-        return any(
-            [
-                project['id'] == self.settings['project_sql_id'] for project in projects
-            ]
-        )
+        project_users = tas_client.get_project_users(self.settings['project_sql_id'])
+        return any([u['username'] == username for u in project_users])
 
     def send_project_request(self, request):
         tracker = self.get_tracker()
