@@ -73,6 +73,7 @@ BreadcrumbLink.defaultProps = {
 
 const RootProjectsLink = ({ api, section, operation, label }) => {
   const dispatch = useDispatch();
+  const modalProps = useSelector((state) => state.files.modalProps[operation]);
   if (section === 'modal') {
     const onClick = (e) => {
       e.stopPropagation();
@@ -81,7 +82,7 @@ const RootProjectsLink = ({ api, section, operation, label }) => {
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
-          props: { showProjects: true },
+          props: { ...modalProps, showProjects: true },
         },
       });
     };
