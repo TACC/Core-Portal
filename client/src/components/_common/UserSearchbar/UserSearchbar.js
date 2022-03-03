@@ -14,7 +14,7 @@ const UserSearchbar = ({
   searchResults,
   placeholder,
   onAddLoading,
-  isSearching
+  isSearching,
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -22,34 +22,34 @@ const UserSearchbar = ({
   const formatUser = ({ firstName, lastName, email, username }) =>
     `${firstName} ${lastName} (${username} | ${email})`;
 
-  const userSearch = e => {
+  const userSearch = (e) => {
     setInputUser(e.target.value);
     if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
-      searchResults.find(user => formatUser(user) === e.target.value)
+      searchResults.find((user) => formatUser(user) === e.target.value)
     );
     if (!selectedUser) {
       onChangeCallback(e.target.value);
     }
   };
 
-  const alreadyMember = user => {
+  const alreadyMember = (user) => {
     return members.some(
-      existingMember =>
+      (existingMember) =>
         existingMember && existingMember.username === user.username
     );
   };
 
   const onChangeCallback = useCallback(
-    query => {
+    (query) => {
       onChange(query);
     },
     [onChange]
   );
 
   const onAddCallback = useCallback(
-    user => {
+    (user) => {
       onAdd(user);
       setInputUser('');
     },
@@ -75,7 +75,7 @@ const UserSearchbar = ({
         <Input
           list="user-search-list"
           type="text"
-          onChange={e => userSearch(e)}
+          onChange={(e) => userSearch(e)}
           placeholder={placeholder}
           styleName="member-search"
           disabled={searchDisabled}
@@ -83,13 +83,14 @@ const UserSearchbar = ({
           value={inputUser}
         />
         <datalist id="user-search-list">
-          {/* eslint-disable */
+          {
+            /* eslint-disable */
             // Need to replace this component with a generalized solution from FP-743
             searchResults
-              .filter(user => !alreadyMember(user))
-              .map(user => (
-              <option value={formatUser(user)} key={user.username} />
-            ))
+              .filter((user) => !alreadyMember(user))
+              .map((user) => (
+                <option value={formatUser(user)} key={user.username} />
+              ))
             /* eslint-enable */
           }
         </datalist>
@@ -109,7 +110,7 @@ UserSearchbar.propTypes = {
       username: PropTypes.string,
       lastName: PropTypes.string,
       firstName: PropTypes.string,
-      email: PropTypes.string
+      email: PropTypes.string,
     })
   ).isRequired,
   onAdd: PropTypes.func.isRequired,
@@ -121,18 +122,18 @@ UserSearchbar.propTypes = {
       username: PropTypes.string,
       lastName: PropTypes.string,
       firstName: PropTypes.string,
-      email: PropTypes.string
+      email: PropTypes.string,
     })
   ).isRequired,
   placeholder: PropTypes.string,
   onAddLoading: PropTypes.bool,
-  isSearching: PropTypes.bool.isRequired
+  isSearching: PropTypes.bool.isRequired,
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,
   searchDisabled: false,
   placeholder: 'Search by name',
-  onAddLoading: false
+  onAddLoading: false,
 };
 
 export default UserSearchbar;

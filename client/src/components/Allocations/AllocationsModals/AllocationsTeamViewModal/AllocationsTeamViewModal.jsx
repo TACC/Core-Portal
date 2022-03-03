@@ -72,7 +72,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, projectId }) => {
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  projectId: number.isRequired
+  projectId: number.isRequired,
 };
 
 export default AllocationsTeamViewModal;

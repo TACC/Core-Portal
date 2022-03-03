@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   AllocationsTeamViewModal,
-  AllocationsManageTeamModal
+  AllocationsManageTeamModal,
 } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
@@ -49,7 +49,7 @@ export const Team = ({ cell: { value } }) => {
             onClick={() => {
               dispatch({
                 type: 'GET_MANAGE_TEAMS',
-                payload: { ...value }
+                payload: { ...value },
               });
               setManageModal(true);
             }}

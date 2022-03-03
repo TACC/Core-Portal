@@ -19,7 +19,7 @@
   overflow-y: scroll;
   padding-left: 0;
   padding-right: 0;
-  border-right: 1px solid rgba(112, 112, 112, 0.25);
+  border-right: 1px solid rgb(112 112 112 / 25%);
 }
 .information-wrapper {
   display: flex;
@@ -46,7 +46,7 @@
     font-weight: normal;
   }
   tr:nth-child(even) td {
-    background-color: rgba(112, 112, 112, 0.15);
+    background-color: rgb(112 112 112 / 15%);
   }
 }
 .search-bar-wrapper {

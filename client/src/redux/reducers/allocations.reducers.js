@@ -11,18 +11,18 @@ export const initialState = {
   search: {
     results: [],
     error: false,
-    loading: false
+    loading: false,
   },
   removingUserOperation: {
     userName: '',
     error: false,
-    loading: false
+    loading: false,
   },
   addUserOperation: {
     userName: '',
     error: false,
-    loading: false
-  }
+    loading: false,
+  },
 };
 
 export function allocations(state = initialState, action) {
@@ -79,8 +79,8 @@ export function allocations(state = initialState, action) {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading
-        }
+          ...action.payload.loading,
+        },
       };
     case 'SEARCH_INIT':
       return {
@@ -89,8 +89,8 @@ export function allocations(state = initialState, action) {
           ...state.search,
           results: [],
           error: false,
-          loading: true
-        }
+          loading: true,
+        },
       };
     case 'ADD_SEARCH_RESULTS':
       return {
@@ -99,8 +99,8 @@ export function allocations(state = initialState, action) {
           ...state.search,
           results: action.payload.data,
           error: false,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'SEARCH_ERROR':
       return {
@@ -108,8 +108,8 @@ export function allocations(state = initialState, action) {
         search: {
           ...state.search,
           error: true,
-          loading: false
-        }
+          loading: false,
+        },
       };
     case 'ALLOCATION_OPERATION_REMOVE_USER_INIT': {
       return {
@@ -117,14 +117,14 @@ export function allocations(state = initialState, action) {
         removingUserOperation: {
           userName: '',
           error: false,
-          loading: false
-        }
+          loading: false,
+        },
       };
     }
     case 'ALLOCATION_OPERATION_REMOVE_USER_STATUS': {
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     }
     case 'ALLOCATION_OPERATION_ADD_USER_INIT': {
@@ -133,8 +133,8 @@ export function allocations(state = initialState, action) {
         addUserOperation: {
           userName: '',
           error: false,
-          loading: true
-        }
+          loading: true,
+        },
       };
     }
     case 'ALLOCATION_OPERATION_ADD_USER_COMPLETE': {
@@ -143,14 +143,14 @@ export function allocations(state = initialState, action) {
         addUserOperation: {
           userName: '',
           error: false,
-          loading: false
-        }
+          loading: false,
+        },
       };
     }
     case 'ALLOCATION_OPERATION_ADD_USER_ERROR': {
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     }
     default:

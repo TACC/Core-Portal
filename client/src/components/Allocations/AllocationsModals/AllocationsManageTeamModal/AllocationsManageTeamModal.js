@@ -8,13 +8,13 @@ import './AllocationsManageTeamModal.module.scss';
 
 export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();
-  const { removingUserOperation } = useSelector(state => state.allocations);
+  const { removingUserOperation } = useSelector((state) => state.allocations);
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'Members',
-        Cell: el => {
+        Cell: (el) => {
           const user = el.row.original;
           return (
             <span>
@@ -22,7 +22,7 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               {` ${user.username} (${user.email})`}
             </span>
           );
-        }
+        },
       },
       {
         Header: 'Role',
@@ -35,12 +35,12 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
             default:
               return 'Member';
           }
-        }
+        },
       },
       {
         Header: '',
         accessor: 'id',
-        Cell: el => {
+        Cell: (el) => {
           const deleteOperationOccuring =
             removingUserOperation.loading &&
             el.row.original.username === removingUserOperation.userName;
@@ -62,13 +62,13 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
                 <Button
                   color="link"
                   disabled={removingUserOperation.loading}
-                  onClick={e => {
+                  onClick={(e) => {
                     dispatch({
                       type: 'REMOVE_USER_FROM_TAS_PROJECT',
                       payload: {
                         projectId,
-                        id: el.row.original.username
-                      }
+                        id: el.row.original.username,
+                      },
                     });
                   }}
                 >
@@ -77,38 +77,33 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               )}
             </>
           );
-        }
-      }
+        },
+      },
     ],
     [rawData, removingUserOperation]
   );
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    prepareRow,
-    headerGroups
-  } = useTable({
-    columns,
-    data
-  });
+  const { getTableProps, getTableBodyProps, rows, prepareRow, headerGroups } =
+    useTable({
+      columns,
+      data,
+    });
   return (
     <table styleName="manage-team-table" {...getTableProps()}>
       <thead>
-        {headerGroups.map(headerGroup => (
+        {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
+            {headerGroup.headers.map((column) => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
             <tr>
-              {row.cells.map(cell => (
+              {row.cells.map((cell) => (
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
               ))}
             </tr>
@@ -120,26 +115,26 @@ export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
 };
 AllocationsManageTeamTable.propTypes = {
   rawData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  projectId: PropTypes.number.isRequired
+  projectId: PropTypes.number.isRequired,
 };
 
 const AllocationsManageTeamModal = ({
   isOpen,
   toggle,
   projectId,
-  projectName
+  projectName,
 }) => {
   const dispatch = useDispatch();
   const { teams, loadingUsernames, search } = useSelector(
-    state => state.allocations
+    (state) => state.allocations
   );
   const addUserOperation = useSelector(
-    state => state.allocations.addUserOperation
+    (state) => state.allocations.addUserOperation
   );
   const error = addUserOperation.error || search.error;
   useEffect(() => {
     dispatch({
-      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT'
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
     });
   }, [isOpen]);
 
@@ -147,26 +142,26 @@ const AllocationsManageTeamModal = ({
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
 
   const onAdd = useCallback(
-    newUser => {
+    (newUser) => {
       dispatch({
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
           id: newUser.user.username,
-          projectName
-        }
+          projectName,
+        },
       });
     },
     [projectId, dispatch]
   );
 
   const onChange = useCallback(
-    query => {
+    (query) => {
       dispatch({
         type: 'GET_USERS_FROM_SEARCH',
         payload: {
-          term: query
-        }
+          term: query,
+        },
       });
     },
     [dispatch]
@@ -211,7 +206,7 @@ AllocationsManageTeamModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   projectId: PropTypes.number.isRequired,
-  projectName: PropTypes.string.isRequired
+  projectName: PropTypes.string.isRequired,
 };
 
 export default AllocationsManageTeamModal;
