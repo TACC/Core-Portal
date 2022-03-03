@@ -15,7 +15,7 @@
 /*
   Components
 */
-// Tables
+/* Tables */
 .manage-account-table {
   font-size: 0.875rem; /* 14px (approved deviation from design) */
   table-layout: fixed;
@@ -62,14 +62,14 @@
 /* Override striped bootstrap table */
 .table-striped > tbody {
   tr:nth-child(even) {
-    background-color: rgba(198, 198, 198, 0.1);
+    background-color: rgb(198 198 198 / 10%);
   }
   tr:nth-child(odd) {
     background-color: white;
   }
 }
 
-// Buttons and Forms
+/* Buttons and Forms */
 .manage-account-submit-button {
   display: flex;
   width: fit-content;

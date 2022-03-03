@@ -1,4 +1,4 @@
-FROM python:3.6-buster as python-base
+FROM python:3.7-buster as python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
