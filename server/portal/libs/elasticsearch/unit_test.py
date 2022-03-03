@@ -103,6 +103,7 @@ class TestESUtils(TestCase):
         delete_recursive('test.system', '/test/file')
         mock_children.assert_called_once_with('test.system',
                                               '/test/file',
+                                              include_parent=True,
                                               recurse=True)
 
         mock_map = mock_bulk.call_args.args[1]
