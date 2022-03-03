@@ -7,13 +7,12 @@
 
   /* As a flex container */
   display: flex;
-  flex-direction: row;
 
   height: 100%;
   /* To ensure flex children stretch to height of scrolled content */
   /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
   /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */
-  flex-wrap: wrap;
+  flex-flow: row wrap;
 }
 #appDetail-wrapper.has-message,
 #appDetail-wrapper.is-loading,
@@ -54,7 +53,7 @@
   padding: 0 40px 0 30px;
   flex: 0.7 1 0;
   max-width: 780px;
-  flex-direction: column;
+  flex-flow: column;
 }
 
 .appInfo-wrapper {

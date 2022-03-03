@@ -59,5 +59,5 @@ Styleguide Components.Bootstrap.Modal
   /* To mimic `.icon` styles without `@extend` or `composes` (unavailable) */
   /* HACK: Copied (and reduced and edited) from `src/styles/trumps/icon...` */
   font-size: 1.5rem; /* bigger to match header text font height (like design) */
-  font-family: 'Cortal-Icons' !important;
+  font-family: Cortal-Icons !important;
 }
