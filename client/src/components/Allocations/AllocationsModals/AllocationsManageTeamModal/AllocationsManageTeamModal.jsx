@@ -122,7 +122,6 @@ const AllocationsManageTeamModal = ({
   const { teams, loadingUsernames, search } = useSelector(
     (state) => state.allocations
   );
-
   useEffect(() => {
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
