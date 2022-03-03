@@ -12,6 +12,7 @@
 <script type="module">
   import flagLinkActive from '/static/site_cms/js/modules/flagLinkActive.js';
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+  import findLinksAndSetTargets from '/static/site_cms/js/modules/setTargetForExternalLinks.js';
 
   const container = document.getElementById('s-cms-nav');
 
@@ -22,5 +23,7 @@
       scopeElement: container,
       ancestorActiveElementSelector: 'li'
     });
+
+    findLinksAndSetTargets({scopeElement: container});
   });
 </script>
