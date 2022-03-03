@@ -55,16 +55,6 @@ const Button = ({
     buttonSizeClass = styles[`width-${size}`];
   }
 
-  let loadingIcon = null;
-  if (isLoading) {
-    loadingIcon = (
-      <LoadingSpinner
-        placement={styles['over-text']}
-        className={styles['loading-over-button']}
-      />
-    );
-  }
-
   return (
     <button
       className={`c-button ${buttonTypeClass} ${buttonSizeClass}`}
@@ -72,7 +62,12 @@ const Button = ({
       type={attr}
       onClick={onclick}
     >
-      {loadingIcon}
+      {isLoading && (
+        <LoadingSpinner
+          placement={styles['over-text']}
+          className={styles['loading-over-button']}
+        />
+      )}
       <Icon
         name={iconNameBefore}
         className={iconNameBefore ? styles['icon--before'] : ''}
