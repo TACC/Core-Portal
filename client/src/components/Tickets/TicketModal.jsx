@@ -62,7 +62,7 @@ const Attachments = ({ attachments, ticketId }) => {
     },
     {
       Header: '',
-      className: 'link',
+      className: 'attachment-download',
       accessor: 'attachment_id',
       Cell: (el) => (
         <a
