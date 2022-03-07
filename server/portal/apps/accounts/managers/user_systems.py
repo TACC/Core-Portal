@@ -7,7 +7,6 @@ import logging
 from django.conf import settings
 from portal.apps.accounts.models import SSHKeys
 from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.utils import service_account
 from portal.utils import encryption as EncryptionUtil
 from portal.apps.users.utils import get_user_data
 from requests.exceptions import HTTPError
@@ -113,7 +112,7 @@ class UserSystemsManager():
         :returns: Agave response
         """
         try:
-            private_system = StorageSystem(service_account(), self.get_system_id(), ignore_error=None)
+            private_system = StorageSystem(self.user.agave_oauth.client, self.get_system_id(), ignore_error=None)
             # If system exists and is disabled, reset with config and enable
             if not private_system.available:
                 private_system = self.validate_storage_system(private_system.id)
@@ -180,7 +179,7 @@ class UserSystemsManager():
         """
         username = self.user.username
         system = StorageSystem(
-            service_account(),
+            self.user.agave_oauth.client,
             self.get_system_id()
         )
         system.site = 'portal.dev'
