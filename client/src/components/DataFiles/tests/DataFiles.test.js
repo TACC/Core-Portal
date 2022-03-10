@@ -70,7 +70,7 @@ describe('DataFiles', () => {
               scheme: 'private',
               api: 'tapis',
               icon: null,
-              hidden: true
+              hidden: true,
             },
           ],
           error: false,

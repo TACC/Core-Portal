@@ -22,7 +22,8 @@ describe('DataFilesSystemSelector', () => {
         operation="copy"
         excludedSystems={systemsFixture.storage.configuration
           .filter(
-            (s) => s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
+            (s) =>
+              s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
           )
           .filter((s) => !(s.scheme === 'public' && canMakePublic))
           .map((s) => s.system)}

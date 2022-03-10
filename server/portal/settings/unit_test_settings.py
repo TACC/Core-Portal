@@ -466,7 +466,7 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'stockyard': {
         'name': 'My Data (Work)',
         'systemId': 'cloud.corral.work.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
+        'host': 'cloud.corral.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
