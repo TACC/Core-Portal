@@ -2,7 +2,7 @@ export const initialTicketList = {
   content: [],
   loading: false,
   loadingError: false,
-  loadingErrorMessage: ''
+  loadingErrorMessage: '',
 };
 
 export function ticketList(state = initialTicketList, action) {
@@ -13,7 +13,7 @@ export function ticketList(state = initialTicketList, action) {
         content: [],
         loading: true,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'TICKET_LIST_FETCH_SUCCESS':
       return {
@@ -21,7 +21,7 @@ export function ticketList(state = initialTicketList, action) {
         content: action.payload,
         loading: false,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'TICKET_LIST_FETCH_ERROR':
       return {
@@ -29,7 +29,7 @@ export function ticketList(state = initialTicketList, action) {
         content: [],
         loadingError: true,
         loadingErrorMessage: action.payload,
-        loading: false
+        loading: false,
       };
     default:
       return state;
@@ -48,7 +48,7 @@ const initialDetailedTicketView = {
   loadingErrorMessage: '',
   replying: false,
   replyingError: false,
-  replyingErrorMessage: ''
+  replyingErrorMessage: '',
 };
 
 let showItemSet;
@@ -58,14 +58,14 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
     case 'TICKET_DETAILED_VIEW_INIT_MODAL':
       return {
         ...initialDetailedTicketView,
-        ticketId: action.payload.ticketId
+        ticketId: action.payload.ticketId,
       };
     case 'TICKET_DETAILED_VIEW_FETCH_HISTORY_STARTED':
       return {
         ...state,
         loading: true,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'TICKET_DETAILED_VIEW_FETCH_HISTORY_SUCCESS':
       return {
@@ -73,32 +73,32 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
         content: action.payload,
         loading: false,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'TICKET_DETAILED_VIEW_FETCH_HISTORY_ERROR':
       return {
         ...state,
         loadingError: true,
         loadingErrorMessage: action.payload,
-        loading: false
+        loading: false,
       };
     case 'TICKET_DETAILED_VIEW_FETCH_TICKET_SUBJECT_STARTED':
       return {
         ...state,
-        ticketSubjectLoading: true
+        ticketSubjectLoading: true,
       };
     case 'TICKET_DETAILED_VIEW_FETCH_TICKET_SUBJECT_SUCCESS':
       return {
         ...state,
         ticketSubject: action.payload,
         ticketSubjectLoading: false,
-        ticketSubjectError: false
+        ticketSubjectError: false,
       };
     case 'TICKET_DETAILED_VIEW_FETCH_TICKET_SUBJECT_ERROR':
       return {
         ...state,
         ticketSubjectLoading: false,
-        ticketSubjectError: true
+        ticketSubjectError: true,
       };
     case 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM':
       showItemSet = new Set(state.showItems);
@@ -110,27 +110,27 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
 
       return {
         ...state,
-        showItems: [...showItemSet.values()]
+        showItems: [...showItemSet.values()],
       };
     case 'TICKET_DETAILED_VIEW_REPLY_STARTED':
       return {
         ...state,
         replying: true,
         replyingError: false,
-        replyingErrorMessage: ''
+        replyingErrorMessage: '',
       };
     case 'TICKET_DETAILED_VIEW_REPLY_SUCCESS':
       return {
         ...state,
         replying: false,
-        content: [...state.content, action.payload]
+        content: [...state.content, action.payload],
       };
     case 'TICKET_DETAILED_VIEW_REPLY_FAILED':
       return {
         ...state,
         replying: false,
         replyingError: true,
-        replyingErrorMessage: action.payload
+        replyingErrorMessage: action.payload,
       };
     default:
       return state;
@@ -142,7 +142,7 @@ export const initialTicketCreateState = {
   creatingError: false,
   creatingErrorMessage: '',
   creatingSuccess: false,
-  createdTicketId: null
+  createdTicketId: null,
 };
 
 export function ticketCreate(state = initialTicketCreateState, action) {
@@ -152,21 +152,21 @@ export function ticketCreate(state = initialTicketCreateState, action) {
     case 'TICKET_CREATE_STARTED':
       return {
         ...state,
-        creating: true
+        creating: true,
       };
     case 'TICKET_CREATE_FAILED':
       return {
         ...state,
         creating: false,
         creatingError: true,
-        creatingErrorMessage: action.payload
+        creatingErrorMessage: action.payload,
       };
     case 'TICKET_CREATE_SUCCESS':
       return {
         ...state,
         creating: false,
         creatingSuccess: true,
-        createdTicketId: action.payload
+        createdTicketId: action.payload,
       };
     default:
       return state;
@@ -177,7 +177,7 @@ export const initialTicketCreateModalState = {
   modalOpen: false,
   subject: '',
   showAsModalOnDashboard: true,
-  provideDashBoardLinkOnSuccess: true
+  provideDashBoardLinkOnSuccess: true,
 };
 
 export function ticketCreateModal(
@@ -189,11 +189,11 @@ export function ticketCreateModal(
       return {
         ...state,
         ...action.payload,
-        modalOpen: true
+        modalOpen: true,
       };
     case 'TICKET_CREATE_SET_MODAL_CLOSE':
       return {
-        ...initialTicketCreateModalState
+        ...initialTicketCreateModalState,
       };
     default:
       return state;

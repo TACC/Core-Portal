@@ -1,25 +1,24 @@
 #appDetail-wrapper {
-    --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
-    --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
+  --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
+  --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
 
-    /* As a flex item */
-    flex-grow: 1;
+  /* As a flex item */
+  flex-grow: 1;
 
-    /* As a flex container */
-    display: flex;
-    flex-direction: row;
+  /* As a flex container */
+  display: flex;
 
-    height: 100%;
-    /* To ensure flex children stretch to height of scrolled content */
-    /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
-    /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */
-    flex-wrap: wrap;
+  height: 100%;
+  /* To ensure flex children stretch to height of scrolled content */
+  /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
+  /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */
+  flex-flow: row wrap;
 }
 #appDetail-wrapper.has-message,
 #appDetail-wrapper.is-loading,
 #appDetail-wrapper.has-external-app {
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Add space to top and bottom of `.appInfo-wrapper` and `#appForm-wrapper` */
@@ -28,45 +27,45 @@
 /* NOTE: UI design is not clear about scroll bounds with top & bottom space */
 .appInfo-wrapper > *:first-child,
 #appForm-wrapper > *:first-child {
-    padding-top: var(--space-top);
+  padding-top: var(--space-top);
 }
 .appInfo-wrapper > *:last-child,
 #appForm-wrapper > *:last-child {
-    padding-bottom: var(--space-bottom);
+  padding-bottom: var(--space-bottom);
 }
 
 /* Overwrite external Jumbotron component */
 /* FAQ: The `.jumbotron` originates from external injected HTML */
 #appDetail-wrapper .jumbotron {
-    /* Radius clashes with app design, because border is flush with container */
-    border-radius: 0;
+  /* Radius clashes with app design, because border is flush with container */
+  border-radius: 0;
 
-    /* Prevent extra space beneath `#appDetail-wrapper` */
-    margin-bottom: 0;
+  /* Prevent extra space beneath `#appDetail-wrapper` */
+  margin-bottom: 0;
 
-    /* Ensure `.jumbotron` scrolls within `#appDetail-wrapper` */
-    height: 100%;
-    overflow: auto;
+  /* Ensure `.jumbotron` scrolls within `#appDetail-wrapper` */
+  height: 100%;
+  overflow: auto;
 }
 
 #appForm-wrapper {
-    display: flex;
-    padding: 0 40px 0 30px;
-    flex: 0.7 1 0;
-    max-width: 780px;
-    flex-direction: column;
+  display: flex;
+  padding: 0 40px 0 30px;
+  flex: 0.7 1 0;
+  max-width: 780px;
+  flex-flow: column;
 }
 
 .appInfo-wrapper {
-    flex: 0.5 1 0;
-    max-width: 400px;
-    border-right: 1px solid #989898;
-    padding-right: 30px;
+  flex: 0.5 1 0;
+  max-width: 400px;
+  border-right: 1px solid #989898;
+  padding-right: 30px;
 }
 
 .appInfo-description {
-    font-size: 14px;
-    padding-bottom: 20px;
+  font-size: 14px;
+  padding-bottom: 20px;
 }
 
 .doc-icon {
@@ -74,49 +73,49 @@
 }
 
 .appInfo-documentation {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .appInfo-documentation .icon {
-    margin-right: 0.5em;
+  margin-right: 0.5em;
 }
 
 .appForm-textInput label,
 .appForm-select label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .appSchema-header {
-    font-weight: bold;
-    padding-bottom: 10px;
-    display: flex;
+  font-weight: bold;
+  padding-bottom: 10px;
+  display: flex;
 }
 
 .appSchema-header span {
-    border-bottom: 2px solid #989898;
-    flex-grow: 1;
+  border-bottom: 2px solid #989898;
+  flex-grow: 1;
 }
 
 .appSchema-section {
-    padding-bottom: 20px;
+  padding-bottom: 20px;
 }
 
 .btn-resetForm {
-    padding: 5px 0 0 20px;
+  padding: 5px 0 0 20px;
 }
 
 .appDetail-placeholder-message {
-    font-size: 1.4rem;
+  font-size: 1.4rem;
 }
 
 /* WARNING: This class is used by other components */
 .appDetail-error {
-    padding: 30px 0;
+  padding: 30px 0;
 }
 /* Remove padding of two error messages */
 /* HACK: Remove padding by subtracting margin (avoids revisiting padding) */
 /* TODO: Consider refactoring padding to use margin, but test side-effects */
 /* CLEVER: `#appForm-wrapper` avoids possible side-effect on other components */
 #appForm-wrapper .appDetail-error ~ .appDetail-error {
-    margin-top: -30px;
+  margin-top: -30px;
 }

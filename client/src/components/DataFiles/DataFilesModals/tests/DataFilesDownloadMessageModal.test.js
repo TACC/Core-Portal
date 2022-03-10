@@ -6,7 +6,7 @@ import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
 
 const mockStore = configureStore();
 const initialMockState = {
-  files: DataFilesDownloadMessageModalFixture
+  files: DataFilesDownloadMessageModalFixture,
 };
 
 describe('DataFilesDownloadMessageModal', () => {
@@ -18,7 +18,9 @@ describe('DataFilesDownloadMessageModal', () => {
     );
 
     expect(
-      getAllByText(/Folders and multiple files must be compressed before downloading./)
+      getAllByText(
+        /Folders and multiple files must be compressed before downloading./
+      )
     ).toBeDefined();
   });
 });

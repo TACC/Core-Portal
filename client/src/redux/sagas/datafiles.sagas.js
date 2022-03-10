@@ -9,7 +9,7 @@ import {
   all,
   race,
   take,
-  select
+  select,
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 import truncateMiddle from '../../utils/truncateMiddle';
@@ -19,7 +19,7 @@ import truncateMiddle from '../../utils/truncateMiddle';
  * a single slash.
  * @param {string} url
  */
-export const removeDuplicateSlashes = url => {
+export const removeDuplicateSlashes = (url) => {
   return url.replace(/\/{2,}/g, '/');
 };
 
@@ -46,10 +46,13 @@ export async function fetchSystemDefinitionUtil(systemId) {
   const response = await fetch(
     `/api/datafiles/systems/definition/${systemId}/`
   );
-  if (!response.ok) {
-    throw new Error(response.status);
-  }
   const responseJson = await response.json();
+  if (!response.ok) {
+    const err = new Error('Error fetching system definition');
+    err.status = response.status;
+    err.data = responseJson;
+    throw err;
+  }
   return responseJson;
 }
 
@@ -59,10 +62,13 @@ export function* fetchSystemDefinition(action) {
     const systemJson = yield call(fetchSystemDefinitionUtil, action.payload);
     yield put({
       type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
-      payload: systemJson
+      payload: systemJson,
     });
   } catch (e) {
-    yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_ERROR',
+      payload: { message: e.data.message, status: e.status },
+    });
   }
 }
 
@@ -79,7 +85,7 @@ export async function pushKeysUtil(system, form) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ form, action: 'push' })
+    body: JSON.stringify({ form, action: 'push' }),
   });
   return request;
 }
@@ -93,7 +99,7 @@ export function* pushKeys(action) {
     password: action.payload.password,
     token: action.payload.token,
     type: action.payload.type,
-    hostname: null
+    hostname: null,
   };
 
   yield call(pushKeysUtil, action.payload.system, form);
@@ -103,8 +109,8 @@ export function* pushKeys(action) {
     type: 'DATA_FILES_TOGGLE_MODAL',
     payload: {
       operation: 'pushKeys',
-      props: {}
-    }
+      props: {},
+    },
   });
 }
 
@@ -133,7 +139,7 @@ export async function fetchFilesUtil(
     offset,
     query_string: queryString,
     filter,
-    nextPageToken
+    nextPageToken,
   });
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
@@ -160,9 +166,9 @@ export function* fetchFiles(action) {
         api: action.payload.api,
         scheme: action.payload.scheme,
         system: action.payload.system,
-        path: action.payload.path || ''
-      }
-    }
+        path: action.payload.path || '',
+      },
+    },
   });
 
   try {
@@ -183,8 +189,8 @@ export function* fetchFiles(action) {
         files: listingResponse.listing,
         reachedEnd: listingResponse.reachedEnd,
         nextPageToken: listingResponse.nextPageToken,
-        section: action.payload.section
-      }
+        section: action.payload.section,
+      },
     });
   } catch (e) {
     yield put({
@@ -192,16 +198,16 @@ export function* fetchFiles(action) {
       payload: {
         section: action.payload.section,
         // When there isn't a status due to network connection error return 503.
-        code: e.status ? e.status.toString() : '503'
-      }
+        code: e.status ? e.status.toString() : '503',
+      },
     });
     // If listing returns 502, body should contain a system def for key pushing.
     yield e.status === 502 &&
       put({
         type: 'SET_SYSTEM',
         payload: {
-          system: e.data.system
-        }
+          system: e.data.system,
+        },
       });
   }
 }
@@ -214,8 +220,8 @@ export function* scrollFiles(action) {
   yield put({
     type: 'SCROLL_FILES_START',
     payload: {
-      section: action.payload.section
-    }
+      section: action.payload.section,
+    },
   });
 
   try {
@@ -237,15 +243,15 @@ export function* scrollFiles(action) {
         files: listingResponse.listing,
         reachedEnd: listingResponse.reachedEnd,
         nextPageToken: listingResponse.nextPageToken,
-        section: action.payload.section
-      }
+        section: action.payload.section,
+      },
     });
   } catch (e) {
     yield put({
       type: 'SCROLL_FILES_ERR',
       payload: {
-        section: action.payload.section
-      }
+        section: action.payload.section,
+      },
     });
   }
 }
@@ -256,7 +262,7 @@ export async function renameFileUtil(api, scheme, system, path, newName) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ new_name: newName })
+    body: JSON.stringify({ new_name: newName }),
   });
   if (!response.ok) {
     throw new Error(response.status);
@@ -274,7 +280,7 @@ export function* renameFile(action) {
   const file = action.payload.selectedFile;
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: 'RUNNING', operation: 'rename' }
+    payload: { status: 'RUNNING', operation: 'rename' },
   });
   try {
     const response = yield call(
@@ -287,7 +293,7 @@ export function* renameFile(action) {
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'SUCCESS', operation: 'rename' }
+      payload: { status: 'SUCCESS', operation: 'rename' },
     });
     yield call(action.payload.reloadCallback, response.name, response.path);
     yield put({
@@ -296,13 +302,13 @@ export function* renameFile(action) {
         message: `${file.name} renamed to ${truncateMiddle(
           action.payload.newName,
           20
-        )}`
-      }
+        )}`,
+      },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'ERROR', operation: 'rename' }
+      payload: { status: 'ERROR', operation: 'rename' },
     });
   }
 }
@@ -320,7 +326,7 @@ export async function moveFileUtil(
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath })
+    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -335,7 +341,7 @@ export function* watchMove() {
 export function* moveFile(src, dest, index) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'RUNNING', key: index, operation: 'move' }
+    payload: { status: 'RUNNING', key: index, operation: 'move' },
   });
   try {
     yield call(
@@ -350,12 +356,12 @@ export function* moveFile(src, dest, index) {
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: index, operation: 'move' }
+      payload: { status: 'SUCCESS', key: index, operation: 'move' },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: index, operation: 'move' }
+      payload: { status: 'ERROR', key: index, operation: 'move' },
     });
     return 'ERR';
   }
@@ -363,25 +369,25 @@ export function* moveFile(src, dest, index) {
 }
 export function* moveFiles(action) {
   const { dest } = action.payload;
-  const moveCalls = action.payload.src.map(file => {
+  const moveCalls = action.payload.src.map((file) => {
     return call(moveFile, file, dest, file.id);
   });
   const { result } = yield race({
     result: all(moveCalls),
-    cancel: take('DATA_FILES_MODAL_CLOSE')
+    cancel: take('DATA_FILES_MODAL_CLOSE'),
   });
   if (!result.includes('ERR')) {
     yield put({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} }
+      payload: { operation: 'move', props: {} },
     });
     yield put({
       type: 'ADD_TOAST',
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } moved to ${truncateMiddle(action.payload.dest.path, 20) || '/'}`
-      }
+        } moved to ${truncateMiddle(action.payload.dest.path, 20) || '/'}`,
+      },
     });
   }
   yield call(action.payload.reloadCallback);
@@ -409,7 +415,7 @@ export async function copyFileUtil(
       dest_path: destPath,
       file_name: filename,
       filetype,
-      dest_path_name: destPathName
+      dest_path_name: destPathName,
     };
   } else {
     url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
@@ -421,7 +427,7 @@ export async function copyFileUtil(
       src_path: path,
       dest_path: destPath,
       dest_path_name: destPathName,
-      dirname: filename
+      dirname: filename,
     };
   }
 
@@ -429,7 +435,7 @@ export async function copyFileUtil(
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -445,7 +451,7 @@ export function* copyFile(src, dest, index) {
   const filetype = src.type === 'dir' ? 'dir' : 'file';
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'RUNNING', key: index, operation: 'copy' }
+    payload: { status: 'RUNNING', key: index, operation: 'copy' },
   });
   try {
     yield call(
@@ -464,12 +470,12 @@ export function* copyFile(src, dest, index) {
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: index, operation: 'copy' }
+      payload: { status: 'SUCCESS', key: index, operation: 'copy' },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: index, operation: 'copy' }
+      payload: { status: 'ERROR', key: index, operation: 'copy' },
     });
     return 'ERR';
   }
@@ -477,25 +483,25 @@ export function* copyFile(src, dest, index) {
 }
 export function* copyFiles(action) {
   const { dest } = action.payload;
-  const copyCalls = action.payload.src.map(file => {
+  const copyCalls = action.payload.src.map((file) => {
     return call(copyFile, file, dest, file.id);
   });
   const { result } = yield race({
     result: all(copyCalls),
-    cancel: take('DATA_FILES_MODAL_CLOSE')
+    cancel: take('DATA_FILES_MODAL_CLOSE'),
   });
   if (!result.includes('ERR')) {
     yield put({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: {} }
+      payload: { operation: 'copy', props: {} },
     });
     yield put({
       type: 'ADD_TOAST',
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`
-      }
+        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`,
+      },
     });
   }
   yield call(action.payload.reloadCallback);
@@ -514,7 +520,7 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     method: 'POST',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: formData
+    body: formData,
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -527,7 +533,7 @@ export function* watchUpload() {
 }
 
 export function* uploadFiles(action) {
-  const uploadCalls = action.payload.files.map(file => {
+  const uploadCalls = action.payload.files.map((file) => {
     return call(
       uploadFile,
       'tapis',
@@ -541,7 +547,7 @@ export function* uploadFiles(action) {
 
   const { result } = yield race({
     result: all(uploadCalls),
-    cancel: take('DATA_FILES_MODAL_CLOSE')
+    cancel: take('DATA_FILES_MODAL_CLOSE'),
   });
 
   if (!result.includes('ERR'))
@@ -550,8 +556,8 @@ export function* uploadFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } uploaded to ${truncateMiddle(action.payload.path, 20) || '/'}`
-      }
+        } uploaded to ${truncateMiddle(action.payload.path, 20) || '/'}`,
+      },
     });
 
   yield call(action.payload.reloadCallback);
@@ -560,18 +566,18 @@ export function* uploadFiles(action) {
 export function* uploadFile(api, scheme, system, path, file, index) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'UPLOADING', key: index, operation: 'upload' }
+    payload: { status: 'UPLOADING', key: index, operation: 'upload' },
   });
   try {
     yield call(uploadFileUtil, api, scheme, system, path, file);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: index, operation: 'upload' }
+      payload: { status: 'SUCCESS', key: index, operation: 'upload' },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: index, operation: 'upload' }
+      payload: { status: 'ERROR', key: index, operation: 'upload' },
     });
     return 'ERR';
   }
@@ -585,7 +591,7 @@ export function* watchPreview() {
 export function* preview(action) {
   yield put({
     type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-    payload: { href: null, content: null, error: null, isLoading: true }
+    payload: { href: null, content: null, error: null, isLoading: true },
   });
   try {
     if (action.payload.api !== 'tapis')
@@ -601,7 +607,7 @@ export function* preview(action) {
     );
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { ...response, isLoading: false }
+      payload: { ...response, isLoading: false },
     });
   } catch (e) {
     yield put({
@@ -610,8 +616,8 @@ export function* preview(action) {
         content: null,
         href: null,
         error: 'Unable to show preview.',
-        isLoading: false
-      }
+        isLoading: false,
+      },
     });
   }
 }
@@ -634,7 +640,7 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dir_name: dirname })
+    body: JSON.stringify({ dir_name: dirname }),
   });
 
   return request;
@@ -659,8 +665,8 @@ export function* mkdir(action) {
     type: 'DATA_FILES_TOGGLE_MODAL',
     payload: {
       operation: 'mkdir',
-      props: {}
-    }
+      props: {},
+    },
   });
 }
 
@@ -670,8 +676,8 @@ export async function fileLinkUtil(method, scheme, system, path) {
     url,
     method,
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
 }
 
@@ -689,10 +695,10 @@ export function* fileLink(action) {
         method,
         url: '',
         error: null,
-        loading: true
+        loading: true,
       },
-      operation: 'link'
-    }
+      operation: 'link',
+    },
   });
   try {
     const result = yield call(fileLinkUtil, method, scheme, system, path);
@@ -704,10 +710,10 @@ export function* fileLink(action) {
             method: null,
             url: '',
             error: null,
-            loading: false
+            loading: false,
           },
-          operation: 'link'
-        }
+          operation: 'link',
+        },
       });
       return;
     }
@@ -718,10 +724,10 @@ export function* fileLink(action) {
           method: null,
           url: result.data || '',
           error: null,
-          loading: false
+          loading: false,
         },
-        operation: 'link'
-      }
+        operation: 'link',
+      },
     });
   } catch (error) {
     yield put({
@@ -731,10 +737,10 @@ export function* fileLink(action) {
           method: null,
           url: '',
           error: error.toString(),
-          loading: false
+          loading: false,
         },
-        operation: 'link'
-      }
+        operation: 'link',
+      },
     });
   }
 }
@@ -782,7 +788,7 @@ export async function trashUtil(api, scheme, system, path) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({})
+    body: JSON.stringify({}),
   });
 
   if (!request.ok) {
@@ -796,63 +802,129 @@ export function* watchTrash() {
 }
 
 export function* trashFiles(action) {
-  const trashCalls = action.payload.src.map(file => {
-    return call(trashFile, file.system, file.path, file.id);
+  const trashCalls = action.payload.src.map((file) => {
+    return call(trashFile, file.system, file.path);
   });
   const { result } = yield race({
     result: all(trashCalls),
-    cancel: take('DATA_FILES_MODAL_CLOSE')
+    cancel: take('DATA_FILES_MODAL_CLOSE'),
   });
   if (!result.includes('ERR')) {
     yield put({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: {} }
+      payload: { operation: 'trash', props: {} },
     });
     yield put({
       type: 'ADD_TOAST',
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } moved to trash`
-      }
+        } moved to trash`,
+      },
     });
   }
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, id) {
+export function* trashFile(system, path) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'RUNNING', key: id, operation: 'trash' }
+    payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
     yield call(trashUtil, 'tapis', 'private', system, path);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: id, operation: 'trash' }
+      payload: { status: 'SUCCESS', key: system + path, operation: 'trash' },
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: id, operation: 'trash' }
+      payload: { status: 'ERROR', key: system + path, operation: 'trash' },
+    });
+  }
+}
+
+export async function emptyUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const method = 'PUT';
+  return fetchUtil({
+    url,
+    method,
+    body: JSON.stringify({}),
+  });
+}
+
+export function* watchEmpty() {
+  yield takeLeading('DATA_FILES_EMPTY', emptyFiles);
+}
+
+export function* emptyFiles(action) {
+  const emptyCalls = action.payload.src.map((file) => {
+    return call(emptyFile, file.system, file.path);
+  });
+  try {
+    const { result } = yield race({
+      result: all(emptyCalls),
+      cancel: take('DATA_FILES_MODAL_CLOSE'),
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${result.length > 1 ? `${result.length} files` : 'File'} ${
+          !result.includes('ERR') ? 'deleted' : 'failed to delete'
+        }`,
+      },
+    });
+  } catch {
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: 'File(s) failed to delete',
+      },
+    });
+  }
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'empty', props: {} },
+  });
+  yield call(action.payload.reloadCallback);
+}
+
+export function* emptyFile(system, path) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'RUNNING', key: system + path, operation: 'empty' },
+  });
+  try {
+    yield call(emptyUtil, 'tapis', 'private', system, path);
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'SUCCESS', key: system + path, operation: 'empty' },
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'ERROR', key: system + path, operation: 'empty' },
     });
     return 'ERR';
   }
   return 'SUCCESS';
 }
 
-export const getLatestApp = async name => {
+export const getLatestApp = async (name) => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
     params: {
       publicOnly: true,
-      name
-    }
+      name,
+    },
   });
   const apps = res.response.appListing;
   const latestApp = apps
-    .filter(app => app.id.includes(name))
+    .filter((app) => app.id.includes(name))
     .reduce(
       (latest, app) => {
         if (app.version > latest.version) {
@@ -884,15 +956,15 @@ const getExtractParams = (file, latestExtract) => {
     archive: true,
     archivePath,
     inputs: {
-      inputFile
+      inputFile,
     },
     maxRunTime: '02:00:00',
     name: 'Extracting Compressed File',
-    parameters: {}
+    parameters: {},
   });
 };
 
-export const extractAppSelector = state => state.workbench.config.extractApp;
+export const extractAppSelector = (state) => state.workbench.config.extractApp;
 
 export function* extractFiles(action) {
   try {
@@ -901,7 +973,7 @@ export function* extractFiles(action) {
     const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'extract' }
+      payload: { status: 'RUNNING', operation: 'extract' },
     });
     const submission = yield call(jobHelper, params);
     if (submission.execSys) {
@@ -916,19 +988,19 @@ export function* extractFiles(action) {
             system: submission.execSys,
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'extract' }
-            }
-          }
-        }
+              payload: { status: 'ERROR', operation: 'extract' },
+            },
+          },
+        },
       });
     } else if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'extract' }
+        payload: { status: 'SUCCESS', operation: 'extract' },
       });
       yield put({
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'extract', props: {} }
+        payload: { operation: 'extract', props: {} },
       });
     } else {
       throw new Error('Unable to extract files');
@@ -936,7 +1008,7 @@ export function* extractFiles(action) {
   } catch (error) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'ERROR', operation: 'extract' }
+      payload: { status: 'ERROR', operation: 'extract' },
     });
   }
 }
@@ -953,12 +1025,12 @@ export function* watchExtract() {
  */
 const getCompressParams = (files, zipfileName, latestZippy) => {
   const inputs = {
-    inputFiles: files.map(file => `agave://${file.system}${file.path}`)
+    inputFiles: files.map((file) => `agave://${file.system}${file.path}`),
   };
   const parameters = {
     filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
     zipfileName,
-    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip'
+    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip',
   };
   const archivePath = `agave://${files[0].system}${files[0].path.substring(
     0,
@@ -973,16 +1045,17 @@ const getCompressParams = (files, zipfileName, latestZippy) => {
     maxRunTime: '02:00:00',
     name: 'Compressing Files',
     inputs,
-    parameters
+    parameters,
   });
 };
 
-export const compressAppSelector = state => state.workbench.config.compressApp;
+export const compressAppSelector = (state) =>
+  state.workbench.config.compressApp;
 
 export function* compressFiles(action) {
   const compressErrorAction = {
     type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: 'ERROR', operation: 'compress' }
+    payload: { status: 'ERROR', operation: 'compress' },
   };
   try {
     const compressApp = yield select(compressAppSelector);
@@ -994,7 +1067,7 @@ export function* compressFiles(action) {
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'compress' }
+      payload: { status: 'RUNNING', operation: 'compress' },
     });
     const submission = yield call(jobHelper, params);
     if (submission.execSys) {
@@ -1007,18 +1080,18 @@ export function* compressFiles(action) {
           props: {
             onSuccess: action,
             system: submission.execSys,
-            onCancel: compressErrorAction
-          }
-        }
+            onCancel: compressErrorAction,
+          },
+        },
       });
     } else if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'compress' }
+        payload: { status: 'SUCCESS', operation: 'compress' },
       });
       yield put({
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'compress', props: {} }
+        payload: { operation: 'compress', props: {} },
       });
     } else {
       throw new Error('Unable to compress files');
@@ -1044,7 +1117,7 @@ export async function makePublicUtil(api, scheme, system, path) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({})
+    body: JSON.stringify({}),
   });
 
   if (!request.ok) {

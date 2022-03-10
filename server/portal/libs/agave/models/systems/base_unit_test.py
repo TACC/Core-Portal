@@ -1,8 +1,6 @@
 from portal.libs.agave.utils import service_account
 from django.conf import settings
-from requests.exceptions import ConnectTimeout
 from portal.libs.agave.models.systems.storage import StorageSystem
-import pytest
 
 
 def test_system_success(mock_agave_client):
@@ -16,7 +14,7 @@ SYSTEM_LISTING_URL = "{}/files/v2/listings/system/{}/".format(settings.AGAVE_TEN
 
 
 def test_system_failure(requests_mock):
-    requests_mock.get(SYSTEM_LISTING_URL, text='Not Found', status_code=404)
+    requests_mock.get(SYSTEM_LISTING_URL, text='Not Found', reason='Not Found', status_code=404)
     storage = StorageSystem(service_account(), id="systemId", load=False)
     success, result = storage.test()
     assert not success
@@ -24,8 +22,8 @@ def test_system_failure(requests_mock):
 
 
 def test_system_failure_with_json_response(requests_mock):
-    json_response = {"custon_error_response_key": "value"}
-    requests_mock.get(SYSTEM_LISTING_URL, json=json_response, status_code=500)
+    json_response = {"custom_error_response_key": "value"}
+    requests_mock.get(SYSTEM_LISTING_URL, json=json_response, reason='Server error', status_code=500)
     storage = StorageSystem(service_account(), id="systemId", load=False)
     success, result = storage.test()
     assert not success

@@ -5,12 +5,12 @@ import { fetchUtil } from 'utils/fetchUtil';
 export async function fetchAppDefinitionUtil(appId) {
   const result = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { app_id: appId }
+    params: { app_id: appId },
   });
   return result.response;
 }
 
-const getCurrentApp = state => state.app;
+const getCurrentApp = (state) => state.app;
 
 function* getApp(action) {
   const { appId } = action.payload;
@@ -34,7 +34,7 @@ function* getApp(action) {
 
 export async function fetchAppTrayUtil() {
   const result = await fetchUtil({
-    url: '/api/workspace/tray'
+    url: '/api/workspace/tray',
   });
   return result;
 }

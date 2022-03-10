@@ -1,5 +1,8 @@
 import React from 'react';
-import { toHaveClass, toBeDisabled } from '@testing-library/jest-dom/dist/matchers';
+import {
+  toHaveClass,
+  toBeDisabled,
+} from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
@@ -28,13 +31,23 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { selected: { FilesListing: [] } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
+          },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -47,16 +60,26 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Community Data', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="community" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { selected: { FilesListing: [] } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
+          },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -69,16 +92,26 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Public Data', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { selected: { FilesListing: [] } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
+          },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -91,16 +124,26 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Google Drive', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { selected: { FilesListing: [] } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '',
+            },
+          },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -112,7 +155,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Trash/)).toBeFalsy();
   });
 
-  it('disables Trash button for files in .Trash', () => {
+  it('enables Empty button for files in .Trash', () => {
     const testFile = {
       name: 'test.txt',
       path: '/.Trash/test.txt',
@@ -122,19 +165,56 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          listing: { FilesListing: [ testFile ] },
-          selected: { FilesListing: [ 0 ] } 
-       },
-        //listing: {  } },
-        systems: systemsFixture
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '.Trash',
+            },
+          },
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
-    expect(getByText(/Trash/).closest('button')).toBeDisabled();
+    expect(getByText(/Empty/).closest('button')).not.toBeDisabled();
+  });
+
+  it('disables Empty button when .Trash is empty', () => {
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              path: '.Trash',
+            },
+          },
+          listing: { FilesListing: [] },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
+        //listing: {  } },
+        systems: systemsFixture,
+      }),
+      createMemoryHistory()
+    );
+    expect(getByText(/Empty/).closest('button')).toBeDisabled();
   });
 });

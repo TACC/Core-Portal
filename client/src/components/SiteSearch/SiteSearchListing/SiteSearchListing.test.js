@@ -12,13 +12,18 @@ const mockState = {
   systems: systemsFixture,
   files: {
     modals: {
-      preview: false
+      preview: false,
     },
     modalProps: {
-      preview: {}
+      preview: {},
     },
-    preview: {}
-  }
+    preview: {},
+  },
+  workbench: {
+    config: {
+      trashPath: '.Trash',
+    },
+  },
 };
 
 describe('SiteSearchListing', () => {
@@ -26,16 +31,17 @@ describe('SiteSearchListing', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
     const store = mockStore(mockState);
-    const { getAllByRole, getByText, getAllByTestId, queryByTestId } = renderComponent(
-      <SiteSearchListing
-        filter="cms"
-        loading={false}
-        error={null}
-        results={siteSearchResults.cms}
-      />,
-      store,
-      history
-    );
+    const { getAllByRole, getByText, getAllByTestId, queryByTestId } =
+      renderComponent(
+        <SiteSearchListing
+          filter="cms"
+          loading={false}
+          error={null}
+          results={siteSearchResults.cms}
+        />,
+        store,
+        history
+      );
 
     expect(getAllByTestId('sitesearch-cms-item').length).toBe(2);
     expect(getByText(/Lateral Load Resisting System/)).toBeDefined();

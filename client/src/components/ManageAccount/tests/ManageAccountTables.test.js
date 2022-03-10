@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, wait, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import configureStore from 'redux-mock-store';
@@ -9,7 +9,7 @@ import {
   OptionalInformation,
   ChangePassword,
   Integrations,
-  Licenses
+  Licenses,
 } from '../ManageAccountTables';
 
 const dummyState = {
@@ -19,7 +19,7 @@ const dummyState = {
   success: {
     optional: false,
     required: false,
-    password: false
+    password: false,
   },
   data: {
     demographics: {
@@ -40,21 +40,21 @@ const dummyState = {
       citizenship: 'United States',
       citizenshipId: 230,
       phone: '512-919-9153',
-      title: 'Center Non-Researcher Staff'
+      title: 'Center Non-Researcher Staff',
     },
     licenses: [],
     integrations: [
       {
         label: 'Google Drive',
         description: 'test description',
-        activated: false
-      }
+        activated: false,
+      },
     ],
-    passwordLastChanged: '6/1/2020'
+    passwordLastChanged: '6/1/2020',
   },
   errors: {},
   fields: {},
-  modals: {}
+  modals: {},
 };
 
 const mockStore = configureStore({});
@@ -62,7 +62,7 @@ const mockStore = configureStore({});
 describe('Required Information Component', () => {
   let getByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
   });
   beforeEach(() => {
     const utils = render(
@@ -84,16 +84,16 @@ describe('Required Information Component', () => {
       'Country of Residence',
       'Country of Citizenship',
       'Ethnicity',
-      'Gender'
+      'Gender',
     ];
-    headings.forEach(heading => {
+    headings.forEach((heading) => {
       expect(getByText(heading)).toBeInTheDocument();
     });
   });
   test('Button to open form modal', async () => {
     const button = getByText(/Edit Required Information/);
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const { type, payload } = testStore.getActions()[0];
       expect(type).toEqual('OPEN_PROFILE_MODAL');
       expect(payload).toEqual({ required: true });
@@ -104,7 +104,7 @@ describe('Required Information Component', () => {
 describe('Change Password Component', () => {
   let getByText, getAllByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
   });
   beforeEach(() => {
     const utils = render(
@@ -125,7 +125,7 @@ describe('Change Password Component', () => {
     expect(getAllByText(/Change Password/)).toHaveLength(2);
     const button = getAllByText(/Change Password/)[1];
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const { type, payload } = testStore.getActions()[0];
       expect(type).toEqual('OPEN_PROFILE_MODAL');
       expect(payload).toEqual({ password: true });
@@ -138,7 +138,7 @@ describe('Third Party Apps', () => {
 
   it('Shows connect link when not connected', () => {
     const testStore = mockStore({
-      profile: dummyState
+      profile: dummyState,
     });
     const { getByText } = render(
       <Provider store={testStore}>
@@ -159,11 +159,11 @@ describe('Third Party Apps', () => {
             {
               label: 'Google Drive',
               description: 'test description',
-              activated: true
-            }
-          ]
-        }
-      }
+              activated: true,
+            },
+          ],
+        },
+      },
     });
     const { getByText } = render(
       <Provider store={testStore}>
@@ -179,7 +179,7 @@ describe('Third Party Apps', () => {
 describe('Optional Information Component', () => {
   let getByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
   });
   beforeEach(() => {
     const utils = render(
@@ -195,16 +195,16 @@ describe('Optional Information Component', () => {
       'Orcid ID',
       'Professional Level',
       'Research Bio',
-      'My Website'
+      'My Website',
     ];
-    headings.forEach(heading => {
+    headings.forEach((heading) => {
       expect(getByText(heading)).toBeInTheDocument();
     });
   });
   it('should have a button that opens a redux controlled modal', async () => {
     const button = getByText(/Edit Optional Information/);
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const [action] = testStore.getActions();
       expect(action.type).toEqual('OPEN_PROFILE_MODAL');
       expect(action.payload).toEqual({ optional: true });
@@ -215,7 +215,7 @@ describe('Optional Information Component', () => {
 describe('License Cell', () => {
   let getByText, getByRole;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
   });
   beforeEach(() => {
     const utils = render(

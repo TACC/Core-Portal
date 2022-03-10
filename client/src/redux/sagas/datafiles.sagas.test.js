@@ -17,9 +17,9 @@ import {
   extractAppSelector,
   compressAppSelector,
   makePublicUtil,
-  doMakePublic
+  doMakePublic,
 } from './datafiles.sagas';
-import {select} from 'redux-saga/effects'
+import { select } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
@@ -30,7 +30,7 @@ describe('fetchSystems', () => {
   beforeEach(() => {
     const fm = fetchMock.sandbox().mock(`/api/datafiles/systems/list/`, {
       body: { private: 'test.private' },
-      status: 200
+      status: 200,
     });
     fetch.mockImplementation(fm);
   });
@@ -42,12 +42,12 @@ describe('fetchSystems', () => {
   it('runs saga', async () => {
     return expectSaga(fetchSystems)
       .provide([
-        [matchers.call.fn(fetchSystemsUtil), { private: 'test.private' }]
+        [matchers.call.fn(fetchSystemsUtil), { private: 'test.private' }],
       ])
       .call(fetchSystemsUtil)
       .put({
         type: 'FETCH_SYSTEMS_SUCCESS',
-        payload: { private: 'test.private' }
+        payload: { private: 'test.private' },
       })
       .run();
   });
@@ -55,12 +55,12 @@ describe('fetchSystems', () => {
   it('catches errors in system retrieval', async () => {
     return expectSaga(fetchSystems)
       .provide([
-        [matchers.call.fn(fetchSystemsUtil), throwError(new Error('error'))]
+        [matchers.call.fn(fetchSystemsUtil), throwError(new Error('error'))],
       ])
       .call(fetchSystemsUtil)
       .put({
         type: 'FETCH_SYSTEMS_ERROR',
-        payload: 'error'
+        payload: 'error',
       })
       .run();
   });
@@ -80,7 +80,7 @@ describe('fetchFiles', () => {
         '/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&nextPageToken&offset=0&query_string=',
         {
           body: { data: '200 response' },
-          status: 200
+          status: 200,
         }
       );
     fetch.mockImplementation(fm);
@@ -99,17 +99,17 @@ describe('fetchFiles', () => {
         system: 'test.system',
         path: 'path/to/file',
         offset: 0,
-        limit: 100
-      }
+        limit: 100,
+      },
     })
       .provide([
         [
           matchers.call.fn(fetchFilesUtil),
           {
             listing: [{ name: 'testfile', system: 'test.system' }],
-            reachedEnd: true
-          }
-        ]
+            reachedEnd: true,
+          },
+        ],
       ])
       .put({
         type: 'FETCH_FILES_START',
@@ -119,9 +119,9 @@ describe('fetchFiles', () => {
             api: 'tapis',
             scheme: 'private',
             system: 'test.system',
-            path: 'path/to/file'
-          }
-        }
+            path: 'path/to/file',
+          },
+        },
       })
       .call(
         fetchFilesUtil,
@@ -140,8 +140,8 @@ describe('fetchFiles', () => {
           files: [{ name: 'testfile', system: 'test.system' }],
           reachedEnd: true,
           section: 'FilesListing',
-          nextPageToken: undefined
-        }
+          nextPageToken: undefined,
+        },
       })
       .run();
   });
@@ -155,14 +155,14 @@ describe('fetchFiles', () => {
         system: 'test.system',
         path: 'path/to/file',
         offset: 0,
-        limit: 100
-      }
+        limit: 100,
+      },
     })
       .provide([
         [
           matchers.call.fn(fetchFilesUtil),
-          throwError({ message: '404', status: 404 })
-        ]
+          throwError({ message: '404', status: 404 }),
+        ],
       ])
       .put({
         type: 'FETCH_FILES_START',
@@ -172,9 +172,9 @@ describe('fetchFiles', () => {
             api: 'tapis',
             scheme: 'private',
             system: 'test.system',
-            path: 'path/to/file'
-          }
-        }
+            path: 'path/to/file',
+          },
+        },
       })
       .call(
         fetchFilesUtil,
@@ -191,8 +191,8 @@ describe('fetchFiles', () => {
         type: 'FETCH_FILES_ERROR',
         payload: {
           section: 'FilesListing',
-          code: '404'
-        }
+          code: '404',
+        },
       })
       .run();
   });
@@ -224,23 +224,23 @@ describe('scrollFiles', () => {
         system: 'test.system',
         path: 'path/to/file',
         offset: 0,
-        limit: 100
-      }
+        limit: 100,
+      },
     })
       .provide([
         [
           matchers.call.fn(fetchFilesUtil),
           {
             listing: [{ name: 'testfile', system: 'test.system' }],
-            reachedEnd: true
-          }
-        ]
+            reachedEnd: true,
+          },
+        ],
       ])
       .put({
         type: 'SCROLL_FILES_START',
         payload: {
-          section: 'FilesListing'
-        }
+          section: 'FilesListing',
+        },
       })
       .call(
         fetchFilesUtil,
@@ -260,8 +260,8 @@ describe('scrollFiles', () => {
           files: [{ name: 'testfile', system: 'test.system' }],
           reachedEnd: true,
           section: 'FilesListing',
-          nextPageToken: undefined
-        }
+          nextPageToken: undefined,
+        },
       })
       .run();
   });
@@ -274,20 +274,15 @@ describe('scrollFiles', () => {
         system: 'test.system',
         path: 'path/to/file',
         offset: 0,
-        limit: 100
-      }
+        limit: 100,
+      },
     })
-      .provide([
-        [
-          matchers.call.fn(fetchFilesUtil),
-          throwError("Failed!")
-        ]
-      ])
+      .provide([[matchers.call.fn(fetchFilesUtil), throwError('Failed!')]])
       .put({
         type: 'SCROLL_FILES_START',
         payload: {
-          section: 'FilesListing'
-        }
+          section: 'FilesListing',
+        },
       })
       .call(
         fetchFilesUtil,
@@ -305,24 +300,24 @@ describe('scrollFiles', () => {
         type: 'SCROLL_FILES_ERR',
         payload: {
           section: 'FilesListing',
-        }
+        },
       })
       .run();
   });
 });
 
-describe("extractFiles", () => {
+describe('extractFiles', () => {
   const jobHelperExpected = JSON.stringify({
     allocation: 'FORK',
     appId: 'extract-frontera-0.1u1',
     archive: true,
     archivePath: 'agave://test.system/dir/',
     inputs: {
-      inputFile: 'agave://test.system/dir/test.zip'
+      inputFile: 'agave://test.system/dir/test.zip',
     },
     maxRunTime: '02:00:00',
     name: 'Extracting Compressed File',
-    parameters: {}
+    parameters: {},
   });
 
   const action = {
@@ -330,43 +325,43 @@ describe("extractFiles", () => {
     payload: {
       file: {
         system: 'test.system',
-        path: '/dir/test.zip'
-      }
-    }
-  }
+        path: '/dir/test.zip',
+      },
+    },
+  };
 
-  it("runs extractFiles saga with success", () => {
-   return expectSaga(extractFiles, action)
+  it('runs extractFiles saga with success', () => {
+    return expectSaga(extractFiles, action)
       .provide([
-        [ select(extractAppSelector), 'extract-frontera'],
-        [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
-        [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
+        [select(extractAppSelector), 'extract-frontera'],
+        [matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1'],
+        [matchers.call.fn(jobHelper), { status: 'ACCEPTED' }],
       ])
       .call(getLatestApp, 'extract-frontera')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'extract' }
+        payload: { status: 'RUNNING', operation: 'extract' },
       })
 
       .call(jobHelper, jobHelperExpected)
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'extract' }
+        payload: { status: 'SUCCESS', operation: 'extract' },
       })
       .run();
   });
 
-  it("runs extractFiles saga with push keys modal", () => {
+  it('runs extractFiles saga with push keys modal', () => {
     return expectSaga(extractFiles, action)
       .provide([
-        [ select(extractAppSelector), 'extract-frontera' ],
-        [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
-        [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
+        [select(extractAppSelector), 'extract-frontera'],
+        [matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1'],
+        [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
       .call(getLatestApp, 'extract-frontera')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'extract' }
+        payload: { status: 'RUNNING', operation: 'extract' },
       })
 
       .call(jobHelper, jobHelperExpected)
@@ -379,16 +374,16 @@ describe("extractFiles", () => {
             system: 'test.cli.system',
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'extract' }
-            }
-          }
-        }
+              payload: { status: 'ERROR', operation: 'extract' },
+            },
+          },
+        },
       })
       .run();
   });
 });
 
-describe("compressFiles", () => {
+describe('compressFiles', () => {
   const action = {
     type: 'DATA_FILES_COMPRESS',
     payload: {
@@ -397,16 +392,16 @@ describe("compressFiles", () => {
         {
           system: 'test.system',
           path: '/test1.txt',
-          name: 'test1.txt'
+          name: 'test1.txt',
         },
         {
           system: 'test.system',
           path: '/test2.txt',
-          name: 'test2.txt'
-        }
-      ]
-    }
-  }
+          name: 'test2.txt',
+        },
+      ],
+    },
+  };
 
   const jobHelperExpected = JSON.stringify({
     allocation: 'FORK',
@@ -417,48 +412,48 @@ describe("compressFiles", () => {
     name: 'Compressing Files',
     inputs: {
       inputFiles: [
-        "agave://test.system/test1.txt",
-        "agave://test.system/test2.txt"
-      ]
+        'agave://test.system/test1.txt',
+        'agave://test.system/test2.txt',
+      ],
     },
     parameters: {
       filenames: '"test1.txt" "test2.txt" ',
       zipfileName: 'test.zip',
-      compression_type: 'zip'
-    }
+      compression_type: 'zip',
+    },
   });
 
-  it("runs compressFiles saga with success", () => {
+  it('runs compressFiles saga with success', () => {
     return expectSaga(compressFiles, action)
       .provide([
-        [ select(compressAppSelector), 'zippy-frontera'],
-        [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
-        [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
+        [select(compressAppSelector), 'zippy-frontera'],
+        [matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1'],
+        [matchers.call.fn(jobHelper), { status: 'ACCEPTED' }],
       ])
       .call(getLatestApp, 'zippy-frontera')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' }
+        payload: { status: 'RUNNING', operation: 'compress' },
       })
       .call(jobHelper, jobHelperExpected)
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'compress' }
+        payload: { status: 'SUCCESS', operation: 'compress' },
       })
       .run();
   });
 
-  it("runs compressFiles saga with push keys modal", () => {
+  it('runs compressFiles saga with push keys modal', () => {
     return expectSaga(compressFiles, action)
       .provide([
-        [ select(compressAppSelector), 'zippy-frontera'],
-        [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
-        [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
+        [select(compressAppSelector), 'zippy-frontera'],
+        [matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1'],
+        [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
       .call(getLatestApp, 'zippy-frontera')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' }
+        payload: { status: 'RUNNING', operation: 'compress' },
       })
       .call(jobHelper, jobHelperExpected)
       .put({
@@ -470,10 +465,10 @@ describe("compressFiles", () => {
             system: 'test.cli.system',
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'compress' }
-            }
-          }
-        }
+              payload: { status: 'ERROR', operation: 'compress' },
+            },
+          },
+        },
       })
       .run();
   });
@@ -485,11 +480,11 @@ describe('copyFiles', () => {
       .sandbox()
       .put('/api/datafiles/tapis/copy/private/test.system/testpath/', {
         body: { data: '200 response' },
-        status: 200
+        status: 200,
       })
       .put('/api/datafiles/transfer/dir/', {
         body: { data: '200 response' },
-        status: 200
+        status: 200,
       });
     fetch.mockImplementation(fm);
   });
@@ -514,11 +509,10 @@ describe('copyFiles', () => {
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
-        body:
-          '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname"}',
+        body: '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname"}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
-        method: 'PUT'
+        method: 'PUT',
       }
     );
   });
@@ -544,13 +538,13 @@ describe('copyFiles', () => {
       src_path: 'testpath',
       dest_path: 'testpath2',
       dest_path_name: 'destname',
-      dirname: 'testfilename'
+      dirname: 'testfilename',
     };
     expect(fetch).toBeCalledWith('/api/datafiles/transfer/dir/', {
       body: JSON.stringify(expectedBody),
       credentials: 'same-origin',
       headers: { 'X-CSRFToken': undefined },
-      method: 'PUT'
+      method: 'PUT',
     });
   });
 });
@@ -574,18 +568,18 @@ describe('fileLink', () => {
         scheme: 'private',
         file: {
           system: 'test.system',
-          path: 'path/to/file'
+          path: 'path/to/file',
         },
-        method: 'get'
-      }
+        method: 'get',
+      },
     })
       .provide([
         [
           matchers.call.fn(fileLinkUtil),
           {
-            data: 'https://postit'
-          }
-        ]
+            data: 'https://postit',
+          },
+        ],
       ])
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -594,10 +588,10 @@ describe('fileLink', () => {
             method: 'get',
             url: '',
             error: null,
-            loading: true
+            loading: true,
           },
-          operation: 'link'
-        }
+          operation: 'link',
+        },
       })
       .call(fileLinkUtil, 'get', 'private', 'test.system', 'path/to/file')
       .put({
@@ -607,10 +601,10 @@ describe('fileLink', () => {
             method: null,
             url: 'https://postit',
             error: null,
-            loading: false
+            loading: false,
           },
-          operation: 'link'
-        }
+          operation: 'link',
+        },
       })
       .run();
   });
@@ -623,7 +617,7 @@ describe('makePublic', () => {
       .mock(
         `/api/datafiles/tapis/makepublic/private/test.system/path/to/file/`,
         {
-          status: 200
+          status: 200,
         }
       );
     fetch.mockImplementation(fm);
@@ -636,7 +630,7 @@ describe('makePublic', () => {
   it('runs saga', async () => {
     return expectSaga(doMakePublic, {
       type: 'DATA_FILES_MAKE_PUBLIC',
-      payload: { system: 'test.system', path: '/path/to/file' }
+      payload: { system: 'test.system', path: '/path/to/file' },
     })
       .provide([[matchers.call.fn(makePublicUtil), {}]])
       .call(makePublicUtil, 'tapis', 'private', 'test.system', '/path/to/file')
@@ -651,7 +645,7 @@ describe('makePublic', () => {
         body: '{}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
-        method: 'PUT'
+        method: 'PUT',
       }
     );
   });

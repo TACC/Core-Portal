@@ -12,17 +12,21 @@
   box-sizing: content-box;
 
   padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--dark);
 }
-
 
 /* Elements */
 
 /* Add vertical space between children that, without wrapping, is invisible */
 /* FAQ: Take away space added, in direction that does not disturb other CSS */
 /* WARNING: `DataFilesToolbar.scss` needs `margin-bottom` */
-.root { margin-top: -5px; }
-.root > * { margin-top: 5px; }
+.root {
+  margin-top: -5px;
+}
+.root > * {
+  margin-top: 5px;
+}
 
 /* Do not allow external margin styles */
 .heading {
@@ -34,7 +38,6 @@
 .heading ~ * {
   max-height: 100%; /* (gently) force oversized elements to fit */
 }
-
 
 /* Modifiers */
 

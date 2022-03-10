@@ -8,7 +8,7 @@ const LIMIT = 50;
 export async function fetchJobs(offset, limit) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
-    params: { offset, limit }
+    params: { offset, limit },
   });
   return result.response;
 }
@@ -17,7 +17,7 @@ export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_LIST_INIT' });
   } else {
-    const reachedEnd = yield select(state => state.jobs.reachedEnd);
+    const reachedEnd = yield select((state) => state.jobs.reachedEnd);
     if (reachedEnd) {
       return;
     }
@@ -33,11 +33,11 @@ export function* getJobs(action) {
     );
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: jobs, reachedEnd: jobs.length < LIMIT }
+      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
-    const notifs = yield select(state => state.notifications.list.notifs);
+    const notifs = yield select((state) => state.notifications.list.notifs);
     yield put({ type: 'UPDATE_JOBS_FROM_NOTIFICATIONS', payload: notifs });
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
@@ -51,9 +51,9 @@ export async function postSubmitJobUtil(jobPayload) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': Cookies.get('csrftoken')
+      'X-CSRFToken': Cookies.get('csrftoken'),
     },
-    body: JSON.stringify(jobPayload)
+    body: JSON.stringify(jobPayload),
   });
   return result;
 }
@@ -70,21 +70,25 @@ export function* submitJob(action) {
           operation: 'pushKeys',
           props: {
             onSuccess: { type: 'SUBMIT_JOB', payload: action.payload },
-            system: res.response.execSys
-          }
-        }
+            system: res.response.execSys,
+          },
+        },
       });
       yield put({ type: 'TOGGLE_SUBMITTING' });
     } else {
       yield put({
         type: 'SUBMIT_JOB_SUCCESS',
-        payload: res.response
+        payload: res.response,
       });
+    }
+
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
     }
   } catch (error) {
     yield put({
       type: 'SUBMIT_JOB_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }
@@ -92,14 +96,14 @@ export function* submitJob(action) {
 export async function fetchJobDetailsUtil(jobId) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
-    params: { job_id: jobId }
+    params: { job_id: jobId },
   });
   return result.response;
 }
 
 export async function fetchSystemUtil(system) {
   const result = await fetchUtil({
-    url: `/api/accounts/systems/${system}/`
+    url: `/api/accounts/systems/${system}/`,
   });
   return result.response;
 }
@@ -108,7 +112,7 @@ export function* getJobDetails(action) {
   const { jobId } = action.payload;
   yield put({
     type: 'JOB_DETAILS_FETCH_STARTED',
-    payload: jobId
+    payload: jobId,
   });
   try {
     const job = yield call(fetchJobDetailsUtil, jobId);
@@ -122,17 +126,17 @@ export function* getJobDetails(action) {
 
     yield put({
       type: 'JOB_DETAILS_FETCH_SUCCESS',
-      payload: { app, job }
+      payload: { app, job },
     });
 
     yield put({
       type: 'JOBS_LIST_UPDATE_JOB',
-      payload: { job }
+      payload: { job },
     });
   } catch (error) {
     yield put({
       type: 'JOB_DETAILS_FETCH_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }

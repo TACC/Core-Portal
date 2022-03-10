@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2022-02-24: Component Design Enhancements; Onboarding and other bugfixes
+
+### Changed
+
+- task/FP-200: Trash Modal: Official Design (#549)
+- FP-545: Create _common Button React Component (#584)
+
+### Fixed
+
+- FP-1479: Site Search WEB results should be purple (#587)
+- FP-1460: Resolve dependabot alerts (#588)
+- FP-1503: Fix onboarding; Remove unnecessary FETCH_AUTHENTICATED_USER dispatch (#595)
+- FP-1428: Fix job history error (#589)
+- FP-1514: Fix project membership step to handle allocation-less projects (#596)
+
+## [2.12.1] - 2022-01-18: Fix anonymous views
+
+### Fixed
+
+- FP-1447: handle anonymous users in data context (#580)
+
+## [2.12.0] - 2022-01-04: Vite Migration; Request Access Page; Relaunch Jobs; ARIA and other bugfixes
+
+### Added
+
+- FP-1257: Frontend builds using Vite (#520)
+- FP-1219: Request Access Page (#538)
+- FP-547: Relaunch jobs in Job History modal. (#552)
+- FP-1146: Enable recaptcha for unauthenticated feedback or tickets (#530)
+
+### Changed
+
+- FP-1325: Add notice to Data Depot (#575)
+- FP-1385: Add ARIA label to Data Files checkboxes for accessibility (#574)
+- FP-1090: Put welcome message visited status in database, not localStorage (#545)
+- FP-1250: Add and enable new app icons (#558)
+- FP-1294: Toggle Site Search Systems (#571)
+- FP-1262: Match HTML Checkbox Behavior for Data Files (#554)
+- FP-1350: Add phone validation tests (#557)
+- FP-357: Keyboard A11y - Ticket navigation and open/close with keyboard (#567)
+- FP-1106: Move Make Public button to copy modal (#531)
+
+### Fixed
+
+- FP-1395: Fix recaptcha bugs (#573)
+- FP-1347: Fix Ticket Attachment Space Discrepancies (#569)
+- FP-1373: Data Files Filter Updates (#556)
+- FP-1386: Make CheckboxHeaderCell keyboard accessible (#563)
+- FP-1420, FP-1425: Fix non-persistent Welcome Message state; Fix Orcid ID link (#578)
+- FP-1429: Fix styling on 'Resubmit Job' button (#579)
+
+## [2.11.1] - 2021-11-18: ES Indexer and job validation hotfixes
+
+### Fixed
+
+- FP-1362: Make hideSearchBar param optional on systems (#550)
+- BM-24: Fix job validation when maxNodes > processorsPerNode (#551)
+
 ## [2.11.0] - 2021-11-15: Bugfixes; UI Improvements
 
 ### Changed
@@ -535,7 +593,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.11.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.13.0
+[2.12.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.1
+[2.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.0
+[2.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.1
 [2.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.0
 [2.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.10.0
 [2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0

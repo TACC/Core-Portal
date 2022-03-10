@@ -1,23 +1,28 @@
 $width: 215px;
 
 .root {
-    overflow-y: auto;
-    flex-wrap: nowrap; /* Overwrite Bootstrap `_nav.scss` style for `.nav` */
-    min-width: $width;
-    max-width: $width;
-    width: $width;
-    background: #f4f4f4;
-    border-right: 1px solid rgba(112, 112, 112, 0.25);
-    padding-top: 20px;
+  overflow-y: auto;
+  flex-wrap: nowrap; /* Overwrite Bootstrap `_nav.scss` style for `.nav` */
+  min-width: $width;
+  max-width: $width;
+  width: $width;
+  background: #f4f4f4;
+  border-right: 1px solid rgb(112 112 112 / 25%);
+  padding-top: 20px;
 }
 
 .link {
   color: var(--global-color-primary--dark);
+  font-weight: 500;
 }
 .link:hover,
 .link--active {
   color: var(--global-color-primary--x-dark); /* to pass color contrast test */
   background-color: var(--global-color-accent--weak);
+}
+.link--active,
+.link:active {
+  font-weight: 700;
 }
 
 .content {
@@ -27,7 +32,6 @@ $width: 215px;
 .text {
   padding-left: 20px;
   font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
-  font-weight: 500;
 }
 
 .feedback-nav-item {

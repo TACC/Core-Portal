@@ -6,7 +6,7 @@
   --min-width: 200px;
 
   margin-left: calc(var(--horizontal-buffer) * -1);
-  border-right: 1px solid rgba(112, 112, 112, 0.25);
+  border-right: 1px solid rgb(112 112 112 / 25%);
 
   padding-top: var(--vertical-buffer);
 }
@@ -16,6 +16,7 @@
 
   padding-left: var(--horizontal-buffer);
   color: var(--global-color-primary--dark);
+  font-weight: 500;
 }
 
 .data-files-sidebar .nav-link.active,
@@ -24,10 +25,17 @@
   background: var(--global-color-accent--weak);
 }
 
+.data-files-sidebar .nav-link.active {
+  font-weight: 700;
+}
+
+.data-files-sidebar .nav-link:active {
+  font-weight: 700;
+}
+
 .data-files-sidebar .nav-text {
   padding-left: 16px;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-  font-weight: 500;
 }
 
 .data-files-btn {
@@ -85,9 +93,9 @@
     color: #707070;
     font-size: 14px;
     i {
-        padding-right: 19px;
-        font-size: 20px;
-        vertical-align: middle;
+      padding-right: 19px;
+      font-size: 20px;
+      vertical-align: middle;
     }
     &:hover {
       color: #707070;

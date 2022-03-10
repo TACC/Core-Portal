@@ -23,7 +23,6 @@
   font-size: 0.75rem;
 }
 
-
 .modal-body-container {
   width: 100%;
   height: 60vh;
@@ -43,6 +42,18 @@
 .panel-content pre {
   white-space: pre-wrap;
   margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
+}
+
+.submit-button {
+  composes: c-button--primary from '../../../styles/components/c-button.css';
+  width: 80%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 14px;
+  margin: auto;
+  --transition-duration: 0;
+  transition: color var(--transition-duration),
+    background-color var(--transition-duration);
 }
 
 .left-panel {
@@ -79,7 +90,8 @@
 dl.panel-content {
   --buffer-horz: 12px; /* ~10px design * 1.2 design-to-app ratio */
   --buffer-vert: 10px; /* gut feel based loosely on random space from design */
-  --border: var(--global-border-width--normal) solid var(--global-color-primary--light);
+  --border: var(--global-border-width--normal) solid
+    var(--global-color-primary--light);
 }
 dl.panel-content,
 dl.panel-content dl,
@@ -106,15 +118,25 @@ dl.right-panel > dd {
 dl.right-panel > dt {
   font-weight: bold;
 }
-dl.right-panel > dt               { border-top: var(--border); }
-dl.right-panel > dt:first-of-type { border-top: none; }
-dl.right-panel > dd:last-of-type  { border-bottom: var(--border); }
+dl.right-panel > dt {
+  border-top: var(--border);
+}
+dl.right-panel > dt:first-of-type {
+  border-top: none;
+}
+dl.right-panel > dd:last-of-type {
+  border-bottom: var(--border);
+}
 dl.right-panel > dt:nth-of-type(even),
 dl.right-panel > dd:nth-of-type(even) {
   background-color: var(--global-color-primary--x-light);
 }
 
 /* Remove the colon from top-level labels */
-dl.panel-content > dt::after { display: none; }
+dl.panel-content > dt::after {
+  display: none;
+}
 /* Prevent adding extra space to existing `dl.panel-content` padding */
-dl.panel-content > dt:first-of-type { padding-top: 0; }
+dl.panel-content > dt:first-of-type {
+  padding-top: 0;
+}

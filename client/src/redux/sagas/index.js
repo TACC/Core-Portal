@@ -20,7 +20,8 @@ import {
   watchExtract,
   watchLink,
   watchTrash,
-  watchMakePublic
+  watchEmpty,
+  watchMakePublic,
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
@@ -33,15 +34,16 @@ import {
   watchPostTicketReply,
   watchPostTicketCreate,
   watchTicketCreateOpenModal,
-  watchTicketCreateCloseModal
+  watchTicketCreateCloseModal,
 } from './tickets.sagas';
+import { watchPostRequestAccess } from './requestAccess.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
 import { watchFetchIntroMessages, watchSaveIntroMessages } from './intro.sagas';
 import {
   watchOnboardingAdminList,
   watchOnboardingAdminIndividualUser,
-  watchOnboardingAction
+  watchOnboardingAction,
 } from './onboarding.sagas';
 import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
@@ -65,6 +67,7 @@ export default function* rootSaga() {
     watchDownload(),
     watchLink(),
     watchTrash(),
+    watchEmpty(),
     watchMakePublic(),
     ...watchAllocations,
     watchCompress(),
@@ -79,6 +82,7 @@ export default function* rootSaga() {
     watchTicketDetailedViewFetchSubject(),
     watchPostTicketReply(),
     watchPostTicketCreate(),
+    watchPostRequestAccess(),
     watchTicketCreateOpenModal(),
     watchTicketCreateCloseModal(),
     watchAuthenticatedUser(),
@@ -92,6 +96,6 @@ export default function* rootSaga() {
     watchOnboardingAction(),
     watchProjects(),
     watchUsers(),
-    watchSiteSearch()
+    watchSiteSearch(),
   ]);
 }

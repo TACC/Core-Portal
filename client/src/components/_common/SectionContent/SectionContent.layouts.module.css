@@ -4,10 +4,6 @@
   /* FAQ: No styles necessary, but defining class to avoid build error */
 }
 
-
-
-
-
 /* Debug */
 /* FAQ: To color-code panels, ucncomment the code in this section */
 
@@ -21,38 +17,22 @@
 .root::after           { background-color: gray; }
 */
 
-
-
-
-
 /* Has Sidebar */
 
 /* CAVEAT: No sidebar styles provided (until a <SectionSidebar> exists) */
 .has-sidebar {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  flex-flow: row nowrap;
 }
-
-
-
-
 
 /* 1 Column */
 
 .one-column {
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  flex-flow: column nowrap;
 }
 
-
-
-
-
 /* 2 Columns */
-
-
 
 /* Always */
 .two-column,
@@ -78,7 +58,7 @@
   .two-column,
   .multi-column {
     column-gap: var(--column-gap);
-    column-rule: 1px solid rgba(112, 112, 112, 0.25);
+    column-rule: 1px solid rgb(112 112 112 / 25%);
     column-fill: auto;
   }
   .two-column > *:not(:last-child),
@@ -96,8 +76,7 @@
     /* To make small column ⪅40% of `.panels` intrinsic width */
     /* FAQ: The percentage and divisor are magic numbers */
     --column-width--small: calc(
-      ( 66.67% - var(--global-space--section-right) )
-      - ( var(--column-gap) / 4 )
+      (66.67% - var(--global-space--section-right)) - (var(--column-gap) / 4)
     );
   }
   /* To hide the expected overflow from `.panels` expanded width */

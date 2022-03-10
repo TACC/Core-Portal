@@ -1,6 +1,6 @@
 @import '../../styles/tools/mixins.scss';
 
-// Required to constrain table within flex box
+/* Required to constrain table within flex box */
 .root {
   position: relative;
 }
@@ -16,12 +16,12 @@
 }
 
 .container-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    border-bottom: 1px solid #707070;
-    padding-bottom: 8px;
-    margin-bottom: 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #707070;
+  padding-bottom: 8px;
+  margin-bottom: 1.5em;
 }
 
 .paginator-container {
@@ -84,7 +84,7 @@
   @include truncate-with-ellipsis;
 }
 .user:nth-child(even) > td:not(.staffwait):not(.name) {
-  background-color: #C6C6C61A;
+  background-color: #c6c6c61a;
 }
 
 /* HACK: This selector has knowledge of sibling component's internal markup */
@@ -136,8 +136,12 @@
 
   font-size: 12px;
 }
-.action-link:not(:first-child) { margin-left: 0.25em; }
-.action-link:not(:last-child) { margin-right: 0.25em; }
+.action-link:not(:first-child) {
+  margin-left: 0.25em;
+}
+.action-link:not(:last-child) {
+  margin-right: 0.25em;
+}
 
 .staffwait {
   background-color: var(--global-color-accent--weak);
@@ -146,13 +150,27 @@
 .users {
   table-layout: fixed;
 
-  col:nth-child(1) { width: 12%; }
-  col:nth-child(2) { width: 14%; }
-  col:nth-child(3) { width: 27%; }
-  th:nth-child(4) { width: 33%; }
-    col:nth-child(4) { width: 18%; }
-    col:nth-child(5) { width: 15%; }
-  col:nth-child(6) { width: 14%; }
+  col:nth-child(1) {
+    width: 12%;
+  }
+  col:nth-child(2) {
+    width: 14%;
+  }
+  col:nth-child(3) {
+    width: 27%;
+  }
+  th:nth-child(4) {
+    width: 33%;
+  }
+  col:nth-child(4) {
+    width: 18%;
+  }
+  col:nth-child(5) {
+    width: 15%;
+  }
+  col:nth-child(6) {
+    width: 14%;
+  }
 }
 
 .no-users-placeholder {

@@ -24,8 +24,8 @@ describe('Utils', () => {
       url: '/api/users/allocations/',
     };
     fetchUtil.mockReturnValue({
-      response: []
-    })
+      response: [],
+    });
     getAllocationsUtil();
     expect(fetchUtil).toHaveBeenCalledWith(fakeParams);
 

@@ -10,20 +10,20 @@ const list = [
     display_name: 'Frontera',
     is_operational: true,
     jobs: { running: 1, queued: 2 },
-    load_percentage: 100
+    load_percentage: 100,
   },
   {
     display_name: 'Lonestar',
     is_operational: false,
     jobs: { running: 1 },
-    load_percentage: 100
+    load_percentage: 100,
   },
   {
     display_name: 'Stampede',
     is_operational: true,
     jobs: { running: 1, queued: 2 },
-    load_percentage: 100
-  }
+    load_percentage: 100,
+  },
 ];
 
 function renderSystemMonitor(store) {
@@ -46,7 +46,9 @@ describe('System Monitor Component', () => {
     expect(getByTestId('loading-spinner'));
   });
   it('renders error when there is an error ', () => {
-    const store = mockStore({ systemMonitor: { list: [], loading: false, error:"Problem" } });
+    const store = mockStore({
+      systemMonitor: { list: [], loading: false, error: 'Problem' },
+    });
     const { getByText } = renderSystemMonitor(store);
     expect(getByText('Unable to gather system information'));
   });

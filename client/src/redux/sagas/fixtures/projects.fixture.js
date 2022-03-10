@@ -26,11 +26,11 @@ export const projectsListingFixture = [
         type: 'SSHKEYS',
         username: '',
         publicKey: '',
-        privateKey: ''
-      }
+        privateKey: '',
+      },
     },
-    absolutePath: '/corral-repl/tacc/aci/CEP/projects/PROJECT-3'
-  }
+    absolutePath: '/corral-repl/tacc/aci/CEP/projects/PROJECT-3',
+  },
 ];
 
 export const projectMetadataResponse = {
@@ -43,30 +43,30 @@ export const projectMetadataResponse = {
     last_name: 'Name',
     first_name: 'User',
     email: 'user@username.com',
-    username: 'username'
+    username: 'username',
   },
   pi: {
     last_name: 'Name',
     first_name: 'User',
     email: 'user@username.com',
-    username: 'username'
+    username: 'username',
   },
   coPis: [
     {
       last_name: 'Pi',
       first_name: 'Co',
       email: 'user@username.com',
-      username: 'copi'
-    }
+      username: 'copi',
+    },
   ],
   teamMembers: [
     {
       last_name: 'Member',
       first_name: 'Team',
       email: 'user@username.com',
-      username: 'teammember'
-    }
-  ]
+      username: 'teammember',
+    },
+  ],
 };
 
 export const projectMetadataFixture = {
@@ -79,38 +79,38 @@ export const projectMetadataFixture = {
         username: 'username',
         first_name: 'User',
         last_name: 'Name',
-        email: 'user@username.com'
+        email: 'user@username.com',
       },
-      access: 'owner'
+      access: 'owner',
     },
     {
       user: {
         last_name: 'Pi',
         first_name: 'Co',
         email: 'user@username.com',
-        username: 'copi'
+        username: 'copi',
       },
-      access: 'edit'
+      access: 'edit',
     },
     {
       user: {
         last_name: 'Member',
         first_name: 'Team',
         email: 'user@username.com',
-        username: 'teammember'
+        username: 'teammember',
       },
-      access: 'edit'
-    }
+      access: 'edit',
+    },
   ],
   loading: false,
-  error: null
+  error: null,
 };
 
 export const projectsFixture = {
   listing: {
     projects: projectsListingFixture,
     loading: false,
-    error: null
+    error: null,
   },
   metadata: {
     title: '',
@@ -118,6 +118,6 @@ export const projectsFixture = {
     projectId: '',
     members: [],
     loading: false,
-    error: null
-  }
+    error: null,
+  },
 };
