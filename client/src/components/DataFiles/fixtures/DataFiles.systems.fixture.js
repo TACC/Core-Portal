@@ -7,6 +7,7 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
+        hidden: true
       },
       {
         name: 'My Data (Frontera)',
