@@ -8,9 +8,9 @@ function useSystems() {
     dispatch({ type: 'FETCH_SYSTEMS' });
   }, [dispatch]);
 
-  const loading = useSelector(state => state.systems.storage.loading);
-  const error = useSelector(state => state.systems.storage.error);
-  const data = useSelector(state => state.systems.storage.configuration);
+  const loading = useSelector((state) => state.systems.storage.loading);
+  const error = useSelector((state) => state.systems.storage.error);
+  const data = useSelector((state) => state.systems.storage.configuration);
 
   return { data, loading, error, fetchSystems };
 }

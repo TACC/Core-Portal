@@ -12,7 +12,7 @@ const DataFilesRenameModal = () => {
   const isOpen = getStatus('rename');
   const selected = getProps('rename').selectedFile ?? {};
   const {
-    params: { api, scheme }
+    params: { api, scheme },
   } = useFileListing('FilesListing');
 
   const { rename: renameCallback, setStatus } = useRename();
@@ -49,7 +49,7 @@ const DataFilesRenameModal = () => {
       newName,
       callback: reloadPage,
       api,
-      scheme
+      scheme,
     });
     toggle();
   };

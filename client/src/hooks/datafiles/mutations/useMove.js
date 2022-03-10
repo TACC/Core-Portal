@@ -7,25 +7,25 @@ function useMove() {
   const { selectedFiles: selected } = useSelectedFiles();
 
   const status = useSelector(
-    state => state.files.operationStatus.move,
+    (state) => state.files.operationStatus.move,
     shallowEqual
   );
 
-  const setStatus = newStatus =>
+  const setStatus = (newStatus) =>
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: newStatus }
+      payload: { operation: 'move', status: newStatus },
     });
 
   const move = ({ destSystem, destPath, callback }) => {
-    const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredSelected = selected.filter((f) => status[f.id] !== 'SUCCESS');
     dispatch({
       type: 'DATA_FILES_MOVE',
       payload: {
         dest: { system: destSystem, path: destPath },
         src: filteredSelected,
-        reloadCallback: callback
-      }
+        reloadCallback: callback,
+      },
     });
   };
 

@@ -7,24 +7,18 @@ function useFileListing(section = 'FilesListing') {
   const dispatch = useDispatch();
   const { query_string: queryString, filter } = parse(useLocation().search);
 
-  const {
-    data,
-    loading,
-    error,
-    params,
-    loadingScroll,
-    reachedEnd
-  } = useSelector(
-    state => ({
-      data: state?.files?.listing?.[section],
-      loading: state?.files?.loading?.[section],
-      loadingScroll: state?.files?.loadingScroll?.[section],
-      error: state?.files?.error?.[section],
-      params: state?.files?.params?.[section],
-      reachedEnd: state?.files?.reachedEnd?.[section]
-    }),
-    shallowEqual
-  );
+  const { data, loading, error, params, loadingScroll, reachedEnd } =
+    useSelector(
+      (state) => ({
+        data: state?.files?.listing?.[section],
+        loading: state?.files?.loading?.[section],
+        loadingScroll: state?.files?.loadingScroll?.[section],
+        error: state?.files?.error?.[section],
+        params: state?.files?.params?.[section],
+        reachedEnd: state?.files?.reachedEnd?.[section],
+      }),
+      shallowEqual
+    );
 
   const fetchListing = useCallback(
     ({ api, scheme, system, path, limit }) => {
@@ -38,8 +32,8 @@ function useFileListing(section = 'FilesListing') {
           limit: limit ?? 100,
           queryString: section === 'FilesListing' ? queryString : null,
           filter: section === 'FilesListing' ? filter : null,
-          section
-        }
+          section,
+        },
       });
     },
     [dispatch, queryString, filter, section]
@@ -57,8 +51,8 @@ function useFileListing(section = 'FilesListing') {
         offset: data.length,
         queryString,
         filter,
-        nextPageToken: data.nextPageToken
-      }
+        nextPageToken: data.nextPageToken,
+      },
     });
   }, [dispatch, params, section, data, queryString, filter]);
 
@@ -70,7 +64,7 @@ function useFileListing(section = 'FilesListing') {
     loadingScroll,
     reachedEnd,
     fetchListing,
-    fetchMore
+    fetchMore,
   };
 }
 

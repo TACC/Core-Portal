@@ -13,7 +13,7 @@ import { formatDateTimeFromValue } from 'utils/timeFormat';
 
 export const CheckboxHeaderCell = () => {
   const { allSelected, selectAll } = useSelectedFiles();
-  const handleKeyPress = e => e.key === 'enter' && selectAll();
+  const handleKeyPress = (e) => e.key === 'enter' && selectAll();
   return (
     <Checkbox
       isChecked={allSelected}

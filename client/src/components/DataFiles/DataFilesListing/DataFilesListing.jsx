@@ -36,7 +36,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     loading,
     error,
     fetchListing,
-    fetchMore
+    fetchMore,
   } = useFileListing('FilesListing');
   const { selectFile } = useSelectedFiles();
 

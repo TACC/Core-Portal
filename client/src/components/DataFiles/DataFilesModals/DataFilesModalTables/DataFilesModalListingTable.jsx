@@ -25,7 +25,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
       api,
       scheme,
       system,
-      path: getParentPath(currentPath)
+      path: getParentPath(currentPath),
     });
   };
   return (
@@ -53,7 +53,7 @@ const DataFilesModalListingNameCell = ({
   indentSubFilesFolders,
 }) => {
   const { fetchListing } = useFileListing('modal');
-  const onClick = e => {
+  const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     fetchListing({ api, scheme, system, path });

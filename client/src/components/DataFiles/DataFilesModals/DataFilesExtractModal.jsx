@@ -15,7 +15,7 @@ const DataFilesExtractModal = () => {
 
   const { params } = useFileListing('FilesListing');
 
-  const isOpen = useSelector(state => state.files.modals.extract);
+  const isOpen = useSelector((state) => state.files.modals.extract);
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
 

@@ -121,7 +121,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
     toggle({
       operation: 'link',
-      props: { selectedFile: selectedFiles[0] }
+      props: { selectedFile: selectedFiles[0] },
     });
   };
   const download = () => {
@@ -133,7 +133,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     } else {
       toggle({
         operation: 'downloadMessage',
-        props: {}
+        props: {},
       });
     }
   };

@@ -32,7 +32,7 @@ function Workbench() {
     hideApps,
     hideDataFiles,
   } = useSelector(
-    state => ({
+    (state) => ({
       loading: state.workbench.loading || systemsLoading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,

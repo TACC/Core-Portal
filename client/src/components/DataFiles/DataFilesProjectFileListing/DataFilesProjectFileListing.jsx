@@ -26,7 +26,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
 
-  const metadata = useSelector(state => state.projects.metadata);
+  const metadata = useSelector((state) => state.projects.metadata);
 
   const editable = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(

@@ -7,7 +7,7 @@ import {
   useSelectedFiles,
   useFileListing,
   useSystems,
-  useModal
+  useModal,
 } from 'hooks/datafiles';
 import { useCopy } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -23,9 +23,11 @@ const DataFilesCopyModal = React.memo(() => {
   const { getStatus, getProps, setProps, toggle: toggleModal } = useModal();
 
   const { params } = useFileListing('FilesListing');
-  const { params: modalParams, data: files, fetchListing } = useFileListing(
-    'modal'
-  );
+  const {
+    params: modalParams,
+    data: files,
+    fetchListing,
+  } = useFileListing('modal');
 
   const dispatch = useDispatch();
 
@@ -49,7 +51,7 @@ const DataFilesCopyModal = React.memo(() => {
     fetchListing({
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system
+      system: systems[0].system,
     });
   };
 
@@ -63,7 +65,7 @@ const DataFilesCopyModal = React.memo(() => {
     setStatus({});
     setProps({
       operation: 'copy',
-      props: {}
+      props: {},
     });
     setDisabled(false);
   };
@@ -77,7 +79,7 @@ const DataFilesCopyModal = React.memo(() => {
         destSystem: system,
         destPath: path,
         name,
-        callback: reloadPage
+        callback: reloadPage,
       });
     },
     [copy, reloadPage, setDisabled, params, modalParams]
@@ -90,7 +92,7 @@ const DataFilesCopyModal = React.memo(() => {
         !(
           // Remove files from the listing if they have been selected.
           selectedFiles
-            .map(f => `${f.system}${f.path}`)
+            .map((f) => `${f.system}${f.path}`)
             .includes(`${system}${path}`)
         )
       );

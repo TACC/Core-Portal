@@ -26,9 +26,9 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
 
-  const isOpen = useSelector(state => state.files.modals.upload);
-  const params = useSelector(state => state.files.params.FilesListing);
-  const status = useSelector(state => state.files.operationStatus.upload);
+  const isOpen = useSelector((state) => state.files.modals.upload);
+  const params = useSelector((state) => state.files.params.FilesListing);
+  const status = useSelector((state) => state.files.operationStatus.upload);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();

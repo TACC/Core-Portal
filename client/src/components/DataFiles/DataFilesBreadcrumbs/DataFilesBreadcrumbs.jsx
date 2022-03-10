@@ -6,7 +6,7 @@ import './DataFilesBreadcrumbs.scss';
 import {
   useSystemDisplayName,
   useFileListing,
-  useModal
+  useModal,
 } from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
@@ -19,14 +19,14 @@ const BreadcrumbLink = ({
   isPublic,
 }) => {
   const { fetchListing } = useFileListing(section);
-  const onClick = e => {
+  const onClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     fetchListing({
       api,
       scheme,
       system,
-      path
+      path,
     });
   };
   const basePath = isPublic ? '/public-data' : '/workbench/data';
@@ -78,7 +78,7 @@ const RootProjectsLink = ({ api, section, operation, label }) => {
       e.preventDefault();
       setProps({
         operation,
-        props: { showProjects: true }
+        props: { showProjects: true },
       });
     };
     return (
@@ -121,7 +121,7 @@ const DataFilesBreadcrumbs = ({
 
   path
     .split('/')
-    .filter(x => !!x)
+    .filter((x) => !!x)
     .reduce((prev, curr) => {
       const comp = `${prev}/${curr}`;
       paths.push(comp);

@@ -6,7 +6,7 @@ import {
   useSelectedFiles,
   useFileListing,
   useSystems,
-  useModal
+  useModal,
 } from 'hooks/datafiles';
 
 import { useMove } from 'hooks/datafiles/mutations';
@@ -19,9 +19,11 @@ const DataFilesMoveModal = React.memo(() => {
   const location = useLocation();
 
   const { params } = useFileListing('FilesListing');
-  const { params: modalParams, data: files, fetchListing } = useFileListing(
-    'modal'
-  );
+  const {
+    params: modalParams,
+    data: files,
+    fetchListing,
+  } = useFileListing('modal');
 
   const { move, status, setStatus } = useMove();
 
@@ -46,7 +48,7 @@ const DataFilesMoveModal = React.memo(() => {
     fetchListing({
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system
+      system: systems[0].system,
     });
   };
 
@@ -62,7 +64,7 @@ const DataFilesMoveModal = React.memo(() => {
       move({
         destSystem: system,
         destPath: path,
-        callback: reloadPage
+        callback: reloadPage,
       });
     },
     [selected, reloadPage, status]
