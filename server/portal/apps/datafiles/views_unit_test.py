@@ -1,10 +1,12 @@
 import pytest
 import json
 import logging
+import os
 from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
 from portal.apps.notifications.models import Notification
+from django.conf import settings
 
 pytestmark = pytest.mark.django_db
 
@@ -19,6 +21,15 @@ def postits_create(mock_agave_client):
         }
     }
     yield mock_agave_client.postits.create
+
+
+@pytest.fixture
+def get_user_data(mocker):
+    mock = mocker.patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
+        tas_user = json.load(f)
+    mock.return_value = tas_user
+    yield mock
 
 
 def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock_agave_client):
@@ -285,3 +296,72 @@ def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_aga
                           data={"href": "https//tapis.example/href"})
     assert response.status_code == 200
     assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": 'other', "content": None, "error": "File too large to preview in this window."}}
+
+
+def test_systems_list(client, authenticated_user, mocker, get_user_data):
+    mock_get_user_storage_systems = mocker.patch('portal.apps.datafiles.views.get_user_storage_systems')
+    mock_get_user_storage_systems.return_value = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+
+    response = client.get('/api/datafiles/systems/list/')
+    assert response.json() == {
+        "default_host": "frontera.tacc.utexas.edu",
+        "system_list": [
+            {
+                "name": "My Data (Frontera)",
+                "system": "frontera.home.username",
+                "scheme": "private",
+                "api": "tapis",
+                "icon": None,
+                "hidden": False
+            },
+            {
+                "name": "My Data (Longhorn)",
+                "system": "longhorn.home.username",
+                "scheme": "private",
+                "api": "tapis",
+                "icon": None,
+                "hidden": False
+            },
+            {
+                "name": "My Data (Work)",
+                "system": "cloud.corral.work.username",
+                "scheme": "private",
+                "api": "tapis",
+                "icon": None,
+                "hidden": True
+            },
+            {
+                'name': 'Community Data',
+                'system': 'portal.storage.community',
+                'scheme': 'community',
+                'api': 'tapis',
+                'icon': None,
+                'siteSearchPriority': 1
+            },
+            {
+                'name': 'Public Data',
+                'system': 'portal.storage.public',
+                'scheme': 'public',
+                'api': 'tapis',
+                'icon': None,
+                'siteSearchPriority': 0
+            },
+            {
+                'name': 'Shared Workspaces',
+                'scheme': 'projects',
+                'api': 'tapis',
+                'icon': 'publications',
+                'privilegeRequired': False,
+                'readOnly': False,
+                'hideSearchBar': False
+            },
+            {
+                'name': 'Google Drive',
+                'system': 'googledrive',
+                'scheme': 'private',
+                'api': 'googledrive',
+                'icon': None,
+                'integration': 'portal.apps.googledrive_integration'
+            }
+        ]
+    }
