@@ -97,7 +97,7 @@ def test_process(regular_user, mock_call_reactor, mocker):
         {
             'name': 'My Data (Work)',
             'host': 'cloud.corral.tacc.utexas.edu',
-            'rootDir': '/home/12345/username',
+            'rootDir': '/work/12345/username',
             'port': 2222,
             'systemId': 'cloud.corral.work.username',
             'icon': None,
