@@ -37,7 +37,7 @@ describe('DataFilesSidebar', () => {
       ...initialMockState,
     });
 
-    const { getByText, queryByText } = renderComponent(
+    const { getByText } = renderComponent(
       <Route path="/workbench/data">
         <DataFilesSidebar />
       </Route>,
@@ -58,7 +58,6 @@ describe('DataFilesSidebar', () => {
         .closest('a')
         .getAttribute('href')
     ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');
-    expect(queryByText(/My Data \(Work\)/)).toBeNull();
   });
 
   it('disables creating new shared workspaces in read only shared workspaces', async () => {

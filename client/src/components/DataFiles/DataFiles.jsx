@@ -28,7 +28,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
   const history = useHistory();
@@ -113,9 +113,7 @@ const DataFiles = () => {
   );
   const loading = useSelector((state) => state.systems.storage.loading);
   const error = useSelector((state) => state.systems.storage.error);
-  const systems = useSelector((state) =>
-    state.systems.storage.configuration.filter((s) => !s.hidden)
-  );
+  const systems = useSelector((state) => state.systems.storage.configuration);
   const noPHISystem = useSelector(
     (state) => state.workbench.config.noPHISystem
   );

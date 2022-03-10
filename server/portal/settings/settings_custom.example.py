@@ -77,7 +77,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
-        'hidden': False,
     },
     'frontera': {
         'name': 'My Data (Frontera)',
@@ -88,7 +87,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
-        'hidden': False,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
@@ -100,7 +98,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-        'hidden': False,
     }
 }
 

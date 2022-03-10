@@ -39,7 +39,7 @@ describe('DataFiles', () => {
         },
       },
     });
-    const { getByText, getAllByText, queryByText } = renderComponent(
+    const { getByText, getAllByText } = renderComponent(
       <DataFiles />,
       store,
       history
@@ -49,7 +49,6 @@ describe('DataFiles', () => {
     //);
     expect(getAllByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();
-    expect(queryByText(/My Data \(Work\)/)).toBeNull();
   });
 
   it('should not render Data Files with no systems', () => {
@@ -63,20 +62,11 @@ describe('DataFiles', () => {
       },
       systems: {
         storage: {
-          configuration: [
-            {
-              name: 'My Data (Work)',
-              system: 'corral.home.username',
-              scheme: 'private',
-              api: 'tapis',
-              icon: null,
-              hidden: true
-            },
-          ],
+          configuration: [],
           error: false,
           errorMessage: null,
           loading: false,
-          defaultHost: 'cloud.corral.tacc.utexas.edu',
+          defaultHost: '',
         },
         definitions: {
           list: [],
