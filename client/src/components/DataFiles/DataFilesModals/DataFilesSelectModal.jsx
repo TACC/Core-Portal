@@ -64,9 +64,13 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={(systems.filter((s) => !s.hidden)[0] || modalParams).system}
+                systemId={
+                  (systems.filter((s) => !s.hidden)[0] || modalParams).system
+                }
                 section="modal"
-                excludedSystems={systems.filter((s) => s.api !== 'tapis' || s.hidden).map((s) => s.system)}
+                excludedSystems={systems
+                  .filter((s) => s.api !== 'tapis' || s.hidden)
+                  .map((s) => s.system)}
                 showProjects={showProjects}
               />
             </div>
