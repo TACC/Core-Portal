@@ -46,7 +46,8 @@ class SystemListingView(BaseApiView):
                             'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
                             'scheme': 'private',
                             'api': 'tapis',
-                            'icon': details['icon']
+                            'icon': details['icon'],
+                            'hidden': details['hidden'] if 'hidden' in details else False
                         }
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
