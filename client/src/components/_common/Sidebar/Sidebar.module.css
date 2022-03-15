@@ -1,0 +1,22 @@
+.root {
+    composes: root from '../../Sidebar/Sidebar.module.scss';
+}
+
+.link {
+    composes: link from '../../Sidebar/Sidebar.module.scss';
+}
+.link--active {
+    composes: link--active from '../../Sidebar/Sidebar.module.scss';
+}
+
+.icon {
+    composes: content from '../../Sidebar/Sidebar.module.scss';
+}
+
+.text {
+    composes: text from '../../Sidebar/Sidebar.module.scss';
+}
+
+.disabled {
+    composes: disabled from '../../Sidebar/Sidebar.module.scss';
+}
