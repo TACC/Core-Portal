@@ -6,7 +6,6 @@ describe("Job Detail Reducer", () => {
     expect(jobs(initialState, { type: undefined })).toEqual(initialState);
   });
   test("Jobs list update job", () => {
-    const jobsInitialState = { ...initialState, list: [jobDetailFixture] };
     const jobOutputLocationPopulated = {
       ...jobDetailFixture,
       outputLocation: "//data/files/example",
@@ -15,6 +14,8 @@ describe("Job Detail Reducer", () => {
       type: "JOBS_LIST_UPDATE_JOB",
       payload: { job: jobOutputLocationPopulated },
     };
+    const jobsInitialState = { ...initialState, list: [jobDetailFixture] };
+
     expect(jobs(jobsInitialState, jobsListUpdateJobAction)).toEqual(
       { ...jobsInitialState },
       {
