@@ -65,7 +65,7 @@ OnboardingApproveActions.defaultProps = {
   action: null,
 };
 
-const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
+const OnboardingResetLinks = ({ callback, disabled, disableSkip, forceStorageCreation, action }) => {
   return (
     <div className={styles.reset}>
       <Button
@@ -97,6 +97,25 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
         )}
         Skip
       </Button>
+      {forceStorageCreation && ( 
+	<>
+          <>|</>
+          <Button
+            color="link"
+            className={styles['action-link']}
+            onClick={() => callback('force_create_storage')}
+            disabled={disabled}
+          >
+            {action === 'force_create_storage' && (
+              <LoadingSpinner
+                placement="inline"
+                className="onboarding-admin__action-spinner"
+              />
+            )}
+          Force Create
+          </Button>
+        </>
+      )}
     </div>
   );
 };
@@ -105,12 +124,14 @@ OnboardingResetLinks.propTypes = {
   callback: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   disableSkip: PropTypes.bool,
+  forceStorageCreation: PropTypes.bool,
   action: PropTypes.string,
 };
 
 OnboardingResetLinks.defaultProps = {
   disabled: false,
   disableSkip: false,
+  forceStorageCreation: false,
   action: null,
 };
 
@@ -182,6 +203,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               }
               disabled={adminAction.loading}
               disableSkip={step.state === 'completed'}
+	      forceStorageCreation={
+                (step.step.split('.').splice(-1)[0] === 'KeyServiceCreationStep')
+	      }
               sentAction={
                 adminAction.username === user.username &&
                 adminAction.step === step.step

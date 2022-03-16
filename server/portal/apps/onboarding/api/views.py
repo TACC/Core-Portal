@@ -21,6 +21,9 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps
 )
 from portal.apps.onboarding.state import SetupState
+from portal.apps.system_creation.utils import (
+    force_create_storage_system
+)
 from portal.apps.users.utils import q_to_model_queries
 import json
 
@@ -170,6 +173,32 @@ class SetupStepView(BaseApiView):
         )
         setup_step.prepare()
 
+    def force_create_storage(self, request, setup_step):
+        """
+        Forces storage creation
+        """
+        if not request.user.is_staff:
+            raise PermissionDenied
+        setup_step.log("force_create_storage by {staff}".format(
+            step=setup_step.display_name(),
+            staff=request.user.username
+        )
+        )
+
+        # Mark the user's setup_complete as False
+        setup_step.user.profile.setup_complete = True
+        setup_step.user.profile.save()
+
+        log_setup_state(
+            setup_step.user,
+            "{user} setup marked complete, now will proceed to force storage system creation".format(
+                user=setup_step.user.username,
+                step=setup_step.step_name()
+            )
+        )
+
+        force_create_storage_system(setup_step.user.username)
+
     def client_action(self, request, setup_step, action, data):
         """
         Call client_action on a setup step
@@ -223,14 +252,18 @@ class SetupStepView(BaseApiView):
         # Call action handler
         if action == "reset":
             self.reset(request, setup_step)
+            execute_setup_steps.apply_async(args=[user.username])
+        elif action == "force_create_storage":
+            self.force_create_storage(request, setup_step)
         elif action == "complete":
             self.complete(request, setup_step)
+            execute_setup_steps.apply_async(args=[user.username])
         else:
             self.client_action(request, setup_step, action, data)
+            execute_setup_steps.apply_async(args=[user.username])
 
         # If no exception was generated from any of the above actions, continue.
         # Retry executing the setup queue for this user
-        execute_setup_steps.apply_async(args=[user.username])
 
         # Serialize and send back the last event on this step
         # Requires safe=False since SetupEvent is not a dict
