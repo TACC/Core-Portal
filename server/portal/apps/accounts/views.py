@@ -139,19 +139,6 @@ def edit_profile(request):
     return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
-def departments_json(request):
-    institution_id = request.GET.get('institutionId')
-    if institution_id:
-        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
-        departments = tas.get_departments(institution_id)
-    else:
-        departments = {}
-    return HttpResponse(
-        json.dumps(departments),
-        content_type='application/json'
-    )
-
-
 def get_form_fields(request):
     return JsonResponse({
         'institutions': [list(i) for i in forms.get_institution_choices()],
