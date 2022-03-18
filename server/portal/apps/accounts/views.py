@@ -139,6 +139,7 @@ def edit_profile(request):
     return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
+@login_required
 def get_form_fields(request):
     return JsonResponse({
         'institutions': [list(i) for i in forms.get_institution_choices()],
