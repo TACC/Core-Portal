@@ -13,8 +13,9 @@ function useFileListing(section = 'FilesListing') {
         data: state?.files?.listing?.[section]?.map((file) => ({
           ...file,
           disabled:
-            !!state.files.operationStatus.trash && state.files.operationStatus.trash[file.system + file.path] ===
-            'RUNNING',
+            !!state.files.operationStatus.trash &&
+            state.files.operationStatus.trash[file.system + file.path] ===
+              'RUNNING',
         })),
         loading: state?.files?.loading?.[section],
         loadingScroll: state?.files?.loadingScroll?.[section],

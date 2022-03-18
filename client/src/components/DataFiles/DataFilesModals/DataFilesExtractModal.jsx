@@ -26,7 +26,7 @@ const DataFilesExtractModal = () => {
     });
   };
 
-  const toggle = () => toggleModal({ operation: 'extract', props: {} })
+  const toggle = () => toggleModal({ operation: 'extract', props: {} });
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });

@@ -16,9 +16,9 @@ function useCompress() {
 
   const compress = ({ filename, files }) => {
     dispatch({
-        type: 'DATA_FILES_COMPRESS',
-        payload: { filename, files },
-      });
+      type: 'DATA_FILES_COMPRESS',
+      payload: { filename, files },
+    });
   };
 
   return { compress, status, setStatus };

@@ -6,7 +6,11 @@ import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FileInputDropZone } from '_common';
-import { useSystemDisplayName, useFileListing, useModal } from 'hooks/datafiles';
+import {
+  useSystemDisplayName,
+  useFileListing,
+  useModal,
+} from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
@@ -27,10 +31,10 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
 
-  const {getStatus: getModalStatus, toggle}  = useModal();
+  const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
   const { params } = useFileListing('FilesListing');
-  const {status, upload, setStatus} = useUpload();
+  const { status, upload, setStatus } = useUpload();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
@@ -40,11 +44,11 @@ const DataFilesUploadModal = ({ className, layout }) => {
     );
     filteredFiles.length > 0 &&
       upload({
-          system: params.system,
-          path: params.path || '',
-          files: filteredFiles,
-          reloadCallback,
-        });
+        system: params.system,
+        path: params.path || '',
+        files: filteredFiles,
+        reloadCallback,
+      });
   };
   const dropZoneDisabled =
     Object.values(status).filter((s) => s === 'UPLOADING').length > 0;
@@ -70,7 +74,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     setUploadedFiles([]);
     setRejectedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    setStatus({})
+    setStatus({});
   };
 
   const selectFiles = (acceptedFiles) => {
@@ -103,12 +107,15 @@ const DataFilesUploadModal = ({ className, layout }) => {
   return (
     <Modal
       isOpen={isOpen}
-      toggle={() => toggle({operation: 'upload', props: {}})}
+      toggle={() => toggle({ operation: 'upload', props: {} })}
       onClosed={onClosed}
       size="xl"
       className={`dataFilesModal ${className}`}
     >
-      <ModalHeader toggle={() => toggle({operation: 'upload', props: {}})} charCode="&#xe912;">
+      <ModalHeader
+        toggle={() => toggle({ operation: 'upload', props: {} })}
+        charCode="&#xe912;"
+      >
         Upload Files
       </ModalHeader>
       <ModalBody className={containerStyleNames}>

@@ -16,14 +16,14 @@ function useUpload() {
 
   const upload = ({ system, path, files, reloadCallback }) => {
     dispatch({
-        type: 'DATA_FILES_UPLOAD',
-        payload: {
-          system,
-          path,
-          files,
-          reloadCallback,
-        },
-      });
+      type: 'DATA_FILES_UPLOAD',
+      payload: {
+        system,
+        path,
+        files,
+        reloadCallback,
+      },
+    });
   };
 
   return { upload, status, setStatus };

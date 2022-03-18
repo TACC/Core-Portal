@@ -9,12 +9,12 @@ import { useMkdir } from 'hooks/datafiles/mutations';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
-  const {toggle: toggleModal, getStatus: getModalStatus } = useModal();
+  const { toggle: toggleModal, getStatus: getModalStatus } = useModal();
   const isOpen = getModalStatus('mkdir');
   const { params } = useFileListing('FilesListing');
   const systemDisplayName = useSystemDisplayName(params);
   const { mkdir } = useMkdir();
-  const toggle = () => toggleModal({ operation: 'mkdir', props: {} })
+  const toggle = () => toggleModal({ operation: 'mkdir', props: {} });
 
   const validationSchema = Yup.object().shape({
     dirname: Yup.string()
@@ -34,13 +34,13 @@ const DataFilesMkdirModal = () => {
 
   const mkdirCallback = ({ dirname }) => {
     mkdir({
-        api: params.api,
-        scheme: params.scheme,
-        system: params.system,
-        path: params.path || '/',
-        dirname,
-        reloadCallback: reloadPage,
-      })
+      api: params.api,
+      scheme: params.scheme,
+      system: params.system,
+      path: params.path || '/',
+      dirname,
+      reloadCallback: reloadPage,
+    });
   };
 
   return (

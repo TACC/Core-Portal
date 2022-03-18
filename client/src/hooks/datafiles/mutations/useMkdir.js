@@ -16,16 +16,16 @@ function useMkdir() {
 
   const mkdir = ({ api, scheme, system, path, dirname, reloadCallback }) => {
     dispatch({
-        type: 'DATA_FILES_MKDIR',
-        payload: {
-          api,
-          scheme,
-          system,
-          path,
-          dirname,
-          reloadCallback
-        },
-      });
+      type: 'DATA_FILES_MKDIR',
+      payload: {
+        api,
+        scheme,
+        system,
+        path,
+        dirname,
+        reloadCallback,
+      },
+    });
   };
 
   return { mkdir, status, setStatus };

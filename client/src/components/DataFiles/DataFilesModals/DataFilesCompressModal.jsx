@@ -23,10 +23,10 @@ const DataFilesCompressModal = () => {
   const dispatch = useDispatch();
 
   const { compress, status, setStatus } = useCompress();
-  const { getStatus: getModalStatus, toggle: toggleModal} = useModal();
-  const { params } = useFileListing('FilesListing')
+  const { getStatus: getModalStatus, toggle: toggleModal } = useModal();
+  const { params } = useFileListing('FilesListing');
 
-  const isOpen = getModalStatus('compress')
+  const isOpen = getModalStatus('compress');
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
@@ -41,17 +41,17 @@ const DataFilesCompressModal = () => {
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
-      setStatus({})
+      setStatus({});
       history.push(location.pathname);
     }
   };
 
-  const toggle = () => toggleModal({operation: 'compress', props: {}})
+  const toggle = () => toggleModal({ operation: 'compress', props: {} });
 
   const compressCallback = () => {
     const { filenameDisplay, filetype } = formRef.current.values;
     const filename = `${filenameDisplay}${filetype}`;
-    compress({filename, files: selected})
+    compress({ filename, files: selected });
   };
 
   let buttonIcon;

@@ -38,7 +38,8 @@ export const CheckboxCell = React.memo(({ index, name, format, disabled }) => {
       id={`FileCheckbox_${index}`}
       role="checkbox"
       aria-label={`select ${itemFormat} ${name}`}
-    />)
+    />
+  );
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,

@@ -10,7 +10,7 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter((f) => f.id === i).length > 0) {
     return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
-  const status = useUpload().status[i]
+  const status = useUpload().status[i];
   switch (status) {
     case 'UPLOADING':
       return <LoadingSpinner placement="inline" />;
