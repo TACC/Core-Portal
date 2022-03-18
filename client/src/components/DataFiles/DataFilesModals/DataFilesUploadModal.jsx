@@ -1,12 +1,13 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FileInputDropZone } from '_common';
-import { useSystemDisplayName } from 'hooks/datafiles';
+import { useSystemDisplayName, useFileListing, useModal } from 'hooks/datafiles';
+import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import styles from './DataFilesUploadModal.module.scss';
@@ -26,9 +27,10 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
 
-  const isOpen = useSelector((state) => state.files.modals.upload);
-  const params = useSelector((state) => state.files.params.FilesListing);
-  const status = useSelector((state) => state.files.operationStatus.upload);
+  const {getStatus: getModalStatus, toggle}  = useModal();
+  const isOpen = getModalStatus('upload');
+  const { params } = useFileListing('FilesListing');
+  const {status, upload, setStatus} = useUpload();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
@@ -37,15 +39,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
       (f) => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
     );
     filteredFiles.length > 0 &&
-      dispatch({
-        type: 'DATA_FILES_UPLOAD',
-        payload: {
+      upload({
           system: params.system,
           path: params.path || '',
           files: filteredFiles,
           reloadCallback,
-        },
-      });
+        });
   };
   const dropZoneDisabled =
     Object.values(status).filter((s) => s === 'UPLOADING').length > 0;
@@ -71,17 +70,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     setUploadedFiles([]);
     setRejectedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'upload', status: {} },
-    });
-  };
-
-  const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'upload', props: {} },
-    });
+    setStatus({})
   };
 
   const selectFiles = (acceptedFiles) => {
@@ -114,12 +103,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
   return (
     <Modal
       isOpen={isOpen}
-      toggle={toggle}
+      toggle={() => toggle({operation: 'upload', props: {}})}
       onClosed={onClosed}
       size="xl"
       className={`dataFilesModal ${className}`}
     >
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
+      <ModalHeader toggle={() => toggle({operation: 'upload', props: {}})} charCode="&#xe912;">
         Upload Files
       </ModalHeader>
       <ModalBody className={containerStyleNames}>

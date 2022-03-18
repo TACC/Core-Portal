@@ -37,7 +37,7 @@ const DataFilesMoveModal = React.memo(() => {
 
   const { getStatus, toggle: toggleModal } = useModal();
 
-  const isOpen = getStatus('movel');
+  const isOpen = getStatus('move');
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const [disabled, setDisabled] = useState(false);

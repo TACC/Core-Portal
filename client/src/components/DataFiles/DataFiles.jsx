@@ -81,6 +81,9 @@ const DataFilesSwitch = React.memo(() => {
 const DataFiles = () => {
   const { params: listingParams } = useFileListing('FilesListing');
   const { data: systems, loading, error } = useSystems();
+  const noPHISystem = useSelector(
+    (state) => state.workbench.config.noPHISystem
+  );
 
   const readOnly =
     listingParams.scheme === 'projects' &&

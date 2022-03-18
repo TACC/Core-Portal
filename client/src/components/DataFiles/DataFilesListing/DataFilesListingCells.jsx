@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Checkbox, Icon, LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './DataFilesListingCells.scss';
 import '../../Onboarding/OnboardingStep.module.scss';
 
@@ -25,10 +25,20 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index }) => {
+export const CheckboxCell = React.memo(({ index, name, format, disabled }) => {
   const { isSelected } = useSelectedFiles();
   const selected = isSelected(index);
-  return <Checkbox isChecked={selected} />;
+  const itemFormat = format === 'raw' ? 'file' : format;
+
+  return disabled ? (
+    <LoadingSpinner placement="inline" />
+  ) : (
+    <Checkbox
+      isChecked={selected}
+      id={`FileCheckbox_${index}`}
+      role="checkbox"
+      aria-label={`select ${itemFormat} ${name}`}
+    />)
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,

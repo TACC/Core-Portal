@@ -1,26 +1,20 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { useSystemDisplayName } from 'hooks/datafiles';
+import { useModal, useFileListing } from 'hooks/datafiles';
+import { useMkdir } from 'hooks/datafiles/mutations';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
-  const dispatch = useDispatch();
-  const isOpen = useSelector((state) => state.files.modals.mkdir);
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
+  const {toggle: toggleModal, getStatus: getModalStatus } = useModal();
+  const isOpen = getModalStatus('mkdir');
+  const { params } = useFileListing('FilesListing');
   const systemDisplayName = useSystemDisplayName(params);
-  const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'mkdir', props: {} },
-    });
-  };
+  const { mkdir } = useMkdir();
+  const toggle = () => toggleModal({ operation: 'mkdir', props: {} })
 
   const validationSchema = Yup.object().shape({
     dirname: Yup.string()
@@ -38,18 +32,15 @@ const DataFilesMkdirModal = () => {
     history.push(location.pathname);
   };
 
-  const mkdir = ({ dirname }) => {
-    dispatch({
-      type: 'DATA_FILES_MKDIR',
-      payload: {
+  const mkdirCallback = ({ dirname }) => {
+    mkdir({
         api: params.api,
         scheme: params.scheme,
         system: params.system,
         path: params.path || '/',
         dirname,
         reloadCallback: reloadPage,
-      },
-    });
+      })
   };
 
   return (
@@ -64,7 +55,7 @@ const DataFilesMkdirModal = () => {
         <Formik
           initialValues={{ dirname: '' }}
           validationSchema={validationSchema}
-          onSubmit={mkdir}
+          onSubmit={mkdirCallback}
         >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">

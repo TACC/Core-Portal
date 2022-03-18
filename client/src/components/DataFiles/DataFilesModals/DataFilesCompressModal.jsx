@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   Button,
   Modal,
@@ -13,37 +13,23 @@ import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
+import { useCompress } from 'hooks/datafiles/mutations';
+import { useSelectedFiles, useModal, useFileListing } from 'hooks/datafiles';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
-  const status = useSelector(
-    (state) => state.files.operationStatus.compress,
-    shallowEqual
-  );
 
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
+  const { compress, status, setStatus } = useCompress();
+  const { getStatus: getModalStatus, toggle: toggleModal} = useModal();
+  const { params } = useFileListing('FilesListing')
 
-  const isOpen = useSelector((state) => state.files.modals.compress);
-  const selectedFiles = useSelector(
-    ({ files: { selected, listing } }) =>
-      selected.FilesListing.map((i) => ({
-        ...listing.FilesListing[i],
-      })),
-    shallowEqual
-  );
+  const isOpen = getModalStatus('compress')
+  const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'compress', props: {} },
-    });
 
   const onOpened = () => {
     dispatch({
@@ -55,21 +41,17 @@ const DataFilesCompressModal = () => {
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
-      dispatch({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'compress' },
-      });
+      setStatus({})
       history.push(location.pathname);
     }
   };
 
+  const toggle = () => toggleModal({operation: 'compress', props: {}})
+
   const compressCallback = () => {
     const { filenameDisplay, filetype } = formRef.current.values;
     const filename = `${filenameDisplay}${filetype}`;
-    dispatch({
-      type: 'DATA_FILES_COMPRESS',
-      payload: { filename, files: selected },
-    });
+    compress({filename, files: selected})
   };
 
   let buttonIcon;

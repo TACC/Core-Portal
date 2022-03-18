@@ -22,10 +22,6 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const { api: currentListing, scheme } = params ?? {};
 
   const dispatch = useDispatch();
-  const currentListing = useSelector(
-    (state) => state.files.params.FilesListing.api
-  );
-  const scheme = useSelector((state) => state.files.params.FilesListing.scheme);
   const system = useSelector((state) => state.pushKeys.target);
   let currSystemHost = useSelector((state) =>
     state.systems.definitions.list.find(
@@ -33,8 +29,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     )
   );
   currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
-  const loading = useSelector((state) => state.files.loading[section]);
-  const err = useSelector((state) => state.files.error[section]);
+
   const modalRefs = useSelector((state) => state.files.refs);
   const systemDefErr = useSelector((state) => state.systems.definitions.error);
 

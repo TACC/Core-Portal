@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
 import { useExtract } from 'hooks/datafiles/mutations';
 import styles from './DataFilesCompressModal.module.scss';
 
@@ -12,18 +12,12 @@ const DataFilesExtractModal = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { extract, status, setStatus } = useExtract();
-
+  const { toggle: toggleModal, getStatus: getModalStatus } = useModal();
   const { params } = useFileListing('FilesListing');
 
-  const isOpen = useSelector((state) => state.files.modals.extract);
+  const isOpen = getModalStatus('extract');
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
-
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'extract', props: {} },
-    });
 
   const onOpened = () => {
     dispatch({
@@ -31,6 +25,8 @@ const DataFilesExtractModal = () => {
       payload: { ...params, section: 'modal' },
     });
   };
+
+  const toggle = () => toggleModal({ operation: 'extract', props: {} })
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
