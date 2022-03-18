@@ -63,7 +63,8 @@ def test_process(regular_user, mock_call_reactor, mocker):
             'host': 'frontera.tacc.utexas.edu',
             'rootDir': '/home1/12345/username',
             'port': 22,
-            'icon': None
+            'icon': None,
+            'hidden': False
         },
         callback='portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationCallback',
         callback_data={'expected': 'frontera.home.username'},
@@ -81,14 +82,33 @@ def test_process(regular_user, mock_call_reactor, mocker):
             'port': 22,
             'requires_allocation': 'longhorn3',
             'systemId': 'longhorn.home.username',
-            'icon': None
+            'icon': None,
+            'hidden': False
         },
         callback='portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationCallback',
         callback_data={'expected': 'longhorn.home.username'},
         dryrun=False,
         force=True
     )
-    mock_call_reactor.assert_has_calls([frontera_call, longhorn_call], any_order=True)
+    stockyard_call = call(
+        regular_user,
+        'cloud.corral.work.username',
+        'wma-storage',
+        {
+            'name': 'My Data (Work)',
+            'host': 'cloud.corral.tacc.utexas.edu',
+            'rootDir': '/work/12345/username',
+            'port': 2222,
+            'systemId': 'cloud.corral.work.username',
+            'icon': None,
+            'hidden': True
+        },
+        callback='portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationCallback',
+        callback_data={'expected': 'cloud.corral.work.username'},
+        dryrun=False,
+        force=True
+    )
+    mock_call_reactor.assert_has_calls([frontera_call, longhorn_call, stockyard_call], any_order=True)
 
 
 def test_mark_system(regular_user, mock_complete, mock_fail, monkeypatch, mocker):
