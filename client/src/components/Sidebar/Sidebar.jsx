@@ -8,7 +8,7 @@ import { FeedbackButton } from '../FeedbackForm';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
-import styles from './Sidebar.module.scss';
+import styles from './Sidebar.module.css';
 
 /** Navigation list item **/
 const SidebarItem = ({ to, label, iconName, children, disabled }) => {
