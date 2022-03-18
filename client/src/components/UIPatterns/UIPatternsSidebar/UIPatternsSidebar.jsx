@@ -1,17 +1,23 @@
 import React from 'react';
 import { Sidebar } from '_common';
+import HistoryBadge from '../../History/HistoryBadge';
 
 function UIPatternsSidebar() {
   const sidebarItems = [
-    { to: 'history', iconName: 'trash', children: 'History' },
-    { to: 'allocations', iconName: 'alert', children: 'Allocations' },
+    {
+      to: 'history',
+      iconName: 'trash',
+      label: 'History',
+      children: <HistoryBadge unread={2} disabled={false} />,
+    },
+    { to: 'allocations', iconName: 'alert', label: 'Allocations' },
     {
       to: 'applications',
       iconName: 'alert',
-      children: 'Disabled',
+      label: 'Disabled',
       disabled: true,
     },
-    { to: 'ui-patterns', iconName: 'file', children: 'Here' },
+    { to: 'ui-patterns', iconName: 'file', label: 'Here' },
   ];
   return (
     <dl>
