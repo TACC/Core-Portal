@@ -22,7 +22,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
-    (state) => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
   const history = useHistory();
@@ -80,7 +80,9 @@ const DataFilesSwitch = React.memo(() => {
 
 const DataFiles = () => {
   const { params: listingParams } = useFileListing('FilesListing');
-  const { data: systems, loading, error } = useSystems();
+  const { data: allSystems, loading, error } = useSystems();
+
+  const systems = allSystems.filter((s) => !s.hidden);
   const noPHISystem = useSelector(
     (state) => state.workbench.config.noPHISystem
   );
