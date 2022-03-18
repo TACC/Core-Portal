@@ -12,7 +12,7 @@ function isNotEmptyString(props, propName, componentName) {
   return null;
 }
 
-const SidebarItem = ({ to, iconName, children, disabled }) => {
+const SidebarItem = ({ to, iconName, label, children, disabled }) => {
   return (
     <NavItem>
       <NavLink
@@ -22,9 +22,14 @@ const SidebarItem = ({ to, iconName, children, disabled }) => {
         className={styles['link']}
         activeClassName={styles['link--active']}
       >
-        <div className={`${disabled && styles['disabled']}`}>
+        <div
+          className={`${disabled ? styles['disabled'] : ''} ${
+            styles['content']
+          } nav-content`}
+        >
           <Icon name={iconName} />
-          <span className={styles['text']}>{children}</span>
+          <span className={styles['text']}>{label}</span>
+          {children}
         </div>
       </NavLink>
     </NavItem>
@@ -33,10 +38,12 @@ const SidebarItem = ({ to, iconName, children, disabled }) => {
 SidebarItem.propTypes = {
   to: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
-  children: isNotEmptyString,
+  label: isNotEmptyString,
+  children: PropTypes.node,
   disabled: PropTypes.bool,
 };
 SidebarItem.defaultProps = {
+  children: null,
   disabled: false,
 };
 
@@ -48,7 +55,8 @@ const Sidebar = ({ sidebarItems }) => {
           to={item.to}
           iconName={item.iconName}
           disabled={item.disabled}
-          key={item.children}
+          label={item.label}
+          key={item.label}
         >
           {item.children}
         </SidebarItem>
