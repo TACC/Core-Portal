@@ -4,6 +4,8 @@ Accounts views.
 import logging
 import json
 import requests
+from functools import wraps
+
 from django.forms.models import model_to_dict
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -109,6 +111,21 @@ def manage_integrations(request):
     return integrations.get_integrations(request)
 
 
+def handle_uncaught_exceptions(message):
+    def _decorator(fn):
+        from functools import wraps
+        @wraps(fn)
+        def wrapper(self, *args, **kw):
+            try:
+                return fn(self, *args, **kw)
+            except Exception:
+                logger.exception("Handling uncaught exception")
+                return JsonResponse({'message': message}, status=500)
+        return wrapper
+    return _decorator
+
+
+@handle_uncaught_exceptions(message="Unable to update profile.")
 @login_required
 def edit_profile(request):
     tas = TASClient(
