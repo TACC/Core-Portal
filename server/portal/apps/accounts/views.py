@@ -29,7 +29,7 @@ def accounts(request):
 
 @login_required
 def change_password(request):
-    username = str(request.user)
+    username = request.user.username
     body = json.loads(request.body)
     current_password = body['currentPW']
     new_password = body['newPW']
