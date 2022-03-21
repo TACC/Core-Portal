@@ -8,7 +8,7 @@ from functools import wraps
 
 from django.forms.models import model_to_dict
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
@@ -111,7 +111,7 @@ def _manage_integrations(request):
 
 def handle_uncaught_exceptions(message):
     def _decorator(fn):
-        from functools import wraps
+
         @wraps(fn)
         def wrapper(self, *args, **kw):
             try:
