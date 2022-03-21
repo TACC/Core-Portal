@@ -85,15 +85,14 @@ def get_profile_data(request):
     context = {
         'demographics': demographics,
         'history': history,
-        'licenses': manage_licenses(request),
-        'integrations': manage_integrations(request),
+        'licenses': _manage_licenses(request),
+        'integrations': _manage_integrations(request),
     }
 
     return JsonResponse(context)
 
 
-@login_required
-def manage_licenses(request):
+def _manage_licenses(request):
     from portal.apps.licenses.models import get_license_info
     licenses, license_models = get_license_info()
     licenses.sort(key=lambda x: x['license_type'])
@@ -106,8 +105,7 @@ def manage_licenses(request):
     return licenses
 
 
-@login_required
-def manage_integrations(request):
+def _manage_integrations(request):
     return integrations.get_integrations(request)
 
 
