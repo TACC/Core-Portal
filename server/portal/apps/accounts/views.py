@@ -27,6 +27,21 @@ def accounts(request):
     return response
 
 
+def handle_uncaught_exceptions(message):
+    def _decorator(fn):
+
+        @wraps(fn)
+        def wrapper(self, *args, **kw):
+            try:
+                return fn(self, *args, **kw)
+            except Exception:
+                logger.exception("Handling uncaught exception")
+                return JsonResponse({'message': message}, status=500)
+        return wrapper
+    return _decorator
+
+
+@handle_uncaught_exceptions(message="Unable to change password.")
 @login_required
 def change_password(request):
     username = request.user.username
@@ -59,6 +74,7 @@ def get_user_history(username):
         raise Exception('Failed to get project users', resp['message'])
 
 
+@handle_uncaught_exceptions(message="Unable to get profile.")
 @login_required
 def get_profile_data(request):
     """
@@ -109,20 +125,6 @@ def _manage_integrations(request):
     return integrations.get_integrations(request)
 
 
-def handle_uncaught_exceptions(message):
-    def _decorator(fn):
-
-        @wraps(fn)
-        def wrapper(self, *args, **kw):
-            try:
-                return fn(self, *args, **kw)
-            except Exception:
-                logger.exception("Handling uncaught exception")
-                return JsonResponse({'message': message}, status=500)
-        return wrapper
-    return _decorator
-
-
 @handle_uncaught_exceptions(message="Unable to update profile.")
 @login_required
 def edit_profile(request):
@@ -154,6 +156,7 @@ def edit_profile(request):
     return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
+@handle_uncaught_exceptions(message="Unable to get form fields.")
 @login_required
 def get_form_fields(request):
     return JsonResponse({
