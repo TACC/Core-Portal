@@ -11,22 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-task/FP-1311: Loading Icon for _common Button React Component (#603)
-task/FP-1541: [A2CPS] Add hidden flag option to data files storage systems (#608)
+- FP-1311: Loading Icon for _common Button React Component (#603)
+- FP-1541: [A2CPS] Add hidden flag option to data files storage systems (#608)
 
 ### Changed
 
-FP-1533: [A2CPS] Use User Client for SystemCreationStep (#607)
-FP-1549: Update node to LTS (v16.x) (#611)
+- FP-1533: [A2CPS] Use User Client for SystemCreationStep (#607)
+- FP-1549: Update node to LTS (v16.x) (#611)
 
 ### Fixed
 
-FP-1154: Copy Modal default destination storage system fix (#570)
-FP-1528: Recursive indexer deletes documents it shouldn't (#599)
-FP-1339: Ticket Attachment Cell Hover Underlines When Not over Link (#602)
-FP-1536: Paginator endcaps have different styles (#604)
-FP-1540: Hotfix: Update ES to Fix Security Issue (#606)
-FP-1430: Output location disappears after clicking on View details link (#609)
+- FP-1154: Copy Modal default destination storage system fix (#570)
+- FP-1528: Recursive indexer deletes documents it shouldn't (#599)
+- FP-1339: Ticket Attachment Cell Hover Underlines When Not over Link (#602)
+- FP-1536: Paginator endcaps have different styles (#604)
+- FP-1540: Hotfix: Update ES to Fix Security Issue (#606)
+- FP-1430: Output location disappears after clicking on View details link (#609)
 
 ## [2.13.0] - 2022-02-24: Component Design Enhancements; Onboarding and other bugfixes
 
