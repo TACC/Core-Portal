@@ -7,4 +7,5 @@ from portal.apps.intromessages import views
 app_name = 'intromessages'
 urlpatterns = [
     path('', views.IntroMessagesView.as_view()),
+    path('custom/', views.CustomMessagesView.as_view())
 ]

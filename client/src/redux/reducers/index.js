@@ -16,7 +16,7 @@ import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
-import introMessages from './intro.reducers';
+import { introMessages, customMessages } from './intro.reducers';
 import { onboarding } from './onboarding.reducers';
 import projects from './projects.reducers';
 import { users } from './users.reducers';
@@ -42,6 +42,7 @@ export default combineReducers({
   notifications,
   workbench,
   introMessages,
+  customMessages,
   onboarding,
   projects,
   users,
