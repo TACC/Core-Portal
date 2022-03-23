@@ -24,6 +24,7 @@ function AppRouter() {
   useEffect(() => {
     if (authenticatedUser) {
       dispatch({ type: 'FETCH_INTRO' });
+      dispatch({ type: 'FETCH_CUSTOM' });
     }
   }, [authenticatedUser]);
   return (

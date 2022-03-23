@@ -8,7 +8,12 @@ export const initialIntroMessages = {
   TICKETS: true,
 };
 
-function introMessages(state = initialIntroMessages, action) {
+export const initialCustomMessages = {
+  messages: [],
+  templates: [],
+};
+
+export function introMessages(state = initialIntroMessages, action) {
   switch (action.type) {
     case 'INTRO_FETCH_STARTED':
       return {
@@ -34,12 +39,42 @@ function introMessages(state = initialIntroMessages, action) {
       };
     case 'INTRO_SAVE_ERROR':
       return {
-        ...state,
-        ...action.paylod,
+        ...action.payload,
       };
     default:
       return state;
   }
 }
 
-export default introMessages;
+export function customMessages(state = initialCustomMessages, action) {
+  switch (action.type) {
+    case 'CUSTOM_FETCH_STARTED':
+      return {
+        ...state,
+      };
+    case 'CUSTOM_FETCH_SUCCESS':
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case 'CUSTOM_FETCH_ERROR':
+      return {
+        ...state,
+      };
+    case 'CUSTOM_SAVE_STARTED':
+      return {
+        ...state,
+      };
+    case 'CUSTOM_SAVE_SUCCESS':
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case 'CUSTOM_SAVE_ERROR':
+      return {
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+}

@@ -72,3 +72,56 @@ export function* saveIntroMessages(action) {
 export function* watchSaveIntroMessages() {
   yield takeLatest('SAVE_INTRO', saveIntroMessages);
 }
+
+export async function getCustomMessages() {
+  const result = await fetchUtil({
+    url: `/api/intromessages/custom/`,
+    method: 'get',
+  });
+  return result.response;
+}
+
+export function* fetchCustomMessages() {
+  yield put({ type: 'CUSTOM_FETCH_STARTED' });
+  try {
+    const customMessages = yield call(getCustomMessages);
+
+    yield put({
+      type: 'CUSTOM_FETCH_SUCCESS',
+      payload: customMessages,
+    });
+  } catch (error) {
+    yield put({
+      type: 'CUSTOM_FETCH_ERROR',
+    });
+  }
+}
+
+export function* watchFetchCustomMessages() {
+  yield takeLeading('FETCH_CUSTOM', fetchCustomMessages);
+}
+
+export function* saveCustomMessages(action) {
+  yield put({ type: 'CUSTOM_SAVE_STARTED' });
+  try {
+    yield call(fetchUtil, {
+      url: '/api/intromessages/custom/',
+      method: 'PUT',
+      body: JSON.stringify(action.payload),
+    });
+
+    yield put({
+      type: 'CUSTOM_SAVE_SUCCESS',
+      payload: action.payload,
+    });
+  } catch (error) {
+    yield put({
+      type: 'CUSTOM_SAVE_ERROR',
+      payload: action.payload,
+    });
+  }
+}
+
+export function* watchSaveCustomMessages() {
+  yield takeLatest('SAVE_CUSTOM', saveCustomMessages);
+}
