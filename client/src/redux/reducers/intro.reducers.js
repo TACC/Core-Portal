@@ -48,29 +48,29 @@ export function introMessages(state = initialIntroMessages, action) {
 
 export function customMessages(state = initialCustomMessages, action) {
   switch (action.type) {
-    case 'CUSTOM_FETCH_STARTED':
+    case 'CUSTOM_MESSAGES_FETCH_STARTED':
       return {
         ...state,
       };
-    case 'CUSTOM_FETCH_SUCCESS':
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case 'CUSTOM_FETCH_ERROR':
-      return {
-        ...state,
-      };
-    case 'CUSTOM_SAVE_STARTED':
-      return {
-        ...state,
-      };
-    case 'CUSTOM_SAVE_SUCCESS':
+    case 'CUSTOM_MESSAGES_FETCH_SUCCESS':
       return {
         ...state,
         ...action.payload,
       };
-    case 'CUSTOM_SAVE_ERROR':
+    case 'CUSTOM_MESSAGES_FETCH_ERROR':
+      return {
+        ...state,
+      };
+    case 'CUSTOM_MESSAGES_SAVE_STARTED':
+      return {
+        ...state,
+      };
+    case 'CUSTOM_MESSAGES_SAVE_SUCCESS':
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case 'CUSTOM_MESSAGES_SAVE_ERROR':
       return {
         ...action.payload,
       };

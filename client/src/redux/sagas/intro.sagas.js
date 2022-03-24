@@ -82,27 +82,27 @@ export async function getCustomMessages() {
 }
 
 export function* fetchCustomMessages() {
-  yield put({ type: 'CUSTOM_FETCH_STARTED' });
+  yield put({ type: 'CUSTOM_MESSAGES_FETCH_STARTED' });
   try {
     const customMessages = yield call(getCustomMessages);
 
     yield put({
-      type: 'CUSTOM_FETCH_SUCCESS',
+      type: 'CUSTOM_MESSAGES_FETCH_SUCCESS',
       payload: customMessages,
     });
   } catch (error) {
     yield put({
-      type: 'CUSTOM_FETCH_ERROR',
+      type: 'CUSTOM_MESSAGES_FETCH_ERROR',
     });
   }
 }
 
 export function* watchFetchCustomMessages() {
-  yield takeLeading('FETCH_CUSTOM', fetchCustomMessages);
+  yield takeLeading('FETCH_CUSTOM_MESSAGES', fetchCustomMessages);
 }
 
 export function* saveCustomMessages(action) {
-  yield put({ type: 'CUSTOM_SAVE_STARTED' });
+  yield put({ type: 'CUSTOM_MESSAGES_SAVE_STARTED' });
   try {
     yield call(fetchUtil, {
       url: '/api/intromessages/custom/',
@@ -111,17 +111,17 @@ export function* saveCustomMessages(action) {
     });
 
     yield put({
-      type: 'CUSTOM_SAVE_SUCCESS',
+      type: 'CUSTOM_MESSAGES_SAVE_SUCCESS',
       payload: action.payload,
     });
   } catch (error) {
     yield put({
-      type: 'CUSTOM_SAVE_ERROR',
+      type: 'CUSTOM_MESSAGES_SAVE_ERROR',
       payload: action.payload,
     });
   }
 }
 
 export function* watchSaveCustomMessages() {
-  yield takeLatest('SAVE_CUSTOM', saveCustomMessages);
+  yield takeLatest('SAVE_CUSTOM_MESSAGES', saveCustomMessages);
 }

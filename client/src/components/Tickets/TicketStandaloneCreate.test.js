@@ -15,7 +15,7 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: initialIntroMessages,
+      introMessages: { ...initialIntroMessages, TICKETS: true },
       workbench,
     });
 

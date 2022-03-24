@@ -19,12 +19,14 @@ import styles from './CustomMessage.module.scss';
 function CustomMessage({ componentName }) {
   const dispatch = useDispatch();
   const { messages, templates } = useSelector((state) => {
-    return {
-      messages: state.customMessages.messages.filter((msg) => msg.unread),
-      templates: state.customMessages.templates.filter(
-        (tmp) => tmp.component === componentName
-      ),
-    };
+    return state.customMessages
+      ? {
+          messages: state.customMessages.messages.filter((msg) => msg.unread),
+          templates: state.customMessages.templates.filter(
+            (tmp) => tmp.component === componentName
+          ),
+        }
+      : { messages: [], templates: [] };
   });
 
   function onDismiss(msg) {
@@ -39,7 +41,7 @@ function CustomMessage({ componentName }) {
       }),
     };
     dispatch({
-      type: 'SAVE_CUSTOM',
+      type: 'SAVE_CUSTOM_MESSAGES',
       payload: newCustomMessages,
     });
   }

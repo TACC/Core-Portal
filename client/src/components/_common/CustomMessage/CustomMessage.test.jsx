@@ -6,21 +6,38 @@ import { Provider } from 'react-redux';
 import CustomMessage from './CustomMessage';
 
 const mockStore = configureStore();
-const store = mockStore({});
+const store = mockStore({
+  customMessages: {
+    messages: [
+      {
+        template_id: '1',
+        unread: true,
+      },
+    ],
+    templates: [
+      {
+        id: 1,
+        component: 'TEST',
+        message_type: 'warning',
+        dismissable: true,
+        message: 'Test Message',
+      },
+    ],
+  },
+});
 
 describe('CustomMessage', () => {
   describe('elements', () => {
-    it('includes class, message, and role appropriately', () => {
-      const { container, getByRole, getByText } = render(
+    it('renders message text, message type, and dismissability correctly', () => {
+      const { container, getByText } = render(
         <Provider store={store}>
-          <CustomMessage componentName="TEST">
-            <p>Test Message</p>
-          </CustomMessage>
+          <CustomMessage componentName="TEST"></CustomMessage>
         </Provider>
       );
-      expect(container.getElementsByClassName('test-class').length).toEqual(1);
-      // NOTE: The `status` role (https://www.w3.org/TR/html-aria/#index-aria-status) is more appropriate than the `alert` role (https://www.w3.org/TR/html-aria/#index-aria-alert), but setting the `role` attribute of an `Alert` is ineffectual
-      expect(getByRole('alert')).not.toEqual(null);
+      expect(container.getElementsByClassName('is-warn').length).toEqual(1);
+      expect(container.getElementsByClassName('close-button').length).toEqual(
+        1
+      );
       expect(getByText('Test Message')).not.toEqual(null);
     });
   });

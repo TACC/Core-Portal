@@ -77,7 +77,7 @@ def test_custommessages_get(client, authenticated_user, custommessage_mock, cust
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == {
-        'messages': [{"template_id": 1, "unread": False}],
+        'messages': [{"template_id": '1', "unread": True}],
         'templates': [{
             'id': 1,
             'component': 'HISTORY',
@@ -100,9 +100,12 @@ def test_custommessages_get_unauthenticated_user(client, regular_user):
 """Test the marking of an CustomMessage as "read" by writing to the database """
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_custommessages_put(client, authenticated_user):
+def test_custommessages_put(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
+    original_message = CustomMessages.objects.get(template_id='1')
+    assert original_message.unread == True
+
     body = {
-        'messages': [{"template_id": 1, "unread": True}],
+        'messages': [{"template_id": '1', "unread": False}],
         'templates': [{
             'id': 1,
             'component': 'HISTORY',
@@ -116,13 +119,11 @@ def test_custommessages_put(client, authenticated_user):
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
-    # should be eight rows in the database for the user
-    assert len(CustomMessages.objects.all()) == 8
-    # let's check to see all rows exist correctly
-    for template_id, message_value in body.items():
-        correct_status = False
-        db_message = CustomMessages.objects.filter(template_id=template_id)
-        if db_message and db_message[0].unread != message_value:
-            correct_status = True
 
-        assert correct_status
+    assert len(CustomMessages.objects.all()) == 1
+
+    body_message = body['messages'][0]
+
+    db_message = CustomMessages.objects.get(template_id=body_message['template_id'])
+    # Ensure that it updated the value correctly
+    assert db_message.unread == body_message['unread']
