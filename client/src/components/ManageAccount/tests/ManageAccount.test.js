@@ -37,6 +37,6 @@ describe('Manage Account Page', () => {
     expect(getByText(/Manage Account/)).toBeInTheDocument();
     expect(getByText(/Back to Dashboard/)).toBeInTheDocument();
     expect(getAllByText(/Loading.../)).toBeDefined();
-    expect(getByRole('status', {name: 'message'})).toBeInTheDocument();
+    expect(getByRole('status', { name: 'message' })).toBeInTheDocument();
   });
 });

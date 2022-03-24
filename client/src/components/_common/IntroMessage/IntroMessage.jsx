@@ -40,7 +40,7 @@ function IntroMessage({ children, className, messageName }) {
   const onDismiss = useCallback(() => {
     const newMessagesState = {
       ...introMessages,
-      [messageName]: false
+      [messageName]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
 
