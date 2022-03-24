@@ -64,7 +64,7 @@ def custommessage_mock(authenticated_user):
 
 @pytest.fixture
 def custommessagetemplate_mock():
-    CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissable=True)
+    CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissible=True)
 
 """
 Test get of "read" (not unread) CustomMessages for an authenticated user and
@@ -82,7 +82,7 @@ def test_custommessages_get(client, authenticated_user, custommessage_mock, cust
             'id': 1,
             'component': 'HISTORY',
             'message_type': 'warning',
-            'dismissable': True,
+            'dismissible': True,
             'message': 'test message'
         }]
     }
@@ -110,7 +110,7 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
             'id': 1,
             'component': 'HISTORY',
             'message_type': 'warning',
-            'dismissable': True,
+            'dismissible': True,
             'message': 'test message'
         }]
     }

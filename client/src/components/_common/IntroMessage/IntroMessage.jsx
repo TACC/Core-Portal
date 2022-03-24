@@ -16,7 +16,7 @@ export function isKnownMessage(messageName) {
 /**
  * A message which, when dismissed, will not appear again unless browser storage is cleared
  *
- * _This message is designed for user introduction to sections, but can be abstracted further into a `<DismissableMessage>` or abstracted less such that a message need not be passed in._
+ * _This message is designed for user introduction to sections, but can be abstracted further into a `<DismissibleMessage>` or abstracted less such that a message need not be passed in._
  *
  * @example
  * // message with custom text, class, and identifier

@@ -70,7 +70,7 @@ class CustomMessagesView(BaseApiView):
             'id',
             'component',
             'message_type',
-            'dismissable',
+            'dismissible',
             'message'
         )
 

@@ -55,7 +55,7 @@ function CustomMessage({ componentName }) {
           <div key={message.template_id} className={styles.message}>
             <SectionMessage
               type={currentTemplate.message_type}
-              canDismiss={currentTemplate.dismissable}
+              canDismiss={currentTemplate.dismissible}
               onDismiss={() => onDismiss(message)}
             >
               {currentTemplate.message}

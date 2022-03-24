@@ -19,7 +19,7 @@ const store = mockStore({
         id: 1,
         component: 'TEST',
         message_type: 'warning',
-        dismissable: true,
+        dismissible: true,
         message: 'Test Message',
       },
     ],

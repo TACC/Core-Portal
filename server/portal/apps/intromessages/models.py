@@ -46,12 +46,12 @@ class CustomMessageTemplate(models.Model):
     # TODO: This should allow multiple components
     component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
     message_type = models.CharField(help_text='Message type', max_length=20, choices=MESSAGE_TYPES, default='info')
-    dismissable = models.BooleanField(default=True)
+    dismissible = models.BooleanField(default=True)
     message = models.TextField(help_text='Message content', default='', blank=True)
 
     def __str__(self):
         return "%s-%s-%s-%s" % (self.message_type, self.component, \
-                ('dismissable' if self.dismissable else 'not dismissable'), self.message[0:20])
+                ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
 
 
 class CustomMessages(models.Model):
