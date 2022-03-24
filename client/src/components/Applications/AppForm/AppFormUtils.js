@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
 export const getMaxQueueRunTime = (app, queueName) => {
-  return app.exec_sys.queues.find(q => q.name === queueName).maxRequestedTime;
+  return app.exec_sys.queues.find((q) => q.name === queueName).maxRequestedTime;
 };
 
 /**
@@ -11,7 +11,7 @@ export const getMaxQueueRunTime = (app, queueName) => {
  * @param {String} maxRunTime - maxRunTime given in the format of hh:mm:ss, usually from the target queue's maxRequestedTime
  * Creates a multigrouped regex to accommodate several layers of timestamps.
  */
-export const createMaxRunTimeRegex = maxRunTime => {
+export const createMaxRunTimeRegex = (maxRunTime) => {
   const replaceAt = (str, i, replace) => {
     return str.slice(0, i) + replace + str.slice(i + 1);
   };
@@ -83,13 +83,13 @@ export const getNodeCountValidation = (queue, app) => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
  */
-export const getProcessorsOnEachNodeValidation = queue => {
+export const getProcessorsOnEachNodeValidation = (queue) => {
   if (queue.maxProcessorsPerNode === -1) {
     return Yup.number();
   }
   return Yup.number()
     .min(1)
-    .max(queue.maxProcessorsPerNode / queue.maxNodes);
+    .max(Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes));
 };
 
 /**
@@ -104,7 +104,7 @@ export const getProcessorsOnEachNodeValidation = queue => {
 export const getQueueValidation = (queue, app) => {
   return Yup.string()
     .required('Required')
-    .oneOf(app.exec_sys.queues.map(q => q.name))
+    .oneOf(app.exec_sys.queues.map((q) => q.name))
     .test(
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',

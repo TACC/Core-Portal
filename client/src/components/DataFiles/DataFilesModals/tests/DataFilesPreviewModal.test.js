@@ -15,9 +15,9 @@ const files = {
       path: 'something/test.txt',
       href: 'href',
       name: 'test.txt',
-      length: 1234
-    }
-  }
+      length: 1234,
+    },
+  },
 };
 
 const mockStore = configureStore();
@@ -31,9 +31,9 @@ describe('Data Files Preview Modal', () => {
           href: null,
           content: 'abcdef',
           error: null,
-          isLoading: false
-        }
-      }
+          isLoading: false,
+        },
+      },
     });
     const { getByText } = renderComponent(<DataFilesPreviewModal />, store);
 
@@ -43,9 +43,12 @@ describe('Data Files Preview Modal', () => {
   });
   it('should show a loading spinner while fetching data', () => {
     const store = mockStore({
-      files
+      files,
     });
-    const { getByTestId, getByText } = renderComponent(<DataFilesPreviewModal />, store);
+    const { getByTestId, getByText } = renderComponent(
+      <DataFilesPreviewModal />,
+      store
+    );
     expect(getByText(/File Preview:/)).toBeDefined();
     expect(getByText(/test\.txt/)).toBeDefined();
     expect(getByTestId('loading-spinner')).toBeDefined();
@@ -58,13 +61,14 @@ describe('Data Files Preview Modal', () => {
           content: null,
           href: null,
           error: 'Unable to show preview.',
-          isLoading: false
-        }
-      }
+          isLoading: false,
+        },
+      },
     });
     const { getByText } = renderComponent(<DataFilesPreviewModal />, store);
     expect(getByText(/File Preview:/)).toBeDefined();
     expect(getByText(/test\.txt/)).toBeDefined();
     expect(getByText('Unable to show preview.')).toBeDefined();
+    expect(getByText(/Preview File/)).toBeDefined();
   });
 });

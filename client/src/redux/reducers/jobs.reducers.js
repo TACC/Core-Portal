@@ -5,7 +5,7 @@ export const initialState = {
   submit: { submitting: false },
   loading: false,
   reachedEnd: false,
-  error: null
+  error: null,
 };
 
 function updateJobFromNotification(job, notification) {
@@ -25,59 +25,68 @@ export function jobs(state = initialState, action) {
         ...state,
         list: [],
         error: null,
-        reachedEnd: false
+        reachedEnd: false,
       };
     case 'JOBS_LIST_START':
       return {
         ...state,
         error: null,
-        loading: true
+        loading: true,
       };
     case 'JOBS_LIST':
       return {
         ...state,
         list: state.list.concat(action.payload.list),
-        reachedEnd: action.payload.reachedEnd
+        reachedEnd: action.payload.reachedEnd,
+      };
+    case 'JOBS_LIST_UPDATE_JOB':
+      return {
+        ...state,
+        list: state.list.map((job) =>
+          job.id === action.payload.job.id
+            ? { ...action.payload.job, outputLocation: job.outputLocation }
+            : job
+        ),
       };
     case 'JOBS_LIST_ERROR':
       return {
         ...state,
-        error: action.payload
+        error: action.payload,
       };
     case 'JOBS_LIST_FINISH':
       return {
         ...state,
-        loading: false
+        loading: false,
       };
     case 'TOGGLE_SUBMITTING':
       return {
         ...state,
-        submit: { ...state.submit, submitting: !state.submit.submitting }
+        submit: { ...state.submit, submitting: !state.submit.submitting },
       };
     case 'FLUSH_SUBMIT':
       return {
         ...state,
-        submit: { submitting: false }
+        submit: { submitting: false },
       };
     case 'SUBMIT_JOB_SUCCESS':
       return {
         ...state,
-        submit: { ...state.submit, response: action.payload, error: false }
+        submit: { ...state.submit, response: action.payload, error: false },
       };
     case 'SUBMIT_JOB_ERROR':
       return {
         ...state,
-        submit: { ...state.submit, response: action.payload, error: true }
+        submit: { ...state.submit, response: action.payload, error: true },
       };
     case 'UPDATE_JOBS_FROM_NOTIFICATIONS': {
       const events = action.payload;
-      const list = state.list.map(job => {
-        const event = events.find(e => e.extra.id === job.id);
+      const list = state.list.map((job) => {
+        const event = events.find((e) => e.extra.id === job.id);
         return event ? updateJobFromNotification(job, event.extra) : job;
       });
       return {
         ...state,
-        list
+        list,
       };
     }
     default:
@@ -92,7 +101,7 @@ const initialJobDetail = {
   display: null,
   loading: false,
   loadingError: false,
-  loadingErrorMessage: ''
+  loadingErrorMessage: '',
 };
 
 export function jobDetail(state = initialJobDetail, action) {
@@ -105,7 +114,7 @@ export function jobDetail(state = initialJobDetail, action) {
         display: null,
         loading: true,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'JOB_DETAILS_FETCH_SUCCESS':
       return {
@@ -118,14 +127,14 @@ export function jobDetail(state = initialJobDetail, action) {
         ),
         loading: false,
         loadingError: false,
-        loadingErrorMessage: ''
+        loadingErrorMessage: '',
       };
     case 'JOB_DETAILS_FETCH_ERROR':
       return {
         ...state,
         loadingError: true,
         loadingErrorMessage: action.payload,
-        loading: false
+        loading: false,
       };
     default:
       return state;

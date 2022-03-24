@@ -4,19 +4,19 @@ export const jobsSubmissionSuccessFixture = {
     submitting: false,
     error: false,
     response: {
-      message: ''
-    }
+      message: '',
+    },
   },
   loading: false,
-  error: null
+  error: null,
 };
 
 export const jobsFixture = {
   list: [],
   submit: {
     submitting: false,
-    error: false
+    error: false,
   },
   loading: false,
-  error: null
+  error: null,
 };

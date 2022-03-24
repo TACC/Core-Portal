@@ -11,8 +11,8 @@ describe('FeedbackButton', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate,
-        creatingSuccess: true
-      }
+        creatingSuccess: true,
+      },
     });
     const { getByRole } = renderComponent(<FeedbackButton />, store);
     expect(getByRole('button'));

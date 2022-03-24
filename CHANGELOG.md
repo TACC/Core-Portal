@@ -7,6 +7,125 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2022-03-22: Hidden Data Files Systems; Security Updates; Bugfixes
+
+### Added
+
+- FP-1311: Loading Icon for _common Button React Component (#603)
+- FP-1541: [A2CPS] Add hidden flag option to data files storage systems (#608)
+
+### Changed
+
+- FP-1533: [A2CPS] Use User Client for SystemCreationStep (#607)
+- FP-1549: Update node to LTS (v16.x) (#611)
+
+### Fixed
+
+- FP-1154: Copy Modal default destination storage system fix (#570)
+- FP-1528: Recursive indexer deletes documents it shouldn't (#599)
+- FP-1339: Ticket Attachment Cell Hover Underlines When Not over Link (#602)
+- FP-1536: Paginator endcaps have different styles (#604)
+- FP-1540: Hotfix: Update ES to Fix Security Issue (#606)
+- FP-1430: Output location disappears after clicking on View details link (#609)
+
+## [2.13.0] - 2022-02-24: Component Design Enhancements; Onboarding and other bugfixes
+
+### Changed
+
+- task/FP-200: Trash Modal: Official Design (#549)
+- FP-545: Create _common Button React Component (#584)
+
+### Fixed
+
+- FP-1479: Site Search WEB results should be purple (#587)
+- FP-1460: Resolve dependabot alerts (#588)
+- FP-1503: Fix onboarding; Remove unnecessary FETCH_AUTHENTICATED_USER dispatch (#595)
+- FP-1428: Fix job history error (#589)
+- FP-1514: Fix project membership step to handle allocation-less projects (#596)
+
+## [2.12.1] - 2022-01-18: Fix anonymous views
+
+### Fixed
+
+- FP-1447: handle anonymous users in data context (#580)
+
+## [2.12.0] - 2022-01-04: Vite Migration; Request Access Page; Relaunch Jobs; ARIA and other bugfixes
+
+### Added
+
+- FP-1257: Frontend builds using Vite (#520)
+- FP-1219: Request Access Page (#538)
+- FP-547: Relaunch jobs in Job History modal. (#552)
+- FP-1146: Enable recaptcha for unauthenticated feedback or tickets (#530)
+
+### Changed
+
+- FP-1325: Add notice to Data Depot (#575)
+- FP-1385: Add ARIA label to Data Files checkboxes for accessibility (#574)
+- FP-1090: Put welcome message visited status in database, not localStorage (#545)
+- FP-1250: Add and enable new app icons (#558)
+- FP-1294: Toggle Site Search Systems (#571)
+- FP-1262: Match HTML Checkbox Behavior for Data Files (#554)
+- FP-1350: Add phone validation tests (#557)
+- FP-357: Keyboard A11y - Ticket navigation and open/close with keyboard (#567)
+- FP-1106: Move Make Public button to copy modal (#531)
+
+### Fixed
+
+- FP-1395: Fix recaptcha bugs (#573)
+- FP-1347: Fix Ticket Attachment Space Discrepancies (#569)
+- FP-1373: Data Files Filter Updates (#556)
+- FP-1386: Make CheckboxHeaderCell keyboard accessible (#563)
+- FP-1420, FP-1425: Fix non-persistent Welcome Message state; Fix Orcid ID link (#578)
+- FP-1429: Fix styling on 'Resubmit Job' button (#579)
+
+## [2.11.1] - 2021-11-18: ES Indexer and job validation hotfixes
+
+### Fixed
+
+- FP-1362: Make hideSearchBar param optional on systems (#550)
+- BM-24: Fix job validation when maxNodes > processorsPerNode (#551)
+
+## [2.11.0] - 2021-11-15: Bugfixes; UI Improvements
+
+### Changed
+
+- FP-181 Download Attachments in Ticket history (#517)
+- FP-1251: Shorten "Principal Investigator" to "PI" in Allocations view (#519)
+- FP-1258: Enable html and large file previews (#521)
+- FP-1130: Remove unused systemPrefix workbench settings (#512)
+- FP-1212: Use Download Modal for Multiple Files (#515)
+- FP-1236: Support multiple RT service accounts (#523)
+- FP-822: Batch notifications after move/copy/upload (#504)
+- FP-1248: Replace underscores in usernames when cloning/retrieving cloned exec system (#525)
+- FP-1308: Update README for server testing (#532)
+- FP-1307: Update ticket attachment design (#542)
+- FP-1079: Catch when a system is down for maintenance and alert user (#526)
+- FP-1264: Added hover effect to Data Files (#536)
+- FP-1166: Handle users who have no allocations (#537)
+- BM-21: Add project request queue setting (#539)
+- FP-180: List file names of attachments in Ticket history (#509)
+- FP-757: Close modals after success (#511)
+- FP-1197: Add unit test for DataFilesTable (#524)
+- FP-1155: Apply search filters on backend  using Elasticsearch (#516)
+
+### Fixed
+
+- FP-1003: Update Shared Workspace breadcrumb on title change (#505)
+- FP-1109: Update Job Status on View Detail and Job Listing (#507)
+- FP-1051: Applications: Better downtime message (#501)
+- FP-1242: Clarify text when copying between different systems. (#518)
+- Hotfix: Fix community data filters and remove 'Back to All Files' in site search (#528)
+- FP-1100: system creation failures (#513)
+- FP-822: hotfix: display slash instead of empty path (#529)
+- FP-1327: Fix onboarding link (#541)
+- FP-1292: File listing error handling when network connection failure. (#540)
+- Fix indexer exception when no project system to skip (#534)
+- FP-1211: Manage Account Section Errors Act like Giant Panels (#543)
+- FP-1295: Handle create workspace user error. (#544)
+- Fix listing path for shared workspaces in data files modal listings. (#535)
+- FP-1002: Manage Account input field Phone validation should match source validation (#533)
+
 ## [2.10.0] - 2021-09-30: CMS Login; UTRC Conversion; Styling Fixes
 
 ### Added
@@ -495,7 +614,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.10.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.14.0
+[2.13.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.13.0
+[2.12.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.1
+[2.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.0
+[2.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.1
+[2.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.0
 [2.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.10.0
 [2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0
 [2.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.8.0

@@ -24,7 +24,9 @@ describe('DataFilesProjectsSearchbar', () => {
     fireEvent.change(input, { target: { value: 'querystring' } });
     fireEvent.submit(form);
 
-    expect(history.location.pathname).toEqual('/workbench/data/tapis/projects/');
+    expect(history.location.pathname).toEqual(
+      '/workbench/data/tapis/projects/'
+    );
     expect(history.location.search).toEqual(`?query_string=querystring`);
   });
 

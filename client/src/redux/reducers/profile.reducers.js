@@ -7,15 +7,15 @@ export const initialState = {
     demographics: {},
     licenses: [],
     integrations: [],
-    passwordLastChanged: ''
+    passwordLastChanged: '',
   },
   errors: {},
   fields: {},
   modals: {
     required: false,
     optional: false,
-    password: false
-  }
+    password: false,
+  },
 };
 export default function profile(state = initialState, action) {
   switch (action.type) {
@@ -23,13 +23,13 @@ export default function profile(state = initialState, action) {
       return {
         ...state,
         isLoading: true,
-        errors: { ...state.errors, data: undefined }
+        errors: { ...state.errors, data: undefined },
       };
     case 'ADD_DATA':
       return {
         ...state,
         isLoading: false,
-        data: { ...state.data, ...action.payload }
+        data: { ...state.data, ...action.payload },
       };
     case 'ADD_DATA_ERROR':
       return {
@@ -37,14 +37,14 @@ export default function profile(state = initialState, action) {
         isLoading: false,
         errors: {
           ...state.errors,
-          data: action.payload
-        }
+          data: action.payload,
+        },
       };
     case 'POPULATE_FIELDS':
       return {
         ...state,
         fields: action.payload,
-        errors: { ...state.errors, fields: undefined }
+        errors: { ...state.errors, fields: undefined },
       };
     case 'POPULATE_FIELDS_ERROR':
       return { ...state, errors: { ...state.errors, fields: action.payload } };
@@ -58,8 +58,8 @@ export default function profile(state = initialState, action) {
         modals: {
           editRequired: false,
           editOptional: false,
-          changePW: false
-        }
+          changePW: false,
+        },
       };
     case 'EDITING_INFORMATION':
       return { ...state, editing: true };
@@ -67,20 +67,20 @@ export default function profile(state = initialState, action) {
       return {
         ...state,
         editing: false,
-        success: { ...state.success, ...action.payload }
+        success: { ...state.success, ...action.payload },
       };
     }
     case 'EDIT_INFORMATION_ERROR':
       return {
         ...state,
         editing: false,
-        errors: { ...state.errors, ...action.payload }
+        errors: { ...state.errors, ...action.payload },
       };
     case 'CHECKING_PASSWORD':
       return {
         ...state,
         success: { ...state.success, password: false },
-        checkingPassword: true
+        checkingPassword: true,
       };
     case 'CHECKED_PASSWORD':
       return {
@@ -88,30 +88,30 @@ export default function profile(state = initialState, action) {
         checkingPassword: false,
         errors: {
           ...state.errors,
-          password: undefined
-        }
+          password: undefined,
+        },
       };
     case 'CHANGED_PASSWORD':
       return {
         ...state,
         success: {
           ...state.success,
-          password: true
-        }
+          password: true,
+        },
       };
     case 'PASSWORD_ERROR':
       return {
         ...state,
         errors: {
           ...state.errors,
-          password: action.payload
-        }
+          password: action.payload,
+        },
       };
     case 'CLEAR_FORM_MESSAGES':
       return {
         ...state,
         success: { optional: false, required: false, password: false },
-        errors: {}
+        errors: {},
       };
     default:
       return state;

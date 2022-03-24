@@ -39,7 +39,7 @@ Markup:
 Styleguide Components.Button
 */
 .c-button,
-[class*="c-button--"] {
+[class*='c-button--'] {
   /* Normalize child element box sizes */
   display: flex;
   /* Align elements horizontally and vertically */
@@ -50,6 +50,7 @@ Styleguide Components.Button
   /* FAQ: Vertical padding reduced by 1px each to near button height of design * 1.2 */
   padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
   border-radius: 0;
+  border: 1px solid #afafaf;
   font-weight: 700;
   /* NOTE: Should set `font-size`, but `.icon`'s `em` adversely changes icon size */
 }
@@ -63,6 +64,33 @@ Styleguide Components.Button
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border: none;
+}
+.c-button--primary:disabled {
+  color: #48484880;
+  background-color: #c6c6c6;
+}
+.c-button--primary:not(:disabled):hover {
+  color: white;
+  background-color: #5f6ac3;
+  border-color: var(--global-color-primary--x-dark);
+}
+.c-button--primary:not(:disabled):active {
+  color: white;
+  background-color: #232b66;
+  border-color: var(--global-color-primary--x-dark);
+}
+.c-button--width-short {
+  width: 68px;
+}
+.c-button--width-medium {
+  width: 104px;
+}
+.c-button--width-large {
+  width: 125px;
+}
+.c-button--size-small {
+  width: 32px;
+  height: 32px;
 }
 
 .c-button--secondary {

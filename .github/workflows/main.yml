@@ -18,7 +18,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6
+        python-version: 3.7
 
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2.0.0
@@ -60,7 +60,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6
+        python-version: 3.7
 
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2.0.0
@@ -93,7 +93,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 16.x
 
     - uses: actions/cache@v1
       with:
@@ -121,7 +121,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 16.x
 
     - uses: actions/cache@v1
       with:

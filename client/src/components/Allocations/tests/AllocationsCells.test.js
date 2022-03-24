@@ -8,7 +8,7 @@ import {
   Systems,
   Awarded,
   Remaining,
-  Expires
+  Expires,
 } from '../AllocationsCells';
 import systemAccessor from '../AllocationsUtils';
 
@@ -42,25 +42,27 @@ const fixture = {
         requestor: 'Owais Jamil',
         reviewerId: 0,
         reviewer: null,
-        computeUsed: 25.57
-      }
-    }
+        computeUsed: 25.57,
+      },
+    },
   ],
   title: 'TEST-Team',
-  pi: 'Test PI'
+  pi: 'Test PI',
 };
 
 const mockStore = configureStore();
-const mockInitialState = {allocations: {
-  active: [],
-  inactive: [],
-  loading: true,
-  teams: {},
-  pages: {},
-  userDirectory: {},
-  loadingUsernames: true,
-  errors: {}
-}};
+const mockInitialState = {
+  allocations: {
+    active: [],
+    inactive: [],
+    loading: true,
+    teams: {},
+    pages: {},
+    userDirectory: {},
+    loadingUsernames: true,
+    errors: {},
+  },
+};
 const Wrapper = ({ store, children }) => (
   <Provider store={store}>{children}</Provider>
 );
@@ -71,7 +73,7 @@ describe('Allocations Table Cells', () => {
   it('should have a team view link in a cell', () => {
     const { getByText } = render(
       <Wrapper store={mockStore(mockInitialState)}>
-        <Team cell={{ value: {name: 'tacc-team' , projectId: 23881} }} />
+        <Team cell={{ value: { name: 'tacc-team', projectId: 23881 } }} />
       </Wrapper>
     );
     expect(getByText(/View Team/)).toBeInTheDocument();
@@ -81,7 +83,7 @@ describe('Allocations Table Cells', () => {
     const { getByText } = render(
       <Systems
         cell={{
-          value
+          value,
         }}
       />
     );

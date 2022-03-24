@@ -77,6 +77,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
+        'hidden': False,
     },
     'frontera': {
         'name': 'My Data (Frontera)',
@@ -87,6 +88,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
+        'hidden': False,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
@@ -98,6 +100,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
+        'hidden': False,
     }
 }
 
@@ -107,14 +110,16 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.storage.community',
         'scheme': 'community',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
         'system': 'cep.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': 'publications'
+        'icon': 'publications',
+        'siteSearchPriority': 0
     },
     {
         'name': 'Shared Workspaces',
@@ -160,20 +165,22 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            'project_sql_id': 12345
-        }
-    },
-    {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 12345,
+            'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStep',
         'settings': {
             'required_systems': ['stampede2.tacc.utexas.edu','ls5.tacc.utexas.edu'],
             'project_sql_id': 12345,
+            'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
         }
     },
     {
@@ -250,5 +257,6 @@ _WORKBENCH_SETTINGS = {
     "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
-    "onboardingCompleteRedirect": '/workbench/'
+    "onboardingCompleteRedirect": '/workbench/',
+    "noPHISystem": ""
 }

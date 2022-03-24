@@ -263,10 +263,24 @@ class JobsView(BaseApiView):
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
 
-        # cancel job / stop job
         if job_id and job_action:
-            METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
+            # resubmit job
+            if job_action == 'resubmit':
+                METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
+            # cancel job / stop job
+            else:
+                METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
+
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
+
+            if job_action == 'resubmit':
+                if "id" in data:
+                    job = JobSubmission.objects.create(
+                        user=request.user,
+                        jobId=data["id"]
+                    )
+                    job.save()
+
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
@@ -543,3 +557,4 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
+   

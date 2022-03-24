@@ -14,9 +14,9 @@ export default function getFilePermissions(name, { files, scheme, api }) {
     '.ssh',
     'authorized_keys',
     '.APPDATA',
-    '.Trash'
+    '.Trash',
   ];
-  const isProtected = files.some(file => protectedFiles.includes(file.name));
+  const isProtected = files.some((file) => protectedFiles.includes(file.name));
   const isPrivate = ['projects', 'private'].includes(scheme);
   const isArchive =
     files.length === 1
@@ -33,10 +33,9 @@ export default function getFilePermissions(name, { files, scheme, api }) {
         files[0].format !== 'folder' &&
         api !== 'googledrive'
       );
-    case 'isFolderSelected':
+    case 'areMultipleFilesOrFolderSelected':
       return (
-        files.length > 0 &&
-        files.some(file => file.format === 'folder') &&
+        (files.length > 1 || files.some((file) => file.format === 'folder')) &&
         api !== 'googledrive'
       );
     case 'extract':
@@ -52,7 +51,7 @@ export default function getFilePermissions(name, { files, scheme, api }) {
     case 'trash':
       return (
         !isProtected &&
-        !files.some(file => file.path.startsWith('/.Trash')) &&
+        !files.some((file) => file.path.startsWith('/.Trash')) &&
         files.length > 0 &&
         isPrivate &&
         api === 'tapis'

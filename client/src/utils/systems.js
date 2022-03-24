@@ -24,7 +24,7 @@ export function getSystemName(host) {
  * @return {string} display name of system
  */
 export function findSystemDisplayName(systemList, system, isRoot) {
-  const matchingSystem = systemList.find(s => s.system === system);
+  const matchingSystem = systemList.find((s) => s.system === system);
   if (matchingSystem) {
     return matchingSystem.name;
   }
@@ -43,7 +43,7 @@ export function findSystemDisplayName(systemList, system, isRoot) {
  */
 
 export function findProjectTitle(projectsList, projectSystem, projectTitle) {
-  const matching = projectsList.find(project => project.id === projectSystem);
+  const matching = projectsList.find((project) => project.id === projectSystem);
   if (matching) {
     return matching.description;
   }
@@ -57,6 +57,8 @@ export function findProjectTitle(projectsList, projectSystem, projectTitle) {
  * @param {Array} systemList
  * @param {Array} projectsList
  * @param {string} system
+ * @param {string} projectTitle
+ * @param {boolean} isRoot
  * @return {string} display name of system or project
  */
 export function findSystemOrProjectDisplayName(
@@ -64,12 +66,13 @@ export function findSystemOrProjectDisplayName(
   systemList,
   projectsList,
   system,
-  projectTitle
+  projectTitle,
+  isRoot
 ) {
   switch (scheme) {
     case 'projects':
       return findProjectTitle(projectsList, system, projectTitle);
     default:
-      return findSystemDisplayName(systemList, system);
+      return findSystemDisplayName(systemList, system, isRoot);
   }
 }

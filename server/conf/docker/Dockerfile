@@ -1,4 +1,4 @@
-FROM python:3.6-buster as python-base
+FROM python:3.7-buster as python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -67,8 +67,8 @@ WORKDIR /srv/www/portal/server
 # `production` image is used for deployed runtime environments
 FROM python-base as production
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+# install node 16.x
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH

@@ -46,7 +46,8 @@ class SystemListingView(BaseApiView):
                             'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
                             'scheme': 'private',
                             'api': 'tapis',
-                            'icon': details['icon']
+                            'icon': details['icon'],
+                            'hidden': details['hidden'] if 'hidden' in details else False
                         }
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
@@ -129,8 +130,6 @@ class TapisFilesView(BaseApiView):
                                                             path,
                                                             body))
             response = tapis_put_handler(client, scheme, system, path, operation, body=body)
-            operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, 'success', {'response': response})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -155,8 +154,6 @@ class TapisFilesView(BaseApiView):
                                                                 body['uploaded_file'].name))
 
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
-            operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, 'success', {'response': response})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -191,8 +188,6 @@ class GoogleDriveFilesView(BaseApiView):
         try:
             response = googledrive_put_handler(client, scheme, system, path,
                                                operation, body=body)
-            operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, 'success', {'response': response})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -224,14 +219,6 @@ class TransferFilesView(BaseApiView):
             else:
                 transfer(src_client, dest_client, **body)
 
-            # Respond with tapis-like info for a toast notification
-            file_info = {
-                'nativeFormat': filetype,
-                'name': body['dirname'],
-                'path': os.path.join(body['dest_path_name'], body['dirname']),
-                'systemId': body['dest_system']
-            }
-            notify(request.user.username, 'copy', 'success', {'response': file_info})
             return JsonResponse({'success': True})
         except Exception as exc:
             logger.info(exc)

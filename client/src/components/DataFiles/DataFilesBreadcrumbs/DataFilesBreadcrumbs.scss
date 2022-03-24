@@ -13,18 +13,17 @@
 /* Breadcrumbs */
 @media only screen and (min-width: 2400px) {
   .breadcrumbs {
-     max-width: 1000px;
+    max-width: 1000px;
   }
 }
 
 @media only screen and (min-width: 1920px) and (max-width: 2399px) {
-   .breadcrumbs {
-     max-width: 630px;
-   }
+  .breadcrumbs {
+    max-width: 630px;
+  }
 }
 
 @media only screen and (min-width: 1680px) and (max-width: 1919px) {
-
   .breadcrumbs {
     max-width: 380px;
   }
@@ -35,5 +34,3 @@
     max-width: 700px;
   }
 }
-
-

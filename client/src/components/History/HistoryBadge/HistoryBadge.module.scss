@@ -1,15 +1,15 @@
 .root {
-    padding: 0 0.3em; /* buffer retained on 2+ digit badge, without increase on 1 digit badge */
-    min-width: 1.3em;  /* ~18px design * 1.2 design-to-app ratio (rounded) */
-    text-align: center;
-    font-size: 0.75em;  /* ~10px design * 1.2 design-to-app ratio */
-    border-radius: 3.6px;
-    background-color: var(--global-color-accent--normal);
-    color: rgb(253, 241, 241);
-    margin-left: auto;
-    margin-right: 2em;
+  padding: 0 0.3em; /* buffer retained on 2+ digit badge, without increase on 1 digit badge */
+  min-width: 1.3em; /* ~18px design * 1.2 design-to-app ratio (rounded) */
+  text-align: center;
+  font-size: 0.75em; /* ~10px design * 1.2 design-to-app ratio */
+  border-radius: 3.6px;
+  background-color: var(--global-color-accent--normal);
+  color: rgb(253 241 241);
+  margin-left: auto;
+  margin-right: 2em;
 }
 
 .disabled {
-    background-color: var(--global-color-accent--weak);
+  background-color: var(--global-color-accent--weak);
 }

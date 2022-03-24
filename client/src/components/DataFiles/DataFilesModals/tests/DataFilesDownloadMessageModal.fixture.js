@@ -1,7 +1,7 @@
 const DataFilesDownloadMessageModalFixture = {
   operationStatus: {
     copy: {},
-    compress: {}
+    compress: {},
   },
   listing: {
     FilesListing: {
@@ -13,25 +13,25 @@ const DataFilesDownloadMessageModalFixture = {
       format: 'folder',
       system: 'test.system',
       mimeType: 'text/directory',
-      type: 'dir'
-    }
+      type: 'dir',
+    },
   },
   params: {
     FilesListing: {
       api: 'tapis',
       scheme: 'private',
       system: 'test.system',
-      path: ''
-    }
+      path: '',
+    },
   },
   selected: {
     FilesListing: [0],
-    modal: []
+    modal: [],
   },
   modals: {
     copy: true,
-    downloadMessage: true
-  }
+    downloadMessage: true,
+  },
 };
 
 export default DataFilesDownloadMessageModalFixture;
