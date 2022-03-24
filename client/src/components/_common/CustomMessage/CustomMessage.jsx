@@ -31,9 +31,7 @@ function CustomMessage({ componentName }) {
 
   function onDismiss(msg) {
     const newCustomMessages = {
-      templates: {
-        ...templates,
-      },
+      templates: templates,
       messages: messages.map((message) => {
         message.unread =
           message.template_id === msg.template_id ? false : message.unread;
