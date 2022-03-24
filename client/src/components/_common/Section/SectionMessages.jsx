@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { IntroMessage, isKnownIntroMessage } from '_common';
+import { CustomMessage, IntroMessage, isKnownIntroMessage } from '_common';
 import * as MESSAGES from '../../../constants/messages';
 
 import styles from './SectionMessages.module.css';
@@ -62,6 +62,10 @@ function SectionMessages({
     isKnownIntroMessage(introMessageName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
+  const customMessage = (
+    <CustomMessage componentName={introMessageName}></CustomMessage>
+  );
+
   useEffect(() => {
     if (hasMessage) {
       document.body.classList.add(hasMessageClass);
@@ -73,6 +77,7 @@ function SectionMessages({
   return (
     <aside className={`${styles['root']} ${className}`}>
       {introMessage}
+      {customMessage}
       {children}
     </aside>
   );

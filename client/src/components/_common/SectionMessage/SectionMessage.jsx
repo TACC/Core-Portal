@@ -15,6 +15,7 @@ const SectionMessage = (props) => {
   // Manage visibility
   const onDismiss = useCallback(() => {
     setIsVisible(!isVisible);
+    props.onDismiss();
   }, [isVisible]);
 
   // Override default props
