@@ -1,14 +1,17 @@
 import pytest
 from portal.apps.intromessages.models import IntroMessages, CustomMessageTemplate, CustomMessages
 
+
 @pytest.fixture
 def intromessage_mock(authenticated_user):
     IntroMessages.objects.create(user=authenticated_user, component="HISTORY", unread=False)
+
 
 """
 Test get of "read" (not unread) IntroMessages for an authenticated user and
 confirm that the JSON is coming back as expected.
 """
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user, intromessage_mock):
@@ -17,6 +20,7 @@ def test_intromessages_get(client, authenticated_user, intromessage_mock):
     assert response.status_code == 200
     print(data)
     assert data["response"] == [{"component": "HISTORY", "unread": False}]
+
 
 """
 Test get of "read" IntroMessages for an unauthenticated user
@@ -28,7 +32,9 @@ def test_intromessages_get_unauthenticated_user(client, regular_user):
     response = client.get('/api/intromessages/')
     assert response.status_code == 302
 
+
 """Test the marking of an IntroMessage as "read" by writing to the database """
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
@@ -58,20 +64,24 @@ def test_intromessages_put(client, authenticated_user):
 
         assert correct_status
 
+
 @pytest.fixture
 def custommessagetemplate_mock():
     template = CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissible=True)
     yield template
+
 
 @pytest.fixture
 def custommessage_mock(authenticated_user, custommessagetemplate_mock):
     message = CustomMessages.objects.create(user=authenticated_user, template=custommessagetemplate_mock)
     yield message
 
+
 """
 Test get of "read" (not unread) CustomMessages for an authenticated user and
 confirm that the JSON is coming back as expected.
 """
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
@@ -91,17 +101,21 @@ def test_custommessages_get(client, authenticated_user, custommessage_mock, cust
         }]
     }
 
+
 """
 Test get of "read" CustomMessages for an unauthenticated user
 User should be redirected to login
 """
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get_unauthenticated_user(client, regular_user):
     response = client.get('/api/intromessages/custom/')
     assert response.status_code == 302
 
+
 """Test the marking of an CustomMessage as "read" by writing to the database """
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_put(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
