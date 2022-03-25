@@ -10,17 +10,14 @@ const store = mockStore({
   customMessages: {
     messages: [
       {
-        template_id: '1',
+        template: {
+          id: 1,
+          component: 'TEST',
+          message_type: 'warning',
+          dismissible: true,
+          message: 'Test Message',
+        },
         unread: true,
-      },
-    ],
-    templates: [
-      {
-        id: 1,
-        component: 'TEST',
-        message_type: 'warning',
-        dismissible: true,
-        message: 'Test Message',
       },
     ],
   },

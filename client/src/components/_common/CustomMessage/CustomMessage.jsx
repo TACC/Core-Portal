@@ -18,21 +18,21 @@ import styles from './CustomMessage.module.scss';
  */
 function CustomMessage({ componentName }) {
   const dispatch = useDispatch();
-  const { messages } = useSelector((state) => {
+  const messages = useSelector((state) => {
     return state.customMessages
-      ? {
-          messages: state.customMessages.messages.filter((msg) => {
-            return msg.unread && msg.template.component === componentName;
-          }),
-        }
-      : { messages: [] };
+      ? state.customMessages.messages.filter((message) => {
+          return message.unread && message.template.component === componentName;
+        })
+      : [];
   });
 
-  function onDismiss(msg) {
+  function onDismiss(dismissMessage) {
     const newCustomMessages = {
       messages: messages.map((message) => {
         message.unread =
-          message.template.id === msg.template.id ? false : message.unread;
+          message.template.id === dismissMessage.template.id
+            ? false
+            : message.unread;
         return message;
       }),
     };

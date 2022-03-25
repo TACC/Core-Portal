@@ -59,12 +59,14 @@ def test_intromessages_put(client, authenticated_user):
         assert correct_status
 
 @pytest.fixture
-def custommessage_mock(authenticated_user):
-    CustomMessages.objects.create(user=authenticated_user, template_id=1)
+def custommessagetemplate_mock():
+    template = CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissible=True)
+    yield template
 
 @pytest.fixture
-def custommessagetemplate_mock():
-    CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissible=True)
+def custommessage_mock(authenticated_user, custommessagetemplate_mock):
+    message = CustomMessages.objects.create(user=authenticated_user, template=custommessagetemplate_mock)
+    yield message
 
 """
 Test get of "read" (not unread) CustomMessages for an authenticated user and
@@ -77,13 +79,15 @@ def test_custommessages_get(client, authenticated_user, custommessage_mock, cust
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == {
-        'messages': [{"template_id": '1', "unread": True}],
-        'templates': [{
-            'id': 1,
-            'component': 'HISTORY',
-            'message_type': 'warning',
-            'dismissible': True,
-            'message': 'test message'
+        'messages': [{
+            "template": {
+                'id': 1,
+                'component': 'HISTORY',
+                'message_type': 'warning',
+                'dismissible': True,
+                'message': 'test message'
+            },
+            "unread": True
         }]
     }
 
@@ -101,17 +105,19 @@ def test_custommessages_get_unauthenticated_user(client, regular_user):
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_put(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
-    original_message = CustomMessages.objects.get(template_id='1')
+    original_message = CustomMessages.objects.get(template__id='1')
     assert original_message.unread == True
 
     body = {
-        'messages': [{"template_id": '1', "unread": False}],
-        'templates': [{
-            'id': 1,
-            'component': 'HISTORY',
-            'message_type': 'warning',
-            'dismissible': True,
-            'message': 'test message'
+        'messages': [{
+            "template": {
+                'id': 1,
+                'component': 'HISTORY',
+                'message_type': 'warning',
+                'dismissible': True,
+                'message': 'test message'
+            },
+            "unread": False
         }]
     }
 
@@ -124,6 +130,6 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
 
     body_message = body['messages'][0]
 
-    db_message = CustomMessages.objects.get(template_id=body_message['template_id'])
+    db_message = CustomMessages.objects.get(template__id=body_message['template']['id'])
     # Ensure that it updated the value correctly
     assert db_message.unread == body_message['unread']
