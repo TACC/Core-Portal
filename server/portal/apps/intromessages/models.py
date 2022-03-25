@@ -43,7 +43,6 @@ class CustomMessageTemplate(models.Model):
                   ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'), \
                   ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account')]
 
-    # TODO: This should allow multiple components
     component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
     message_type = models.CharField(help_text='Message type', max_length=20, choices=MESSAGE_TYPES, default='info')
     dismissible = models.BooleanField(default=True)
@@ -68,7 +67,6 @@ class CustomMessages(models.Model):
 
     Used for storing messages instances that were created by admin and handles status of each message.
     """
-    # TODO: This is to determine whether the user dismissed it or not
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="+",
