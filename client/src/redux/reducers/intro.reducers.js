@@ -10,7 +10,6 @@ export const initialIntroMessages = {
 
 export const initialCustomMessages = {
   messages: [],
-  templates: [],
 };
 
 export function introMessages(state = initialIntroMessages, action) {

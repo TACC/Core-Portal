@@ -49,6 +49,15 @@ class CustomMessageTemplate(models.Model):
     dismissible = models.BooleanField(default=True)
     message = models.TextField(help_text='Message content', default='', blank=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'component': self.component,
+            'message_type': self.message_type,
+            'dismissible': self.dismissible,
+            'message': self.message
+        }
+
     def __str__(self):
         return "%s-%s-%s-%s" % (self.message_type, self.component, \
                 ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
@@ -66,9 +75,14 @@ class CustomMessages(models.Model):
         on_delete=models.CASCADE
     )
 
-    template_id = models.CharField(max_length=255, db_index=True)
+    template = models.ForeignKey(
+        CustomMessageTemplate,
+        related_name="+",
+        on_delete=models.CASCADE,
+    )
+
     unread = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('user', 'template_id',)
+        unique_together = ('user', 'template',)
 

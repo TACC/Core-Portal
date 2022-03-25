@@ -18,23 +18,21 @@ import styles from './CustomMessage.module.scss';
  */
 function CustomMessage({ componentName }) {
   const dispatch = useDispatch();
-  const { messages, templates } = useSelector((state) => {
+  const { messages } = useSelector((state) => {
     return state.customMessages
       ? {
-          messages: state.customMessages.messages.filter((msg) => msg.unread),
-          templates: state.customMessages.templates.filter(
-            (tmp) => tmp.component === componentName
-          ),
+          messages: state.customMessages.messages.filter((msg) => {
+            return msg.unread && msg.template.component === componentName;
+          }),
         }
-      : { messages: [], templates: [] };
+      : { messages: [] };
   });
 
   function onDismiss(msg) {
     const newCustomMessages = {
-      templates: templates,
       messages: messages.map((message) => {
         message.unread =
-          message.template_id === msg.template_id ? false : message.unread;
+          message.template.id === msg.template.id ? false : message.unread;
         return message;
       }),
     };
@@ -45,25 +43,18 @@ function CustomMessage({ componentName }) {
   }
 
   return messages.map((message) => {
-    if (message.unread) {
-      const currentTemplate = templates.find(
-        (template) => template.id == message.template_id
-      );
-
-      if (currentTemplate && message.unread) {
-        return (
-          <div key={message.template_id} className={styles.message}>
-            <SectionMessage
-              type={currentTemplate.message_type}
-              canDismiss={currentTemplate.dismissible}
-              onDismiss={() => onDismiss(message)}
-            >
-              {currentTemplate.message}
-            </SectionMessage>
-          </div>
-        );
-      }
-    }
+    const template = message.template;
+    return (
+      <div key={template.id} className={styles.message}>
+        <SectionMessage
+          type={template.message_type}
+          canDismiss={template.dismissible}
+          onDismiss={() => onDismiss(message)}
+        >
+          {template.message}
+        </SectionMessage>
+      </div>
+    );
   });
 }
 

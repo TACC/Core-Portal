@@ -15,31 +15,16 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def get_or_create_custom_messages(user, template_id):
+def get_or_create_custom_messages(user, template):
     try:
-        message = CustomMessages.objects.get(
-            user=user,
-            template_id=template_id
-        )
-
+        message = CustomMessages.objects.get(user=user, template=template)
     except CustomMessages.DoesNotExist:
-        message = CustomMessages.objects.create(
-            user=user,
-            template_id=template_id
-        )
+        message = CustomMessages.objects.create(user=user, template=template)
 
     return {
-        'template_id': message.template_id,
+        'template': message.template.to_dict(),
         'unread': message.unread,
     }
-
-def cleanup_custom_messages(user, templates):
-    user_messages = CustomMessages.objects.filter(user=user)
-    template_ids = [int(template['id']) for template in templates]
-
-    for user_message in user_messages:
-        if int(user_message.template_id) not in template_ids:
-            user_message.delete()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -66,28 +51,19 @@ class IntroMessagesView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class CustomMessagesView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        templates = CustomMessageTemplate.objects.all().values(
-            'id',
-            'component',
-            'message_type',
-            'dismissible',
-            'message'
-        )
-
-        cleanup_custom_messages(request.user, templates)
-        messages = [get_or_create_custom_messages(request.user, template['id']) for template in templates]
+        templates = CustomMessageTemplate.objects.all()
+        messages = [get_or_create_custom_messages(request.user, template) for template in templates]
 
         return JsonResponse({
             'response': {
                 'messages': list(messages),
-                'templates': list(templates)
             }
         })
 
     def put(self, request, *args):
         body = json.loads(request.body)
         for msg in body['messages']:
-            message = CustomMessages.objects.get(user=request.user, template_id=msg['template_id'])
+            message = CustomMessages.objects.get(user=request.user, template__id=msg['template']['id'])
             message.unread = msg['unread']
             message.save()
         return JsonResponse({'status': 'OK'})
