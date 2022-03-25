@@ -27,6 +27,7 @@ Test get of "read" IntroMessages for an unauthenticated user
 User should be redirected to login
 """
 
+
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get_unauthenticated_user(client, regular_user):
     response = client.get('/api/intromessages/')
