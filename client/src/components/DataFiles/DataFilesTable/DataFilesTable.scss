@@ -14,16 +14,13 @@
 .tr-background-shading:not(.-status) {
   background: #f4f4f4;
 }
-.tr:hover {
+.tr:not(.tr-header):hover {
   background-color: rgb(0 0 0 / 5%);
 }
 .tr-header {
   border-bottom: 1px solid #000000;
   padding-bottom: 0;
   font-weight: bold;
-}
-.tr-header:hover {
-  background-color: inherit;
 }
 
 .scroll {
