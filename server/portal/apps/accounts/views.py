@@ -16,7 +16,7 @@ from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
 from portal.apps.accounts import form_fields as forms
-from portal.utils import handle_uncaught_exceptions
+from portal.utils.decorators import handle_uncaught_exceptions
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
