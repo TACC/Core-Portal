@@ -4,7 +4,6 @@ Accounts views.
 import logging
 import json
 import requests
-from functools import wraps
 
 from django.forms.models import model_to_dict
 from django.conf import settings
@@ -17,6 +16,8 @@ from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
 from portal.apps.accounts import form_fields as forms
+from portal.utils import handle_uncaught_exceptions
+
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
@@ -25,20 +26,6 @@ logger = logging.getLogger(__name__)
 def accounts(request):
     response = redirect('/workbench/account/')
     return response
-
-
-def handle_uncaught_exceptions(message):
-    def _decorator(fn):
-
-        @wraps(fn)
-        def wrapper(self, *args, **kw):
-            try:
-                return fn(self, *args, **kw)
-            except Exception:
-                logger.exception("Handling uncaught exception")
-                return JsonResponse({'message': message}, status=500)
-        return wrapper
-    return _decorator
 
 
 @handle_uncaught_exceptions(message="Unable to change password.")
