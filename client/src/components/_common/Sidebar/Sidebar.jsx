@@ -12,7 +12,7 @@ function isNotEmptyString(props, propName, componentName) {
   return null;
 }
 
-const SidebarItem = ({ to, iconName, label, children, disabled }) => {
+const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
   return (
     <NavItem>
       <NavLink
@@ -41,31 +41,51 @@ SidebarItem.propTypes = {
   label: isNotEmptyString,
   children: PropTypes.node,
   disabled: PropTypes.bool,
+  hidden: PropTypes.bool,
 };
 SidebarItem.defaultProps = {
   children: null,
   disabled: false,
+  hidden: false,
 };
 
-const Sidebar = ({ sidebarItems }) => {
+const Sidebar = ({ sidebarItems, addItems, loading }) => {
   return (
     <Nav className={styles['root']} vertical>
-      {sidebarItems.map((item) => (
-        <SidebarItem
-          to={item.to}
-          iconName={item.iconName}
-          disabled={item.disabled}
-          label={item.label}
-          key={item.label}
-        >
-          {item.children}
-        </SidebarItem>
-      ))}
+      {!loading &&
+        sidebarItems.map(
+          (item) =>
+            !item.hidden && (
+              <SidebarItem
+                to={item.to}
+                iconName={item.iconName}
+                disabled={item.disabled}
+                label={item.label}
+                key={item.label}
+              >
+                {item.children}
+              </SidebarItem>
+            )
+        )}
+      {addItems
+        ? addItems.map((item) => (
+            <NavItem className={item.className} key={item.className}>
+              {item.children}
+            </NavItem>
+          ))
+        : null}
     </Nav>
   );
 };
+
 Sidebar.propTypes = {
   sidebarItems: PropTypes.arrayOf(PropTypes.object).isRequired,
+  addItems: PropTypes.arrayOf(PropTypes.object),
+  loading: PropTypes.bool,
+};
+Sidebar.defaultProps = {
+  addItems: [],
+  loading: false,
 };
 
 export default Sidebar;
