@@ -56,11 +56,21 @@ const mockInitialState = {
     active: [],
     inactive: [],
     loading: true,
-    teams: {},
+    teams: {
+      5555: [{}]
+    },
     pages: {},
     userDirectory: {},
     loadingUsernames: true,
     errors: {},
+    search: {
+      results: {}
+    }
+  },
+  profile: {
+    data: {
+      demographics: {}
+    }
   },
 };
 const Wrapper = ({ store, children }) => (
@@ -73,7 +83,7 @@ describe('Allocations Table Cells', () => {
   it('should have a team view link in a cell', () => {
     const { getByText } = render(
       <Wrapper store={mockStore(mockInitialState)}>
-        <Team cell={{ value: { name: 'tacc-team', projectId: 23881 } }} />
+        <Team cell={{ value: { name: 'tacc-team', projectId: 5555 } }} />
       </Wrapper>
     );
     expect(getByText(/View Team/)).toBeInTheDocument();
