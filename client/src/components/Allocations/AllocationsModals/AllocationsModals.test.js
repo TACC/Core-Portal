@@ -51,8 +51,8 @@ describe('View Team Modal', () => {
       },
       profile: {
         data: {
-          demographics: {}
-        }
+          demographics: {},
+        },
       },
     });
     const { getByText } = render(
@@ -113,8 +113,8 @@ describe('View Team Modal', () => {
       },
       profile: {
         data: {
-          demographics: {}
-        }
+          demographics: {},
+        },
       },
     });
 
@@ -159,8 +159,8 @@ describe('View Team Modal', () => {
       },
       profile: {
         data: {
-          demographics: {}
-        }
+          demographics: {},
+        },
       },
     });
 

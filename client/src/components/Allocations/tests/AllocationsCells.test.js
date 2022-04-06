@@ -57,20 +57,20 @@ const mockInitialState = {
     inactive: [],
     loading: true,
     teams: {
-      5555: [{}]
+      5555: [{}],
     },
     pages: {},
     userDirectory: {},
     loadingUsernames: true,
     errors: {},
     search: {
-      results: {}
-    }
+      results: {},
+    },
   },
   profile: {
     data: {
-      demographics: {}
-    }
+      demographics: {},
+    },
   },
 };
 const Wrapper = ({ store, children }) => (
