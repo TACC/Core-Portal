@@ -3,7 +3,7 @@
 }
 
 .member-search-group {
-  width: 70%;
+  width: 85%;
 }
 
 .member-search {
@@ -13,4 +13,5 @@
 
 .add-button {
   composes: c-button--secondary from '../../../styles/components/c-button.css';
+  margin-bottom: 0;
 }

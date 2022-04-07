@@ -49,6 +49,11 @@ describe('View Team Modal', () => {
         },
         errors: {},
       },
+      profile: {
+        data: {
+          demographics: {},
+        },
+      },
     });
     const { getByText } = render(
       <Provider store={testStore}>
@@ -106,6 +111,11 @@ describe('View Team Modal', () => {
         },
         errors: {},
       },
+      profile: {
+        data: {
+          demographics: {},
+        },
+      },
     });
 
     // Render Modal
@@ -145,6 +155,11 @@ describe('View Team Modal', () => {
         },
         errors: {
           teams: { 1234: new Error('Unable to fetch') },
+        },
+      },
+      profile: {
+        data: {
+          demographics: {},
         },
       },
     });
