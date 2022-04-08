@@ -25,12 +25,14 @@ describe('fetchUtil', () => {
     });
 
     expect(fetch).toHaveBeenCalledWith(req, {
-      body: JSON.stringify({}),
-      credentials: 'same-origin',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrf'),
+      fetchParams: {
+        body: JSON.stringify({}),
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': Cookies.get('csrf'),
+        },
+        method: 'POST',
       },
-      method: 'POST',
     });
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(json).toEqual({ hello: 'world' });
