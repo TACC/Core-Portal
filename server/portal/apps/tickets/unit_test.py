@@ -1,4 +1,3 @@
-from requests.api import request
 import pytest
 from django.http import HttpResponse
 from django.http import HttpRequest
@@ -8,6 +7,7 @@ from portal.apps.tickets.utils import get_recaptcha_verification
 @pytest.fixture(autouse=True)
 def mock_render(mocker):
     yield mocker.patch('portal.apps.tickets.views.render', return_value=HttpResponse("OK"))
+
 
 def test_tickets_get(client, authenticated_user):
     response = client.get('/tickets/')
@@ -37,8 +37,9 @@ def test_ticket_create_authenticated_setup_incomplete(client, regular_user):
     response = client.get('/tickets/new/')
     assert response.status_code == 200
 
-def test_get_recaptcha_verification(mocker,requests_mock,regular_user):
-    recaptchaSuccess =  {'success': True, 'challenge_ts': '2021-11-23T17:58:27Z', 'hostname': 'testkey.google.com'}
+
+def test_get_recaptcha_verification(mocker, requests_mock, regular_user):
+    recaptchaSuccess = {'success': True, 'challenge_ts': '2021-11-23T17:58:27Z', 'hostname': 'testkey.google.com'}
     requests_mock.post('https://www.google.com/recaptcha/api/siteverify', json=recaptchaSuccess)
     request = HttpRequest()
     request.method = 'POST'

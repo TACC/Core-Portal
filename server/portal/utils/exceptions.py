@@ -45,6 +45,7 @@ class PortalException(RequestException):
         self.response = response
         self.extra = extra
 
+
 class ApiMethodNotAllowed(PortalException):
     """Custom 405 Method Not Allowed Exception"""
     def __init__(self, extra=None, *args, **kwargs):

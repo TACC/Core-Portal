@@ -349,4 +349,3 @@ class TestAgaveUtils(TestCase):
         file_name = 'file.txt'
         res = AgaveUtils.increment_file_name(self.agave_file_listing, file_name)
         self.assertEqual(res, 'file(1).txt')
-

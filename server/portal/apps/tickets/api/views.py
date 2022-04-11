@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil

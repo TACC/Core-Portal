@@ -11,6 +11,7 @@ from portal.exceptions.api import ApiException
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 def lookup_manager(name):
     """Lookup data depot manager class"""
 

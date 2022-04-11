@@ -1,5 +1,5 @@
-import logging 
-from django.core.management import BaseCommand, CommandError
+import logging
+from django.core.management import BaseCommand
 from django.conf import settings
 from portal.libs.agave.utils import service_account
 from portal.apps.workspace.models import (
@@ -10,6 +10,7 @@ import json
 
 
 logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     """
@@ -29,7 +30,6 @@ class Command(BaseCommand):
         """
         tag = tag + ":"
         return next((tag_value[len(tag):] for tag_value in definition['tags'] if tag_value.startswith(tag)), None)
-
 
     def handle(self, *args, **options):
         if options['metadata']:
@@ -72,11 +72,9 @@ class Command(BaseCommand):
                     app_entry.name = definition['name']
                     app_entry.revision = definition['revision']
                     app_entry.lastRetrieved = definition['id']
-                    
+
                 app_entry.save()
                 logger.info("Imported {}".format(app_entry))
             except Exception:
                 logger.exception("Error importing application")
                 logger.info("Following app could not be imported: {}".format(app))
-
-            
