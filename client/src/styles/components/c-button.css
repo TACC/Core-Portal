@@ -41,8 +41,7 @@ Styleguide Components.Button
 
 /* Base */
 
-.c-button,
-[class*='c-button--'] {
+.c-button {
   --min-width: 75px;
   --mid-width: 110px;
   --max-width: 130px;
