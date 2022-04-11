@@ -59,8 +59,23 @@ Styleguide Components.Button
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
 
-  transition: 0.2s;
+.c-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.c-button:disabled,
+a.c-button--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* WARNING: Opinionated: Add "hand" cursor if not disabled */
+.c-button:not(
+  :disabled,
+  a.c-button--disabled
+) {
+  cursor: pointer;
 }
 
 
@@ -79,45 +94,77 @@ Styleguide Components.Button
   max-width: var(--max-width);
 }
 
-.c-button--primary {
-  color: var(--global-color-primary--xx-light);
-  background-color: var(--global-color-accent--normal);
-  border-color: var(--global-color-accent--normal);
-}
-.c-button--primary:disabled {
-  color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--light);
-  border-color: var(--global-color-primary--light);
-}
-.c-button--primary:not(:disabled):hover {
-  background-color: var(--global-color-accent-muted--dark);
-  border-color: var(--global-color-primary--xx-light); /* as if half pressed */
-}
-.c-button--primary:not(:disabled):active {
-  background-color: var(--global-color-accent-muted--x-dark);
-  border-color: var(--global-color-accent-muted--x-dark);
+/* Modifiers: Types: Primary */
+
+.c-button--primary:not(
+  .c-button:hover,
+  .c-button:focus,
+  .c-button:active
+) {
+  color: #FFFFFF;
+  background-color: #784FE8;
+  border-color: #784FE8;
 }
 
-.c-button--secondary {
-  color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--x-light);
-  border-color: var(--global-color-primary--normal);
+.c-button--primary:hover {
+  color: #FFFFFF;
+  background-color: #6039CC;
+  border-color: #6039CC;
 }
-.c-button--secondary:disabled {
-  color: var(--global-color-primary--dark);
-  background-color: var(--global-color-primary--xx-light);
-  border-color: var(--global-color-primary--normal);
+
+.c-button--primary:focus:not(:active) {
+  color: #FFFFFF;
+  background-color: #784FE8;
+  border-color: #FFFFFF;
+
+  outline: var(--global-border-width--normal) solid #A387ED;
 }
-.c-button--secondary:not(:disabled):hover {
-  color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--light);
-  border-color: var(--global-color-primary--xx-light); /* as if half pressed */
+
+.c-button--primary:active {
+  color: #FFFFFF;
+  background-color: #3D189B;
+  border-color: #6039CC;
+
+  border-width: var(--global-border-width--normal);
+  outline: var(--global-border-width--normal) solid #6039CC;
 }
-.c-button--secondary:not(:disabled):active {
-  color: var(--global-color-primary--x-light);
-  background-color: var(--global-color-primary--dark);
-  border-color: var(--global-color-primary--xx-dark);
+
+/* Modifiers: Types: Secondary */
+
+.c-button--secondary:not(
+  .c-button:hover,
+  .c-button:focus,
+  .c-button:active
+) {
+  color: #222222;
+  background-color: #FFFFFF;
+  border-color: #222222;
 }
+
+.c-button--secondary:hover {
+  color: #222222;
+  background-color: #DBDBDB;
+  border-color: #6039CC;
+}
+
+.c-button--secondary:focus:not(:active) {
+  color: #222222;
+  background-color: #DBDBDB;
+  border-color: #222222;
+
+  outline: var(--global-border-width--thick) solid #A387ED;
+}
+
+.c-button--secondary:active {
+  color: #222222;
+  background-color: #E3D7FD;
+  border-color: #6039CC;
+
+  border-width: var(--global-border-width--normal);
+  outline: var(--global-border-width--normal) solid #6039CC;
+}
+
+/* Modifiers: Types: As Link */
 
 .c-button--as-link {
   color: var(--global-color-accent--normal);
@@ -129,6 +176,7 @@ Styleguide Components.Button
 .c-button--as-link:not(:disabled):hover {
   text-decoration: underline;
 }
+
 
 
 /* Modifiers: Sizes */
