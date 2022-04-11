@@ -5,13 +5,17 @@
 /* FP-545: Move these styles to `_common/Button` */
 /*
 Button
+
 A button that may have icon(s) before and/or after its text.
+
 Override Bootstrap styles. See:
 - [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/)
 - [Bootstrap Buttons](https://getbootstrap.com/docs/4.4/components/buttons/)
+
 .c-button--primary - A primary (expected) user action
 .c-button--secondary - For an optional user action
 .c-button--as-link - A button that visually resembles a link
+
 Markup:
 <main>
     <button class="c-button c-button--secondary">
@@ -31,6 +35,7 @@ Markup:
       Return to Previous Screen
     </button>
 </main>
+
 Styleguide Components.Button
 */
 .c-button {
