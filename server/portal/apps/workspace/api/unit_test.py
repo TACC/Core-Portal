@@ -23,4 +23,4 @@ class TestJobHistoryView(TestCase):
         response = self.client.get("/api/workspace/jobs/{}/history".format(job_uuid))
         self.mock_agave_client.jobs.getHistory.assert_called_with(jobId=job_uuid)
         data = json.loads(response.content)
-        self.assertEqual(data, { "response": "mock_response"})
+        self.assertEqual(data, {"response": "mock_response"})

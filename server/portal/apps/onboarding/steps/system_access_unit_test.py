@@ -19,6 +19,7 @@ def tas_client(mocker):
 def mock_user_allocations(mocker):
     yield mocker.patch('portal.apps.onboarding.steps.system_access.get_allocations', autospec=True)
 
+
 @pytest.fixture
 def system_access_step(settings, regular_user, tas_client, mock_user_allocations):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [

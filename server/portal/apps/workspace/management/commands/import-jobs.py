@@ -1,4 +1,4 @@
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand
 from portal.libs.agave.utils import service_account
 from django.contrib.auth import get_user_model
 from portal.apps.workspace.models import JobSubmission
