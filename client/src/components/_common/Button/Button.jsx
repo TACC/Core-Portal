@@ -44,18 +44,18 @@ const Button = ({
   if (type === 'link' && size) {
     size = '';
     // Component will work, except `size` is ineffectual
-    console.warn('A <Button> with `type="link"` ignores `size` prop.');
+    console.warn('A <Button type="link"> ignores `size` prop.');
   }
   if (type === 'primary' && size === 'small') {
     type = 'secondary';
     // Component will work, except `type` is ineffectual
-    console.error('A <Button> may not be `type="primary"` and `size="small"`. '
-                  + 'Using `type="secondary" instead.');
+    console.error('A <Button type="primary" size="small"> is not allowed. '
+                  + 'Using `type="secondary"` instead.');
   }
   if (type !== 'link' && ! size) {
     size = 'short';
     // Component will work, except `size` is auto-set
-    console.log('A <Button> that is not `type="link"` and has no `size`. '
+    console.debug('A <Button> that is not `type="link"` and has no `size` '
                   + 'is automatically assigned `size="short"`.');
   }
   /* eslint-enable no-console */
