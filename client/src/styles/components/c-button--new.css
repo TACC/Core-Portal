@@ -102,32 +102,32 @@ a.c-button--disabled {
   .c-button:focus,
   .c-button:active
 ) {
-  color: #FFFFFF;
-  background-color: #784FE8;
-  border-color: #784FE8;
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
 }
 
 .c-button--primary:hover {
-  color: #FFFFFF;
-  background-color: #6039CC;
-  border-color: #6039CC;
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--dark);
+  border-color: var(--global-color-accent--dark);
 }
 
 .c-button--primary:focus:not(:active) {
-  color: #FFFFFF;
-  background-color: #784FE8;
-  border-color: #FFFFFF;
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-primary--xx-light);
 
-  outline: var(--global-border-width--normal) solid #A387ED;
+  outline: var(--global-border-width--normal) solid var(--global-color-accent--light);
 }
 
 .c-button--primary:active {
-  color: #FFFFFF;
-  background-color: #3D189B;
-  border-color: #6039CC;
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--x-dark);
+  border-color: var(--global-color-accent--dark);
 
   border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid #6039CC;
+  outline: var(--global-border-width--normal) solid var(--global-color-accent--dark);
 }
 
 /* Modifiers: Types: Secondary */
@@ -137,38 +137,38 @@ a.c-button--disabled {
   .c-button:focus,
   .c-button:active
 ) {
-  color: #222222;
-  background-color: #FFFFFF;
-  border-color: #222222;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--xx-light);
+  border-color: var(--global-color-primary--xx-dark);
 }
 
 .c-button--secondary:hover {
-  color: #222222;
-  background-color: #DBDBDB;
-  border-color: #6039CC;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--light);
+  border-color: var(--global-color-accent--dark);
 }
 
 .c-button--secondary:focus:not(:active) {
-  color: #222222;
-  background-color: #DBDBDB;
-  border-color: #222222;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--light);
+  border-color: var(--global-color-primary--xx-dark);
 
-  outline: var(--global-border-width--thick) solid #A387ED;
+  outline: var(--global-border-width--thick) solid var(--global-color-accent--light);
 }
 
 .c-button--secondary:active {
-  color: #222222;
-  background-color: #E3D7FD;
-  border-color: #6039CC;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--x-light);
+  border-color: var(--global-color-accent--dark);
 
   border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid #6039CC;
+  outline: var(--global-border-width--normal) solid var(--global-color-accent--dark);
 }
 
 /* Modifiers: Types: As Link */
 
 .c-button--as-link {
-  color: var(--global-color-accent--normal);
+  color: var(--global-color-accent--dark);
 
   background: unset;
   border: unset;
