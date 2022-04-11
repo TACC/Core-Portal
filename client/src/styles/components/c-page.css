@@ -40,17 +40,21 @@ ul.c-page-list {
 }
 .c-page-link--always-click::before,
 .c-page-link--always-click::after {
-  --width: calc( var(--item-buffer) + var(--item-border) );
+  --width: var(--item-buffer);
+  --vert-offset: calc( -1 * var(--item-border) );
+  --horz-offset: calc( 100% + var(--item-border) );
 
   content: '';
   width: var(--width);
   position: absolute;
-  top: calc( -1 * var(--item-border) );
-  bottom: calc( -1 * var(--item-border) );
+  top: var(--vert-offset);
+  bottom: var(--vert-offset);
 }
-/* FP-1596: Remove background colors (they were for debugging) */
-.c-page-link--always-click::before { background-color: aliceblue; right: 100% }
-.c-page-link--always-click::after { background-color: lavenderblush; left: 100% }
+.c-page-link--always-click.c-button {
+  overflow: visible; /* overwrite `.c-button` so pseudo elements show */
+}
+.c-page-link--always-click::before { right: var(--horz-offset) }
+.c-page-link--always-click::after { left: var(--horz-offset) }
 
 
 
