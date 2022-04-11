@@ -8,7 +8,7 @@ Styleguide Components.Pagination
 
 
 
-/* Pagination: Variables */
+/* Variables */
 
 .c-page-list {
   --item-width: 2em;
@@ -18,7 +18,7 @@ Styleguide Components.Pagination
 
 
 
-/* Pagination: List */
+/* List */
 
 .c-page-list {
   display: flex;
@@ -32,7 +32,7 @@ ul.c-page-list {
   list-style: none;
 }
 
-/* Pagination: List: Constant Hover */
+/* List: Constant Hover */
 
 .c-page-link--always-click {
   position: relative;
@@ -59,13 +59,13 @@ ul.c-page-list {
 
 
 
-/* Pagination: Item */
+/* Item */
 
 .c-page-item              { margin-inline: var(--item-buffer) }
 .c-page-item:first-child  { margin-left: 0 }
 .c-page-item:last-child   { margin-right: 0 }
 
-/* Pagination: Item: Truncated */
+/* Item: Truncated */
 
 .c-page-item--etcetera {
   min-width: var(--item-width);
@@ -77,13 +77,13 @@ ul.c-page-list {
 
 
 
-/* Pagination: End */
+/* End */
 
 .c-page-end { padding: 4px 12px }
 
 
 
-/* Pagination: Link */
+/* Link */
 
 .c-page-link {
   padding: 5px 0;
