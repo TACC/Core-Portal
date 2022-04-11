@@ -41,19 +41,20 @@ ul.c-page-list {
 .c-page-link--always-click::before,
 .c-page-link--always-click::after {
   --width: var(--item-buffer);
-  --offset: calc( 100% + var(--item-border) );
+  --vert-offset: calc( -1 * var(--item-border) );
+  --horz-offset: calc( 100% + var(--item-border) );
 
   content: '';
   width: var(--width);
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: var(--vert-offset);
+  bottom: var(--vert-offset);
 }
 .c-page-link--always-click.c-button {
   overflow: visible; /* overwrite `.c-button` so pseudo elements show */
 }
-.c-page-link--always-click::before { right: var(--offset) }
-.c-page-link--always-click::after { left: var(--offset) }
+.c-page-link--always-click::before { right: var(--horz-offset) }
+.c-page-link--always-click::after { left: var(--horz-offset) }
 
 
 
