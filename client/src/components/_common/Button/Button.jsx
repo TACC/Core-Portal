@@ -87,7 +87,7 @@ const Button = ({
     >
       {isLoading && (
         <LoadingSpinner
-          placement={styles['over-text']}
+          placement="inline"
           className={styles['loading-over-button']}
         />
       )}

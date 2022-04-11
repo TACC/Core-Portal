@@ -92,7 +92,7 @@ function UIPatternsButton() {
         <Button
           type="primary"
           onClick={onClick}
-          size="large"
+          size="long"
           isLoading={isLoading}
         >
           Click Me!

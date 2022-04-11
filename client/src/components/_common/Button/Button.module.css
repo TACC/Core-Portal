@@ -36,12 +36,10 @@
 .loading-text {
   opacity: 0.3;
 }
-[class*='c-button'] .loading-over-button {
-  position: relative;
-  left: 50%;
-}
-.over-text {
-  width: 1.5rem;
-  height: 1.5rem;
+.root { position: relative }
+.root .loading-over-button {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
