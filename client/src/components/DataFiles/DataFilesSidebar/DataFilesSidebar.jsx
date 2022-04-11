@@ -31,7 +31,7 @@ const DataFilesSidebar = ({ readOnly }) => {
     (state) => state.files.params.FilesListing
   );
   const systems = useSelector(
-    (state) => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
 

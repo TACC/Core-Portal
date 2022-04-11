@@ -10,4 +10,11 @@ describe('Button', () => {
     const el = queryByTestId('no button here');
     expect(el).toBeNull;
   });
+  it('disables button when in loading state', () => {
+    const { queryByText } = render(
+      <Button isLoading={true}>Loading Button</Button>
+    );
+    const el = queryByText('Loading Button');
+    expect(el).toBeDisabled;
+  });
 });

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Icon from '../Icon';
 
 import styles from './Button.module.css';
+import LoadingSpinner from '_common/LoadingSpinner';
 
 export const TYPES = ['', 'primary', 'secondary', 'link'];
 
@@ -26,6 +27,7 @@ const Button = ({
   disabled,
   onClick,
   attr,
+  isLoading,
 }) => {
   function onclick(e) {
     if (disabled) {
@@ -79,22 +81,30 @@ const Button = ({
   return (
     <button
       className={`${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass}`}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
     >
-    {iconNameBefore ?
-      <Icon
-        name={iconNameBefore}
-        className={iconNameBefore ? styles['icon--before'] : ''}
-      ></Icon>
-    : ''}
-      <span>{children}</span>
-    {iconNameAfter ?
-      <Icon
-        name={iconNameAfter}
-        className={iconNameAfter ? styles['icon--after'] : ''}
-      ></Icon>
+      {isLoading && (
+        <LoadingSpinner
+          placement={styles['over-text']}
+          className={styles['loading-over-button']}
+        />
+      )}
+      {iconNameBefore ?
+        <Icon
+          name={iconNameBefore}
+          className={iconNameBefore ? styles['icon--before'] : ''}
+        ></Icon>
+      : ''}
+      <span className={isLoading ? styles['loading-text'] : ''}>
+        {children}
+      </span>
+      {iconNameAfter ?
+        <Icon
+          name={iconNameAfter}
+          className={iconNameAfter ? styles['icon--after'] : ''}
+        ></Icon>
       : ''}
     </button>
   );
@@ -108,6 +118,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   attr: PropTypes.oneOf(ATTRIBUTES),
+  isLoading: PropTypes.bool,
 };
 Button.defaultProps = {
   iconNameBefore: '',
@@ -117,6 +128,7 @@ Button.defaultProps = {
   disabled: false,
   onClick: null,
   attr: 'button',
+  isLoading: false,
 };
 
 export default Button;

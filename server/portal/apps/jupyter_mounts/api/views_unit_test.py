@@ -76,6 +76,11 @@ def test_get(authenticated_user, client, service_account, mock_manager, mock_pro
             "pems": "rw"
         },
         {
+            "path": "/12345/username",
+            "mountPath": "/test/mock_name",
+            "pems": "rw"
+        },
+        {
             "path": "/projects/cep.project-1",
             "mountPath": "/test/My Projects/test",
             "pems": "rw"

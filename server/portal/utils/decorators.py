@@ -5,10 +5,11 @@
 
 import logging
 from functools import wraps
+from django.http import JsonResponse
 from portal.utils.jwt_auth import login_user_agave_jwt
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def agave_jwt_login(func):
@@ -43,3 +44,25 @@ def agave_jwt_login(func):
         return func(request, *args, **kwargs)
 
     return decorated_function
+
+
+def handle_uncaught_exceptions(message):
+    """Decorator to handle any uncaught exceptions and provide a json error response
+
+    If the view does not handle an exception, this decorator provides
+    a json response with a 500 error code.
+
+    :param str message: Error message for the json repsonse
+
+    """
+    def _decorator(fn):
+
+        @wraps(fn)
+        def wrapper(self, *args, **kw):
+            try:
+                return fn(self, *args, **kw)
+            except Exception:
+                logger.exception("Handling uncaught exception")
+                return JsonResponse({'message': message}, status=500)
+        return wrapper
+    return _decorator

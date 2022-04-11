@@ -6,10 +6,12 @@ import configureStore from 'redux-mock-store';
 import DataFilesProjectsList from './DataFilesProjectsList';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import filesFixture from '../fixtures/DataFiles.files.fixture';
 
 const mockStore = configureStore();
 const initialMockState = {
   projects: projectsFixture,
+  files: filesFixture,
   systems: systemsFixture,
 };
 
