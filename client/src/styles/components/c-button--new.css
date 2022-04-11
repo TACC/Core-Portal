@@ -62,21 +62,17 @@ Styleguide Components.Button
   white-space: nowrap;
 }
 
-.c-button:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
-.c-button:disabled,
-a.c-button--disabled {
+.c-button:disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 /* WARNING: Opinionated: Add "hand" cursor if not disabled */
-.c-button:not(
-  :disabled,
-  a.c-button--disabled
-) {
+.c-button:not(:disabled) {
   cursor: pointer;
+}
+
+.c-button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 
