@@ -8,7 +8,7 @@ Styleguide Components.Pagination
 
 
 
-/* Pagination: Variables */
+/* Variables */
 
 .c-page-list {
   --item-width: 2em;
@@ -18,7 +18,7 @@ Styleguide Components.Pagination
 
 
 
-/* Pagination: List */
+/* List */
 
 .c-page-list {
   display: flex;
@@ -32,7 +32,7 @@ ul.c-page-list {
   list-style: none;
 }
 
-/* Pagination: List: Constant Hover */
+/* List: Constant Hover */
 
 .c-page-link--always-click {
   display: flex;
@@ -56,7 +56,7 @@ ul.c-page-list {
 
 
 
-/* Pagination: Item */
+/* Item */
 
 .c-page-item              { margin-inline: var(--item-buffer) }
 .c-page-item:first-child  { margin-left: 0 }
@@ -65,7 +65,7 @@ ul.c-page-list {
 .c-page-item--active { /* SEE `.c-page-link--active` */ }
 .c-page-item--disabled { /* SEE `.c-page-link--disabled` */ }
 
-/* Pagination: Item: Truncated */
+/* Item: Truncated */
 
 .c-page-item--etcetera {
   min-width: var(--item-width);
@@ -76,13 +76,13 @@ ul.c-page-list {
 
 
 
-/* Pagination: End */
+/* End */
 
 .c-page-end { padding: 4px 12px }
 
 
 
-/* Pagination: Link */
+/* Link */
 
 .c-page-link {
   position: relative;
@@ -106,7 +106,7 @@ ul.c-page-list {
   border-color: var(--global-color-primary--xx-dark);
 }
 
-/* Pagination: Link: Active */
+/* Link: Active */
 
 .c-page-link--active,
 .c-page-item--active .c-page-link {
@@ -115,7 +115,7 @@ ul.c-page-list {
   border-color: #784FE8;
 }
 
-/* Pagination: Link: Hover */
+/* Link: Hover */
 
 .c-page-link:hover {
   color: #FFFFFF;
@@ -126,7 +126,7 @@ a.c-page-link:hover {
   text-decoration: none;
 }
 
-/* Pagination: Link: Focus */
+/* Link: Focus */
 
 .c-page-link:focus {
   color: #FFFFFF;
@@ -137,7 +137,7 @@ a.c-page-link:hover {
   outline: var(--global-border-width--x-thick) solid #A387ED;
 }
 
-/* Pagination: Link: Disabled */
+/* Link: Disabled */
 
 .c-page-link:is(:disabled, .c-page-link--disabled) {
   opacity: 0.5;
@@ -153,7 +153,7 @@ a.c-page-link:hover {
 
 
 
-/* Pagination: Link: Narrow First Digit */
+/* Link: Narrow First Digit */
 
 /* To better center numbers with a narrower first digit i.e. 10, 12–20 */
 .c-page-link--narrower-first-digit {
