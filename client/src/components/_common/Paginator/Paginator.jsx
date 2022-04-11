@@ -10,16 +10,14 @@ const PaginatorEtc = () => {
 
 const PaginatorPage = ({ number, callback, current }) => {
   return (
-    <div className={styles['page-root']}>
-      <Button
-        size="small"
-        type={number === current ? 'active' : 'secondary'}
-        className={styles.page}
-        onClick={() => callback(number)}
-      >
-        {number}
-      </Button>
-    </div>
+    <Button
+      size="small"
+      type={number === current ? 'active' : 'secondary'}
+      className={styles['page-root'] + ' ' + styles.page}
+      onClick={() => callback(number)}
+    >
+      {number}
+    </Button>
   );
 };
 
@@ -56,7 +54,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
           .map((_, index) => start + index)
       : [];
   return (
-    <div className={styles.root}>
+    <nav className={styles.root}>
       <Button
         type="link"
         className={styles.endcap}
@@ -89,7 +87,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       >
         <span>Next &gt;</span>
       </Button>
-    </div>
+    </nav>
   );
 };
 
