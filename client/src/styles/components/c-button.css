@@ -1,17 +1,17 @@
-/* FP-546: Some styles are overridden/duplicated by `Workbench.scss` */
+/* WARNING: This file is copied from Portal repo */
+/* TODO: Share source code between CMS, Portal, & User Guide */
+/* SEE: https://github.com/TACC/Core-Portal/blob/main/client/src/styles/components/c-button.css */
+
+/* FP-545: Move these styles to `_common/Button` */
 /*
 Button
-
 A button that may have icon(s) before and/or after its text.
-
 Override Bootstrap styles. See:
 - [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/)
 - [Bootstrap Buttons](https://getbootstrap.com/docs/4.4/components/buttons/)
-
 .c-button--primary - A primary (expected) user action
 .c-button--secondary - For an optional user action
 .c-button--as-link - A button that visually resembles a link
-
 Markup:
 <main>
     <button class="c-button c-button--secondary">
@@ -31,190 +31,108 @@ Markup:
       Return to Previous Screen
     </button>
 </main>
-
 Styleguide Components.Button
 */
-
-
-
-
-
-/* Base */
-
-[class*="c-button"] {
-  --min-width: 75px;
-  --mid-width: 110px;
-  --max-width: 130px;
-}
 .c-button {
-  display: inline-block;
+  /* Normalize child element box sizes */
+  display: flex;
+  /* Align elements horizontally and vertically */
+  align-items: center;
+  justify-content: center;
 
-  border-width: var(--global-border-width--normal);
-  border-style: solid;
-
-  font-weight: 500;
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-
-  /* When possible: @extend %x-truncate--one-line; */
-  /* SEE: https://github.com/tacc-wbomar/Core-Styles/blob/20e4cb7/source/_imports/tools/x-truncate.css#L36-L41 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* OVERWRITE BOOTSTRAP `.btn` */
+  /* FAQ: Vertical padding reduced by 1px each to near button height of design * 1.2 */
+  padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
+  border-radius: 0;
+  border: 1px solid #afafaf;
+  font-weight: 700;
+  /* NOTE: Should set `font-size`, but `.icon`'s `em` adversely changes icon size */
 }
 
-.c-button:active:not(:disabled) {
-  transform: translateY(1px);
+/* Types */
+
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color and border
+           styles are overridden and duplicated by `Workbench.scss` */
+.c-button--primary {
+  @composes: c-button;
+
+  /* OVERWRITE BOOTSTRAP `.btn-primary` */
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border: none;
 }
-
-.c-button:disabled,
-a.c-button--disabled {
-  opacity: 0.5;
-  pointer-events: none;
+.c-button--primary:disabled {
+  color: #48484880;
+  background-color: #c6c6c6;
 }
-/* WARNING: Opinionated: Add "hand" cursor if not disabled */
-.c-button:not(
-  :disabled,
-  a.c-button--disabled
-) {
-  cursor: pointer;
+.c-button--primary:not(:disabled):hover {
+  color: white;
+  background-color: #5f6ac3;
+  border-color: var(--global-color-primary--x-dark);
 }
-
-
-
-
-
-/* Modifiers */
-
-
-/* Modifiers: Types */
-
-.c-button--primary,
-.c-button--secondary {
-  padding: 6px 18px;
-  min-width: var(--min-width);
-  max-width: var(--max-width);
+.c-button--primary:not(:disabled):active {
+  color: white;
+  background-color: #232b66;
+  border-color: var(--global-color-primary--x-dark);
 }
-
-/* Modifiers: Types: Primary */
-
-.c-button--primary:not(
-  .c-button:hover,
-  .c-button:focus,
-  .c-button:active
-) {
-  color: #FFFFFF;
-  background-color: #784FE8;
-  border-color: #784FE8;
-}
-
-.c-button--primary:hover {
-  color: #FFFFFF;
-  background-color: #6039CC;
-  border-color: #6039CC;
-}
-
-.c-button--primary:focus:not(:active) {
-  color: #FFFFFF;
-  background-color: #784FE8;
-  border-color: #FFFFFF;
-
-  outline: var(--global-border-width--normal) solid #A387ED;
-}
-
-.c-button--primary:active {
-  color: #FFFFFF;
-  background-color: #3D189B;
-  border-color: #6039CC;
-
-  border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid #6039CC;
-}
-
-/* Modifiers: Types: Secondary */
-
-.c-button--secondary:not(
-  .c-button:hover,
-  .c-button:focus,
-  .c-button:active
-) {
-  color: #222222;
-  background-color: #FFFFFF;
-  border-color: #222222;
-}
-
-.c-button--secondary:hover {
-  color: #222222;
-  background-color: #DBDBDB;
-  border-color: #6039CC;
-}
-
-.c-button--secondary:focus:not(:active) {
-  color: #222222;
-  background-color: #DBDBDB;
-  border-color: #222222;
-
-  outline: var(--global-border-width--thick) solid #A387ED;
-}
-
-.c-button--secondary:active {
-  color: #222222;
-  background-color: #E3D7FD;
-  border-color: #6039CC;
-
-  border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid #6039CC;
-}
-
-/* Modifiers: Types: As Link */
-
-.c-button--as-link {
-  color: var(--global-color-accent--normal);
-
-  background: unset;
-  border: unset;
-  padding-inline: unset;
-}
-.c-button--as-link:not(:disabled):hover {
-  text-decoration: underline;
-}
-
-
-
-/* Modifiers: Sizes */
-
 .c-button--width-short {
-  width: var(--min-width);
+  width: 68px;
 }
 .c-button--width-medium {
-  width: var(--mid-width);
+  width: 104px;
 }
-.c-button--width-long {
-  width: var(--max-width);
+.c-button--width-large {
+  width: 125px;
 }
 .c-button--size-small {
-  min-width: 0;
-  padding: 3px 9px;
-  line-height: 1;
+  width: 32px;
+  height: 32px;
 }
 
+.c-button--secondary {
+  @composes: c-button;
 
-
-
-
-/* Elements */
-
-.c-button__icon--before,
-.c-button__icon--after {
-  /* … */
+  /* OVERWRITE BOOTSTRAP `.btn-secondary` */
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--x-light);
+  border: var(--global-border--normal);
 }
+.c-button--secondary:disabled {
+  /* OVERWRITE BOOTSTRAP `.btn-secondary:disabled` */
+  /* FP-546: Implementation of this style (which matches design) is pending:
+     - Confirmation from designers (these styles have poor color contrast)
+     - Removal of overly-specific `Workbench.scss` styles (requires FP-546)
+  /*
+  color: var(--global-color-primary--dark);
+  background-color: var(--global-color-primary--light);
+  border: var(--global-color-primary--light);
+  */
+}
+/* WARNING: These styles are NOT defined by Design (origin: DataFiles) — 2020-07-21 */
+.c-button--secondary:not(:disabled):hover {
+  /* OVERWRITE BOOTSTRAP `.btn-secondary:not(:disabled):hover` */
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--normal);
+  border-color: var(--global-color-primary--x-dark);
+}
+
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color
+           styles are overridden and duplicated by `Workbench.scss` */
+.c-button--as-link {
+  @composes: c-button;
+
+  /* OVERWRITE BOOTSTRAP `.btn-link` */
+  color: var(--global-color-accent--normal);
+}
+
+/* Children */
 
 .c-button__icon--before {
-  margin-right: 0.5em;
+  margin-right: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 }
 .c-button__icon--after {
-  margin-left: 0.5em;
+  margin-left: auto; /* this is how to "justify-self" on flex children */
 }
-
 .c-button__text {
   /* … */
 }

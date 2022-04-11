@@ -1,36 +1,36 @@
 .root {
-  composes: c-button from '../../../styles/components/c-button.css';
+  composes: c-button from '../../../styles/components/c-button--new.css';
 }
 
 .primary {
-  composes: c-button--primary from '../../../styles/components/c-button.css';
+  composes: c-button--primary from '../../../styles/components/c-button--new.css';
 }
 .secondary {
-  composes: c-button--secondary from '../../../styles/components/c-button.css';
+  composes: c-button--secondary from '../../../styles/components/c-button--new.css';
 }
 
 .size-small {
-  composes: c-button--size-small from '../../../styles/components/c-button.css';
+  composes: c-button--size-small from '../../../styles/components/c-button--new.css';
 }
 .width-short {
-  composes: c-button--width-short from '../../../styles/components/c-button.css';
+  composes: c-button--width-short from '../../../styles/components/c-button--new.css';
 }
 .width-medium {
-  composes: c-button--width-medium from '../../../styles/components/c-button.css';
+  composes: c-button--width-medium from '../../../styles/components/c-button--new.css';
 }
 .width-long {
-  composes: c-button--width-long from '../../../styles/components/c-button.css';
+  composes: c-button--width-long from '../../../styles/components/c-button--new.css';
 }
 
 .as-link {
-  composes: c-button--as-link from '../../../styles/components/c-button.css';
+  composes: c-button--as-link from '../../../styles/components/c-button--new.css';
 }
 
 .icon--before {
-  composes: c-button__icon--before from '../../../styles/components/c-button.css';
+  composes: c-button__icon--before from '../../../styles/components/c-button--new.css';
 }
 .icon--after {
-  composes: c-button__icon--after from '../../../styles/components/c-button.css';
+  composes: c-button__icon--after from '../../../styles/components/c-button--new.css';
 }
 
 .loading-text {
