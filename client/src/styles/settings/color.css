@@ -17,7 +17,8 @@
        SEE: https://github.com/TACC/Core-Portal/pull/452
             | #707070   "dark"       | #484848   "x-dark"
             | #484848   "x-dark"     | #222222   "xx-dark"
-            | #9D85EF   old "normal" | #7754E8   new "normal"
+            | #9D85EF   old "normal" | #784FE8   new "normal"
+            | #7159E0   deviant      | #784FE8   new "normal"
             | #9D85EF20 old "weak"   | #7754E840 new "weak"
             | #DFDAF5   old "light"  | #7754E840 new "weak"
     */
@@ -31,11 +32,16 @@
   /* ¹ REQ: Use of this color for text may have result darker than design
               (designer approved for accessibile color contrast via FP-1082) */
 
-  /* Distinct Hues */
-  --global-color-accent--normal: #7754e8;
-  --global-color-accent--weak: #7754e840; /* =25% opacity */
-  /* on white, eq. to #DFD7FA */
-  --global-color-accent--alt: #d2cce7;
+  /* Accent Hues */
+  --global-color-accent--x-light: #E3D7FD;
+  --global-color-accent--light: #A387ED;
+  --global-color-accent--normal: #784FE8;
+  --global-color-accent--dark: #6039CC;
+  --global-color-accent--x-dark: #3D189B;
+
+  --global-color-accent--weak: #6039CC40; /* similar to #E3D7FD on #f4f4f4 */
+
+  /* Other Hues */
   --global-color-info--normal: var(--global-color-primary--x-dark);
   --global-color-info--weak: var(--global-color-primary--x-light);
   --global-color-success--normal: #43d130;
@@ -44,7 +50,7 @@
   --global-color-success--alt-weak: var(--global-color-warning--weak);
   --global-color-warning--normal: #c7ce1d;
   --global-color-warning--weak: #c7ce1d20;
-  --global-color-warning--alt: var(--global-color-accent--normal);
+  --global-color-warning--alt: var(--global-color-accent--dark);
   --global-color-warning--alt-weak: var(--global-color-accent--weak);
   --global-color-danger--normal: #eb6e6e;
   --global-color-danger--weak: #eb6e6e20;
