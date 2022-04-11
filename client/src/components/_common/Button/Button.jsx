@@ -35,7 +35,7 @@ const Button = ({
       return;
     }
     if (onClick) {
-      return onclick(e);
+      return onClick(e);
     }
   }
 
