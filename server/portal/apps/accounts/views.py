@@ -101,10 +101,10 @@ def _manage_licenses(request):
     licenses.sort(key=lambda x: x['license_type'])
     license_models.sort(key=lambda x: x.license_type)
 
-    for l, m in zip(licenses, license_models):
+    for license, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
-            l['current_user_license'] = True
-        l['template_html'] = render_to_string(l['details_html'])
+            license['current_user_license'] = True
+        license['template_html'] = render_to_string(license['details_html'])
     return licenses
 
 
