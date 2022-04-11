@@ -25,6 +25,7 @@ function UIPatternsButton() {
               <th scope="col">Normal</th>
               <th scope="col">Disabled</th>
               <th scope="col">Small</th>
+              <th scope="col"><span className="sr-only">Note</span></th>
             </tr>
           </thead>
           <tbody>
@@ -45,6 +46,7 @@ function UIPatternsButton() {
               <td><Button type="link">Button</Button></td>
               <td><Button type="link" disabled>Button</Button></td>
               <td><Button type="link">Button</Button></td>
+              <td><small>A <code>&lt;Button type=&quot;link&quot;&gt;</code> ignores <code>size</code> prop.</small></td>
             </tr>
           </tbody>
         </table>
