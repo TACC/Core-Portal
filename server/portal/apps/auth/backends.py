@@ -10,6 +10,7 @@ from portal.apps.accounts.models import PortalProfile
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 class AgaveOAuthBackend(ModelBackend):
 
     def authenticate(self, *args, **kwargs):
@@ -20,7 +21,7 @@ class AgaveOAuthBackend(ModelBackend):
             base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
 
             logger.info('Attempting login via Agave with token "%s"' %
-                             token[:8].ljust(len(token), '-'))
+                        token[:8].ljust(len(token), '-'))
 
             # TODO make this into an AgavePy call
             response = requests.get('%s/profiles/v2/me' % base_url,

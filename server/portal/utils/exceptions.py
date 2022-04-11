@@ -11,6 +11,7 @@ from requests.models import Response
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+
 class PortalException(RequestException):
     """Base Exception to use across the portal.
 
