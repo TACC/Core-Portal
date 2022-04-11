@@ -12,9 +12,6 @@
 .etcetera {
   composes: c-page-item--etcetera from '../../../styles/components/c-page.css';
 }
-.narrower-first-digit {
-  composes: c-page-link--narrower-first-digit from '../../../styles/components/c-page.css';
-}
 
 .page-root {
   composes: c-page-item from '../../../styles/components/c-page.css';
@@ -23,12 +20,11 @@
 .page {
   composes: c-page-link from '../../../styles/components/c-page.css';
   composes: c-page-link--always-click from '../../../styles/components/c-page.css';
+
+  /* To show `c-page-link--always-click` pseudo elements */
+  overflow: visible; /* overwrite <Button>'s `c-button` */
 }
 .page:global(.btn) {
   border-radius: 0;
   font-size: inherit;
-}
-
-.current {
-  composes: c-page-link--active from '../../../styles/components/c-page.css';
 }

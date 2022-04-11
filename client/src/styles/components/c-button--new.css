@@ -161,6 +161,16 @@ Styleguide Components.Button
   border-color: var(--global-color-primary--xx-dark);
 }
 
+/* Modifiers: Types: Is Active */
+
+.c-button--is-active:not(
+  .c-button:hover,
+  .c-button:focus,
+  .c-button:active
+) {
+  background-color: var(--global-color-accent--x-light);
+}
+
 /* Modifiers: Types: As Link */
 
 .c-button--as-link {

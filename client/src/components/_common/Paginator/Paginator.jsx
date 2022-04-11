@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import PropTypes from 'prop-types';
 import styles from './Paginator.module.scss';
 
@@ -9,15 +9,12 @@ const PaginatorEtc = () => {
 
 
 const PaginatorPage = ({ number, callback, current }) => {
-  const narrowerFirstDigit = number >= 10 && number < 20 && number !== 11;
   return (
     <div className={styles['page-root']}>
       <Button
-        className={`
-          ${styles.page}
-          ${number === current ? styles.current : ''}
-          ${narrowerFirstDigit ? styles['narrower-first-digit'] : ''}
-        `}
+        size="small"
+        type={number === current ? 'active' : 'secondary'}
+        className={styles.page}
         onClick={() => callback(number)}
       >
         {number}
@@ -61,7 +58,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
   return (
     <div className={styles.root}>
       <Button
-        color="link"
+        type="link"
         className={styles.endcap}
         onClick={() => callback(current - 1)} // eslint-disable-line
         disabled={current === 1}
@@ -85,7 +82,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
         <PaginatorPage number={pages} callback={callback} current={current} />
       )}
       <Button
-        color="link"
+        type="link"
         className={styles.endcap}
         onClick={() => callback(current + 1)} // eslint-disable-line
         disabled={current === pages}

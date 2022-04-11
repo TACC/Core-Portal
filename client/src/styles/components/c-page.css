@@ -7,7 +7,7 @@
 .c-page-list {
   --item-width: 2em;
   --item-buffer: 3px;
-  --item-border: var(--global-border-width--thick);
+  --item-border: var(--global-border-width--normal); /* WARNING: assumption */
 }
 
 
@@ -29,22 +29,25 @@ ul.c-page-list {
 /* Pagination: List: Constant Hover */
 
 .c-page-link--always-click {
-  display: flex;
-  flex-direction: row;
+  position: relative;
+  box-sizing: content-box;
 }
 .c-page-link--always-click::before,
 .c-page-link--always-click::after {
-  --width: calc( var(--item-buffer) + var(--item-border) );
+  --width: var(--item-buffer);
+  --offset: calc( 100% + var(--item-border) );
 
   content: '';
   width: var(--width);
   position: absolute;
-  top: calc( -1 * var(--item-border) );
-  bottom: calc( -1 * var(--item-border) );
+  top: 0;
+  bottom: 0;
 }
-/* FP-1596: Remove background colors (they were for debugging) */
-.c-page-link--always-click::before { background-color: aliceblue; right: 100% }
-.c-page-link--always-click::after { background-color: lavenderblush; left: 100% }
+.c-page-link--always-click.c-button {
+  overflow: visible; /* overwrite `.c-button` so pseudo elements show */
+}
+.c-page-link--always-click::before { right: var(--offset) }
+.c-page-link--always-click::after { left: var(--offset) }
 
 
 
@@ -56,16 +59,14 @@ ul.c-page-list {
 .c-page-item:first-child  { margin-left: 0 }
 .c-page-item:last-child   { margin-right: 0 }
 
-.c-page-item--active { /* SEE `.c-page-link--active` */ }
-.c-page-item--disabled { /* SEE `.c-page-link--disabled` */ }
-
 /* Pagination: Item: Truncated */
 
 .c-page-item--etcetera {
   min-width: var(--item-width);
   margin-inline: 2px;
   text-align: center;
-  cursor: default; /* WARNING: Opinionated: Remove "hand" cursor over "..." */
+
+  cursor: default;
 }
 
 
@@ -79,77 +80,7 @@ ul.c-page-list {
 /* Pagination: Link */
 
 .c-page-link {
-  position: relative;
-  display: block;
-
-  padding: 4px;
+  padding: 5px 0;
   min-width: var(--item-width);
   line-height: 1.2;
-
-  border-width: var(--global-border-width--thick);
-  border-style: solid;
-}
-.c-page-link:not(
-  .c-page-link--active,
-  .c-page-item--active .c-page-link
-  .c-page-link:hover,
-  .c-page-link:focus
-) {
-  color: var(--global-color-primary--xx-dark);
-  background-color: var(--global-color-primary--xx-light);
-  border-color: var(--global-color-primary--xx-dark);
-}
-
-/* Pagination: Link: Active */
-
-.c-page-link--active,
-.c-page-item--active .c-page-link {
-  color: #FFFFFF;
-  background-color: #784FE8;
-  border-color: #784FE8;
-}
-
-/* Pagination: Link: Hover */
-
-.c-page-link:hover {
-  color: #FFFFFF;
-  background-color: #6039CC;
-  border-color: #6039CC;
-}
-a.c-page-link:hover {
-  text-decoration: none;
-}
-
-/* Pagination: Link: Focus */
-
-.c-page-link:focus {
-  color: #FFFFFF;
-  border-color: #FFFFFF;
-  background-color: #784FE8;
-
-  outline-offset: calc( var(--global-border-width--x-thick) * 2 );
-  outline: var(--global-border-width--x-thick) solid #A387ED;
-}
-
-/* Pagination: Link: Disabled */
-
-.c-page-link:is(:disabled, .c-page-link--disabled) {
-  opacity: 0.5;
-}
-/* WARNING: Opinionated: Add "hand" cursor if not disabled */
-.c-page-link:not(
-  :disabled,
-  .c-page-link--disabled,
-  .c-page-item--disabled .c-page-link
-) {
-  cursor: pointer;
-}
-
-
-
-/* Pagination: Link: Narrow First Digit */
-
-/* To better center numbers with a narrower first digit i.e. 10, 12–20 */
-.c-page-link--narrower-first-digit {
-  padding-inline: 3px 5px;
 }
