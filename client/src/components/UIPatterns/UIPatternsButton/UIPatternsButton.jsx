@@ -25,7 +25,7 @@ function UIPatternsButton() {
               <th scope="col">Normal</th>
               <th scope="col">Disabled</th>
               <th scope="col">Small</th>
-              <th scope="col"><span className="sr-only">Note</span></th>
+              <th scope="col"><small>Note</small></th>
             </tr>
           </thead>
           <tbody>
@@ -34,12 +34,14 @@ function UIPatternsButton() {
               <td><Button type="primary">Button</Button></td>
               <td><Button type="primary" disabled>Button</Button></td>
               <td><Icon name="no-alert">not supported</Icon></td>
+              <td></td>
             </tr>
             <tr>
               <td>Secondary</td>
               <td><Button type="secondary">Button</Button></td>
               <td><Button type="secondary" disabled>Button</Button></td>
               <td><Button type="secondary" size="small">Button</Button></td>
+              <td></td>
             </tr>
             <tr className={styles['link']}>
               <td>as Link</td>
