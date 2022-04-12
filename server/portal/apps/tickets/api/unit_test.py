@@ -71,7 +71,7 @@ def test_tickets_create_missing_required_description_or_subject(client, authenti
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_tickets_create_missing_required_description_or_subject(client, regular_user, mock_rtutil):
+def test_tickets_create_missing_required_email(client, regular_user, mock_rtutil):
     # missing user email for unauthenticated user
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
