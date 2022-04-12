@@ -3,6 +3,7 @@ from django.utils.six.moves import input
 from django.conf import settings
 import elasticsearch
 from elasticsearch_dsl import Index
+from elasticsearch_dsl.connections import connections  # noqa: F401
 from portal.libs.elasticsearch.indexes import setup_files_index
 
 
