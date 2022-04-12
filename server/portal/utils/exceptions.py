@@ -2,14 +2,8 @@
 .. module:: portal.utils.exceptions
    :synopsis: Exceptions used across the portal
 """
-
-import logging
 from requests.exceptions import RequestException
 from requests.models import Response
-
-#pylint: disable=invalid-name
-logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 
 class PortalException(RequestException):

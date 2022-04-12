@@ -6,9 +6,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from portal.apps.accounts.models import PortalProfile
 
-#pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 
 class AgaveOAuthBackend(ModelBackend):

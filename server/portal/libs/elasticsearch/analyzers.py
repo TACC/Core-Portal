@@ -5,9 +5,9 @@
 import logging
 from elasticsearch_dsl import analyzer, token_filter, tokenizer
 
-#pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+
 
 path_analyzer = analyzer('path_analyzer',
                          tokenizer=tokenizer('path_hierarchy'))

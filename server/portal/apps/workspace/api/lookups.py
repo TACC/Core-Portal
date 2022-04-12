@@ -7,9 +7,8 @@ import logging
 from django.conf import settings
 from portal.exceptions.api import ApiException
 
-#pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 
 def lookup_manager(name):
