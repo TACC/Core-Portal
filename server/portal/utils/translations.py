@@ -34,7 +34,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
         return None
 
     # Have to make a storage system map -> jupyter mount point map with portal-home-{username} keys replaced
-    user_replace = lambda k: k.replace("{username}", username)
+    user_replace = lambda k: k.replace("{username}", username)  # noqa: E731
     system_map = {
         user_replace(k): user_replace(v) for (k, v) in portal_jupyter_system_map.items()
     }
