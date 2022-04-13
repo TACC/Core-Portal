@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Message } from '_common';
 
-import './IntroMessage.module.css';
+import styles from './IntroMessage.module.css';
 
 /**
  * Whether the name is of a known intro message
@@ -53,8 +53,7 @@ function IntroMessage({ children, className, messageName }) {
       type="info"
       scope="section"
       canDismiss
-      styleName="root"
-      className={className}
+      className={`${styles.root} ${className}`}
       isVisible={isVisible}
       onDismiss={onDismiss}
     >
