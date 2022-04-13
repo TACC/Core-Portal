@@ -3,30 +3,11 @@ import PropTypes from 'prop-types';
 import Message from '_common/Message';
 
 /**
- * Show an event-based message to the user
+ * Show a section/page-specific event-based message to the user
  * @example
- * // Basic usage
- * <SectionMessage type="warning">Uh oh.</Section>
- * @example
- * // Manage onDismiss via props
- * // CAVEAT: Available through `<Message>` but (maybe) not `<SectionMessage>`
- * ...
- * const [isVisible, setIsVisible] = useState(...);
- *
- * const onDismiss = useCallback(() => {
- *   setIsVisible(!isVisible);
- * }, [isVisible]);
- *
- * return (
- *   <Message
- *     type="warning"
- *     isVisible={isVisible}
- *     onDismiss={onDismiss}
- *   >
- *     Uh oh.
- *   </Message>
- * );
- * ...
+ * // basic usage
+ * <SectionMessage type="warning">Uh oh.</SectionMessage>
+ * @see _common/Message
  */
 const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);

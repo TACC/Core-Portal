@@ -57,10 +57,27 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
 
 /**
  * Show an event-based message to the user
- * @todo Document examples
  * @example
- * // Blah blah…
- * <Sample jsx>
+ * // basic usage
+ * <Message type="error" scope="inline">Invalid content.</Message>
+ * @example
+ * // manage dismissal and visibility
+ * const [isVisible, setIsVisible] = useState(...);
+ *
+ * const onDismiss = useCallback(() => {
+ *   setIsVisible(!isVisible);
+ * }, [isVisible]);
+ *
+ * return (
+ *   <SectionMessage
+ *     type="warning"
+ *     isVisible={isVisible}
+ *     onDismiss={onDismiss}
+ *   >
+ *     Uh oh.
+ *   </SectionMessage>
+ * );
+ * ...
  */
 const Message = ({
   ariaLabel,

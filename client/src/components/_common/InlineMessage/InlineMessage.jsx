@@ -2,11 +2,11 @@ import React from 'react';
 import Message from '_common/Message';
 
 /**
- * Show an event-based message to the user
- * @todo Document examples
+ * Show a component-specific event-based message to the user
  * @example
- * // Blah blah…
- * <Sample jsx>
+ * // basic usage
+ * <InlineMessage type="success">Task complete.</InlineMessage>
+ * @see _common/Message
  */
 const InlineMessage = (props) => {
   // Override default props
