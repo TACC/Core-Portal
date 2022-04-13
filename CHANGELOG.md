@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2022-03-22: Hidden Data Files Systems; Security Updates; Bugfixes
+
+### Added
+
+- FP-1311: Loading Icon for _common Button React Component (#603)
+- FP-1541: [A2CPS] Add hidden flag option to data files storage systems (#608)
+
+### Changed
+
+- FP-1533: [A2CPS] Use User Client for SystemCreationStep (#607)
+- FP-1549: Update node to LTS (v16.x) (#611)
+
+### Fixed
+
+- FP-1154: Copy Modal default destination storage system fix (#570)
+- FP-1528: Recursive indexer deletes documents it shouldn't (#599)
+- FP-1339: Ticket Attachment Cell Hover Underlines When Not over Link (#602)
+- FP-1536: Paginator endcaps have different styles (#604)
+- FP-1540: Hotfix: Update ES to Fix Security Issue (#606)
+- FP-1430: Output location disappears after clicking on View details link (#609)
+
+## [2.13.0] - 2022-02-24: Component Design Enhancements; Onboarding and other bugfixes
+
+### Changed
+
+- task/FP-200: Trash Modal: Official Design (#549)
+- FP-545: Create _common Button React Component (#584)
+
+### Fixed
+
+- FP-1479: Site Search WEB results should be purple (#587)
+- FP-1460: Resolve dependabot alerts (#588)
+- FP-1503: Fix onboarding; Remove unnecessary FETCH_AUTHENTICATED_USER dispatch (#595)
+- FP-1428: Fix job history error (#589)
+- FP-1514: Fix project membership step to handle allocation-less projects (#596)
+
 ## [2.12.1] - 2022-01-18: Fix anonymous views
 
 ### Fixed
@@ -578,7 +614,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.12.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.14.0
+[2.13.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.13.0
 [2.12.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.1
 [2.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.12.0
 [2.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.1

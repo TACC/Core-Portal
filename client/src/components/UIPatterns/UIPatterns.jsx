@@ -7,7 +7,9 @@ import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
 import UIPatternsPill from './UIPatternsPill';
 import UIPatternsShowMore from './UIPatternsShowMore';
 import UIPatternsPaginator from './UIPatternsPaginator';
+import UIPatternsButton from './UIPatternsButton';
 import styles from './UIPatterns.module.scss';
+import UIPatternsSidebar from './UIPatternsSidebar';
 
 function UIPatterns() {
   return (
@@ -44,6 +46,14 @@ function UIPatterns() {
           <div className={styles['list-item']}>
             <h6>Paginator</h6>
             <UIPatternsPaginator />
+          </div>
+          <div className={styles['list-item']}>
+            <h6>Button</h6>
+            <UIPatternsButton />
+          </div>
+          <div className={styles['list-item']}>
+            <h6>Sidebar</h6>
+            <UIPatternsSidebar />
           </div>
         </>
       }

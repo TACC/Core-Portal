@@ -27,18 +27,6 @@ def test_manager(tas_mock, regular_user_with_underscore):
 
 
 @pytest.fixture
-def mock_service_account(mocker):
-    mock = mocker.patch('portal.apps.accounts.managers.user_systems.service_account')
-    # Provide the return_value as a fixture, since the service_account
-    # function is always called to create an agave client anyway.
-    # Provides syntactic sugar:
-    #   mock_service_account.systems.get.return_value = "mock"
-    # instead of:
-    #   mock_service_account.return_value.systems.get.return_value = "mock"
-    yield mock.return_value
-
-
-@pytest.fixture
 def mock_404(monkeypatch):
     mock_error = HTTPError()
     monkeypatch.setattr(mock_error, 'response', MagicMock(status_code=404))
@@ -63,26 +51,28 @@ def test_lookup_methods(test_manager):
     assert test_manager.get_private_directory() == '01234/user_name'
 
 
-def test_setup_private_system_exists(test_manager, mock_service_account):
+def test_setup_private_system_exists(test_manager, regular_user_with_underscore):
+    client = regular_user_with_underscore.agave_oauth.client
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         system = json.load(f)
-        mock_service_account.systems.get.return_value = system
+        client.systems.get.return_value = system
         assert test_manager.setup_private_system().id == system['id']
 
 
-def test_setup_private_system(test_manager, mock_service_account, regular_user_with_underscore, mock_404, monkeypatch):
+def test_setup_private_system(test_manager, regular_user_with_underscore, mock_404, monkeypatch):
+    client = regular_user_with_underscore.agave_oauth.client
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         system = json.load(f)
     # Mock all the service functions
-    mock_service_account.systems.get.side_effect = mock_404
-    system_definition = StorageSystem.from_dict(mock_service_account, system)
+    client.systems.get.side_effect = mock_404
+    system_definition = StorageSystem.from_dict(client, system)
     mock_get_system_definition = MagicMock(return_value=system_definition)
     monkeypatch.setattr(test_manager, 'get_system_definition', mock_get_system_definition)
 
     # Run the test
     assert test_manager.setup_private_system().id == system_definition.id
 
-    mock_service_account.systems.updateRole.assert_called_with(
+    client.systems.updateRole.assert_called_with(
         body={'role': "OWNER", 'username': regular_user_with_underscore.username},
         systemId=system_definition.id)
     system_key = SSHKeys.objects.all()[0]
@@ -93,8 +83,9 @@ def test_setup_private_system(test_manager, mock_service_account, regular_user_w
     assert key_object.system == system['id']
 
 
-def test_get_system_definition(test_manager, mock_service_account, mock_404):
-    mock_service_account.systems.get.side_effect = mock_404
+def test_get_system_definition(test_manager, regular_user_with_underscore, mock_404):
+    client = regular_user_with_underscore.agave_oauth.client
+    client.systems.get.side_effect = mock_404
     system = test_manager.get_system_definition("public_key", "private_key")
     assert system.name == "frontera.home.user-name"
     assert system.storage.host == "frontera.tacc.utexas.edu"

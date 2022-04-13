@@ -76,7 +76,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       )}
       <Button
         color="link"
-        className={styles.endca}
+        className={styles.endcap}
         onClick={() => callback(current + 1)} // eslint-disable-line
         disabled={current === pages}
       >
