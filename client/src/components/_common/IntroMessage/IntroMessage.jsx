@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Message } from '_common';
+import { SectionMessage } from '_common';
 
 import styles from './IntroMessage.module.css';
 
@@ -48,17 +48,16 @@ function IntroMessage({ children, className, messageName }) {
   }, [isVisible]);
 
   return (
-    <Message
+    <SectionMessage
       aria-label={messageName}
       type="info"
-      scope="section"
       canDismiss
       className={`${styles.root} ${className}`}
       isVisible={isVisible}
       onDismiss={onDismiss}
     >
       {children}
-    </Message>
+    </SectionMessage>
   );
 }
 IntroMessage.propTypes = {
