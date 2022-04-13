@@ -18,7 +18,7 @@ export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [teamModal, setTeamModal] = useState(false);
   const [manageModal, setManageModal] = useState(false);
-  const { projectId } = value;
+  const { projectId, name } = value;
   return (
     <>
       <Button
@@ -51,6 +51,7 @@ export const Team = ({ cell: { value } }) => {
       <AllocationsManageTeamModal
         isOpen={manageModal}
         projectId={projectId}
+        projectName={name}
         toggle={() => setManageModal(!manageModal)}
         viewToggle={() => {
           dispatch({

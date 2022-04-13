@@ -115,6 +115,7 @@ const AllocationsManageTeamModal = ({
   isOpen,
   toggle,
   projectId,
+  projectName,
   viewToggle,
 }) => {
   const dispatch = useDispatch();
@@ -122,6 +123,7 @@ const AllocationsManageTeamModal = ({
   const { teams, loadingUsernames, search } = useSelector(
     (state) => state.allocations
   );
+  //const projectName = useSelector(state => state.allocations
   useEffect(() => {
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
@@ -138,6 +140,7 @@ const AllocationsManageTeamModal = ({
         payload: {
           projectId,
           id: newUser.user.username,
+          projectName,
         },
       });
     },
