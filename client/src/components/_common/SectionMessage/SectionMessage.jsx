@@ -11,31 +11,38 @@ import Message from '_common/Message';
  */
 const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);
+  const autoManageVisible = (props.canDismiss && props.isVisible === undefined);
+  const autoManageDismiss = (props.canDismiss && props.isVisible === undefined);
 
-  // Manage visibility
-  const onDismiss = useCallback(() => {
-    setIsVisible(!isVisible);
-    props.onDismiss();
-  }, [isVisible]);
+  function onDismiss() {
+    if ( autoManageVisible ) {
+      setIsVisible( ! isVisible);
+    }
+    if ( ! autoManageDismiss ) {
+      props.onDismiss();
+    }
+  }
 
   // Override default props
-  const messageProps = {
+  let messageProps = {
     ...Message.defaultProps,
     ...props,
-    isVisible,
-    onDismiss,
+    onDismiss: onDismiss,
     scope: 'section',
   };
+  if ( autoManageVisible ) {
+    messageProps.isVisible = isVisible;
+  }
+  if ( autoManageDismiss ) {
+    messageProps.onDismiss = onDismiss;
+  }
 
   // Avoid manually syncing <Message>'s props
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Message {...messageProps} />;
 };
-SectionMessage.propTypes = {
-  ...Message.propTypes,
-  isVisible: PropTypes.bool,
-  onDismiss: PropTypes.func,
-};
-SectionMessage.defaultProps = Message.defaultProps;
+SectionMessage.propTypes = Message.propTypes;
+let { isVisible, onDismiss, ...defaultProps } = Message.defaultProps;
+SectionMessage.defaultProps = defaultProps;
 
 export default SectionMessage;
