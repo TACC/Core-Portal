@@ -43,7 +43,9 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.id === action.payload.job.id ? action.payload.job : job
+          job.id === action.payload.job.id
+            ? { ...action.payload.job, outputLocation: job.outputLocation }
+            : job
         ),
       };
     case 'JOBS_LIST_ERROR':
