@@ -22,18 +22,12 @@ describe('SystemRoleSelector', () => {
 
     renderComponent(
       <SystemRoleSelector projectId="CEP-000" username="testuser" />,
-      mockStore({})
+      mockStore({authenticatedUser: {user: {username: 'testuser'}}})
     );
     expect(await screen.findByTestId('loading-spinner')).toBeDefined();
-
     await waitFor(async () => {
-      const query = await screen.findByDisplayValue('GUEST');
+      const query = await screen.findByText('GUEST');
       expect(query).toBeDefined();
-
-      const selector = await screen.findByTestId('selector');
-      fireEvent.change(selector, { target: { value: 'USER' } });
-      expect(await screen.findByDisplayValue('USER')).toBeDefined();
-      expect(await screen.findByText('Update')).toBeDefined();
     });
   });
 });

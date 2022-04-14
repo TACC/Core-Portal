@@ -98,19 +98,6 @@ const DataFilesProjectMembers = ({
   const columns = [
     memberColumn,
     {
-      Header: 'Permissions',
-      accessor: 'user.username',
-      id: 'project-role',
-      className: 'project-members__cell',
-      Cell: projectId
-        ? (el) => (
-            <ProjectRoleSelector projectId={projectId} username={el.value} />
-          )
-        : (el) => (
-            <span>{mapAccessToRoles(el.row.original.access).projectRole}</span>
-          ),
-    },
-    {
       Header: 'Role',
       accessor: 'user.username',
       id: 'role',

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useQuery, useMutation } from 'react-query';
+import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
 import { Button } from 'reactstrap';
+import styles from '../DataFilesProjectMembers.module.scss';
 import LoadingSpinner from '_common/LoadingSpinner';
 
 const getSystemRole = async (projectId, username) => {
@@ -44,6 +46,15 @@ const useSystemRole = (projectId, username) => {
 };
 
 const SystemRoleSelector = ({ projectId, username }) => {
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+  const { query: authenticatedUserQuery } = useSystemRole(
+    projectId,
+    authenticatedUser
+  );
+  const currentUserRole = authenticatedUserQuery.data?.role;
+
   const {
     query: { data, isLoading, isFetching, error },
     mutation: { mutate: setSystemRole, isLoading: isMutating },
@@ -52,24 +63,28 @@ const SystemRoleSelector = ({ projectId, username }) => {
   const [selectedRole, setSelectedRole] = useState(data?.role);
   useEffect(() => setSelectedRole(data?.role), [data?.role]);
 
-  if (isLoading) return <LoadingSpinner placement="inline" />;
+  if (isLoading || authenticatedUserQuery.isLoading)
+    return <LoadingSpinner placement="inline" />;
   if (error) return <span>Error</span>;
-  if (['ADMIN', 'OWNER'].includes(data.role)) return <span>{data.role}</span>;
+  if (data.role === 'OWNER' || !['OWNER', 'ADMIN'].includes(currentUserRole))
+    return <span>{data.role}</span>;
   return (
     <div style={{ display: 'inline-flex' }}>
       <DropdownSelector
         value={selectedRole}
         onChange={(e) => setSelectedRole(e.target.value)}
       >
+        {username !== authenticatedUser && <option value="ADMIN">ADMIN</option>}
         <option value="USER">USER</option>
         <option value="GUEST">GUEST</option>
       </DropdownSelector>
       {data.role !== selectedRole && !isFetching && (
         <Button
-          className="data-files-btn"
+          style={{ marginLeft: '5px' }}
+          className={styles['ownership-button']}
           onClick={() => setSystemRole(selectedRole)}
         >
-          {isMutating ? <LoadingSpinner placement="inline" /> : 'Update'}
+          Update
         </Button>
       )}
     </div>

@@ -106,7 +106,7 @@ const DataFilesManageProjectModal = () => {
   return (
     <div className={styles.root}>
       <Modal
-        size="xl"
+        size="lg"
         isOpen={isOpen}
         toggle={toggle}
         className="dataFilesModal"
