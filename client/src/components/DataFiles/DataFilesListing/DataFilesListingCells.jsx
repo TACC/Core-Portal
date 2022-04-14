@@ -17,7 +17,9 @@ export const CheckboxHeaderCell = () => {
   return (
     <Checkbox
       isChecked={allSelected}
-      role="button"
+      id="FileCheckboxHeader"
+      role="checkbox"
+      aria-label="select all folders and files"
       tabIndex={0}
       onClick={selectAll}
       onKeyDown={handleKeyPress}
