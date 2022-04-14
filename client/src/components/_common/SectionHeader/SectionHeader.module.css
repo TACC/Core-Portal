@@ -15,6 +15,10 @@
   border-bottom: var(--global-border-width--normal) solid
     var(--global-color-primary--dark);
 }
+/* FP-546: Remove this because <Button> handles font-size */
+.root > a:global(.btn) {
+  font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
+}
 
 /* Elements */
 
