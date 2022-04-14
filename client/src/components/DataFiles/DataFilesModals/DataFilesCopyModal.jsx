@@ -49,7 +49,7 @@ const DataFilesCopyModal = React.memo(() => {
 
   const onOpened = () => {
     fetchListing({
-      ...params
+      ...params,
     });
   };
 
