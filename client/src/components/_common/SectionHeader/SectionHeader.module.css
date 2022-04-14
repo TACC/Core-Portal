@@ -18,6 +18,12 @@
 /* FP-546: Remove this because <Button> handles font-size */
 .root > a:global(.btn) {
   font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
+  border-radius: 0; /* overwrite bootstrap */
+
+  /* Copied from FP-1491 / #598 */
+  min-width: 0;
+  padding: 3px 9px;
+  line-height: 1;
 }
 
 /* Elements */
