@@ -49,9 +49,7 @@ const DataFilesCopyModal = React.memo(() => {
 
   const onOpened = () => {
     fetchListing({
-      api: 'tapis',
-      scheme: 'private',
-      system: systems[0].system,
+      ...params
     });
   };
 
