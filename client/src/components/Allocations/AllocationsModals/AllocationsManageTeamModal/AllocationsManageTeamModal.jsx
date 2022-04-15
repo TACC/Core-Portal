@@ -1,8 +1,17 @@
 import React, { useCallback, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, Table, Button } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Table,
+  Button,
+  Row,
+  Col,
+} from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, UserSearchbar, Message } from '_common';
+import { has } from 'lodash';
 import styles from './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
@@ -120,10 +129,9 @@ const AllocationsManageTeamModal = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { teams, loadingUsernames, search } = useSelector(
+  const { teams, loadingUsernames, search, errors } = useSelector(
     (state) => state.allocations
   );
-  //const projectName = useSelector(state => state.allocations
   useEffect(() => {
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
@@ -132,6 +140,8 @@ const AllocationsManageTeamModal = ({
 
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
+
+  const error = has(errors.teams, projectId);
 
   const onAdd = useCallback(
     (newUser) => {
@@ -180,7 +190,13 @@ const AllocationsManageTeamModal = ({
           placeholder="Search by username, email, or last name"
         />
         <div className={styles.listingWrapper}>
-          {isLoading ? (
+          {error ? (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
+                <span>Unable to retrieve team data.</span>
+              </Col>
+            </Row>
+          ) : isLoading ? (
             <LoadingSpinner />
           ) : (
             <AllocationsManageTeamTable
