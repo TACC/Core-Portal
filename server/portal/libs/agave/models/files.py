@@ -118,7 +118,7 @@ class BaseFile(BaseAgaveResource):
 
     def __repr__(self):
         return '<{}: {}/{}>'.format(self.__class__.__name__,
-                                     self.system, self.path)
+                                    self.system, self.path)
 
     @property
     def agave_uri(self):
@@ -475,8 +475,7 @@ class BaseFile(BaseAgaveResource):
             listing = cls(client=client, **list_result[0])
             if listing.type == 'dir' or offset:
                 # directory names display as "/" from API
-                listing._children = [cls(client=client, **f)
-                                    for f in list_result[1:]]
+                listing._children = [cls(client=client, **f) for f in list_result[1:]]
 
         listing.name = os.path.basename(listing.path)
         return listing

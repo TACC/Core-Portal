@@ -11,9 +11,8 @@ from portal.libs.elasticsearch.docs.base import (IndexedFile,
                                                  IndexedProject)
 from portal.libs.elasticsearch.analyzers import file_query_analyzer
 
-#pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 
 def setup_indexes(doc_type, reindex=False, force=False):
