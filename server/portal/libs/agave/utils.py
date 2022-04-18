@@ -220,7 +220,7 @@ def text_preview(url):
             return content
         else:
             raise ValueError("File does not contain text")
-    except UnicodeDecodeError as e:
+    except UnicodeDecodeError:
         logger.debug("Unable to decode file/contains non-ascii characters")
         raise ValueError("File does not contain text")
 
