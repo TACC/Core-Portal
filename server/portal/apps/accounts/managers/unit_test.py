@@ -2,7 +2,7 @@ from django.test import (
     TestCase,
     override_settings
 )
-from mock import MagicMock, patch, ANY
+from mock import MagicMock, patch
 from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.accounts.managers.accounts import add_pub_key_to_resource, setup
 from portal.apps.accounts.managers.ssh_keys import KeysManager

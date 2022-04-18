@@ -557,4 +557,3 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
-   

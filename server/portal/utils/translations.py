@@ -1,8 +1,10 @@
 import logging
 import os
-import urllib.request, urllib.parse, urllib.error
-import copy
+import urllib.request
+import urllib.parse
+import urllib.error
 from urllib.parse import urlparse
+import copy
 from django.conf import settings
 
 
@@ -32,9 +34,9 @@ def get_jupyter_url(system, path, username, is_dir=False):
         return None
 
     # Have to make a storage system map -> jupyter mount point map with portal-home-{username} keys replaced
-    user_replace = lambda k : k.replace("{username}", username)
+    user_replace = lambda k: k.replace("{username}", username)  # noqa: E731
     system_map = {
-        user_replace(k) : user_replace(v) for (k, v) in portal_jupyter_system_map.items()
+        user_replace(k): user_replace(v) for (k, v) in portal_jupyter_system_map.items()
     }
 
     # Check to see that the request file manager is configured to a Jupyter mount point
@@ -49,7 +51,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
     action = "/edit"
 
     # If the filename ends with .ipynb, the action is to open as /notebooks
-    _ , ext = os.path.splitext(path)
+    _, ext = os.path.splitext(path)
     if ext == ".ipynb":
         action = "/notebooks"
 
@@ -64,6 +66,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
         system=system_map[system],
         path=path
     )
+
 
 def url_parse_inputs(job):
     """
@@ -81,7 +84,7 @@ def url_parse_inputs(job):
                 job['inputs'][key] = urllib.parse.quote(parsed.path)
         else:
             # If array, replace it with new array where each element was parsed
-            parsed_values = [ ]
+            parsed_values = []
             for input in value:
                 parsed = urlparse(input)
                 input = '{}://{}{}'.format(

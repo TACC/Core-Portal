@@ -83,7 +83,7 @@ class Roles(object):
     def to_dict(self):
         """Dict representation of Roles."""
 
-        roles= {}
+        roles = {}
         for role in self.roles:
             roles[role.username] = role.role
 

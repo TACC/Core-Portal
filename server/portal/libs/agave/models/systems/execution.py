@@ -99,7 +99,7 @@ class ExecutionSystem(BaseSystem):
         """Validate self.type"""
         if self.type != BaseSystem.TYPES.EXECUTION:
             raise ValidationError(
-                "Execution system type must be {execution_type}".format(
+                "Execution system type must be {storage_type}".format(
                     storage_type=BaseSystem.TYPES.EXECUTION
                 )
             )
