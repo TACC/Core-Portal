@@ -187,8 +187,11 @@ const AllocationsManageTeamModal = ({
           searchDisable={isLoading}
           onChange={onChange}
           searchResults={search.results}
-          placeholder="Search by username, email, or last name"
+          placeholder=""
         />
+        <i className={styles['help-text']}>
+          Search by entering the full username, email, or last name.
+        </i>
         <div className={styles.listingWrapper}>
           {error ? (
             <Row style={{ height: '50vh' }}>
