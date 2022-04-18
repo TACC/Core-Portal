@@ -189,11 +189,9 @@ const AllocationsManageTeamModal = ({
           searchResults={search.results}
           placeholder=""
         />
-        <div className={styles['help-text']}>
-          <span>
-            <i>Search by entering the full username, email, or last name.</i>
-          </span>
-        </div>
+        <i className={styles['help-text']}>
+          Search by entering the full username, email, or last name.
+        </i>
         <div className={styles.listingWrapper}>
           {error ? (
             <Row style={{ height: '50vh' }}>
