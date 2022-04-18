@@ -24,7 +24,7 @@ function Dashboard() {
         </Link>
       }
       contentClassName={styles['panels']}
-      contentLayoutName="twoColumnUnequal"
+      contentLayoutName="twoColumn"
       contentShouldScroll
       content={
         <>
