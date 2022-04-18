@@ -82,9 +82,7 @@ jobs:
     - name: Server-Side Linting
       run: |
         cd server
-        git fetch origin "+refs/heads/main:refs/remotes/origin/main"
-        git diff -U0 origin/main..HEAD | poetry run flake8 --diff
-#         poetry run pylint --rcfile=server/.pylintrc $(git diff origin/main..HEAD --name-only "*.py")
+        poetry run flake8
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-18.04

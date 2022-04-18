@@ -20,18 +20,19 @@ class Command(BaseCommand):
     help = (
         'Force system creation via keyservice for a given user'
     )
+
     def add_arguments(self, parser):
         parser.add_argument('-u', '--username', type=str, required=True, help="Username")
 
     def handle(self, *args, **options):
         """Handle command."""
         username = options.get('username')
-        
+
         user, created = get_user_model().objects.get_or_create(username=username)
 
         if created:
             logger.warn("Username {} does not exist locally, creating a virtual user".format(username))
-        
+
         storage_systems = get_user_storage_systems(
             user.username,
             settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS

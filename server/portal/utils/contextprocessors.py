@@ -17,7 +17,7 @@ def analytics(request):
 
 def messages(request):
     """Overwritting messages to remove duplicates.
-    
+
     Same as the default messages middleware, but it is duplicate-message aware,
     preventing duplicate messages with the same content from being displayed.
     Args:
@@ -37,6 +37,7 @@ def messages(request):
         'messages': unique_msgs,
         'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
     }
+
 
 def debug(request):
     context = {}

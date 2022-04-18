@@ -1,7 +1,6 @@
 import urllib
 import os
 import io
-import datetime
 from django.conf import settings
 from requests.exceptions import HTTPError
 import logging
@@ -518,7 +517,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
                 error = "Unable to show preview."
         else:
             error = "File too large to preview in this window."
-    return {'href': url, 'fileType': file_type, 'content': txt, 'error': error }
+    return {'href': url, 'fileType': file_type, 'content': txt, 'error': error}
 
 
 def download_bytes(client, system, path):
