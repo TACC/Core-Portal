@@ -11,14 +11,14 @@ import Message from '_common/Message';
  */
 const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);
-  const autoManageVisible = (props.canDismiss && props.isVisible === undefined);
-  const autoManageDismiss = (props.canDismiss && props.isVisible === undefined);
+  const autoManageVisible = props.canDismiss && props.isVisible === undefined;
+  const autoManageDismiss = props.canDismiss && props.isVisible === undefined;
 
   function onDismiss() {
-    if ( autoManageVisible ) {
-      setIsVisible( ! isVisible);
+    if (autoManageVisible) {
+      setIsVisible(!isVisible);
     }
-    if ( ! autoManageDismiss ) {
+    if (!autoManageDismiss) {
       props.onDismiss();
     }
   }
@@ -30,10 +30,10 @@ const SectionMessage = (props) => {
     onDismiss: onDismiss,
     scope: 'section',
   };
-  if ( autoManageVisible ) {
+  if (autoManageVisible) {
     messageProps.isVisible = isVisible;
   }
-  if ( autoManageDismiss ) {
+  if (autoManageDismiss) {
     messageProps.onDismiss = onDismiss;
   }
 
