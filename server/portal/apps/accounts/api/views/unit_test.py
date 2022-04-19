@@ -1,4 +1,4 @@
-from django.test import TestCase, Client, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory, override_settings
 from mock import patch, MagicMock
 import pytest
 from django.contrib.auth import get_user_model
@@ -9,6 +9,7 @@ from portal.libs.agave.models.systems.storage import StorageSystem
 @pytest.mark.django_db(transaction=True)
 class TestSystemsListView(TestCase):
     fixtures = ['users', 'auth']
+
     @classmethod
     def setUpClass(cls):
         super(TestSystemsListView, cls).setUpClass()
@@ -17,7 +18,7 @@ class TestSystemsListView(TestCase):
         cls.mock_AccountsManager = cls.mock_AccountsManager_patcher.start()
 
         cls.mock_client = MagicMock()
-        cls.mock_client.systems.get.return_value = { }
+        cls.mock_client.systems.get.return_value = {}
 
         cls.rf = RequestFactory()
         cls.view = SystemsListView()
@@ -45,7 +46,7 @@ class TestSystemsListView(TestCase):
                 "not.a.project.system2"
             ]
         ]
-        self.mock_AccountsManager.execution_systems.return_value = [ ]
+        self.mock_AccountsManager.execution_systems.return_value = []
         request = self.rf.get("/api/accounts/systems/list")
         request.user = get_user_model().objects.get(username="username")
         self.view.get(request)
@@ -56,6 +57,3 @@ class TestSystemsListView(TestCase):
 
         # There should be two storage systems returned
         self.assertEqual(len(args[0]["response"]["storage"]), 2)
-
-
-
