@@ -407,6 +407,14 @@ export function files(state = initialFilesState, action) {
           },
         },
       };
+    case 'PROJECTS_CLEAR_FILE_SELECTION':
+      return {
+        ...state,
+        selected: {
+          ...state.selected,
+          FilesListing: []
+        }
+      };
     default:
       return state;
   }
