@@ -22,56 +22,50 @@ export default function getFilePermissions(name, { files, scheme, api }) {
     files.length === 1
       ? /^.*\.(t?gz|tar(\.gz)?|zip)$/gi.test(files[0].name)
       : false;
-  const isProjectsList =
-    scheme === 'projects' &&
-    files.some((file) => !file.path.includes('projects'));
+  //const isProjectsList =
+    //scheme === 'projects' &&
+    //files.some((file) => !file.path.includes('projects'));
   switch (name) {
     case 'rename':
       return (
         !isProtected &&
         files.length === 1 &&
         isPrivate &&
-        api !== 'googledrive' &&
-        !isProjectsList
+        api !== 'googledrive'
       );
     case 'download':
       return (
         files.length === 1 &&
         files[0].format !== 'folder' &&
-        api !== 'googledrive' &&
-        !isProjectsList
+        api !== 'googledrive'
       );
     case 'areMultipleFilesOrFolderSelected':
       return (
         (files.length > 1 || files.some((file) => file.format === 'folder')) &&
-        api !== 'googledrive' &&
-        !isProjectsList
+        api !== 'googledrive'
       );
     case 'extract':
       return (
         files.length === 1 &&
         isArchive &&
         isPrivate &&
-        api === 'tapis' &&
-        !isProjectsList
+        api === 'tapis'
       );
     case 'compress':
       return (
         !isArchive &&
         files.length > 0 &&
         isPrivate &&
-        api === 'tapis' &&
-        !isProjectsList
+        api === 'tapis'
       );
     case 'copy':
-      return files.length > 0 && !isProjectsList;
+      return files.length > 0;
     case 'move':
       return (
         !isProtected &&
         files.length > 0 &&
         isPrivate &&
-        api !== 'googledrive' &&
-        !isProjectsList
+        api !== 'googledrive'
       );
     case 'trash':
       return (
@@ -79,8 +73,7 @@ export default function getFilePermissions(name, { files, scheme, api }) {
         !files.some((file) => file.path.startsWith('/.Trash')) &&
         files.length > 0 &&
         isPrivate &&
-        api === 'tapis' &&
-        !isProjectsList
+        api === 'tapis'
       );
     case 'public':
       return (
