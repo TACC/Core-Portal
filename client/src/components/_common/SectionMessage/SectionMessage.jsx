@@ -12,7 +12,7 @@ import Message from '_common/Message';
 const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);
   const autoManageVisible = props.canDismiss && props.isVisible === undefined;
-  const autoManageDismiss = props.canDismiss && props.isVisible === undefined;
+  const autoManageDismiss = props.canDismiss && props.onDismiss === undefined;
 
   function onDismiss() {
     if (autoManageVisible) {
