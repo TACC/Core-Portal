@@ -55,7 +55,7 @@ class MetadataJSONSerializer(json.JSONEncoder):
                     if related is not None:
                         ret[attname] = _seralize_user(related)
                 else:
-                    if val == None:
+                    if val is None:
                         ret[attname] = None
                     else:
                         ret[attname] = field.value_to_string(obj)

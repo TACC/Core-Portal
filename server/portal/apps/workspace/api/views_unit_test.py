@@ -1,4 +1,3 @@
-from portal.apps.workspace.models import JobSubmission
 from mock import MagicMock
 from django.conf import settings
 from portal.apps.workspace.api.views import JobsView, AppsTrayView
