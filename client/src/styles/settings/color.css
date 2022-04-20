@@ -11,18 +11,19 @@
     --(…)dark:  darker value
 */
 
+/* If Design doc uses color on the left, then use color on the right
+  | Design | Code |
+  | -      | -    |
+  | #707070   old "dark"   | --global-color-primary--x-dark
+  | #484848   old "x-dark" | --global-color-primary--xx-dark
+  | #9D85EF   old "normal" | --global-color-accent--normal
+  | #9D85EF20 old "weak"   | --global-color-accent--weak
+  | #DFDAF5   old "light"  | --global-color-accent--weak
+  | rgb(112 112 112 / 25%) | --global-color-primary--normal
+*/
+
 :root {
   /* Primary (Text, Layout) */
-  /* If Design doc uses color on the left, then use color on the right
-    | Design | Code |
-    | -      | -    |
-    | #707070   old "dark"   | --global-color-primary--x-dark
-    | #484848   old "x-dark" | --global-color-primary--xx-dark
-    | #9D85EF   old "normal" | --global-color-accent--normal
-    | #9D85EF20 old "weak"   | --global-color-accent--weak
-    | #DFDAF5   old "light"  | --global-color-accent--weak
-    | rgb(112 112 112 / 25%) | --global-color-primary--normal
-  */
   --global-color-primary--xx-light: #ffffff;
   --global-color-primary--x-light: #f4f4f4;
   --global-color-primary--light: #c6c6c6;
