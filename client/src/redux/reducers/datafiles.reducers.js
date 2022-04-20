@@ -412,8 +412,8 @@ export function files(state = initialFilesState, action) {
         ...state,
         selected: {
           ...state.selected,
-          FilesListing: []
-        }
+          FilesListing: [],
+        },
       };
     default:
       return state;
