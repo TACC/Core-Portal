@@ -6,5 +6,6 @@ class SignalsConfig(AppConfig):
     verbose_name = 'Portal Signals'
 
     def ready(self):
-        import portal.apps.signals.receivers
-        import portal.apps.signals.signals
+
+        import portal.apps.signals.receivers  # noqa: F401
+        import portal.apps.signals.signals  # noqa: F401
