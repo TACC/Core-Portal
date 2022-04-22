@@ -407,7 +407,7 @@ export function files(state = initialFilesState, action) {
           },
         },
       };
-    case 'PROJECTS_CLEAR_FILE_SELECTION':
+    case 'DATA_FILES_CLEAR_FILE_SELECTION':
       return {
         ...state,
         selected: {

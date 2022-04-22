@@ -12,7 +12,7 @@ export async function fetchProjectsListing(queryString) {
 
 export function* getProjectsListing(action) {
   yield put({
-    type: 'PROJECTS_CLEAR_FILE_SELECTION',
+    type: 'DATA_FILES_CLEAR_FILE_SELECTION',
   });
   yield put({
     type: 'PROJECTS_GET_LISTING_STARTED',
