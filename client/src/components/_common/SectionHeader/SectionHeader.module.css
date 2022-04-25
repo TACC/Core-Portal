@@ -16,7 +16,7 @@
     var(--global-color-primary--dark);
 }
 /* FP-546: Remove this because <Button> handles font-size */
-.root > a:global(.btn) {
+.root > a:global(.btn-secondary) {
   font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
   border-radius: 0; /* overwrite bootstrap */
 
