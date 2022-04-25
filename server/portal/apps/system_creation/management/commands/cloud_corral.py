@@ -1,10 +1,6 @@
 """Management command."""
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.files import BaseFile
-from portal.apps.projects.models.base import ProjectId, Project
 from portal.apps.webhooks.callback import WebhookCallback
 from portal.apps.system_creation.utils import call_reactor, substitute_user_variables
 from portal.libs.agave.utils import service_account
@@ -19,13 +15,14 @@ class Command(BaseCommand):
     help = (
         'Rewrite the host of a /work storage system to cloud.corral'
     )
+
     def add_arguments(self, parser):
         parser.add_argument('-s', '--system', type=str, required=True, help="System name")
 
     def handle(self, *args, **options):
         """Handle command."""
         systemId = options.get('system')
-        
+
         agc = service_account()
         system = agc.systems.get(systemId=systemId)
         username = system['storage']['rootDir'].split('/')[-1]

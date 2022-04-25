@@ -32,9 +32,9 @@ def test_put_handler(mock_googledrive_client, mock_operations):
                             'googledrive',
                             'id1',
                             'copy', body={'id': '1'})
-    mock_operations.copy    .assert_called_with(mock_googledrive_client,
-                                                'googledrive', 'id1',
-                                                **{'id': '1'})
+    mock_operations.copy.assert_called_with(mock_googledrive_client,
+                                            'googledrive', 'id1',
+                                            **{'id': '1'})
 
 
 def test_put_handler_forbidden(mock_googledrive_client, mock_operations):

@@ -14,8 +14,6 @@ from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
-from django.contrib.auth import get_user_model
-# from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 
 LOGGER = logging.getLogger(__name__)
