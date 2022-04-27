@@ -20,6 +20,7 @@ const UserSearchbar = ({
     `${firstName} ${lastName} (${username} | ${email})`;
 
   const userSearch = (e) => {
+    if (e.target.value !== selectedUser) setSelectedUser('');
     setInputUser(e.target.value);
     if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
@@ -49,6 +50,7 @@ const UserSearchbar = ({
     (user) => {
       onAdd(user);
       setInputUser('');
+      setSelectedUser('');
     },
     [setInputUser, onAdd]
   );
