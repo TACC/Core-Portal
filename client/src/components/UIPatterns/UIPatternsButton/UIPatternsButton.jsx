@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Icon } from '_common';
+import { Button, InlineMessage } from '_common';
 
 import styles from './UIPatternsButton.module.css';
 
@@ -13,85 +13,85 @@ function UIPatternsButton() {
   };
   return (
     <dl>
-      <dt>Default</dt>
-      <dd><Button>Button</Button></dd>
-
-      <dt>Types</dt>
+      <dt>Default Button</dt>
+      <dd><small>
+          (auto-set:&nbsp;
+          <code>type=&quot;secondary&quot;</code>&nbsp;
+          <code>size=&quot;short&quot;</code>)
+      </small></dd>
       <dd>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th scope="col">Normal</th>
-              <th scope="col">Disabled</th>
-              <th scope="col">Small</th>
-              <th scope="col"><small>Note</small></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className={styles['primary']}>
-              <td>Primary</td>
-              <td><Button type="primary">Button</Button></td>
-              <td><Button type="primary" disabled>Button</Button></td>
-              <td><Icon name="no-alert">not supported</Icon></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Secondary</td>
-              <td><Button type="secondary">Button</Button></td>
-              <td><Button type="secondary" disabled>Button</Button></td>
-              <td><Button type="secondary" size="small">Button</Button></td>
-              <td></td>
-            </tr>
-            <tr className={styles['link']}>
-              <td>as Link</td>
-              <td><Button type="link">Button</Button></td>
-              <td><Button type="link" disabled>Button</Button></td>
-              <td><Button type="link">Button</Button></td>
-              <td><small>A <code>&lt;Button type=&quot;link&quot;&gt;</code> ignores <code>size</code> prop.</small></td>
-            </tr>
-          </tbody>
-        </table>
+        <Button>Button</Button>
+        <Button disabled>Button</Button>
+        <Button size="small">Button</Button>
       </dd>
-
-      <dt>Sizes</dt>
+      <dt>Primary Button</dt>
+      <dd><small><code>type=&quot;primary&quot;</code></small></dd>
       <dd>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th scope="col">Small</th>
-              <th scope="col">Short</th>
-              <th scope="col">Medium</th>
-              <th scope="col">Long</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Act</td>
-              <td><Button size="small">Act</Button></td>
-              <td><Button size="short">Act</Button></td>
-              <td><Button size="medium">Act</Button></td>
-              <td><Button size="long">Act</Button></td>
-            </tr>
-            <tr>
-              <td>Action Text</td>
-              <td><Button size="small">Action Text</Button></td>
-              <td><Button size="short">Action Text</Button></td>
-              <td><Button size="medium">Action Text</Button></td>
-              <td><Button size="long">Action Text</Button></td>
-            </tr>
-            <tr>
-              <td>Long Text is Truncated</td>
-              <td><Button size="small">Long Text is Truncated</Button></td>
-              <td><Button size="short">Long Text is Truncated</Button></td>
-              <td><Button size="medium">Long Text is Truncated</Button></td>
-              <td><Button size="long">Long Text is Truncated</Button></td>
-            </tr>
-          </tbody>
-        </table>
+        <Button type="primary">Button</Button>
+        <Button type="primary" disabled>Button</Button>
+        <InlineMessage type="info">No small primary buttons.</InlineMessage>
+        <p><small>Use for regular-height buttons that are alone or are the main action of a pair of buttons.</small></p>
+      </dd>
+      <dt>Secondary Button</dt>
+      <dd><small>
+        <code>type=&quot;secondary&quot;</code>&nbsp;
+        (<code>size=&quot;small&quot;</code>)
+      </small></dd>
+      <dd>
+        <Button type="secondary">Button</Button>
+        <Button type="secondary" disabled>Button</Button>
+        <Button type="secondary" size="small">Button</Button>
+        <p><small>Use for buttons in groups, in headers, and all small buttons.</small></p>
+      </dd>
+      <dt>Button Sizes: Heights</dt>
+      <dd><small><code>size=&quot;small&quot;</code></small></dd>
+      <dd>
+        <Button size="small">small</Button>
+        <Button size="small">small, more text</Button>
+        <Button size="small">small, even more text</Button>
+        <p><small>Small buttons are as wide as their content but do not exceed width of <code>size=&quot;medium&quot;</code>.</small></p>
+      </dd>
+      <dt>Button Sizes: Widths</dt>
+      <dd><small>
+        <code>size=&quot;short&quot;</code>
+        &nbsp;|&nbsp;
+        <code>size=&quot;medium&quot;</code>
+        &nbsp;|&nbsp;
+        <code>size=&quot;long&quot;</code>
+      </small></dd>
+      <dd>
+        <Button size="short">short</Button>
+        <Button size="medium">medium</Button>
+        <Button size="long">long</Button>
+      </dd>
+      <dd>
+        <Button size="short">short, even more text</Button>
+        <Button size="medium">medium, even more text</Button>
+        <Button size="long">long, even more text</Button>
+        <p><small>All regular-height buttons are limited to these available widths.</small></p>
+      </dd>
+      <dt>Button with Icon</dt>
+      <dd><small>
+        <code>iconNameBefore=&quot;...&quot;</code>
+        &nbsp;|&nbsp;
+        <code>iconNameBefore=&quot;...&quot;</code>
+        &nbsp;(auto-set: <code>size=&quot;medium&quot;</code>)
+      </small></dd>
+      <dd>
+        <Button iconNameBefore="trash" size="medium">Button</Button>
+        <Button iconNameAfter="trash" size="medium">Button</Button>
+      </dd>
+      <dt>Button as Link</dt>
+      <dd><small><code>type=&quot;link&quot;</code></small></dd>
+      <dd>
+        <Button type="link">Link</Button>
       </dd>
       <dt>Spinner over Button</dt>
+      <dd><small>
+        <code>isLoading=&quot;...&quot;</code>&nbsp;
+        <code>type=&quot;...&quot;</code>&nbsp;
+        <code>size=&quot;...&quot;</code>
+      </small></dd>
       <dd>
         <Button
           type="primary"
