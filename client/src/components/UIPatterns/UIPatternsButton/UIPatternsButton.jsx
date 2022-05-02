@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, InlineMessage } from '_common';
 
-import styles from './UIPatternsButton.module.css';
+import './UIPatternsButton.module.css';
 
 function UIPatternsButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +24,6 @@ function UIPatternsButton() {
       <dd>
         <Button>Button</Button>
         <Button disabled={true}>Disabled</Button>
-        <Button size="small">Small</Button>
       </dd>
       <dt>Primary Button</dt>
       <dd>
