@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Icon } from '_common';
-
-import styles from './UIPatternsButton.module.css';
+import { Button } from '_common';
 
 import './UIPatternsButton.module.css';
 
