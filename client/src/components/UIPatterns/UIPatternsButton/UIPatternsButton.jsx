@@ -21,14 +21,14 @@ function UIPatternsButton() {
       </small></dd>
       <dd>
         <Button>Button</Button>
-        <Button disabled>Button</Button>
-        <Button size="small">Button</Button>
+        <Button disabled>Disabled</Button>
+        <Button size="small">Small</Button>
       </dd>
       <dt>Primary Button</dt>
       <dd><small><code>type=&quot;primary&quot;</code></small></dd>
       <dd>
         <Button type="primary">Button</Button>
-        <Button type="primary" disabled>Button</Button>
+        <Button type="primary" disabled>Disabled</Button>
         <InlineMessage type="info">No small primary buttons.</InlineMessage>
         <p><small>Use for regular-height buttons that are alone or are the main action of a pair of buttons.</small></p>
       </dd>
@@ -39,7 +39,7 @@ function UIPatternsButton() {
       </small></dd>
       <dd>
         <Button type="secondary">Button</Button>
-        <Button type="secondary" disabled>Button</Button>
+        <Button type="secondary" disabled>Disabled</Button>
         <Button type="secondary" size="small">Button</Button>
         <p><small>Use for buttons in groups, in headers, and all small buttons.</small></p>
       </dd>
@@ -65,9 +65,9 @@ function UIPatternsButton() {
         <Button size="long">long</Button>
       </dd>
       <dd>
-        <Button size="short">short, even more text</Button>
-        <Button size="medium">medium, even more text</Button>
-        <Button size="long">long, even more text</Button>
+        <Button size="short">short, with more text</Button>
+        <Button size="medium">medium, with more text</Button>
+        <Button size="long">long, with more text</Button>
         <p><small>All regular-height buttons are limited to these available widths.</small></p>
       </dd>
       <dt>Button with Icon</dt>
@@ -75,7 +75,7 @@ function UIPatternsButton() {
         <code>iconNameBefore=&quot;...&quot;</code>
         &nbsp;|&nbsp;
         <code>iconNameBefore=&quot;...&quot;</code>
-        &nbsp;(auto-set: <code>size=&quot;medium&quot;</code>)
+        &nbsp;(manually added: <code>size=&quot;medium&quot;</code>)
       </small></dd>
       <dd>
         <Button iconNameBefore="trash" size="medium">Button</Button>
