@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, InlineMessage } from '_common';
+import { Button } from '_common';
 
 import './UIPatternsButton.module.css';
 
@@ -36,7 +36,7 @@ function UIPatternsButton() {
         <Button type="primary" disabled={true}>
           Disabled
         </Button>
-        <InlineMessage type="info">No small primary buttons.</InlineMessage>
+        <span>No small primary buttons.</span>
         <p>
           <small>
             Use for regular-height buttons that are alone or are the main action
