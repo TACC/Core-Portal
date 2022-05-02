@@ -23,7 +23,7 @@ function UIPatternsButton() {
       </dd>
       <dd>
         <Button>Button</Button>
-        <Button disabled>Disabled</Button>
+        <Button disabled={true}>Disabled</Button>
         <Button size="small">Small</Button>
       </dd>
       <dt>Primary Button</dt>
@@ -34,7 +34,7 @@ function UIPatternsButton() {
       </dd>
       <dd>
         <Button type="primary">Button</Button>
-        <Button type="primary" disabled>
+        <Button type="primary" disabled={true}>
           Disabled
         </Button>
         <InlineMessage type="info">No small primary buttons.</InlineMessage>
@@ -54,7 +54,7 @@ function UIPatternsButton() {
       </dd>
       <dd>
         <Button type="secondary">Button</Button>
-        <Button type="secondary" disabled>
+        <Button type="secondary" disabled={true}>
           Disabled
         </Button>
         <Button type="secondary" size="small">
