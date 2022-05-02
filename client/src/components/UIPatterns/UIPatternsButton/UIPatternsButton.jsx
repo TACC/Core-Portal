@@ -85,6 +85,7 @@ function UIPatternsButton() {
       <dd><small><code>type=&quot;link&quot;</code></small></dd>
       <dd>
         <Button type="link">Link</Button>
+        <p><small>To “clear” or “cancel” a UI state.</small></p>
       </dd>
       <dt>Spinner over Button</dt>
       <dd><small>
