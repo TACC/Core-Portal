@@ -48,7 +48,7 @@ const Button = ({
   }
   if (type === 'primary' && size === 'small') {
     type = 'secondary';
-    // Component will work, except `type` is ineffectual
+    // Component will work, except `type` is overridden
     console.error(
       'A <Button type="primary" size="small"> is not allowed. ' +
         'Using `type="secondary"` instead.'
