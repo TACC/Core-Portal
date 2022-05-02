@@ -66,10 +66,6 @@ Styleguide Components.Button
   cursor: pointer;
 }
 
-.c-button:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
 
 
 
