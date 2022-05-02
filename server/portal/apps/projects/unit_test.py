@@ -193,9 +193,9 @@ def test_add_pi_unauthorized(mock_owner, django_user_model, mock_agave_client, m
 
 
 def test_create_metadata(mock_owner, mock_agave_client, mock_storage_system, project_model, mock_signal):
-        # Test creating metadata with no owner
-        project_model._create_metadata("Project Title", "PRJ-123")
-        assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
+    # Test creating metadata with no owner
+    project_model._create_metadata("Project Title", "PRJ-123")
+    assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
 
-        project_model._create_metadata("Project Title 2", "PRJ-124", mock_owner)
-        assert ProjectMetadata.objects.get(project_id="PRJ-124").owner == mock_owner
+    project_model._create_metadata("Project Title 2", "PRJ-124", mock_owner)
+    assert ProjectMetadata.objects.get(project_id="PRJ-124").owner == mock_owner

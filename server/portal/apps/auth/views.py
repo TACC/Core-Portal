@@ -32,7 +32,6 @@ def _get_auth_state():
     return secrets.token_hex(24)
 
 
-# Create your views here.
 def agave_oauth(request):
     """First step for agave OAuth workflow.
     """

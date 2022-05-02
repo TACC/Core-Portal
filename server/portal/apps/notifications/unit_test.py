@@ -22,8 +22,6 @@ webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
 
 wh_url = reverse('webhooks:jobs_wh_handler')
 
-# Create your tests here.
-
 
 @skip("Need to mock websocket call to redis")
 class NotificationsTestCase(TestCase):
