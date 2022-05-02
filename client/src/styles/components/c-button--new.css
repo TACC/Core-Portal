@@ -30,11 +30,7 @@ Markup:
 Styleguide Components.Button
 */
 
-
-
-
-
-/* Base */
+/* BASE */
 
 [class*='c-button'] {
   --min-width: 75px;
@@ -66,12 +62,7 @@ Styleguide Components.Button
   cursor: pointer;
 }
 
-
-
-
-
-/* Modifiers */
-
+/* MODIFIERS */
 
 /* Modifiers: Types */
 
@@ -96,7 +87,8 @@ Styleguide Components.Button
   border-color: var(--global-color-accent--dark);
 
   border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid var(--global-color-accent--dark);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--dark);
 }
 
 .c-button--primary:focus:not(:active) {
@@ -104,14 +96,11 @@ Styleguide Components.Button
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-primary--xx-light);
 
-  outline: var(--global-border-width--normal) solid var(--global-color-accent--light);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--light);
 }
 
-.c-button--primary:not(
-  .c-button:hover,
-  .c-button:focus,
-  .c-button:active
-) {
+.c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active) {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-accent--normal);
@@ -131,7 +120,8 @@ Styleguide Components.Button
   border-color: var(--global-color-accent--dark);
 
   border-width: var(--global-border-width--normal);
-  outline: var(--global-border-width--normal) solid var(--global-color-accent--dark);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--dark);
 }
 
 .c-button--secondary:focus:not(:active) {
@@ -139,14 +129,11 @@ Styleguide Components.Button
   background-color: var(--global-color-primary--light);
   border-color: var(--global-color-primary--xx-dark);
 
-  outline: var(--global-border-width--thick) solid var(--global-color-accent--light);
+  outline: var(--global-border-width--thick) solid
+    var(--global-color-accent--light);
 }
 
-.c-button--secondary:not(
-  .c-button:hover,
-  .c-button:focus,
-  .c-button:active
-) {
+.c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--xx-dark);
@@ -165,8 +152,6 @@ Styleguide Components.Button
   text-decoration: underline;
 }
 
-
-
 /* Modifiers: Sizes */
 
 .c-button--width-short {
@@ -184,11 +169,7 @@ Styleguide Components.Button
   line-height: 1;
 }
 
-
-
-
-
-/* Elements */
+/* ELEMENTS */
 
 .c-button__icon--before,
 .c-button__icon--after {

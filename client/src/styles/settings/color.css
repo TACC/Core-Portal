@@ -37,14 +37,14 @@
               (designer approved for accessibile color contrast via FP-1082) */
 
   /* Accent Hues */
-  --global-color-accent--x-light: #E3D7FD;
-  --global-color-accent--light: #A387ED;
-  --global-color-accent--normal: #784FE8;
-  --global-color-accent--dark: #6039CC;
-  --global-color-accent--x-dark: #3D189B;
+  --global-color-accent--x-light: #e3d7fd;
+  --global-color-accent--light: #a387ed;
+  --global-color-accent--normal: #784fe8;
+  --global-color-accent--dark: #6039cc;
+  --global-color-accent--x-dark: #3d189b;
 
   --global-color-accent--alt: #d2cce7;
-  --global-color-accent--weak: #6039CC40; /* similar to #E3D7FD on #f4f4f4 */
+  --global-color-accent--weak: #6039cc40; /* similar to #E3D7FD on #f4f4f4 */
 
   /* Other Hues */
   --global-color-info--normal: var(--global-color-primary--x-dark);
