@@ -4,13 +4,11 @@
 """
 import logging
 import json
-from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
-from portal.apps.search.tasks import agave_indexer
 from django.conf import settings
 
 

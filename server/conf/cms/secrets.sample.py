@@ -32,7 +32,7 @@ if _USING_CONTAINERS:
             'PORT': '5432',
             'NAME': 'taccsite',
             'USER': 'postgresadmin',
-            'PASSWORD': 'taccforever', # Change before live deployment.
+            'PASSWORD': 'taccforever',  # Change before live deployment.
             'HOST': 'core_cms_postgres'
         }
     }
@@ -44,7 +44,7 @@ else:
             'PORT': '5432',
             'NAME': 'taccsite',
             'USER': 'postgresadmin',
-            'PASSWORD': 'taccforever', # Change before live deployment.
+            'PASSWORD': 'taccforever',  # Change before live deployment.
             'HOST': 'localhost'
         }
     }
@@ -251,7 +251,7 @@ _NSF_BRANDING = [
     "True"
 ]
 
-_BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
+_BRANDING = [_TACC_BRANDING, _UTEXAS_BRANDING]        # Default TACC Portal.
 # _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
 
 ########################
@@ -347,5 +347,5 @@ _LOGIN_UNAUTH_LINK = {
     "icon": "sign-in-alt",
 }
 
-_PORTAL_AUTH_LINKS = [ _DASH_AUTH_LINK, _PROFILE_AUTH_LINK, _LOGOUT_AUTH_LINK ]       # Default TACC Portal.
-_PORTAL_UNAUTH_LINKS = [ _LOGIN_UNAUTH_LINK ]                                         # Default TACC Portal.
+_PORTAL_AUTH_LINKS = [_DASH_AUTH_LINK, _PROFILE_AUTH_LINK, _LOGOUT_AUTH_LINK]       # Default TACC Portal.
+_PORTAL_UNAUTH_LINKS = [_LOGIN_UNAUTH_LINK]                                         # Default TACC Portal.

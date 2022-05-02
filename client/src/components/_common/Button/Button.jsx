@@ -49,15 +49,19 @@ const Button = ({
   }
   if (type === 'primary' && size === 'small') {
     type = 'secondary';
-    // Component will work, except `type` is ineffectual
-    console.error('A <Button type="primary" size="small"> is not allowed. '
-                  + 'Using `type="secondary"` instead.');
+    // Component will work, except `type` is overridden
+    console.error(
+      'A <Button type="primary" size="small"> is not allowed. ' +
+        'Using `type="secondary"` instead.'
+    );
   }
-  if (type !== 'link' && ! size) {
+  if (type !== 'link' && !size) {
     size = 'short';
     // Component will work, except `size` is auto-set
-    console.debug('A <Button> that is not `type="link"` and has no `size` '
-                  + 'is automatically assigned `size="short"`.');
+    console.debug(
+      'A <Button> that is not `type="link"` and has no `size` ' +
+        'is automatically assigned `size="short"`.'
+    );
   }
   /* eslint-enable no-console */
 
@@ -81,12 +85,7 @@ const Button = ({
 
   return (
     <button
-      className={`
-        ${buttonRootClass}
-        ${buttonTypeClass}
-        ${buttonSizeClass}
-        ${className}
-      `}
+      className={`${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass}`}
       disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
@@ -97,21 +96,25 @@ const Button = ({
           className={styles['loading-over-button']}
         />
       )}
-      {iconNameBefore ?
+      {iconNameBefore ? (
         <Icon
           name={iconNameBefore}
           className={iconNameBefore ? styles['icon--before'] : ''}
         ></Icon>
-      : ''}
+      ) : (
+        ''
+      )}
       <span className={isLoading ? styles['loading-text'] : ''}>
         {children}
       </span>
-      {iconNameAfter ?
+      {iconNameAfter ? (
         <Icon
           name={iconNameAfter}
           className={iconNameAfter ? styles['icon--after'] : ''}
         ></Icon>
-      : ''}
+      ) : (
+        ''
+      )}
     </button>
   );
 };
