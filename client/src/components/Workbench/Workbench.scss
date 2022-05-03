@@ -43,8 +43,6 @@
   align-items: center;
 }
 
-/* FP-1596: Commented out until Portal buttons' reliance on them is resolved */
-/*
 .workbench-content .btn-link,
 .workbench-content .wb-link {
   color: var(--global-color-accent--normal);
@@ -61,7 +59,6 @@
   color: white;
   border: none;
 }
-*/
 
 .workbench-content .badge-success {
   background-color: #43d130;
