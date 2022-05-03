@@ -118,7 +118,7 @@ class ProjectsApiView(BaseApiView):
                 if member['access'] == 'owner':
                     access = 'pi'
                 elif member['access'] == 'edit':
-                    access = 'co_pi'
+                    access = 'team_member'
                 else:
                     raise ApiException("Unsupported access level")
                 mgr.add_member(
