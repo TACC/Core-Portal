@@ -5,7 +5,6 @@ import os
 from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
-from portal.apps.notifications.models import Notification
 from django.conf import settings
 
 pytestmark = pytest.mark.django_db
@@ -175,7 +174,7 @@ def test_get_system_forbidden(client, regular_user, mock_agave_client, agave_sto
     mock_agave_client.systems.get.return_value = agave_storage_system_mock
 
     response = client.get("/api/datafiles/systems/definition/MySystem/")
-    assert response.status_code == 302 # redirect to login
+    assert response.status_code == 302  # redirect to login
 
 
 @pytest.fixture
@@ -218,7 +217,7 @@ def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, 
                                                     agave_file_mock, text_file_fixture):
     mock_agave_client.files.importData.return_value = agave_file_mock
     response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
-                          data={"uploaded_file": text_file_fixture})
+                           data={"uploaded_file": text_file_fixture})
     assert response.status_code == 200
     assert response.json() == {"data": agave_file_mock}
 
@@ -262,7 +261,7 @@ def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_agav
 
 
 def test_tapis_file_view_preview_other_text_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
-                                           requests_mock, agave_indexer):
+                                                 requests_mock, agave_indexer):
     mock_agave_client.files.list.return_value = agave_file_listing_mock
     mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
     requests_mock.get(POSTIT_HREF, text="file content")
@@ -274,7 +273,7 @@ def test_tapis_file_view_preview_other_text_file(client, authenticated_user, moc
 
 
 def test_tapis_file_view_preview_unsupported_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
-                                                 requests_mock, agave_indexer):
+                                                  requests_mock, agave_indexer):
     mock_agave_client.files.list.return_value = agave_file_listing_mock
     mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
     requests_mock.get(POSTIT_HREF, text="file content")
@@ -286,7 +285,7 @@ def test_tapis_file_view_preview_unsupported_file(client, authenticated_user, mo
 
 
 def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
-                                                  requests_mock, agave_indexer):
+                                            requests_mock, agave_indexer):
     agave_file_listing_mock[0]["length"] = 5000000
     mock_agave_client.files.list.return_value = agave_file_listing_mock
     mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}

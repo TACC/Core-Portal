@@ -205,7 +205,7 @@ def test_project_manager_create(mocker, authenticated_user, project_manager, por
     # Project creation should initialize ProjectId
     project_manager.create('PRJ-1')
     assert len(ProjectId.objects.all()) == 1
-    assert ProjectId.objects.all()[0].value == 13 # max of prj dir and storage values
+    assert ProjectId.objects.all()[0].value == 13  # max of prj dir and storage values
 
     # ProjectId collision should resolve
     mock_get_latest_project_directory.return_value = 21
