@@ -41,7 +41,10 @@ const SectionMessage = (props) => {
   return <Message {...messageProps} />;
 };
 SectionMessage.propTypes = Message.propTypes;
-let { isVisible, onDismiss, ...defaultProps } = Message.defaultProps;
-SectionMessage.defaultProps = defaultProps;
+SectionMessage.defaultProps = {
+  ...Message.defaultProps,
+  isVisible: undefined,
+  onDismiss: undefined
+};
 
 export default SectionMessage;
