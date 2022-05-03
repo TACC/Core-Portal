@@ -44,7 +44,7 @@ SectionMessage.propTypes = Message.propTypes;
 SectionMessage.defaultProps = {
   ...Message.defaultProps,
   isVisible: undefined,
-  onDismiss: undefined
+  onDismiss: undefined,
 };
 
 export default SectionMessage;
