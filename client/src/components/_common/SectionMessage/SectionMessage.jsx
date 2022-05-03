@@ -27,7 +27,6 @@ const SectionMessage = (props) => {
   const messageProps = {
     ...Message.defaultProps,
     ...props,
-    onDismiss: onDismiss,
     scope: 'section',
   };
   if (autoManageVisible) {
