@@ -68,15 +68,24 @@ def substitute_user_variables(user, systemId, variables):
     return systemId, variables
 
 
-def force_create_storage_system(username):
+def force_create_storage_system(username, system_name=''):
     user, created = get_user_model().objects.get_or_create(username=username)
+
+    # Extract only a single target system
+    if system_name:
+        target_system = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.get(system_name)
+        target_systems = {
+            system_name: target_system
+        }
+    else:
+        target_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
     if created:
         logger.warn("Username {} does not exist locally, creating a virtual user".format(username))
 
     storage_systems = get_user_storage_systems(
-            user.username,
-            settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+        user.username,
+        target_systems
     )
     logger.debug("Unpacking systems to create: {}".format(storage_systems))
 
@@ -94,7 +103,7 @@ def force_create_storage_system(username):
             force=True,
             dryrun=False,
             callback="portal.apps.system_creation.utils.ForceSystemCreationCallback",
-            callback_data={"systemId": systemId}
+            callback_data={"systemId": systemId, "username": user.username}
         )
         logger.info(
             "Forced System Creation reactor for {} has executionId {}".format(
@@ -139,8 +148,13 @@ class ForceSystemCreationCallback(WebhookCallback):
         super(ForceSystemCreationCallback, self).__init__()
 
     def callback(self, external_call, webhook_request):
-        logger.info("Works Here!!!")
+        from django.contrib.auth import get_user_model
         response = json.loads(webhook_request.body)
+
+        user = get_user_model().objects.get(external_call.callback_data['username'])
+        user.profile.setup_complete = True
+        user.profile.save()
+
         self.logger.info("Forced System Creation of {systemId} {result}".format(
             result=response['result'],
             systemId=external_call.callback_data['systemId'],

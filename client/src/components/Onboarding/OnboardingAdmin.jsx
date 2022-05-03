@@ -112,7 +112,7 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, forceStorageCre
                 className="onboarding-admin__action-spinner"
               />
             )}
-          Force Create
+          Force Recreate
           </Button>
         </>
       )}

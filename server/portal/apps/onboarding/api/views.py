@@ -185,8 +185,7 @@ class SetupStepView(BaseApiView):
         )
         )
 
-        # Mark the user's setup_complete as False
-        setup_step.user.profile.setup_complete = True
+        setup_step.user.profile.setup_complete = False
         setup_step.user.profile.save()
 
         log_setup_state(
