@@ -20,7 +20,7 @@ function isNotEmptyString(props, propName, componentName) {
 
 const Button = ({
   children,
-  className, 
+  className,
   iconNameBefore,
   iconNameAfter,
   type,

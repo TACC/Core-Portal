@@ -6,8 +6,6 @@ A navigation list of sequential page toggles with end cap links.
 Styleguide Components.Pagination
 */
 
-
-
 /* Variables */
 
 .c-page-list {
@@ -15,8 +13,6 @@ Styleguide Components.Pagination
   --item-buffer: 3px;
   --item-border: var(--global-border-width--normal); /* WARNING: assumption */
 }
-
-
 
 /* List */
 
@@ -41,8 +37,8 @@ ul.c-page-list {
 .c-page-link--always-click::before,
 .c-page-link--always-click::after {
   --width: var(--item-buffer);
-  --vert-offset: calc( -1 * var(--item-border) );
-  --horz-offset: calc( 100% + var(--item-border) );
+  --vert-offset: calc(-1 * var(--item-border));
+  --horz-offset: calc(100% + var(--item-border));
 
   content: '';
   width: var(--width);
@@ -53,18 +49,24 @@ ul.c-page-list {
 .c-page-link--always-click.c-button {
   overflow: visible; /* overwrite `.c-button` so pseudo elements show */
 }
-.c-page-link--always-click::before { right: var(--horz-offset) }
-.c-page-link--always-click::after { left: var(--horz-offset) }
-
-
-
-
+.c-page-link--always-click::before {
+  right: var(--horz-offset);
+}
+.c-page-link--always-click::after {
+  left: var(--horz-offset);
+}
 
 /* Item */
 
-.c-page-item              { margin-inline: var(--item-buffer) }
-.c-page-item:first-child  { margin-left: 0 }
-.c-page-item:last-child   { margin-right: 0 }
+.c-page-item {
+  margin-inline: var(--item-buffer);
+}
+.c-page-item:first-child {
+  margin-left: 0;
+}
+.c-page-item:last-child {
+  margin-right: 0;
+}
 
 /* Item: Truncated */
 
@@ -76,13 +78,11 @@ ul.c-page-list {
   cursor: default;
 }
 
-
-
 /* End */
 
-.c-page-end { padding: 4px 12px }
-
-
+.c-page-end {
+  padding: 4px 12px;
+}
 
 /* Link */
 

@@ -7,7 +7,6 @@ const PaginatorEtc = () => {
   return <span className={styles.etcetera}>...</span>;
 };
 
-
 const PaginatorPage = ({ number, callback, current }) => {
   return (
     <Button
