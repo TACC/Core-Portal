@@ -26,7 +26,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     const systemParams = {
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system,
+      system: systems.filter((s) => !s.hidden)[0].system,
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
@@ -64,9 +64,13 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={(systems[0] || modalParams).system}
+                systemId={
+                  (systems.filter((s) => !s.hidden)[0] || modalParams).system
+                }
                 section="modal"
-                excludedSystems={['googledrive']}
+                excludedSystems={systems
+                  .filter((s) => s.api !== 'tapis' || s.hidden)
+                  .map((s) => s.system)}
                 showProjects={showProjects}
               />
             </div>

@@ -200,7 +200,6 @@ class TestAgaveJWTAuth(TestCase):
         login_user_agave_jwt(mock_request)
         self.assertEqual(len(mock_login.mock_calls), 0)
 
-
     @override_settings(
         AGAVE_JWT_PUBKEY='pub-key==',
         AGAVE_JWT_HEADER='x_agave_header'
@@ -216,14 +215,9 @@ class TestAgaveJWTAuth(TestCase):
         login_user_agave_jwt(mock_request)
         self.assertEqual(len(mock_login.mock_calls), 0)
 
-
     @patch('portal.utils.jwt_auth.login')
     @patch('portal.utils.jwt_auth._get_jwt_payload', return_value='payload')
-    @patch('portal.utils.jwt_auth._decode_jwt',
-        return_value={
-            'http://wso2.org/claims/fullname': 'wma_prtl',
-        }
-    )
+    @patch('portal.utils.jwt_auth._decode_jwt', return_value={'http://wso2.org/claims/fullname': 'wma_prtl'})
     @patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
     def test_agave_jwt_expired_token(self,
                                      mock_client,

@@ -451,6 +451,7 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
+        'hidden': False,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
@@ -460,6 +461,16 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
+        'hidden': False,
+    },
+    'stockyard': {
+        'name': 'My Data (Work)',
+        'systemId': 'cloud.corral.work.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/work/{tasdir}',
+        'port': 2222,
+        'icon': None,
+        'hidden': True,
     }
 }
 
@@ -496,10 +507,21 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'siteSearchPriority': 1
     },
     {
+        'name': 'Public Data',
+        'system': 'portal.storage.public',
+        'scheme': 'public',
+        'api': 'tapis',
+        'icon': None,
+        'siteSearchPriority': 0
+    },
+    {
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': 'publications'
+        'icon': 'publications',
+        'privilegeRequired': False,
+        'readOnly': False,
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
@@ -508,14 +530,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'googledrive',
         'icon': None,
         'integration': 'portal.apps.googledrive_integration'
-    },
-    {
-        'name': 'Public Data',
-        'system': 'portal.storage.public',
-        'scheme': 'public',
-        'api': 'tapis',
-        'icon': None,
-        'siteSearchPriority': 0
     }
 ]
 

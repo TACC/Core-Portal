@@ -495,7 +495,11 @@ PORTAL_EXEC_SYSTEMS = {
     'maverick2.tacc.utexas.edu': {
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
-    }
+    },
+    'lonestar6.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
+    },
 }
 
 """
@@ -737,4 +741,4 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
-    from .settings_local import *
+    from .settings_local import *  # noqa: F403, F401

@@ -2,7 +2,6 @@ import google_auth_oauthlib.flow
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -115,6 +114,7 @@ def oauth2_callback(request):
         cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
 
     return HttpResponseRedirect('/accounts/profile')
+
 
 @login_required
 def disconnect(request):

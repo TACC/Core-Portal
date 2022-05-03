@@ -24,7 +24,7 @@ function Dashboard() {
         </Link>
       }
       contentClassName={styles['panels']}
-      contentLayoutName="twoColumnUnequal"
+      contentLayoutName="twoColumn"
       contentShouldScroll
       content={
         <>
@@ -104,9 +104,9 @@ function DashboardTickets() {
       headerActions={
         <Link
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-          className="wb-link"
+          className="btn btn-secondary btn-sm"
         >
-          Add Ticket
+          New Ticket
         </Link>
       }
       contentShouldScroll

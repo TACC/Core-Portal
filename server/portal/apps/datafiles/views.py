@@ -1,10 +1,8 @@
 import json
 import logging
-import os
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.users.utils import get_allocations
 from portal.apps.auth.tasks import get_user_storage_systems
-from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
@@ -46,7 +44,8 @@ class SystemListingView(BaseApiView):
                             'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
                             'scheme': 'private',
                             'api': 'tapis',
-                            'icon': details['icon']
+                            'icon': details['icon'],
+                            'hidden': details['hidden'] if 'hidden' in details else False
                         }
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
@@ -80,11 +79,11 @@ class TapisFilesView(BaseApiView):
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
                          "system:{} path:{} filesize:{}".format(request.user.username,
-                                                    operation,
-                                                    scheme,
-                                                    system,
-                                                    path,
-                                                    request.GET.get('length')))
+                                                                operation,
+                                                                scheme,
+                                                                system,
+                                                                path,
+                                                                request.GET.get('length')))
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
 

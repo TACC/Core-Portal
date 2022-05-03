@@ -9,29 +9,34 @@ import filesModalFixture from '../fixtures/files.modal.fixture';
 const mockStore = configureStore();
 
 describe('DataFilesSystemSelector', () => {
-  it('contains options for non-private systems', () => {
+  it('does not render excluded systems in selector', () => {
     const history = createMemoryHistory();
     const store = mockStore({
       systems: systemsFixture,
       files: filesModalFixture,
     });
+    const canMakePublic = true;
     const { queryByText } = renderComponent(
       <DataFilesSystemSelector
         section="modal"
         operation="copy"
         excludedSystems={systemsFixture.storage.configuration
-          .filter((s) => s.scheme !== 'private')
+          .filter(
+            (s) =>
+              s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
+          )
+          .filter((s) => !(s.scheme === 'public' && canMakePublic))
           .map((s) => s.system)}
       />,
       store,
       history
     );
-    expect(queryByText(/My Data \(Work\)/)).toBeDefined();
+    expect(queryByText(/My Data \(Work\)/)).toBeNull();
     expect(queryByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(queryByText(/My Data \(Longhorn\)/)).toBeDefined();
     expect(queryByText(/Google Drive/)).toBeDefined();
     expect(queryByText(/Shared Workspaces/)).toBeDefined();
-    expect(queryByText(/Public Data/)).toBeNull();
+    expect(queryByText(/Public Data/)).toBeDefined();
     expect(queryByText(/Community Data/)).toBeNull();
   });
 });

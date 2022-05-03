@@ -1,8 +1,6 @@
 
 import logging
 from django.conf import settings
-from django.contrib.auth.models import User
-# from django.core.management import call_command
 from celery import shared_task
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
