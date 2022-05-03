@@ -24,7 +24,7 @@ const SectionMessage = (props) => {
   }
 
   // Override default props
-  let messageProps = {
+  const messageProps = {
     ...Message.defaultProps,
     ...props,
     onDismiss: onDismiss,
