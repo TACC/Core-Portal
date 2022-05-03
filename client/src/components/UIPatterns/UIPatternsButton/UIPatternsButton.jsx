@@ -124,8 +124,7 @@ function UIPatternsButton() {
           Button
         </Button>
       </dd>
-
-      <dt>Sizes</dt>
+      <dt>Button as Link</dt>
       <dd>
         <small>
           <code>type=&quot;link&quot;</code> (any <code>size</code> prop value
