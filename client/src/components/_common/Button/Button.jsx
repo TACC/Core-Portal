@@ -85,7 +85,9 @@ const Button = ({
 
   return (
     <button
-      className={`${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass}`}
+      className={`
+        ${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass} ${className}
+      `}
       disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
