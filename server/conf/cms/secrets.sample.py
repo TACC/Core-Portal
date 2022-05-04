@@ -40,11 +40,12 @@ ES_HOSTS = 'http://elasticsearch:9200'
 ES_INDEX_PREFIX = 'cms-dev-{}'
 ES_DOMAIN = 'http://localhost:8000'
 
+es_engine = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
 HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ES_HOSTS,
-        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
-        'KWARGS': {'http_auth': ES_AUTH}
-    }
+  'default': {
+    'ENGINE': es_engine,
+    'URL': ES_HOSTS,
+    'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+    'KWARGS': {'http_auth': ES_AUTH}
+  }
 }

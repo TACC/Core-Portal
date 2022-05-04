@@ -1,5 +1,5 @@
-# SEE: https://github.com/TACC/Core-CMS/blob/main/taccsite_cms/settings_custom.example.py
-# SEE: https://github.com/TACC/Core-CMS-Resources/blob/main/example-cms/settings_custom.py
+# SEE: TACC/Core-CMS:/taccsite_cms/settings_custom.example.py
+# SEE: TACC/Core-CMS-Resources:/example-cms/settings_custom.py
 
 ########################
 # DJANGO CMS SETTINGS
@@ -67,7 +67,7 @@ NSF_BRANDING = [
     "True"
 ]
 
-BRANDING = [ TACC_BRANDING, UTEXAS_BRANDING ]
+BRANDING = [TACC_BRANDING, UTEXAS_BRANDING]
 
 ########################
 # LOGOS
