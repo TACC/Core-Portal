@@ -37,7 +37,7 @@ GOOGLE_ANALYTICS_PRELOAD = True
 
 ES_AUTH = 'username:password'
 ES_HOSTS = 'http://elasticsearch:9200'
-ES_INDEX_PREFIX = 'cms-dev-{}'
+ES_INDEX_PREFIX = 'cep-dev-{}'
 ES_DOMAIN = 'http://localhost:8000'
 
 es_engine = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
