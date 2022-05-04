@@ -1,12 +1,6 @@
 /* TRUMPS: Icons */
 @import url('./icon.fonts.css');
 
-/* To support instances of icons that neglect `.icon` */
-[class^='icon-'],
-[class*=' icon-'] {
-  @extend .icon;
-}
-
 /* To overwrite `icon.fonts.css` icon sizes */
 /* relative units */
 .icon-sm,
