@@ -179,9 +179,9 @@ class SetupStepView(BaseApiView):
         """
         if not request.user.is_staff:
             raise PermissionDenied
-        setup_step.log("force_create_storage by {staff}".format(
-            step=setup_step.display_name(),
-            staff=request.user.username
+        setup_step.log("force_create_storage by {staff}, due to {step}".format(
+            staff=request.user.username,
+            step=setup_step.display_name()
         )
         )
 
@@ -190,7 +190,7 @@ class SetupStepView(BaseApiView):
 
         log_setup_state(
             setup_step.user,
-            "{user} setup marked complete, now will proceed to force storage system creation".format(
+            "{user} setup marked complete, now will proceed to force storage system creation as {step}".format(
                 user=setup_step.user.username,
                 step=setup_step.step_name()
             )

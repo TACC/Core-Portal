@@ -9,6 +9,7 @@ import pytest
 
 pytestmark = pytest.mark.django_db
 
+
 def test_call_reactor(regular_user, mocker):
     mock_service_account = mocker.patch('portal.apps.system_creation.utils.service_account')
     mock_register_webhook = mocker.patch('portal.apps.system_creation.utils.register_webhook')
@@ -97,14 +98,14 @@ def test_force_create_storage_system(regular_user, mocker):
 
     mock_systems = mocker.patch('portal.apps.system_creation.utils.get_user_storage_systems')
     mock_systems.return_value = {
-    "mocksystem": {
-        "description": "Mock description for {portal}",
-        "site": "{portal}",
-        "systemId": "data-tacc-work-{username}",
-        "rootDir": "/work/{tasdir}",
-        "name": "data-tacc-work-{username}",
-        "id": "data-tacc-work-{username}"
-        }
+        "mocksystem": {
+            "description": "Mock description for {portal}",
+            "site": "{portal}",
+            "systemId": "data-tacc-work-{username}",
+            "rootDir": "/work/{tasdir}",
+            "name": "data-tacc-work-{username}",
+            "id": "data-tacc-work-{username}"
+            }
     }
     mock_service_account = mocker.patch('portal.apps.system_creation.utils.service_account')
     mock_service_account.return_value.actors.sendMessage.return_value = {
