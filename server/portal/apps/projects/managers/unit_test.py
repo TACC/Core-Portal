@@ -7,7 +7,6 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import os
 from django.conf import settings
-from django.contrib import auth
 from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.models.base import ProjectId
 import pytest
@@ -182,6 +181,7 @@ def test_remove_member(authenticated_user, project_manager, service_account):
             }
         }
     )
+
 
 def test_change_project_role(authenticated_user, project_manager, service_account):
     project_manager.change_project_role('PRJ-123', 'username', 'co_pi', 'member')

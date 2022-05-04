@@ -11,7 +11,6 @@ from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.systems.roles import Roles
-from portal.libs.agave.utils import service_account
 from json.decoder import JSONDecodeError
 
 logger = logging.getLogger(__name__)

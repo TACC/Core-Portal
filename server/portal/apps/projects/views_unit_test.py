@@ -1,5 +1,3 @@
-
-from mock.mock import patch
 import pytest
 from portal.apps.projects.managers.base import ProjectsManager
 from mock import MagicMock
@@ -114,6 +112,7 @@ def test_project_instance_patch(regular_user, client, mock_project_mgr):
         'response': {'projectId': 'PRJ-123'}
     }
 
+
 def test_project_change_role(regular_user, client, mock_project_mgr):
     mock_project_mgr.change_project_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
     client.force_login(regular_user)
@@ -128,6 +127,7 @@ def test_project_change_role(regular_user, client, mock_project_mgr):
         'response': {'projectId': 'PRJ-123'}
     }
 
+
 def test_project_change_system_role(regular_user, client, mock_project_mgr):
     mock_project_mgr.change_system_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
     client.force_login(regular_user)
@@ -141,6 +141,7 @@ def test_project_change_system_role(regular_user, client, mock_project_mgr):
         'status': 200,
         'response': {'projectId': 'PRJ-123'}
     }
+
 
 def test_members_view_add(regular_user, client, mock_project_mgr):
     mock_project_mgr.add_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})

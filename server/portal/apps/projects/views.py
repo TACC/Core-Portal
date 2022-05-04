@@ -339,7 +339,7 @@ class ProjectMembersApiView(BaseApiView):
 def get_project_role(request, project_id, username):
     role = None
     mgr = ProjectsManager(request.user)
-    role = mgr.role_for_user(project_id, username) 
+    role = mgr.role_for_user(project_id, username)
 
     return JsonResponse({'username': username, 'role': role})
 
