@@ -2,7 +2,6 @@ import google_auth_oauthlib.flow
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -19,6 +18,13 @@ class IndexView(TemplateView):
     Main workbench view.
     """
     template_name = 'portal/apps/workbench/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['setup_complete'] = False if self.request.user.is_anonymous \
+            else self.request.user.profile.setup_complete
+        context['DEBUG'] = settings.DEBUG
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         return super(IndexView, self).dispatch(request, *args, **kwargs)
@@ -108,6 +114,7 @@ def oauth2_callback(request):
         cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
 
     return HttpResponseRedirect('/accounts/profile')
+
 
 @login_required
 def disconnect(request):

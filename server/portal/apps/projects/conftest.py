@@ -1,5 +1,5 @@
 import pytest
-from portal.apps.projects.models.base import Project, ProjectId
+from portal.apps.projects.models.base import Project
 
 
 @pytest.mark.django_db

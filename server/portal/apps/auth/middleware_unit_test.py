@@ -49,29 +49,29 @@ class TestAgaveOAuthMiddleware(TransactionTestCase):
         # Test middleware for user that is fully authenticated
         self.mock_agave_oauth.expired = False
         response = self.middleware.__call__(self.request)
-        self.assertEquals(response, "MOCK_RESPONSE")
+        self.assertEqual(response, "MOCK_RESPONSE")
 
     def test_expired_user(self):
         self.mock_agave_oauth.expired = True
         response = self.middleware.__call__(self.request)
-        self.assertEquals(response, "MOCK_RESPONSE")
+        self.assertEqual(response, "MOCK_RESPONSE")
         self.mock_agave_oauth.client.token.refresh.assert_called_with()
 
     def test_refresh_error(self):
         self.mock_agave_oauth.expired = True
         self.mock_agave_oauth.client.token.refresh.side_effect = HTTPError
         response = self.middleware.__call__(self.request)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
         self.mock_logout.assert_called_with(self.request)
 
     @patch('portal.apps.auth.middleware.transaction')
     def test_logouts(self, mock_transaction):
         mock_transaction.atomic.side_effect = RequestException
         response = self.middleware.__call__(self.request)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
         self.mock_logout.assert_called_with(self.request)
 
         mock_transaction.atomic.side_effect = ObjectDoesNotExist
         response = self.middleware.__call__(self.request)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
         self.mock_logout.assert_called_with(self.request)

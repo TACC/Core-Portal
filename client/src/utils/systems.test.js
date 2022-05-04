@@ -2,7 +2,7 @@ import {
   getSystemName,
   findSystemDisplayName,
   findProjectTitle,
-  findSystemOrProjectDisplayName
+  findSystemOrProjectDisplayName,
 } from './systems';
 import systemsFixture from '../components/DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsListingFixture } from '../redux/sagas/fixtures/projects.fixture';

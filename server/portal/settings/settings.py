@@ -15,7 +15,6 @@ import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -97,8 +96,10 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.system_creation',
     'portal.apps.public_data',
+    'portal.apps.request_access',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
+    'portal.apps.intromessages',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +122,8 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, '../../client/dist')],
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -215,7 +217,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    ('build', os.path.join(BASE_DIR, '../../client/build')),
+    os.path.join(BASE_DIR, '../../client/dist'),
+    # Serve fonts using the cep.dev hostname in debug mode
+    ('src/fonts', os.path.join(BASE_DIR, '../../client/src/fonts'))
 ]
 
 STATICFILES_FINDERS = [
@@ -491,7 +495,11 @@ PORTAL_EXEC_SYSTEMS = {
     'maverick2.tacc.utexas.edu': {
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
-    }
+    },
+    'lonestar6.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
+    },
 }
 
 """
@@ -674,7 +682,7 @@ SUPPORTED_IMAGE_PREVIEW_EXTS = [
 SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
     '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
-    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
     '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
     '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
     '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
@@ -687,6 +695,10 @@ SUPPORTED_OBJECT_PREVIEW_EXTS = [
 
 SUPPORTED_IPYNB_PREVIEW_EXTS = [
     '.ipynb'
+]
+
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
+    '.htm', '.html'
 ]
 
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -717,9 +729,16 @@ CHANNEL_LAYERS = {
 SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
+WORKBENCH_SETTINGS.update({'trashPath': AGAVE_DEFAULT_TRASH_NAME})
+
+"""
+SETTINGS: RECAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
+RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
 """
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
-    from .settings_local import *
+    from .settings_local import *  # noqa: F403, F401

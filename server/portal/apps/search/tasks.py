@@ -1,8 +1,6 @@
 
 import logging
 from django.conf import settings
-from django.contrib.auth.models import User
-# from django.core.management import call_command
 from celery import shared_task
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
@@ -18,10 +16,11 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
 def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
-    if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-        if sys['scheme'] == 'projects' and sys['hideSearchBar'] == True
-        and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)):
-            return
+    if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+            if sys.get('scheme', None) == 'projects'
+            and sys.get('hideSearchBar', None)
+            and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)), None):
+        return
 
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels

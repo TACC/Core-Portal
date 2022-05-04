@@ -12,17 +12,31 @@
   box-sizing: content-box;
 
   padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--dark);
 }
+/* FP-546: Remove this because <Button> handles font-size */
+.root > a:global(.btn-secondary) {
+  font-size: 0.875rem; /* 14px (12px design * 1.2 design-to-app ratio) */
+  border-radius: 0; /* overwrite bootstrap */
 
+  /* Copied from FP-1491 / #598 */
+  min-width: 0;
+  padding: 3px 9px;
+  line-height: 1;
+}
 
 /* Elements */
 
 /* Add vertical space between children that, without wrapping, is invisible */
 /* FAQ: Take away space added, in direction that does not disturb other CSS */
 /* WARNING: `DataFilesToolbar.scss` needs `margin-bottom` */
-.root { margin-top: -5px; }
-.root > * { margin-top: 5px; }
+.root {
+  margin-top: -5px;
+}
+.root > * {
+  margin-top: 5px;
+}
 
 /* Do not allow external margin styles */
 .heading {
@@ -34,7 +48,6 @@
 .heading ~ * {
   max-height: 100%; /* (gently) force oversized elements to fit */
 }
-
 
 /* Modifiers */
 

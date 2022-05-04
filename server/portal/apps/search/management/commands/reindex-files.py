@@ -1,12 +1,11 @@
-import logging
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand
 from django.utils.six.moves import input
 from django.conf import settings
 import elasticsearch
-from elasticsearch import TransportError
 from elasticsearch_dsl import Index
-from elasticsearch_dsl.connections import connections
+from elasticsearch_dsl.connections import connections  # noqa: F401
 from portal.libs.elasticsearch.indexes import setup_files_index
+
 
 class Command(BaseCommand):
     """
@@ -46,7 +45,7 @@ class Command(BaseCommand):
         try:
             default_index_name = Index(default_index_alias, using=es_client).get_alias().keys()[0]
             reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
-        except Exception as e:
+        except Exception:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
             raise SystemExit
 

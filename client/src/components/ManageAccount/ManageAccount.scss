@@ -15,7 +15,7 @@
 /*
   Components
 */
-// Tables
+/* Tables */
 .manage-account-table {
   font-size: 0.875rem; /* 14px (approved deviation from design) */
   table-layout: fixed;
@@ -59,17 +59,17 @@
 .manage-account-table.table {
   margin-bottom: 0;
 }
-  /* Override striped bootstrap table */
-  .table-striped > tbody {
-    tr:nth-child(even) {
-      background-color: rgba(198, 198, 198, 0.1);
-    }
-    tr:nth-child(odd) {
-      background-color: white;
-    }
+/* Override striped bootstrap table */
+.table-striped > tbody {
+  tr:nth-child(even) {
+    background-color: rgb(198 198 198 / 10%);
   }
+  tr:nth-child(odd) {
+    background-color: white;
+  }
+}
 
-// Buttons and Forms
+/* Buttons and Forms */
 .manage-account-submit-button {
   display: flex;
   width: fit-content;
@@ -77,7 +77,9 @@
   font: bold 12px Roboto, sans-serif;
   padding: 0.5rem 1rem;
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
-  background-color: var(--global-color-accent--normal) !important; /* override `.workbench-content .btn-secondary` */
+  background-color: var(
+    --global-color-accent--normal
+  ) !important; /* override `.workbench-content .btn-secondary` */
   color: white !important; /* override `.workbench-content .btn-secondary` */
 }
 

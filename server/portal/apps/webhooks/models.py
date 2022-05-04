@@ -5,8 +5,6 @@ from django.conf import settings
 from datetime import datetime
 from portal.apps.webhooks.fields import JSONField
 
-# Create your models here.
-
 
 class ExternalCall(models.Model):
     """ExternalCall

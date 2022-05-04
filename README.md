@@ -1,14 +1,19 @@
 # TACC Core Portal
 
-* Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
+The base Portal code for TACC WMA Workspace Portals
 
-[![codecov](https://codecov.io/gh/TACC/Core-Portal/branch/main/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Core-Portal)
+### Related Repositories:
+- [Camino], a Docker container-based deployment scheme
+- [Core CMS], the base CMS code for TACC WMA CMS Websites
+- [Core Portal Deployments], private repository that facilitates deployments of [Core Portal] images via [Camino] and Jenkins
+
+# Local Development Setup
 
 ## Prequisites for running the portal application
 
 * Docker 20.10.7
 * Docker Compose 1.29.2
-* Python 3.6.8
+* Python 3.7.12
 * Nodejs 12.x (LTS)
 
 The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
@@ -172,25 +177,6 @@ NOTE: This may require a computer restart to take effect.
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
-### Creating Local CA and signed cert
-
-1. Generate RSA-2048 key for CA: `openssl genrsa -des3 -out ca.key 2048` (This file should already be in the repo)
-2. Generate root CA certificate: `openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.pem` (Root CA cert is valid for 365 days. Keep any form values to "CEP CA")
-3. Generate RSA-2048 key for local dev site: `openssl genrsa out cep.dev.key 2048` (This file should already be in the repo)
-4. Generate Cert Request (CSR): `openssql req -new -key -cep.dev.key -out cep.dev.csr` (Keep any form values to "CEP CA")
-5. Make sure `cep.dev.ext` is correct
-6. Generate Cert: `openssl x509 -req -in cep.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out cep.dev.crt -days 365 -sha256 -extfile cep.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
-7. Files created: `cep.dev.key` (site private key), `cep.dev.csr` (site certificate signing request), `cep.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
-
-### Additional Setup
-
-Follow the Confluence pages below to set up Projects, Notifications, and Elastic Search.
-
-- Projects: https://confluence.tacc.utexas.edu/x/pQCPAQ
-- Notifications: https://confluence.tacc.utexas.edu/x/3QnG
-- ElasticSearch: https://confluence.tacc.utexas.edu/x/aARkAQ
-
-
 ### Linting and Formatting Conventions
 
 Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and is enforced on commits to the repo. To see a list of linting issues, in the console:
@@ -204,18 +190,16 @@ You may auto-fix your linting errors to conform with configured standards, for s
 - `npm run lint:js -- --fix`
 - `npm run lint:css -- --fix`
 
-Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 main | flake8 --diff` from the command line.
-This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
+Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `flake8` from the command line.
+To do so, run the following in the `core_portal_django` container:
 
 ```
-python3 -m venv <path_to_local_venv_dir>
-. <path_to_local_venv_dir>/bin/activate
-pip install -r server/requirements.txt
+flake8
 ```
 
 ### Testing
 
-Server-side python testing is run through pytest. Run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
+Server-side python testing is run through pytest. Start docker container first by `docker exec -it core_portal_django bash`, Then run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
 
 Client-side javascript testing is run through Jest. Run `npm run test`* from the `client` folder to ensure tests are running correctly.
 
@@ -262,7 +246,9 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 <!-- Link Aliases -->
 
-[Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
-[Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[Core Portal Deployments]: https://github.com/TACC/Core-Portal-Deployments
+[Camino]: https://github.com/TACC/Camino
+[Core CMS]: https://github.com/TACC/Core-CMS
+[Core Portal]: https://github.com/TACC/Core-Portal
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/

@@ -14,39 +14,47 @@ import filesFixture from '../fixtures/DataFiles.files.fixture';
 const mockStore = configureStore();
 const initialMockState = {
   pushKeys: {
-    target: {}
+    target: {},
   },
   files: {
     loading: {
-      FilesListing: false
+      FilesListing: false,
     },
     params: {
       FilesListing: {
         system: 'test.system',
         path: 'test/path',
-        scheme: 'private'
-      }
+        scheme: 'private',
+      },
     },
     loadingScroll: {
-      FilesListing: false
+      FilesListing: false,
     },
     error: {
-      FilesListing: false
+      FilesListing: false,
     },
     listing: {
-      FilesListing: []
+      FilesListing: [],
     },
     selected: {
-      FilesListing: []
+      FilesListing: [],
     },
     selectAll: {
-      FilesListing: false
+      FilesListing: false,
     },
     reachedEnd: {
-      FilesListing: true
-    }
+      FilesListing: true,
+    },
+    operationStatus: {
+      trash: false,
+    },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {
+      trashPath: '.Trash',
+    },
+  },
 };
 
 describe('CheckBoxCell', () => {
@@ -54,7 +62,7 @@ describe('CheckBoxCell', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [0] } } });
     const { getByRole } = renderComponent(
-      <CheckboxCell index={0} />,
+      <CheckboxCell index={0} name="Foldername" format="folder" />,
       store,
       history
     );
@@ -65,7 +73,7 @@ describe('CheckBoxCell', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [] } } });
     const { getByRole } = renderComponent(
-      <CheckboxCell index={0} />,
+      <CheckboxCell index={0} name="Filename" format="file" />,
       store,
       history
     );
@@ -92,11 +100,9 @@ describe('FileNavCell', () => {
       history
     );
     expect(getByText('Filename')).toBeDefined();
-    expect(
-      getByText('Filename')
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/test.system/path/to/file/');
+    expect(getByText('Filename').closest('a').getAttribute('href')).toEqual(
+      '/workbench/data/tapis/private/test.system/path/to/file/'
+    );
   });
 
   it('renders name if not directory', () => {
@@ -129,7 +135,7 @@ describe('DataFilesListing', () => {
       format: 'file',
       length: 4096,
       lastModified: '2019-06-17T15:49:53-05:00',
-      _links: { self: { href: 'href.test' } }
+      _links: { self: { href: 'href.test' } },
     };
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -137,8 +143,8 @@ describe('DataFilesListing', () => {
       ...initialMockState,
       files: {
         ...initialMockState.files,
-        listing: { FilesListing: [testfile] }
-      }
+        listing: { FilesListing: [testfile] },
+      },
     });
 
     const { getByText, getAllByRole } = renderComponent(
@@ -185,22 +191,22 @@ describe('DataFilesListing', () => {
   });
 
   it.each([
-    ['500', /There was a problem accessing this file system./,'private'],
+    ['500', /There was a problem accessing this file system./, 'private'],
     [
       '502',
       /An error occurred loading this directory. For help, please submit/,
-      'public'
+      'public',
     ],
     [
       '502',
       /There was a problem accessing this file system. If this is your/,
-      'private'
+      'private',
     ],
     [
       '404',
       'The file or folder that you are attempting to access does not exist.',
-      'private'
-    ]
+      'private',
+    ],
   ])('Renders "%s" error message correctly', (errorCode, message, scheme) => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -224,38 +230,6 @@ describe('DataFilesListing', () => {
     expect(getByText(message)).toBeDefined();
   });
 
-  it('filters by file type', () => {
-    const store = mockStore({
-      ...initialMockState,
-      files: filesFixture
-    });
-    const history = createMemoryHistory();
-    history.push('/workbench/data/tapis/private/test.system/');
-
-    const { getByTestId, getAllByTestId } = renderComponent(
-      <DataFilesListing
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/"
-      />,
-      store,
-      history
-    );
-
-    const dropdownSelector = getByTestId('selector');
-    fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(1);
-    fireEvent.change(dropdownSelector, { target: { value: 'Text' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(2);
-    fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(4);
-    fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(
-      filesFixture.listing.FilesListing.length
-    );
-  });
-
   it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
@@ -264,7 +238,7 @@ describe('DataFilesListing', () => {
 
     const store = mockStore({
       ...initialMockState,
-      systems: systemsFixture
+      systems: systemsFixture,
     });
 
     const { queryByText } = render(

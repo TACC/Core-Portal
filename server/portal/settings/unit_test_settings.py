@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'portal.apps.googledrive_integration',
     'portal.apps.datafiles',
     'portal.apps.projects',
+    'portal.apps.intromessages',
 
 ]
 
@@ -309,6 +310,13 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
 """
+SETTINGS: RECAPTCHA TESTING KEY
+provided by Google at https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do
+"""
+RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+
+"""
 SETTINGS: LOGGING
 """
 
@@ -400,7 +408,7 @@ SUPPORTED_IMAGE_PREVIEW_EXTS = [
 SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
     '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
-    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
     '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
     '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
     '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
@@ -413,6 +421,10 @@ SUPPORTED_OBJECT_PREVIEW_EXTS = [
 
 SUPPORTED_IPYNB_PREVIEW_EXTS = [
     '.ipynb'
+]
+
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
+    '.htm', '.html'
 ]
 
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -439,6 +451,7 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
+        'hidden': False,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
@@ -448,6 +461,16 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
+        'hidden': False,
+    },
+    'stockyard': {
+        'name': 'My Data (Work)',
+        'systemId': 'cloud.corral.work.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/work/{tasdir}',
+        'port': 2222,
+        'icon': None,
+        'hidden': True,
     }
 }
 
@@ -480,13 +503,25 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.community',
         'scheme': 'community',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 1
+    },
+    {
+        'name': 'Public Data',
+        'system': 'portal.storage.public',
+        'scheme': 'public',
+        'api': 'tapis',
+        'icon': None,
+        'siteSearchPriority': 0
     },
     {
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': 'publications'
+        'icon': 'publications',
+        'privilegeRequired': False,
+        'readOnly': False,
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
@@ -495,13 +530,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'googledrive',
         'icon': None,
         'integration': 'portal.apps.googledrive_integration'
-    },
-    {
-        'name': 'Public Data',
-        'system': 'portal.storage.public',
-        'scheme': 'public',
-        'api': 'tapis',
-        'icon': None
     }
 ]
 

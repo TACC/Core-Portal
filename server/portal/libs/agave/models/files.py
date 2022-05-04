@@ -7,7 +7,6 @@ import json
 import logging
 import urllib.parse
 from requests.exceptions import HTTPError
-from agavepy.async import AgaveAsyncResponse, Error
 from django.conf import settings
 from cached_property import cached_property
 from .base import BaseAgaveResource
@@ -119,7 +118,7 @@ class BaseFile(BaseAgaveResource):
 
     def __repr__(self):
         return '<{}: {}/{}>'.format(self.__class__.__name__,
-                                     self.system, self.path)
+                                    self.system, self.path)
 
     @property
     def agave_uri(self):
@@ -288,68 +287,68 @@ class BaseFile(BaseAgaveResource):
             self._wrapped = res[0]
         return self
 
-    def import_data(self, from_system, from_path, retries=5, remote_url=None, external_resource=False):
-        """Imports data from an external storage system
+    # def import_data(self, from_system, from_path, retries=5, remote_url=None, external_resource=False):
+    #     """Imports data from an external storage system
 
-        :param str from_system: System to import from.
-        :param str from_path: Path to import from.
-        :param int retries: Maximum retries if something goes wrong.
+    #     :param str from_system: System to import from.
+    #     :param str from_path: Path to import from.
+    #     :param int retries: Maximum retries if something goes wrong.
 
-        :returns: Agave File Resource imported.
-        :rtype: :class:`BaseFile`
+    #     :returns: Agave File Resource imported.
+    #     :rtype: :class:`BaseFile`
 
-        .. note:: This function should be used to move data from one
-        Agave storage system to another Agave storage system.
+    #     .. note:: This function should be used to move data from one
+    #     Agave storage system to another Agave storage system.
 
-        .. todo:: We should implement a fallback using another type of
-        data transfer method if this fails.
-        """
-        if not remote_url:
-            remote_url = 'agave://{}/{}'.format(
-                from_system,
-                urllib.parse.quote(from_path)
-            )
-        file_name = os.path.split(from_path)[1]
-        _retries = retries
-        while _retries > 0:
-            try:
-                result = self._ac.files.importData(
-                    systemId=self.system,
-                    filePath=urllib.parse.quote(self.path),
-                    fileName=str(file_name),
-                    urlToIngest=remote_url
-                )
-                async_resp = AgaveAsyncResponse(self._ac, result)
-                async_status = async_resp.result(600)
-                _retries = 0
-            except Error as err:
-                logger.error(
-                    'There was an error importing data. %s. Retrying...',
-                    err,
-                    exc_info=True
-                )
-                _retries -= 1
+    #     .. todo:: We should implement a fallback using another type of
+    #     data transfer method if this fails.
+    #     """
+    #     if not remote_url:
+    #         remote_url = 'agave://{}/{}'.format(
+    #             from_system,
+    #             urllib.parse.quote(from_path)
+    #         )
+    #     file_name = os.path.split(from_path)[1]
+    #     _retries = retries
+    #     while _retries > 0:
+    #         try:
+    #             result = self._ac.files.importData(
+    #                 systemId=self.system,
+    #                 filePath=urllib.parse.quote(self.path),
+    #                 fileName=str(file_name),
+    #                 urlToIngest=remote_url
+    #             )
+    #             async_resp = AgaveAsyncResponse(self._ac, result)
+    #             async_status = async_resp.result(600)
+    #             _retries = 0
+    #         except Error as err:
+    #             logger.error(
+    #                 'There was an error importing data. %s. Retrying...',
+    #                 err,
+    #                 exc_info=True
+    #             )
+    #             _retries -= 1
 
-        if str(async_status) == 'FAILED':
-            logger.error(
-                'Import Data failed from: systemId=%s, filePath=%s. '
-                'to: systemId=%s, filePath=%s '
-                'using URI: %s',
-                from_system,
-                from_path,
-                self.system,
-                self.path,
-                remote_url,
-                exc_info=True
-            )
+    #     if str(async_status) == 'FAILED':
+    #         logger.error(
+    #             'Import Data failed from: systemId=%s, filePath=%s. '
+    #             'to: systemId=%s, filePath=%s '
+    #             'using URI: %s',
+    #             from_system,
+    #             from_path,
+    #             self.system,
+    #             self.path,
+    #             remote_url,
+    #             exc_info=True
+    #         )
 
-        # If import is coming from an external resource like google drive,
-        # don't return a listing for every recursive file upload.
-        if external_resource:
-            return BaseFile(system=result['systemId'],
-                            path=result['path'],
-                            client=self._ac)
-        return BaseFile.listing(self._ac, self.system, result['path'])
+    #     # If import is coming from an external resource like google drive,
+    #     # don't return a listing for every recursive file upload.
+    #     if external_resource:
+    #         return BaseFile(system=result['systemId'],
+    #                         path=result['path'],
+    #                         client=self._ac)
+    #     return BaseFile.listing(self._ac, self.system, result['path'])
 
     def copy(self, dest_path, file_name=None):
         """Copies the current file to the provided destination path.
@@ -476,8 +475,7 @@ class BaseFile(BaseAgaveResource):
             listing = cls(client=client, **list_result[0])
             if listing.type == 'dir' or offset:
                 # directory names display as "/" from API
-                listing._children = [cls(client=client, **f)
-                                    for f in list_result[1:]]
+                listing._children = [cls(client=client, **f) for f in list_result[1:]]
 
         listing.name = os.path.basename(listing.path)
         return listing

@@ -13,7 +13,7 @@ export function* getAuthenticatedUser() {
   } catch (error) {
     yield put({
       type: 'AUTHENTICATED_USER_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }

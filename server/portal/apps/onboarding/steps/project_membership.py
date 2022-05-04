@@ -61,12 +61,8 @@ class ProjectMembershipStep(AbstractStep):
     def is_project_member(self):
         username = self.user.username
         tas_client = self.get_tas_client()
-        projects = tas_client.projects_for_user(username)
-        return any(
-            [
-                project['id'] == self.settings['project_sql_id'] for project in projects
-            ]
-        )
+        project_users = tas_client.get_project_users(self.settings['project_sql_id'])
+        return any([u['username'] == username for u in project_users])
 
     def send_project_request(self, request):
         tracker = self.get_tracker()
@@ -85,7 +81,7 @@ class ProjectMembershipStep(AbstractStep):
         try:
             if tracker.login():
                 result = tracker.create_ticket(
-                    Queue='Accounting',
+                    Queue=self.settings.get('rt_queue') or 'Accounting',
                     Subject='{project} Project Membership Request for {username}'.format(
                         project=self.project['title'],
                         username=self.user.username
@@ -175,7 +171,7 @@ class ProjectMembershipStep(AbstractStep):
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
         request_text = """Your request for membership on the {project} project has been
-        granted. Please login at {base_url}/onboarding/setup to continue setting up your account.
+        granted. Please login at {base_url}/workbench/onboarding/setup to continue setting up your account.
         """.format(
             project=self.project['title'],
             base_url=settings.WH_BASE_URL

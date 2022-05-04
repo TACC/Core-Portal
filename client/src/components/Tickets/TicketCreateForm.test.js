@@ -3,6 +3,7 @@ import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
 import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
@@ -14,15 +15,16 @@ const exampleAuthenticatedUser = {
   email: 'max@munster.mann',
   oauth: {
     expires_in: 14400,
-    scope: 'default'
+    scope: 'default',
   },
-  isStaff: false
+  isStaff: false,
 };
 
 describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
     const store = mockStore({
-      ticketCreate
+      ticketCreate,
+      workbench,
     });
 
     const { getAllByText } = renderComponent(<TicketCreateForm />, store);
@@ -32,8 +34,9 @@ describe('TicketCreateForm', () => {
   it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
-        ...ticketCreate
-      }
+        ...ticketCreate,
+      },
+      workbench,
     });
 
     const { getAllByText, getByDisplayValue } = renderComponent(
@@ -50,8 +53,9 @@ describe('TicketCreateForm', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate,
-        creating: true
-      }
+        creating: true,
+      },
+      workbench,
     });
 
     const { getByTestId } = renderComponent(
@@ -66,8 +70,9 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate,
         creatingSuccess: true,
-        createdTicketId: 1234
-      }
+        createdTicketId: 1234,
+      },
+      workbench,
     });
 
     const { getByText } = renderComponent(
@@ -82,8 +87,9 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate,
         creatingError: true,
-        creatingErrorMessage: 'Mock error'
-      }
+        creatingErrorMessage: 'Mock error',
+      },
+      workbench,
     });
 
     const { getByText } = renderComponent(

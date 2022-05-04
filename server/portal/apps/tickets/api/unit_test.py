@@ -16,6 +16,12 @@ def rt_ticket_history(scope="module"):
 
 
 @pytest.fixture
+def mock_invalid_recaptcha(requests_mock):
+    recaptchaSuccess = {'success': False, 'challenge_ts': '2021-11-23T17:58:27Z', 'hostname': 'testkey.google.com'}
+    requests_mock.post('https://www.google.com/recaptcha/api/siteverify', json=recaptchaSuccess)
+
+
+@pytest.fixture
 def mock_rt(mocker, rt_tickets, rt_ticket_history):
     mock_rt = mocker.MagicMock()
     mock_rt.getUserTickets.return_value = rt_tickets
@@ -65,7 +71,7 @@ def test_tickets_create_missing_required_description_or_subject(client, authenti
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_tickets_create_missing_required_description_or_subject(client, regular_user, mock_rtutil):
+def test_tickets_create_missing_required_email(client, regular_user, mock_rtutil):
     # missing user email for unauthenticated user
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
@@ -114,6 +120,19 @@ def test_tickets_create_unauthencated(client, regular_user, mock_rtutil):
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_unauthencated_invalid_recaptcha(client, regular_user, mock_rtutil, mock_invalid_recaptcha):
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "email": "email@test.com",
+                                 "subject": "subject",
+                                 "first_name": "first_name",
+                                 "last_name": "last_name"}
+                           )
+    assert response.status_code == 400
+    assert json.loads(response.content) == {'message': 'Invalid reCAPTCHA. Please try again.'}
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil):
     attachment = (io.BytesIO(b"abcdef"), 'test.jpg')
     response = client.post('/api/tickets/',
@@ -143,6 +162,29 @@ def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil
 def test_tickets_get_history(client, authenticated_user, mock_rtutil):
     response = client.get('/api/tickets/1/history')
     assert response.status_code == 200
+    result = json.loads(response.content)
+    assert len(result["ticket_history"]) == 5
+    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    assert result["ticket_history"][2]["Creator"] == full_name
+    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][4]["Creator"] == full_name
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+@pytest.mark.parametrize("service_account", ["portal", "rtdev", "rtprod"])
+def test_tickets_get_history_handle_service_accounts(service_account, client, authenticated_user, mock_rtutil, rt_ticket_history):
+    for i in [6, 9]:  # two messages from service accounts
+        # set to different service account
+        rt_ticket_history[i]["Creator"] = service_account
+    mock_rtutil.getTicketHistory.return_value = rt_ticket_history
+
+    response = client.get('/api/tickets/1/history')
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    assert result["ticket_history"][2]["Creator"] == full_name
+    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][4]["Creator"] == full_name
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

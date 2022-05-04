@@ -1,7 +1,7 @@
 export const initialState = {
   list: [],
   loading: false,
-  error: null
+  error: null,
 };
 export default function systemMonitor(state = initialState, action) {
   switch (action.type) {

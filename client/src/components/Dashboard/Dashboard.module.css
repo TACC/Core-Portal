@@ -2,7 +2,9 @@
 
 .panels {
   /* HELP: How to assign this spacing when Quick Links is added? */
-  padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+  padding-top: var(
+    --global-space--section-left
+  ); /* deviated from design to use a similar global spacing */
 }
 
 .panels > * {
@@ -12,10 +14,9 @@
 /* FAQ: A border on <table> would be hidden unless it is scrolled to bottom */
 /* CAVEAT: Jobs panel border is halfway down section, even its table is empty */
 .panels > * > :global(.o-flex-item-table-wrap) {
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--dark);
 }
-
-
 
 /* Elements: System Monitor */
 
@@ -42,13 +43,7 @@
   overflow-x: hidden;
 }
 
-
-
-
-
 /* Media Queries */
-
-
 
 /* Narrow */
 /* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
@@ -58,8 +53,7 @@
   .panels {
     /* FAQ: Flex is necessary to allow easy panel re-ordering */
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    flex-flow: column nowrap;
   }
 
   /* Panels */

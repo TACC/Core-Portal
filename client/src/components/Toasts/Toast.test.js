@@ -9,13 +9,14 @@ import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../redux/sagas/fixtures/projects.fixture';
 import {
   dataFilesRename,
+  dataFilesCopy,
   dataFilesError,
   dataFilesUpload,
-  dataFilesUploadToSharedWorkSpace
+  dataFilesUploadToSharedWorkSpace,
 } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import {
   jobStatusUpdatePending,
-  jobInteractiveSessionReady
+  jobInteractiveSessionReady,
 } from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
 
 const mockStore = configureStore();
@@ -27,8 +28,8 @@ const exampleToasts = [
     message: 'This is a test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'RUNNING'
-    }
+      status: 'RUNNING',
+    },
   },
   {
     pk: '2',
@@ -36,12 +37,12 @@ const exampleToasts = [
     message: 'This is another test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'FINISHED'
-    }
-  }
+      status: 'FINISHED',
+    },
+  },
 ];
 
-const getToastStore = eventToasts => {
+const getToastStore = (eventToasts) => {
   return {
     systems: systemsFixture,
     projects: projectsFixture,
@@ -49,9 +50,9 @@ const getToastStore = eventToasts => {
       ...notifications,
       list: {
         ...notifications.list,
-        toasts: eventToasts
-      }
-    }
+        toasts: eventToasts,
+      },
+    },
   };
 };
 
@@ -124,6 +125,65 @@ describe('getToastMessage', () => {
     expect(getToastMessage(dataFilesRename)).toEqual(
       'File renamed to test2.png'
     );
+
+    // Between same systems
+    expect(
+      getToastMessage(
+        {
+          ...dataFilesCopy,
+          extra: {
+            ...dataFilesCopy.extra,
+            response: {
+              ...dataFilesCopy.extra.response,
+              source: 'agave://cloud.corral.work.username//testfol/test.png',
+              systemId: 'cloud.corral.work.username',
+            },
+          },
+        },
+        systemsFixture.storage.configuration,
+        projectsFixture.listing.projects
+      )
+    ).toEqual('File copied to testfol');
+
+    // Between different systems
+    expect(
+      getToastMessage(
+        {
+          ...dataFilesCopy,
+          extra: {
+            ...dataFilesCopy.extra,
+            response: {
+              ...dataFilesCopy.extra.response,
+              source: 'agave://cloud.corral.work.username//testfol/test.png',
+              systemId: 'cep.local.project.username.CEP-1',
+            },
+          },
+        },
+        systemsFixture.storage.configuration,
+        projectsFixture.listing.projects
+      )
+    ).toEqual('File started copying to testfol');
+
+    // Between different systems and https source
+    expect(
+      getToastMessage(
+        {
+          ...dataFilesCopy,
+          extra: {
+            ...dataFilesCopy.extra,
+            response: {
+              ...dataFilesCopy.extra.response,
+              source:
+                'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png',
+              systemId: 'cep.local.project.username.CEP-1',
+            },
+          },
+        },
+        systemsFixture.storage.configuration,
+        projectsFixture.listing.projects
+      )
+    ).toEqual('File started copying to testfol');
+
     expect(getToastMessage(dataFilesError)).toEqual('Move failed');
   });
 });

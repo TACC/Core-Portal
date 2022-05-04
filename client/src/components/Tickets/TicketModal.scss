@@ -29,7 +29,6 @@
 }
 
 .ticket-model-content {
-
   color: var(--global-color-primary--xx-dark);
   font-size: 0.75rem;
   height: 90vh;
@@ -50,6 +49,10 @@
 
   .card-body {
     white-space: pre-wrap;
+  }
+
+  .attached {
+    padding-top: 0;
   }
 
   .ticket-responder {
@@ -99,5 +102,16 @@
   .icon-action {
     font-size: 1.4em;
     display: flex;
+  }
+  .attachment-download {
+    text-align: right;
+  }
+  .link {
+    color: var(--global-color-accent--normal);
+    margin-right: 20px;
+    &:hover {
+      color: var(--global-color-accent--normal);
+      text-decoration: underline;
+    }
   }
 }

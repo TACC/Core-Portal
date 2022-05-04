@@ -11,8 +11,11 @@
   font-size: 0.875rem; /* 14px (approved deviation from design) */
   border-bottom: 1px solid #e0e0e0;
 }
-.tr-background-shading {
-  background: #F4F4F4;
+.tr-background-shading:not(.-status) {
+  background: #f4f4f4;
+}
+.tr:not(.tr-header):hover {
+  background-color: rgb(0 0 0 / 5%);
 }
 .tr-header {
   border-bottom: 1px solid #000000;
@@ -27,7 +30,17 @@
 .tr-selected:not(.scroll):not(.tr-header) {
   background: var(--global-color-accent--weak);
 }
-
+.tr-disabled {
+  color: var(--global-color-primary--light);
+}
+.tr-disabled .data-files-nav-link {
+  color: var(--global-color-primary--light);
+  pointer-events: none;
+}
+.tr-disabled .btn.btn-sm {
+  color: var(--global-color-primary--light);
+  pointer-events: none;
+}
 .td {
   padding-left: 15px;
   padding-right: 15px;

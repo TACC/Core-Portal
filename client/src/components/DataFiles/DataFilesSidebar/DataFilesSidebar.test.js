@@ -11,11 +11,11 @@ const mockStore = configureStore();
 const initialMockState = {
   files: {
     error: {
-      FilesListing: false
+      FilesListing: false,
     },
     params: {
-      FilesListing: {}
-    }
+      FilesListing: {},
+    },
   },
   systems: systemsFixture,
   authenticatedUser: {
@@ -23,9 +23,9 @@ const initialMockState = {
       username: 'username',
       first_name: 'User',
       last_name: 'Name',
-      email: 'user@username.com'
-    }
-  }
+      email: 'user@username.com',
+    },
+  },
 };
 
 describe('DataFilesSidebar', () => {
@@ -34,10 +34,10 @@ describe('DataFilesSidebar', () => {
     history.push('/workbench/data/');
 
     const store = mockStore({
-      ...initialMockState
+      ...initialMockState,
     });
 
-    const { getByText } = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <Route path="/workbench/data">
         <DataFilesSidebar />
       </Route>,
@@ -58,6 +58,7 @@ describe('DataFilesSidebar', () => {
         .closest('a')
         .getAttribute('href')
     ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');
+    expect(queryByText(/My Data \(Work\)/)).toBeNull();
   });
 
   it('disables creating new shared workspaces in read only shared workspaces', async () => {
@@ -79,9 +80,10 @@ describe('DataFilesSidebar', () => {
       history
     );
 
-    expect(Array.from(container.querySelectorAll('.dropdown-item'))
-      .find(el =>
-        el.textContent.includes('Shared Workspace'))
-      ).toBeUndefined();
+    expect(
+      Array.from(container.querySelectorAll('.dropdown-item')).find((el) =>
+        el.textContent.includes('Shared Workspace')
+      )
+    ).toBeUndefined();
   });
 });
