@@ -1,0 +1,6 @@
+.root {
+  /* To replicate margin that is unset by `<Message>` */
+  /* HACK: Overwrite spacing that was removed */
+  /* FP-1227: Standardize Message margin and do not hack here */
+  margin: var(--global-space--section-top) 0 !important;
+}

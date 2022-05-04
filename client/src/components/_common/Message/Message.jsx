@@ -57,12 +57,30 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
 
 /**
  * Show an event-based message to the user
- * @todo Document examples
  * @example
- * // Blah blah…
- * <Sample jsx>
+ * // basic usage
+ * <Message type="error" scope="inline">Invalid content.</Message>
+ * @example
+ * // manage dismissal and visibility
+ * const [isVisible, setIsVisible] = useState(...);
+ *
+ * const onDismiss = useCallback(() => {
+ *   setIsVisible(!isVisible);
+ * }, [isVisible]);
+ *
+ * return (
+ *   <SectionMessage
+ *     type="warning"
+ *     isVisible={isVisible}
+ *     onDismiss={onDismiss}
+ *   >
+ *     Uh oh.
+ *   </SectionMessage>
+ * );
+ * ...
  */
 const Message = ({
+  ariaLabel,
   children,
   className,
   dataTestid,
@@ -123,6 +141,7 @@ const Message = ({
       className={`${className} ${containerStyleNames}`}
       role={role}
       in={isVisible}
+      aria-label={ariaLabel}
       data-testid={dataTestid}
     >
       <Icon
@@ -151,6 +170,8 @@ const Message = ({
   );
 };
 Message.propTypes = {
+  /** How to label this message for accessibility (via `aria-label`) */
+  ariaLabel: PropTypes.string,
   /** Whether an action can be dismissed (requires scope equals `section`) */
   canDismiss: PropTypes.bool,
   /** Message text (as child node) */
@@ -170,6 +191,7 @@ Message.propTypes = {
   type: PropTypes.oneOf(TYPES).isRequired,
 };
 Message.defaultProps = {
+  ariaLabel: 'message',
   className: '',
   canDismiss: false,
   dataTestid: '',
