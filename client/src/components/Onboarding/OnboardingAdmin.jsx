@@ -65,7 +65,13 @@ OnboardingApproveActions.defaultProps = {
   action: null,
 };
 
-const OnboardingResetLinks = ({ callback, disabled, disableSkip, forceStorageCreation, action }) => {
+const OnboardingResetLinks = ({
+  callback,
+  disabled,
+  disableSkip,
+  forceStorageCreation,
+  action,
+}) => {
   return (
     <div className={styles.reset}>
       <Button
@@ -97,8 +103,8 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, forceStorageCre
         )}
         Skip
       </Button>
-      {forceStorageCreation && ( 
-	<>
+      {forceStorageCreation && (
+        <>
           <>|</>
           <Button
             color="link"
@@ -112,7 +118,7 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, forceStorageCre
                 className="onboarding-admin__action-spinner"
               />
             )}
-          Force Recreate
+            Force Recreate
           </Button>
         </>
       )}
@@ -203,9 +209,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               }
               disabled={adminAction.loading}
               disableSkip={step.state === 'completed'}
-	      forceStorageCreation={
-                (step.step.split('.').splice(-1)[0] === 'KeyServiceCreationStep')
-	      }
+              forceStorageCreation={
+                step.step.split('.').splice(-1)[0] === 'KeyServiceCreationStep'
+              }
               sentAction={
                 adminAction.username === user.username &&
                 adminAction.step === step.step
