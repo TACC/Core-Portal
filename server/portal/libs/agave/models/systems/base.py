@@ -168,8 +168,7 @@ class BaseSystem(BaseAgaveResource):
     @cached_property_with_ttl(ttl=60*15)
     def roles(self):
         """System roles."""
-        client = service_account()
-        roles = client.systems.listRoles(
+        roles = self._ac.systems.listRoles(
             systemId=self.id
         )
         return Roles(self._ac, roles, self)

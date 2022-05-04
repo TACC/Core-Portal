@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Input, Label, Button } from 'reactstrap';
 import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
+import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';
 
 const DataFilesProjectMembers = ({
@@ -19,6 +20,12 @@ const DataFilesProjectMembers = ({
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector((state) => state.users.search.users);
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+  const { query: authenticatedUserQuery } = !projectId
+    ? {}
+    : useSystemRole(projectId, authenticatedUser);
 
   const [selectedUser, setSelectedUser] = useState('');
 
@@ -94,22 +101,35 @@ const DataFilesProjectMembers = ({
       </span>
     ),
   };
+  const roleColumn =
+    !projectId ||
+    ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role)
+      ? [
+          {
+            Header: 'Role',
+            accessor: 'user.username',
+            id: 'role',
+            className: 'project-members__cell',
+            show: false,
+            Cell: projectId
+              ? (el) => (
+                  <SystemRoleSelector
+                    projectId={projectId}
+                    username={el.value}
+                  />
+                )
+              : (el) => (
+                  <span>
+                    {mapAccessToRoles(el.row.original.access).systemRole}
+                  </span>
+                ),
+          },
+        ]
+      : [];
 
   const columns = [
     memberColumn,
-    {
-      Header: 'Role',
-      accessor: 'user.username',
-      id: 'role',
-      className: 'project-members__cell',
-      Cell: projectId
-        ? (el) => (
-            <SystemRoleSelector projectId={projectId} username={el.value} />
-          )
-        : (el) => (
-            <span>{mapAccessToRoles(el.row.original.access).systemRole}</span>
-          ),
-    },
+    ...roleColumn,
     {
       Header: loading ? (
         <LoadingSpinner
@@ -239,7 +259,7 @@ const DataFilesProjectMembers = ({
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={existingMembers}
         className={styles[listStyle]}
-        columnMemoProps={[loading, mode, transferUser]}
+        columnMemoProps={[loading, mode, transferUser, authenticatedUserQuery]}
       />
     </div>
   );

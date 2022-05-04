@@ -22,7 +22,7 @@ describe('SystemRoleSelector', () => {
 
     renderComponent(
       <SystemRoleSelector projectId="CEP-000" username="testuser" />,
-      mockStore({authenticatedUser: {user: {username: 'testuser'}}})
+      mockStore({ authenticatedUser: { user: { username: 'testuser' } } })
     );
     expect(await screen.findByTestId('loading-spinner')).toBeDefined();
     await waitFor(async () => {

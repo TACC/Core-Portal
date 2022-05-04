@@ -34,7 +34,7 @@ const setSystemRole = async (projectId, username, role) => {
   return data;
 };
 
-const useSystemRole = (projectId, username) => {
+export const useSystemRole = (projectId, username) => {
   const query = useQuery(['system-role', projectId, username], () =>
     getSystemRole(projectId, username)
   );
@@ -59,14 +59,20 @@ const SystemRoleSelector = ({ projectId, username }) => {
     query: { data, isLoading, isFetching, error },
     mutation: { mutate: setSystemRole, isLoading: isMutating },
   } = useSystemRole(projectId, username);
-
   const [selectedRole, setSelectedRole] = useState(data?.role);
   useEffect(() => setSelectedRole(data?.role), [data?.role]);
 
   if (isLoading || authenticatedUserQuery.isLoading)
     return <LoadingSpinner placement="inline" />;
   if (error) return <span>Error</span>;
-  if (data.role === 'OWNER' || !['OWNER', 'ADMIN'].includes(currentUserRole))
+  //Only owners/admins can change roles;
+  // owner roles cannot be changed except using the Transfer mechanism;
+  // users cannot change their own roles.
+  if (
+    data.role === 'OWNER' ||
+    username === authenticatedUser ||
+    !['OWNER', 'ADMIN'].includes(currentUserRole)
+  )
     return <span>{data.role}</span>;
   return (
     <div style={{ display: 'inline-flex' }}>
