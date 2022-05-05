@@ -61,7 +61,7 @@ p.is-scope-section {
 /* Modifiers: Type */
 
 /* Design decided icon is not necessary for informational messages */
-.is-info .icon[aria-label='Notice'] {
+.is-info .icon:not(.close-icon) {
   display: none;
 }
 
