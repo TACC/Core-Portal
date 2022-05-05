@@ -141,17 +141,18 @@ describe('DataFilesSearchbar', () => {
         loading: {},
       },
     });
-    const { getByRole, getByTestId, queryByTestId, getByPlaceholderText } = renderComponent(
-      <DataFilesSearchbar
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        resultCount={0}
-        disabled
-      />,
-      store,
-      history
-    );
+    const { getByRole, getByTestId, queryByTestId, getByPlaceholderText } =
+      renderComponent(
+        <DataFilesSearchbar
+          api="tapis"
+          scheme="private"
+          system="frontera.home.username"
+          resultCount={0}
+          disabled
+        />,
+        store,
+        history
+      );
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
