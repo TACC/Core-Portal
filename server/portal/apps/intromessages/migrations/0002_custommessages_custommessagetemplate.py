@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('component', models.CharField(choices=[('Dashboard', 'dashboard'), ('Data Files', 'datafiles'), ('Applications', 'applications'), ('Allocations', 'allocations'), ('History', 'history'), ('Account', 'account')], default='Dashboard', help_text='Component type', max_length=20)),
                 ('message_type', models.CharField(choices=[], default='info', help_text='Message type', max_length=20)),
                 ('dismissible', models.BooleanField(default=True)),
-                ('message', models.TextField(blank=True, default='', help_text='Message content')),
+                ('message', models.CharField(blank=True, max_length=200, default='', help_text='Message content (max 200 characters)')),
             ],
         ),
 
