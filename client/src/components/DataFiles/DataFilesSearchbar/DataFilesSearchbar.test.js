@@ -125,6 +125,38 @@ describe('DataFilesSearchbar', () => {
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
     expect(getByTestId('selector')).toBeDefined();
+    expect(getByTestId('summary-of-search-results')).toBeDefined();
+    expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
+  });
+
+  it('has hides results when disabled', () => {
+    const history = createMemoryHistory();
+    history.push(
+      '/workbench/data/api/scheme/system/path?query_string=testquery'
+    );
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {},
+      },
+    });
+    const { getByRole, getByTestId, queryByTestId, getByPlaceholderText } = renderComponent(
+      <DataFilesSearchbar
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        resultCount={0}
+        disabled
+      />,
+      store,
+      history
+    );
+
+    expect(getByRole('form')).toBeDefined();
+    expect(getByRole('searchbox')).toBeDefined();
+    expect(getByTestId('selector')).toBeDefined();
+    expect(queryByTestId('summary-of-search-results')).toBeNull();
     expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
 });

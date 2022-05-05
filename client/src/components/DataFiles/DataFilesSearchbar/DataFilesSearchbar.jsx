@@ -146,11 +146,12 @@ const DataFilesSearchbar = ({
           </DropdownSelector>
         </div>
       )}
-      {((hasQuery && !siteSearch) ||
+      {((hasQuery && !siteSearch && !disabled) ||
         (filterType && filterType !== 'All Types')) && (
         <div
           aria-label="Summary of Search Results"
           className={styles['results']}
+          data-testid="summary-of-search-results"
         >
           {resultCount} results in {sectionName}
         </div>
