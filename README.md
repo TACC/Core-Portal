@@ -29,14 +29,32 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 After you clone the repository locally, there are several configuration steps required to prepare the project.
 
 
-#### Create settings_secret.py, settings_local.py, and secrets.py
+#### Create settings and secrets
+
+##### Portal
 
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally._
+    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
+
+##### CMS
+
+A shortcut for the CMS steps is:
+
+```
+cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
+touch server/conf/cms/settings_local.py
+touch server/conf/cms/settings_custom.py
+```
+
+Otherwise:
 
 - Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
+
+- To emulate a specific CMS project, copy https://github.com/TACC/Core-CMS-Resources/blob/main/__PROJECT_TO_EMULATE__/settings_custom.py to `server/conf/cms/settings_custom.py`
+
+- To override any standard or custom CMS settings, create a `server/conf/cms/settings_local.py`
 
 #### Build the image for the portal's django container:
     make build

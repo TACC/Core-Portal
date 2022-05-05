@@ -1,35 +1,20 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { findSystemOrProjectDisplayName } from 'utils/systems';
+import { useSystemDisplayName } from 'hooks/datafiles';
+import { useModal, useFileListing } from 'hooks/datafiles';
+import { useMkdir } from 'hooks/datafiles/mutations';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
-  const dispatch = useDispatch();
-  const systemList = useSelector(
-    (state) => state.systems.storage.configuration
-  );
-  const projectsList = useSelector((state) => state.projects.listing.projects);
-  const isOpen = useSelector((state) => state.files.modals.mkdir);
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
-  const systemDisplayName = findSystemOrProjectDisplayName(
-    params.scheme,
-    systemList,
-    projectsList,
-    params.system
-  );
-  const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'mkdir', props: {} },
-    });
-  };
+  const { toggle: toggleModal, getStatus: getModalStatus } = useModal();
+  const isOpen = getModalStatus('mkdir');
+  const { params } = useFileListing('FilesListing');
+  const systemDisplayName = useSystemDisplayName(params);
+  const { mkdir } = useMkdir();
+  const toggle = () => toggleModal({ operation: 'mkdir', props: {} });
 
   const validationSchema = Yup.object().shape({
     dirname: Yup.string()
@@ -47,17 +32,14 @@ const DataFilesMkdirModal = () => {
     history.push(location.pathname);
   };
 
-  const mkdir = ({ dirname }) => {
-    dispatch({
-      type: 'DATA_FILES_MKDIR',
-      payload: {
-        api: params.api,
-        scheme: params.scheme,
-        system: params.system,
-        path: params.path || '/',
-        dirname,
-        reloadCallback: reloadPage,
-      },
+  const mkdirCallback = ({ dirname }) => {
+    mkdir({
+      api: params.api,
+      scheme: params.scheme,
+      system: params.system,
+      path: params.path || '/',
+      dirname,
+      reloadCallback: reloadPage,
     });
   };
 
@@ -73,7 +55,7 @@ const DataFilesMkdirModal = () => {
         <Formik
           initialValues={{ dirname: '' }}
           validationSchema={validationSchema}
-          onSubmit={mkdir}
+          onSubmit={mkdirCallback}
         >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
