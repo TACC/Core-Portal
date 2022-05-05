@@ -55,9 +55,8 @@
 }
 
 /* Aliases */
-/* .icon-contract */
-.icon-collapse::before {
-  content: '\e915';
+.icon-collapse/* aka .icon-contract */::before {
+  content: '\ea15';
 }
 
 /* Overrides */
