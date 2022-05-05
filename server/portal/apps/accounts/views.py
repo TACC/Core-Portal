@@ -4,9 +4,10 @@ Accounts views.
 import logging
 import json
 import requests
+
 from django.forms.models import model_to_dict
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
@@ -15,6 +16,8 @@ from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
 from portal.apps.accounts import form_fields as forms
+from portal.utils.decorators import handle_uncaught_exceptions
+
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
@@ -25,9 +28,10 @@ def accounts(request):
     return response
 
 
+@handle_uncaught_exceptions(message="Unable to change password.")
 @login_required
 def change_password(request):
-    username = str(request.user)
+    username = request.user.username
     body = json.loads(request.body)
     current_password = body['currentPW']
     new_password = body['newPW']
@@ -57,6 +61,7 @@ def get_user_history(username):
         raise Exception('Failed to get project users', resp['message'])
 
 
+@handle_uncaught_exceptions(message="Unable to get profile.")
 @login_required
 def get_profile_data(request):
     """
@@ -83,32 +88,31 @@ def get_profile_data(request):
     context = {
         'demographics': demographics,
         'history': history,
-        'licenses': manage_licenses(request),
-        'integrations': manage_integrations(request),
+        'licenses': _manage_licenses(request),
+        'integrations': _manage_integrations(request),
     }
 
     return JsonResponse(context)
 
 
-@login_required
-def manage_licenses(request):
+def _manage_licenses(request):
     from portal.apps.licenses.models import get_license_info
     licenses, license_models = get_license_info()
     licenses.sort(key=lambda x: x['license_type'])
     license_models.sort(key=lambda x: x.license_type)
 
-    for l, m in zip(licenses, license_models):
+    for license, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
-            l['current_user_license'] = True
-        l['template_html'] = render_to_string(l['details_html'])
+            license['current_user_license'] = True
+        license['template_html'] = render_to_string(license['details_html'])
     return licenses
 
 
-@login_required
-def manage_integrations(request):
+def _manage_integrations(request):
     return integrations.get_integrations(request)
 
 
+@handle_uncaught_exceptions(message="Unable to update profile.")
 @login_required
 def edit_profile(request):
     tas = TASClient(
@@ -139,19 +143,8 @@ def edit_profile(request):
     return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
-def departments_json(request):
-    institution_id = request.GET.get('institutionId')
-    if institution_id:
-        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
-        departments = tas.get_departments(institution_id)
-    else:
-        departments = {}
-    return HttpResponse(
-        json.dumps(departments),
-        content_type='application/json'
-    )
-
-
+@handle_uncaught_exceptions(message="Unable to get form fields.")
+@login_required
 def get_form_fields(request):
     return JsonResponse({
         'institutions': [list(i) for i in forms.get_institution_choices()],

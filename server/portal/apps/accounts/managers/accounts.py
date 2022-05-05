@@ -72,7 +72,7 @@ def setup(username, system):
 
     :param str username: Account's username to setup
 
-    :return: home_dir, home_sys
+    :return: home_dir
 
     .. note::
         The django setting `PORTAL_USER_ACCOUNT_SETUP_STEPS` can be used to
@@ -92,7 +92,7 @@ def setup(username, system):
             )
         )
         return home_dir
-    home_sys = mgr.setup_private_system(user)
+    mgr.setup_private_system(user)
 
     return home_dir
 

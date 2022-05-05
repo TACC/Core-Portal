@@ -135,7 +135,6 @@ class UserApplicationsManager(AbstractApplicationsManager):
         cloned_exec_sys = self.get_or_create_cloned_app_exec_system(host_app.execution_system, allocation)
 
         cloned_depl_path = '.APPDATA/{appName}-{rev}.0'.format(
-            username=self.user.username,
             appName=cloned_app_name,
             rev=host_app.revision
         )

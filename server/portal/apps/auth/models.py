@@ -9,9 +9,7 @@ from django.conf import settings
 from agavepy.agave import Agave
 from agavepy import agave
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
 
 
 TOKEN_EXPIRY_THRESHOLD = 600

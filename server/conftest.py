@@ -15,7 +15,6 @@ def mock_agave_client(mocker):
 
 @pytest.fixture
 def mock_googledrive_client(mocker):
-    from googleapiclient.discovery import Resource
     return MagicMock()
 
 

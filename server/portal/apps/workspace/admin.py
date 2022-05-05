@@ -4,6 +4,7 @@ from portal.apps.workspace.models import (
     AppTrayCategory
 )
 
+
 @admin.register(AppTrayCategory)
 class AppTrayCategoryAdmin(admin.ModelAdmin):
     fields = ('category', 'priority', )
