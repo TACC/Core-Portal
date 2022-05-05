@@ -46,3 +46,7 @@ $core-portal-color-primary: var(--global-color-accent--normal);
   flex-grow: 1;
   justify-content: flex-end;
 }
+
+.hidden {
+  visibility: hidden;
+}

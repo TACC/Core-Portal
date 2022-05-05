@@ -6,7 +6,28 @@ import { useLocation, NavLink as RRNavLink } from 'react-router-dom';
 import { Icon, Pill } from '_common';
 import './SiteSearchSidebar.scss';
 
-const SiteSearchSidebar = ({ authenticated, schemes, results }) => {
+const SiteSearchSidebarItem = ({ to, label, icon, count, searching }) => {
+  return (
+    <NavItem>
+      <NavLink
+        tag={RRNavLink}
+        to={to}
+        activeClassName="active"
+      >
+        <div className="nav-content">
+          <Icon name={icon} />
+          <span className="nav-text">{label}</span>
+          <div className="search-count-pill">
+            <Pill className={`${searching ? 'hidden' : ''}`}>{count.toString()}</Pill>
+          </div>
+        </div>
+      </NavLink>
+    </NavItem>
+  );
+};
+
+
+const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
   const queryParams = queryStringParser.parse(useLocation().search);
   // Reset pagination on browse
   const query = queryStringParser.stringify({ ...queryParams, page: 1 });
@@ -15,51 +36,28 @@ const SiteSearchSidebar = ({ authenticated, schemes, results }) => {
       <div className="site-search-sidebar">
         <div className="site-search-nav">
           <Nav vertical>
-            <NavItem>
-              <NavLink
-                tag={RRNavLink}
-                to={`/search/cms/?${query}`}
-                activeClassName="active"
-              >
-                <div className="nav-content">
-                  <Icon name="browser" />
-                  <span className="nav-text">Web Content </span>
-                  <div className="search-count-pill">
-                    <Pill>{results.cms.count.toString()}</Pill>
-                  </div>
-                </div>
-              </NavLink>
-              {schemes.includes('public') && (
-                <NavLink
-                  tag={RRNavLink}
-                  to={`/search/public/?${query}`}
-                  activeClassName="active"
-                >
-                  <div className="nav-content">
-                    <Icon name="folder" />
-                    <span className="nav-text">Public Files</span>
-                    <div className="search-count-pill">
-                      <Pill>{results.public.count.toString()}</Pill>
-                    </div>
-                  </div>
-                </NavLink>
-              )}
-              {authenticated && schemes.includes('community') && (
-                <NavLink
-                  tag={RRNavLink}
-                  to={`/search/community/?${query}`}
-                  activeClassName="active"
-                >
-                  <div className="nav-content">
-                    <Icon name="folder" />
-                    <span className="nav-text">Community Data</span>
-                    <div className="search-count-pill">
-                      <Pill>{results.community.count.toString()}</Pill>
-                    </div>
-                  </div>
-                </NavLink>
-              )}
-            </NavItem>
+            <SiteSearchSidebarItem
+              to={`/search/cms/?${query}`}
+              label="Web Content"
+              icon="browser"
+              count={results.cms.count}
+              searching={searching}/>
+            {schemes.includes('public') && (
+              <SiteSearchSidebarItem
+                to={`/search/public/?${query}`}
+                label="Public Files"
+                icon="folder"
+                count={results.public.count}
+                searching={searching}/>
+            )}
+            {authenticated && schemes.includes('community') && (
+              <SiteSearchSidebarItem
+                to={`/search/community/?${query}`}
+                label="Community Data"
+                icon="folder"
+                count={results.community.count}
+                searching={searching}/>
+            )}
           </Nav>
         </div>
       </div>
@@ -74,6 +72,7 @@ SiteSearchSidebar.propTypes = {
     })
   ).isRequired,
   schemes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  searching: PropTypes.bool.isRequired
 };
 
 export default SiteSearchSidebar;
