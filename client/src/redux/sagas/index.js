@@ -43,7 +43,7 @@ import {
   watchFetchIntroMessages,
   watchSaveIntroMessages,
   watchFetchCustomMessages,
-  watchSaveCustomMessages
+  watchSaveCustomMessages,
 } from './message.sagas';
 import {
   watchOnboardingAdminList,
