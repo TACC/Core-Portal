@@ -144,11 +144,11 @@ const DataFilesSearchbar = ({
           </DropdownSelector>
         </div>
       )}
-      {((hasQuery && !siteSearch && !disabled) ||
+      {((hasQuery && !siteSearch) ||
         (filterType && filterType !== 'All Types')) && (
         <div
           aria-label="Summary of Search Results"
-          className={styles['results']}
+          className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
           {resultCount} results in {sectionName}
@@ -159,9 +159,9 @@ const DataFilesSearchbar = ({
         <Button
           type="reset"
           color="link"
+          data-testid="reset"
           className={styles['clear-button']}
           onClick={onClear}
-          data-testid="reset"
         >
           Back to All Files
         </Button>

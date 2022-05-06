@@ -126,6 +126,9 @@ describe('DataFilesSearchbar', () => {
     expect(getByRole('searchbox')).toBeDefined();
     expect(getByTestId('selector')).toBeDefined();
     expect(getByTestId('summary-of-search-results')).toBeDefined();
+    expect(
+      getByTestId('summary-of-search-results').getAttribute('class')
+    ).not.toMatch(/hidden/);
     expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
 
@@ -141,23 +144,24 @@ describe('DataFilesSearchbar', () => {
         loading: {},
       },
     });
-    const { getByRole, getByTestId, queryByTestId, getByPlaceholderText } =
-      renderComponent(
-        <DataFilesSearchbar
-          api="tapis"
-          scheme="private"
-          system="frontera.home.username"
-          resultCount={0}
-          disabled
-        />,
-        store,
-        history
-      );
+    const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
+      <DataFilesSearchbar
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        resultCount={0}
+        disabled
+      />,
+      store,
+      history
+    );
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
     expect(getByTestId('selector')).toBeDefined();
-    expect(queryByTestId('summary-of-search-results')).toBeNull();
+    expect(
+      getByTestId('summary-of-search-results').getAttribute('class')
+    ).toMatch(/hidden/);
     expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
 });
