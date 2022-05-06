@@ -203,10 +203,12 @@ Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and i
 1. Run `npm run lint`, which is the same as linting both languages independently:
     - `npm run lint:js`
     - `npm run lint:css`
+    - `npm run prettier:check`
 
 You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
 - `npm run lint:js -- --fix`
 - `npm run lint:css -- --fix`
+- `npm run prettier:fix`
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `flake8` from the command line.
 To do so, run the following in the `core_portal_django` container:

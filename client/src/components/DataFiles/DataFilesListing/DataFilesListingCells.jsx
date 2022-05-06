@@ -3,44 +3,33 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Checkbox, Icon, LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './DataFilesListingCells.scss';
 import '../../Onboarding/OnboardingStep.module.scss';
 
+import { useSelectedFiles } from 'hooks/datafiles';
 import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 
 export const CheckboxHeaderCell = () => {
-  const selected = useSelector((state) => state.files.selectAll.FilesListing);
-  const listingLength = useSelector(
-    (state) => state.files.listing.FilesListing.length
-  );
-  const dispatch = useDispatch();
-  const toggleSelect = () => {
-    listingLength &&
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_SELECT_ALL',
-        payload: { section: 'FilesListing' },
-      });
-  };
-  const handleKeyPress = (e) => e.key === ' ' && toggleSelect();
+  const { allSelected, selectAll } = useSelectedFiles();
+  const handleKeyPress = (e) => e.key === 'enter' && selectAll();
   return (
     <Checkbox
-      isChecked={selected}
+      isChecked={allSelected}
       id="FileCheckboxHeader"
       role="checkbox"
       aria-label="select all folders and files"
       tabIndex={0}
-      onClick={toggleSelect}
+      onClick={selectAll}
       onKeyDown={handleKeyPress}
     />
   );
 };
 
 export const CheckboxCell = React.memo(({ index, name, format, disabled }) => {
-  const selected = useSelector((state) =>
-    state.files.selected.FilesListing.includes(index)
-  );
+  const { isSelected } = useSelectedFiles();
+  const selected = isSelected(index);
   const itemFormat = format === 'raw' ? 'file' : format;
 
   return disabled ? (
