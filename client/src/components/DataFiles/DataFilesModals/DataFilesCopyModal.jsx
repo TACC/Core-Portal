@@ -1,9 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useHistory, useLocation } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import { SectionMessage } from '_common';
+import { useHistory, useLocation } from 'react-router-dom';
+import {
+  useSelectedFiles,
+  useFileListing,
+  useSystems,
+  useModal,
+} from 'hooks/datafiles';
+import { useCopy } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
@@ -13,61 +19,37 @@ import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsLis
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
+  const { copy, setStatus } = useCopy();
+  const { getStatus, getProps, setProps, toggle: toggleModal } = useModal();
+
+  const { params } = useFileListing('FilesListing');
+  const {
+    params: modalParams,
+    data: files,
+    fetchListing,
+  } = useFileListing('modal');
 
   const dispatch = useDispatch();
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
-  const modalParams = useSelector(
-    (state) => state.files.params.modal,
-    shallowEqual
-  );
 
   const reloadPage = () => {
+    fetchListing(modalParams);
     history.push(location.pathname);
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...modalParams, section: 'modal' },
-    });
   };
-  const files = useSelector((state) => state.files.listing.modal, shallowEqual);
-  const isOpen = useSelector((state) => state.files.modals.copy);
-  const { showProjects, canMakePublic } = useSelector(
-    (state) => state.files.modalProps.copy
-  );
-  const status = useSelector(
-    (state) => state.files.operationStatus.copy,
-    shallowEqual
-  );
-  const [disabled, setDisabled] = useState(false);
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration,
-    shallowEqual
-  );
 
-  const selectedFiles = useSelector((state) =>
-    state.files.selected.FilesListing.map((i) => ({
-      ...state.files.listing.FilesListing[i],
-      id: uuidv4(),
-    }))
-  );
+  const isOpen = getStatus('copy');
+  const { showProjects, canMakePublic } = getProps('copy');
+
+  const [disabled, setDisabled] = useState(false);
+  const { data: systems } = useSystems();
+
+  const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
 
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: {} },
-    });
+  const toggle = () => toggleModal({ operation: 'copy', props: {} });
 
   const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: {
-        ...params,
-        path: '',
-        section: 'modal',
-      },
+    fetchListing({
+      ...params,
     });
   };
 
@@ -80,16 +62,10 @@ const DataFilesCopyModal = React.memo(() => {
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'copy', status: {} },
-    });
-    dispatch({
-      type: 'DATA_FILES_SET_MODAL_PROPS',
-      payload: {
-        operation: 'copy',
-        props: {},
-      },
+    setStatus({});
+    setProps({
+      operation: 'copy',
+      props: {},
     });
     setDisabled(false);
   };
@@ -97,19 +73,16 @@ const DataFilesCopyModal = React.memo(() => {
   const copyCallback = useCallback(
     (system, path, name) => {
       setDisabled(true);
-      const filteredSelected = selected
-        .filter((f) => status[f.id] !== 'SUCCESS')
-        .map((f) => ({ ...f, api: params.api }));
-      dispatch({
-        type: 'DATA_FILES_COPY',
-        payload: {
-          dest: { system, path, api: modalParams.api, name },
-          src: filteredSelected,
-          reloadCallback: reloadPage,
-        },
+      copy({
+        srcApi: params.api,
+        destApi: modalParams.api,
+        destSystem: system,
+        destPath: path,
+        name,
+        callback: reloadPage,
       });
     },
-    [selected, reloadPage, status]
+    [copy, reloadPage, setDisabled, params, modalParams]
   );
 
   const listingFilter = useCallback(
@@ -118,10 +91,9 @@ const DataFilesCopyModal = React.memo(() => {
         format === 'folder' &&
         !(
           // Remove files from the listing if they have been selected.
-          (
-            selectedFiles.map((f) => f.system).includes(system) &&
-            selectedFiles.map((f) => f.path).includes(path)
-          )
+          selectedFiles
+            .map((f) => `${f.system}${f.path}`)
+            .includes(`${system}${path}`)
         )
       );
     },
