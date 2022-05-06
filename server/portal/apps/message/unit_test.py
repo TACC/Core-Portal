@@ -121,7 +121,7 @@ def test_custommessages_get_unauthenticated_user(client, regular_user):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_put(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
     original_message = CustomMessages.objects.get(template__id='1')
-    assert original_message.unread == True
+    assert original_message.unread is True
 
     body = {
         'messages': [{

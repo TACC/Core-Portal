@@ -1,6 +1,6 @@
 """
 .. :module: apps.message.views
-   :synopsis: Views to handle read/unread status of IntroMessages 
+   :synopsis: Views to handle read/unread status of IntroMessages
               and generate CustomMessages
 """
 

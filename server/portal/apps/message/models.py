@@ -36,11 +36,11 @@ class CustomMessageTemplate(models.Model):
     Used for storing admin-controlled messages for specific components that utilize CustomMessages.
     """
 
-    MESSAGE_TYPES = [('info', 'Info'), ('success', 'Success'), \
+    MESSAGE_TYPES = [('info', 'Info'), ('success', 'Success'),
                      ('warning', 'Warn'), ('error', 'Error')]
 
-    COMPONENTS = [('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'), \
-                  ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'), \
+    COMPONENTS = [('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'),
+                  ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'),
                   ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account')]
 
     component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
@@ -58,8 +58,8 @@ class CustomMessageTemplate(models.Model):
         }
 
     def __str__(self):
-        return "%s-%s-%s-%s" % (self.message_type, self.component, \
-                ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
+        return "%s-%s-%s-%s" % (self.message_type, self.component,
+                                ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
 
 
 class CustomMessages(models.Model):
@@ -83,4 +83,3 @@ class CustomMessages(models.Model):
 
     class Meta:
         unique_together = ('user', 'template',)
-
