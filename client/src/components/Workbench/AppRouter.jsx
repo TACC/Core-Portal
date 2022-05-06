@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSystems } from 'hooks/datafiles';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
@@ -11,6 +12,7 @@ import SiteSearch from '../SiteSearch';
 
 function AppRouter() {
   const dispatch = useDispatch();
+  const { fetchSystems } = useSystems();
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
@@ -18,7 +20,7 @@ function AppRouter() {
   useEffect(() => {
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'FETCH_WORKBENCH' });
-    dispatch({ type: 'FETCH_SYSTEMS' });
+    fetchSystems();
   }, []);
 
   useEffect(() => {

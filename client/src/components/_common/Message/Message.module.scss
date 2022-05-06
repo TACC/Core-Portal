@@ -27,6 +27,7 @@
 
   display: flex;
 }
+/* HELP: FP-1227: Why is this unset? */
 p.is-scope-section {
   margin-top: 0;
   margin-bottom: 0;
@@ -69,7 +70,7 @@ p.is-scope-section {
 
 .is-scope-inline {
   &.is-info .icon {
-    color: var(--global-color-info--normal);
+    color: var(--global-color-info--dark);
   }
   &.is-warn .icon {
     color: var(--global-color-warning--normal);
@@ -94,10 +95,11 @@ p.is-scope-section {
 
   /* Modifiers */
   &.is-info {
+    color: var(--global-color-info--dark);
     border-color: var(--global-color-info--normal);
-    background-color: var(--global-color-info--weak);
+    background-color: var(--global-color-info--light);
     & .type-icon {
-      color: var(--global-color-info--normal);
+      color: var(--global-color-info--dark);
     }
   }
   &.is-warn {
