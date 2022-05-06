@@ -5,7 +5,7 @@ import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
 import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
-import initialIntroMessages from '../../redux/reducers/intro.reducers';
+import initialIntroMessages from '../../redux/reducers/message.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
 const mockStore = configureStore();

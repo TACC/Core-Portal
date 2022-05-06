@@ -43,8 +43,8 @@ import {
   watchFetchIntroMessages,
   watchSaveIntroMessages,
   watchFetchCustomMessages,
-  watchSaveCustomMessages,
-} from './intro.sagas';
+  watchSaveCustomMessages
+} from './message.sagas';
 import {
   watchOnboardingAdminList,
   watchOnboardingAdminIndividualUser,
@@ -95,8 +95,8 @@ export default function* rootSaga() {
     watchFetchNotifications(),
     watchWorkbench(),
     watchFetchIntroMessages(),
-    watchSaveIntroMessages(),
     watchFetchCustomMessages(),
+    watchSaveIntroMessages(),
     watchSaveCustomMessages(),
     watchOnboardingAdminList(),
     watchOnboardingAdminIndividualUser(),

@@ -1,5 +1,5 @@
 import pytest
-from portal.apps.intromessages.models import IntroMessages, CustomMessageTemplate, CustomMessages
+from portal.apps.message.models import IntroMessages, CustomMessageTemplate, CustomMessages
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ confirm that the JSON is coming back as expected.
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user, intromessage_mock):
-    response = client.get('/api/intromessages/')
+    response = client.get('/api/message/intro/')
     data = response.json()
     assert response.status_code == 200
     print(data)
@@ -30,7 +30,7 @@ User should be redirected to login
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get_unauthenticated_user(client, regular_user):
-    response = client.get('/api/intromessages/')
+    response = client.get('/api/message/intro/')
     assert response.status_code == 302
 
 
@@ -50,7 +50,7 @@ def test_intromessages_put(client, authenticated_user):
         'UI': 'True'
     }
 
-    response = client.put('/api/intromessages/',
+    response = client.put('/api/message/intro/',
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
@@ -86,7 +86,7 @@ confirm that the JSON is coming back as expected.
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
-    response = client.get('/api/intromessages/custom/')
+    response = client.get('/api/message/custom/')
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == {
@@ -111,7 +111,7 @@ User should be redirected to login
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get_unauthenticated_user(client, regular_user):
-    response = client.get('/api/intromessages/custom/')
+    response = client.get('/api/message/custom/')
     assert response.status_code == 302
 
 
@@ -136,7 +136,7 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
         }]
     }
 
-    response = client.put('/api/intromessages/custom/',
+    response = client.put('/api/message/custom/',
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200

@@ -1,12 +1,13 @@
 """
-.. :module: apps.intromessages.views
-   :synopsis: Views to handle read/unread status of IntroMessages
+.. :module: apps.message.views
+   :synopsis: Views to handle read/unread status of IntroMessages 
+              and generate CustomMessages
 """
 
 import logging
 from portal.views.base import BaseApiView
 from django.http import JsonResponse
-from portal.apps.intromessages.models import IntroMessages, CustomMessages, CustomMessageTemplate
+from portal.apps.message.models import IntroMessages, CustomMessages, CustomMessageTemplate
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import json
