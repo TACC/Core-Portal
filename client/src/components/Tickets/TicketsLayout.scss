@@ -14,17 +14,14 @@
     tr > *:nth-child(1) {
       width: 12%;
     }
-    /* subject */
-    tr > *:nth-child(2) {
-      width: 63%;
-    }
+    /* subject (fills to available width) */
     /* date */
     tr > *:nth-child(3) {
       width: 12%;
     }
     /* status */
     tr > *:nth-child(4) {
-      width: 12%;
+      width: 14%;
     }
   }
 }
@@ -32,19 +29,16 @@
   .tickets-view {
     /* number */
     tr > *:nth-child(1) {
-      width: 12.5%;
+      width: 15%;
     }
-    /* subject */
-    tr > *:nth-child(2) {
-      width: 52.5%;
-    }
+    /* subject (fills to available width) */
     /* date */
     tr > *:nth-child(3) {
-      width: 20%;
+      width: 6.5em;
     }
     /* status */
     tr > *:nth-child(4) {
-      width: 15%;
+      width: 7em;
     }
   }
 }
