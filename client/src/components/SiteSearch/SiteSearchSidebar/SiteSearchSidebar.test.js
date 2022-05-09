@@ -1,12 +1,12 @@
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import SiteSearchSidebar from './SiteSearchSidebar';
+import { SiteSearchSidebarItem } from './SiteSearchSidebar';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from '../fixtures/siteSearch.fixture.json';
 import '@testing-library/jest-dom';
 import { fireEvent } from '@testing-library/react';
-import { within } from '@testing-library/dom';
 
 const mockStore = configureStore();
 
@@ -20,6 +20,7 @@ describe('SiteSearchSidebar', () => {
         authenticated
         schemes={['public', 'community']}
         results={siteSearchResults}
+        searching={false}
       />,
       store,
       history
@@ -45,6 +46,7 @@ describe('SiteSearchSidebar', () => {
         authenticated
         schemes={['public', 'community']}
         results={siteSearchResults}
+        searching={false}
       />,
       store,
       history
@@ -60,5 +62,40 @@ describe('SiteSearchSidebar', () => {
     fireEvent.click(getByText('Web Content'));
     expect(history.location.pathname).toEqual('/search/cms/');
     expect(history.location.search).toEqual('?page=1&query_string=test');
+  });
+
+  it('searchbar item has expected elements', () => {
+    const isSearching = false;
+    const store = mockStore({});
+    const { getByText, getByTestId } = renderComponent(
+      <SiteSearchSidebarItem
+        to={`/search/cms/?foo`}
+        label="Web Content"
+        icon="browser"
+        count={23}
+        searching={isSearching}
+      />,
+      store
+    );
+
+    expect(getByText('Web Content')).toBeDefined();
+    expect(getByTestId('count-pill')).toBeDefined();
+    expect(getByTestId('count-pill')).not.toHaveClass('hidden');
+  });
+
+  it('searchbar item hides count when waiting for results', () => {
+    const isSearching = true;
+    const store = mockStore({});
+    const { getByText, getByTestId } = renderComponent(
+      <SiteSearchSidebarItem
+        to={`/search/cms/?foo`}
+        label="Web Content"
+        icon="browser"
+        count={23}
+        searching={isSearching}
+      />,
+      store
+    );
+    expect(getByTestId('count-pill')).toHaveClass('hidden');
   });
 });
