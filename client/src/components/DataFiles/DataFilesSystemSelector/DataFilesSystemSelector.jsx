@@ -82,7 +82,7 @@ const DataFilesSystemSelector = ({
       >
         {dropdownSystems.map((s) => (
           <option
-            key={s.system}
+            key={s.name}
             value={s.scheme === 'projects' ? 'shared' : s.system}
           >
             {s.name}

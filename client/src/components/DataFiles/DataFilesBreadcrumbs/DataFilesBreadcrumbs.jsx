@@ -1,10 +1,13 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
-import { findSystemOrProjectDisplayName } from 'utils/systems';
+import {
+  useSystemDisplayName,
+  useFileListing,
+  useModal,
+} from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
   api,
@@ -15,19 +18,15 @@ const BreadcrumbLink = ({
   section,
   isPublic,
 }) => {
-  const dispatch = useDispatch();
+  const { fetchListing } = useFileListing(section);
   const onClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    dispatch({
-      type: 'FETCH_FILES',
-      payload: {
-        api,
-        scheme,
-        system,
-        path,
-        section,
-      },
+    fetchListing({
+      api,
+      scheme,
+      system,
+      path,
     });
   };
   const basePath = isPublic ? '/public-data' : '/workbench/data';
@@ -72,18 +71,14 @@ BreadcrumbLink.defaultProps = {
 };
 
 const RootProjectsLink = ({ api, section, operation, label }) => {
-  const dispatch = useDispatch();
-  const modalProps = useSelector((state) => state.files.modalProps[operation]);
+  const { setProps } = useModal();
   if (section === 'modal') {
     const onClick = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      dispatch({
-        type: 'DATA_FILES_SET_MODAL_PROPS',
-        payload: {
-          operation,
-          props: { ...modalProps, showProjects: true },
-        },
+      setProps({
+        operation,
+        props: { showProjects: true },
       });
     };
     return (
@@ -123,28 +118,17 @@ const DataFilesBreadcrumbs = ({
 }) => {
   const paths = [];
   const pathComps = [];
-  const systemList = useSelector(
-    (state) => state.systems.storage.configuration
-  );
-  const projectsList = useSelector((state) => state.projects.listing.projects);
-  const projectTitle = useSelector((state) => state.projects.metadata.title);
 
   path
     .split('/')
-    .filter((x) => x)
+    .filter((x) => !!x)
     .reduce((prev, curr) => {
       const comp = `${prev}/${curr}`;
       paths.push(comp);
       pathComps.push(curr);
       return comp;
     }, '');
-  const root = findSystemOrProjectDisplayName(
-    scheme,
-    systemList,
-    projectsList,
-    system,
-    projectTitle
-  );
+  const root = useSystemDisplayName({ scheme, system });
 
   return (
     <div className={`breadcrumbs ${className}`}>

@@ -1,16 +1,16 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
 import { LoadingSpinner, InlineMessage } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
+import { useUpload } from 'hooks/datafiles/mutations';
 import styles from './DataFilesUploadModalListingTable.module.scss';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter((f) => f.id === i).length > 0) {
     return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
-  const status = useSelector((state) => state.files.operationStatus.upload[i]);
+  const status = useUpload().status[i];
   switch (status) {
     case 'UPLOADING':
       return <LoadingSpinner placement="inline" />;
