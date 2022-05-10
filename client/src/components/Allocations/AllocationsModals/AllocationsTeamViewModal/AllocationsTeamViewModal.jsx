@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { number, bool, func } from 'prop-types';
 import {
   Modal,
@@ -7,14 +7,18 @@ import {
   Container,
   Col,
   Row,
-  Button,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { Tab, Tabs } from '@material-ui/core';
+import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import { has } from 'lodash';
 import AllocationsTeamTable from './AllocationsTeamTable';
+import { AllocationsManageTeamTable } from '../AllocationsManageTeamModal/AllocationsManageTeamModal';
 import AllocationsContactCard from './AllocationsContactCard';
+import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
+import manageStyles from '../AllocationsManageTeamModal/AllocationsManageTeamModal.module.scss';
+import '../AllocationsModalTabs.css';
 
 const AllocationsTeamViewModal = ({
   isOpen,
@@ -22,9 +26,10 @@ const AllocationsTeamViewModal = ({
   projectId,
   managementToggle,
 }) => {
-  const { teams, loadingUsernames, errors } = useSelector(
+  const { teams, loadingUsernames, search, errors } = useSelector(
     (state) => state.allocations
   );
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.profile.data.demographics.username);
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
@@ -43,6 +48,43 @@ const AllocationsTeamViewModal = ({
   const resetCard = () => {
     setCard(null);
   };
+
+  useEffect(() => {
+    dispatch({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
+    });
+  }, [isOpen]);
+
+  const onAdd = useCallback(
+    (newUser) => {
+      dispatch({
+        type: 'ADD_USER_TO_TAS_PROJECT',
+        payload: {
+          projectId,
+          id: newUser.user.username,
+          projectName,
+        },
+      });
+    },
+    [projectId, dispatch]
+  );
+
+  const onChange = useCallback(
+    (query) => {
+      dispatch({
+        type: 'GET_USERS_FROM_SEARCH',
+        payload: {
+          term: query,
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  const [selectedTab, setSelectedTab] = useState(0);
+  const handleTabChange = (e, newValue ) => {
+    setSelectedTab(newValue);
+  }
   return (
     <Modal
       isOpen={isOpen}
@@ -51,21 +93,14 @@ const AllocationsTeamViewModal = ({
       size="lg"
       onClosed={resetCard}
     >
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
-        <span>View Team</span>
-        <div>
-          {isManager && (
-            <Button
-              className="btn btn-sm p-0"
-              color="link"
-              onClick={managementToggle}
-            >
-              Manage Team
-            </Button>
-          )}
-        </div>
+      <ModalHeader className='tab-row' toggle={toggle} charCode="&#xe912;">
+        <Tabs value={selectedTab} onChange={handleTabChange} TabIndicatorProps={{style: {backgroundColor: "white"}}}>
+          <Tab label='View Team' className={`tab ${selectedTab === 0 ? 'active' : 'inactive'}`} />
+          <Tab label='Manage Team' className={`tab ${selectedTab === 1 ? 'active' : 'inactive'}`} />
+        </Tabs>
       </ModalHeader>
-      <ModalBody className="d-flex p-0">
+      <ModalBody className={ selectedTab === 0 ? 'd-flex p-0' : 'p-2'}>
+        { selectedTab === 0 &&     
         <Container>
           {error ? (
             <Row style={{ height: '50vh' }}>
@@ -96,6 +131,43 @@ const AllocationsTeamViewModal = ({
             </Row>
           )}
         </Container>
+        }
+        { selectedTab === 1 &&
+        <>
+        <div className={manageStyles['search-bar-wrapper']}>
+          <span className={manageStyles['search-bar-header-text']}>Add Member</span>
+        <UserSearchbar
+        members={teams[projectId]}
+        onAdd={onAdd}
+        addDisabled={isLoading}
+        searchDisable={isLoading}
+        onChange={onChange}
+        searchResults={search.results}
+        placeholder=""
+        />
+        <i className={manageStyles['help-text']}>
+          Search by entering the full username, email, or last name.
+        </i>
+        </div>
+        <div className={manageStyles['listing-wrapper']}>
+          {error ? (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
+                <span>Unable to retrieve team data.</span>
+              </Col>
+            </Row>
+          ) : isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <AllocationsManageTeamTable
+              rawData={teams[projectId]}
+              projectId={projectId}
+            />
+          )}
+        </div>
+        <i className={manageStyles['help-text']}>The PI, Co-PIs, and Allocation Managers can manage the team.</i>    
+        </>
+        }
       </ModalBody>
     </Modal>
   );
