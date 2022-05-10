@@ -145,7 +145,7 @@ Styleguide Components.Button
 /* Modifiers: Types: As Link */
 
 .c-button--as-link {
-  color: var(--global-color-accent--dark);
+  color: var(--global-color-accent--normal);
 
   background: unset;
   border: unset;
