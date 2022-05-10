@@ -1,17 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
   Table,
   Button,
-  Row,
-  Col,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner, UserSearchbar, Message } from '_common';
-import { has } from 'lodash';
+import { LoadingSpinner, Message, DropdownSelector } from '_common';
 import styles from './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
@@ -35,14 +29,34 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       {
         Header: 'Role',
         accessor: ({ role }) => {
-          switch (role) {
-            case 'PI':
-              return 'Principal Investigator';
-            case 'Delegate':
-              return 'Allocation Manager';
-            default:
-              return 'Member';
+          /*const changeUserRole = (user,role) => {
+            dispatch({
+              type: ##UPDATE_USER_ROLE_IN_TAS_PROJECT,
+              payload: user, role
+            })
+          }*/
+          const allocationRoles = {
+            'Standard':'Member', 
+            'Delegate':'Allocation Manager', 
+            'PI':'Principal Investigator'
           }
+          console.log(role);
+          return (
+            <div>
+                <DropdownSelector
+                //onChange={(e) => changeUserRole(user, e.target.value)}
+                value=""
+                >
+                  <option value="">{allocationRoles[role]}</option>
+                  {Object.keys(allocationRoles).filter(
+                    (userRole) =>
+                    userRole !== role).map((userRole) =>
+                      <option value="">{allocationRoles[userRole]}</option>
+                    ) 
+                  }
+                </DropdownSelector>
+            </div>
+          )
         },
       },
       {
@@ -94,7 +108,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       data,
     });
   return (
-    <Table hover responsive borderless size="sm" {...getTableProps()}>
+    <Table  hover responsive borderless size="sm" className={styles['manage-team-table']} {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -120,97 +134,4 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   );
 };
 
-const AllocationsManageTeamModal = ({
-  isOpen,
-  toggle,
-  projectId,
-  projectName,
-  viewToggle,
-}) => {
-  const dispatch = useDispatch();
-
-  const { teams, loadingUsernames, search, errors } = useSelector(
-    (state) => state.allocations
-  );
-  useEffect(() => {
-    dispatch({
-      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
-    });
-  }, [isOpen]);
-
-  const isLoading =
-    loadingUsernames[projectId] && loadingUsernames[projectId].loading;
-
-  const error = has(errors.teams, projectId);
-
-  const onAdd = useCallback(
-    (newUser) => {
-      dispatch({
-        type: 'ADD_USER_TO_TAS_PROJECT',
-        payload: {
-          projectId,
-          id: newUser.user.username,
-          projectName,
-        },
-      });
-    },
-    [projectId, dispatch]
-  );
-
-  const onChange = useCallback(
-    (query) => {
-      dispatch({
-        type: 'GET_USERS_FROM_SEARCH',
-        payload: {
-          term: query,
-        },
-      });
-    },
-    [dispatch]
-  );
-
-  return (
-    <Modal isOpen={isOpen} toggle={toggle} className={styles.root}>
-      <ModalHeader>
-        Manage Team
-        <div>
-          <Button className="btn btn-sm p-0" color="link" onClick={viewToggle}>
-            View Team
-          </Button>
-        </div>
-      </ModalHeader>
-      <ModalBody className="p-2">
-        <UserSearchbar
-          members={teams[projectId]}
-          onAdd={onAdd}
-          addDisabled={isLoading}
-          searchDisable={isLoading}
-          onChange={onChange}
-          searchResults={search.results}
-          placeholder=""
-        />
-        <i className={styles['help-text']}>
-          Search by entering the full username, email, or last name.
-        </i>
-        <div className={styles.listingWrapper}>
-          {error ? (
-            <Row style={{ height: '50vh' }}>
-              <Col className="d-flex justify-content-center">
-                <span>Unable to retrieve team data.</span>
-              </Col>
-            </Row>
-          ) : isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <AllocationsManageTeamTable
-              rawData={teams[projectId]}
-              projectId={projectId}
-            />
-          )}
-        </div>
-      </ModalBody>
-    </Modal>
-  );
-};
-
-export default AllocationsManageTeamModal;
+export default AllocationsManageTeamTable;

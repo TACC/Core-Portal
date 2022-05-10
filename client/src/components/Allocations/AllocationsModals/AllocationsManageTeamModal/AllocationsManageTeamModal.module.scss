@@ -15,7 +15,7 @@
   }
 }
 .listing-wrapper {
-  height: 50vh;
+  height: 31.125vh;
   overflow-y: scroll;
   padding-left: 0;
   padding-right: 0;
@@ -51,6 +51,9 @@
 }
 .search-bar-wrapper {
   margin: 0 1rem;
+}
+.search-bar-header-text {
+  font-size: 13px;
 }
 .help-text {
   font-size: 12px;
