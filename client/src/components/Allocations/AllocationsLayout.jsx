@@ -30,7 +30,7 @@ export const Actions = ({ page }) => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <Link to={`${root}/manage`} className="btn btn-primary">
-      Manage Allocations
+      Request New Allocation
     </Link>
   );
 };
