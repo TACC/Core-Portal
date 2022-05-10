@@ -60,7 +60,7 @@ export const appTrayFixture = {
       apps: [
         {
           label: 'TACC Visualization Portal',
-          icon: 'visualization',
+          icon: 'vis-portal',
           version: '1.0',
           revision: '',
           type: 'html',
@@ -131,7 +131,7 @@ export const appTrayExpectedFixture = {
     Visualization: [
       {
         label: 'TACC Visualization Portal',
-        icon: 'visualization',
+        icon: 'vis-portal',
         version: '1.0',
         revision: '',
         type: 'html',
