@@ -23,7 +23,7 @@ export const Team = ({ cell: { value } }) => {
     <>
       <Button
         className="btn btn-sm"
-        color="link"
+        color="secondary"
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
