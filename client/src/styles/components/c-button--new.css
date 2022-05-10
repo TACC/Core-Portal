@@ -54,7 +54,10 @@ Styleguide Components.Button
 }
 
 .c-button:disabled {
-  opacity: 0.5;
+  color: var(--global-color-primary--dark);
+  background-color: var(--global-color-primary--xx-light);
+  border-color: var(--global-color-primary--dark);
+
   pointer-events: none;
 }
 /* WARNING: Opinionated: Add "hand" cursor if not disabled */
@@ -100,7 +103,7 @@ Styleguide Components.Button
     var(--global-color-accent--light);
 }
 
-.c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active) {
+.c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-accent--normal);
@@ -133,7 +136,7 @@ Styleguide Components.Button
     var(--global-color-accent--light);
 }
 
-.c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active) {
+.c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--xx-dark);
