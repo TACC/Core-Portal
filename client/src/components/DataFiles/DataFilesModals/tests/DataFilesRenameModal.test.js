@@ -19,8 +19,8 @@ const initialMockState = {
   },
 };
 
-describe('DataFilesCopyModal', () => {
-  it('renders the mkdir modal', () => {
+describe('DataFilesRenameModal', () => {
+  it('renders the rename modal', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);
