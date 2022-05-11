@@ -1,6 +1,13 @@
 import { cloneDeep } from 'lodash';
-import { namdAppFixture } from './fixtures/AppForm.app.fixture';
-import { getNodeCountValidation, getQueueValidation } from './AppFormUtils';
+import {
+  namdAppFixture,
+  namdDefaultFormValues,
+} from './fixtures/AppForm.app.fixture';
+import {
+  getNodeCountValidation,
+  getQueueValidation,
+  getFixedValuesForUpdatedQueue,
+} from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue = namdAppFixture.exec_sys.queues.find(
@@ -62,5 +69,23 @@ describe('AppFormUtils', () => {
     expect(
       getQueueValidation(normalQueue, stampede2SerialApp).isValidSync('normal')
     ).toEqual(true);
+  });
+
+  it('getFixedValuesForUpdatedQueue properly fixes node count when using small queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'small';
+    values.nodeCount = 3;
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    expect(updatedValues.nodeCount).toEqual(2);
+  });
+
+  it('getFixedValuesForUpdatedQueue properly fixes node count when using normal queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'normal';
+    values.nodeCount = 2;
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    expect(updatedValues.nodeCount).toEqual(3);
   });
 });

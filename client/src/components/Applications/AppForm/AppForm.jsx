@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormikContext } from 'formik';
 import { cloneDeep } from 'lodash';
 import {
   AppIcon,
@@ -24,6 +24,7 @@ import {
   getNodeCountValidation,
   getProcessorsOnEachNodeValidation,
   getQueueValidation,
+  getFixedValuesForUpdatedQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -124,6 +125,26 @@ export const AppDetail = () => {
       )}
     </>
   );
+};
+
+/**
+ * AdjustValuesWhenQueueChanges is a component that makes uses of
+ * useFormikContext to ensure that when users switch queues, some
+ * variables are updated to match the queue specifications (i.e.
+ * correct node count, runtime etc)
+ */
+const AdjustValuesWhenQueueChanges = ({ app }) => {
+  const [previousValues, setPreviousValues] = useState();
+
+  // Grab values and update if queue changes
+  const { values, setValues, isValid } = useFormikContext();
+  React.useEffect(() => {
+    if (previousValues && previousValues.batchQueue !== values.batchQueue) {
+      setValues(getFixedValuesForUpdatedQueue(app, values));
+    }
+    setPreviousValues(values);
+  }, [app, values, setValues, isValid]);
+  return null;
 };
 
 const AppInfo = ({ app }) => {
@@ -466,6 +487,7 @@ export const AppSchemaForm = ({ app }) => {
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
+              <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
                 <div className="appSchema-section">
                   <div className="appSchema-header">

@@ -52,6 +52,17 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
 };
 
 /**
+ * Get min node count for queue
+ */
+const getMinNodeCount = (queue, app) => {
+  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
+  return getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+    queue.name === 'normal'
+    ? 3
+    : 1;
+};
+
+/**
  * Get validator for a node count of a queue
  *
  * @function
@@ -60,11 +71,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  */
 export const getNodeCountValidation = (queue, app) => {
   // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
-  const min =
-    getSystemName(app.exec_sys.login.host) === 'Frontera' &&
-    queue.name === 'normal'
-      ? 3
-      : 1;
+  const min = getMinNodeCount(queue, app);
   return Yup.number()
     .min(
       min,
@@ -116,4 +123,30 @@ export const getQueueValidation = (queue, app) => {
         );
       }
     );
+};
+
+/**
+ * Get corrected values for a new queue
+ *
+ * Check values and if any do not work with the current queue, then fix those
+ * values.
+ *
+ * @function
+ * @param {Object} values
+ * @returns {Object} updated/fixed values
+ */
+export const getFixedValuesForUpdatedQueue = (app, values) => {
+  const fixedValues = { ...values };
+  const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
+  const minNode = getMinNodeCount(queue, app);
+
+  if (values.nodeCount < minNode) {
+    fixedValues.nodeCount = minNode;
+  }
+
+  if (values.nodeCount > queue.maxNodes) {
+    fixedValues.nodeCount = queue.maxNodes;
+  }
+
+  return fixedValues;
 };
