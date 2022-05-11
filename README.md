@@ -40,16 +40,6 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### CMS
 
-A shortcut for the CMS steps is:
-
-```
-cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
-touch server/conf/cms/settings_local.py
-touch server/conf/cms/settings_custom.py
-```
-
-Otherwise:
-
 - Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 
 - To emulate a specific CMS project, copy https://github.com/TACC/Core-CMS-Resources/blob/main/__PROJECT_TO_EMULATE__/settings_custom.py to `server/conf/cms/settings_custom.py`
