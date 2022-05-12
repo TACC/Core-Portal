@@ -71,7 +71,7 @@ describe('AppFormUtils', () => {
     ).toEqual(true);
   });
 
-  it('getFixedValuesForUpdatedQueue properly fixes node count when using small queue', () => {
+  it('getFixedValuesForUpdatedQueue fixes node count when using small queue', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'small';
@@ -80,7 +80,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.nodeCount).toEqual(2);
   });
 
-  it('getFixedValuesForUpdatedQueue properly fixes node count when using normal queue', () => {
+  it('getFixedValuesForUpdatedQueue fixes node count when using normal queue', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'normal';
@@ -89,7 +89,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.nodeCount).toEqual(3);
   });
 
-  it('getFixedValuesForUpdatedQueue properly fixes processorsOnEachNode when using dev queue', () => {
+  it('getFixedValuesForUpdatedQueue fixes processorsOnEachNode', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'development';
