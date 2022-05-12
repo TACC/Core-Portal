@@ -88,4 +88,14 @@ describe('AppFormUtils', () => {
     const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
     expect(updatedValues.nodeCount).toEqual(3);
   });
+
+  it('getFixedValuesForUpdatedQueue properly fixes processorsOnEachNode when using dev queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'development';
+    values.processorsOnEachNode = 64;
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    /* should to be 56 (i.e. 2240/40) on development queue */
+    expect(updatedValues.processorsOnEachNode).toEqual(56);
+  });
 });

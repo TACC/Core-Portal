@@ -84,6 +84,12 @@ export const getNodeCountValidation = (queue, app) => {
 };
 
 /**
+ * Get min node count for queue
+ */
+const getMaxProcessorsOnEachNode = (queue) =>
+  Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes);
+
+/**
  * Get validator for processors on each node
  *
  * @function
@@ -94,9 +100,7 @@ export const getProcessorsOnEachNodeValidation = (queue) => {
   if (queue.maxProcessorsPerNode === -1) {
     return Yup.number();
   }
-  return Yup.number()
-    .min(1)
-    .max(Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes));
+  return Yup.number().min(1).max(getMaxProcessorsOnEachNode(queue));
 };
 
 /**
@@ -139,6 +143,7 @@ export const getFixedValuesForUpdatedQueue = (app, values) => {
   const fixedValues = { ...values };
   const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
   const minNode = getMinNodeCount(queue, app);
+  const maxProcessorsOnEachNode = getMaxProcessorsOnEachNode(queue);
 
   if (values.nodeCount < minNode) {
     fixedValues.nodeCount = minNode;
@@ -146,6 +151,10 @@ export const getFixedValuesForUpdatedQueue = (app, values) => {
 
   if (values.nodeCount > queue.maxNodes) {
     fixedValues.nodeCount = queue.maxNodes;
+  }
+
+  if (values.processorsOnEachNode > maxProcessorsOnEachNode) {
+    fixedValues.processorsOnEachNode = maxProcessorsOnEachNode;
   }
 
   return fixedValues;
