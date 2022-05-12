@@ -82,9 +82,16 @@ const Button = ({
     buttonSizeClass = styles[`width-${size}`];
   }
 
+  const buttonLoadingClass = isLoading ? styles['loading'] : '';
+
   return (
     <button
-      className={`${buttonRootClass} ${buttonTypeClass} ${buttonSizeClass}`}
+      className={`
+        ${buttonRootClass}
+        ${buttonTypeClass}
+        ${buttonSizeClass}
+        ${buttonLoadingClass}
+      `}
       disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
@@ -103,9 +110,7 @@ const Button = ({
       ) : (
         ''
       )}
-      <span className={isLoading ? styles['loading-text'] : ''}>
-        {children}
-      </span>
+      <span className={styles['text']}>{children}</span>
       {iconNameAfter ? (
         <Icon
           name={iconNameAfter}

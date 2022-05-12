@@ -6,6 +6,7 @@ A button that may have icon(s) before and/or after its text.
 .c-button--primary - A primary (expected) user action
 .c-button--secondary - For an optional user action
 .c-button--as-link - A button that visually resembles a link
+.c-button--is-busy - A clicked button that started an incomplete process
 
 Markup:
 <main>
@@ -24,6 +25,12 @@ Markup:
     </button>
     <button class="c-button c-button--as-link">
       Return to Previous Screen
+    </button>
+    <button class="c-button c-button--secondary c-button--is-busy">
+      <span class="c-button__text">Submit (Secondary)</span>
+    </button>
+    <button class="c-button c-button--primary c-button--is-busy">
+      <span class="c-button__text">Submit (Primary)</span>
     </button>
 </main>
 
@@ -53,7 +60,7 @@ Styleguide Components.Button
   white-space: nowrap;
 }
 
-.c-button:disabled {
+.c-button:disabled:not(.c-button--is-busy) {
   color: var(--global-color-primary--dark);
   background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--dark);
@@ -103,6 +110,7 @@ Styleguide Components.Button
     var(--global-color-accent--light);
 }
 
+.c-button--primary.c-button--is-busy,
 .c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
@@ -136,6 +144,7 @@ Styleguide Components.Button
     var(--global-color-accent--light);
 }
 
+.c-button--secondary.c-button--is-busy,
 .c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--xx-light);
@@ -153,6 +162,15 @@ Styleguide Components.Button
 }
 .c-button--as-link:not(:disabled):hover {
   text-decoration: underline;
+}
+
+/* Modifiers: Types: Is Busy */
+
+.c-button--is-busy {
+  opacity: 0.5;
+}
+.c-button--is-busy .c-button__text {
+  opacity: 0.3;
 }
 
 /* Modifiers: Sizes */
@@ -173,11 +191,6 @@ Styleguide Components.Button
 }
 
 /* ELEMENTS */
-
-.c-button__icon--before,
-.c-button__icon--after {
-  /* … */
-}
 
 .c-button__icon--before {
   margin-right: 0.5em;
