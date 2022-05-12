@@ -60,16 +60,15 @@ Styleguide Components.Button
   white-space: nowrap;
 }
 
+.c-button:not(:disabled) {
+  cursor: pointer; /* WARNING: Opinionated */
+}
 .c-button:disabled:not(.c-button--is-busy) {
   color: var(--global-color-primary--dark);
   background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--dark);
 
   pointer-events: none;
-}
-/* WARNING: Opinionated: Add "hand" cursor if not disabled */
-.c-button:not(:disabled) {
-  cursor: pointer;
 }
 
 /* MODIFIERS */
@@ -197,8 +196,4 @@ Styleguide Components.Button
 }
 .c-button__icon--after {
   margin-left: 0.5em;
-}
-
-.c-button__text {
-  /* … */
 }
