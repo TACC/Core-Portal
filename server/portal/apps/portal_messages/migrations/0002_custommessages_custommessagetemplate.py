@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
             name='CustomMessageTemplate',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('component', models.CharField(choices=[('Dashboard', 'dashboard'), ('Data Files', 'datafiles'), ('Applications', 'applications'), ('Allocations', 'allocations'), ('History', 'history'), ('Account', 'account')], default='Dashboard', help_text='Component type', max_length=20)),
-                ('message_type', models.CharField(choices=[], default='info', help_text='Message type', max_length=20)),
-                ('dismissible', models.BooleanField(default=True)),
+                ('component', models.CharField(choices=[('Dashboard', 'DASHBOARD'), ('Data Files', 'DATA'), ('Applications', 'APPLICATIONS'), ('Allocations', 'ALLOCATIONS'), ('History', 'HISTORY'), ('Account', 'ACCOUNT')], default='Dashboard', help_text='Component type', max_length=20)),
+                ('message_type', models.CharField(choices=[('info', 'Info'), ('success', 'Success'), ('warning', 'Warn'), ('error', 'Error')], default='info', help_text='Message type', max_length=20)),
+                ('dismissible', models.BooleanField(default=False)),
                 ('message', models.CharField(blank=True, max_length=200, default='', help_text='Message content (max 200 characters)')),
             ],
         ),

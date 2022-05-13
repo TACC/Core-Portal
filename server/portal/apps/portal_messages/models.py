@@ -45,7 +45,7 @@ class CustomMessageTemplate(models.Model):
 
     component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
     message_type = models.CharField(help_text='Message type', max_length=20, choices=MESSAGE_TYPES, default='info')
-    dismissible = models.BooleanField(default=True)
+    dismissible = models.BooleanField(default=False)
     message = models.CharField(help_text='Message content (max 200 characters)', max_length=200, default='', blank=True)
 
     def to_dict(self):
