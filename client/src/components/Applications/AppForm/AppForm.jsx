@@ -137,13 +137,13 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
   const [previousValues, setPreviousValues] = useState();
 
   // Grab values and update if queue changes
-  const { values, setValues, isValid } = useFormikContext();
+  const { values, setValues } = useFormikContext();
   React.useEffect(() => {
     if (previousValues && previousValues.batchQueue !== values.batchQueue) {
       setValues(getFixedValuesForUpdatedQueue(app, values));
     }
     setPreviousValues(values);
-  }, [app, values, setValues, isValid]);
+  }, [app, values, setValues]);
   return null;
 };
 
