@@ -160,5 +160,21 @@ export const getFixedValuesForUpdatedQueue = (app, values) => {
     fixedValues.processorsOnEachNode = maxProcessorsOnEachNode;
   }
 
+  if (values.maxRunTime) {
+    const longestMaxRequestedTime = app.exec_sys.queues
+      .map((queue) => queue.maxRequestedTime)
+      .sort()
+      .at(-1);
+    const runtimeRegExp = new RegExp(
+      createMaxRunTimeRegex(longestMaxRequestedTime)
+    );
+    if (
+      runtimeRegExp.test(values.maxRunTime) &&
+      values.maxRunTime > queue.maxRequestedTime
+    ) {
+      fixedValues.maxRunTime = queue.maxRequestedTime;
+    }
+  }
+
   return fixedValues;
 };

@@ -108,3 +108,28 @@ describe('AppFormUtils', () => {
     /* shouldn't change for rtx or rtx-dev queues as maxProcessorsPerNode is -1  */
     expect(updatedValues.processorsOnEachNode).toEqual(2);
   });
+
+  it('getFixedValuesForUpdatedQueue fixes maxRunTime', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'development';
+    values.maxRunTime = '48:00:00';
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    expect(updatedValues.maxRunTime).toEqual('02:00:00');
+  });
+
+  it('getFixedValuesForUpdatedQueue avoids fixing runtime if not valid or empty', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.maxRunTime = '99:00:00';
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    expect(updatedValues.maxRunTime).toEqual('99:00:00');
+
+    values.maxRunTime = '';
+    const moreUpdatedValues = getFixedValuesForUpdatedQueue(
+      appFrontera,
+      values
+    );
+    expect(moreUpdatedValues.maxRunTime).toEqual('');
+  });
+});
