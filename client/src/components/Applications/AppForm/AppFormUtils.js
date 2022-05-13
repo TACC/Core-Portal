@@ -154,12 +154,16 @@ export const getFixedValuesForUpdatedQueue = (app, values) => {
   }
 
   if (
-    queue.maxProcessorsPerNode !== -1 &&
+    queue.maxProcessorsPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
     values.processorsOnEachNode > maxProcessorsOnEachNode
   ) {
     fixedValues.processorsOnEachNode = maxProcessorsOnEachNode;
   }
 
+  /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
+  for all the queues, then we should check if the time works for the new queue and update
+  it if it doesn't.
+   */
   if (values.maxRunTime) {
     const longestMaxRequestedTime = app.exec_sys.queues
       .map((queue) => queue.maxRequestedTime)
