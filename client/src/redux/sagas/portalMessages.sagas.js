@@ -3,7 +3,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 export async function getIntroMessages() {
   const result = await fetchUtil({
-    url: `/api/message/intro/`,
+    url: `/api/portal_messages/intro/`,
     method: 'get',
   });
   return result.response;
@@ -50,7 +50,7 @@ export function* saveIntroMessages(action) {
   yield put({ type: 'INTRO_SAVE_STARTED' });
   try {
     yield call(fetchUtil, {
-      url: '/api/message/intro/',
+      url: '/api/portal_messages/intro/',
       method: 'PUT',
       body: JSON.stringify(action.payload),
     });
@@ -75,7 +75,7 @@ export function* watchSaveIntroMessages() {
 
 export async function getCustomMessages() {
   const result = await fetchUtil({
-    url: `/api/message/custom/`,
+    url: `/api/portal_messages/custom/`,
     method: 'get',
   });
   return result.response;
@@ -105,7 +105,7 @@ export function* saveCustomMessages(action) {
   yield put({ type: 'CUSTOM_MESSAGES_SAVE_STARTED' });
   try {
     yield call(fetchUtil, {
-      url: '/api/message/custom/',
+      url: '/api/portal_messages/custom/',
       method: 'PUT',
       body: JSON.stringify(action.payload),
     });

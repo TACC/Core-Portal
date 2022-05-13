@@ -58,8 +58,8 @@ class CustomMessageTemplate(models.Model):
         }
 
     def __str__(self):
-        return "%s-%s-%s-%s" % (self.message_type, self.component,
-                                ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
+        return "%s | %s | %s | %s" % (self.message_type, self.component,
+                                      ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
 
 
 class CustomMessages(models.Model):

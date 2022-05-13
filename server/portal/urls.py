@@ -77,8 +77,8 @@ urlpatterns = [
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 
-    # message
-    path('api/message/', include('portal.apps.message.urls', namespace='message')),
+    # portal_messages
+    path('api/portal_messages/', include('portal.apps.portal_messages.urls', namespace='portal_messages')),
 
 
     # integrations

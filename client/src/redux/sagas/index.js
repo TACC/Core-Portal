@@ -44,7 +44,7 @@ import {
   watchSaveIntroMessages,
   watchFetchCustomMessages,
   watchSaveCustomMessages,
-} from './message.sagas';
+} from './portalMessages.sagas';
 import {
   watchOnboardingAdminList,
   watchOnboardingAdminIndividualUser,

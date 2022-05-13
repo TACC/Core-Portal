@@ -99,7 +99,7 @@ INSTALLED_APPS = [
     'portal.apps.request_access',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
-    'portal.apps.message',
+    'portal.apps.portal_messages',
 ]
 
 MIDDLEWARE = [

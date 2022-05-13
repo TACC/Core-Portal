@@ -1,7 +1,7 @@
 """Message URLs
 """
 from django.urls import path
-from portal.apps.message import views
+from portal.apps.portal_messages import views
 
 
 app_name = 'message'
