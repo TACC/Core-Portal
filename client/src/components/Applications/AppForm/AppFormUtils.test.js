@@ -98,4 +98,13 @@ describe('AppFormUtils', () => {
     /* should to be 56 (i.e. 2240/40) on development queue */
     expect(updatedValues.processorsOnEachNode).toEqual(56);
   });
-});
+
+  it('getFixedValuesForUpdatedQueue handles processorsOnEachNode for rtx queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'rtx';
+    values.processorsOnEachNode = 2;
+    const updatedValues = getFixedValuesForUpdatedQueue(appFrontera, values);
+    /* shouldn't change for rtx or rtx-dev queues as maxProcessorsPerNode is -1  */
+    expect(updatedValues.processorsOnEachNode).toEqual(2);
+  });

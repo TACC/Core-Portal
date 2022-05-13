@@ -153,7 +153,10 @@ export const getFixedValuesForUpdatedQueue = (app, values) => {
     fixedValues.nodeCount = queue.maxNodes;
   }
 
-  if (values.processorsOnEachNode > maxProcessorsOnEachNode) {
+  if (
+    queue.maxProcessorsPerNode !== -1 &&
+    values.processorsOnEachNode > maxProcessorsOnEachNode
+  ) {
     fixedValues.processorsOnEachNode = maxProcessorsOnEachNode;
   }
 
