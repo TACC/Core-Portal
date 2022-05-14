@@ -1,3 +1,5 @@
+@import url("@tacc/core-styles/source/_imports/tools/media-queries.css");
+
 /* Elements */
 
 .panels {
@@ -21,7 +23,7 @@
 /* Tall & Wide */
 /* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
 
-@media only screen and (min-height: 634px) and (min-width: 992px) {
+@media only screen and (min-height: 634px) and (--medium-and-above) {
   /* Panel Container */
   .panels {
     width: var(--column-width--container);
@@ -47,7 +49,7 @@
 /* Short & Wide */
 /* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
 
-@media only screen and (max-height: 633px) and (min-width: 1200px) {
+@media only screen and (max-height: 633px) and (--wide-and-above) {
   /* "[…] Information" Panels */
   .panels > *:nth-child(-n + 2) {
     /* CAVEAT: This is a dev value that just "looked good" */
