@@ -1,4 +1,4 @@
-@import url("@tacc/core-styles/source/_imports/tools/media-queries.css");
+@import url('styles/tools/media-queries.css');
 
 /* Base */
 
@@ -88,7 +88,7 @@
 }
 
 /* Tall & Wide */
-@media only screen and (min-height: 634px) and (--medium-and-above) {
+@media screen and (--short-and-above) and (--medium-and-above) {
   .two-column,
   .multi-column {
     column-count: 2;
@@ -96,12 +96,12 @@
 }
 
 /* Short & Wide */
-@media only screen and (max-height: 633px) and (--medium-to-wide) {
+@media screen and (--short-and-below) and (--medium-to-wide) {
   .two-column {
     column-count: 2;
   }
 }
-@media only screen and (max-height: 633px) and (--wide-and-above) {
+@media screen and (--short-and-below) and (--wide-and-above) {
   .two-column {
     column-count: 2;
   }
