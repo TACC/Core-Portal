@@ -19,8 +19,8 @@
 
 /* OBJECTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('@tacc/core-styles/source/_imports/objects/o-flex-item-table-wrap.css');
 @import url('./objects/o-fixed-header-table.css');
-@import url('./objects/o-flex-item-table-wrap.css');
 
 /* COMPONENTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
