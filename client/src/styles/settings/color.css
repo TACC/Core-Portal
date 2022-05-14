@@ -1,15 +1,4 @@
-/* SETTINGS: Color */
-
-/* Usage: `var(--global-color-primary--normal)` */
-/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
-
-/* Modifers
-    --normal:   standard color
-    --alt:      alternate color
-    --weak:     transparent instance
-    --(…)light: lighter value
-    --(…)dark:  darker value
-*/
+@import url("@tacc/core-styles/source/_imports/settings/color.css");
 
 /* If Design doc uses color on the left, use color on the right
   (When design is updated to use the new colors, we can remove this)
@@ -21,21 +10,11 @@
   | #9D85EF20 old "weak"   | --global-color-accent--weak
   | #DFDAF5   old "light"  | --global-color-accent--weak
   | rgb(112 112 112 / 25%) | --global-color-primary--normal
+  | …-primary--dark for light text  | …-primary--x-dark
+  | …-primary--x-dark for dark text | …-primary--xx-dark
 */
 
 :root {
-  /* Primary (Text, Layout) */
-  --global-color-primary--xx-light: #ffffff;
-  --global-color-primary--x-light: #f4f4f4;
-  --global-color-primary--light: #c6c6c6;
-  --global-color-primary--normal: #afafaf;
-  --global-color-primary--dark: #707070;
-  --global-color-primary--x-dark: #484848; /* ¹ */
-  --global-color-primary--xx-dark: #222222; /* ¹ */
-  /* ¹ REQ: Use of this color for text may have result darker than design
-              (designer approved for accessibile color contrast via FP-1082) */
-
-  /* Distinct Hues */
   --global-color-accent--normal: #7754e8;
   --global-color-accent--weak: #7754e840; /* =25% opacity */
   /* on white, eq. to #DFD7FA */

@@ -1,7 +1,4 @@
-/* SETTINGS: Border */
-
-/* Usage: `var(--global-space--section-right)` */
-/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
+@import url("@tacc/core-styles/source/_imports/settings/space.css");
 
 :root {
   --global-space--section-top: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
