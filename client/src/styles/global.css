@@ -2,7 +2,7 @@
 /* SEE: ./README.md */
 
 /* SETTINGS */
-@import url("@tacc/core-styles/source/_imports/settings/border.css");
+@import url('@tacc/core-styles/source/_imports/settings/border.css');
 @import url('./settings/color.css');
 @import url('./settings/font.css');
 @import url('./settings/space.css');
