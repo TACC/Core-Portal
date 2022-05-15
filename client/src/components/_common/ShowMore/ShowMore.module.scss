@@ -1,12 +1,9 @@
-@import '../../../styles/tools/mixins.scss';
-
 .clamped {
-  overflow: hidden;
-  display: box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  --lines: 4;
+
+  composes: x-truncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
 }
 
 .expanded {
-  overflow: visible;
+  composes: x-untruncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
 }
