@@ -138,7 +138,7 @@ export const getQueueValidation = (queue, app) => {
  * @param {Object} values
  * @returns {Object} updated/fixed values
  */
-export const getFixedValuesForUpdatedQueue = (app, values) => {
+export const updateValuesForQueue = (app, values) => {
   const fixedValues = { ...values };
   const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
   const minNode = getMinNodeCount(queue, app);

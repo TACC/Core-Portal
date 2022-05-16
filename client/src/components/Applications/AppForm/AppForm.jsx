@@ -24,7 +24,7 @@ import {
   getNodeCountValidation,
   getProcessorsOnEachNodeValidation,
   getQueueValidation,
-  getFixedValuesForUpdatedQueue,
+  updateValuesForQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -140,7 +140,7 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
     if (previousValues && previousValues.batchQueue !== values.batchQueue) {
-      setValues(getFixedValuesForUpdatedQueue(app, values));
+      setValues(updateValuesForQueue(app, values));
     }
     setPreviousValues(values);
   }, [app, values, setValues]);
