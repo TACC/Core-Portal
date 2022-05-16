@@ -106,18 +106,16 @@ const Button = ({
         <Icon
           name={iconNameBefore}
           className={iconNameBefore ? styles['icon--before'] : ''}
-        ></Icon>
+        />
       ) : (
         ''
       )}
       <span className={styles['text']}>{children}</span>
-      {iconNameAfter ? (
+      {iconNameAfter && (
         <Icon
           name={iconNameAfter}
           className={iconNameAfter ? styles['icon--after'] : ''}
-        ></Icon>
-      ) : (
-        ''
+        />
       )}
     </button>
   );
