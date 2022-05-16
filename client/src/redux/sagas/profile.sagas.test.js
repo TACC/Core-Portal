@@ -78,6 +78,7 @@ describe('getProfileData Saga', () => {
           },
         ],
       ])
+      .put({ type: 'LOAD_PROFILE_DATA' })
       .put({ type: 'GET_FORM_FIELDS' })
       .call(fetchUtil, { url: '/accounts/api/profile/data/' })
       .put({
