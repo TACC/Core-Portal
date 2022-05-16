@@ -139,24 +139,24 @@ export const getQueueValidation = (queue, app) => {
  * @returns {Object} updated/fixed values
  */
 export const updateValuesForQueue = (app, values) => {
-  const fixedValues = { ...values };
+  const updatedValues = { ...values };
   const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
   const minNode = getMinNodeCount(queue, app);
   const maxProcessorsOnEachNode = getMaxProcessorsOnEachNode(queue);
 
   if (values.nodeCount < minNode) {
-    fixedValues.nodeCount = minNode;
+    updatedValues.nodeCount = minNode;
   }
 
   if (values.nodeCount > queue.maxNodes) {
-    fixedValues.nodeCount = queue.maxNodes;
+    updatedValues.nodeCount = queue.maxNodes;
   }
 
   if (
     queue.maxProcessorsPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
     values.processorsOnEachNode > maxProcessorsOnEachNode
   ) {
-    fixedValues.processorsOnEachNode = maxProcessorsOnEachNode;
+    updatedValues.processorsOnEachNode = maxProcessorsOnEachNode;
   }
 
   /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
@@ -175,9 +175,9 @@ export const updateValuesForQueue = (app, values) => {
       runtimeRegExp.test(values.maxRunTime) &&
       values.maxRunTime > queue.maxRequestedTime
     ) {
-      fixedValues.maxRunTime = queue.maxRequestedTime;
+      updatedValues.maxRunTime = queue.maxRequestedTime;
     }
   }
 
-  return fixedValues;
+  return updatedValues;
 };

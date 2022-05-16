@@ -71,7 +71,7 @@ describe('AppFormUtils', () => {
     ).toEqual(true);
   });
 
-  it('updateValuesForQueue fixes node count when using small queue', () => {
+  it('updateValuesForQueue updates node count when using small queue', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'small';
@@ -80,7 +80,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.nodeCount).toEqual(2);
   });
 
-  it('updateValuesForQueue fixes node count when using normal queue', () => {
+  it('updateValuesForQueue updates node count when using normal queue', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'normal';
@@ -89,7 +89,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.nodeCount).toEqual(3);
   });
 
-  it('updateValuesForQueue fixes processorsOnEachNode', () => {
+  it('updateValuesForQueue updates processorsOnEachNode', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'development';
@@ -109,7 +109,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.processorsOnEachNode).toEqual(2);
   });
 
-  it('updateValuesForQueue fixes maxRunTime', () => {
+  it('updateValuesForQueue updates maxRunTime', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.batchQueue = 'development';
@@ -118,7 +118,7 @@ describe('AppFormUtils', () => {
     expect(updatedValues.maxRunTime).toEqual('02:00:00');
   });
 
-  it('updateValuesForQueue avoids fixing runtime if not valid or empty', () => {
+  it('updateValuesForQueue avoids updating runtime if not valid or empty', () => {
     const appFrontera = cloneDeep(namdAppFixture);
     const values = cloneDeep(namdDefaultFormValues);
     values.maxRunTime = '99:00:00';
