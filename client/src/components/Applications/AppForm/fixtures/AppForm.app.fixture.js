@@ -583,3 +583,24 @@ export const namdAppMissingKeysFixture = {
     absolutePath: null,
   },
 };
+
+export const namdDefaultFormValues = {
+  inputs: {
+    inputDirectory: '',
+  },
+  parameters: {
+    confFile: '',
+    namdCommandLineOptions:
+      '+ppn 13 +pemap 2-26:2,30-54:2,3-27:2,31-55:2 +commap 0,28,1,29',
+  },
+  name: 'namd-frontera-2.1.3u2_2022-05-11T02:03:16',
+  batchQueue: 'normal',
+  nodeCount: 1,
+  processorsOnEachNode: 1,
+  maxRunTime: '',
+  archivePath: '',
+  archive: true,
+  archiveOnAppError: true,
+  appId: 'namd-frontera-2.1.3u2',
+  allocation: 'TACC-ACI',
+};
