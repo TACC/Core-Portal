@@ -42,4 +42,16 @@ describe('AppIcon', () => {
     );
     expect(getByRole('img')).toHaveAttribute('class', 'icon icon-jupyter');
   });
+  it('should render icon for zippy toolbar app', () => {
+    const { getByRole } = renderAppIcon(
+      'prtl.clone.username.FORK.zippy-0.2u2-2.0'
+    );
+    expect(getByRole('img')).toHaveAttribute('class', 'icon icon-compress');
+  });
+  it('should render icon for extract toolbar app', () => {
+    const { getByRole } = renderAppIcon(
+      'prtl.clone.username.FORK.extract-0.1u7-7.0'
+    );
+    expect(getByRole('img')).toHaveAttribute('class', 'icon icon-extract');
+  });
 });
