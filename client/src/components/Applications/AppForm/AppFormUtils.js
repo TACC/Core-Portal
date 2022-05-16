@@ -55,7 +55,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * Get min node count for queue
  */
 const getMinNodeCount = (queue, app) => {
-  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
+  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node count of 3
   return getSystemName(app.exec_sys.login.host) === 'Frontera' &&
     queue.name === 'normal'
     ? 3
@@ -70,7 +70,6 @@ const getMinNodeCount = (queue, app) => {
  * @returns {Yup.number()} min/max validation of node count
  */
 export const getNodeCountValidation = (queue, app) => {
-  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
   const min = getMinNodeCount(queue, app);
   return Yup.number()
     .min(
