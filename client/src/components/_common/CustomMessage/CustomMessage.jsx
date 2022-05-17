@@ -27,18 +27,13 @@ function CustomMessage({ componentName }) {
   });
 
   function onDismiss(dismissMessage) {
-    const newCustomMessages = {
-      messages: messages.map((message) => {
-        message.unread =
-          message.template.id === dismissMessage.template.id
-            ? false
-            : message.unread;
-        return message;
-      }),
+    dismissMessage.unread = false;
+    const payload = {
+      message: dismissMessage
     };
     dispatch({
       type: 'SAVE_CUSTOM_MESSAGES',
-      payload: newCustomMessages,
+      payload
     });
   }
 

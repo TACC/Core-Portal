@@ -1,3 +1,15 @@
+function updateCustomMessages(state, dismissMessage) {
+  return {
+    messages: state.messages.map((message) => {
+      message.unread =
+        message.template.id === dismissMessage.template.id
+          ? false
+          : message.unread;
+      return message;
+    }),
+  };
+}
+
 export const initialIntroMessages = {
   DASHBOARD: true,
   APPLICATIONS: true,
@@ -67,11 +79,11 @@ export function customMessages(state = initialCustomMessages, action) {
     case 'CUSTOM_MESSAGES_SAVE_SUCCESS':
       return {
         ...state,
-        ...action.payload,
+        ...updateCustomMessages(state, action.payload.message)
       };
     case 'CUSTOM_MESSAGES_SAVE_ERROR':
       return {
-        ...action.payload,
+        ...action.payload
       };
     default:
       return state;
