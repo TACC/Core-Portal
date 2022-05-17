@@ -58,8 +58,7 @@ function SectionMessages({
       {introMessageContent}
     </IntroMessage>
   );
-  const hasMessage =
-    isKnownIntroMessage(messageName) || children.length > 0;
+  const hasMessage = isKnownIntroMessage(messageName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   const customMessage = (

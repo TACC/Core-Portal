@@ -79,11 +79,11 @@ export function customMessages(state = initialCustomMessages, action) {
     case 'CUSTOM_MESSAGES_SAVE_SUCCESS':
       return {
         ...state,
-        ...updateCustomMessages(state, action.payload.message)
+        ...updateCustomMessages(state, action.payload.message),
       };
     case 'CUSTOM_MESSAGES_SAVE_ERROR':
       return {
-        ...action.payload
+        ...action.payload,
       };
     default:
       return state;

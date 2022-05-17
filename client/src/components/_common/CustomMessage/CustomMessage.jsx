@@ -29,11 +29,11 @@ function CustomMessage({ componentName }) {
   function onDismiss(dismissMessage) {
     dismissMessage.unread = false;
     const payload = {
-      message: dismissMessage
+      message: dismissMessage,
     };
     dispatch({
       type: 'SAVE_CUSTOM_MESSAGES',
-      payload
+      payload,
     });
   }
 
