@@ -14,7 +14,7 @@ import UIPatternsSidebar from './UIPatternsSidebar';
 function UIPatterns() {
   return (
     <Section
-      introMessageName="UI"
+      messageName="UI"
       className={styles.container}
       header="UI Patterns"
       content={

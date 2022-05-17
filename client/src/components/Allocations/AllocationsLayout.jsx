@@ -68,7 +68,7 @@ export const Layout = ({ page }) => {
   return (
     <Section
       bodyClassName="has-loaded-allocations"
-      introMessageName="ALLOCATIONS"
+      messageName="ALLOCATIONS"
       header={<Header page={page} />}
       headerClassName="allocations-header"
       headerActions={<Actions page={page} />}
