@@ -104,7 +104,9 @@ const Button = ({
       ) : (
         ''
       )}
-      <span className={styles['text']} data-testid="text">{children}</span>
+      <span className={styles['text']} data-testid="text">
+        {children}
+      </span>
       {iconNameAfter && (
         <Icon
           name={iconNameAfter}

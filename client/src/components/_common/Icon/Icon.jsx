@@ -10,12 +10,14 @@ const Icon = ({ children, className, dataTestid, name }) => {
     : iconClassName;
   const label = children;
 
-  return <i
-    className={fullClassName}
-    role="img"
-    aria-label={label}
-    data-testid={dataTestid}
-  />;
+  return (
+    <i
+      className={fullClassName}
+      role="img"
+      aria-label={label}
+      data-testid={dataTestid}
+    />
+  );
 };
 Icon.propTypes = {
   /** A text alternative to the icon (for accessibility) */

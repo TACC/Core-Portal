@@ -28,26 +28,27 @@ function isPropertyLimitation(type, size) {
   let isLimited = false;
 
   if (
-    type === 'primary' && size === 'small' ||
-    type !== 'link' && !size ||
-    type === 'link' && size
-  ) isLimited = true;
+    (type === 'primary' && size === 'small') ||
+    (type !== 'link' && !size) ||
+    (type === 'link' && size)
+  )
+    isLimited = true;
 
   return isLimited;
 }
 
 function getExpectedType(type, size) {
   let expType = type;
-  if (type === 'primary' && size === 'small') { expType = ''; }
+  if (type === 'primary' && size === 'small') {
+    expType = '';
+  }
   return expType;
 }
 
 describe('Button', () => {
   it('uses given text', () => {
     muteTypeNotLinkNoSizeLog();
-    const { getByTestId } = render(
-      <Button>{TEST_TEXT}</Button>
-    );
+    const { getByTestId } = render(<Button>{TEST_TEXT}</Button>);
     expect(getByTestId('text').textContent).toEqual(TEST_TEXT);
   });
 
@@ -71,7 +72,9 @@ describe('Button', () => {
     test('both `iconNameAfter` and `iconNameBefore` are given', () => {
       muteTypeNotLinkNoSizeLog();
       const { queryByTestId } = render(
-        <Button iconNameBefore="folder" iconNameAfter="file">{TEST_TEXT}</Button>
+        <Button iconNameBefore="folder" iconNameAfter="file">
+          {TEST_TEXT}
+        </Button>
       );
       expect(queryByTestId('icon-before')).toBeInTheDocument();
       expect(queryByTestId('icon-after')).toBeInTheDocument();
@@ -85,7 +88,9 @@ describe('Button', () => {
         return Promise.resolve();
       }
       const { getByRole, getByTestId } = render(
-        <Button type={type} size={TEST_SIZE}>{TEST_TEXT}</Button>
+        <Button type={type} size={TEST_SIZE}>
+          {TEST_TEXT}
+        </Button>
       );
 
       testClassnamesByType(type, TEST_SIZE, getByRole, getByTestId);
@@ -96,7 +101,9 @@ describe('Button', () => {
         return Promise.resolve();
       }
       const { getByRole, getByTestId } = render(
-        <Button type={TEST_TYPE} size={size}>{TEST_TEXT}</Button>
+        <Button type={TEST_TYPE} size={size}>
+          {TEST_TEXT}
+        </Button>
       );
 
       testClassnamesByType(TEST_TYPE, size, getByRole, getByTestId);
@@ -126,7 +133,9 @@ describe('Button', () => {
     test('type is "link" & ANY size`', () => {
       console.warn = jest.fn();
       const { getByRole, getByTestId } = render(
-        <Button type="link" size={TEST_SIZE}>{TEST_TEXT}</Button>
+        <Button type="link" size={TEST_SIZE}>
+          {TEST_TEXT}
+        </Button>
       );
       const expectedType = 'link';
       const expectedSize = '';
@@ -137,7 +146,9 @@ describe('Button', () => {
     test('type is "primary" & size is "small"', () => {
       console.error = jest.fn();
       const { getByRole, getByTestId } = render(
-        <Button type="primary" size="small">{TEST_TEXT}</Button>
+        <Button type="primary" size="small">
+          {TEST_TEXT}
+        </Button>
       );
       const expectedType = 'secondary';
       const expectedSize = 'small';
