@@ -10,11 +10,9 @@ describe('Profile/Manage Account Reducer', () => {
     const loadingProfileData = {
       type: 'LOAD_PROFILE_DATA',
     };
-    expect(profileReducer(initialState, loadingProfileData)).toEqual({
-      ...initialState,
-      isLoading: true,
-      errors: { data: undefined },
-    });
+    expect(profileReducer(initialState, loadingProfileData)).toEqual(
+      initialState
+    );
 
     const editingInformation = {
       type: 'EDITING_INFORMATION',
