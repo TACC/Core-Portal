@@ -102,8 +102,9 @@ const DataFilesProjectMembers = ({
     ),
   };
   const roleColumn =
-    !projectId ||
-    ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role)
+    mode !== 'transfer' &&
+    (!projectId ||
+      ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role))
       ? [
           {
             Header: 'Role',
