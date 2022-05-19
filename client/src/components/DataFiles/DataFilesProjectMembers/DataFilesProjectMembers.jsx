@@ -259,7 +259,12 @@ const DataFilesProjectMembers = ({
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={existingMembers}
         className={styles[listStyle]}
-        columnMemoProps={[loading, mode, transferUser, authenticatedUserQuery]}
+        columnMemoProps={[
+          loading,
+          mode,
+          transferUser,
+          authenticatedUserQuery?.data?.role,
+        ]}
       />
     </div>
   );
