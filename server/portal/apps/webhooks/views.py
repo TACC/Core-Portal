@@ -145,20 +145,6 @@ class JobsWebhookView(BaseApiView):
                     if should_notify:
                         n = Notification.objects.create(**event_data)
                         n.save()
-                        logger.debug('Event data with action link {}'.format(event_data))
-
-                        try:
-                            logger.debug('Preparing to Index Job Output job={}'.format(job_name))
-
-                            agave_indexer.apply_async(args=[archiveSystem],
-                                                      kwargs={'filePath': archivePath},
-                                                      recurse=False,
-                                                      reindex=True)
-                            logger.debug(
-                                'Finished Indexing Job Output job={}'.format(job_name))
-                        except Exception as e:
-                            logger.exception('Error indexing job output: {}'.format(e))
-                            return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             elif job_status == 'FINISHED':
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
@@ -193,9 +179,7 @@ class JobsWebhookView(BaseApiView):
                             logger.debug('Preparing to Index Job Output job={}'.format(job_name))
 
                             agave_indexer.apply_async(args=[archiveSystem],
-                                                      kwargs={'filePath': archivePath},
-                                                      recurse=False,
-                                                      reindex=True)
+                                                      kwargs={'filePath': archivePath})
                             logger.debug(
                                 'Finished Indexing Job Output job={}'.format(job_name))
                         except Exception as e:
