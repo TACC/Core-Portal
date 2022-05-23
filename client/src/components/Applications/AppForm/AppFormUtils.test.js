@@ -1,6 +1,13 @@
 import { cloneDeep } from 'lodash';
-import { namdAppFixture } from './fixtures/AppForm.app.fixture';
-import { getNodeCountValidation, getQueueValidation } from './AppFormUtils';
+import {
+  namdAppFixture,
+  namdDefaultFormValues,
+} from './fixtures/AppForm.app.fixture';
+import {
+  getNodeCountValidation,
+  getQueueValidation,
+  updateValuesForQueue,
+} from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue = namdAppFixture.exec_sys.queues.find(
@@ -62,5 +69,64 @@ describe('AppFormUtils', () => {
     expect(
       getQueueValidation(normalQueue, stampede2SerialApp).isValidSync('normal')
     ).toEqual(true);
+  });
+
+  it('updateValuesForQueue updates node count when using small queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'small';
+    values.nodeCount = 3;
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    expect(updatedValues.nodeCount).toEqual(2);
+  });
+
+  it('updateValuesForQueue updates node count when using normal queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'normal';
+    values.nodeCount = 2;
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    expect(updatedValues.nodeCount).toEqual(3);
+  });
+
+  it('updateValuesForQueue updates processorsOnEachNode', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'development';
+    values.processorsOnEachNode = 64;
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    /* should to be 56 (i.e. 2240/40) on development queue */
+    expect(updatedValues.processorsOnEachNode).toEqual(56);
+  });
+
+  it('updateValuesForQueue handles processorsOnEachNode for rtx queue', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'rtx';
+    values.processorsOnEachNode = 2;
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    /* shouldn't change for rtx or rtx-dev queues as maxProcessorsPerNode is -1  */
+    expect(updatedValues.processorsOnEachNode).toEqual(2);
+  });
+
+  it('updateValuesForQueue updates maxRunTime', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.batchQueue = 'development';
+    values.maxRunTime = '48:00:00';
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    expect(updatedValues.maxRunTime).toEqual('02:00:00');
+  });
+
+  it('updateValuesForQueue avoids updating runtime if not valid or empty', () => {
+    const appFrontera = cloneDeep(namdAppFixture);
+    const values = cloneDeep(namdDefaultFormValues);
+    values.maxRunTime = '99:00:00';
+    const updatedValues = updateValuesForQueue(appFrontera, values);
+    expect(updatedValues.maxRunTime).toEqual('99:00:00');
+
+    values.maxRunTime = '';
+    const moreUpdatedValues = updateValuesForQueue(appFrontera, values);
+    expect(moreUpdatedValues.maxRunTime).toEqual('');
   });
 });
