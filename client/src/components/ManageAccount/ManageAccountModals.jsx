@@ -32,7 +32,7 @@ export const EditRequiredInformationModal = () => {
 
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
+    if (success) dispatch({ type: 'GET_PROFILE_DATA' });
   };
 
   return (
@@ -78,7 +78,7 @@ export const EditOptionalInformationModal = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
+    if (success) dispatch({ type: 'GET_PROFILE_DATA' });
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
@@ -118,7 +118,7 @@ export const ChangePasswordModal = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
+    if (success) dispatch({ type: 'GET_PROFILE_DATA' });
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">

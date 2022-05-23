@@ -204,7 +204,7 @@ describe('Change Password', () => {
     await waitFor(() => {
       const [close, reload] = successStore.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
-      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+      expect(reload.type).toEqual('GET_PROFILE_DATA');
     });
   });
 });
@@ -320,7 +320,7 @@ describe('Edit Optional Information', () => {
     await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
-      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+      expect(reload.type).toEqual('GET_PROFILE_DATA');
     });
   });
 });
@@ -468,7 +468,7 @@ describe('Edit Required Information', () => {
     await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
-      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+      expect(reload.type).toEqual('GET_PROFILE_DATA');
     });
   });
 });

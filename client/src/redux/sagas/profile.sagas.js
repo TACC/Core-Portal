@@ -15,6 +15,7 @@ export const getPasswordStatus = (h) => {
 };
 
 export function* getProfileData(action) {
+  yield put({ type: 'LOAD_PROFILE_DATA' });
   yield put({ type: 'GET_FORM_FIELDS' });
   try {
     const response = yield call(fetchUtil, {
