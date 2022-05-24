@@ -156,8 +156,36 @@ Styleguide Components.Button
 
 /* Modifiers: Types: Is Active */
 
-.c-button--is-active:not(.c-button:hover, .c-button:focus, .c-button:active) {
+.c-button--is-active:hover {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--alt);
+  border-color: var(--global-color-accent--dark);
+}
+
+.c-button--is-active:active {
+  color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-accent--x-light);
+  border-color: var(--global-color-accent--dark);
+
+  border-width: var(--global-border-width--normal);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--dark);
+}
+
+.c-button--is-active:focus:not(:active) {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--alt);
+  border-color: var(--global-color-primary--xx-dark);
+
+  outline: var(--global-border-width--thick) solid
+    var(--global-color-accent--light);
+}
+
+.c-button--is-active.c-button--is-busy,
+.c-button--is-active:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--x-light);
+  border-color: var(--global-color-primary--xx-dark);
 }
 
 /* Modifiers: Types: As Link */
