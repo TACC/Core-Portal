@@ -9,7 +9,6 @@
   composes: c-button--secondary from '../../../styles/components/c-button--new.css';
 }
 .active {
-  composes: c-button--secondary from '../../../styles/components/c-button--new.css';
   composes: c-button--is-active from '../../../styles/components/c-button--new.css';
 }
 
