@@ -80,7 +80,8 @@ Styleguide Components.Button
 /* Modifiers: Types */
 
 .c-button--primary,
-.c-button--secondary {
+.c-button--secondary,
+.c-button--is-active {
   padding: 6px 18px;
   min-width: var(--min-width);
   max-width: var(--max-width);
