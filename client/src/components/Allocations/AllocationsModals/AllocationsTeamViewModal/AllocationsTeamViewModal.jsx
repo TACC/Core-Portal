@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import { has } from 'lodash';
 import AllocationsTeamTable from './AllocationsTeamTable';
-import { AllocationsManageTeamTable } from '../AllocationsManageTeamModal/AllocationsManageTeamModal';
+import AllocationsManageTeamTable from '../AllocationsManageTeamModal';
 import AllocationsContactCard from './AllocationsContactCard';
 import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
@@ -24,7 +24,6 @@ const AllocationsTeamViewModal = ({
   isOpen,
   toggle,
   projectId,
-  managementToggle,
 }) => {
   const { teams, loadingUsernames, search, errors } = useSelector(
     (state) => state.allocations
@@ -36,6 +35,7 @@ const AllocationsTeamViewModal = ({
   const [isManager, setManager] = useState(false);
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
+  console.log(isLoading);
   React.useEffect(() => {
     if (!isLoading) {
       const currentUser = teams[projectId].filter((u) => u.username === user);
@@ -96,7 +96,7 @@ const AllocationsTeamViewModal = ({
       <ModalHeader className='tab-row' toggle={toggle} charCode="&#xe912;">
         <Tabs value={selectedTab} onChange={handleTabChange} TabIndicatorProps={{style: {backgroundColor: "white"}}}>
           <Tab label='View Team' className={`tab ${selectedTab === 0 ? 'active' : 'inactive'}`} />
-          <Tab label='Manage Team' className={`tab ${selectedTab === 1 ? 'active' : 'inactive'}`} />
+          {isManager && <Tab label='Manage Team' className={`tab ${selectedTab === 1 ? 'active' : 'inactive'}`} />}
         </Tabs>
       </ModalHeader>
       <ModalBody className={ selectedTab === 0 ? 'd-flex p-0' : 'p-2'}>
