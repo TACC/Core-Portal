@@ -6,7 +6,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, Message, DropdownSelector } from '_common';
-import styles from './AllocationsManageTeamModal.module.scss';
+import styles from './AllocationsManageTeamTable.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();

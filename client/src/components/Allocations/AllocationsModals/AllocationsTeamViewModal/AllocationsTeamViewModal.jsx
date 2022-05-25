@@ -13,11 +13,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import { has } from 'lodash';
 import AllocationsTeamTable from './AllocationsTeamTable';
-import AllocationsManageTeamTable from '../AllocationsManageTeamModal';
+import AllocationsManageTeamTable from '../AllocationsManageTeamTable';
 import AllocationsContactCard from './AllocationsContactCard';
 import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
-import manageStyles from '../AllocationsManageTeamModal/AllocationsManageTeamModal.module.scss';
+import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 import '../AllocationsModalTabs.css';
 
 const AllocationsTeamViewModal = ({
@@ -35,7 +35,6 @@ const AllocationsTeamViewModal = ({
   const [isManager, setManager] = useState(false);
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
-  console.log(isLoading);
   React.useEffect(() => {
     if (!isLoading) {
       const currentUser = teams[projectId].filter((u) => u.username === user);
