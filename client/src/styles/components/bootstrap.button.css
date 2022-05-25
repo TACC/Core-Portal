@@ -1,3 +1,4 @@
+/* CAVEAT: Incomplete because some overrides are in various components */
 /*
 Button (Bootstrap)
 
@@ -8,8 +9,11 @@ Override Bootstrap styles. See:
 
 Styleguide Components.Bootstrap.Button
 */
-/* CAVEAT: This stylesheet is not complete, because some
-           global styles are scattered among components */
+
+.btn {
+  border-radius: 0;
+}
+
 .btn-link,
 .btn-link:hover {
   color: var(--global-color-accent--normal);

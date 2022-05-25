@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { parse } from 'query-string';
 import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
+import { useSelectedFiles } from 'hooks/datafiles';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
@@ -27,11 +28,7 @@ const PublicData = () => {
         (sys) => sys.scheme === 'public'
       ) || {}
   );
-  const selectedFiles = useSelector((state) =>
-    state.files.selected.FilesListing.map(
-      (i) => state.files.listing.FilesListing[i]
-    )
-  );
+  const { selectedFiles } = useSelectedFiles();
 
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
