@@ -309,7 +309,9 @@ export function files(state = initialFilesState, action) {
       setValue = !state.selectAll[action.payload.section];
 
       if (setValue) {
-        selectedSet = new Set(state.listing.FilesListing.map((f, i) => i));
+        selectedSet = new Set(
+          state.listing.FilesListing?.map((f, i) => i) ?? []
+        );
       } else {
         selectedSet = new Set([]);
       }

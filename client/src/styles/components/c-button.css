@@ -39,7 +39,9 @@ Markup:
 Styleguide Components.Button
 */
 .c-button,
-[class*='c-button--'] {
+.c-button--primary,
+.c-button--secondary,
+.c-button--as-link {
   /* Normalize child element box sizes */
   display: flex;
   /* Align elements horizontally and vertically */

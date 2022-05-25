@@ -11,8 +11,14 @@ const AppIcon = ({ appId }) => {
     Object.keys(appIcons).forEach((appName) => {
       if (id.includes(appName)) {
         appIcon = appIcons[appName].toLowerCase();
+        return appIcon;
       }
     });
+    if (id.includes('compress') || id.includes('zippy')) {
+      appIcon = 'compress';
+    } else if (id.includes('extract')) {
+      appIcon = 'extract';
+    }
     return appIcon;
   };
   const iconName = findAppIcon(appId);

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.16.0] - 2022-05-17: Hook library; Dynamic App Form Updates; Styling
+
+### Added
+
+- FP-1384: Hook library for Data Files (#553)
+
+### Changed
+
+- Clean up FP-1082 & Prep for FP-1613 (#627)
+- Bump django from 2.2.27 to 2.2.28 in /server (#629)
+- FP-990 & FP-1255: Update <IntroMessage> to Use Dismissible <SectionMessage> (#616)
+- FP-1194: CMS Samples: Update Secrets, Add Settings (#522)
+- FP-1628: Update app values when user changes a new queue (#638)
+- FP-1491: Style _common Button React Component (#598)
+
+### Fixed
+
+- FP-1543: No Small Primary Buttons (even in Header) (#628)
+- FP-1567: Toolbar state not refreshing when moving to shared workspaces ProjectsList (#619)
+- Add prettier check/fix commands (#633)
+- FP-1566: fix early search results display (#634)
+- FP-1618, FP-1626, FP-1630, FP-1299: Various bugfixes (#630)
+- FP-1638: Add fixed widths for icon and date in Jobs table (#635)
+
 ## [2.15.0] - 2022-04-19: Common Sidebar; Bugfixes
 
 ### Added
@@ -636,7 +660,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.15.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.16.0...HEAD
+[2.16.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.16.0
 [2.15.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.15.0
 [2.14.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.14.0
 [2.13.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.13.0

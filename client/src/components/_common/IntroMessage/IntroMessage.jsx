@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { SectionMessage } from '_common';
+
+import styles from './IntroMessage.module.css';
 
 /**
  * Whether the name is of a known intro message
@@ -31,24 +34,30 @@ function IntroMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const introMessages = useSelector((state) => state.introMessages);
   const shouldShow = isKnownMessage(messageName);
+  const [isVisible, setIsVisible] = useState(shouldShow);
 
-  function onDismiss(name) {
+  // Manage visibility
+  const onDismiss = useCallback(() => {
     const newMessagesState = {
       ...introMessages,
-      [name]: false,
+      [messageName]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
-  }
+
+    setIsVisible(!isVisible);
+  }, [isVisible]);
 
   return (
-    <Alert
-      isOpen={shouldShow}
-      toggle={() => onDismiss(messageName)}
-      color="secondary"
-      className={className}
+    <SectionMessage
+      aria-label={messageName}
+      type="info"
+      canDismiss
+      className={`${styles.root} ${className}`}
+      isVisible={isVisible}
+      onDismiss={onDismiss}
     >
       {children}
-    </Alert>
+    </SectionMessage>
   );
 }
 IntroMessage.propTypes = {
