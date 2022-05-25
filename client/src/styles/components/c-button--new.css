@@ -1,0 +1,199 @@
+/*
+Button
+
+A button that may have icon(s) before and/or after its text.
+
+.c-button--primary - A primary (expected) user action
+.c-button--secondary - For an optional user action
+.c-button--as-link - A button that visually resembles a link
+.c-button--is-busy - A clicked button that started an incomplete process
+
+Markup:
+<main>
+    <button class="c-button c-button--secondary">
+      <i class="c-button__icon--before" data-icon="X">(clear input)</i>
+      <span class="c-button__text">Cancel</span>
+    </button>
+    <button class="c-button c-button--primary">
+      <i class="c-button__icon" data-icon="✓">(check input)</i>
+      <span class="c-button__text">Confirm</span>
+      <i class="c-button__icon--after" data-icon="→">(and exit)</i>
+    </button>
+    <button class="c-button c-button--secondary">
+      <span class="c-button__text">Skip</span>
+      <i class="c-button__icon--after" data-icon="→">(and move to next form)</i>
+    </button>
+    <button class="c-button c-button--as-link">
+      Return to Previous Screen
+    </button>
+    <button class="c-button c-button--secondary c-button--is-busy">
+      <span class="c-button__text">Submit (Secondary)</span>
+    </button>
+    <button class="c-button c-button--primary c-button--is-busy">
+      <span class="c-button__text">Submit (Primary)</span>
+    </button>
+</main>
+
+Styleguide Components.Button
+*/
+
+/* BASE */
+
+[class*='c-button'] {
+  --min-width: 75px;
+  --mid-width: 110px;
+  --max-width: 130px;
+}
+.c-button {
+  display: inline-block;
+
+  border-width: var(--global-border-width--normal);
+  border-style: solid;
+
+  font-weight: 500;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+
+  /* When possible: @extend %x-truncate--one-line; */
+  /* SEE: https://github.com/tacc-wbomar/Core-Styles/blob/20e4cb7/source/_imports/tools/x-truncate.css#L36-L41 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-button:not(:disabled) {
+  cursor: pointer; /* WARNING: Opinionated */
+}
+.c-button:disabled:not(.c-button--is-busy) {
+  color: var(--global-color-primary--dark);
+  background-color: var(--global-color-primary--xx-light);
+  border-color: var(--global-color-primary--dark);
+
+  pointer-events: none;
+}
+
+/* MODIFIERS */
+
+/* Modifiers: Types */
+
+.c-button--primary,
+.c-button--secondary {
+  padding: 6px 18px;
+  min-width: var(--min-width);
+  max-width: var(--max-width);
+}
+
+/* Modifiers: Types: Primary */
+
+.c-button--primary:hover {
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--dark);
+  border-color: var(--global-color-accent--dark);
+}
+
+.c-button--primary:active {
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--x-dark);
+  border-color: var(--global-color-accent--dark);
+
+  border-width: var(--global-border-width--normal);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--dark);
+}
+
+.c-button--primary:focus:not(:active) {
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-primary--xx-light);
+
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--light);
+}
+
+.c-button--primary.c-button--is-busy,
+.c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
+}
+
+/* Modifiers: Types: Secondary */
+
+.c-button--secondary:hover {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--light);
+  border-color: var(--global-color-accent--dark);
+}
+
+.c-button--secondary:active {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--x-light);
+  border-color: var(--global-color-accent--dark);
+
+  border-width: var(--global-border-width--normal);
+  outline: var(--global-border-width--normal) solid
+    var(--global-color-accent--dark);
+}
+
+.c-button--secondary:focus:not(:active) {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--light);
+  border-color: var(--global-color-primary--xx-dark);
+
+  outline: var(--global-border-width--thick) solid
+    var(--global-color-accent--light);
+}
+
+.c-button--secondary.c-button--is-busy,
+.c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--xx-light);
+  border-color: var(--global-color-primary--xx-dark);
+}
+
+/* Modifiers: Types: As Link */
+
+.c-button--as-link {
+  color: var(--global-color-accent--normal);
+
+  background: unset;
+  border: unset;
+  padding-inline: unset;
+}
+.c-button--as-link:not(:disabled):hover {
+  text-decoration: underline;
+}
+
+/* Modifiers: Types: Is Busy */
+
+.c-button--is-busy {
+  opacity: 0.5;
+}
+.c-button--is-busy .c-button__text {
+  opacity: 0.3;
+}
+
+/* Modifiers: Sizes */
+
+.c-button--width-short {
+  width: var(--min-width);
+}
+.c-button--width-medium {
+  width: var(--mid-width);
+}
+.c-button--width-long {
+  width: var(--max-width);
+}
+.c-button--size-small {
+  min-width: 0;
+  padding: 3px 9px;
+  line-height: 1;
+}
+
+/* ELEMENTS */
+
+.c-button__icon--before {
+  margin-right: 0.5em;
+}
+.c-button__icon--after {
+  margin-left: 0.5em;
+}

@@ -48,6 +48,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
           queryString={query_string}
           schemes={Object.keys(results).filter((key) => results[key].include)}
           authenticated={Boolean(user)}
+          searching={loading}
           results={results}
         />
       </div>

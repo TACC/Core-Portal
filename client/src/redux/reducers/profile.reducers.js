@@ -20,11 +20,7 @@ export const initialState = {
 export default function profile(state = initialState, action) {
   switch (action.type) {
     case 'LOAD_PROFILE_DATA':
-      return {
-        ...state,
-        isLoading: true,
-        errors: { ...state.errors, data: undefined },
-      };
+      return initialState;
     case 'ADD_DATA':
       return {
         ...state,

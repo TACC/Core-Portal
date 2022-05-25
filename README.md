@@ -29,14 +29,22 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 After you clone the repository locally, there are several configuration steps required to prepare the project.
 
 
-#### Create settings_secret.py, settings_local.py, and secrets.py
+#### Create settings and secrets
+
+##### Portal
 
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally._
+    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
+
+##### CMS
 
 - Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
+
+- To emulate a specific CMS project, copy https://github.com/TACC/Core-CMS-Resources/blob/main/__PROJECT_TO_EMULATE__/settings_custom.py to `server/conf/cms/settings_custom.py`
+
+- To override any standard or custom CMS settings, create a `server/conf/cms/settings_local.py`
 
 #### Build the image for the portal's django container:
     make build
@@ -185,10 +193,12 @@ Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and i
 1. Run `npm run lint`, which is the same as linting both languages independently:
     - `npm run lint:js`
     - `npm run lint:css`
+    - `npm run prettier:check`
 
 You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
 - `npm run lint:js -- --fix`
 - `npm run lint:css -- --fix`
+- `npm run prettier:fix`
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `flake8` from the command line.
 To do so, run the following in the `core_portal_django` container:

@@ -3,38 +3,48 @@ import PropTypes from 'prop-types';
 import Message from '_common/Message';
 
 /**
- * Show an event-based message to the user
- * @todo Document examples
+ * Show a section/page-specific event-based message to the user
  * @example
- * // Blah blah…
- * <Sample jsx>
+ * // basic usage
+ * <SectionMessage type="warning">Uh oh.</SectionMessage>
+ * @see _common/Message
  */
 const SectionMessage = (props) => {
   const [isVisible, setIsVisible] = useState(true);
+  const autoManageVisible = props.canDismiss && props.isVisible === undefined;
+  const autoManageDismiss = props.canDismiss && props.onDismiss === undefined;
 
-  // Manage visibility
-  const onDismiss = useCallback(() => {
-    setIsVisible(!isVisible);
-  }, [isVisible]);
+  function onDismiss() {
+    if (autoManageVisible) {
+      setIsVisible(!isVisible);
+    }
+    if (!autoManageDismiss) {
+      props.onDismiss();
+    }
+  }
 
   // Override default props
   const messageProps = {
     ...Message.defaultProps,
     ...props,
-    isVisible,
-    onDismiss,
     scope: 'section',
   };
+  if (autoManageVisible) {
+    messageProps.isVisible = isVisible;
+  }
+  if (autoManageDismiss) {
+    messageProps.onDismiss = onDismiss;
+  }
 
   // Avoid manually syncing <Message>'s props
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Message {...messageProps} />;
 };
-SectionMessage.propTypes = {
-  ...Message.propTypes,
-  isVisible: PropTypes.bool,
-  onDismiss: PropTypes.func,
+SectionMessage.propTypes = Message.propTypes;
+SectionMessage.defaultProps = {
+  ...Message.defaultProps,
+  isVisible: undefined,
+  onDismiss: undefined,
 };
-SectionMessage.defaultProps = Message.defaultProps;
 
 export default SectionMessage;
