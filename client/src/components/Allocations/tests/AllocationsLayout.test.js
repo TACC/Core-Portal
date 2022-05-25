@@ -38,7 +38,7 @@ describe('Allocations Page Layout', () => {
     );
     // Header
     expect(getAllByText(/Allocations/)).toBeDefined();
-    expect(getByText(/Manage/)).toBeDefined();
+    expect(getByText(/Request/)).toBeDefined();
     // Sidebar
     expect(getAllByText(/Approved/)[1].closest('a')).toHaveAttribute(
       'href',

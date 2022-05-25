@@ -172,4 +172,75 @@ describe('View Team Modal', () => {
 
     expect(getByText(/Unable to retrieve team data./)).toBeDefined();
   });
+  const testManageStore = {
+    allocations: {
+      teams: {
+        1234: [
+          {
+            id: '123456',
+            username: 'testuser1',
+            role: 'Standard',
+            firstName: 'Test',
+            lastName: 'User1',
+            email: 'user1@gmail.com',
+            usageData: [],
+          },
+          {
+            id: '012345',
+            username: 'testuser2',
+            role: 'PI',
+            firstName: 'Test',
+            lastName: 'User2',
+            email: 'user2@gmail.com',
+            usageData: [
+              {
+                usage: '0.5 SU',
+                resource: 'stampede2.tacc.utexas.edu',
+                allocationId: 1,
+                percentUsed: 0.005,
+                status: 'Active',
+              },
+              {
+                usage: '10 SU',
+                resource: 'frontera.tacc.utexas.edu',
+                allocationId: 2,
+                percentUsed: 10,
+                status: 'Active',
+              },
+            ],
+          },
+        ],
+      },
+      loadingUsernames: {
+        1234: {
+          loading: false,
+        },
+      },
+      errors: {},
+    },
+    profile: {
+      data: {
+        demographics: {},
+      },
+    },
+  };
+  
+  test('does not render the Manage Team tab', () => {
+    testManageStore.profile.data.demographics.username = 'testuser1';
+    const { queryByText } = render(
+      <Provider store={mockStore(testManageStore)}>
+        <AllocationsTeamViewModal {...testProps} /> 
+      </Provider>
+    );
+    expect(queryByText(/Manage Team/)).toBeNull();
+  });
+  test('renders the Manage Team tab', () => {
+    testManageStore.profile.data.demographics.username = 'testuser2';
+    const { getByText } = render(
+      <Provider store={mockStore(testManageStore)}>
+        <AllocationsTeamViewModal {...testProps} /> 
+      </Provider>
+    );
+    expect(getByText(/Manage Team/).closest('button')).toBeDefined();
+  });
 });
