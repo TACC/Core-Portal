@@ -27,6 +27,8 @@
   overflow: auto;
 }
 .manage-team-table {
+  overflow-x: hidden;
+  max-width: 100%;
   font-size: 0.875rem;
   line-height: 2rem;
   margin: 0 1rem;

@@ -13,7 +13,12 @@ import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 import '../AllocationsModalTabs.css';
 
-const AllocationsTeamViewModal = ({ isOpen, toggle, projectId }) => {
+const AllocationsTeamViewModal = ({
+  isOpen,
+  toggle,
+  projectId,
+  projectName,
+}) => {
   const { teams, loadingUsernames, search, errors } = useSelector(
     (state) => state.allocations
   );

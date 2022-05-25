@@ -14,7 +14,7 @@ const CELL_PROPTYPES = {
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [teamModal, setTeamModal] = useState(false);
-  const { projectId } = value;
+  const { projectId, name } = value;
   return (
     <>
       <Button
@@ -35,13 +35,7 @@ export const Team = ({ cell: { value } }) => {
         isOpen={teamModal}
         projectId={projectId}
         toggle={() => setTeamModal(!teamModal)}
-        managementToggle={() => {
-          setTeamModal(!teamModal);
-          dispatch({
-            type: 'GET_MANAGE_TEAMS',
-            payload: { ...value },
-          });
-        }}
+        projectName={name}
       />
     </>
   );

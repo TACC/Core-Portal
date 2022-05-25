@@ -26,18 +26,25 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       {
         Header: 'Role',
         accessor: ({ role }) => {
+          switch (role) {
+            case 'PI':
+              return 'Principal Investigator';
+            case 'Delegate':
+              return 'Allocation Manager';
+            default:
+              return 'Member';
+          } // Selector and ability to change user's role in allocation to be implemented later //
           /*const changeUserRole = (user,role) => {
             dispatch({
               type: ##UPDATE_USER_ROLE_IN_TAS_PROJECT,
               payload: user, role
             })
-          }*/
+          }
           const allocationRoles = {
             Standard: 'Member',
             Delegate: 'Allocation Manager',
             PI: 'Principal Investigator',
           };
-          console.log(role);
           return (
             <div>
               <DropdownSelector
@@ -52,7 +59,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
                   ))}
               </DropdownSelector>
             </div>
-          );
+          );*/
         },
       },
       {
