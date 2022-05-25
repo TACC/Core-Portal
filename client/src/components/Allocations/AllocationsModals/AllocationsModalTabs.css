@@ -2,11 +2,11 @@
   flex-direction: row;
   position: relative;
   height: 63.5px;
-  border-bottom: 1px solid #AFAFAF;
+  border-bottom: 1px solid #afafaf;
   padding: 5px;
 }
 .tab-row.modal-header .close {
-  transform: translate(-25%,25%);
+  transform: translate(-25%, 25%);
 }
 .tab {
   font-size: 19px;
@@ -19,22 +19,22 @@
 }
 
 .tab.active {
-  background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 1px solid #AFAFAF;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid #afafaf;
   border-bottom: none;
   opacity: 1;
   text-transform: none;
   outline: none;
 }
 .tab.inactive {
-  background: #F4F4F4 0% 0% no-repeat padding-box;
+  background: #f4f4f4 0% 0% no-repeat padding-box;
   color: black;
   border: none;
-  border-bottom: 1px solid #AFAFAF;
+  border-bottom: 1px solid #afafaf;
   text-transform: none;
   height: 58.5px;
 }
 .tab.inactive:hover {
-  background: #DBDBDB 0% 0% no-repeat padding-box;
-  border: 1px solid #AFAFAF;
+  background: #dbdbdb 0% 0% no-repeat padding-box;
+  border: 1px solid #afafaf;
 }

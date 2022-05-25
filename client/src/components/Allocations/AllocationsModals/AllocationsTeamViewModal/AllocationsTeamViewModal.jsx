@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { number, bool, func } from 'prop-types';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Container,
-  Col,
-  Row,
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner } from '_common';
@@ -20,11 +13,7 @@ import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 import '../AllocationsModalTabs.css';
 
-const AllocationsTeamViewModal = ({
-  isOpen,
-  toggle,
-  projectId,
-}) => {
+const AllocationsTeamViewModal = ({ isOpen, toggle, projectId }) => {
   const { teams, loadingUsernames, search, errors } = useSelector(
     (state) => state.allocations
   );
@@ -81,9 +70,9 @@ const AllocationsTeamViewModal = ({
   );
 
   const [selectedTab, setSelectedTab] = useState(0);
-  const handleTabChange = (e, newValue ) => {
+  const handleTabChange = (e, newValue) => {
     setSelectedTab(newValue);
-  }
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -92,81 +81,97 @@ const AllocationsTeamViewModal = ({
       size="lg"
       onClosed={resetCard}
     >
-      <ModalHeader className='tab-row' toggle={toggle} charCode="&#xe912;">
-        <Tabs value={selectedTab} onChange={handleTabChange} TabIndicatorProps={{style: {backgroundColor: "white"}}}>
-          <Tab label='View Team' className={`tab ${selectedTab === 0 ? 'active' : 'inactive'}`} />
-          {isManager && <Tab label='Manage Team' className={`tab ${selectedTab === 1 ? 'active' : 'inactive'}`} />}
-        </Tabs>
-      </ModalHeader>
-      <ModalBody className={ selectedTab === 0 ? 'd-flex p-0' : 'p-2'}>
-        { selectedTab === 0 &&     
-        <Container>
-          {error ? (
-            <Row style={{ height: '50vh' }}>
-              <Col className="d-flex justify-content-center">
-                <span>Unable to retrieve team data.</span>
-              </Col>
-            </Row>
-          ) : (
-            <Row>
-              <Col className={styles['listing-wrapper']} lg={5}>
-                {isLoading ? (
-                  <LoadingSpinner />
-                ) : (
-                  <AllocationsTeamTable
-                    visible={card}
-                    rawData={teams[projectId]}
-                    clickHandler={setCard}
-                  />
-                )}
-              </Col>
-              <Col className={styles['information-wrapper']}>
-                {isLoading ? (
-                  <span>Loading user list. This may take a moment.</span>
-                ) : (
-                  <AllocationsContactCard listing={card} />
-                )}
-              </Col>
-            </Row>
-          )}
-        </Container>
-        }
-        { selectedTab === 1 &&
-        <>
-        <div className={manageStyles['search-bar-wrapper']}>
-          <span className={manageStyles['search-bar-header-text']}>Add Member</span>
-        <UserSearchbar
-        members={teams[projectId]}
-        onAdd={onAdd}
-        addDisabled={isLoading}
-        searchDisable={isLoading}
-        onChange={onChange}
-        searchResults={search.results}
-        placeholder=""
-        />
-        <i className={manageStyles['help-text']}>
-          Search by entering the full username, email, or last name.
-        </i>
-        </div>
-        <div className={manageStyles['listing-wrapper']}>
-          {error ? (
-            <Row style={{ height: '50vh' }}>
-              <Col className="d-flex justify-content-center">
-                <span>Unable to retrieve team data.</span>
-              </Col>
-            </Row>
-          ) : isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <AllocationsManageTeamTable
-              rawData={teams[projectId]}
-              projectId={projectId}
+      <ModalHeader className="tab-row" toggle={toggle} charCode="&#xe912;">
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          TabIndicatorProps={{ style: { backgroundColor: 'white' } }}
+        >
+          <Tab
+            label="View Team"
+            className={`tab ${selectedTab === 0 ? 'active' : 'inactive'}`}
+          />
+          {isManager && (
+            <Tab
+              label="Manage Team"
+              className={`tab ${selectedTab === 1 ? 'active' : 'inactive'}`}
             />
           )}
-        </div>
-        <i className={manageStyles['help-text']}>The PI, Co-PIs, and Allocation Managers can manage the team.</i>    
-        </>
-        }
+        </Tabs>
+      </ModalHeader>
+      <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'p-2'}>
+        {selectedTab === 0 && (
+          <Container>
+            {error ? (
+              <Row style={{ height: '50vh' }}>
+                <Col className="d-flex justify-content-center">
+                  <span>Unable to retrieve team data.</span>
+                </Col>
+              </Row>
+            ) : (
+              <Row>
+                <Col className={styles['listing-wrapper']} lg={5}>
+                  {isLoading ? (
+                    <LoadingSpinner />
+                  ) : (
+                    <AllocationsTeamTable
+                      visible={card}
+                      rawData={teams[projectId]}
+                      clickHandler={setCard}
+                    />
+                  )}
+                </Col>
+                <Col className={styles['information-wrapper']}>
+                  {isLoading ? (
+                    <span>Loading user list. This may take a moment.</span>
+                  ) : (
+                    <AllocationsContactCard listing={card} />
+                  )}
+                </Col>
+              </Row>
+            )}
+          </Container>
+        )}
+        {selectedTab === 1 && (
+          <>
+            <div className={manageStyles['search-bar-wrapper']}>
+              <span className={manageStyles['search-bar-header-text']}>
+                Add Member
+              </span>
+              <UserSearchbar
+                members={teams[projectId]}
+                onAdd={onAdd}
+                addDisabled={isLoading}
+                searchDisable={isLoading}
+                onChange={onChange}
+                searchResults={search.results}
+                placeholder=""
+              />
+              <i className={manageStyles['help-text']}>
+                Search by entering the full username, email, or last name.
+              </i>
+            </div>
+            <div className={manageStyles['listing-wrapper']}>
+              {error ? (
+                <Row style={{ height: '50vh' }}>
+                  <Col className="d-flex justify-content-center">
+                    <span>Unable to retrieve team data.</span>
+                  </Col>
+                </Row>
+              ) : isLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <AllocationsManageTeamTable
+                  rawData={teams[projectId]}
+                  projectId={projectId}
+                />
+              )}
+            </div>
+            <i className={manageStyles['help-text']}>
+              The PI, Co-PIs, and Allocation Managers can manage the team.
+            </i>
+          </>
+        )}
       </ModalBody>
     </Modal>
   );

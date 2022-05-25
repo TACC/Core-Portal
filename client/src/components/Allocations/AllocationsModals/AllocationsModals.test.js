@@ -224,12 +224,12 @@ describe('View Team Modal', () => {
       },
     },
   };
-  
+
   test('does not render the Manage Team tab', () => {
     testManageStore.profile.data.demographics.username = 'testuser1';
     const { queryByText } = render(
       <Provider store={mockStore(testManageStore)}>
-        <AllocationsTeamViewModal {...testProps} /> 
+        <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
     expect(queryByText(/Manage Team/)).toBeNull();
@@ -238,7 +238,7 @@ describe('View Team Modal', () => {
     testManageStore.profile.data.demographics.username = 'testuser2';
     const { getByText } = render(
       <Provider store={mockStore(testManageStore)}>
-        <AllocationsTeamViewModal {...testProps} /> 
+        <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
     expect(getByText(/Manage Team/).closest('button')).toBeDefined();

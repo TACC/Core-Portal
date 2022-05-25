@@ -3,9 +3,7 @@ import { shape, arrayOf, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  AllocationsTeamViewModal,
-} from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({

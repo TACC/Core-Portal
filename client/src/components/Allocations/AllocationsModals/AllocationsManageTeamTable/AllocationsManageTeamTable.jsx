@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Table,
-  Button,
-} from 'reactstrap';
+import { Table, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, Message, DropdownSelector } from '_common';
@@ -36,27 +33,26 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
             })
           }*/
           const allocationRoles = {
-            'Standard':'Member', 
-            'Delegate':'Allocation Manager', 
-            'PI':'Principal Investigator'
-          }
+            Standard: 'Member',
+            Delegate: 'Allocation Manager',
+            PI: 'Principal Investigator',
+          };
           console.log(role);
           return (
             <div>
-                <DropdownSelector
+              <DropdownSelector
                 //onChange={(e) => changeUserRole(user, e.target.value)}
                 value=""
-                >
-                  <option value="">{allocationRoles[role]}</option>
-                  {Object.keys(allocationRoles).filter(
-                    (userRole) =>
-                    userRole !== role).map((userRole) =>
-                      <option value="">{allocationRoles[userRole]}</option>
-                    ) 
-                  }
-                </DropdownSelector>
+              >
+                <option value="">{allocationRoles[role]}</option>
+                {Object.keys(allocationRoles)
+                  .filter((userRole) => userRole !== role)
+                  .map((userRole) => (
+                    <option value="">{allocationRoles[userRole]}</option>
+                  ))}
+              </DropdownSelector>
             </div>
-          )
+          );
         },
       },
       {
@@ -108,7 +104,14 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       data,
     });
   return (
-    <Table  hover responsive borderless size="sm" className={styles['manage-team-table']} {...getTableProps()}>
+    <Table
+      hover
+      responsive
+      borderless
+      size="sm"
+      className={styles['manage-team-table']}
+      {...getTableProps()}
+    >
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
