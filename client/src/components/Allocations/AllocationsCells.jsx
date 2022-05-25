@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   AllocationsTeamViewModal,
-  AllocationsManageTeamModal,
 } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
@@ -17,8 +16,7 @@ const CELL_PROPTYPES = {
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [teamModal, setTeamModal] = useState(false);
-  const [manageModal, setManageModal] = useState(false);
-  const { projectId, name } = value;
+  const { projectId } = value;
   return (
     <>
       <Button
@@ -45,21 +43,6 @@ export const Team = ({ cell: { value } }) => {
             type: 'GET_MANAGE_TEAMS',
             payload: { ...value },
           });
-          setManageModal(true);
-        }}
-      />
-      <AllocationsManageTeamModal
-        isOpen={manageModal}
-        projectId={projectId}
-        projectName={name}
-        toggle={() => setManageModal(!manageModal)}
-        viewToggle={() => {
-          dispatch({
-            type: 'GET_TEAMS',
-            payload: { ...value },
-          });
-          setTeamModal(true);
-          setManageModal(!manageModal);
         }}
       />
     </>
