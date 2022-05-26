@@ -66,9 +66,7 @@ const UserSearchbar = ({
             }
             size="short"
             isLoading={isLoading}
-            disabled={
-              !selectedUser || isLoading || alreadyMember(selectedUser)
-            }
+            disabled={!selectedUser || isLoading || alreadyMember(selectedUser)}
           >
             Add
           </Button>
