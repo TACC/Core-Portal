@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { shape, arrayOf, number, string } from 'prop-types';
-import { Button, Badge } from 'reactstrap';
+import { Badge } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { AllocationsTeamViewModal } from './AllocationsModals';
@@ -18,8 +19,6 @@ export const Team = ({ cell: { value } }) => {
   return (
     <>
       <Button
-        className="btn btn-sm"
-        color="secondary"
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
@@ -27,6 +26,7 @@ export const Team = ({ cell: { value } }) => {
           });
           setTeamModal(true);
         }}
+        size="medium"
         disabled={teamModal}
       >
         View Team
