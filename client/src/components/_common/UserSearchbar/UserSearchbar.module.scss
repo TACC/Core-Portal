@@ -5,13 +5,3 @@
 .member-search-group {
   width: 85%;
 }
-
-.member-search {
-  margin-bottom: 1em;
-  font-size: 12px !important;
-}
-
-.add-button {
-  composes: c-button--secondary from '../../../styles/components/c-button.css';
-  margin-bottom: 0;
-}
