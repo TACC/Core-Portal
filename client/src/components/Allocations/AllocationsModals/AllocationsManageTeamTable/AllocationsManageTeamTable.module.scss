@@ -1,30 +1,9 @@
-.root {
-  max-width: 700px;
-  .modal-body {
-    overflow-y: initial !important;
-  }
-  .update-button {
-    display: flex;
-    width: fit-content;
-    border-radius: 0;
-    font: bold 12px Roboto, sans-serif;
-    padding: 0.5rem 1rem;
-    border: 0 !important; /* override `.workbench-content .btn-secondary` */
-    background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
-    color: white !important; /* override `.workbench-content .btn-secondary` */
-  }
-}
 .listing-wrapper {
   height: 31.125vh;
   overflow-y: scroll;
   padding-left: 0;
   padding-right: 0;
   border-right: 1px solid rgb(112 112 112 / 25%);
-}
-.information-wrapper {
-  display: flex;
-  padding: 1em;
-  overflow: auto;
 }
 .manage-team-table {
   overflow-x: hidden;

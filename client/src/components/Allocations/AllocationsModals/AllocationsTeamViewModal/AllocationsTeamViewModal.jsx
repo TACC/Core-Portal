@@ -81,7 +81,6 @@ const AllocationsTeamViewModal = ({
     <Modal
       isOpen={isOpen}
       toggle={toggle}
-      className={styles.root}
       size="lg"
       onClosed={resetCard}
     >
