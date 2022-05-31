@@ -106,10 +106,8 @@
     font-size: 0.875rem; /* 14px (approved deviation from design) */
   }
 }
-/* Selector is long so it is specific enough to override without !important */
-/* NOTE: The length of selector helps devs find the source of the overwrite */
-.allocations-table.InfiniteScrollTable tbody tr:not(.-status) td {
-  vertical-align: top;
+td {
+  vertical-align: top !important; /* override InfiniteScrollTable */
 }
 
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
