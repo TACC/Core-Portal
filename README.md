@@ -266,6 +266,7 @@ If you need to change files within `node_modules/@tacc/core-styles/source`:
 
 If you need to test file changes with [Core CMS] changes:
 
+0. You should stash, commit, or revert any changes to `package.json` or `package-lock.json`.
 1. Clone [Core Styles].
 2. Allow live edit of node module via your [Core Styles] clone:
 
@@ -287,7 +288,10 @@ If you need to test file changes with [Core CMS] changes:
 
 4. Make changes in your [Core Styles] clone as necessary.
 5. Test changes.
-6. Do __not__ commit `npm link`'s automatic changes to `package.json` and `package-lock.json`!
+6. Undo changes to `package.json` and `package-lock.json`.
+    - _Warning: Do __not__ commit `npm link`'s automatic changes to `package.json` and `package-lock.json`!_
+
+- _Note: If you run `npm install` or `npm ci`, the live-edit link is destroyed. Repeat these steps to restore it._
 
 <sub>\* Use of `npm link` _without `--save`_ is overwritten by `npm install`. See [details](https://github.com/npm/cli/issues/2380#issuecomment-1029967927).</sub>
 
