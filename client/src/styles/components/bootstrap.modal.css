@@ -10,7 +10,7 @@ Override Bootstrap styles. See:
 
 Styleguide Components.Bootstrap.Modal
 */
-@import url('@tacc/core-styles/source/_imports/tools/x-truncate.css');
+@import url('@tacc/core-styles/src/lib/_imports/tools/x-truncate.css');
 
 .modal-content,
 .modal-header,

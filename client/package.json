@@ -67,7 +67,7 @@
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
     "@rollup/plugin-eslint": "^8.0.1",
-    "@tacc/core-styles": "git+https://git@github.com/TACC/Core-Styles.git#v0.5.1",
+    "@tacc/core-styles": "https://gitpkg.now.sh/TACC/tup-ui/libs/core-styles?tup-starter-nx--core-styles-integration",
     "@testing-library/jest-dom": "^5.0.2",
     "@testing-library/react": "^12.1.1",
     "@types/react": "^17.0.26",
