@@ -18,6 +18,9 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
+  const hideAllocations = useSelector(
+    (state) => state.workbench.config.hideAllocations
+  );
   const sidebarItems = [
     {
       to: path + ROUTES.DASHBOARD,
@@ -44,6 +47,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
       label: 'Allocations',
       iconName: 'allocations',
       disabled: disabled,
+      hidden: hideAllocations,
     },
     {
       to: path + ROUTES.HISTORY,
