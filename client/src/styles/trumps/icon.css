@@ -1,6 +1,32 @@
 /* TRUMPS: Icons */
 @import url('./icon.fonts.css');
 
+/* To overwrite `icon.fonts.css` icon sizes */
+/* relative units */
+.icon-sm,
+.icon-lg {
+  /* To disallow new icon size method (relative, by class) */
+  /* FAQ: Avoid new solutions until icons are solely managed by <Icon> */
+  font-size: unset;
+}
+/* absolute units */
+/* SEE: https://confluence.tacc.utexas.edu/x/dgB_CQ */
+.icon-16,
+.icon-32 {
+  /* To disallow unsupported font sizes */
+  font-size: unset;
+}
+.icon-18 {
+  font-size: 18px;
+}
+.icon-24 {
+  font-size: 24px;
+}
+.icon-64 {
+  font-size: 64px;
+}
+
+/* To tweak icon size and support `.icon-set` */
 .icon,
 .icon-set {
   width: 1em;
@@ -23,10 +49,14 @@
   right: 0;
 }
 
+/* To remove support for extra icons that should not be used */
+.icon-jobs-history::before {
+  content: unset;
+}
+
 /* Aliases */
-/* .icon-contract */
-.icon-collapse::before {
-  content: '\e915';
+.icon-collapse/* aka .icon-contract */::before {
+  content: '\ea15';
 }
 
 /* Overrides */
