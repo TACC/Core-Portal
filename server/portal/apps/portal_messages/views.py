@@ -63,8 +63,9 @@ class CustomMessagesView(BaseApiView):
 
     def put(self, request, *args):
         body = json.loads(request.body)
-        msg = body['message']
-        message = CustomMessages.objects.get(user=request.user, template__id=msg['template']['id'])
-        message.unread = msg['unread']
+        template_id = body['templateId']
+        unread = body['unread']
+        message = CustomMessages.objects.get(user=request.user, template__id=template_id)
+        message.unread = unread
         message.save()
         return JsonResponse({'status': 'OK'})

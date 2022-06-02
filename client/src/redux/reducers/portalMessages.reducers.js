@@ -1,9 +1,9 @@
-function updateCustomMessages(state, dismissMessage) {
+function updateCustomMessages(state, payload) {
   return {
     messages: state.messages.map((message) => {
       message.unread =
-        message.template.id === dismissMessage.template.id
-          ? false
+        message.template.id === payload.templateId
+          ? payload.unread
           : message.unread;
       return message;
     }),
@@ -79,7 +79,7 @@ export function customMessages(state = initialCustomMessages, action) {
     case 'CUSTOM_MESSAGES_SAVE_SUCCESS':
       return {
         ...state,
-        ...updateCustomMessages(state, action.payload.message),
+        ...updateCustomMessages(state, action.payload),
       };
     case 'CUSTOM_MESSAGES_SAVE_ERROR':
       return {

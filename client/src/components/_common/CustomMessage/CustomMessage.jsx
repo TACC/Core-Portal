@@ -27,9 +27,9 @@ function CustomMessage({ componentName }) {
   });
 
   function onDismiss(dismissMessage) {
-    dismissMessage.unread = false;
     const payload = {
-      message: dismissMessage,
+      templateId: dismissMessage.template.id,
+      unread: false
     };
     dispatch({
       type: 'SAVE_CUSTOM_MESSAGES',
