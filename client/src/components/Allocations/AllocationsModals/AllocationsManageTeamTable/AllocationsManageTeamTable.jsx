@@ -113,7 +113,6 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   return (
     <Table
       hover
-      responsive
       borderless
       size="sm"
       className={styles['manage-team-table']}

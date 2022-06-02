@@ -143,7 +143,7 @@ export const teamPayloadUtil = (
   usageData = {},
   allocations = []
 ) => {
-  const loading = { [id]: false };
+  const loading = { [id]: { loading: false } };
   if (error) {
     return {
       errors: { [id]: obj },
@@ -229,12 +229,12 @@ export function* getUsernamesManage(action) {
   try {
     yield put({
       type: 'MANAGE_USERS_INIT',
-      payload: { loading: { [action.payload.projectId]: { loading: true } } },
+      payload: { loadingUsernames: { [action.payload.projectId]: { loading: true } } },
     });
     const json = yield call(getTeamsUtil, action.payload.name);
     const payload = {
       data: { [action.payload.projectId]: json },
-      loading: { [action.payload.projectId]: { loading: false } },
+      loadingUsernames: { [action.payload.projectId]: { loading: false } },
     };
     yield put({
       type: 'ADD_USERNAMES_TO_TEAM',

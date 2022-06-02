@@ -1,13 +1,11 @@
 .listing-wrapper {
   height: 31.125vh;
   overflow-y: scroll;
+  overflow-x: hidden;
   padding-left: 0;
   padding-right: 0;
-  border-right: 1px solid rgb(112 112 112 / 25%);
 }
 .manage-team-table {
-  overflow-x: hidden;
-  max-width: 100%;
   font-size: 0.875rem;
   line-height: 2rem;
   margin: 0 1rem;
