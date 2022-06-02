@@ -20,7 +20,7 @@ describe('IntroMessage', () => {
       );
       expect(container.getElementsByClassName('test-class').length).toEqual(1);
       // NOTE: The `status` role (https://www.w3.org/TR/html-aria/#index-aria-status) is more appropriate than the `alert` role (https://www.w3.org/TR/html-aria/#index-aria-alert), but setting the `role` attribute of an `Alert` is ineffectual
-      expect(getByRole('alert')).not.toEqual(null);
+      expect(getByRole('status')).not.toEqual(null);
       expect(getByText('Test Message')).not.toEqual(null);
     });
   });

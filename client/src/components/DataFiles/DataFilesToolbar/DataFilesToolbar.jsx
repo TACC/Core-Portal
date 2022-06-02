@@ -4,6 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
+import { useModal, useSelectedFiles } from 'hooks/datafiles';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({
@@ -39,18 +40,14 @@ ToolbarButton.propTypes = {
 
 const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
+  const { toggle } = useModal();
+  const { selectedFiles } = useSelectedFiles();
 
   const history = useHistory();
   const location = useLocation();
   const reloadPage = () => {
     history.push(location.pathname);
   };
-
-  const selectedFiles = useSelector((state) =>
-    state.files.selected.FilesListing.map(
-      (i) => state.files.listing.FilesListing[i]
-    )
-  );
 
   const inTrash = useSelector((state) =>
     state.files.params.FilesListing.path.startsWith(
@@ -99,42 +96,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const toggleRenameModal = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'rename',
-        props: { selectedFile: selectedFiles[0] },
-      },
-    });
+    toggle({ operation: 'rename', props: { selectedFile: selectedFiles[0] } });
 
   const toggleMoveModal = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: { selectedFiles } },
-    });
+    toggle({ operation: 'move', props: { selectedFiles } });
 
   const toggleCopyModal = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: { selectedFiles, canMakePublic } },
-    });
+    toggle({ operation: 'copy', props: { selectedFiles, canMakePublic } });
 
-  const toggleCompressModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'compress', props: { selectedFiles } },
-    });
-  };
+  const toggleCompressModal = () =>
+    toggle({ operation: 'compress', props: { selectedFiles } });
 
-  const toggleExtractModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'extract',
-        props: { selectedFile: selectedFiles[0] },
-      },
-    });
-  };
+  const toggleExtractModal = () =>
+    toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
   const toggleLinkModal = () => {
     dispatch({
@@ -145,12 +119,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
       },
       method: 'get',
     });
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'link',
-        props: { selectedFile: selectedFiles[0] },
-      },
+    toggle({
+      operation: 'link',
+      props: { selectedFile: selectedFiles[0] },
     });
   };
   const download = () => {
@@ -160,12 +131,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
         payload: { file: selectedFiles[0] },
       });
     } else {
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: {
-          operation: 'downloadMessage',
-          props: {},
-        },
+      toggle({
+        operation: 'downloadMessage',
+        props: {},
       });
     }
   };

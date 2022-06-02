@@ -16,7 +16,9 @@ export default defineConfig({
   resolve: {
     alias: {
       _common: resolve(__dirname, 'src/components/_common'),
+      hooks: resolve(__dirname, 'src/hooks'),
       utils: resolve(__dirname, 'src/utils'),
+      styles: resolve(__dirname, 'src/styles'),
     },
   },
 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
+import { useSystems } from 'hooks/datafiles';
 import Dashboard from '../Dashboard';
 import TicketCreateModal from '../Tickets/TicketCreateModal';
 import ManageAccount from '../ManageAccount';
@@ -20,6 +21,7 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
+  const { loading: loadingSystems } = useSystems();
 
   // showUIPatterns: Show some entries only in local development
   const {
@@ -29,15 +31,17 @@ function Workbench() {
     isStaff,
     hideApps,
     hideDataFiles,
+    hideAllocations,
   } = useSelector(
     (state) => ({
-      loading: state.workbench.loading || state.systems.storage.loading,
+      loading: state.workbench.loading | loadingSystems,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
         state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
       hideApps: state.workbench.config.hideApps,
       hideDataFiles: state.workbench.config.hideDataFiles,
+      hideAllocations: state.workbench.config.hideAllocations,
     }),
     shallowEqual
   );
@@ -95,10 +99,12 @@ function Workbench() {
                     component={Applications}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.ALLOCATIONS}`}
-                  component={Allocations}
-                />
+                {!hideAllocations && (
+                  <Route
+                    path={`${path}${ROUTES.ALLOCATIONS}`}
+                    component={Allocations}
+                  />
+                )}
                 {!hideApps && (
                   <Route
                     path={`${path}${ROUTES.HISTORY}`}
