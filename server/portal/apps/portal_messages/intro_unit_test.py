@@ -124,16 +124,8 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
     assert original_message.unread is True
 
     body = {
-        'message': {
-            "template": {
-                'id': 1,
-                'component': 'HISTORY',
-                'message_type': 'warning',
-                'dismissible': True,
-                'message': 'test message'
-            },
-            "unread": False
-        }
+        'templateId': 1,
+        'unread': False
     }
 
     response = client.put('/api/portal_messages/custom/',
@@ -143,8 +135,6 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
 
     assert len(CustomMessages.objects.all()) == 1
 
-    body_message = body['message']
-
-    db_message = CustomMessages.objects.get(template__id=body_message['template']['id'])
+    db_message = CustomMessages.objects.get(template__id=body['templateId'])
     # Ensure that it updated the value correctly
-    assert db_message.unread == body_message['unread']
+    assert db_message.unread == body['unread']
