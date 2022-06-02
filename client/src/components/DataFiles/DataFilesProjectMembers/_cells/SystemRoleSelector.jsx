@@ -62,7 +62,7 @@ const SystemRoleSelector = ({ projectId, username }) => {
   const [selectedRole, setSelectedRole] = useState(data?.role);
   useEffect(() => setSelectedRole(data?.role), [data?.role]);
 
-  if (isLoading || authenticatedUserQuery.isLoading)
+  if (isLoading || authenticatedUserQuery.isLoading || isMutating)
     return <LoadingSpinner placement="inline" />;
   if (error) return <span>Error</span>;
   //Only owners/admins can change roles;
