@@ -96,7 +96,7 @@ Styleguide Components.Button
   border-color: var(--global-color-accent--dark);
 }
 
-.c-button--primary:active {
+.c-button--primary:active:not(.c-button--is-busy) {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--x-dark);
   border-color: var(--global-color-accent--dark);
@@ -130,7 +130,7 @@ Styleguide Components.Button
   border-color: var(--global-color-accent--normal);
 }
 
-.c-button--secondary:active {
+.c-button--secondary:active:not(.c-button--is-busy) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-accent--x-light);
   border-color: var(--global-color-accent--dark);
@@ -181,7 +181,7 @@ Styleguide Components.Button
   border-color: var(--global-color-accent--dark);
 }
 
-.c-button--tertiary:active {
+.c-button--tertiary:active:not(.c-button--is-busy) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-accent--x-light);
   border-color: var(--global-color-accent--dark);
