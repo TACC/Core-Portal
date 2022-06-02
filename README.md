@@ -245,6 +245,21 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
     - `bug/` for bugfixes
     - `fix/` for hotfixes
 
+#### Testing Core Styles Changes Locally
+
+1. Clone [Core Styles] (if you haven't already).
+2. Tell project to temporarily use your [Core Styles] clone:
+    ```bash
+    npm link path-to/Core-Styles # e.g. npm link ../../Core-Styles
+    ```
+
+3. Make changes in your [Core Styles] clone as necessary.
+4. Test changes.
+    - Changes to imported files during `npm run dev` will trigger livereload.
+5. Commit successful changes to a [Core Styles] branch.
+
+- _Note: [If you run `npm install` or `npm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
+
 #### Best Practices
 Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
 
