@@ -65,6 +65,28 @@ function UIPatternsButton() {
           </small>
         </p>
       </dd>
+      <dt>Active Button</dt>
+      <dd>
+        <small>
+          <code>type=&quot;active&quot;</code>&nbsp; (
+          <code>size=&quot;small&quot;</code>)
+        </small>
+      </dd>
+      <dd>
+        <Button type="active">Button</Button>
+        <Button type="active" disabled={true}>
+          Disabled
+        </Button>
+        <Button type="active" size="small">
+          Button
+        </Button>
+        <p>
+          <small>
+            Use for active option button in a group of buttons (.e.g active page
+            in pagination).
+          </small>
+        </p>
+      </dd>
       <dt>Button Sizes: Heights</dt>
       <dd>
         <small>
