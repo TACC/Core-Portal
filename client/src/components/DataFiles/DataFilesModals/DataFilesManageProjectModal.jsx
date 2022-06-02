@@ -116,6 +116,7 @@ const DataFilesManageProjectModal = () => {
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
+            projectId={projectId}
             members={members}
             onAdd={onAdd}
             onRemove={onRemove}
