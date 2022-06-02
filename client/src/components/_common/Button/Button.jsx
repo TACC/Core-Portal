@@ -122,7 +122,7 @@ const Button = ({
 };
 Button.propTypes = {
   children: isNotEmptyString,
-  className: isNotEmptyString,
+  className: PropTypes.string,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
   type: PropTypes.oneOf(TYPES),
