@@ -148,7 +148,7 @@ const Layout = () => {
   return (
     <Section
       bodyClassName="has-loaded-history"
-      introMessageName="HISTORY"
+      messageComponentName="HISTORY"
       header={`History / ${historyType}`}
       headerClassName={styles['header']}
       headerActions={<Actions />}
