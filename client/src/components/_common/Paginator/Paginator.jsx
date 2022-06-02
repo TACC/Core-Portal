@@ -1,18 +1,22 @@
 import React from 'react';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import PropTypes from 'prop-types';
 import styles from './Paginator.module.scss';
 
+const PaginatorEtc = () => {
+  return <span className={styles.etcetera}>...</span>;
+};
+
 const PaginatorPage = ({ number, callback, current }) => {
   return (
-    <div className={styles['page-root']}>
-      <Button
-        className={`${styles.page} ${number === current ? styles.current : ''}`}
-        onClick={() => callback(number)}
-      >
-        {number}
-      </Button>
-    </div>
+    <Button
+      size="small"
+      type={number === current ? 'active' : 'secondary'}
+      className={styles['page-root'] + ' ' + styles.page}
+      onClick={() => callback(number)}
+    >
+      {number}
+    </Button>
   );
 };
 
@@ -49,9 +53,9 @@ const Paginator = ({ pages, current, callback, spread }) => {
           .map((_, index) => start + index)
       : [];
   return (
-    <div className={styles.root}>
+    <nav className={styles.root}>
       <Button
-        color="link"
+        type="link"
         className={styles.endcap}
         onClick={() => callback(current - 1)} // eslint-disable-line
         disabled={current === 1}
@@ -59,7 +63,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
         <span>&lt; Previous</span>
       </Button>
       <PaginatorPage number={1} callback={callback} current={current} />
-      {middlePages[0] > 2 && <span>...</span>}
+      {middlePages[0] > 2 && <PaginatorEtc />}
       {middlePages.map((number) => {
         return (
           <PaginatorPage
@@ -70,19 +74,19 @@ const Paginator = ({ pages, current, callback, spread }) => {
           />
         );
       })}
-      {middlePages[middlePages.length - 1] < pages - 1 && <span>...</span>}
+      {middlePages[middlePages.length - 1] < pages - 1 && <PaginatorEtc />}
       {pages > 1 && (
         <PaginatorPage number={pages} callback={callback} current={current} />
       )}
       <Button
-        color="link"
+        type="link"
         className={styles.endcap}
         onClick={() => callback(current + 1)} // eslint-disable-line
         disabled={current === pages}
       >
         <span>Next &gt;</span>
       </Button>
-    </div>
+    </nav>
   );
 };
 
