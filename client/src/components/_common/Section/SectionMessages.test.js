@@ -41,7 +41,10 @@ describe('SectionMessages', () => {
     it('renders known intro message but with custom message', () => {
       const { getByText, queryByText } = render(
         <Provider store={store}>
-          <SectionMessages introMessageName="DASHBOARD" introMessageText="Hello" />
+          <SectionMessages
+            introMessageName="DASHBOARD"
+            introMessageText="Hello"
+          />
         </Provider>
       );
       expect(queryByText(MESSAGES['DASHBOARD'])).toEqual(null);

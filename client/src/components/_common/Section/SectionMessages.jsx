@@ -54,11 +54,15 @@ function SectionMessages({
   const introMessageContent = introMessageText || MESSAGES[introMessageName];
   const introMessage = introMessageContent && (
     /* FAQ: Alternate message name allows tracking custom message dismissal */
-    <IntroMessage introMessageName={introMessageName || introMessageText} canDismiss>
+    <IntroMessage
+      introMessageName={introMessageName || introMessageText}
+      canDismiss
+    >
       {introMessageContent}
     </IntroMessage>
   );
-  const hasMessage = isKnownIntroMessage(introMessageName) || children.length > 0;
+  const hasMessage =
+    isKnownIntroMessage(introMessageName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   const customMessage = (
