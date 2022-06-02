@@ -82,7 +82,8 @@ function UIPatternsButton() {
         </Button>
         <p>
           <small>
-            Use for inactive option buttons in a group of buttons (.e.g active page in pagination).
+            Use for inactive option buttons in a group of buttons (.e.g active
+            page in pagination).
           </small>
         </p>
       </dd>
