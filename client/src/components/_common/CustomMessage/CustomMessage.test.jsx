@@ -28,7 +28,7 @@ describe('CustomMessage', () => {
     it('renders message text, message type, and dismissability correctly', () => {
       const { container, getByText } = render(
         <Provider store={store}>
-          <CustomMessage componentName="TEST"></CustomMessage>
+          <CustomMessage messageComponentName="TEST"></CustomMessage>
         </Provider>
       );
       expect(container.getElementsByClassName('is-warn').length).toEqual(1);

@@ -33,13 +33,13 @@ function getLayoutClass(contentLayoutName) {
  * @example
  * // manually build messages, automatically build intro message (by name)
  * <Section
- *   introMessageName="DASHBOARD"
+ *   messageComponentName="DASHBOARD"
  *   messages={<>…</>}
  * />
  * @example
  * // overwrite text of an automatic intro message, no additional messages
  * <Section
- *   introMessageName="DASHBOARD"
+ *   messageComponentName="DASHBOARD"
  *   introMessageText={`We welcome you to the dashboard, ${givenName}`}
  * />
  * @example
@@ -112,7 +112,7 @@ function Section({
   // sidebarClassName,
   messages,
   messagesClassName,
-  introMessageName,
+  messageComponentName,
   introMessageText,
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
@@ -151,7 +151,7 @@ function Section({
     <section className={`${styles['root']} ${className} ${layoutClass}`}>
       <SectionMessages
         className={`${styles['messages']} ${messagesClassName}`}
-        introMessageName={introMessageName}
+        messageComponentName={messageComponentName}
         introMessageText={introMessageText}
       >
         {messages}
@@ -230,10 +230,10 @@ Section.propTypes = {
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
   /** The name of the message to use */
-  introMessageName: PropTypes.string,
+  messageComponentName: PropTypes.string,
   /** Any additional className(s) for the sidebar list */
   // sidebarClassName: '',
-  /** Custom intro text (can overwrite message from `introMessageName`) */
+  /** Custom intro text (can overwrite message from `messageComponentName`) */
   introMessageText: PropTypes.string,
 };
 Section.defaultProps = {
@@ -251,7 +251,7 @@ Section.defaultProps = {
   manualHeader: undefined,
   messages: '',
   messagesClassName: '',
-  introMessageName: '',
+  messageComponentName: '',
   // sidebarClassName: '',
   introMessageText: '',
 };

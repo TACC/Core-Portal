@@ -14,7 +14,7 @@ import {
 } from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
-import { initialIntroMessages as introMessages } from '../../redux/reducers/portalMessages.reducers';
+import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
 import * as introMessageText from '../../constants/messages';
@@ -25,7 +25,7 @@ const state = {
   workbench,
   onboarding,
   notifications,
-  introMessages,
+  introMessageComponents,
   jobs,
   systemMonitor,
   ticketList,

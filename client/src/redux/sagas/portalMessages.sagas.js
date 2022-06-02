@@ -1,7 +1,7 @@
 import { put, takeLatest, takeLeading, call } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 
-export async function getIntroMessages() {
+export async function getIntroMessageComponents() {
   const result = await fetchUtil({
     url: `/api/portal_messages/intro/`,
     method: 'get',
@@ -9,13 +9,13 @@ export async function getIntroMessages() {
   return result.response;
 }
 
-export function* fetchIntroMessages() {
+export function* fetchIntroMessageComponents() {
   yield put({ type: 'INTRO_FETCH_STARTED' });
   try {
-    const introMessages = yield call(getIntroMessages);
-    // create complete list of IntroMessages for the user with status
+    const introMessageComponents = yield call(getIntroMessageComponents);
+    // create complete list of IntroMessageComponents for the user with status
     // for all messages set to unread (true)
-    const messages = {
+    const messageComponents = {
       ACCOUNT: true,
       ALLOCATIONS: true,
       APPLICATIONS: true,
@@ -26,13 +26,13 @@ export function* fetchIntroMessages() {
       UI: true,
     };
 
-    introMessages.forEach((element) => {
-      messages[element.component] = element.unread;
+    introMessageComponents.forEach((element) => {
+      messageComponents[element.component] = element.unread;
     });
 
     yield put({
       type: 'INTRO_FETCH_SUCCESS',
-      payload: messages,
+      payload: messageComponents,
     });
   } catch (error) {
     yield put({
@@ -41,12 +41,12 @@ export function* fetchIntroMessages() {
   }
 }
 
-export function* watchFetchIntroMessages() {
-  yield takeLeading('FETCH_INTRO', fetchIntroMessages);
+export function* watchFetchIntroMessageComponents() {
+  yield takeLeading('FETCH_INTRO', fetchIntroMessageComponents);
 }
 
-// Write IntroMessages to the database and update the redux store.
-export function* saveIntroMessages(action) {
+// Write IntroMessageComponents to the database and update the redux store.
+export function* saveIntroMessageComponents(action) {
   yield put({ type: 'INTRO_SAVE_STARTED' });
   try {
     yield call(fetchUtil, {
@@ -60,7 +60,7 @@ export function* saveIntroMessages(action) {
       payload: action.payload,
     });
   } catch (error) {
-    // Return the intended state of intro messages
+    // Return the intended state of intro message components
     // regardless of save success or failure
     yield put({
       type: 'INTRO_SAVE_ERROR',
@@ -69,8 +69,8 @@ export function* saveIntroMessages(action) {
   }
 }
 
-export function* watchSaveIntroMessages() {
-  yield takeLatest('SAVE_INTRO', saveIntroMessages);
+export function* watchSaveIntroMessageComponents() {
+  yield takeLatest('SAVE_INTRO', saveIntroMessageComponents);
 }
 
 export async function getCustomMessages() {

@@ -8,12 +8,12 @@ import styles from './IntroMessage.module.css';
 
 /**
  * Whether the name is of a known intro message
- * @param {String} introMessageName - The name of the message to check
+ * @param {String} messageComponentName - The name of the component that contains the message
  */
-export function isKnownMessage(introMessageName) {
-  const introMessages = useSelector((state) => state.introMessages);
+export function isKnownMessage(messageComponentName) {
+  const introMessageComponents = useSelector((state) => state.introMessageComponents);
 
-  return introMessages && introMessages[introMessageName];
+  return introMessageComponents && introMessageComponents[messageComponentName];
 }
 
 /**
@@ -25,22 +25,22 @@ export function isKnownMessage(introMessageName) {
  * // message with custom text, class, and identifier
  * <IntroMessage
  *   className="external-message-class"
- *   introMessageName={identifierForMessageLikeRouteName}
+ *   messageComponentName={identifierForMessageLikeRouteName}
  * >
  *   Introductory text (defined externally).
  * </IntroMessage>
  */
-function IntroMessage({ children, className, introMessageName }) {
+function IntroMessage({ children, className, messageComponentName }) {
   const dispatch = useDispatch();
-  const introMessages = useSelector((state) => state.introMessages);
-  const shouldShow = isKnownMessage(introMessageName);
+  const introMessageComponents = useSelector((state) => state.introMessageComponents);
+  const shouldShow = isKnownMessage(messageComponentName);
   const [isVisible, setIsVisible] = useState(shouldShow);
 
   // Manage visibility
   const onDismiss = useCallback(() => {
     const newMessagesState = {
-      ...introMessages,
-      [introMessageName]: false,
+      ...introMessageComponents,
+      [messageComponentName]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
 
@@ -49,7 +49,7 @@ function IntroMessage({ children, className, introMessageName }) {
 
   return (
     <SectionMessage
-      aria-label={introMessageName}
+      aria-label={messageComponentName}
       type="info"
       canDismiss
       className={`${styles.root} ${className}`}
@@ -66,7 +66,7 @@ IntroMessage.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** A unique identifier for the message */
-  introMessageName: PropTypes.string.isRequired,
+  messageName: PropTypes.string.isRequired,
 };
 IntroMessage.defaultProps = {
   className: '',

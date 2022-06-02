@@ -118,7 +118,7 @@ const DataFiles = () => {
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      introMessageName={
+      messageComponentName={
         listingParams.system === noPHISystem ? 'UNPROTECTED' : 'DATA'
       }
       header={

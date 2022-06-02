@@ -8,7 +8,7 @@ import { initialState as profile } from '../../../redux/reducers/profile.reducer
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
-import introMessages from '../../../redux/reducers/portalMessages.reducers';
+import introMessageComponents from '../../../redux/reducers/portalMessages.reducers';
 import ManageAccountPage from '../index';
 
 const mockStore = configureStore();
@@ -24,7 +24,7 @@ describe('Manage Account Page', () => {
             config: { hideDataFiles: false },
           },
           notifications,
-          introMessages,
+          introMessageComponents,
           ticketCreate,
         })}
       >

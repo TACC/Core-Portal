@@ -40,8 +40,8 @@ import { watchPostRequestAccess } from './requestAccess.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
 import {
-  watchFetchIntroMessages,
-  watchSaveIntroMessages,
+  watchFetchIntroMessageComponents,
+  watchSaveIntroMessageComponents,
   watchFetchCustomMessages,
   watchSaveCustomMessages,
 } from './portalMessages.sagas';
@@ -94,9 +94,9 @@ export default function* rootSaga() {
     watchSocket(),
     watchFetchNotifications(),
     watchWorkbench(),
-    watchFetchIntroMessages(),
+    watchFetchIntroMessageComponents(),
     watchFetchCustomMessages(),
-    watchSaveIntroMessages(),
+    watchSaveIntroMessageComponents(),
     watchSaveCustomMessages(),
     watchOnboardingAdminList(),
     watchOnboardingAdminIndividualUser(),

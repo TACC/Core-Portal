@@ -10,7 +10,7 @@ function updateCustomMessages(state, payload) {
   };
 }
 
-export const initialIntroMessages = {
+export const initialIntroMessageComponents = {
   DASHBOARD: true,
   APPLICATIONS: true,
   DATA: true,
@@ -24,7 +24,7 @@ export const initialCustomMessages = {
   messages: [],
 };
 
-export function introMessages(state = initialIntroMessages, action) {
+export function introMessageComponents(state = initialIntroMessageComponents, action) {
   switch (action.type) {
     case 'INTRO_FETCH_STARTED':
       return {

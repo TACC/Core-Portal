@@ -12,16 +12,16 @@ import styles from './CustomMessage.module.scss';
  * @example
  * // message with identifier
  * <CustomMessage
- *   componentName={identifierForMessageLikeRouteName}
+ *   messageComponentName={identifierForMessageLikeRouteName}
  * >
  * </CustomMessage>
  */
-function CustomMessage({ componentName }) {
+function CustomMessage({ messageComponentName }) {
   const dispatch = useDispatch();
   const messages = useSelector((state) => {
     return state.customMessages
       ? state.customMessages.messages.filter((message) => {
-          return message.unread && message.template.component === componentName;
+          return message.unread && message.template.component === messageComponentName;
         })
       : [];
   });
@@ -55,7 +55,7 @@ function CustomMessage({ componentName }) {
 
 CustomMessage.propTypes = {
   /** A unique identifier for the message */
-  componentName: PropTypes.string.isRequired,
+  messageComponentName: PropTypes.string.isRequired,
 };
 
 export default CustomMessage;
