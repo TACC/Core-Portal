@@ -60,7 +60,7 @@ const AppsRoutes = () => {
   return (
     <Section
       bodyClassName="has-loaded-applications"
-      messageName="APPLICATIONS"
+      introMessageName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
           <AppsHeader categoryDict={categoryDict} />

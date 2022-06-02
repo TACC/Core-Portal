@@ -8,12 +8,12 @@ import styles from './IntroMessage.module.css';
 
 /**
  * Whether the name is of a known intro message
- * @param {String} messageName - The name of the message to check
+ * @param {String} introMessageName - The name of the message to check
  */
-export function isKnownMessage(messageName) {
+export function isKnownMessage(introMessageName) {
   const introMessages = useSelector((state) => state.introMessages);
 
-  return introMessages && introMessages[messageName];
+  return introMessages && introMessages[introMessageName];
 }
 
 /**
@@ -25,22 +25,22 @@ export function isKnownMessage(messageName) {
  * // message with custom text, class, and identifier
  * <IntroMessage
  *   className="external-message-class"
- *   messageName={identifierForMessageLikeRouteName}
+ *   introMessageName={identifierForMessageLikeRouteName}
  * >
  *   Introductory text (defined externally).
  * </IntroMessage>
  */
-function IntroMessage({ children, className, messageName }) {
+function IntroMessage({ children, className, introMessageName }) {
   const dispatch = useDispatch();
   const introMessages = useSelector((state) => state.introMessages);
-  const shouldShow = isKnownMessage(messageName);
+  const shouldShow = isKnownMessage(introMessageName);
   const [isVisible, setIsVisible] = useState(shouldShow);
 
   // Manage visibility
   const onDismiss = useCallback(() => {
     const newMessagesState = {
       ...introMessages,
-      [messageName]: false,
+      [introMessageName]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
 
@@ -49,7 +49,7 @@ function IntroMessage({ children, className, messageName }) {
 
   return (
     <SectionMessage
-      aria-label={messageName}
+      aria-label={introMessageName}
       type="info"
       canDismiss
       className={`${styles.root} ${className}`}
@@ -66,7 +66,7 @@ IntroMessage.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** A unique identifier for the message */
-  messageName: PropTypes.string.isRequired,
+  introMessageName: PropTypes.string.isRequired,
 };
 IntroMessage.defaultProps = {
   className: '',

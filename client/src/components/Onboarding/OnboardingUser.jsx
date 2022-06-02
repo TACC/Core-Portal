@@ -45,7 +45,7 @@ const OnboardingUser = () => {
 
   return (
     <Section
-      messageName="ONBOARDING"
+      introMessageName="ONBOARDING"
       header={
         isStaff
           ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`

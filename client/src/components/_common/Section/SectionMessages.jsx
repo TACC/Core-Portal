@@ -17,11 +17,11 @@ import './SectionMessages.css';
  *
  * @example
  * // an automatic intro message (if found), no additional messages
- * <SectionMessages messageName="DASHBOARD" />
+ * <SectionMessages introMessageName="DASHBOARD" />
  * @example
  * // overwrite text of an automatic intro message, no additional messages
  * <SectionMessages
- *   messageName="DASHBOARD"
+ *   introMessageName="DASHBOARD"
  *   introMessageText={`We intro you to the dashboard, ${givenName}`} />
  * @example
  * // define text for a manual intro message, no additional messages
@@ -30,7 +30,7 @@ import './SectionMessages.css';
  * />
  * @example
  * // an automatic intro message (if found), some additional messages
- * <SectionMessages messageName="DASHBOARD">
+ * <SectionMessages introMessageName="DASHBOARD">
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
  *     <button>Claim your prize.</button>
@@ -48,21 +48,21 @@ import './SectionMessages.css';
 function SectionMessages({
   children,
   className,
-  messageName,
+  introMessageName,
   introMessageText,
 }) {
-  const introMessageContent = introMessageText || MESSAGES[messageName];
+  const introMessageContent = introMessageText || MESSAGES[introMessageName];
   const introMessage = introMessageContent && (
     /* FAQ: Alternate message name allows tracking custom message dismissal */
-    <IntroMessage messageName={messageName || introMessageText} canDismiss>
+    <IntroMessage introMessageName={introMessageName || introMessageText} canDismiss>
       {introMessageContent}
     </IntroMessage>
   );
-  const hasMessage = isKnownIntroMessage(messageName) || children.length > 0;
+  const hasMessage = isKnownIntroMessage(introMessageName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   const customMessage = (
-    <CustomMessage componentName={messageName}></CustomMessage>
+    <CustomMessage componentName={introMessageName}></CustomMessage>
   );
 
   useEffect(() => {
@@ -82,19 +82,19 @@ function SectionMessages({
   );
 }
 SectionMessages.propTypes = {
-  /** Component-based message(s) (e.g. <Alert>, <Message>) (intro message found automatically, given `messageName`) */
+  /** Component-based message(s) (e.g. <Alert>, <Message>) (intro message found automatically, given `introMessageName`) */
   children: PropTypes.node,
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** The name of the route section (to search for required message) */
-  messageName: PropTypes.string,
-  /** Custom intro text (can overwrite message from `messageName`) */
+  introMessageName: PropTypes.string,
+  /** Custom intro text (can overwrite message from `introMessageName`) */
   introMessageText: PropTypes.string,
 };
 SectionMessages.defaultProps = {
   children: '',
   className: '',
-  messageName: '',
+  introMessageName: '',
   introMessageText: '',
 };
 
