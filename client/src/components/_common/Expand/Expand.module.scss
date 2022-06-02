@@ -1,5 +1,3 @@
-@import '../../../styles/tools/mixins.scss';
-
 /* Prevent from butting up against its label (like inside `DescriptionList`) */
 dd .container {
   margin-top: 0.25rem; /* copied from Bootstrap `.mt-1` styles */
@@ -20,7 +18,7 @@ dd .container {
 
   padding-right: 1em;
 
-  @include truncate-with-ellipsis;
+  composes: x-truncate--one-line from '@tacc/core-styles/dist/tools/x-truncate.css';
 }
 
 /* States */
