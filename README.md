@@ -279,16 +279,9 @@ If you need to test file changes with [Core CMS] changes:
 
     _**Do** use `--save`.\* Do **not** commit the changes to `package.json` **nor** `package-lock.json`._
 
-3. Re-install [Core Styles] dependency `postcss-cli`:
-
-    ```bash
-    # cd path-to-Core-Portal/client
-    npm install postcss-cli --no-save
-    ```
-
-4. Make changes in your [Core Styles] clone as necessary.
-5. Test changes.
-6. Undo changes to `package.json` and `package-lock.json`.
+3. Make changes in your [Core Styles] clone as necessary.
+4. Test changes.
+5. Undo changes to `package.json` and `package-lock.json`.
     - _Warning: Do __not__ commit `npm link`'s automatic changes to `package.json` and `package-lock.json`!_
 
 - _Note: If you run `npm install` or `npm ci`, the live-edit link is destroyed. Repeat these steps to restore it._
