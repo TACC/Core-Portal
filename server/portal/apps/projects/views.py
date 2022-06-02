@@ -116,7 +116,7 @@ class ProjectsApiView(BaseApiView):
                 if member['access'] == 'owner':
                     access = 'pi'
                 elif member['access'] == 'edit':
-                    access = 'co_pi'
+                    access = 'team_member'
                 else:
                     raise ApiException("Unsupported access level")
                 mgr.add_member(
@@ -266,7 +266,7 @@ class ProjectMembersApiView(BaseApiView):
         username = data.get('username')
         res = ProjectsManager(request.user).add_member(
             project_id,
-            'co_pi',
+            'team_member',
             username
         )
         return JsonResponse(
@@ -285,9 +285,10 @@ class ProjectMembersApiView(BaseApiView):
         :param dict data: Data.
         """
         username = data.get('username')
+        role = ProjectsManager(request.user).role_for_user(project_id, username)
         prj = ProjectsManager(request.user).remove_member(
             project_id=project_id,
-            member_type='co_pi',
+            member_type=role,
             username=username
         )
         return JsonResponse(
@@ -297,3 +298,55 @@ class ProjectMembersApiView(BaseApiView):
             },
             encoder=ProjectsManager.meta_serializer_cls
         )
+
+    def change_project_role(self, request, project_id, **data):
+        username = data.get('username')
+        old_role = data.get('oldRole')
+        new_role = data.get('newRole')
+        prj = ProjectsManager(request.user).change_project_role(
+            project_id,
+            username,
+            old_role,
+            new_role
+        )
+
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
+
+    def change_system_role(self, request, project_Id, **data):
+        username = data.get('username')
+        new_role = data.get('newRole')
+        prj = ProjectsManager(request.user).change_system_role(
+            project_Id,
+            username,
+            new_role)
+
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
+
+
+@login_required
+def get_project_role(request, project_id, username):
+    role = None
+    mgr = ProjectsManager(request.user)
+    role = mgr.role_for_user(project_id, username)
+
+    return JsonResponse({'username': username, 'role': role})
+
+
+@login_required
+def get_system_role(request, project_id, username):
+    mgr = ProjectsManager(request.user)
+    prj = mgr.get_project(project_id)
+    role = prj.storage.roles.for_user(username).role
+    return JsonResponse({'username': username, 'role': role})
