@@ -275,5 +275,6 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Camino]: https://github.com/TACC/Camino
 [Core CMS]: https://github.com/TACC/Core-CMS
 [Core Portal]: https://github.com/TACC/Core-Portal
+[Core Styles]: https://github.com/TACC/Core-Styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/
