@@ -245,61 +245,19 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
     - `bug/` for bugfixes
     - `fix/` for hotfixes
 
-#### Changing Core Styles
-
-If you need to change files within `node_modules/@tacc/core-styles/source`:
-
-1. Clone [Core Styles].
-2. Make and commit changes.
-3. Open pull request.
-4. After PR is merged.
-5. In [Core CMS], update [Core Styles] module commit:
-
-  ```bash
-  cd client
-  npm install git+https://git@github.com/TACC/Core-Styles.git
-  ```
-
-6. Commit changes.
-
 #### Testing Core Styles Changes Locally
 
-If you need to test file changes with [Core CMS] changes:
-
-0. You should stash, commit, or revert any changes to `package.json` or `package-lock.json`.
-1. Clone [Core Styles].
-2. Allow live edit of node module via your [Core Styles] clone:
-
+1. Clone [Core Styles] (if you haven't already).
+2. Tell project to temporarily use your [Core Styles] clone:
     ```bash
-    cd path-to-Core-Styles
-    npm link
-    cd path-to-Core-Portal/client
-    npm link @tacc/core-styles
+    npm link path-to/Core-Styles # e.g. npm link ../../Core-Styles
     ```
 
 3. Make changes in your [Core Styles] clone as necessary.
 4. Test changes.
-5. Undo changes to `package.json` and `package-lock.json`.
+    - Changes to imported files during `npm run dev` will trigger livereload.
 
-- _Note: If you run `npm install` or `npm ci`, the live-edit link is destroyed. Repeat these steps to restore it._
-
-<sub>\* Use of `npm link` _without `--save`_ is overwritten by `npm install`. See [details](https://github.com/npm/cli/issues/2380#issuecomment-1029967927).</sub>
-
-#### Testing Core Styles Changes Remotely
-
-If you need to test [Core CMS] and [Core Styles] changes on a server:
-
-1. Push changes onto a [Core Styles] branch (not `main`).
-2. Install [Core Styles] at that branch:
-
-    ```bash
-    # cd path-to-Core-CMS
-    npm install --save-dev git+https://git@github.com/TACC/Core-Styles.git#your-branch-name
-    ```
-
-3. Deploy changes to test server.\*
-
-<sub>\* See [Deployment Steps](#deployment-steps).</sub>
+- _Note: If you run `npm install` or `npm ci`, the link is destroyed. Repeat these steps to restore it._
 
 #### Best Practices
 Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
