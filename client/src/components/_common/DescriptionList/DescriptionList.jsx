@@ -26,6 +26,13 @@ const DescriptionList = ({ className, data, density, direction }) => {
     .map((s) => styles[s])
     .join(' ');
 
+  const shouldTruncateValues =
+    (direction === 'vertical' && density === 'compact') ||
+    (direction === 'horizontal' && density === 'default');
+  const valueClassName = `${styles.value} ${
+    shouldTruncateValues ? 'value-truncated' : ''
+  }`;
+
   return (
     <dl className={`${className} ${containerStyleNames}`} data-testid="list">
       {Object.entries(data).map(([key, value]) => (
@@ -35,12 +42,12 @@ const DescriptionList = ({ className, data, density, direction }) => {
           </dt>
           {Array.isArray(value) ? (
             value.map((val) => (
-              <dd className={styles.value} data-testid="value" key={uuidv4()}>
+              <dd className={valueClassName} data-testid="value" key={uuidv4()}>
                 {val}
               </dd>
             ))
           ) : (
-            <dd className={styles.value} data-testid="value">
+            <dd className={valueClassName} data-testid="value">
               {value}
             </dd>
           )}

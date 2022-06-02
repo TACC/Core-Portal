@@ -41,8 +41,6 @@
 /* Do not allow external margin styles */
 .heading {
   margin-bottom: 0; /* Overwrite Bootstrap `h1`–`h6` styles */
-
-  text-transform: capitalize;
 }
 /* Header actions are always after heading text */
 .heading ~ * {
