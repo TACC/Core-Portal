@@ -10,7 +10,9 @@ function TicketStandaloneCreate() {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
-  const introMessageComponents = useSelector((state) => state.introMessageComponents);
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
   return (
     <>
       <Navbar className="ticket-unauthenticated-title">Add Ticket</Navbar>

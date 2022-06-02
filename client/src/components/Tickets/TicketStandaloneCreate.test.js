@@ -15,7 +15,10 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessageComponents: { ...initialIntroMessageComponents, TICKETS: true },
+      introMessageComponents: {
+        ...initialIntroMessageComponents,
+        TICKETS: true,
+      },
       workbench,
     });
 
@@ -29,7 +32,10 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessageComponents: { ...initialIntroMessageComponents, TICKETS: false },
+      introMessageComponents: {
+        ...initialIntroMessageComponents,
+        TICKETS: false,
+      },
       workbench,
     });
 

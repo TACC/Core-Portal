@@ -24,7 +24,10 @@ export const initialCustomMessages = {
   messages: [],
 };
 
-export function introMessageComponents(state = initialIntroMessageComponents, action) {
+export function introMessageComponents(
+  state = initialIntroMessageComponents,
+  action
+) {
   switch (action.type) {
     case 'INTRO_FETCH_STARTED':
       return {

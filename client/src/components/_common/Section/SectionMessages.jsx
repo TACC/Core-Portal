@@ -51,7 +51,8 @@ function SectionMessages({
   messageComponentName,
   introMessageText,
 }) {
-  const introMessageContent = introMessageText || MESSAGES[messageComponentName];
+  const introMessageContent =
+    introMessageText || MESSAGES[messageComponentName];
   const introMessage = introMessageContent && (
     /* FAQ: Alternate message name allows tracking custom message dismissal */
     <IntroMessage

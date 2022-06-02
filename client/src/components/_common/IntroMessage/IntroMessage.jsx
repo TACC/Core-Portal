@@ -11,7 +11,9 @@ import styles from './IntroMessage.module.css';
  * @param {String} messageComponentName - The name of the component that contains the message
  */
 export function isKnownMessage(messageComponentName) {
-  const introMessageComponents = useSelector((state) => state.introMessageComponents);
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
 
   return introMessageComponents && introMessageComponents[messageComponentName];
 }
@@ -32,7 +34,9 @@ export function isKnownMessage(messageComponentName) {
  */
 function IntroMessage({ children, className, messageComponentName }) {
   const dispatch = useDispatch();
-  const introMessageComponents = useSelector((state) => state.introMessageComponents);
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
   const shouldShow = isKnownMessage(messageComponentName);
   const [isVisible, setIsVisible] = useState(shouldShow);
 

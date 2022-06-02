@@ -21,7 +21,10 @@ function CustomMessage({ messageComponentName }) {
   const messages = useSelector((state) => {
     return state.customMessages
       ? state.customMessages.messages.filter((message) => {
-          return message.unread && message.template.component === messageComponentName;
+          return (
+            message.unread &&
+            message.template.component === messageComponentName
+          );
         })
       : [];
   });
