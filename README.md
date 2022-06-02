@@ -256,8 +256,9 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
 3. Make changes in your [Core Styles] clone as necessary.
 4. Test changes.
     - Changes to imported files during `npm run dev` will trigger livereload.
+5. Commit successful changes to a [Core Styles] branch.
 
-- _Note: If you run `npm install` or `npm ci`, the link is destroyed. Repeat these steps to restore it._
+- _Note: [If you run `npm install` or `npm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
 
 #### Best Practices
 Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
