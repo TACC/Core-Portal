@@ -8,6 +8,8 @@ import LoadingSpinner from '_common/LoadingSpinner';
 export const TYPE_MAP = {
   primary: 'primary',
   secondary: 'secondary',
+  tertiary: 'tertiary',
+  active: 'is-active',
   link: 'as-link',
 };
 export const TYPES = [''].concat(Object.keys(TYPE_MAP));
@@ -31,6 +33,7 @@ function isNotEmptyString(props, propName, componentName) {
 
 const Button = ({
   children,
+  className,
   iconNameBefore,
   iconNameAfter,
   type,
@@ -119,6 +122,7 @@ const Button = ({
 };
 Button.propTypes = {
   children: isNotEmptyString,
+  className: isNotEmptyString,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
   type: PropTypes.oneOf(TYPES),
@@ -130,6 +134,7 @@ Button.propTypes = {
   isLoading: PropTypes.bool,
 };
 Button.defaultProps = {
+  className: '',
   iconNameBefore: '',
   iconNameAfter: '',
   type: 'secondary',

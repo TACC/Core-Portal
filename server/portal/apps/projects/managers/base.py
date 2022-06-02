@@ -294,6 +294,18 @@ class ProjectsManager(object):
         self.apply_permissions(prj, username, 'remove')
         return prj
 
+    def change_system_role(self, project_id, username, new_role):
+        user = get_user_model().objects.get(username=username)
+        prj = self.get_project(project_id)
+        prj.change_storage_system_role(user, new_role)
+        return prj
+
+    def change_project_role(self, project_id, username, old_role, new_role):
+        user = get_user_model().objects.get(username=username)
+        prj = self.get_project(project_id)
+        prj.change_project_role(user, old_role, new_role)
+        return prj
+
     def _update_meta(self, project, **data):  # pylint: disable=no-self-use
         """Update project metadata.
 
@@ -352,3 +364,12 @@ class ProjectsManager(object):
         self._update_meta(prj, **data)
         self._update_storage(prj, **data)
         return prj
+
+    def role_for_user(self, project_id, username):
+        """
+        Get a user's role for a project.
+        returns one of 'pi', 'co_pi', 'team_member', None
+        """
+        prj = self.get_project(project_id)
+
+        return prj.get_project_role(username)
