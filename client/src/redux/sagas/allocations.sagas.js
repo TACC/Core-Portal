@@ -229,7 +229,9 @@ export function* getUsernamesManage(action) {
   try {
     yield put({
       type: 'MANAGE_USERS_INIT',
-      payload: { loadingUsernames: { [action.payload.projectId]: { loading: true } } },
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
     });
     const json = yield call(getTeamsUtil, action.payload.name);
     const payload = {

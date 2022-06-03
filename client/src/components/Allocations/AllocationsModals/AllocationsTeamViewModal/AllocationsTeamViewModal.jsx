@@ -78,12 +78,7 @@ const AllocationsTeamViewModal = ({
     setSelectedTab(newValue);
   };
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={toggle}
-      size="lg"
-      onClosed={resetCard}
-    >
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
       <ModalHeader className="has-MuiTabs" toggle={toggle} charCode="&#xe912;">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <Tab label="View Team" />
