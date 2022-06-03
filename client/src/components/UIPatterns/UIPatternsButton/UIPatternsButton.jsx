@@ -65,6 +65,28 @@ function UIPatternsButton() {
           </small>
         </p>
       </dd>
+      <dt>Tertiary Button</dt>
+      <dd>
+        <small>
+          <code>type=&quot;tertiary&quot;</code>&nbsp; (
+          <code>size=&quot;small&quot;</code>)
+        </small>
+      </dd>
+      <dd>
+        <Button type="tertiary">Button</Button>
+        <Button type="tertiary" disabled={true}>
+          Disabled
+        </Button>
+        <Button type="tertiary" size="small">
+          Button
+        </Button>
+        <p>
+          <small>
+            Use for inactive option buttons in a group of buttons (.e.g active
+            page in pagination).
+          </small>
+        </p>
+      </dd>
       <dt>Active Button</dt>
       <dd>
         <small>
@@ -175,6 +197,22 @@ function UIPatternsButton() {
           isLoading={isLoading}
         >
           Click Me!
+        </Button>
+        <Button
+          type="secondary"
+          onClick={onClick}
+          size="long"
+          isLoading={isLoading}
+        >
+          Or Me Instead!
+        </Button>
+        <Button
+          type="tertiary"
+          onClick={onClick}
+          size="long"
+          isLoading={isLoading}
+        >
+          Or Even Me!
         </Button>
       </dd>
     </dl>

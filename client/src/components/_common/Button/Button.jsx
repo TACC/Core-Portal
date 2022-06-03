@@ -5,7 +5,7 @@ import Icon from '../Icon';
 import styles from './Button.module.css';
 import LoadingSpinner from '_common/LoadingSpinner';
 
-export const TYPES = ['', 'primary', 'secondary', 'active', 'link'];
+export const TYPES = ['', 'primary', 'secondary', 'tertiary', 'active', 'link'];
 
 export const SIZES = ['', 'short', 'medium', 'long', 'small'];
 
@@ -70,7 +70,7 @@ const Button = ({
   let buttonTypeClass;
   if (type === 'link') {
     buttonTypeClass = styles['as-link'];
-  } else if (type === 'primary' || type === 'secondary' || type === 'active') {
+  } else if (['primary', 'secondary', 'tertiary', 'active'].includes(type)) {
     buttonTypeClass = styles[`${type}`];
   } else if (type === '') {
     buttonTypeClass = type;
