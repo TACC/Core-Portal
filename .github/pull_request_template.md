@@ -1,14 +1,25 @@
-## Overview: ##
+## Overview
 
-## Related Jira tickets: ##
+
+
+## Related
 
 * [FP-123](https://jira.tacc.utexas.edu/browse/FP-123)
+<!--
+- requires|required by|mimics https://github.com/TACC/Core-…/pull/…
+-->
 
-## Summary of Changes: ##
+## Changes
 
-## Testing Steps: ##
+
+
+## Testing
+
 1.
 
-## UI Photos:
+## UI
 
-## Notes: ##
+
+
+## Notes
+
