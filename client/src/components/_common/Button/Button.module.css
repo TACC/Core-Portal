@@ -8,6 +8,9 @@
 .secondary {
   composes: c-button--secondary from '../../../styles/components/c-button--new.css';
 }
+.tertiary {
+  composes: c-button--tertiary from '../../../styles/components/c-button--new.css';
+}
 .active {
   composes: c-button--is-active from '../../../styles/components/c-button--new.css';
 }
