@@ -152,9 +152,6 @@ const AllocationsTeamViewModal = ({
                 />
               )}
             </div>
-            <i className={manageStyles['help-text']}>
-              The PI, Co-PIs, and Allocation Managers can manage the team.
-            </i>
           </>
         )}
       </ModalBody>
