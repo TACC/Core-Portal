@@ -13,7 +13,7 @@ describe('IntroMessage', () => {
     it('includes class, message, and role appropriately', () => {
       const { container, getByRole, getByText } = render(
         <Provider store={store}>
-          <IntroMessage className="test-class" messageName="TEST">
+          <IntroMessage className="test-class" messageComponentName="TEST">
             <p>Test Message</p>
           </IntroMessage>
         </Provider>

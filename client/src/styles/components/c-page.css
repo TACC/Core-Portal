@@ -1,0 +1,93 @@
+/*
+Pagination
+
+A navigation list of sequential page toggles with end cap links.
+
+Styleguide Components.Pagination
+*/
+
+/* Variables */
+
+.c-page-list {
+  --item-width: 2em;
+  --item-buffer: 3px;
+  --item-border: var(--global-border-width--normal); /* WARNING: assumption */
+}
+
+/* List */
+
+.c-page-list {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  list-style: none;
+
+  font-size: 14px; /* TEMPORARY: Should be 14px and have commented rem value */
+}
+ul.c-page-list {
+  list-style: none;
+}
+
+/* List: Constant Hover */
+
+.c-page-link--always-click {
+  position: relative;
+  box-sizing: content-box;
+}
+.c-page-link--always-click::before,
+.c-page-link--always-click::after {
+  --width: var(--item-buffer);
+  --vert-offset: calc(-1 * var(--item-border));
+  --horz-offset: calc(100% + var(--item-border));
+
+  content: '';
+  width: var(--width);
+  position: absolute;
+  top: var(--vert-offset);
+  bottom: var(--vert-offset);
+}
+.c-page-link--always-click.c-button {
+  overflow: visible; /* overwrite `.c-button` so pseudo elements show */
+}
+.c-page-link--always-click::before {
+  right: var(--horz-offset);
+}
+.c-page-link--always-click::after {
+  left: var(--horz-offset);
+}
+
+/* Item */
+
+.c-page-item {
+  margin-inline: var(--item-buffer);
+}
+.c-page-item:first-child {
+  margin-left: 0;
+}
+.c-page-item:last-child {
+  margin-right: 0;
+}
+
+/* Item: Truncated */
+
+.c-page-item--etcetera {
+  min-width: var(--item-width);
+  margin-inline: 2px;
+  text-align: center;
+
+  cursor: default;
+}
+
+/* End */
+
+.c-page-end {
+  padding: 4px 12px;
+}
+
+/* Link */
+
+.c-page-link {
+  padding: 5px 0;
+  min-width: var(--item-width);
+  line-height: 1.2;
+}
