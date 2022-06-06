@@ -147,7 +147,7 @@ export const teamPayloadUtil = (
   if (error) {
     return {
       errors: { [id]: obj },
-      loading,
+      loadingUsernames,
     };
   }
 
