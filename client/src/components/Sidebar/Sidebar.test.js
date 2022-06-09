@@ -16,7 +16,7 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History',
 ];
-const APP_DATA_PAGES = ['Applications', 'History', 'Data Files'];
+const APP_DATA_PAGES = ['Applications', 'History', 'Data Files', 'Allocations'];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
@@ -50,7 +50,11 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench: {
           ...workbench,
-          config: { hideApps: false, hideDataFiles: false },
+          config: {
+            hideApps: false,
+            hideDataFiles: false,
+            hideAllocations: false,
+          },
         },
         notifications,
         ticketCreate,
@@ -71,7 +75,11 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench: {
           ...workbench,
-          config: { hideApps: true, hideDataFiles: true },
+          config: {
+            hideApps: true,
+            hideDataFiles: true,
+            hideAllocations: true,
+          },
         },
         notifications,
         ticketCreate,
@@ -117,7 +125,11 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench: {
           status: { debug: true },
-          config: { hideApps: false, hideDataFiles: false },
+          config: {
+            hideApps: false,
+            hideDataFiles: false,
+            hideAllocations: false,
+          },
         },
         notifications,
         ticketCreate,

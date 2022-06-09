@@ -26,6 +26,7 @@ describe('AppRouter', () => {
       { type: 'FETCH_WORKBENCH' },
       { type: 'FETCH_SYSTEMS' },
       { type: 'FETCH_INTRO' },
+      { type: 'FETCH_CUSTOM_MESSAGES' },
     ]);
   });
 });

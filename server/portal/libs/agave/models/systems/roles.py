@@ -18,11 +18,13 @@ class Role(object):
     PUBLISHER = 'PUBLISHER'
     ADMIN = 'ADMIN'
     OWNER = 'OWNER'
+    GUEST = 'GUEST'
     ALL_ROLES = [
         USER,
         PUBLISHER,
         ADMIN,
-        OWNER
+        OWNER,
+        GUEST
     ]
 
     def __init__(self, role):
