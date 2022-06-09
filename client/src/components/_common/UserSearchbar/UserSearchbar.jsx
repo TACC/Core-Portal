@@ -60,7 +60,7 @@ const UserSearchbar = ({
       <div className={`input-group ${styles['member-search-group']}`}>
         <div className="input-group-prepend">
           <Button
-            type="primary"
+            type="secondary"
             onClick={() =>
               onAddCallback({ user: selectedUser, access: 'edit' })
             }
