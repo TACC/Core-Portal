@@ -6,6 +6,7 @@ import {
   projectsListingFixture,
   projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
+jest.mock('cross-fetch');
 const mockStore = configureStore();
 
 const initialMockState = {

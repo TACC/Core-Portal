@@ -1,18 +1,31 @@
 """
-.. :module: apps.intromessages.views
+.. :module: apps.portal_messages.views
    :synopsis: Views to handle read/unread status of IntroMessages
+              and generate CustomMessages
 """
 
 import logging
 from portal.views.base import BaseApiView
 from django.http import JsonResponse
-from portal.apps.intromessages.models import IntroMessages
+from portal.apps.portal_messages.models import IntroMessages, CustomMessages, CustomMessageTemplate
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import json
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_or_create_custom_messages(user, template):
+    try:
+        message = CustomMessages.objects.get(user=user, template=template)
+    except CustomMessages.DoesNotExist:
+        message = CustomMessages.objects.create(user=user, template=template)
+
+    return {
+        'template': message.template.to_dict(),
+        'unread': message.unread,
+    }
 
 
 @method_decorator(login_required, name='dispatch')
@@ -33,4 +46,26 @@ class IntroMessagesView(BaseApiView):
             except IntroMessages.DoesNotExist:
                 new_db_message = IntroMessages.objects.create(user=request.user, component=component_name, unread=component_value)
                 new_db_message.save()
+        return JsonResponse({'status': 'OK'})
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomMessagesView(BaseApiView):
+    def get(self, request, *args, **kwargs):
+        templates = CustomMessageTemplate.objects.all()
+        messages = [get_or_create_custom_messages(request.user, template) for template in templates]
+
+        return JsonResponse({
+            'response': {
+                'messages': list(messages),
+            }
+        })
+
+    def put(self, request, *args):
+        body = json.loads(request.body)
+        template_id = body['templateId']
+        unread = body['unread']
+        message = CustomMessages.objects.get(user=request.user, template__id=template_id)
+        message.unread = unread
+        message.save()
         return JsonResponse({'status': 'OK'})
