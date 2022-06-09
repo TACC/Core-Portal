@@ -10,6 +10,8 @@ Override Bootstrap styles. See:
 
 Styleguide Components.Bootstrap.Modal
 */
+@import url('@tacc/core-styles/source/_imports/tools/x-truncate.css');
+
 .modal-content,
 .modal-header,
 .modal-body,
@@ -36,9 +38,7 @@ Styleguide Components.Bootstrap.Modal
   font-weight: normal;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  @extend .x-truncate--one-line;
 }
 
 /* To darken close button */

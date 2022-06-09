@@ -183,6 +183,16 @@ def test_remove_member(authenticated_user, project_manager, service_account):
     )
 
 
+def test_change_project_role(authenticated_user, project_manager, service_account):
+    project_manager.change_project_role('PRJ-123', 'username', 'co_pi', 'member')
+    project_manager.get_project().change_project_role.assert_called_with(authenticated_user, 'co_pi', 'member')
+
+
+def test_change_system_role(authenticated_user, project_manager, service_account):
+    project_manager.change_system_role('PRJ-123', 'username', 'USER')
+    project_manager.get_project().change_storage_system_role.assert_called_with(authenticated_user, 'USER')
+
+
 def test_project_manager_create(mocker, authenticated_user, project_manager, portal_project, mock_project_save_signal):
     mock_get_latest_project_directory = mocker.patch('portal.apps.projects.managers.base.get_latest_project_directory')
     mock_get_latest_project_storage = mocker.patch('portal.apps.projects.managers.base.get_latest_project_storage')
