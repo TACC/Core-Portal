@@ -8,39 +8,43 @@ import styles from './IntroMessage.module.css';
 
 /**
  * Whether the name is of a known intro message
- * @param {String} messageName - The name of the message to check
+ * @param {String} messageComponentName - The name of the component that contains the message
  */
-export function isKnownMessage(messageName) {
-  const introMessages = useSelector((state) => state.introMessages);
+export function isKnownMessage(messageComponentName) {
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
 
-  return introMessages && introMessages[messageName];
+  return introMessageComponents && introMessageComponents[messageComponentName];
 }
 
 /**
  * A message which, when dismissed, will not appear again unless browser storage is cleared
  *
- * _This message is designed for user introduction to sections, but can be abstracted further into a `<DismissableMessage>` or abstracted less such that a message need not be passed in._
+ * _This message is designed for user introduction to sections, but can be abstracted further into a `<DismissibleMessage>` or abstracted less such that a message need not be passed in._
  *
  * @example
  * // message with custom text, class, and identifier
  * <IntroMessage
  *   className="external-message-class"
- *   messageName={identifierForMessageLikeRouteName}
+ *   messageComponentName={identifierForMessageLikeRouteName}
  * >
  *   Introductory text (defined externally).
  * </IntroMessage>
  */
-function IntroMessage({ children, className, messageName }) {
+function IntroMessage({ children, className, messageComponentName }) {
   const dispatch = useDispatch();
-  const introMessages = useSelector((state) => state.introMessages);
-  const shouldShow = isKnownMessage(messageName);
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
+  const shouldShow = isKnownMessage(messageComponentName);
   const [isVisible, setIsVisible] = useState(shouldShow);
 
   // Manage visibility
   const onDismiss = useCallback(() => {
     const newMessagesState = {
-      ...introMessages,
-      [messageName]: false,
+      ...introMessageComponents,
+      [messageComponentName]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
 
@@ -49,7 +53,7 @@ function IntroMessage({ children, className, messageName }) {
 
   return (
     <SectionMessage
-      aria-label={messageName}
+      aria-label={messageComponentName}
       type="info"
       canDismiss
       className={`${styles.root} ${className}`}
