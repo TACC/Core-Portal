@@ -1,7 +1,4 @@
-/* SETTINGS: Font */
-
-/* Usage: `var(--global-font-family--sans)` */
-/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
+@import url('@tacc/core-styles/source/_imports/settings/font.css');
 
 :root {
   /* stylelint-disable value-keyword-case */

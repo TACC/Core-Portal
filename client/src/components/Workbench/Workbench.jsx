@@ -31,6 +31,7 @@ function Workbench() {
     isStaff,
     hideApps,
     hideDataFiles,
+    hideAllocations,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,
@@ -40,6 +41,7 @@ function Workbench() {
         state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
       hideApps: state.workbench.config.hideApps,
       hideDataFiles: state.workbench.config.hideDataFiles,
+      hideAllocations: state.workbench.config.hideAllocations,
     }),
     shallowEqual
   );
@@ -97,10 +99,12 @@ function Workbench() {
                     component={Applications}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.ALLOCATIONS}`}
-                  component={Allocations}
-                />
+                {!hideAllocations && (
+                  <Route
+                    path={`${path}${ROUTES.ALLOCATIONS}`}
+                    component={Allocations}
+                  />
+                )}
                 {!hideApps && (
                   <Route
                     path={`${path}${ROUTES.HISTORY}`}
