@@ -71,7 +71,7 @@ export function allocations(state = initialState, action) {
         teams: { ...state.teams, ...action.payload.data },
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading,
+          ...action.payload.loadingUsernames,
         },
       };
     case 'MANAGE_USERS_INIT':
@@ -79,7 +79,7 @@ export function allocations(state = initialState, action) {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading,
+          ...action.payload.loadingUsernames,
         },
       };
     case 'SEARCH_INIT':

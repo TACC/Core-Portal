@@ -143,11 +143,11 @@ export const teamPayloadUtil = (
   usageData = {},
   allocations = []
 ) => {
-  const loading = { [id]: { loading: false } };
+  const loadingUsernames = { [id]: { loading: false } };
   if (error) {
     return {
       errors: { [id]: obj },
-      loading,
+      loadingUsernames,
     };
   }
 
@@ -222,7 +222,7 @@ export const teamPayloadUtil = (
         };
       }),
   };
-  return { data, loading };
+  return { data, loadingUsernames };
 };
 
 export function* getUsernamesManage(action) {

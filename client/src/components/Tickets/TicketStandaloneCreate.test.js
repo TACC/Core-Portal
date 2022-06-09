@@ -5,7 +5,7 @@ import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
 import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
-import initialIntroMessages from '../../redux/reducers/intro.reducers';
+import initialIntroMessageComponents from '../../redux/reducers/portalMessages.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
 const mockStore = configureStore();
@@ -15,7 +15,10 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: initialIntroMessages,
+      introMessageComponents: {
+        ...initialIntroMessageComponents,
+        TICKETS: true,
+      },
       workbench,
     });
 
@@ -29,7 +32,10 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: { ...initialIntroMessages, TICKETS: false },
+      introMessageComponents: {
+        ...initialIntroMessageComponents,
+        TICKETS: false,
+      },
       workbench,
     });
 

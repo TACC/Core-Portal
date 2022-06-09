@@ -132,7 +132,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr>
+            <tr key={row.id}>
               {row.cells.map((cell) => (
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
               ))}

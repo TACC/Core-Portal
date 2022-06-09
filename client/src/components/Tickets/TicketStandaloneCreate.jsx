@@ -10,14 +10,16 @@ function TicketStandaloneCreate() {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
-  const introMessages = useSelector((state) => state.introMessages);
+  const introMessageComponents = useSelector(
+    (state) => state.introMessageComponents
+  );
   return (
     <>
       <Navbar className="ticket-unauthenticated-title">Add Ticket</Navbar>
 
       <div className="ticket-unauthenticated-create-form">
         <Alert
-          isOpen={introMessages.TICKETS}
+          isOpen={introMessageComponents.TICKETS}
           color="secondary"
           className="introMessageGeneral"
         >
