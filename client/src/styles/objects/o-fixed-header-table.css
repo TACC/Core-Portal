@@ -29,5 +29,5 @@ Styleguide Objects.FixedHeaderTable
   top: 0;
 
   z-index: 1; /* so table content (e.g. button)¹ does not scroll over <th> */
-              /* (table content with a `position` value other than static) */
+  /* ¹ table content with a `position` value other than static */
 }
