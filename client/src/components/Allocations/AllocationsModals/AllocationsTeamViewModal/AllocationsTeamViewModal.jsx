@@ -85,7 +85,7 @@ const AllocationsTeamViewModal = ({
           {isManager && <Tab label="Manage Team" />}
         </Tabs>
       </ModalHeader>
-      <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : ''}>
+      <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'pb-0'}>
         {selectedTab === 0 && (
           <Container>
             {error ? (
