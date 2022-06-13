@@ -26,7 +26,7 @@ export const Team = ({ cell: { value } }) => {
           });
           setTeamModal(true);
         }}
-        size="medium"
+        size="small"
         disabled={teamModal}
       >
         View Team
