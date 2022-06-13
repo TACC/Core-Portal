@@ -32,7 +32,7 @@ Icon.propTypes = {
 Icon.defaultProps = {
   children: '',
   className: '',
-  dataTestid: '',
+  dataTestid: undefined,
 };
 
 export default Icon;

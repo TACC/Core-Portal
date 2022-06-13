@@ -139,7 +139,7 @@ Button.defaultProps = {
   iconNameAfter: '',
   type: 'secondary',
   size: '', // unless `type="link", defaults to `short` after `propTypes`
-  dataTestid: '',
+  dataTestid: undefined,
   disabled: false,
   onClick: null,
   attr: 'button',
