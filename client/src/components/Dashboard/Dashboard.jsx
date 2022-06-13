@@ -15,7 +15,7 @@ function Dashboard() {
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
-      introMessageName="DASHBOARD"
+      messageComponentName="DASHBOARD"
       messages={<BrowserChecker />}
       header="Dashboard"
       headerActions={

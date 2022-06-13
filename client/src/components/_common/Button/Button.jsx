@@ -5,7 +5,7 @@ import Icon from '../Icon';
 import styles from './Button.module.css';
 import LoadingSpinner from '_common/LoadingSpinner';
 
-export const TYPES = ['', 'primary', 'secondary', 'link'];
+export const TYPES = ['', 'primary', 'secondary', 'tertiary', 'active', 'link'];
 
 export const SIZES = ['', 'short', 'medium', 'long', 'small'];
 
@@ -20,6 +20,7 @@ function isNotEmptyString(props, propName, componentName) {
 
 const Button = ({
   children,
+  className,
   iconNameBefore,
   iconNameAfter,
   type,
@@ -69,7 +70,7 @@ const Button = ({
   let buttonTypeClass;
   if (type === 'link') {
     buttonTypeClass = styles['as-link'];
-  } else if (type === 'primary' || type === 'secondary') {
+  } else if (['primary', 'secondary', 'tertiary', 'active'].includes(type)) {
     buttonTypeClass = styles[`${type}`];
   } else if (type === '') {
     buttonTypeClass = type;
@@ -91,6 +92,7 @@ const Button = ({
         ${buttonTypeClass}
         ${buttonSizeClass}
         ${buttonLoadingClass}
+        ${className}
       `}
       disabled={disabled || isLoading}
       type={attr}
@@ -122,6 +124,7 @@ const Button = ({
 };
 Button.propTypes = {
   children: isNotEmptyString,
+  className: isNotEmptyString,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
   type: PropTypes.oneOf(TYPES),
@@ -132,6 +135,7 @@ Button.propTypes = {
   isLoading: PropTypes.bool,
 };
 Button.defaultProps = {
+  className: '',
   iconNameBefore: '',
   iconNameAfter: '',
   type: 'secondary',

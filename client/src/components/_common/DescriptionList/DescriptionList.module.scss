@@ -1,5 +1,3 @@
-@import '../../../styles/tools/mixins.scss';
-
 .container.is-horz {
   margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
   & dd {
@@ -10,9 +8,7 @@
 /* Children */
 
 .key {
-  @include truncate-with-ellipsis;
-
-  text-overflow: ':';
+  composes: x-truncate--one-line from '@tacc/core-styles/dist/tools/x-truncate.css';
 }
 .key::after {
   content: ':';
@@ -55,9 +51,6 @@
 } /* 40px Firefox default margin */
 
 /* Truncate specific edge cases */
-.is-horz.is-wide > .value {
-  @include truncate-with-ellipsis;
-}
-.is-vert.is-narrow > .value {
-  @include truncate-with-ellipsis;
+.value-truncated {
+  composes: x-truncate--one-line from '@tacc/core-styles/dist/tools/x-truncate.css';
 }
