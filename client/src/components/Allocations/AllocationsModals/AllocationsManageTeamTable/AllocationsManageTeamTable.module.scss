@@ -6,7 +6,7 @@
   margin-bottom: 28px;
 }
 .manage-team-table {
-  font-size: 12px; /* 10px design * 1.2 design-to-app ratio */
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
   margin-bottom: 0; /* overwrite bootstrap */
   border-collapse: separate; /* keep <th> border-bottom visible on scroll */
   border-spacing: 0;
