@@ -37,14 +37,6 @@ function isPropertyLimitation(type, size) {
   return isLimited;
 }
 
-function getExpectedType(type, size) {
-  let expType = type;
-  if (type === 'primary' && size === 'small') {
-    expType = '';
-  }
-  return expType;
-}
-
 describe('Button', () => {
   it('uses given text', () => {
     muteTypeNotLinkNoSizeLog();
