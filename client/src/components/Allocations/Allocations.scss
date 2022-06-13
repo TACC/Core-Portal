@@ -106,6 +106,9 @@
     font-size: 0.875rem; /* 14px (approved deviation from design) */
   }
 }
+td {
+  vertical-align: top !important; /* override InfiniteScrollTable */
+}
 
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
