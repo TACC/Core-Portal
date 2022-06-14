@@ -278,6 +278,13 @@ RT_PW = 'test'
 RT_QUEUE = 'test'
 RT_TAG = 'test_tag'
 
+# Tapis Tenant.
+TAPIS_TENANT_BASE_URL = 'https://example.tapis.io'
+
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = 'test'
+TAPIS_CLIENT_KEY = 'test'
+
 # Agave Tenant.
 AGAVE_TENANT_ID = 'portal'
 AGAVE_TENANT_BASEURL = 'https://api.example.com'

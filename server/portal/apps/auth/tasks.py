@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def setup_user(self, username, system):
     """Setup workflow for each user
 
-        Called asynchronously from portal.apps.auth.views.agave_oauth_callback
+        Called asynchronously from portal.apps.auth.views.tapis_oauth_callback
         :param str username: string username to setup systems for
         :param dict systems: dict of systems from settings
     """
