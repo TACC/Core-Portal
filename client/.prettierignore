@@ -1,4 +1,9 @@
+# vendor
 node_modules
+# vendor: copied
+icon.fonts.css
+
+# auto-generated
 coverage
 build
 dist

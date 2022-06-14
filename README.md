@@ -5,6 +5,7 @@ The base Portal code for TACC WMA Workspace Portals
 ### Related Repositories:
 - [Camino], a Docker container-based deployment scheme
 - [Core CMS], the base CMS code for TACC WMA CMS Websites
+- [Core Styles], the shared UI pattern code for TACC WMA CMS Websites
 - [Core Portal Deployments], private repository that facilitates deployments of [Core Portal] images via [Camino] and Jenkins
 
 # Local Development Setup
@@ -245,6 +246,21 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
     - `bug/` for bugfixes
     - `fix/` for hotfixes
 
+#### Testing Core Styles Changes Locally
+
+1. Clone [Core Styles] (if you haven't already).
+2. Tell project to temporarily use your [Core Styles] clone:
+    ```bash
+    npm link path-to/Core-Styles # e.g. npm link ../../Core-Styles
+    ```
+
+3. Make changes in your [Core Styles] clone as necessary.
+4. Test changes.
+    - Changes to imported files during `npm run dev` will trigger livereload.
+5. Commit successful changes to a [Core Styles] branch.
+
+- _Note: [If you run `npm install` or `npm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
+
 #### Best Practices
 Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
 
@@ -260,5 +276,6 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Camino]: https://github.com/TACC/Camino
 [Core CMS]: https://github.com/TACC/Core-CMS
 [Core Portal]: https://github.com/TACC/Core-Portal
+[Core Styles]: https://github.com/TACC/Core-Styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/
