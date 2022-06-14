@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
+import { Button } from '_common';
 
 import styles from './UserSearchbar.module.scss';
 
@@ -8,8 +9,7 @@ const UserSearchbar = ({
   members,
   onAdd,
   onChange,
-  addDisabled,
-  searchDisabled,
+  isLoading,
   searchResults,
   placeholder,
 }) => {
@@ -60,13 +60,13 @@ const UserSearchbar = ({
       <div className={`input-group ${styles['member-search-group']}`}>
         <div className="input-group-prepend">
           <Button
-            className={`${styles['add-button']} ${styles['member-search']}`}
+            type="secondary"
             onClick={() =>
               onAddCallback({ user: selectedUser, access: 'edit' })
             }
-            disabled={
-              !selectedUser || addDisabled || alreadyMember(selectedUser)
-            }
+            size="short"
+            isLoading={isLoading}
+            disabled={!selectedUser || isLoading || alreadyMember(selectedUser)}
           >
             Add
           </Button>
@@ -77,7 +77,7 @@ const UserSearchbar = ({
           onChange={(e) => userSearch(e)}
           placeholder={placeholder}
           className={styles.memberSearch}
-          disabled={searchDisabled}
+          disabled={isLoading}
           autoComplete="false"
           value={inputUser}
         />
@@ -109,8 +109,7 @@ UserSearchbar.propTypes = {
   ).isRequired,
   onAdd: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-  addDisabled: PropTypes.bool,
-  searchDisabled: PropTypes.bool,
+  isLoading: PropTypes.bool,
   searchResults: PropTypes.arrayOf(
     PropTypes.shape({
       username: PropTypes.string,
@@ -122,8 +121,7 @@ UserSearchbar.propTypes = {
   placeholder: PropTypes.string,
 };
 UserSearchbar.defaultProps = {
-  addDisabled: false,
-  searchDisabled: false,
+  isLoading: false,
   placeholder: 'Search by name',
 };
 

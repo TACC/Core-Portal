@@ -143,11 +143,11 @@ export const teamPayloadUtil = (
   usageData = {},
   allocations = []
 ) => {
-  const loading = { [id]: false };
+  const loadingUsernames = { [id]: { loading: false } };
   if (error) {
     return {
       errors: { [id]: obj },
-      loading,
+      loadingUsernames,
     };
   }
 
@@ -222,19 +222,21 @@ export const teamPayloadUtil = (
         };
       }),
   };
-  return { data, loading };
+  return { data, loadingUsernames };
 };
 
 export function* getUsernamesManage(action) {
   try {
     yield put({
       type: 'MANAGE_USERS_INIT',
-      payload: { loading: { [action.payload.projectId]: { loading: true } } },
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
     });
     const json = yield call(getTeamsUtil, action.payload.name);
     const payload = {
       data: { [action.payload.projectId]: json },
-      loading: { [action.payload.projectId]: { loading: false } },
+      loadingUsernames: { [action.payload.projectId]: { loading: false } },
     };
     yield put({
       type: 'ADD_USERNAMES_TO_TEAM',
@@ -280,7 +282,12 @@ export const manageUtil = async (pid, uid, add = true) => {
 
 export function* addUser(action) {
   try {
-    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
+    yield put({
+      type: 'ALLOCATION_OPERATION_ADD_USER_INIT',
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
+    });
     yield call(manageUtil, action.payload.projectId, action.payload.id);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
     const { projectId, projectName } = action.payload;

@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { shape, arrayOf, number, string } from 'prop-types';
-import { Button, Badge } from 'reactstrap';
+import { Badge } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  AllocationsTeamViewModal,
-  AllocationsManageTeamModal,
-} from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -17,13 +15,10 @@ const CELL_PROPTYPES = {
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [teamModal, setTeamModal] = useState(false);
-  const [manageModal, setManageModal] = useState(false);
   const { projectId, name } = value;
   return (
     <>
       <Button
-        className="btn btn-sm"
-        color="link"
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
@@ -31,6 +26,7 @@ export const Team = ({ cell: { value } }) => {
           });
           setTeamModal(true);
         }}
+        size="small"
         disabled={teamModal}
       >
         View Team
@@ -39,28 +35,7 @@ export const Team = ({ cell: { value } }) => {
         isOpen={teamModal}
         projectId={projectId}
         toggle={() => setTeamModal(!teamModal)}
-        managementToggle={() => {
-          setTeamModal(!teamModal);
-          dispatch({
-            type: 'GET_MANAGE_TEAMS',
-            payload: { ...value },
-          });
-          setManageModal(true);
-        }}
-      />
-      <AllocationsManageTeamModal
-        isOpen={manageModal}
-        projectId={projectId}
         projectName={name}
-        toggle={() => setManageModal(!manageModal)}
-        viewToggle={() => {
-          dispatch({
-            type: 'GET_TEAMS',
-            payload: { ...value },
-          });
-          setTeamModal(true);
-          setManageModal(!manageModal);
-        }}
       />
     </>
   );

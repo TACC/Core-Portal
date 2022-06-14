@@ -1,0 +1,63 @@
+.listing-wrapper {
+  height: 33.5vh;
+  overflow-y: auto;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 28px;
+}
+.manage-team-table {
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
+  margin-bottom: 0; /* overwrite bootstrap */
+  border-collapse: separate; /* keep <th> border-bottom visible on scroll */
+  border-spacing: 0;
+
+  td,
+  th {
+    padding: 9px 15px;
+    vertical-align: middle;
+  }
+  th {
+    font-weight: bold;
+    background-color: var(--global-color-primary--xx-light);
+  }
+  thead th /* specificity overwrites bootstrap */ {
+    border-bottom: 1px solid var(--global-color-primary--dark);
+  }
+  tr:nth-child(even) td {
+    background-color: var(--global-color-primary--x-light);
+  }
+  /* action */
+  tr > *:nth-child(3) {
+    text-align: right;
+    padding-right: 40px;
+
+    /* To not let button appear atop header on scroll */
+    button {
+      position: static; /* overwrite <Button> */
+    }
+  }
+}
+/* wide screen */
+@media (--medium-and-below) {
+  .manage-team-table {
+    /* member */
+    tr > *:nth-child(1) {
+      width: 60%;
+    }
+    /* role */
+    tr > *:nth-child(2) {
+      width: 15%;
+    }
+    /* action */
+    tr > *:nth-child(3) {
+      width: 20%;
+    }
+  }
+}
+.search-bar-header-text {
+  font-size: 13px;
+}
+.help-text {
+  margin-top: 0.5rem;
+  display: block;
+}
