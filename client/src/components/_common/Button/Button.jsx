@@ -13,7 +13,9 @@ export const ATTRIBUTES = ['button', 'submit', 'reset'];
 
 function isNotEmptyString(props, propName, componentName) {
   if (!props[propName] || props[propName].replace(/ /g, '') === '') {
-    return new Error(`No text passed to <${componentName}> prop "${propName}". Validation failed.`);
+    return new Error(
+      `No text passed to <${componentName}> prop "${propName}". Validation failed.`
+    );
   }
   return null;
 }
