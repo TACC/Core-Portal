@@ -5,15 +5,30 @@ import Icon from '../Icon';
 import styles from './Button.module.css';
 import LoadingSpinner from '_common/LoadingSpinner';
 
-export const TYPES = ['', 'primary', 'secondary', 'tertiary', 'active', 'link'];
+export const TYPE_MAP = {
+  primary: 'primary',
+  secondary: 'secondary',
+  tertiary: 'tertiary',
+  active: 'is-active',
+  link: 'as-link',
+};
+export const TYPES = [''].concat(Object.keys(TYPE_MAP));
 
-export const SIZES = ['', 'short', 'medium', 'long', 'small'];
+export const SIZE_MAP = {
+  short: 'width-short',
+  medium: 'width-medium',
+  long: 'width-long',
+  small: 'size-small',
+};
+export const SIZES = [''].concat(Object.keys(SIZE_MAP));
 
 export const ATTRIBUTES = ['button', 'submit', 'reset'];
 
 function isNotEmptyString(props, propName, componentName) {
   if (!props[propName] || props[propName].replace(/ /g, '') === '') {
-    return new Error(`No text passed to ${componentName}. Validation failed.`);
+    return new Error(
+      `No text passed to <${componentName}> prop "${propName}". Validation failed.`
+    );
   }
   return null;
 }
@@ -25,6 +40,7 @@ const Button = ({
   iconNameAfter,
   type,
   size,
+  dataTestid,
   disabled,
   onClick,
   attr,
@@ -65,38 +81,18 @@ const Button = ({
   }
   /* eslint-enable no-console */
 
-  const buttonRootClass = styles['root'];
-
-  let buttonTypeClass;
-  if (type === 'link') {
-    buttonTypeClass = styles['as-link'];
-  } else if (['primary', 'secondary', 'tertiary', 'active'].includes(type)) {
-    buttonTypeClass = styles[`${type}`];
-  } else if (type === '') {
-    buttonTypeClass = type;
-  }
-
-  let buttonSizeClass;
-  if (size === 'small') {
-    buttonSizeClass = styles['size-small'];
-  } else {
-    buttonSizeClass = styles[`width-${size}`];
-  }
-
-  const buttonLoadingClass = isLoading ? styles['loading'] : '';
-
   return (
     <button
       className={`
-        ${buttonRootClass}
-        ${buttonTypeClass}
-        ${buttonSizeClass}
-        ${buttonLoadingClass}
-        ${className}
+        ${styles['root']}
+        ${TYPE_MAP[type] ? styles[TYPE_MAP[type]] : ''}
+        ${SIZE_MAP[size] ? styles[SIZE_MAP[size]] : ''}
+        ${isLoading ? styles['loading'] : ''}
       `}
       disabled={disabled || isLoading}
       type={attr}
       onClick={onclick}
+      data-testid={dataTestid}
     >
       {isLoading && (
         <LoadingSpinner
@@ -107,15 +103,19 @@ const Button = ({
       {iconNameBefore ? (
         <Icon
           name={iconNameBefore}
+          dataTestid="icon-before"
           className={iconNameBefore ? styles['icon--before'] : ''}
         />
       ) : (
         ''
       )}
-      <span className={styles['text']}>{children}</span>
+      <span className={styles['text']} data-testid="text">
+        {children}
+      </span>
       {iconNameAfter && (
         <Icon
           name={iconNameAfter}
+          dataTestid="icon-after"
           className={iconNameAfter ? styles['icon--after'] : ''}
         />
       )}
@@ -124,11 +124,12 @@ const Button = ({
 };
 Button.propTypes = {
   children: isNotEmptyString,
-  className: isNotEmptyString,
+  className: PropTypes.string,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
   type: PropTypes.oneOf(TYPES),
   size: PropTypes.oneOf(SIZES),
+  dataTestid: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   attr: PropTypes.oneOf(ATTRIBUTES),
@@ -140,6 +141,7 @@ Button.defaultProps = {
   iconNameAfter: '',
   type: 'secondary',
   size: '', // unless `type="link", defaults to `short` after `propTypes`
+  dataTestid: undefined,
   disabled: false,
   onClick: null,
   attr: 'button',

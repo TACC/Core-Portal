@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table, Button } from 'reactstrap';
+import { Table } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, Message, DropdownSelector } from '_common';
@@ -83,7 +84,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               {deleteOperationOccuring && <LoadingSpinner placement="inline" />}
               {removable && (
                 <Button
-                  color="link"
+                  type="link"
                   disabled={removingUserOperation.loading}
                   onClick={(e) => {
                     dispatch({
@@ -115,7 +116,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       hover
       borderless
       size="sm"
-      className={styles['manage-team-table']}
+      className={`${styles['manage-team-table']} o-fixed-header-table`}
       {...getTableProps()}
     >
       <thead>
