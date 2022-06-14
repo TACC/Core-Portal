@@ -85,7 +85,7 @@ const AllocationsTeamViewModal = ({
           {isManager && <Tab label="Manage Team" />}
         </Tabs>
       </ModalHeader>
-      <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'p-2'}>
+      <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'pb-0'}>
         {selectedTab === 0 && (
           <Container>
             {error ? (
@@ -132,9 +132,9 @@ const AllocationsTeamViewModal = ({
                 searchResults={search.results}
                 placeholder=""
               />
-              <i className={manageStyles['help-text']}>
+              <small className={manageStyles['help-text']}>
                 Search by entering the full username, email, or last name.
-              </i>
+              </small>
             </div>
             <div className={manageStyles['listing-wrapper']}>
               {error ? (
