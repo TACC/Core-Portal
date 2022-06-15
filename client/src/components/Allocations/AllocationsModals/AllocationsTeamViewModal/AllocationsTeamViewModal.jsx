@@ -3,7 +3,7 @@ import { number, bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import { InlineMessage, LoadingSpinner } from '_common';
 import { has } from 'lodash';
 import AllocationsTeamTable from './AllocationsTeamTable';
 import AllocationsManageTeamTable from '../AllocationsManageTeamTable';
@@ -18,9 +18,14 @@ const AllocationsTeamViewModal = ({
   projectId,
   projectName,
 }) => {
-  const { teams, loadingUsernames, search, errors } = useSelector(
-    (state) => state.allocations
-  );
+  const {
+    teams,
+    loadingUsernames,
+    search,
+    errors,
+    addUserOperation,
+    removingUserOperation,
+  } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.profile.data.demographics.username);
   const error = has(errors.teams, projectId);
@@ -150,6 +155,25 @@ const AllocationsTeamViewModal = ({
                   rawData={teams[projectId]}
                   projectId={projectId}
                 />
+              )}
+            </div>
+            <div className={manageStyles['user-operation-error']}>
+              {addUserOperation.error ? (
+                <InlineMessage type="error">
+                  Unable to add user {addUserOperation.userName}.
+                </InlineMessage>
+              ) : (
+                ' '
+              )}
+              {addUserOperation.error && removingUserOperation.error ? (
+                <br></br>
+              ) : null}
+              {removingUserOperation.error ? (
+                <InlineMessage type="error">
+                  Unable to remove user {removingUserOperation.userName}.
+                </InlineMessage>
+              ) : (
+                ' '
               )}
             </div>
           </>

@@ -3,7 +3,6 @@
   overflow-y: auto;
   padding-left: 0;
   padding-right: 0;
-  margin-bottom: 28px;
 }
 .manage-team-table {
   font-size: 0.875rem; /* 14px (approved deviation from design) */
@@ -66,4 +65,8 @@
 .help-text {
   margin-top: 0.5rem;
   display: block;
+}
+.user-operation-error {
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
