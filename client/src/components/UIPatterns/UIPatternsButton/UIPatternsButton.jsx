@@ -177,7 +177,9 @@ function UIPatternsButton() {
       </dd>
       <dd>
         <Button type="link">Link</Button>
-        <Button type="link" disabled>Disabled</Button>
+        <Button type="link" disabled>
+          Disabled
+        </Button>
         <p>
           <small>To “clear” or “cancel” a UI state.</small>
         </p>
