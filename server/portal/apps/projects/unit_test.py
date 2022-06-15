@@ -18,7 +18,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture()
 def agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
 @pytest.fixture()

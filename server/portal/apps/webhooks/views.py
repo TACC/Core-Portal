@@ -38,7 +38,7 @@ def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
 
     """
     user = get_user_model().objects.get(username=job_owner)
-    agave = user.agave_oauth.client
+    agave = user.tapis_oauth.client
     job_data = agave.jobs.get(jobId=job_uuid)
 
     # Validate the job ID against the owner
@@ -301,7 +301,7 @@ class InteractiveWebhookView(BaseApiView):
         #         'associationIds': [job_uuid],
         #     }
         #     user = get_user_model().objects.get(username=job_owner)
-        #     agave = user.agave_oauth.client
+        #     agave = user.tapis_oauth.client
         #     agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
         # except (HTTPError, AgaveException) as e:

@@ -28,7 +28,7 @@ class AbstractWorkspaceManager:
         :param request: Django request object.
         """
         try:
-            self._ac = request.user.agave_oauth.client
+            self._ac = request.user.tapis_oauth.client
             self.username = request.user.username
         except AttributeError:
             self._ac = None
@@ -66,7 +66,7 @@ class AbstractApplicationsManager:
         :param user: Django user instance
         """
         self.user = user
-        self.client = self.user.agave_oauth.client
+        self.client = self.user.tapis_oauth.client
 
     @abstractmethod
     def get_clone_system_id(self, *args, **kwargs):

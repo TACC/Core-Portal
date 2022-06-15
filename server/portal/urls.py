@@ -21,7 +21,7 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.static import static
-from portal.apps.auth.views import agave_oauth as login
+from portal.apps.auth.views import tapis_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView

@@ -96,11 +96,11 @@ class ProjectsManager(object):
         :param str system_id: System Id.
         """
         sys = StorageSystem(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             system_id
         )
         prj = Project(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             sys.name,
             storage=sys
         )
@@ -112,7 +112,7 @@ class ProjectsManager(object):
         :param str project_id: Project Id.
         """
         prj = Project(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             project_id
         )
         if not prj.storage.uuid:
@@ -168,7 +168,7 @@ class ProjectsManager(object):
 
         try:
             prj = Project.create(
-                self.user.agave_oauth.client,
+                self.user.tapis_oauth.client,
                 title,
                 project_id,
                 self.user
@@ -190,7 +190,7 @@ class ProjectsManager(object):
                 prj_id=ProjectId.next_id()
             )
             prj = Project.create(
-                self.user.agave_oauth.client,
+                self.user.tapis_oauth.client,
                 title,
                 project_id,
                 self.user
@@ -207,7 +207,7 @@ class ProjectsManager(object):
     def list(self, offset=0, limit=100):
         """List projects."""
         return [prj.storage for prj in Project.listing(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             offset=offset,
             limit=limit
         )]

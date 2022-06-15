@@ -218,7 +218,7 @@ class TestAgaveJWTAuth(TestCase):
     @patch('portal.utils.jwt_auth.login')
     @patch('portal.utils.jwt_auth._get_jwt_payload', return_value='payload')
     @patch('portal.utils.jwt_auth._decode_jwt', return_value={'http://wso2.org/claims/fullname': 'wma_prtl'})
-    @patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    @patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
     def test_agave_jwt_expired_token(self,
                                      mock_client,
                                      mock_decode_jwt,
@@ -226,18 +226,18 @@ class TestAgaveJWTAuth(TestCase):
                                      mock_login):
 
         user = get_user_model().objects.get(username='wma_prtl')
-        user.agave_oauth.expires_in = 0
-        user.agave_oauth.save()
-        self.assertTrue(user.agave_oauth.expired)
+        user.tapis_oauth.expires_in = 0
+        user.tapis_oauth.save()
+        self.assertTrue(user.tapis_oauth.expired)
 
         def refresh_token(*args, **kwargs):
-            user.agave_oauth.expires_in = 13253919840009999
-            user.agave_oauth.save()
-            return user.agave_oauth.refresh_token
+            user.tapis_oauth.expires_in = 13253919840009999
+            user.tapis_oauth.save()
+            return user.tapis_oauth.refresh_token
 
         mock_client.token.refresh.side_effect = refresh_token
 
         mock_request = Mock()
         login_user_agave_jwt(mock_request)
         mock_client.token.refresh.assert_called_once_with()
-        self.assertFalse(user.agave_oauth.expired)
+        self.assertFalse(user.tapis_oauth.expired)

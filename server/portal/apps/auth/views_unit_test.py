@@ -32,8 +32,6 @@ def test_tapis_callback(client, mocker, regular_user):
     session.save()
 
     mock_tapis_token_post.return_value.json.return_value = {
-        "token_type": "bearer",
-        "scope": "default",
         "access_token": "4c8728a095934e10a642ad8371fcbe",
         "expires_in": 12457,
         "refresh_token": "d6ede1effb7be9c3efd7feba5f5af6"

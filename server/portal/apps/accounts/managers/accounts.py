@@ -83,7 +83,7 @@ def setup(username, system):
     mgr = UserSystemsManager(user, system)
     home_dir = mgr.get_private_directory(user)
     systemId = mgr.get_system_id()
-    system = StorageSystem(user.agave_oauth.client, id=systemId)
+    system = StorageSystem(user.tapis_oauth.client, id=systemId)
     success, result = system.test()
     if success:
         logger.info(
@@ -113,11 +113,11 @@ def reset_system_keys(username, system_id):
     """
     user = check_user(username)
 
-    sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
+    sys_dict = user.tapis_oauth.client.systems.get(systemId=system_id)
     if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
-        sys = StorageSystem.from_dict(user.agave_oauth.client, sys_dict)
+        sys = StorageSystem.from_dict(user.tapis_oauth.client, sys_dict)
     elif sys_dict['type'] == ExecutionSystem.TYPES.EXECUTION:
-        sys = ExecutionSystem.from_dict(user.agave_oauth.client, sys_dict)
+        sys = ExecutionSystem.from_dict(user.tapis_oauth.client, sys_dict)
 
     private_key = EncryptionUtil.create_private_key()
     priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
@@ -279,7 +279,7 @@ def storage_systems(user, offset=0, limit=100):
     """
     systems = []
     res = StorageSystem.list(
-        user.agave_oauth.client,
+        user.tapis_oauth.client,
         type=StorageSystem.TYPES.STORAGE,
         offset=offset,
         limit=limit
@@ -297,7 +297,7 @@ def execution_systems(user, offset=0, limit=100):
     """
     systems = []
     res = ExecutionSystem.list(
-        user.agave_oauth.client,
+        user.tapis_oauth.client,
         type=ExecutionSystem.TYPES.EXECUTION,
         offset=offset,
         limit=limit
@@ -314,11 +314,11 @@ def get_system(user, system_id):
     :returns: System object
     :rtype: :class:`StorageSystem` or :class:`ExecutionSystem`
     """
-    system = user.agave_oauth.client.systems.get(systemId=system_id)
+    system = user.tapis_oauth.client.systems.get(systemId=system_id)
     if system.type == StorageSystem.TYPES.STORAGE:
-        sys = StorageSystem.from_dict(user.agave_oauth.client, system)
+        sys = StorageSystem.from_dict(user.tapis_oauth.client, system)
     elif system.type == ExecutionSystem.TYPES.EXECUTION:
-        sys = ExecutionSystem.from_dict(user.agave_oauth.client, system)
+        sys = ExecutionSystem.from_dict(user.tapis_oauth.client, system)
 
     sys.test()
     return sys

@@ -28,8 +28,7 @@ class AuthenticatedView(BaseApiView):
                 "last_name": u.last_name,
                 "email": u.email,
                 "oauth": {
-                    "expires_in": u.agave_oauth.expires_in,
-                    "scope": u.agave_oauth.scope,
+                    "expires_in": u.tapis_oauth.expires_in,
                 },
                 "isStaff": u.is_staff
             }

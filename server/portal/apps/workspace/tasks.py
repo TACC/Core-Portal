@@ -24,7 +24,7 @@ def submit_job(request, username, job_post):
 
     try:
         user = get_user_model().objects.get(username=username)
-        agave = user.agave_oauth.client
+        agave = user.tapis_oauth.client
         response = agave.jobs.submit(body=job_post)
         logger.debug('Job Submission Response: {}'.format(response))
 
