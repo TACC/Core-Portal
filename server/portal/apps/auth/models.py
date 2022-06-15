@@ -17,7 +17,7 @@ class TapisOAuthToken(models.Model):
 
     Use this class to store login details as well as refresh a token.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth', on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
     expires_in = models.BigIntegerField()
