@@ -162,9 +162,7 @@ const AllocationsTeamViewModal = ({
                 <InlineMessage type="error">
                   Unable to add user {addUserOperation.userName}.
                 </InlineMessage>
-              ) : (
-                ' '
-              )}
+              ) : null}
               {addUserOperation.error && removingUserOperation.error ? (
                 <br></br>
               ) : null}
@@ -172,9 +170,7 @@ const AllocationsTeamViewModal = ({
                 <InlineMessage type="error">
                   Unable to remove user {removingUserOperation.userName}.
                 </InlineMessage>
-              ) : (
-                ' '
-              )}
+              ) : null}
             </div>
           </>
         )}
