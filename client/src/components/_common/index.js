@@ -29,3 +29,4 @@ export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
 export { default as ShowMore } from './ShowMore';
 export { default as Paginator } from './Paginator';
+export { default as UserSearchbar } from './UserSearchbar';
