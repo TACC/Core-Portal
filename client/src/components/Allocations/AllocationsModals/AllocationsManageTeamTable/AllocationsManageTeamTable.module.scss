@@ -34,12 +34,6 @@
   }
   tr:nth-child(even) td {
     background-color: var(--global-color-primary--x-light);
-
-    button:disabled {
-      background-color: var(
-        --global-color-primary--x-light
-      ); /* button's disabled state background will match row background color */
-    }
   }
 }
 /* wide screen */

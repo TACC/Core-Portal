@@ -75,10 +75,12 @@ Styleguide Components.Button
 }
 .c-button:disabled:not(.c-button--is-busy) {
   color: var(--global-color-primary--dark);
-  background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--dark);
 
   pointer-events: none;
+}
+.c-button:disabled:not(.c-button--is-busy, .c-button--as-link) {
+  background-color: var(--global-color-primary--xx-light);
 }
 
 /* MODIFIERS */
