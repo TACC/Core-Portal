@@ -23,9 +23,6 @@
   thead th /* specificity overwrites bootstrap */ {
     border-bottom: 1px solid var(--global-color-primary--dark);
   }
-  tr:nth-child(even) td {
-    background-color: var(--global-color-primary--x-light);
-  }
   /* action */
   tr > *:nth-child(3) {
     text-align: right;
@@ -34,6 +31,15 @@
     /* To not let button appear atop header on scroll */
     button {
       position: static; /* overwrite <Button> */
+    }
+  }
+  tr:nth-child(even) td {
+    background-color: var(--global-color-primary--x-light);
+
+    button:disabled {
+      background-color: var(
+        --global-color-primary--x-light
+      ); /* button's disabled state background will match row background color */
     }
   }
 }
