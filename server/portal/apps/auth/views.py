@@ -56,7 +56,7 @@ def tapis_oauth(request):
     authorization_url = (
         f"{tenant_base_url}/v3/oauth2/authorize?"
         f"client_id={client_id}&"
-        f"client_redirect_uri={redirect_uri}&"
+        f"redirect_uri={redirect_uri}&"
         "response_type=code&"
         f"state={session['auth_state']}"
     )

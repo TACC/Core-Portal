@@ -61,7 +61,7 @@ class TestTapisOAuthBackend(TransactionTestCase):
             "status": "success",
             "result": {
                 "username": "testuser",
-                "first_name": "test",
+                "given_name": "test",
                 "last_name": "user",
                 "email": "test@user.com"
             }

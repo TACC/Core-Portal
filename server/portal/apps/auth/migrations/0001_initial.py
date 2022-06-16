@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             name='TapisOAuthToken',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('access_token', models.CharField(max_length=255)),
-                ('refresh_token', models.CharField(max_length=255)),
+                ('access_token', models.CharField(max_length=2048)),
+                ('refresh_token', models.CharField(max_length=2048)),
                 ('expires_in', models.BigIntegerField()),
                 ('created', models.BigIntegerField()),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='tapis_oauth', to=settings.AUTH_USER_MODEL)),

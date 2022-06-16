@@ -38,7 +38,7 @@ class TapisOAuthBackend(ModelBackend):
                                      'from Tapis Profile' % username)
                     user = UserModel.objects.create_user(
                         username=username,
-                        first_name=tapis_user['first_name'],
+                        first_name=tapis_user['given_name'],
                         last_name=tapis_user['last_name'],
                         email=tapis_user['email']
                     )
