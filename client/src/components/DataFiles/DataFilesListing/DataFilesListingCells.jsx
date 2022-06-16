@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Checkbox, Icon, LoadingSpinner } from '_common';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import './DataFilesListingCells.scss';
 import '../../Onboarding/OnboardingStep.module.scss';
@@ -173,7 +173,7 @@ export const ViewPathCell = ({ file }) => {
     });
   };
   return (
-    <Button className="btn btn-sm" color="link" onClick={onClick}>
+    <Button type="link" onClick={onClick}>
       View Path
     </Button>
   );
