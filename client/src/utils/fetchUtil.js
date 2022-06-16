@@ -22,8 +22,10 @@ export async function fetchUtil({ url, params, ...options }) {
     'X-CSRFToken': Cookies.get('csrftoken'),
     ...fetchParams.headers,
   };
-
-  const response = await fetch(request, fetchParams);
+  const response = await fetch(request, {
+    fetchParams,
+    ...options.init,
+  });
   const json = await response.json();
   if (!response.ok) {
     throw new FetchError(json, response);

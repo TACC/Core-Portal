@@ -5,6 +5,11 @@ from portal.apps.auth.models import TapisOAuthToken
 from pytas.http import TASClient
 from portal.apps.users.utils import get_tas_allocations, get_allocations
 from elasticsearch.exceptions import NotFoundError
+from zeep.exceptions import Fault
+import pytest
+import json
+import os
+from django.conf import settings
 
 
 class AttrDict(dict):
@@ -220,3 +225,110 @@ class TestGetIndexedAllocations(TestCase):
         get_allocations('testuser')
         mock_get_alloc.assert_called_with('testuser')
         mock_idx().save.assert_called_with()
+
+
+@pytest.fixture
+def tas_add_user_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project.json')))
+
+
+@pytest.fixture
+def tas_delete_user_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project.json')))
+
+
+@pytest.fixture
+def tas_add_user_error_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project_error.json')))
+
+
+@pytest.fixture
+def tas_delete_user_error_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project_error.json')))
+
+
+def test_add_user(client, requests_mock, authenticated_user, tas_add_user_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 200
+    assert response.json() == {"response": 'ok'}
+
+
+def test_add_user_unauthenticated(client):
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 302
+
+
+def test_add_user_failure(client, requests_mock, authenticated_user, tas_add_user_error_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_error_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 400
+
+
+def test_delete_user(client, requests_mock, authenticated_user, tas_delete_user_response):
+    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_response)
+    response = client.delete('/api/users/team/manage/1234/5678')
+    assert response.status_code == 200
+    assert response.json() == {"response": 'ok'}
+
+
+def test_delete_user_unauthenticated(client):
+    response = client.delete('/api/users/team/manage/1234/5678')
+    assert response.status_code == 302
+
+
+def test_delete_user_failure(client, requests_mock, authenticated_user, tas_delete_user_error_response):
+    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
+    response = client.delete('/api/users/team/manage/1234/5678')
+    assert response.status_code == 400
+
+
+@pytest.fixture
+def mock_tas_account1(mocker):
+    mock_account = mocker.MagicMock()
+    mock_account.Login = "username1"
+    mock_account.Person.Email = "user1@user.com"
+    mock_account.Person.FirstName = "firstName1"
+    mock_account.Person.LastName = "commonLastName"
+    yield mock_account
+
+
+@pytest.fixture
+def mock_tas_account2(mocker):
+    mock_account = mocker.MagicMock()
+    mock_account.Login = "username2"
+    mock_account.Person.Email = "user2@user.com"
+    mock_account.Person.FirstName = "firstName2"
+    mock_account.Person.LastName = "commonLastName"
+    yield mock_account
+
+
+@pytest.fixture
+def mock_tas_zeep_client(mocker):
+    zeep_client = mocker.patch('portal.apps.users.views.Client', autospec=True)
+    zeep_client.return_value.service.GetAccountsByLastName.return_value = []
+    zeep_client.return_value.service.GetAccountsByEmail.return_value = []
+    zeep_client.return_value.service.GetAccountByLogin.side_effect = Fault("None")
+    yield zeep_client.return_value
+
+
+def test_search_tas_user_unauthenticated(client):
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 302
+
+
+def test_search_tas_empty_response(client, authenticated_user, mock_tas_zeep_client):
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 200
+    assert response.json() == {"result": []}
+
+
+def test_search_tas(client, authenticated_user, mock_tas_zeep_client, mock_tas_account1, mock_tas_account2):
+    mock_tas_zeep_client.service.GetAccountsByLastName.return_value = [mock_tas_account1, mock_tas_account2]
+    mock_tas_zeep_client.service.GetAccountsByEmail.return_value = [mock_tas_account1, mock_tas_account2]
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 200
+    assert response.json() == {"result": [{"username": "username1", "email": "user1@user.com",
+                                           "firstName": "firstName1", "lastName": "commonLastName"},
+                                          {"username": "username2", "email": "user2@user.com",
+                                           "firstName": "firstName2", "lastName": "commonLastName"}]}
