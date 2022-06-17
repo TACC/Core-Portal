@@ -47,8 +47,7 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
-            contentClassName:
-              styles['content--has-list-to-illustrate-scrolling'],
+            contentClassName: 'content--has-list-to-illustrate-scrolling',
             header: 'Milk',
             content: 'Cow, Soy, Nut',
             contentShouldScroll: <code>true</code>,
@@ -75,8 +74,7 @@ function UIPatternsSection() {
           className={styles['term-details']}
           direction="vertical"
           data={{
-            contentClassName:
-              styles['content--has-table-to-illustrate-scrolling'],
+            contentClassName: 'content--has-table-to-illustrate-scrolling',
             header:
               'Section with <SectionTableWrapper> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
@@ -122,8 +120,8 @@ function UIPatternsSection() {
           className={styles['term-details']}
           direction="vertical"
           data={{
-            className: styles['is-resizable'],
-            contentClassName: styles['content--should-always-show-scrollbar'],
+            className: 'is-resizable',
+            contentClassName: 'content--should-always-show-scrollbar',
             header: 'Header',
             content: (
               <>
