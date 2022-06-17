@@ -1653,7 +1653,7 @@ python-versions = "*"
 
 [[package]]
 name = "tapipy"
-version = "1.2.3"
+version = "1.2.5"
 description = "Python lib for interacting with an instance of the Tapis API Framework"
 category = "main"
 optional = false
@@ -2951,8 +2951,8 @@ strict-rfc3339 = [
     {file = "strict-rfc3339-0.7.tar.gz", hash = "sha256:5cad17bedfc3af57b399db0fed32771f18fc54bbd917e85546088607ac5e1277"},
 ]
 tapipy = [
-    {file = "tapipy-1.2.3-py3-none-any.whl", hash = "sha256:b406ed56bd6fdf3e9838e6e7153d4134c7064af38dde80273182b7b1b33ba010"},
-    {file = "tapipy-1.2.3.tar.gz", hash = "sha256:feb1428917700535952dd61bf496b8660fc3ea302644d1d6f0d5073a52e612e2"},
+    {file = "tapipy-1.2.5-py3-none-any.whl", hash = "sha256:ff927d523124985f0e4bc7c40706685b506450fed805726c206117caffb6846f"},
+    {file = "tapipy-1.2.5.tar.gz", hash = "sha256:9406dc85cb8f6711b2a336e98bfab414d02191fdff7edba14a53602363127850"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
