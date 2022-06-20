@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Message } from '_common';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Message } from '_common';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
 
@@ -133,7 +133,7 @@ const DataFilesManageProjectModal = () => {
           ) : null}
           <div className={styles['owner-controls']}>
             {isOwner ? (
-              <Button color="link" onClick={toggleTransferMode}>
+              <Button type="link" onClick={toggleTransferMode}>
                 <h6 className={styles['ownership-toggle']}>
                   {transferMode
                     ? 'Cancel Change Ownership'

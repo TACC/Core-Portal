@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { LoadingSpinner, Message } from '_common';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Message } from '_common';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
 
 const DataFilesProjectEditDescriptionModal = () => {
@@ -116,11 +116,12 @@ const DataFilesProjectEditDescriptionModal = () => {
                   </Message>
                 )}
                 <Button
-                  type="submit"
-                  className={`data-files-btn ${styles['update-button']}`}
-                  disabled={isUpdating || !isValid || !dirty}
+                  attr="submit"
+                  type="primary"
+                  size="long"
+                  disabled={!isValid || !dirty}
+                  isLoading={isUpdating}
                 >
-                  {isUpdating && <LoadingSpinner placement="inline" />}
                   Update Changes
                 </Button>
               </div>

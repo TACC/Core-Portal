@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import Icon from '../Icon';
 import styles from './TextCopyField.module.scss';
 
@@ -34,22 +34,16 @@ const TextCopyField = ({ value, placeholder }) => {
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <Button
-            className={`${styles['copy-button']} ${
-              isCopied ? styles['is-copied'] : ''
-            }`}
             // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
             //      - `data-attribute` and `attr()` (pending browser support)
             //      - PostCSS and JSON variables (pending greater need for this)
-            style={{ '--transition-duration': `${transitionDuration}s` }}
+            //style={{ '--transition-duration': `${transitionDuration}s` }}
             onClick={onCopy}
             disabled={isEmpty}
-            type="button"
+            type="primary"
+            iconNameBefore={isCopied ? 'approved-reverse' : 'link'}
           >
-            <Icon
-              name={isCopied ? 'approved-reverse' : 'link'}
-              className={styles['button__icon']}
-            />
-            <span className={styles['button__text']}>Copy</span>
+            Copy
           </Button>
         </CopyToClipboard>
       </div>

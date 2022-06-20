@@ -16,12 +16,12 @@ export const ToolbarButton = ({
 }) => {
   const iconClassName = `icon-action icon-${iconName}`;
   return (
-    <Button 
-    iconNameBefore={iconClassName} 
-    size={['Compress','Download'].includes(text) ? 'long' : 'medium'} 
-    type={text === 'Empty' ? 'primary' : 'secondary'}
-    disabled={disabled} 
-    onClick={onClick} 
+    <Button
+      iconNameBefore={iconClassName}
+      size={['Compress', 'Download'].includes(text) ? 'long' : 'medium'}
+      type={text === 'Empty' ? 'primary' : 'secondary'}
+      disabled={disabled}
+      onClick={onClick}
     >
       {text}
     </Button>
