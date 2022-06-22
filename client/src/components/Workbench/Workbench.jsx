@@ -17,6 +17,7 @@ import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import './Workbench.scss';
+import '../../index.css'
 
 function Workbench() {
   const { path } = useRouteMatch();
