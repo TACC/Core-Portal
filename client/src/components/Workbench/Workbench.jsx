@@ -17,7 +17,8 @@ import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import './Workbench.scss';
-import '../../index.css'
+// Core Styles needs to be imported last for Rollup to compile the CSS correctly.
+import '../../index.css';
 
 function Workbench() {
   const { path } = useRouteMatch();
