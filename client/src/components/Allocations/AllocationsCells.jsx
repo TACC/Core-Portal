@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { shape, arrayOf, number, string } from 'prop-types';
-import { Button, Badge } from 'reactstrap';
+import { Badge } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { AllocationsTeamViewModal } from './AllocationsModals';
@@ -13,28 +14,28 @@ const CELL_PROPTYPES = {
 
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
-  const [openModal, setOpenModal] = useState(false);
-  const { projectId } = value;
+  const [teamModal, setTeamModal] = useState(false);
+  const { projectId, name } = value;
   return (
     <>
       <Button
-        className="btn btn-sm"
-        color="link"
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
             payload: { ...value },
           });
-          setOpenModal(true);
+          setTeamModal(true);
         }}
-        disabled={openModal}
+        size="small"
+        disabled={teamModal}
       >
         View Team
       </Button>
       <AllocationsTeamViewModal
-        isOpen={openModal}
-        pid={projectId}
-        toggle={() => setOpenModal(!openModal)}
+        isOpen={teamModal}
+        projectId={projectId}
+        toggle={() => setTeamModal(!teamModal)}
+        projectName={name}
       />
     </>
   );

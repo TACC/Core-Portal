@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.17.0] - 2022-06-14: Admin Messages; Member Roles for Shared Workspaces
+
+### Added
+
+- FP-1643: Toggle allocations setting (#643)
+- FP-1534: Cortal v1.4 (#632)
+- FP-1375: Admin controlled messages (#615)
+
+### Changed
+
+- FP-1653: Order onboarding admin view users by date_joined, descending (#642)
+- FP-1647: Use Core-Styles (#639)
+- FP-1596: Pagination Using Button Component (#631)
+- FP-1131: Add Member role to shared workspace (frontend) (#597)
+
+### Fixed
+
+- FP-1677: Update (Fix) Button Styles (#654)
+- Fix Allocations Table Cell Content Alignment (#648)
+- FP-1321: Reindex job archive path. (#644)
+
 ## [2.16.0] - 2022-05-17: Hook library; Dynamic App Form Updates; Styling
 
 ### Added
@@ -660,7 +681,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.16.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.17.0...HEAD
+[2.17.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.17.0
 [2.16.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.16.0
 [2.15.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.15.0
 [2.14.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.14.0

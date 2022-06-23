@@ -61,3 +61,14 @@ Styleguide Components.Bootstrap.Modal
   font-size: 1.5rem; /* bigger to match header text font height (like design) */
   font-family: Cortal-Icons !important;
 }
+
+.modal-header.has-MuiTabs {
+  flex-direction: row;
+  position: relative;
+  height: 63.5px;
+  border-bottom: 1px solid #afafaf;
+  padding: 5px;
+}
+.modal-header.has-MuiTabs .close {
+  transform: translate(-25%, 25%);
+}

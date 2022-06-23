@@ -194,7 +194,7 @@ Message.defaultProps = {
   ariaLabel: 'message',
   className: '',
   canDismiss: false,
-  dataTestid: '',
+  dataTestid: undefined,
   isVisible: true,
   onDismiss: () => {},
   scope: '', // RFE: Require scope; remove this line
