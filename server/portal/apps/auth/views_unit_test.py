@@ -21,7 +21,7 @@ def test_auth_tapis(client, mocker):
     assert client.session['auth_state'] == TEST_STATE
 
 
-def test_tapis_callback(client, mocker, regular_user):
+def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     mock_authenticate = mocker.patch('portal.apps.auth.views.authenticate')
     mock_tapis_token_post = mocker.patch('portal.apps.auth.views.requests.post')
     mock_launch_setup_checks = mocker.patch('portal.apps.auth.views.launch_setup_checks')
@@ -31,11 +31,7 @@ def test_tapis_callback(client, mocker, regular_user):
     session['auth_state'] = TEST_STATE
     session.save()
 
-    mock_tapis_token_post.return_value.json.return_value = {
-        "access_token": "4c8728a095934e10a642ad8371fcbe",
-        "expires_in": 12457,
-        "refresh_token": "d6ede1effb7be9c3efd7feba5f5af6"
-    }
+    mock_tapis_token_post.return_value.json.return_value = tapis_tokens_create_mock
     mock_tapis_token_post.return_value.status_code = 200
     mock_authenticate.return_value = regular_user
 

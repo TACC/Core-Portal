@@ -142,6 +142,11 @@ def agave_listing_mock():
 
 
 @pytest.fixture
+def tapis_tokens_create_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/auth/create-tokens-response.json')))
+
+
+@pytest.fixture
 def text_file_fixture():
     with tempfile.TemporaryDirectory() as temp_directory:
         filename = os.path.join(temp_directory, "text_file.txt")

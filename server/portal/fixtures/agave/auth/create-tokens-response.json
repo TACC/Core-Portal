@@ -1,0 +1,20 @@
+{
+    "message": "Token created successfully.",
+    "metadata": {},
+    "result": {
+        "access_token": {
+            "access_token": "accesstoken",
+            "expires_at": "2022-04-13T23:15:35.381461+00:00",
+            "expires_in": 14400,
+            "jti": "ed11303e-0e91-4e1a-b0b7-ea8227000152"
+        },
+        "refresh_token": {
+            "expires_at": "2023-04-13T19:15:35.392882+00:00",
+            "expires_in": 31536000,
+            "jti": "fc91bd7b-b5fb-4570-aaf5-52ca4fb6517a",
+            "refresh_token": "refreshtoken"
+        }
+    },
+    "status": "success",
+    "version": "dev"
+}
