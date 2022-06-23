@@ -19,7 +19,7 @@ class TapisOAuthBackend(ModelBackend):
             token = kwargs['token']
 
             logger.info('Attempting login via Tapis with token "%s"' %
-                             token[:8].ljust(len(token), '-'))
+                        token[:8].ljust(len(token), '-'))
 
             response = requests.get(f"{settings.TAPIS_TENANT_BASE_URL}/v3/oauth2/userinfo", headers={"X-Tapis-Token": token})
             json_result = response.json()
@@ -35,7 +35,7 @@ class TapisOAuthBackend(ModelBackend):
                     user.save()
                 except UserModel.DoesNotExist:
                     logger.info('Creating local user record for "%s" '
-                                     'from Tapis Profile' % username)
+                                'from Tapis Profile' % username)
                     user = UserModel.objects.create_user(
                         username=username,
                         first_name=tapis_user['given_name'],
