@@ -43,7 +43,7 @@ const getContents = (step) => {
     case 'processing':
       return (
         <span className={styles.processing}>
-          <Pill type={type}>Processing</Pill>
+          <Pill shouldTruncate={false} type={type}>Processing</Pill>
           <LoadingSpinner
             placement="inline"
             className="onboarding-status__loading"
