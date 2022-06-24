@@ -13,7 +13,7 @@ def test_auth_tapis(client, mocker):
 
     response = client.get("/auth/tapis/", follow=False)
 
-    tapis_authorize = "{}/authorize?client_id=test&response_type=code&redirect_uri=https://testserver/auth/tapis/callback/&state={}".format(
+    tapis_authorize = "{}/v3/oauth2/authorize?client_id=test&redirect_uri=http://testserver/auth/tapis/callback/&response_type=code&state={}".format(
         settings.TAPIS_TENANT_BASEURL, TEST_STATE)
 
     assert response.status_code == 302
