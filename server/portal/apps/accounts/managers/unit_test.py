@@ -119,6 +119,9 @@ class TestUserSetup(TestCase):
 
         self.mock_user = get_user_model().objects.get(username="username")
 
+        self.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
+        self.mock_client = self.mock_client_patcher.start()
+
         # check_user function should be faked
         self.mock_user.profile.setup_complete = False
         self.mock_check_user_patcher = patch('portal.apps.accounts.managers.accounts.check_user', return_value=self.mock_user)
