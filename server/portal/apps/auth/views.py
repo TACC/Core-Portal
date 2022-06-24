@@ -48,7 +48,7 @@ def tapis_oauth(request):
 
     redirect_uri = f"{protocol}://{request.get_host()}{reverse('portal_auth:tapis_oauth_callback')}"
 
-    tenant_base_url = getattr(settings, 'TAPIS_TENANT_BASE_URL')
+    tenant_base_url = getattr(settings, 'TAPIS_TENANT_BASEURL')
     client_id = getattr(settings, 'TAPIS_CLIENT_ID')
 
     METRICS.debug("user:{} starting oauth redirect login".format(request.user.username))
@@ -109,7 +109,7 @@ def tapis_oauth_callback(request):
             'code': code,
             'redirect_uri': redirect_uri,
         }
-        response = requests.post(f"{settings.TAPIS_TENANT_BASE_URL}/v3/oauth2/tokens", data=body, auth=(settings.TAPIS_CLIENT_ID, settings.TAPIS_CLIENT_KEY))
+        response = requests.post(f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/tokens", data=body, auth=(settings.TAPIS_CLIENT_ID, settings.TAPIS_CLIENT_KEY))
         response_json = response.json()
         token_data = {
             'created': int(time.time()),

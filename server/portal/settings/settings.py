@@ -355,7 +355,7 @@ SETTINGS: TAPIS
 """
 
 # Tapis Tenant.
-TAPIS_TENANT_BASE_URL = settings_secret._TAPIS_TENANT_BASE_URL
+TAPIS_TENANT_BASEURL = settings_secret._TAPIS_TENANT_BASEURL
 
 # Tapis Client Configuration
 TAPIS_CLIENT_ID = settings_secret._TAPIS_CLIENT_ID

@@ -80,7 +80,7 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASE_URL'),
+        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
                      client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
                      client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
                      access_token=self.access_token,

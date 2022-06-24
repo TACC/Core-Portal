@@ -35,7 +35,7 @@ _RT_PW = 'password'
 ########################
 
 # Tapis Tenant.
-TAPIS_TENANT_BASE_URL = 'https://example.tapis.io'
+TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 
 # Tapis Client Configuration
 TAPIS_CLIENT_ID = ''

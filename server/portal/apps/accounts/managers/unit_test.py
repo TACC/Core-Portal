@@ -137,7 +137,8 @@ class TestUserSetup(TestCase):
 
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_systems_manager_patcher.stop)
-        self.addCleanup(self.mock_storage_system.stop)
+        self.addCleanup(self.mock_storage_system_patcher.stop)
+        self.addCleanup(self.mock_client_patcher.stop)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_setup_no_preexisting(self):

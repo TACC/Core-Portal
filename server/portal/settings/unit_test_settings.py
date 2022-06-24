@@ -279,7 +279,7 @@ RT_QUEUE = 'test'
 RT_TAG = 'test_tag'
 
 # Tapis Tenant.
-TAPIS_TENANT_BASE_URL = 'https://example.tapis.io'
+TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 
 # Tapis Client Configuration
 TAPIS_CLIENT_ID = 'test'

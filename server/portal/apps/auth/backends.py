@@ -21,7 +21,7 @@ class TapisOAuthBackend(ModelBackend):
             logger.info('Attempting login via Tapis with token "%s"' %
                         token[:8].ljust(len(token), '-'))
 
-            response = requests.get(f"{settings.TAPIS_TENANT_BASE_URL}/v3/oauth2/userinfo", headers={"X-Tapis-Token": token})
+            response = requests.get(f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/userinfo", headers={"X-Tapis-Token": token})
             json_result = response.json()
             if 'status' in json_result and json_result['status'] == 'success':
                 tapis_user = json_result['result']
