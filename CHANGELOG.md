@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - FP-1702: CSS Load Order Differs on Dev vs Local (#665)
+- FP-1539: Fix Undesired `<Pill>` truncation (#666)
 
 ## [2.17.0] - 2022-06-14: Admin Messages; Member Roles for Shared Workspaces
 
