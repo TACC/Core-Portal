@@ -15,7 +15,7 @@ def setup_user(self, username, system):
         :param dict systems: dict of systems from settings
     """
     from portal.apps.accounts.managers.accounts import setup
-    logger.info("Setup task for {username} launched on {system}".format(username=username, system=system))
+    logger.info(f"Setup task for {username} launched on {system}")
     setup(username, system)
 
 

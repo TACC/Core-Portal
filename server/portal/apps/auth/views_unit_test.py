@@ -13,8 +13,8 @@ def test_auth_tapis(client, mocker):
 
     response = client.get("/auth/tapis/", follow=False)
 
-    tapis_authorize = "{}/v3/oauth2/authorize?client_id=test&redirect_uri=http://testserver/auth/tapis/callback/&response_type=code&state={}".format(
-        settings.TAPIS_TENANT_BASEURL, TEST_STATE)
+    tapis_authorize = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/authorize" \
+        f"?client_id=test&redirect_uri=http://testserver/auth/tapis/callback/&response_type=code&state={TEST_STATE}"
 
     assert response.status_code == 302
     assert response.url == tapis_authorize
@@ -35,7 +35,7 @@ def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     mock_tapis_token_post.return_value.status_code = 200
     mock_authenticate.return_value = regular_user
 
-    response = client.get("/auth/tapis/callback/?state={}&code=83163624a0bc41c4a376e0acb16a62f9".format(TEST_STATE))
+    response = client.get(f"/auth/tapis/callback/?state={TEST_STATE}&code=83163624a0bc41c4a376e0acb16a62f9")
     assert response.status_code == 302
     assert response.url == settings.LOGIN_REDIRECT_URL
     assert mock_launch_setup_checks.call_count == 1
@@ -47,7 +47,7 @@ def test_tapis_callback_no_code(client):
     session['auth_state'] = TEST_STATE
     session.save()
 
-    response = client.get("/auth/tapis/callback/?state={}".format(TEST_STATE))
+    response = client.get(f"/auth/tapis/callback/?state={TEST_STATE}")
     assert response.status_code == 302
     assert response.url == reverse('portal_accounts:logout')
 
@@ -57,7 +57,7 @@ def test_tapis_callback_mismatched_state(client):
     session = client.session
     session['auth_state'] = "TEST_STATE"
     session.save()
-    response = client.get("/auth/tapis/callback/?state={}".format('bar'))
+    response = client.get("/auth/tapis/callback/?state=bar")
     assert response.status_code == 400
 
 

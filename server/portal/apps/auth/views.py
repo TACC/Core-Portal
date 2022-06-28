@@ -21,7 +21,7 @@ from portal.apps.search.tasks import index_allocations
 
 
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger('metrics.{}'.format(__name__))
+METRICS = logging.getLogger(f'metrics.{__name__}')
 
 
 def logged_out(request):
@@ -51,7 +51,7 @@ def tapis_oauth(request):
     tenant_base_url = getattr(settings, 'TAPIS_TENANT_BASEURL')
     client_id = getattr(settings, 'TAPIS_CLIENT_ID')
 
-    METRICS.debug("user:{} starting oauth redirect login".format(request.user.username))
+    METRICS.debug(f"user:{request.user.username} starting oauth redirect login")
     # Authorization code request
     authorization_url = (
         f"{tenant_base_url}/v3/oauth2/authorize?"
@@ -131,7 +131,7 @@ def tapis_oauth_callback(request):
             token.save()
 
             login(request, user)
-            METRICS.debug("user:{} successful oauth login".format(user.username))
+            METRICS.debug(f"user:{user.username} successful oauth login")
             launch_setup_checks(user)
         else:
             messages.error(

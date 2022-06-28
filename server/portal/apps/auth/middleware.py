@@ -34,12 +34,12 @@ class TapisTokenRefreshMiddleware(object):
                                 tapis_oauth.client.token.refresh()
                             except HTTPError:
                                 raise Exception(
-                                    'Tapis Token refresh failed; Forcing logout for {}'.format(user.username)
+                                    f'Tapis Token refresh failed; Forcing logout for {user.username}'
                                 )
                 except ObjectDoesNotExist:
-                    raise Exception('Authenticated user {} missing Tapis API Token'.format(user.username))
+                    raise Exception(f'Authenticated user {user.username} missing Tapis API Token')
                 except RequestException:
-                    raise Exception('Tapis Token refresh failed. Forcing logout for {}'.format(user.username))
+                    raise Exception(f'Tapis Token refresh failed. Forcing logout for {user.username}')
 
         except Exception as e:
             logger.exception(e)
