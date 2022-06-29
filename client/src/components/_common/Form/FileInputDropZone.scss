@@ -11,6 +11,7 @@
   align-items: center;
 
   .icon.icon-upload {
+    /* This rule needs the additional '.icon' in order for it to be picked up first both in dev and prod (see Core-Portal PR #667)*/
     color: #70707026;
     display: flex;
     font-size: 12rem;
