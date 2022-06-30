@@ -251,13 +251,13 @@ class InteractiveWebhookView(BaseApiView):
             host = request.POST.get('host', '')
             port = request.POST.get('port', '')
             password = request.POST.get('password', '')
-            address = request.POST.get('address', '')
             job_uuid = password
 
             target_uri = \
-                'https://{host}/no-vnc/vnc.html?'\
-                'hostname={host}&port={port}&autoconnect=true&password={pw}' \
+                'https://tap.tacc.utexas.edu/noVNC/?'\
+                'host={host}&port={port}&autoconnect=true&encrypt=true&resize=scale&password={pw}' \
                 .format(host=host, port=port, pw=password)
+
             event_data = {
                 Notification.EVENT_TYPE: 'interactive_session_ready',
                 Notification.STATUS: Notification.INFO,
