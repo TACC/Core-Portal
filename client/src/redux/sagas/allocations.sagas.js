@@ -251,9 +251,8 @@ export function* getUsernamesManage(action) {
  */
 export const searchUsersUtil = async (term) => {
   const res = await fetchUtil({
-    url: '/api/users/tas-users',
+    url: '/api/users/tas-users/',
     params: { search: term },
-    init: { fetchParams: null },
   });
   const json = res.result;
   return json;
