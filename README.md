@@ -61,7 +61,7 @@ OR
     docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
-#### Install client-side dependencies and bundle code with webpack:
+#### Install client-side dependencies and bundle code:
 
     cd client
     npm ci
