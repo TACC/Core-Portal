@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import LoadingSpinner from '_common/LoadingSpinner';
 import { QueryClient, QueryClientProvider } from 'react-query';
 const AppRouter = React.lazy(() => import('./components/Workbench'));
-import './index.css';
 import store from './redux/store';
 
 const queryClient = new QueryClient();
