@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button,
   CardHeader,
   CardBody,
   Card,
@@ -21,6 +20,7 @@ import * as Yup from 'yup';
 
 import { formatDateTime } from 'utils/timeFormat';
 import {
+  Button,
   FormField,
   FileInputDropZoneFormField,
   LoadingSpinner,
@@ -166,8 +166,8 @@ function TicketHistoryReply({ ticketId }) {
                 <Message type="error">Something went wrong.</Message>
               )}
               <Button
-                type="submit"
-                color="primary"
+                attr="submit"
+                type="primary"
                 disabled={
                   !isValid ||
                   isSubmitting ||
@@ -175,8 +175,9 @@ function TicketHistoryReply({ ticketId }) {
                   gettingTicketHistory ||
                   loadingError
                 }
+                isLoading={isReplying}
               >
-                {isReplying && <Spinner size="sm" color="white" />} Reply
+                Reply
               </Button>
             </FormGroup>
           </Form>
