@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, FormGroup } from 'reactstrap';
+import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
 import { cloneDeep } from 'lodash';
 import {
+  Button,
   AppIcon,
   FormField,
   Icon,
@@ -633,18 +634,18 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary" disabled={!isValid}>
-                  {jobSubmission.submitting && (
-                    <LoadingSpinner placement="inline" />
-                  )}{' '}
-                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
-                  <span>Submit</span>
-                </Button>
                 <Button
-                  onClick={handleReset}
-                  className="btn-resetForm"
-                  color="link"
+                  attr="submit"
+                  size="medium"
+                  type="primary"
+                  disabled={!isValid}
+                  isLoading={jobSubmission.submitting}
+                  iconNameBefore={jobSubmission.error ? 'alert' : null}
                 >
+                  Submit
+                </Button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Button onClick={handleReset} type="link">
                   <h6>Reset Fields to Defaults</h6>
                 </Button>
               </FormGroup>
