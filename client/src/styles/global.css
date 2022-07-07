@@ -2,7 +2,7 @@
 /* SEE: ./README.md */
 
 /* SETTINGS */
-@import url('@tacc/core-styles/source/_imports/settings/border.css');
+@import url('@tacc/core-styles/src/lib/_imports/settings/border.css');
 @import url('./settings/color.css');
 @import url('./settings/font.css');
 @import url('./settings/space.css');
@@ -19,7 +19,7 @@
 
 /* OBJECTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
-@import url('@tacc/core-styles/source/_imports/objects/o-flex-item-table-wrap.css');
+@import url('@tacc/core-styles/src/lib/_imports/objects/o-flex-item-table-wrap.css');
 @import url('./objects/o-fixed-header-table.css');
 
 /* COMPONENTS */
