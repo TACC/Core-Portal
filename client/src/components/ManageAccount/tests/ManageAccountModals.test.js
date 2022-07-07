@@ -76,12 +76,12 @@ describe('various valid input phone numbers and email addresses', () => {
       const storeWithFields = mockStore({ profile: stateWithFields });
       stateWithFields['data']['demographics']['phone'] = phoneNumber;
       stateWithFields['data']['demographics']['email'] = email;
-      const { getByLabelText, queryByText } = render(
+      const { getByText, queryByText } = render(
         <Provider store={storeWithFields}>
           <EditRequiredInformationModal />
         </Provider>
       );
-      const submitButton = getByLabelText(/required-submit/);
+      const submitButton = getByText(/Submit/);
       const clickSpy = jest.spyOn(submitButton, 'click');
       fireEvent.click(submitButton);
       await waitFor(() => {
@@ -257,9 +257,7 @@ describe('Edit Optional Information', () => {
       expect(getByText(label)).toBeDefined();
     });
 
-    const submitButton = getByLabelText(
-      /edit-optional-information-submit-button/
-    );
+    const submitButton = getByText(/Submit/);
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
@@ -405,7 +403,7 @@ describe('Edit Required Information', () => {
         <EditRequiredInformationModal />
       </Provider>
     );
-    const submitButton = getByLabelText(/required-submit/);
+    const submitButton = getByText(/Submit/);
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
 

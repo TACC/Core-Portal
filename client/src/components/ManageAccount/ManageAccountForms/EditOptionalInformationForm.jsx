@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
-import { LoadingSpinner } from '_common';
+import { Button, LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 export default function () {
@@ -64,12 +63,12 @@ export default function () {
           aria-label="bio"
         />
         <Button
-          type="submit"
-          className="manage-account-submit-button"
-          aria-label="edit-optional-information-submit-button"
+          attr="submit"
+          type="primary"
+          size="medium"
+          isLoading={isEditing}
         >
-          {isEditing && <LoadingSpinner placement="inline" />}
-          <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
+          Submit
         </Button>
       </Form>
     </Formik>
