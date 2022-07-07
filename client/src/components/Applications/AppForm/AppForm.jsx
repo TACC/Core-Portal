@@ -187,6 +187,16 @@ export const AppSchemaForm = ({ app }) => {
             maxCardinality: 10
           }
         }
+      ],
+      parameters: [
+        {
+          ...app.definition.parameters[0],
+          semantics: {
+            ...app.definition.parameters[0].semantics,
+            minCardinality: 1,
+            maxCardinality: 10
+          }
+        }
       ] 
     }
   };
@@ -509,7 +519,7 @@ export const AppSchemaForm = ({ app }) => {
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
-              <FormGroup tag="fieldset">
+              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Inputs</span>
@@ -656,7 +666,7 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary" disabled={!isValid}>
+                <Button type="submit" color="primary" disabled={isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}

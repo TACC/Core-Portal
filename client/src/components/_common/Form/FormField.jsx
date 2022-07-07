@@ -65,24 +65,29 @@ const FormField = ({
   const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
   props.type = 'array';
   const { id, name, multiInput, maxitems, minitems } = props;
-  const [inputItems, setInputItems] = useState([{id: 0}]);
-  const [inputItemCounter, setInputItemCounter] = useState(0);
+
+  const [inputItems, setInputItems] = useState(() => {
+    return [...Array(minitems).keys()];
+  });
 
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
 
   const addInputItem = () => {
-    console.log("happen")
-    let newInputItem = {
-      id: inputItemCounter
-    };
-    setInputItems([...inputItems, newInputItem]);
-    setInputItems(setInputItemCounter(inputItemCounter++));
+    if (maxitems > inputItems.length) {
+      setInputItems([
+        ...inputItems, 
+        {
+          id: Date.now()
+        }
+      ]);
+    }
   };
 
   const deleteInputItem = (inputItem) => {
-    setInputItems(inputItems.filter(ii => ii.id != inputItem.id));
-    setInputItems(setInputIdCounter(inputItemCounter--));
+    if (minitems < inputItems.length) {
+      setInputItems(inputItems.filter(ii => ii.id != inputItem.id));
+    }
   };
 
   const FieldLabel = () => (
@@ -154,8 +159,19 @@ const FormField = ({
     ) : (
         <>
           {hasAddon && addonType === 'prepend' ? addon : null}
-          <Input {...field} {...props} bsSize="sm" />
-          lskdflkjsdkljf
+          <InputGroup>
+            <Input {...field} {...props} bsSize="sm" />
+            <InputGroupAddon addonType="append">
+              <Button
+                size="sm"
+                color="secondary"
+                type="button"
+                onClick={() => deleteInputItem(id)}
+              >
+                X
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
           {hasAddon && addonType === 'append' ? addon : null}
           </>
       )
@@ -183,7 +199,7 @@ const FormField = ({
     <>
       {inputItems.map(inputItem => {
         return (
-          <div>
+          <div className="multi-form-field">
             <FormInput id={inputItem}/>
           </div>
         )
