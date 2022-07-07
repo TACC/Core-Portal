@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
-import { Icon } from '_common';
+import { Button, Icon } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './OnboardingAdminSearchbar.module.scss';
@@ -50,12 +49,13 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
           <Button
-            type="submit"
-            className={styles['submit-button']}
+            attr="submit"
+            type="secondary"
+            size="medium"
             disabled={disabled}
+            iconNameBefore="search"
           >
-            <Icon name="search" className={styles['button__icon']} />
-            <span className={styles['button__text']}>Search</span>
+            Search
           </Button>
         </div>
         <input

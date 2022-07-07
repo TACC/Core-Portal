@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { LoadingSpinner, Message } from '_common';
-import { Button } from 'reactstrap';
+import { Button, LoadingSpinner, Message } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
@@ -54,16 +53,14 @@ const OnboardingActions = ({ step }) => {
       {isStaff && step.state === 'staffwait' ? (
         <>
           <Button
-            color="link"
-            className={styles.action}
+            type="link"
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
             {step.staffApprove}
           </Button>
           <Button
-            color="link"
-            className={styles.action}
+            type="link"
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
           >
@@ -73,8 +70,7 @@ const OnboardingActions = ({ step }) => {
       ) : null}
       {step.state === 'userwait' ? (
         <Button
-          color="link"
-          className={styles.action}
+          type="link"
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >
@@ -84,16 +80,15 @@ const OnboardingActions = ({ step }) => {
       {isStaff ? (
         <>
           <Button
-            color="link"
-            className={styles.action}
+            type="link"
             disabled={isSending}
             onClick={() => actionCallback('reset', username)}
           >
             Admin Reset
           </Button>
+          &nbsp;&nbsp;&nbsp;
           <Button
-            color="link"
-            className={styles.action}
+            type="link"
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}
           >

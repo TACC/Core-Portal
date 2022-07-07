@@ -1,13 +1,13 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  Button,
   Icon,
   LoadingSpinner,
   SectionMessage,
   Message,
   Paginator,
 } from '_common';
-import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
@@ -21,34 +21,24 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
     <div className={styles['approve-container']}>
       <Button
-        className={`c-button--secondary ${styles.approve}`}
+        type="secondary"
+        size="medium"
+        iconNameBefore="approved-reverse"
         onClick={() => callback('staff_approve')}
         disabled={disabled}
+        isLoading={action === 'staff_approve'}
       >
-        {action === 'staff_approve' ? (
-          <LoadingSpinner
-            placement="inline"
-            className="onboarding-admin__action-spinner"
-          />
-        ) : (
-          <Icon name="approved-reverse" />
-        )}
-        <>Approve</>
+        Approve
       </Button>
       <Button
-        className={`c-button--secondary ${styles.approve}`}
+        type="secondary"
+        size="medium"
+        iconNameBefore="denied-reverse"
         onClick={() => callback('staff_deny')}
         disabled={disabled}
+        isLoading={action === 'staff_approve'}
       >
-        {action === 'staff_approve' ? (
-          <LoadingSpinner
-            placement="inline"
-            className="onboarding-admin__action-spinner"
-          />
-        ) : (
-          <Icon name="denied-reverse" />
-        )}
-        <>Deny</>
+        Deny
       </Button>
     </div>
   );
@@ -69,32 +59,20 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
   return (
     <div className={styles.reset}>
       <Button
-        color="link"
-        className={styles['action-link']}
+        type="link"
         onClick={() => callback('reset')}
+        isLoading={action === 'reset'}
         disabled={disabled}
       >
-        {action === 'reset' && (
-          <LoadingSpinner
-            placement="inline"
-            className="onboarding-admin__action-spinner"
-          />
-        )}
         Reset
       </Button>
-      <>|</>
+      <> | </>
       <Button
-        color="link"
-        className={styles['action-link']}
+        type="link"
         disabled={disabled || disableSkip}
         onClick={() => callback('complete')}
+        isLoading={action === 'complete'}
       >
-        {action === 'complete' && (
-          <LoadingSpinner
-            placement="inline"
-            className="onboarding-admin__action-spinner"
-          />
-        )}
         Skip
       </Button>
     </div>
@@ -191,11 +169,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             />
           </td>
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <Button
-              color="link"
-              className={styles['action-link']}
-              onClick={() => viewLogCallback(user, step)}
-            >
+            <Button type="link" onClick={() => viewLogCallback(user, step)}>
               View Log
             </Button>
           </td>
