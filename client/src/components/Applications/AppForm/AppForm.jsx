@@ -174,6 +174,25 @@ AppInfo.propTypes = {
 };
 
 export const AppSchemaForm = ({ app }) => {
+  app = {
+    ...app,
+    definition: {
+      ...app.definition,
+      inputs: [
+        {
+          ...app.definition.inputs[0],
+          semantics: {
+            ...app.definition.inputs[0].semantics,
+            minCardinality: 1,
+            maxCardinality: 10
+          }
+        }
+      ] 
+    }
+  };
+  console.log(app)
+
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
@@ -236,6 +255,7 @@ export const AppSchemaForm = ({ app }) => {
     });
   };
 
+  // TODO HERE
   const appFields = FormSchema(app);
 
   // initial form values
@@ -424,40 +444,41 @@ export const AppSchemaForm = ({ app }) => {
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          const job = cloneDeep(values);
-          /* remove falsy input */
-          Object.entries(job.inputs).forEach(([k, v]) => {
-            let val = v;
-            if (Array.isArray(val)) {
-              val = val.filter(Boolean);
-              if (val.length === 0) {
-                delete job.inputs[k];
-              }
-            } else if (!val) {
-              delete job.inputs[k];
-            }
-          });
-          /* remove falsy parameter */
-          // TODO: allow falsy parameters for parameters of type bool
-          // Object.entries(job.parameters).forEach(([k, v]) => {
+          console.log(values)
+          // const job = cloneDeep(values);
+          // /* remove falsy input */
+          // Object.entries(job.inputs).forEach(([k, v]) => {
           //   let val = v;
-          //   if (Array.isArray(v)) {
+          //   if (Array.isArray(val)) {
           //     val = val.filter(Boolean);
           //     if (val.length === 0) {
-          //       delete job.parameters[k];
+          //       delete job.inputs[k];
           //     }
-          //   } else if (val === null || val === undefined) {
-          //     delete job.parameters[k];
+          //   } else if (!val) {
+          //     delete job.inputs[k];
           //   }
           // });
-          /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
-          if (app.definition.tags.includes('DCV')) {
-            job.name += '-dcvserver';
-          }
-          dispatch({
-            type: 'SUBMIT_JOB',
-            payload: job,
-          });
+          // /* remove falsy parameter */
+          // // TODO: allow falsy parameters for parameters of type bool
+          // // Object.entries(job.parameters).forEach(([k, v]) => {
+          // //   let val = v;
+          // //   if (Array.isArray(v)) {
+          // //     val = val.filter(Boolean);
+          // //     if (val.length === 0) {
+          // //       delete job.parameters[k];
+          // //     }
+          // //   } else if (val === null || val === undefined) {
+          // //     delete job.parameters[k];
+          // //   }
+          // // });
+          // /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
+          // if (app.definition.tags.includes('DCV')) {
+          //   job.name += '-dcvserver';
+          // }
+          // dispatch({
+          //   type: 'SUBMIT_JOB',
+          //   payload: job,
+          // });
         }}
       >
         {({
@@ -488,22 +509,24 @@ export const AppSchemaForm = ({ app }) => {
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
-              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
+              <FormGroup tag="fieldset">
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Inputs</span>
                   </div>
                   {Object.entries(appFields.inputs).map(([id, field]) => {
-                    return (
-                      <FormField
-                        {...field}
-                        name={`inputs.${id}`}
-                        agaveFile
-                        SelectModal={DataFilesSelectModal}
-                        placeholder="Browse Data Files"
-                        key={`inputs.${id}`}
-                      />
-                    );
+                      return (
+                        <>
+                          <FormField
+                            {...field}
+                            name={`inputs.${id}`}
+                            agaveFile
+                            SelectModal={DataFilesSelectModal}
+                            placeholder="Browse Data Files"
+                            key={`inputs.${id}`}
+                            />
+                        </>
+                      );
                   })}
                   {Object.entries(appFields.parameters).map(([id, field]) => {
                     return (
