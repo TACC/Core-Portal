@@ -49,6 +49,9 @@
 
 .input {
   composes: form-control from '../../../styles/components/bootstrap.form.css';
+  height: calc(
+    1.5em + 0.75rem + 2.828px
+  ); /* used to match height of _common button standard height */
 }
 .output {
   /* … */

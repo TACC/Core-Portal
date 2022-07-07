@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
 
 import { Icon } from '_common';
@@ -29,10 +29,11 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button className={styles.link} color="link" onClick={onClick}>
-      <Icon className={styles['link-icon']} name="nav-left" />
-      <span className={styles['path']}>Back</span>
-    </Button>
+    <div className={styles['link']}>
+      <Button type="link" iconNameBefore="nav-left" onClick={onClick}>
+        Back
+      </Button>
+    </div>
   );
 };
 BackLink.propTypes = {
@@ -111,11 +112,7 @@ const DataFilesModalButtonCell = ({
   return (
     formatSupportsOperation && (
       <span>
-        <Button
-          disabled={disabled}
-          className="float-right data-files-btn"
-          onClick={onClick}
-        >
+        <Button type="primary" disabled={disabled} onClick={onClick}>
           {operationName}
         </Button>
       </span>

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'reactstrap';
 import queryString from 'query-string';
-import { Icon } from '_common';
+import { Button, Icon } from '_common';
 
 import styles from './DataFilesProjectsSearchbar.module.css';
 
@@ -29,9 +28,13 @@ const DataFilesProjectsSearchbar = () => {
     <form aria-label="search" className={styles.container} onSubmit={onSubmit}>
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" className={styles['submit-button']}>
-            <Icon name="search" className={styles['button__icon']} />
-            <span className={styles['button__text']}>Search</span>
+          <Button
+            attr="submit"
+            type="secondary"
+            iconNameBefore="search"
+            size="medium"
+          >
+            Search
           </Button>
         </div>
         <input
