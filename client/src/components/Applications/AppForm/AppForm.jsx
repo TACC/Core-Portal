@@ -294,7 +294,7 @@ export const AppSchemaForm = ({ app }) => {
   }
   return (
     <div id="appForm-wrapper">
-      {/* The !! is needed because the second value of this shorthand 
+      {/* The !! is needed because the second value of this shorthand
           is interpreted as a literal 0 if not. */}
       {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
@@ -450,9 +450,12 @@ export const AppSchemaForm = ({ app }) => {
           //     delete job.parameters[k];
           //   }
           // });
-          /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
+          /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
           if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
+          }
+          if (app.definition.tags.includes('VNC')) {
+            job.name += 'tap_';
           }
           dispatch({
             type: 'SUBMIT_JOB',

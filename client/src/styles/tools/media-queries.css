@@ -1,4 +1,4 @@
-@import url('@tacc/core-styles/source/_imports/tools/media-queries.css');
+@import url('@tacc/core-styles/src/lib/_imports/tools/media-queries.css');
 
 @custom-media --short-and-below (width < 634px);
 @custom-media --short-and-above (width >= 634px);
