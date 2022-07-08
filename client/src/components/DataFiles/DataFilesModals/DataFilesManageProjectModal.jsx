@@ -106,7 +106,7 @@ const DataFilesManageProjectModal = () => {
   return (
     <div className={styles.root}>
       <Modal
-        size="lg"
+        size="xl"
         isOpen={isOpen}
         toggle={toggle}
         className="dataFilesModal"
@@ -132,7 +132,7 @@ const DataFilesManageProjectModal = () => {
             </div>
           ) : null}
           <div className={styles['owner-controls']}>
-            {isOwner ? (
+            {isOwner && members.length > 1 ? (
               <Button color="link" onClick={toggleTransferMode}>
                 <h6 className={styles['ownership-toggle']}>
                   {transferMode
