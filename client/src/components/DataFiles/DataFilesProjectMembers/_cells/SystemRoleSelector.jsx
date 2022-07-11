@@ -91,7 +91,7 @@ const SystemRoleSelector = ({ projectId, username }) => {
           <option value="ADMIN">Administrator</option>
         )}
         <option value="USER">User (read/write)</option>
-        <option value="GUEST">Guest (read-only)</option>
+        <option value="GUEST">Guest (read only)</option>
       </DropdownSelector>
       {data.role !== selectedRole && !isFetching && (
         <Button
