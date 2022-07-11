@@ -51,7 +51,7 @@ const SystemRoleSelector = ({ projectId, username }) => {
     OWNER: 'Owner',
     ADMIN: 'Administrator',
     USER: 'User (read/write)',
-    GUEST: 'Guest (read-only',
+    GUEST: 'Guest (read-only)',
   };
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username

@@ -52,6 +52,9 @@ const DataFilesManageProjectModal = () => {
     [projectId, dispatch]
   );
 
+  const onOpen = () =>
+    dispatch({ type: 'PROJECTS_SET_MEMBER_RESET', payload: {} });
+
   const onRemove = useCallback(
     (removedUser) => {
       dispatch({
@@ -108,6 +111,7 @@ const DataFilesManageProjectModal = () => {
       <Modal
         size="xl"
         isOpen={isOpen}
+        onOpened={onOpen}
         toggle={toggle}
         className="dataFilesModal"
       >
