@@ -53,7 +53,7 @@ function FileInputDropZone({
       <input {...getInputProps()} />
       {!showFileList && (
         <div className="no-attachment-view">
-          <i className="icon-upload" />
+          <i className="icon icon-upload" />
           <br />
           <Button type="secondary" size="medium" onClick={open}>
             Select File(s)
