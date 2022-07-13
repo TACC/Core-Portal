@@ -139,17 +139,8 @@ const FormSchema = (app) => {
       required: input.value.required,
     };
 
-    field.multiinput = false;
-    if (input.semantics.maxCardinality > 1) {
-      field.multiinput = true;
-      field.maxitems = input.semantics.maxCardinality;
-      field.minitems = input.semantics.minCardinality;
-    }
-
     field.type = 'text';
-    appFields.schema.inputs[input.id] = field.multiinput
-      ? Yup.array().of(Yup.string())
-      : Yup.string();
+    appFields.schema.inputs[input.id] = Yup.string();
     if (input.value.required) {
       appFields.schema.inputs[input.id] =
         appFields.schema.inputs[input.id].required('Required');
@@ -171,6 +162,14 @@ const FormSchema = (app) => {
       input.value.default === null || typeof input.value.default === 'undefined'
         ? ''
         : input.value.default;
+
+    field.multiinput = false;
+    if (input.semantics.maxCardinality > 1) {
+      field.multiinput = true;
+      field.maxitems = input.semantics.maxCardinality;
+      field.minitems = input.semantics.minCardinality;
+      appFields.schema.inputs[input.id] = Yup.array().of(Yup.string());
+    }
   });
   return appFields;
 };
