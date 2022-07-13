@@ -8,6 +8,19 @@ const FormSchema = (app) => {
     schema: { inputs: {}, parameters: {} },
   };
 
+  Yup.addMethod(Yup.array, 'oneOfSchemas', function (schemas) {
+    return this.test(
+      'one-of-schemas',
+      'Not all items in ${path} match one of the allowed schemas',
+      (items) =>
+        items.every((item) => {
+          return schemas.some((schema) =>
+            schema.isValidSync(item, { strict: true })
+          );
+        })
+    );
+  });
+
   (app.definition.parameters || []).forEach((parameter) => {
     const param = parameter;
     if (!param.value.visible || param.id.startsWith('_')) {
@@ -25,29 +38,51 @@ const FormSchema = (app) => {
       required: param.value.required,
     };
 
+    field.multiinput = false;
+    if (param.semantics.maxCardinality > 1) {
+      field.multiinput = true;
+      field.maxitems = param.semantics.maxCardinality;
+      field.minitems = param.semantics.minCardinality;
+    }
+
     switch (param.value.type) {
       case 'bool':
       case 'flag':
         field.type = 'checkbox';
         field.checked = param.value.default || false;
-        appFields.schema.parameters[param.id] = Yup.boolean();
+        appFields.schema.parameters[param.id] = field.multiinput
+          ? Yup.array().of(Yup.boolean())
+          : Yup.boolean();
         break;
 
       case 'enumeration':
         field.type = 'select';
         field.options = param.value.enum_values;
-        appFields.schema.parameters[param.id] = Yup.string().oneOf(
-          field.options.map((enumVal) => {
-            if (typeof enumVal === 'string') {
-              return enumVal;
-            }
-            return Object.keys(enumVal)[0];
-          })
-        );
+        appFields.schema.parameters[param.id] = field.multiinput
+          ? Yup.array().of(
+              Yup.string().oneOf(
+                field.options.map((enumVal) => {
+                  if (typeof enumVal === 'string') {
+                    return enumVal;
+                  }
+                  return Object.keys(enumVal)[0];
+                })
+              )
+            )
+          : Yup.string().oneOf(
+              field.options.map((enumVal) => {
+                if (typeof enumVal === 'string') {
+                  return enumVal;
+                }
+                return Object.keys(enumVal)[0];
+              })
+            );
         break;
 
       case 'number':
-        appFields.schema.parameters[param.id] = Yup.number();
+        appFields.schema.parameters[param.id] = field.multiinput
+          ? Yup.array().of(Yup.number())
+          : Yup.number();
         field.type = 'number';
         break;
 
@@ -55,16 +90,20 @@ const FormSchema = (app) => {
         field.agaveFile = param.semantics.ontology.includes('agaveFile');
         if (param.semantics.ontology.includes('email')) {
           field.type = 'email';
-          appFields.schema.parameters[param.id] = Yup.string().email(
-            'Must be a valid email.'
-          );
+          appFields.schema.parameters[param.id] = field.multiinput
+            ? Yup.array().of(Yup.email())
+            : Yup.string().email('Must be a valid email.');
         } else {
           field.type = 'text';
-          appFields.schema.parameters[param.id] = Yup.string();
+          appFields.schema.parameters[param.id] = field.multiinput
+            ? Yup.array().of(Yup.string())
+            : Yup.string();
         }
         break;
       default:
-        appFields.schema.parameters[param.id] = Yup.string();
+        appFields.schema.parameters[param.id] = field.multiinput
+          ? Yup.array().of(Yup.string())
+          : Yup.string();
         field.type = 'text';
     }
 
@@ -99,13 +138,18 @@ const FormSchema = (app) => {
       description: input.details.description,
       required: input.value.required,
     };
-    if (input.semantics.maxCardinality === 1) {
-      field.type = 'text';
-    } else {
-      field.type = 'array';
-      field.maxItems = input.semantics.maxCardinality;
+
+    field.multiinput = false;
+    if (input.semantics.maxCardinality > 1) {
+      field.multiinput = true;
+      field.maxitems = input.semantics.maxCardinality;
+      field.minitems = input.semantics.minCardinality;
     }
-    appFields.schema.inputs[input.id] = Yup.string();
+
+    field.type = 'text';
+    appFields.schema.inputs[input.id] = field.multiinput
+      ? Yup.array().of(Yup.string())
+      : Yup.string();
     if (input.value.required) {
       appFields.schema.inputs[input.id] =
         appFields.schema.inputs[input.id].required('Required');
