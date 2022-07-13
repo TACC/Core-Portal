@@ -61,7 +61,7 @@ OR
     docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
-#### Install client-side dependencies and bundle code with webpack:
+#### Install client-side dependencies and bundle code:
 
     cd client
     npm ci
@@ -276,6 +276,6 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Camino]: https://github.com/TACC/Camino
 [Core CMS]: https://github.com/TACC/Core-CMS
 [Core Portal]: https://github.com/TACC/Core-Portal
-[Core Styles]: https://github.com/TACC/Core-Styles
+[Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/

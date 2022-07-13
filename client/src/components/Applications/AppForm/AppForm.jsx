@@ -174,35 +174,6 @@ AppInfo.propTypes = {
 };
 
 export const AppSchemaForm = ({ app }) => {
-  app = {
-    ...app,
-    definition: {
-      ...app.definition,
-      inputs: [
-        {
-          ...app.definition.inputs[0],
-          semantics: {
-            ...app.definition.inputs[0].semantics,
-            minCardinality: 1,
-            maxCardinality: 10
-          }
-        }
-      ],
-      parameters: [
-        {
-          ...app.definition.parameters[0],
-          semantics: {
-            ...app.definition.parameters[0].semantics,
-            minCardinality: 1,
-            maxCardinality: 10
-          }
-        }
-      ] 
-    }
-  };
-  console.log(app)
-
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
@@ -265,7 +236,6 @@ export const AppSchemaForm = ({ app }) => {
     });
   };
 
-  // TODO HERE
   const appFields = FormSchema(app);
 
   // initial form values
@@ -324,7 +294,7 @@ export const AppSchemaForm = ({ app }) => {
   }
   return (
     <div id="appForm-wrapper">
-      {/* The !! is needed because the second value of this shorthand 
+      {/* The !! is needed because the second value of this shorthand
           is interpreted as a literal 0 if not. */}
       {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
@@ -454,41 +424,51 @@ export const AppSchemaForm = ({ app }) => {
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          console.log(values)
-          // const job = cloneDeep(values);
-          // /* remove falsy input */
-          // Object.entries(job.inputs).forEach(([k, v]) => {
+          const job = cloneDeep(values);
+          /* remove falsy input */
+          Object.entries(job.inputs).forEach(([k, v]) => {
+            let val = v;
+            if (Array.isArray(val)) {
+              val = val.filter(Boolean);
+              if (val.length === 0) {
+                delete job.inputs[k];
+              }
+            } else if (!val) {
+              delete job.inputs[k];
+            }
+          });
+          /* remove falsy parameter */
+          // TODO: allow falsy parameters for parameters of type bool
+          // Object.entries(job.parameters).forEach(([k, v]) => {
           //   let val = v;
-          //   if (Array.isArray(val)) {
+          //   if (Array.isArray(v)) {
           //     val = val.filter(Boolean);
           //     if (val.length === 0) {
-          //       delete job.inputs[k];
+          //       delete job.parameters[k];
           //     }
-          //   } else if (!val) {
-          //     delete job.inputs[k];
+          //   } else if (val === null || val === undefined) {
+          //     delete job.parameters[k];
           //   }
           // });
-          // /* remove falsy parameter */
-          // // TODO: allow falsy parameters for parameters of type bool
-          // // Object.entries(job.parameters).forEach(([k, v]) => {
-          // //   let val = v;
-          // //   if (Array.isArray(v)) {
-          // //     val = val.filter(Boolean);
-          // //     if (val.length === 0) {
-          // //       delete job.parameters[k];
-          // //     }
-          // //   } else if (val === null || val === undefined) {
-          // //     delete job.parameters[k];
-          // //   }
-          // // });
-          // /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
-          // if (app.definition.tags.includes('DCV')) {
-          //   job.name += '-dcvserver';
-          // }
-          // dispatch({
-          //   type: 'SUBMIT_JOB',
-          //   payload: job,
-          // });
+          /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
+          if (app.definition.tags.includes('DCV')) {
+            job.name += '-dcvserver';
+          }
+          dispatch({
+            type: 'SUBMIT_JOB',
+            payload: job,
+          });
+          /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
+          if (app.definition.tags.includes('DCV')) {
+            job.name += '-dcvserver';
+          }
+          if (app.definition.tags.includes('VNC')) {
+            job.name += 'tap_';
+          }
+          dispatch({
+            type: 'SUBMIT_JOB',
+            payload: job,
+          });
         }}
       >
         {({
@@ -525,18 +505,18 @@ export const AppSchemaForm = ({ app }) => {
                     <span>Inputs</span>
                   </div>
                   {Object.entries(appFields.inputs).map(([id, field]) => {
-                      return (
-                        <>
-                          <FormField
-                            {...field}
-                            name={`inputs.${id}`}
-                            agaveFile
-                            SelectModal={DataFilesSelectModal}
-                            placeholder="Browse Data Files"
-                            key={`inputs.${id}`}
-                            />
-                        </>
-                      );
+                    return (
+                      <>
+                        <FormField
+                          {...field}
+                          name={`inputs.${id}`}
+                          agaveFile
+                          SelectModal={DataFilesSelectModal}
+                          placeholder="Browse Data Files"
+                          key={`inputs.${id}`}
+                        />
+                      </>
+                    );
                   })}
                   {Object.entries(appFields.parameters).map(([id, field]) => {
                     return (
