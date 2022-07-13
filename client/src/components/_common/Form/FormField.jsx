@@ -63,32 +63,9 @@ const FormField = ({
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
   const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
-  props.type = 'array';
-  const { id, name, multiInput, maxitems, minitems } = props;
-
-  const [inputItems, setInputItems] = useState(() => {
-    return [...Array(minitems).keys()];
-  });
-
+  const { id, name } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
-
-  const addInputItem = () => {
-    if (maxitems > inputItems.length) {
-      setInputItems([
-        ...inputItems, 
-        {
-          id: Date.now()
-        }
-      ]);
-    }
-  };
-
-  const deleteInputItem = (inputItem) => {
-    if (minitems < inputItems.length) {
-      setInputItems(inputItems.filter(ii => ii.id != inputItem.id));
-    }
-  };
 
   const FieldLabel = () => (
     <Label
@@ -119,102 +96,6 @@ const FormField = ({
     </>
   );
 
-  const FormInput = ({id}) => (
-    agaveFile ? (
-      <>
-        <SelectModal
-          isOpen={openAgaveFileModal}
-          toggle={() => {
-            setOpenAgaveFileModal((prevState) => !prevState);
-          }}
-          onSelect={(system, path) => {
-            helpers.setValue(`agave://${system}${path}`);
-          }}
-          />
-
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <Button
-              size="sm"
-              color="secondary"
-              type="button"
-              onClick={() => setOpenAgaveFileModal(true)}
-            >
-              Select
-            </Button>
-          </InputGroupAddon>
-          <Input {...field} {...props} bsSize="sm" />
-          <InputGroupAddon addonType="append">
-            <Button
-              size="sm"
-              color="secondary"
-              type="button"
-              onClick={() => deleteInputItem(id)}
-            >
-              X
-            </Button>
-          </InputGroupAddon>
-        </InputGroup>
-        </>
-    ) : (
-        <>
-          {hasAddon && addonType === 'prepend' ? addon : null}
-          <InputGroup>
-            <Input {...field} {...props} bsSize="sm" />
-            <InputGroupAddon addonType="append">
-              <Button
-                size="sm"
-                color="secondary"
-                type="button"
-                onClick={() => deleteInputItem(id)}
-              >
-                X
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-          {hasAddon && addonType === 'append' ? addon : null}
-          </>
-      )
-  )
-        // {inputItems.map(inputItem => {
-        //   return (
-        //     <div>
-        //       <FormInput/>
-        //       <Button
-        //         onClick={deleteInputItem(inputItem)}
-        //         color="link">
-        //         Remove
-        //       </Button>
-        //     </div>
-        //   )
-        // })}
-  //
-        // <Button
-        //   onClick={addInputItem()}
-        //   color="link">
-        //   <b>+ Add File Input</b>
-        // </Button>
-
-  const MultiFormInput = () => (
-    <>
-      {inputItems.map(inputItem => {
-        return (
-          <div className="multi-form-field">
-            <FormInput id={inputItem}/>
-          </div>
-        )
-      })}
-      <Button 
-        onClick={() => addInputItem()}
-        color="link"
-      >
-        <b>+ Add File Input</b>
-      </Button>
-      </>
-  );
-
-  // MultiFormPrepend = () => 
-
   // Allowing ineffectual prop combinations would lead to confusion
   if (addon && agaveFile) {
     throw new Error(
@@ -230,7 +111,39 @@ const FormField = ({
       {label && hasAddon ? <FieldLabel /> : null}
       <FormFieldWrapper type={wrapperType}>
         {label && !hasAddon ? <FieldLabel /> : null}
-        {multiInput ? <MultiFormInput /> : <FormInput />}
+        {agaveFile ? (
+          <>
+            <SelectModal
+              isOpen={openAgaveFileModal}
+              toggle={() => {
+                setOpenAgaveFileModal((prevState) => !prevState);
+              }}
+              onSelect={(system, path) => {
+                helpers.setValue(`agave://${system}${path}`);
+              }}
+            />
+
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <Button
+                  size="sm"
+                  color="secondary"
+                  type="button"
+                  onClick={() => setOpenAgaveFileModal(true)}
+                >
+                  Select
+                </Button>
+              </InputGroupAddon>
+              <Input {...field} {...props} bsSize="sm" />
+            </InputGroup>
+          </>
+        ) : (
+          <>
+            {hasAddon && addonType === 'prepend' ? addon : null}
+            <Input {...field} {...props} bsSize="sm" />
+            {hasAddon && addonType === 'append' ? addon : null}
+          </>
+        )}
         {!hasAddon ? <FieldNote /> : null}
       </FormFieldWrapper>
       {hasAddon ? <FieldNote /> : null}

@@ -450,14 +450,6 @@ export const AppSchemaForm = ({ app }) => {
           //     delete job.parameters[k];
           //   }
           // });
-          /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
-          if (app.definition.tags.includes('DCV')) {
-            job.name += '-dcvserver';
-          }
-          dispatch({
-            type: 'SUBMIT_JOB',
-            payload: job,
-          });
           /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
           if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
@@ -506,16 +498,14 @@ export const AppSchemaForm = ({ app }) => {
                   </div>
                   {Object.entries(appFields.inputs).map(([id, field]) => {
                     return (
-                      <>
-                        <FormField
-                          {...field}
-                          name={`inputs.${id}`}
-                          agaveFile
-                          SelectModal={DataFilesSelectModal}
-                          placeholder="Browse Data Files"
-                          key={`inputs.${id}`}
-                        />
-                      </>
+                      <FormField
+                        {...field}
+                        name={`inputs.${id}`}
+                        agaveFile
+                        SelectModal={DataFilesSelectModal}
+                        placeholder="Browse Data Files"
+                        key={`inputs.${id}`}
+                      />
                     );
                   })}
                   {Object.entries(appFields.parameters).map(([id, field]) => {
@@ -646,7 +636,7 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary" disabled={isValid}>
+                <Button type="submit" color="primary" disabled={!isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}

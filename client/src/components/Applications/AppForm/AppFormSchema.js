@@ -25,13 +25,6 @@ const FormSchema = (app) => {
       required: param.value.required,
     };
 
-    field.multiInput = false;
-    if (param.semantics.maxCardinality > 1) {
-      field.multiInput = true;
-      field.maxitems = param.semantics.maxCardinality;
-      field.minitems = param.semantics.minCardinality;
-    }
-
     switch (param.value.type) {
       case 'bool':
       case 'flag':
@@ -106,13 +99,12 @@ const FormSchema = (app) => {
       description: input.details.description,
       required: input.value.required,
     };
-    field.multiInput = false;
-    if (input.semantics.maxCardinality > 1) {
-      field.multiInput = true;
-      field.maxitems = input.semantics.maxCardinality;
-      field.minitems = input.semantics.minCardinality;
+    if (input.semantics.maxCardinality === 1) {
+      field.type = 'text';
+    } else {
+      field.type = 'array';
+      field.maxItems = input.semantics.maxCardinality;
     }
-    field.type = 'text';
     appFields.schema.inputs[input.id] = Yup.string();
     if (input.value.required) {
       appFields.schema.inputs[input.id] =
@@ -136,7 +128,6 @@ const FormSchema = (app) => {
         ? ''
         : input.value.default;
   });
-  console.log(appFields)
   return appFields;
 };
 

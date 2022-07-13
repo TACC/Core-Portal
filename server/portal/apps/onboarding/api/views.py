@@ -128,14 +128,6 @@ class SetupStepView(BaseApiView):
 
         user = self.get_user_parameter(request, username)
 
-        step_name = 'portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationStep'
-        setup_step = load_setup_step(user, step_name)
-
-        setup_step.user.profile.setup_complete = True
-        setup_step.user.profile.save()
-
-        setup_step.state = SetupState.COMPLETED
-
         result = get_user_onboarding(user)
 
         # Encode with SetupEventEncoder
