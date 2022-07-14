@@ -88,6 +88,7 @@ const Button = ({
         ${TYPE_MAP[type] ? styles[TYPE_MAP[type]] : ''}
         ${SIZE_MAP[size] ? styles[SIZE_MAP[size]] : ''}
         ${isLoading ? styles['loading'] : ''}
+        ${className}
       `}
       disabled={disabled || isLoading}
       type={attr}

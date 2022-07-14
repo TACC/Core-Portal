@@ -44,8 +44,8 @@
   margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
 }
 
-.submit-button-container {
-  width: 60%;
+.submit-button {
+  display: block;
   margin: auto;
 }
 
