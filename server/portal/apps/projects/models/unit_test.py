@@ -6,6 +6,7 @@
 
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.models.base import Project
+from portal.apps.projects.models.utils import get_latest_project_storage
 from portal.libs.agave.models.systems.storage import StorageSystem
 import pytest
 
@@ -120,3 +121,20 @@ def test_project_change_project_role(agave_client, mock_owner, mock_project_save
     prj.change_project_role(mock_owner, 'co_pi', 'member')
     mock_remove.assert_called_with(mock_owner)
     mock_add.assert_called_with(mock_owner)
+
+
+def test_get_latest_project_storage(mock_owner, portal_project, agave_client, mock_project_save_signal, service_account, mocker):
+    sys = StorageSystem(agave_client, 'cep.test.SOME-PRJ-5678')
+    sys.last_modified = '1234'
+    sys.name = 'SOME-PRJ-5678'
+
+    mock_search = mocker.patch('portal.apps.projects.models.base.StorageSystem.search')
+    mock_search.return_value = [sys]
+
+    Project(
+        agave_client,
+        'SOME-PRJ-5678',
+        storage=sys
+    )
+    latest = get_latest_project_storage()
+    assert latest == 5678

@@ -52,6 +52,9 @@ const DataFilesManageProjectModal = () => {
     [projectId, dispatch]
   );
 
+  const onOpen = () =>
+    dispatch({ type: 'PROJECTS_SET_MEMBER_RESET', payload: {} });
+
   const onRemove = useCallback(
     (removedUser) => {
       dispatch({
@@ -106,8 +109,9 @@ const DataFilesManageProjectModal = () => {
   return (
     <div className={styles.root}>
       <Modal
-        size="lg"
+        size="xl"
         isOpen={isOpen}
+        onOpened={onOpen}
         toggle={toggle}
         className="dataFilesModal"
       >
@@ -132,7 +136,7 @@ const DataFilesManageProjectModal = () => {
             </div>
           ) : null}
           <div className={styles['owner-controls']}>
-            {isOwner ? (
+            {isOwner && members.length > 1 ? (
               <Button color="link" onClick={toggleTransferMode}>
                 <h6 className={styles['ownership-toggle']}>
                   {transferMode

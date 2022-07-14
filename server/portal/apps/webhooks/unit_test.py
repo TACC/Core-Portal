@@ -97,9 +97,8 @@ class TestInteractiveWebhookView(TestCase):
 
         self.vnc_event = {
             "event_type": "VNC",
-            "host": "vis.tacc.utexas.edu",
+            "host": "stampede2.tacc.utexas.edu",
             "port": "2234",
-            "address": "vis.tacc.utexas.edu:1234",
             "password": "3373312947011719656-242ac11b-0001-007",
             "owner": "username"
         }
@@ -132,8 +131,13 @@ class TestInteractiveWebhookView(TestCase):
         action_link = n.to_dict()['action_link']
 
         self.assertEqual(action_link,
-                         "https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname=vis.tacc.utexas.edu"
-                         "&port=2234&autoconnect=true&password=3373312947011719656-242ac11b-0001-007")
+                         "https://tap.tacc.utexas.edu/noVNC/?"
+                         "host=stampede2.tacc.utexas.edu&"
+                         "port=2234&"
+                         "autoconnect=true&"
+                         "encrypt=true&"
+                         "resize=scale&"
+                         "password=3373312947011719656-242ac11b-0001-007")
         self.assertEqual(n.operation, 'vnc_session_start')
 
     def test_webhook_web_post(self):

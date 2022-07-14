@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.19.0] - 2022-07-14: Core-Styles; TAP Functions; Bugfixes
+
+### Changed
+
+- TUP-271: Use Core-Styles from TUP UI (#651)
+- Bump lxml from 4.6.5 to 4.9.1 in /server (#671)
+- docs(README): do not mention webpack (#668)
+- FP-1633: Alter webhook and job name to use new tap functions (#669)
+
+### Fixed
+
+- FP-1694: Fix background icon in FileInputDropdownSelector (#667)
+- FP-1696: Manage Team modal bugfixes (#672)
+- FP-1722: Fix Shared Workspaces id and accept any amount of hyphens in PORTAL_PROJECTS_ID_PREFIX (#673)
+
+## [2.18.1] - 2022-07-06: Hotfix: Fix `fetchUtil`
+
+### Fixed
+
+- FP-1715: Fix `fetchUtil` (#670)
+
+## [2.18.0] - 2022-06-28: Manage Allocations
+
+### Added
+
+- FP-737: Manage Allocations (#568)
+- FP-1650: Test Cases for _common/Button (#640)
+
+### Fixed
+
+- FP-1702: CSS Load Order Differs on Dev vs Local (#665)
+- FP-1539: Fix Undesired `<Pill>` truncation (#666)
+
 ## [2.17.0] - 2022-06-14: Admin Messages; Member Roles for Shared Workspaces
 
 ### Added
@@ -681,7 +714,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.17.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.18.1...HEAD
+[2.18.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.1
+[2.18.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.0
 [2.17.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.17.0
 [2.16.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.16.0
 [2.15.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.15.0

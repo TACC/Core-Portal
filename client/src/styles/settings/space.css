@@ -1,4 +1,4 @@
-@import url('@tacc/core-styles/source/_imports/settings/space.css');
+@import url('@tacc/core-styles/src/lib/_imports/settings/space.css');
 
 :root {
   --global-space--section-top: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
