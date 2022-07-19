@@ -45,8 +45,10 @@
 }
 
 .submit-button {
+  --max-width: 100%; /* (temporarily) overwrite `.c-button--...` */
+
   display: block;
-  margin: auto;
+  width: 100%;
 }
 
 .left-panel {

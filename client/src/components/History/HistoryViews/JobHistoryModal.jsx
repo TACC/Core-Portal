@@ -136,9 +136,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
 
   return (
     <>
-      <div className={styles['left-panel']}>
+      <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
-          className={styles['panel-content']}
           density="compact"
           data={{
             Output: !hideDataFiles && (
@@ -155,7 +154,6 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
           <Button
             type="primary"
             attr="submit"
-            size="large"
             className={styles['submit-button']}
             onClick={resubmitJob}
           >
