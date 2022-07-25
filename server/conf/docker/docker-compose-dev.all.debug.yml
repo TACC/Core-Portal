@@ -10,6 +10,7 @@ services:
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
+      - ../../cms/ui:/code/taccsite_ui
     command: python manage.py runserver 0.0.0.0:8000
     container_name: core_portal_cms
     depends_on:
