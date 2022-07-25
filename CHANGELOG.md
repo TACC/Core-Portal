@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.19.0] - 2022-07-14: Core-Styles; TAP Functions; Bugfixes
+
+### Changed
+
+- TUP-271: Use Core-Styles from TUP UI (#651)
+- Bump lxml from 4.6.5 to 4.9.1 in /server (#671)
+- docs(README): do not mention webpack (#668)
+- FP-1633: Alter webhook and job name to use new tap functions (#669)
+
+### Fixed
+
+- FP-1694: Fix background icon in FileInputDropdownSelector (#667)
+- FP-1696: Manage Team modal bugfixes (#672)
+- FP-1722: Fix Shared Workspaces id and accept any amount of hyphens in PORTAL_PROJECTS_ID_PREFIX (#673)
+
 ## [2.18.1] - 2022-07-06: Hotfix: Fix `fetchUtil`
 
 ### Fixed
