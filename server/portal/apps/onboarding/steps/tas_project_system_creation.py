@@ -10,7 +10,6 @@ from portal.apps.onboarding.execute import (
 )
 from portal.libs.agave.models.systems.storage import StorageSystem
 from requests.exceptions import RequestException
-from django.conf import settings
 import json
 import logging
 
