@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'portal.apps.datafiles',
     'portal.apps.projects',
     'portal.apps.portal_messages',
+    'portal.apps.tas_project_systems',
 
 ]
 
@@ -532,6 +533,21 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'integration': 'portal.apps.googledrive_integration'
     }
 ]
+
+
+PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
+    'apcd': {
+        'name': '{projectname} (APCD)',
+        'description': 'Organizational storage for {projectname} (APCD)',
+        'site': 'cep',
+        'systemId': 'cloud.corral.{projectname}.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/corral-secure/tacc/apcd/{projectdir}',
+        'port': 2222,
+        'icon': None,
+        'hidden': False,
+    }
+}
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
