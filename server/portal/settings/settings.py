@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
     'portal.apps.portal_messages',
+    'portal.apps.tas_project_systems',
 ]
 
 MIDDLEWARE = [
@@ -616,6 +617,8 @@ WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
 PORTAL_DOMAIN = settings_custom._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
+
+PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = getattr(settings_custom, '_PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', {})
 
 """
 SETTINGS: ELASTICSEARCH
