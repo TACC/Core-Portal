@@ -53,14 +53,15 @@ def call_reactor(user, systemId, reactor_template, variables,
     return result
 
 
-def substitute_user_variables(user, systemId, variables):
+def substitute_user_variables(user, systemId, variables, additional_substitutions={}):
     """
     Utility function to substitute systemId and variables with user specific
     values, such as {username}, {workdir}
     """
     substitutions = _create_substitutions(user)
-    systemId = systemId.format(**substitutions)
-    variables = _substitute_variables(variables, substitutions)
+    merged_substitutions = {**substitutions, **additional_substitutions}
+    systemId = systemId.format(**merged_substitutions)
+    variables = _substitute_variables(variables, merged_substitutions)
     return systemId, variables
 
 
