@@ -6,9 +6,11 @@ from portal.apps.tas_project_systems.models import (
     TasProjectSystemEntry
 )
 
+
 class TasProjectSystemEntryAdminForm(ModelForm):
     model = TasProjectSystemEntry
     fields = ['project_sql_id', 'projectname', 'projectdir']
+
     def __init__(self, *args, **kwargs):
         super(TasProjectSystemEntryAdminForm, self).__init__(*args, **kwargs)
         self.fields['template'] = forms.ChoiceField(
@@ -18,5 +20,6 @@ class TasProjectSystemEntryAdminForm(ModelForm):
 
 class TasProjectSystemEntryAdmin(admin.ModelAdmin):
     form = TasProjectSystemEntryAdminForm
+
 
 admin.site.register(TasProjectSystemEntry, TasProjectSystemEntryAdmin)

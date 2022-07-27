@@ -1,0 +1,32 @@
+[
+  {
+    "model": "tas_project_systems.tasprojectsystementry",
+    "pk": 1,
+    "fields": {
+      "project_sql_id": 23881,
+      "projectname": "BCBS",
+      "projectdir": "bcbs",
+      "template": "apcd-organization"
+    }
+  },
+  {
+    "model": "tas_project_systems.tasprojectsystementry",
+    "pk": 2,
+    "fields": {
+      "project_sql_id": 99999,
+      "projectname": "United Health",
+      "projectdir": "united",
+      "template": "apcd-organization"
+    }
+  },
+  {
+    "model": "tas_project_systems.tasprojectsystementry",
+    "pk": 3,
+    "fields": {
+      "project_sql_id": 52,
+      "projectname": "Submissions",
+      "projectdir": "submissions",
+      "template": "apcd-submissions"
+    }
+  }
+]

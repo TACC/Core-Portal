@@ -5,6 +5,7 @@ from portal.apps.system_creation.utils import (
     substitute_user_variables
 )
 
+
 def get_tas_project_ids(username):
     tas_client = TASClient(
         baseURL=settings.TAS_URL,
@@ -13,7 +14,7 @@ def get_tas_project_ids(username):
             'password': settings.TAS_CLIENT_SECRET
         }
     )
-    return list(set([ project['id'] for project in tas_client.projects_for_user(username) ]))
+    return list(set([project['id'] for project in tas_client.projects_for_user(username)]))
 
 
 def get_system_variables_from_project_entry(user, project_entry):
@@ -29,10 +30,11 @@ def get_system_variables_from_project_entry(user, project_entry):
 def get_tas_project_system_variables(user):
     project_ids = get_tas_project_ids(user.username)
     project_entries = []
-    # Get all matching project system definitions for a user
+    # Get all matching project entries definitions for a user based on their TAS project IDs
     for project_id in project_ids:
-        project_entries += [ project_entry for project_entry in TasProjectSystemEntry.objects.all().filter(project_sql_id=project_id) ]
-    return [ get_system_variables_from_project_entry(user, project_entry) for project_entry in project_entries ]
+        project_entries += [project_entry for project_entry in TasProjectSystemEntry.objects.all().filter(project_sql_id=project_id)]
+    # Generate system variables for use in system creation based off of matching project entries
+    return [get_system_variables_from_project_entry(user, project_entry) for project_entry in project_entries]
 
 
 def get_datafiles_system_list(user):

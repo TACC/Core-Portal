@@ -28,6 +28,5 @@ class TasProjectSystemEntry(models.Model):
         choices=[(template_name, template_name) for template_name in dict.keys(settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES)]
     )
 
-
     def __str__(self):
-        return f"{self.projectname} ({self.project_sql_id})"
+        return f"{self.projectname} ({self.project_sql_id}) - {self.template}"
