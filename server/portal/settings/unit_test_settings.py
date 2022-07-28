@@ -560,8 +560,6 @@ PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
     }
 }
 
-
-
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
 

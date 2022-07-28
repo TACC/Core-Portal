@@ -207,7 +207,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 
 
 #################################
-# DJANGO APP: TAS_PROJECT_SYSTEMS 
+# DJANGO APP: TAS_PROJECT_SYSTEMS
 #################################
 _PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
     'apcd-organization': {
