@@ -203,7 +203,7 @@ class IndexedAllocation(Document):
         name = settings.ES_INDEX_PREFIX.format('allocations')
 
 
-class IndexedTasProjects(Document):
+class IndexedTasProjectSystems(Document):
     """
     Elasticsearch document representing cached TAS Project IDs for a user.
     """
@@ -220,4 +220,4 @@ class IndexedTasProjects(Document):
         return cls.get(uuid, using=es_client)
 
     class Index:
-        name = settings.ES_INDEX_PREFIX.format('tas_projects')
+        name = settings.ES_INDEX_PREFIX.format('tas_project_systems')

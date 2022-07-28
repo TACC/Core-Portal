@@ -114,10 +114,11 @@ Then, use the django shell in the `core_portal_django` container—
 
 —to run the following code to set up the search index:
 ```
-from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index, setup_tas_project_systems_index
 setup_files_index(force=True)
 setup_projects_index(force=True)
 setup_allocations_index(force=True)
+setup_tas_project_systems_index(force=True)
 ```
 
 ### Setting up notifications locally:

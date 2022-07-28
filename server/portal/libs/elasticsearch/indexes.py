@@ -8,7 +8,8 @@ from django.conf import settings
 from elasticsearch_dsl import Index
 from portal.libs.elasticsearch.docs.base import (IndexedFile,
                                                  IndexedAllocation,
-                                                 IndexedProject)
+                                                 IndexedProject,
+                                                 IndexedTasProjectSystems)
 from portal.libs.elasticsearch.analyzers import file_query_analyzer
 
 
@@ -74,4 +75,10 @@ def setup_projects_index(reindex=False, force=False):
     index = setup_indexes('projects', reindex, force)
     if not index.exists():
         index.document(IndexedProject)
+        index.create()
+
+def setup_tas_project_systems_index(reindex=False, force=False):
+    index = setup_indexes('tas_project_systems', reindex, force)
+    if not index.exists():
+        index.document(IndexedTasProjectSystems)
         index.create()

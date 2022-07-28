@@ -34,7 +34,7 @@ class TasProjectSystemCreationStep(AbstractStep):
         self.log("Awaiting storage system creation")
 
     def process(self):
-        tas_project_systems = get_tas_project_system_variables(self.user)
+        tas_project_systems = get_tas_project_system_variables(self.user, force=True)
 
         # Convert list of tuples to dictionary
         systems = {

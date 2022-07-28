@@ -6,37 +6,22 @@ from portal.apps.system_creation.utils import (
 )
 from elasticsearch.exceptions import NotFoundError
 import logging
-from portal.libs.elasticsearch.docs.base import IndexedTasProjects
+from portal.libs.elasticsearch.docs.base import IndexedTasProjectSystems
 from portal.libs.elasticsearch.utils import get_sha256_hash
 
 logger = logging.getLogger(__name__)
 
 
-def get_tas_project_ids(username, force=False):
-    result = {
-        'tas_projects': []
-    }
-    try:
-        if force:
-            logger.info("Forcing TAS project retrieval for user:{}".format(username))
-            raise NotFoundError
-        cached = IndexedTasProjects.from_username(username).value.to_dict()
-        result.update(cached)
-        return result['tas_projects']
-    except NotFoundError:
-        # Fall back to getting projects from TAS
-        tas_client = TASClient(
-            baseURL=settings.TAS_URL,
-            credentials={
-                'username': settings.TAS_CLIENT_KEY,
-                'password': settings.TAS_CLIENT_SECRET
-            }
-        )
-        result['tas_projects'] = list(set([project['id'] for project in tas_client.projects_for_user(username)]))
-        doc = IndexedTasProjects(username=username, value=result)
-        doc.meta.id = get_sha256_hash(username)
-        doc.save()
-    return result['tas_projects']
+def get_tas_project_ids(username):
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
+    return list(set([project['id'] for project in tas_client.projects_for_user(username)]))
+
 
 
 def get_system_variables_from_project_entry(user, project_entry):
@@ -49,14 +34,39 @@ def get_system_variables_from_project_entry(user, project_entry):
     return substitute_user_variables(user, templateValues['systemId'], templateValues, additional_substitutions=additional_substitutions)
 
 
-def get_tas_project_system_variables(user):
-    project_ids = get_tas_project_ids(user.username)
-    project_entries = []
-    # Get all matching project entries definitions for a user based on their TAS project IDs
-    for project_id in project_ids:
-        project_entries += [project_entry for project_entry in TasProjectSystemEntry.objects.all().filter(project_sql_id=project_id)]
-    # Generate system variables for use in system creation based off of matching project entries
-    return [get_system_variables_from_project_entry(user, project_entry) for project_entry in project_entries]
+def index_project_systems(username, variable_mapping):
+    tas_project_systems = {
+        systemId: variables for systemId, variables in variable_mapping
+    }
+    doc = IndexedTasProjectSystems(username=username, value=tas_project_systems)
+    doc.meta.id = get_sha256_hash(username)
+    doc.save()
+
+
+def retrieve_indexed_system_variables(username):
+    tas_project_systems = {}
+    cached = IndexedTasProjectSystems.from_username(username).value.to_dict()
+    tas_project_systems.update(cached)
+    return dict.items(tas_project_systems)
+
+
+def get_tas_project_system_variables(user, force=False):
+    username = user.username
+    try:
+        if force:
+            logger.info("Forcing refresh of TAS Project Systems for user: {}".format(username))
+            raise NotFoundError
+        return retrieve_indexed_system_variables(username)
+    except NotFoundError:
+        project_ids = get_tas_project_ids(user.username)
+        project_entries = []
+        # Get all matching project entries definitions for a user based on their TAS project IDs
+        for project_id in project_ids:
+            project_entries += [project_entry for project_entry in TasProjectSystemEntry.objects.all().filter(project_sql_id=project_id)]
+        # Generate system variables for use in system creation based off of matching project entries
+        variable_mapping = [get_system_variables_from_project_entry(user, project_entry) for project_entry in project_entries]
+        index_project_systems(username, variable_mapping)
+        return variable_mapping
 
 
 def get_datafiles_system_list(user):
