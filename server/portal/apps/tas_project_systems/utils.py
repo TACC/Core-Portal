@@ -10,6 +10,8 @@ from elasticsearch.exceptions import NotFoundError
 import logging
 from portal.libs.elasticsearch.docs.base import IndexedTasProjectSystems
 from portal.libs.elasticsearch.utils import get_sha256_hash
+from celery import shared_task
+from django.contrib.auth import get_user_model
 import json
 
 logger = logging.getLogger(__name__)
@@ -89,7 +91,9 @@ def get_datafiles_system_list(user):
     ]
 
 
-def create_tas_project_systems(user, force_project_id=None):
+@shared_task()
+def create_tas_project_systems(username, force_project_id=None):
+    user = get_user_model().objects.get(username=username)
     tas_project_systems = get_tas_project_system_variables(user, force=True, force_project_id=force_project_id)
 
     # Convert list of tuples to dictionary

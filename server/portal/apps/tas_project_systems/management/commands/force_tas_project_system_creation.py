@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-u', '--username', type=str, required=True, help="Username")
         parser.add_argument(
-            '-i', '--project_id',
+            '-p', '--project_id',
             type=int,
             required=False,
             help="Force creation of a specific project ID (specified user must still be on this TAS project"
@@ -33,4 +33,4 @@ class Command(BaseCommand):
         if created:
             logger.warn("Username {} does not exist locally, creating a virtual user".format(username))
 
-        create_tas_project_systems(user, force_project_id=force_project_id)
+        create_tas_project_systems.apply_async(args=[username], kwargs={'force_project_id': force_project_id})

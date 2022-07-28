@@ -34,7 +34,7 @@ class TasProjectSystemEntryAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         for user in get_user_model().objects.all():
             logger.debug("Forcing TAS Project System Creation for user {} with TAS Project ID {}".format(user.username, obj.project_sql_id))
-            create_tas_project_systems(user, force_project_id=obj.project_sql_id)
+            create_tas_project_systems.apply_async(args=[user.username], kwargs={'force_project_id': obj.project_sql_id})
 
 
 if getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', None) is not None:
