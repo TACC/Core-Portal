@@ -5,6 +5,7 @@ from django.conf import settings
 from portal.apps.tas_project_systems.utils import (
     get_tas_project_ids,
     get_datafiles_system_list,
+    get_tas_project_system_variables,
     get_system_variables_from_project_entry
 )
 from django.core.management import call_command
@@ -53,34 +54,43 @@ def mock_get_tas_project_ids(mocker, tas_project_ids):
 
 
 @pytest.fixture
-def mock_IndexedTasProjects(mocker, tas_project_ids):
-    mock = mocker.patch('portal.apps.tas_project_systems.utils.IndexedTasProjects')
-    mock.from_username.return_value.value.to_dict.return_value = {'tas_projects': tas_project_ids}
+def mock_IndexedTasProjectSystems(mocker):
+    mock = mocker.patch('portal.apps.tas_project_systems.utils.IndexedTasProjectSystems')
+    mock.from_username.return_value.value.to_dict.return_value = {
+        'cloud.corral.BCBS.mockuser': {
+            'name': 'BCBS (APCD)',
+            'description': 'Organizational storage for BCBS (APCD)',
+            'host': 'cloud.corral.tacc.utexas.edu',
+            'rootDir': '/corral-secure/tacc/apcd/bcbs',
+            'site': 'cep',
+            'systemId': 'cloud.corral.BCBS.mockuser',
+            'hidden': False,
+            'icon': None,
+            'port': 2222 
+        },
+        'cloud.corral.submissions.mockuser': {
+            'name': 'Submissions (APCD)',
+            'description': 'Submission storage for (APCD)',
+            'site': 'cep',
+            'systemId': 'cloud.corral.submissions.mockuser',
+            'host': 'cloud.corral.tacc.utexas.edu',
+            'rootDir': '/corral-secure/tacc/apcd/submissions',
+            'port': 2222,
+            'icon': None,
+            'hidden': False
+        }
+    }
     yield mock
 
 
-def test_get_tas_project_ids(mock_IndexedTasProjects, tas_project_ids):
+def test_get_tas_project_ids(tas_project_ids):
     project_ids = get_tas_project_ids("mockuser")
     assert len(project_ids) == 3
     for project_id in project_ids:
         assert project_id in tas_project_ids
 
 
-def test_get_tas_project_ids_not_found(mock_IndexedTasProjects, mock_tas):
-    mock_IndexedTasProjects.from_username.side_effect = NotFoundError
-    project_ids = get_tas_project_ids("mockuser")
-    assert len(project_ids) == 3
-    mock_tas.assert_called()
-
-
-def test_get_tas_project_ids_forced(mock_IndexedTasProjects, mock_tas):
-    project_ids = get_tas_project_ids("mockuser", force=True)
-    assert len(project_ids) == 3
-    mock_tas.assert_called()
-    mock_IndexedTasProjects.return_value.save.assert_called()
-
-
-def test_get_system_variables_for_project_entry(regular_user, mock_get_tas_project_ids):
+def test_get_system_variables_for_project_entry(regular_user):
     bcbs_project_entry = TasProjectSystemEntry.objects.all().filter(project_sql_id=23881)[0]
     variables = get_system_variables_from_project_entry(regular_user, bcbs_project_entry)
     assert variables == ('cloud.corral.BCBS.mockuser', {
@@ -96,7 +106,25 @@ def test_get_system_variables_for_project_entry(regular_user, mock_get_tas_proje
     })
 
 
-def test_get_datafiles_system_list(regular_user, mock_get_tas_project_ids):
+def test_get_tas_project_system_variables(regular_user, mock_IndexedTasProjectSystems):
+    variables = get_tas_project_system_variables(regular_user)
+    assert len(variables) == 2
+
+
+def test_get_tas_project_system_variables_not_found(regular_user, mock_IndexedTasProjectSystems, mock_get_tas_project_ids):
+    mock_IndexedTasProjectSystems.from_username.side_effect = NotFoundError
+    variables = get_tas_project_system_variables(regular_user)
+    assert len(variables) == 2
+    mock_IndexedTasProjectSystems.return_value.save.assert_called()
+
+
+def test_get_tas_project_system_variables_forced(regular_user, mock_IndexedTasProjectSystems, mock_get_tas_project_ids):
+    variables = get_tas_project_system_variables(regular_user, force=True)
+    assert len(variables) == 2
+    mock_IndexedTasProjectSystems.return_value.save.assert_called()
+
+
+def test_get_datafiles_system_list(regular_user, mock_IndexedTasProjectSystems):
     assert get_datafiles_system_list(regular_user) == [
         {
             'name': 'BCBS (APCD)',
