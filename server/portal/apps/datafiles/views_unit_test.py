@@ -297,7 +297,9 @@ def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_aga
     assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": 'other', "content": None, "error": "File too large to preview in this window."}}
 
 
-def test_systems_list(client, authenticated_user, mocker, get_user_data):
+def test_systems_list(client, authenticated_user, mocker, get_user_data, settings):
+    # Disable tas_project_systems for test
+    settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = None
     mock_get_user_storage_systems = mocker.patch('portal.apps.datafiles.views.get_user_storage_systems')
     mock_get_user_storage_systems.return_value = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
