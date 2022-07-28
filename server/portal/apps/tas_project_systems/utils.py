@@ -51,6 +51,7 @@ def retrieve_indexed_system_variables(username):
 
 
 def get_tas_project_system_variables(user, force=False):
+    assert settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     username = user.username
     try:
         if force:

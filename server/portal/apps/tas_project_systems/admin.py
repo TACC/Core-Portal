@@ -23,4 +23,5 @@ class TasProjectSystemEntryAdmin(admin.ModelAdmin):
     form = TasProjectSystemEntryAdminForm
 
 
-admin.site.register(TasProjectSystemEntry, TasProjectSystemEntryAdmin)
+if settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES:
+    admin.site.register(TasProjectSystemEntry, TasProjectSystemEntryAdmin)

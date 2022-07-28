@@ -65,7 +65,7 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cloud.corral.work.{username}": "/tacc-work",
 }
 
-_PORTAL_KEY_SERVICE_ACTOR_ID = ""
+_PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'stockyard': {
@@ -214,9 +214,9 @@ _PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
         'name': '{projectname} (APCD)',
         'description': 'Organizational storage for {projectname} (APCD)',
         'site': 'cep',
-        'systemId': 'cloud.corral.{projectname}.{username}',
+        'systemId': 'apcd-test.{projectname}.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/corral-secure/tacc/apcd/{projectdir}',
+        'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
         'hidden': False,
@@ -225,12 +225,12 @@ _PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
         'name': 'Submissions (APCD)',
         'description': 'Submission storage for (APCD)',
         'site': 'cep',
-        'systemId': 'cloud.corral.submissions.{username}',
+        'systemId': 'apcd-test.submissions.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/corral-secure/tacc/apcd/submissions',
+        'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
-        'hidden': False
+        'hidden': False,
     }
 }
 
