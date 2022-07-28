@@ -4,17 +4,39 @@ from portal.apps.tas_project_systems.models import TasProjectSystemEntry
 from portal.apps.system_creation.utils import (
     substitute_user_variables
 )
+from elasticsearch.exceptions import NotFoundError
+import logging
+from portal.libs.elasticsearch.docs.base import IndexedTasProjects
+from portal.libs.elasticsearch.utils import get_sha256_hash
+
+logger = logging.getLogger(__name__)
 
 
-def get_tas_project_ids(username):
-    tas_client = TASClient(
-        baseURL=settings.TAS_URL,
-        credentials={
-            'username': settings.TAS_CLIENT_KEY,
-            'password': settings.TAS_CLIENT_SECRET
-        }
-    )
-    return list(set([project['id'] for project in tas_client.projects_for_user(username)]))
+def get_tas_project_ids(username, force=False):
+    result = {
+        'tas_projects': []
+    }
+    try:
+        if force:
+            logger.info("Forcing TAS project retrieval for user:{}".format(username))
+            raise NotFoundError
+        cached = IndexedTasProjects.from_username(username).value.to_dict()
+        result.update(cached)
+        return result['tas_projects']
+    except NotFoundError:
+        # Fall back to getting projects from TAS
+        tas_client = TASClient(
+            baseURL=settings.TAS_URL,
+            credentials={
+                'username': settings.TAS_CLIENT_KEY,
+                'password': settings.TAS_CLIENT_SECRET
+            }
+        )
+        result['tas_projects'] = list(set([project['id'] for project in tas_client.projects_for_user(username)]))
+        doc = IndexedTasProjects(username=username, value=result)
+        doc.meta.id = get_sha256_hash(username)
+        doc.save()
+    return result['tas_projects']
 
 
 def get_system_variables_from_project_entry(user, project_entry):

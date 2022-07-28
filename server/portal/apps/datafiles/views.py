@@ -3,6 +3,7 @@ import logging
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.users.utils import get_allocations
 from portal.apps.auth.tasks import get_user_storage_systems
+from portal.apps.tas_project_systems.utils import get_datafiles_system_list
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
@@ -31,7 +32,6 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
         if request.user.is_authenticated:
@@ -50,6 +50,8 @@ class SystemListingView(BaseApiView):
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
                 response['default_host'] = default_system['host']
+        if len(dict.keys(settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES)) > 0:
+            response['system_list'] += get_datafiles_system_list(request.user)
         if portal_systems:
             response['system_list'] += portal_systems
         return JsonResponse(response)

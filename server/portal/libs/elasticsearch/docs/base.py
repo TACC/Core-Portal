@@ -201,3 +201,23 @@ class IndexedAllocation(Document):
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('allocations')
+
+
+class IndexedTasProjects(Document):
+    """
+    Elasticsearch document representing cached TAS Project IDs for a user.
+    """
+    username = Text(fields={'_exact': Keyword()})
+    value = Object()
+
+    @classmethod
+    def from_username(cls, username):
+
+        es_client = Elasticsearch(hosts=settings.ES_HOSTS,
+                                  http_auth=settings.ES_AUTH,
+                                  timeout=10)
+        uuid = get_sha256_hash(username)
+        return cls.get(uuid, using=es_client)
+
+    class Index:
+        name = settings.ES_INDEX_PREFIX.format('tas_projects')
