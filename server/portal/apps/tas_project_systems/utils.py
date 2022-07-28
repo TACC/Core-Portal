@@ -54,16 +54,18 @@ def retrieve_indexed_system_variables(username):
     return dict.items(tas_project_systems)
 
 
-def get_tas_project_system_variables(user, force=False):
+def get_tas_project_system_variables(user, force=False, force_project_id=None):
     assert settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     username = user.username
     try:
-        if force:
+        if force or force_project_id is not None:
             logger.info("Forcing refresh of TAS Project Systems for user: {}".format(username))
             raise NotFoundError
         return retrieve_indexed_system_variables(username)
     except NotFoundError:
         project_ids = get_tas_project_ids(user.username)
+        if force_project_id is not None:
+            project_ids = list(filter(lambda id: id == force_project_id, project_ids))
         project_entries = []
         # Get all matching project entries definitions for a user based on their TAS project IDs
         for project_id in project_ids:
@@ -88,8 +90,8 @@ def get_datafiles_system_list(user):
     ]
 
 
-def create_tas_project_systems(user):
-    tas_project_systems = get_tas_project_system_variables(user, force=True)
+def create_tas_project_systems(user, force_project_id=None):
+    tas_project_systems = get_tas_project_system_variables(user, force=True, force_project_id=force_project_id)
 
     # Convert list of tuples to dictionary
     storage_systems = {

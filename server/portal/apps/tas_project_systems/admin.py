@@ -5,6 +5,14 @@ from django.conf import settings
 from portal.apps.tas_project_systems.models import (
     TasProjectSystemEntry
 )
+from portal.apps.tas_project_systems.utils import (
+    create_tas_project_systems
+)
+from django.contrib.auth import get_user_model
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class TasProjectSystemEntryAdminForm(ModelForm):
@@ -21,6 +29,11 @@ class TasProjectSystemEntryAdminForm(ModelForm):
 
 class TasProjectSystemEntryAdmin(admin.ModelAdmin):
     form = TasProjectSystemEntryAdminForm
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        for user in get_user_model().objects.all():
+            logger.debug("Forcing TAS Project System Creation for user {} with TAS Project ID {}".format(user.username, obj.project_sql_id))
+            create_tas_project_systems(user, force_project_id=obj.project_sql_id)
 
 
 if getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', None) is not None:
