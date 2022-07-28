@@ -77,6 +77,7 @@ def setup_projects_index(reindex=False, force=False):
         index.document(IndexedProject)
         index.create()
 
+
 def setup_tas_project_systems_index(reindex=False, force=False):
     index = setup_indexes('tas_project_systems', reindex, force)
     if not index.exists():

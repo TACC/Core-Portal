@@ -26,7 +26,6 @@ def get_tas_project_ids(username):
     return list(set([project['id'] for project in tas_client.projects_for_user(username)]))
 
 
-
 def get_system_variables_from_project_entry(user, project_entry):
     templates = settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     templateValues = templates[project_entry.template]

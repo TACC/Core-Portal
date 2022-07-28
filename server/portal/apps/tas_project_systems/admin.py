@@ -29,6 +29,7 @@ class TasProjectSystemEntryAdminForm(ModelForm):
 
 class TasProjectSystemEntryAdmin(admin.ModelAdmin):
     form = TasProjectSystemEntryAdminForm
+
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         for user in get_user_model().objects.all():

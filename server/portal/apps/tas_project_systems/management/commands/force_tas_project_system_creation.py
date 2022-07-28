@@ -1,7 +1,5 @@
 from django.core.management.base import BaseCommand
-from portal.apps.webhooks.callback import WebhookCallback
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from portal.apps.tas_project_systems.utils import create_tas_project_systems
 import logging
 
@@ -36,4 +34,3 @@ class Command(BaseCommand):
             logger.warn("Username {} does not exist locally, creating a virtual user".format(username))
 
         create_tas_project_systems(user, force_project_id=force_project_id)
-    
