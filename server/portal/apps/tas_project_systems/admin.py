@@ -13,8 +13,9 @@ class TasProjectSystemEntryAdminForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TasProjectSystemEntryAdminForm, self).__init__(*args, **kwargs)
+        templates = getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', {})
         self.fields['template'] = forms.ChoiceField(
-            choices=[(template, template) for template in settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES]
+            choices=[(template, template) for template in dict.keys(templates)]
         )
 
 

@@ -24,8 +24,7 @@ class TasProjectSystemEntry(models.Model):
     template = models.CharField(
         help_text='The template to use for creating TAPIS systems',
         max_length=64,
-        blank=False,
-        choices=[(template_name, template_name) for template_name in dict.keys(settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES)]
+        blank=False
     )
 
     def __str__(self):

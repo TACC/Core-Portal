@@ -205,6 +205,36 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     }
 ]
 
+
+#################################
+# DJANGO APP: TAS_PROJECT_SYSTEMS 
+#################################
+_PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
+    'apcd-organization': {
+        'name': '{projectname} (APCD)',
+        'description': 'Organizational storage for {projectname} (APCD)',
+        'site': 'cep',
+        'systemId': 'cloud.corral.{projectname}.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/corral-secure/tacc/apcd/{projectdir}',
+        'port': 2222,
+        'icon': None,
+        'hidden': False,
+    },
+    'apcd-submissions': {
+        'name': 'Submissions (APCD)',
+        'description': 'Submission storage for (APCD)',
+        'site': 'cep',
+        'systemId': 'cloud.corral.submissions.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/corral-secure/tacc/apcd/submissions',
+        'port': 2222,
+        'icon': None,
+        'hidden': False
+    }
+}
+
+
 #######################
 # PROJECTS SETTINGS
 #######################

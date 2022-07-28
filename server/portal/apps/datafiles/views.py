@@ -50,7 +50,7 @@ class SystemListingView(BaseApiView):
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
                 response['default_host'] = default_system['host']
-        if len(dict.keys(settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES)) > 0:
+        if settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES:
             response['system_list'] += get_datafiles_system_list(request.user)
         if portal_systems:
             response['system_list'] += portal_systems
