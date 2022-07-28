@@ -23,5 +23,5 @@ class TasProjectSystemEntryAdmin(admin.ModelAdmin):
     form = TasProjectSystemEntryAdminForm
 
 
-if settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES:
+if getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', None) is not None:
     admin.site.register(TasProjectSystemEntry, TasProjectSystemEntryAdmin)

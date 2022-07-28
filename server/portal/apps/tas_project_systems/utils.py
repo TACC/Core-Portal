@@ -28,6 +28,7 @@ def get_system_variables_from_project_entry(user, project_entry):
     templates = settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     templateValues = templates[project_entry.template]
     additional_substitutions = {
+        'projectid': project_entry.projectid,
         'projectname': project_entry.projectname,
         'projectdir': project_entry.projectdir
     }

@@ -5,6 +5,7 @@
     "fields": {
       "project_sql_id": 23881,
       "projectname": "BCBS",
+      "projectid": "bcbs",
       "projectdir": "bcbs",
       "template": "apcd-organization"
     }
@@ -15,6 +16,7 @@
     "fields": {
       "project_sql_id": 99999,
       "projectname": "United Health",
+      "projectid": "unitedhealth",
       "projectdir": "united",
       "template": "apcd-organization"
     }
@@ -25,6 +27,7 @@
     "fields": {
       "project_sql_id": 52,
       "projectname": "Submissions",
+      "projectid": "submissions",
       "projectdir": "submissions",
       "template": "apcd-submissions"
     }

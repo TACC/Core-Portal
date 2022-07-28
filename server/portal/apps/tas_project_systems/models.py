@@ -11,8 +11,13 @@ class TasProjectSystemEntry(models.Model):
         help_text='The TAS project ID to match for the user',
         blank=False
     )
+    projectid = models.CharField(
+        help_text='A projectid value to use for generating systems. Must be all lowercase, one word, no punctuation',
+        max_length=32,
+        blank=False
+    )
     projectname = models.CharField(
-        help_text='The project name',
+        help_text='The project name for display and description purposes',
         max_length=64,
         blank=False
     )

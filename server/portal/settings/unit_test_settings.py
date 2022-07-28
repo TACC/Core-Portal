@@ -540,9 +540,9 @@ PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
         'name': '{projectname} (APCD)',
         'description': 'Organizational storage for {projectname} (APCD)',
         'site': 'cep',
-        'systemId': 'cloud.corral.{projectname}.{username}',
+        'systemId': 'apcd-test.{projectid}.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/corral-secure/tacc/apcd/{projectdir}',
+        'rootDir': '/work/{tasdir}/{projectdir}',
         'port': 2222,
         'icon': None,
         'hidden': False,
@@ -551,14 +551,16 @@ PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES = {
         'name': 'Submissions (APCD)',
         'description': 'Submission storage for (APCD)',
         'site': 'cep',
-        'systemId': 'cloud.corral.submissions.{username}',
+        'systemId': 'apcd-test.submissions.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/corral-secure/tacc/apcd/submissions',
+        'rootDir': '/work/{tasdir}/{projectdir}',
         'port': 2222,
         'icon': None,
-        'hidden': False
+        'hidden': False,
     }
 }
+
+
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"

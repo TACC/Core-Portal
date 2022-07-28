@@ -57,27 +57,27 @@ def mock_get_tas_project_ids(mocker, tas_project_ids):
 def mock_IndexedTasProjectSystems(mocker):
     mock = mocker.patch('portal.apps.tas_project_systems.utils.IndexedTasProjectSystems')
     mock.from_username.return_value.value.to_dict.return_value = {
-        'cloud.corral.BCBS.mockuser': {
+        'apcd-organization': {
             'name': 'BCBS (APCD)',
             'description': 'Organizational storage for BCBS (APCD)',
-            'host': 'cloud.corral.tacc.utexas.edu',
-            'rootDir': '/corral-secure/tacc/apcd/bcbs',
             'site': 'cep',
-            'systemId': 'cloud.corral.BCBS.mockuser',
-            'hidden': False,
+            'systemId': 'apcd-test.bcbs.mockuser',
+            'host': 'cloud.corral.tacc.utexas.edu',
+            'rootDir': '/work/01234/mockuser/bcbs',
+            'port': 2222,
             'icon': None,
-            'port': 2222 
+            'hidden': False,
         },
-        'cloud.corral.submissions.mockuser': {
+        'apcd-submissions': {
             'name': 'Submissions (APCD)',
             'description': 'Submission storage for (APCD)',
             'site': 'cep',
-            'systemId': 'cloud.corral.submissions.mockuser',
+            'systemId': 'apcd-test.submissions.mockuser',
             'host': 'cloud.corral.tacc.utexas.edu',
-            'rootDir': '/corral-secure/tacc/apcd/submissions',
+            'rootDir': '/work/01234/mockuser/submissions',
             'port': 2222,
             'icon': None,
-            'hidden': False
+            'hidden': False,
         }
     }
     yield mock
@@ -93,16 +93,16 @@ def test_get_tas_project_ids(tas_project_ids):
 def test_get_system_variables_for_project_entry(regular_user):
     bcbs_project_entry = TasProjectSystemEntry.objects.all().filter(project_sql_id=23881)[0]
     variables = get_system_variables_from_project_entry(regular_user, bcbs_project_entry)
-    assert variables == ('cloud.corral.BCBS.mockuser', {
+    assert variables == ('apcd-test.bcbs.mockuser', {
         'name': 'BCBS (APCD)',
         'description': 'Organizational storage for BCBS (APCD)',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/corral-secure/tacc/apcd/bcbs',
         'site': 'cep',
-        'systemId': 'cloud.corral.BCBS.mockuser',
-        'hidden': False,
+        'systemId': 'apcd-test.bcbs.mockuser',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/work/01234/mockuser/bcbs',
+        'port': 2222,
         'icon': None,
-        'port': 2222
+        'hidden': False,
     })
 
 
@@ -129,7 +129,7 @@ def test_get_datafiles_system_list(regular_user, mock_IndexedTasProjectSystems):
         {
             'name': 'BCBS (APCD)',
             'scheme': 'private',
-            'system': 'cloud.corral.BCBS.mockuser',
+            'system': 'apcd-test.bcbs.mockuser',
             'icon': None,
             'hidden': False,
             'api': 'tapis'
@@ -137,7 +137,7 @@ def test_get_datafiles_system_list(regular_user, mock_IndexedTasProjectSystems):
         {
             'name': 'Submissions (APCD)',
             'scheme': 'private',
-            'system': 'cloud.corral.submissions.mockuser',
+            'system': 'apcd-test.submissions.mockuser',
             'icon': None,
             'hidden': False,
             'api': 'tapis'
