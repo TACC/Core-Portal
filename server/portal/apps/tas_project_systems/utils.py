@@ -155,7 +155,7 @@ def reset_cached_systems_for_username(username):
     """
     try:
         user = get_user_model().objects.get(username=username)
-    except:
+    except Exception:
         logger.error("User {} not found".format(username))
         return
     get_tas_project_system_variables(user, force=True)
@@ -169,7 +169,7 @@ def create_systems_for_tas_project(username, project_sql_id):
     """
     try:
         user = get_user_model().objects.get(username=username)
-    except:
+    except Exception:
         logger.error("User {} not found".format(username))
         return
     # Verify the user is on this TAS Project
@@ -187,7 +187,7 @@ def create_systems_for_tas_project(username, project_sql_id):
 @shared_task()
 def create_all_tas_project_systems(username):
     """
-    Given a username, force re-create all TAS project systems for them    
+    Given a username, force re-create all TAS project systems for them
     """
     user = get_user_model().objects.get(username=username)
     tas_project_systems = get_tas_project_system_variables(user, force=True)

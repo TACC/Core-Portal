@@ -1,6 +1,6 @@
 from portal.apps.onboarding.steps.tas_project_system_creation import TasProjectSystemCreationStep
 from portal.libs.agave.models.systems.storage import StorageSystem
-from mock import call 
+from mock import call
 import pytest
 from django.conf import settings
 import json

@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         if created:
             logger.warn("Username {} does not exist locally, creating a virtual user".format(username))
-        
+
         if project_sql_id is not None:
             create_systems_for_tas_project.apply_async(args=[username, project_sql_id])
         else:

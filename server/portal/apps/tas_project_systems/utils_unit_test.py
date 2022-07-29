@@ -12,7 +12,6 @@ from portal.apps.tas_project_systems.utils import (
     update_cached_project_systems
 )
 from django.core.management import call_command
-from portal.apps.tas_project_systems.models import TasProjectSystemEntry
 from elasticsearch.exceptions import NotFoundError
 
 pytestmark = pytest.mark.django_db
@@ -81,27 +80,16 @@ def test_retrieve_cached_project_systems(mock_IndexedTasProjectSystems):
     assert 'apcd-test.bcbs.mockuser' in result
 
 
-def test_update_cahced_project_systems(mock_IndexedTasProjectSystems, mocker):
+def test_update_cahced_project_systems(mock_IndexedTasProjectSystems, mock_project_systems, mocker):
     mock_cache_project_systems = mocker.patch('portal.apps.tas_project_systems.utils.cache_project_systems')
     update_cached_project_systems("mockuser", {"apcd-test.bcbs.mockuser": "test"})
     mock_cache_project_systems.assert_called_with(
-        "mockuser", 
+        "mockuser",
         {
             'apcd-test.bcbs.mockuser': "test",
-            'apcd-test.submissions.mockuser': {
-                'name': 'Submissions (APCD)',
-                'description': 'Submission storage for (APCD)',
-                'site': 'cep',
-                'systemId': 'apcd-test.submissions.mockuser',
-                'host': 'cloud.corral.tacc.utexas.edu',
-                'rootDir': '/work/01234/mockuser/submissions',
-                'port': 2222,
-                'icon': None,
-                'hidden': False,
-            } 
+            'apcd-test.submissions.mockuser': mock_project_systems['apcd-test.submissions.mockuser']
         }
     )
-
 
 
 def test_get_tas_project_ids(tas_project_ids):
@@ -111,20 +99,10 @@ def test_get_tas_project_ids(tas_project_ids):
         assert project_id in tas_project_ids
 
 
-def test_get_system_variables_for_project_sql_id(regular_user):
+def test_get_system_variables_for_project_sql_id(regular_user, mock_project_systems):
     variables = get_system_variables_from_project_sql_id(regular_user, 23881)
     assert variables == {
-        'apcd-test.bcbs.mockuser': {
-            'name': 'BCBS (APCD)',
-            'description': 'Organizational storage for BCBS (APCD)',
-            'site': 'cep',
-            'systemId': 'apcd-test.bcbs.mockuser',
-            'host': 'cloud.corral.tacc.utexas.edu',
-            'rootDir': '/work/01234/mockuser/bcbs',
-            'port': 2222,
-            'icon': None,
-            'hidden': False,
-        }
+        'apcd-test.bcbs.mockuser': mock_project_systems['apcd-test.bcbs.mockuser']
     }
 
 

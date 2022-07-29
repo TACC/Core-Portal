@@ -43,5 +43,6 @@ class TasProjectSystemEntryAdmin(admin.ModelAdmin):
             logger.debug("Removing cached entries for user {} with TAS Project ID {}".format(user.username, obj.project_sql_id))
             reset_cached_systems_for_username.apply_async(args=[user.username])
 
+
 if getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', None) is not None:
     admin.site.register(TasProjectSystemEntry, TasProjectSystemEntryAdmin)
