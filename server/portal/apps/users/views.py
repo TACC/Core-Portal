@@ -19,7 +19,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
 from portal.apps.users.utils import (get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage,
-                                     add_user, remove_user)
+                                     add_user, remove_user, get_tas_client, get_project_from_name)
 
 logger = logging.getLogger(__name__)
 
@@ -156,19 +156,31 @@ class UserDataView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class TasUsersView(BaseApiView):
-    """SOAP search endpoint for TAS users
-    """
+    """SOAP actions for TAS"""
 
-    def get(self, request):
-        search_term = request.GET.get('search')
-        if search_term is None:
-            raise HttpResponseBadRequest('No search term provided')
+    NORMAL_USER = 0
+    DELEGATE_USER = 2
+
+    def _getSOAPTASClient():
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
 
         # SOAP client via zeep
-        client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
+        try:
+            client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
                         transport=Transport(session=session, cache=InMemoryCache()))
+        except Exception:
+            raise Exception("Error getting TAS SOAP Client")
+        return client
+
+    def get(self, request):
+        """SOAP search endpoint for TAS users
+        """
+        search_term = request.GET.get('search')
+        if search_term is None:
+            raise HttpResponseBadRequest('No search term provided')
+
+        client = self._getSOAPTASClient()
 
         last_name_result = client.service.GetAccountsByLastName(search_term)
         email_result = client.service.GetAccountsByEmail(search_term)
@@ -195,6 +207,31 @@ class TasUsersView(BaseApiView):
             if entry not in result:
                 result.append(entry)
         return JsonResponse({'result': result})
+
+    def post(self, request):
+        """Updates the role of the given project user.
+        """
+        action = request.POST.get('action', None)
+        if not action:
+            return HttpResponseBadRequest('No action defined')
+        project_id = request.POST.get('projectId', None)
+        if not action:
+            return HttpResponseBadRequest('No project ID defined')
+        new_delegate = request.POST.get('newDelegate', None)
+        if not action:
+            return HttpResponseBadRequest('No new delegate defined')
+        old_delegate = request.POST.get('oldDelegate', None)
+
+        tas_project = get_project_from_name(project_id)
+        is_pi = tas_project['pi']['username'] == request.user.username
+        if not is_pi:
+            return JsonResponse({'message': 'Unauthorized: Delegates can only be assigned by the Project PI.'}, status=401)
+
+        tas_client = self._getSOAPTASClient()
+        if old_delegate:
+            tas_client.EditProjectUser(old_delegate, self.NORMAL_USER)
+        if new_delegate:
+            tas_client.EditProjectUser(new_delegate, self.DELEGATE_USER)
 
 
 @method_decorator(login_required, name='dispatch')
