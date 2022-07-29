@@ -28,86 +28,97 @@ def get_tas_project_ids(username):
     return list(set([project['id'] for project in tas_client.projects_for_user(username)]))
 
 
-def get_system_variables_from_project_entry(user, project_entry):
+def get_system_variables_from_project_sql_id(user, project_sql_id):
+    """
+    Get all project entries that match a specific Project SQL ID and return
+    a dictionary of system variables
+    """
+    result = {}
     templates = settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
-    templateValues = templates[project_entry.template]
-    additional_substitutions = {
-        'projectid': project_entry.projectid,
-        'projectname': project_entry.projectname,
-        'projectdir': project_entry.projectdir
-    }
-    return substitute_user_variables(user, templateValues['systemId'], templateValues, additional_substitutions=additional_substitutions)
+    project_entries = TasProjectSystemEntry.objects.all().filter(project_sql_id=project_sql_id)
+    for project_entry in project_entries:
+        templateValues = templates[project_entry.template]
+        additional_substitutions = {
+            'projectid': project_entry.projectid,
+            'projectname': project_entry.projectname,
+            'projectdir': project_entry.projectdir
+        }
+        systemId, variables = substitute_user_variables(
+            user, templateValues['systemId'],
+            templateValues,
+            additional_substitutions=additional_substitutions
+        )
+        result[systemId] = variables
+    return result
 
 
-def index_project_systems(username, variable_mapping):
-    tas_project_systems = {
-        systemId: variables for systemId, variables in variable_mapping
-    }
+def cache_project_systems(username, tas_project_systems):
+    """
+    Save a dictionary of system variables to elasticsearch
+    """
     doc = IndexedTasProjectSystems(username=username, value=tas_project_systems)
     doc.meta.id = get_sha256_hash(username)
     doc.save()
 
 
-def retrieve_indexed_system_variables(username):
+def update_cached_project_systems(username, tas_project_systems):
+    """
+    Merge a dictionary of system variables into a user's record of system varaibles in elasticsearch
+    """
+    merged = {}
+    try:
+        cached = retrieve_cached_system_variables(username)
+        merged.update(cached)
+    except NotFoundError:
+        pass
+        merged.update(tas_project_systems)
+    merged.update(tas_project_systems)
+    cache_project_systems(username, merged)
+
+
+def retrieve_cached_system_variables(username):
+    """
+    Retrieve a dictionary of any system variables cached in elasticsearch
+    """
     tas_project_systems = {}
     cached = IndexedTasProjectSystems.from_username(username).value.to_dict()
     tas_project_systems.update(cached)
-    return dict.items(tas_project_systems)
+    return tas_project_systems
 
 
-def get_tas_project_system_variables(user, force=False, force_project_id=None):
+def get_tas_project_system_variables(user, force=False):
     assert settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     username = user.username
     try:
-        if force or force_project_id is not None:
+        if force:
             logger.info("Forcing refresh of TAS Project Systems for user: {}".format(username))
             raise NotFoundError
-        return retrieve_indexed_system_variables(username)
+        return retrieve_cached_system_variables(username)
     except NotFoundError:
-        project_ids = get_tas_project_ids(user.username)
-        if force_project_id is not None:
-            project_ids = list(filter(lambda id: id == force_project_id, project_ids))
-        project_entries = []
-        # Get all matching project entries definitions for a user based on their TAS project IDs
-        for project_id in project_ids:
-            project_entries += [project_entry for project_entry in TasProjectSystemEntry.objects.all().filter(project_sql_id=project_id)]
-        # Generate system variables for use in system creation based off of matching project entries
-        variable_mapping = [get_system_variables_from_project_entry(user, project_entry) for project_entry in project_entries]
-        index_project_systems(username, variable_mapping)
-        return variable_mapping
+        project_sql_ids = get_tas_project_ids(user.username)
+        tas_project_systems = {}
+        for project_sql_id in project_sql_ids:
+            tas_project_systems.update(get_system_variables_from_project_sql_id(user, project_sql_id))
+        cache_project_systems(user.username, tas_project_systems)
+        return tas_project_systems
 
 
 def get_datafiles_system_list(user):
-    system_variables = get_tas_project_system_variables(user)
+    system_variables = dict.values(get_tas_project_system_variables(user))
     return [
         {
-            'name': system_variable[1]['name'],
-            'system':  system_variable[1]['systemId'],
+            'name': system_variable['name'],
+            'system':  system_variable['systemId'],
             'scheme': 'private',
             'api': 'tapis',
-            'icon': system_variable[1]['icon'],
-            'hidden': system_variable[1]['hidden'] if 'hidden' in system_variable else False
+            'icon': system_variable['icon'],
+            'hidden': system_variable['hidden'] if 'hidden' in system_variable else False
         } for system_variable in system_variables
     ]
 
 
-@shared_task()
-def create_tas_project_systems(username, force_project_id=None):
-    user = get_user_model().objects.get(username=username)
-    tas_project_systems = get_tas_project_system_variables(user, force=True, force_project_id=force_project_id)
-
-    # Convert list of tuples to dictionary
-    storage_systems = {
-        systemId: variables for systemId, variables in tas_project_systems
-    }
-    logger.debug("Unpacking systems to create: {}".format(storage_systems))
-
-    # Create a list of tuples of systemId, variables from substitute_user_variables
-    substituted = [
-        substitute_user_variables(user, v['systemId'], v) for k, v in storage_systems.items()
-    ]
-
-    for systemId, variables in substituted:
+def create_systems(user, tas_project_systems):
+    for systemId, variables in dict.items(tas_project_systems):
         result = call_reactor(
             user,
             systemId,
@@ -124,6 +135,34 @@ def create_tas_project_systems(username, force_project_id=None):
                 result['executionId']
             )
         )
+
+
+@shared_task()
+def create_systems_for_tas_project(username, project_sql_id):
+    # Find the user
+    try:
+        user = get_user_model().objects.get(username=username)
+    except:
+        logger.error("User {} not found".format(username))
+        return
+    # Verify the user is on this TAS Project
+    project_ids = get_tas_project_ids(username)
+    if project_sql_id not in project_ids:
+        logger.error("User {} is not a member of TAS Project {}".format(username, project_sql_id))
+        return
+    # Get updated systems
+    updated_systems = get_system_variables_from_project_sql_id(user, project_sql_id)
+    update_cached_project_systems(username, updated_systems)
+    # Fire off system creation
+    create_systems(user, updated_systems)
+
+
+@shared_task()
+def create_all_tas_project_systems(username):
+    user = get_user_model().objects.get(username=username)
+    tas_project_systems = get_tas_project_system_variables(user, force=True)
+    # Fire off system creation
+    create_systems(user, tas_project_systems)
 
 
 class ForceTasProjectSystemCreationCallback(WebhookCallback):

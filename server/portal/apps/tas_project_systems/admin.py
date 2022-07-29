@@ -6,7 +6,7 @@ from portal.apps.tas_project_systems.models import (
     TasProjectSystemEntry
 )
 from portal.apps.tas_project_systems.utils import (
-    create_tas_project_systems
+    create_systems_for_tas_project
 )
 from django.contrib.auth import get_user_model
 import logging
@@ -34,7 +34,7 @@ class TasProjectSystemEntryAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         for user in get_user_model().objects.all():
             logger.debug("Forcing TAS Project System Creation for user {} with TAS Project ID {}".format(user.username, obj.project_sql_id))
-            create_tas_project_systems.apply_async(args=[user.username], kwargs={'force_project_id': obj.project_sql_id})
+            create_systems_for_tas_project.apply_async(args=[user.username, obj.project_sql_id])
 
 
 if getattr(settings, 'PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES', None) is not None:

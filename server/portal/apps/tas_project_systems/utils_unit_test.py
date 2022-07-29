@@ -6,7 +6,7 @@ from portal.apps.tas_project_systems.utils import (
     get_tas_project_ids,
     get_datafiles_system_list,
     get_tas_project_system_variables,
-    get_system_variables_from_project_entry
+    get_system_variables_from_project_sql_id
 )
 from django.core.management import call_command
 from portal.apps.tas_project_systems.models import TasProjectSystemEntry
@@ -57,7 +57,7 @@ def mock_get_tas_project_ids(mocker, tas_project_ids):
 def mock_IndexedTasProjectSystems(mocker):
     mock = mocker.patch('portal.apps.tas_project_systems.utils.IndexedTasProjectSystems')
     mock.from_username.return_value.value.to_dict.return_value = {
-        'apcd-organization': {
+        'apcd-test.bcbs.mockuser': {
             'name': 'BCBS (APCD)',
             'description': 'Organizational storage for BCBS (APCD)',
             'site': 'cep',
@@ -68,7 +68,7 @@ def mock_IndexedTasProjectSystems(mocker):
             'icon': None,
             'hidden': False,
         },
-        'apcd-submissions': {
+        'apcd-test.submissions.mockuser': {
             'name': 'Submissions (APCD)',
             'description': 'Submission storage for (APCD)',
             'site': 'cep',
@@ -90,20 +90,21 @@ def test_get_tas_project_ids(tas_project_ids):
         assert project_id in tas_project_ids
 
 
-def test_get_system_variables_for_project_entry(regular_user):
-    bcbs_project_entry = TasProjectSystemEntry.objects.all().filter(project_sql_id=23881)[0]
-    variables = get_system_variables_from_project_entry(regular_user, bcbs_project_entry)
-    assert variables == ('apcd-test.bcbs.mockuser', {
-        'name': 'BCBS (APCD)',
-        'description': 'Organizational storage for BCBS (APCD)',
-        'site': 'cep',
-        'systemId': 'apcd-test.bcbs.mockuser',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/01234/mockuser/bcbs',
-        'port': 2222,
-        'icon': None,
-        'hidden': False,
-    })
+def test_get_system_variables_for_project_sql_id(regular_user):
+    variables = get_system_variables_from_project_sql_id(regular_user, 23881)
+    assert variables == {
+        'apcd-test.bcbs.mockuser': {
+            'name': 'BCBS (APCD)',
+            'description': 'Organizational storage for BCBS (APCD)',
+            'site': 'cep',
+            'systemId': 'apcd-test.bcbs.mockuser',
+            'host': 'cloud.corral.tacc.utexas.edu',
+            'rootDir': '/work/01234/mockuser/bcbs',
+            'port': 2222,
+            'icon': None,
+            'hidden': False,
+        }
+    }
 
 
 def test_get_tas_project_system_variables(regular_user, mock_IndexedTasProjectSystems):

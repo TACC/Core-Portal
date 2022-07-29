@@ -36,15 +36,11 @@ class TasProjectSystemCreationStep(AbstractStep):
     def process(self):
         tas_project_systems = get_tas_project_system_variables(self.user, force=True)
 
-        # Convert list of tuples to dictionary
-        systems = {
-            systemId: variables for systemId, variables in tas_project_systems
-        }
-        self.logger.debug("KeyService variables substituted: {}".format(systems))
+        self.logger.debug("KeyService variables substituted: {}".format(tas_project_systems))
 
         # Create only storage systems that are not currently accessible
         systemList = []
-        for systemId in systems.keys():
+        for systemId in tas_project_systems.keys():
             try:
                 success, _ = StorageSystem(self.user.agave_oauth.client, id=systemId, load=False).test()
             except RequestException as err:
