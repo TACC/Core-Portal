@@ -14,7 +14,6 @@ from portal.libs.agave.filter_mapping import filter_mapping
 logger = logging.getLogger(__name__)
 
 
-
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     """
     Perform a Tapis file listing
