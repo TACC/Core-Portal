@@ -67,16 +67,15 @@ def update_cached_project_systems(username, tas_project_systems):
     """
     merged = {}
     try:
-        cached = retrieve_cached_system_variables(username)
+        cached = retrieve_cached_project_systems(username)
         merged.update(cached)
     except NotFoundError:
-        pass
         merged.update(tas_project_systems)
     merged.update(tas_project_systems)
     cache_project_systems(username, merged)
 
 
-def retrieve_cached_system_variables(username):
+def retrieve_cached_project_systems(username):
     """
     Retrieve a dictionary of any system variables cached in elasticsearch
     """
@@ -97,7 +96,7 @@ def get_tas_project_system_variables(user, force=False):
         if force:
             logger.info("Forcing refresh of TAS Project Systems for user: {}".format(username))
             raise NotFoundError
-        return retrieve_cached_system_variables(username)
+        return retrieve_cached_project_systems(username)
     except NotFoundError:
         project_sql_ids = get_tas_project_ids(user.username)
         tas_project_systems = {}

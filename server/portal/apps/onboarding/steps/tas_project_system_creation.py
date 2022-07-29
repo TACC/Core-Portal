@@ -69,7 +69,7 @@ class TasProjectSystemCreationStep(AbstractStep):
             'successful': []
         }
 
-        for systemId, variables in tas_project_systems:
+        for systemId, variables in tas_project_systems.items():
             result = call_reactor(
                 self.user,
                 systemId,
