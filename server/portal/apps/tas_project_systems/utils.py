@@ -87,6 +87,10 @@ def retrieve_cached_system_variables(username):
 
 
 def get_tas_project_system_variables(user, force=False):
+    """
+    Get a dictionary of TAS project system variable mappings, first looking for a pre-existing
+    dictionary for a user in the elasticsearch cache
+    """
     assert settings.PORTAL_TAS_PROJECT_SYSTEMS_TEMPLATES
     username = user.username
     try:
@@ -104,6 +108,9 @@ def get_tas_project_system_variables(user, force=False):
 
 
 def get_datafiles_system_list(user):
+    """
+    Transform the dictionary of TAS Project System variable into something Data Files understands
+    """
     system_variables = dict.values(get_tas_project_system_variables(user))
     return [
         {
@@ -118,7 +125,11 @@ def get_datafiles_system_list(user):
 
 
 def create_systems(user, tas_project_systems):
+    """
+    Run system creation via key service reactor with callbacks on the given dictionary of systems
+    """
     for systemId, variables in dict.items(tas_project_systems):
+        logger.debug("Calling system creation reactor for {} with {}".format(systemId, variables))
         result = call_reactor(
             user,
             systemId,
@@ -138,8 +149,25 @@ def create_systems(user, tas_project_systems):
 
 
 @shared_task()
+def reset_cached_systems_for_username(username):
+    """
+    Recomputes the cached records of any TAS project systems associated with the project_sql_id
+    This DOES NOT delete the actual TAPIS system
+    """
+    try:
+        user = get_user_model().objects.get(username=username)
+    except:
+        logger.error("User {} not found".format(username))
+        return
+    get_tas_project_system_variables(user, force=True)
+
+
+@shared_task()
 def create_systems_for_tas_project(username, project_sql_id):
-    # Find the user
+    """
+    Given a username and project_sql_id, force re-create TAS Project Systems associated
+    with a specific project_sql_id
+    """
     try:
         user = get_user_model().objects.get(username=username)
     except:
@@ -159,6 +187,9 @@ def create_systems_for_tas_project(username, project_sql_id):
 
 @shared_task()
 def create_all_tas_project_systems(username):
+    """
+    Given a username, force re-create all TAS project systems for them    
+    """
     user = get_user_model().objects.get(username=username)
     tas_project_systems = get_tas_project_system_variables(user, force=True)
     # Fire off system creation
