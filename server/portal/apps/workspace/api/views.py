@@ -26,6 +26,7 @@ from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from server.portal.apps.workspace.api.handlers.tapis_v2 import tapis_client
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -191,8 +192,11 @@ class MetadataView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
+    # TODO: Refactor so that this gets from args instead of GET.get()
     def get(self, request, *args, **kwargs):
+        # Rename to client and 
         agave = request.user.agave_oauth.client
+        # replace
         job_id = request.GET.get('job_id')
 
         # get specific job info
