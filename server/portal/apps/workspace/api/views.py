@@ -167,11 +167,8 @@ class MetadataView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    # TODO: Refactor so that this gets from args instead of GET.get()
     def get(self, request, *args, **kwargs):
-        # Rename to client and 
         agave = request.user.agave_oauth.client
-        # replace
         job_id = request.GET.get('job_id')
 
         # get specific job info
