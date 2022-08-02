@@ -22,7 +22,7 @@ from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
-from portal.apps.workspace.api.handlers.tapis_v2 import (apps_get_handler)
+from portal.apps.workspace.api.handlers.tapis_handlers import (apps_get_handler)
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
