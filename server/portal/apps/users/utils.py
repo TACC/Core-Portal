@@ -155,7 +155,7 @@ def get_allocations(username, force=False):
         return allocations
 
 
-def get_usernames(project_name):
+def get_project_users_from_name(project_name):
     """Returns list of project users
 
     : returns: usernames

@@ -18,7 +18,7 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import (get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage,
+from portal.apps.users.utils import (get_allocations, get_project_users_from_name, get_user_data, get_per_user_allocation_usage,
                                      add_user, remove_user, get_tas_client, get_project_from_name)
 
 logger = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ class TeamView(BaseApiView):
         : returns: {'usernames': usernames}
         : rtype: dict
         """
-        usernames = get_usernames(project_name)
+        usernames = get_project_users_from_name(project_name)
         return JsonResponse({'response': usernames}, safe=False)
 
 
@@ -162,15 +162,16 @@ class TasUsersView(BaseApiView):
     DELEGATE_USER = 2
 
     def _getSOAPTASClient():
+        """SOAP client via zeep
+        """
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
 
-        # SOAP client via zeep
         try:
             client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
-                        transport=Transport(session=session, cache=InMemoryCache()))
+                            transport=Transport(session=session, cache=InMemoryCache()))
         except Exception:
-            raise Exception("Error getting TAS SOAP Client")
+            raise Exception("Error instantiating TAS SOAP Client")
         return client
 
     def get(self, request):
@@ -209,29 +210,37 @@ class TasUsersView(BaseApiView):
         return JsonResponse({'result': result})
 
     def post(self, request):
-        """Updates the role of the given project user.
+        """SOAP management endpoints for TAS
         """
         action = request.POST.get('action', None)
         if not action:
             return HttpResponseBadRequest('No action defined')
-        project_id = request.POST.get('projectId', None)
-        if not action:
+
+        op = getattr(self, action)
+        op(request)
+
+    def assign_delegate(self, request):
+        """Assign a new project delegate.
+        """
+        project_name = request.POST.get('projectName', None)
+        if not project_name:
             return HttpResponseBadRequest('No project ID defined')
         new_delegate = request.POST.get('newDelegate', None)
-        if not action:
+        if not new_delegate:
             return HttpResponseBadRequest('No new delegate defined')
-        old_delegate = request.POST.get('oldDelegate', None)
 
-        tas_project = get_project_from_name(project_id)
+        tas_project = get_project_from_name(project_name)
         is_pi = tas_project['pi']['username'] == request.user.username
         if not is_pi:
-            return JsonResponse({'message': 'Unauthorized: Delegates can only be assigned by the Project PI.'}, status=401)
+            return JsonResponse({'message': 'Forbidden: Delegates can only be assigned by the Project PI.'}, status=403)
 
         tas_client = self._getSOAPTASClient()
-        if old_delegate:
-            tas_client.EditProjectUser(old_delegate, self.NORMAL_USER)
-        if new_delegate:
-            tas_client.EditProjectUser(new_delegate, self.DELEGATE_USER)
+        try:
+            tas_client.service.EditProjectUser(new_delegate, self.DELEGATE_USER)
+        except Exception:
+            raise Exception(f"Error assigning new delegate {new_delegate} to project {project_name}")
+
+        return JsonResponse({'response': 'ok'})
 
 
 @method_decorator(login_required, name='dispatch')
