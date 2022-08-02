@@ -158,9 +158,6 @@ class UserDataView(BaseApiView):
 class TasUsersView(BaseApiView):
     """SOAP actions for TAS"""
 
-    NORMAL_USER = 0
-    DELEGATE_USER = 2
-
     def _getSOAPTASClient():
         """SOAP client via zeep
         """
@@ -209,36 +206,29 @@ class TasUsersView(BaseApiView):
                 result.append(entry)
         return JsonResponse({'result': result})
 
-    def post(self, request):
-        """SOAP management endpoints for TAS
+    def put(self, request):
+        """SOAP endpoint to update TAS project user roles
         """
-        action = request.POST.get('action', None)
-        if not action:
-            return HttpResponseBadRequest('No action defined')
-
-        op = getattr(self, action)
-        op(request)
-
-    def assign_delegate(self, request):
-        """Assign a new project delegate.
-        """
-        project_name = request.POST.get('projectName', None)
+        project_name = request.PUT.get('projectName', None)
         if not project_name:
-            return HttpResponseBadRequest('No project ID defined')
-        new_delegate = request.POST.get('newDelegate', None)
-        if not new_delegate:
-            return HttpResponseBadRequest('No new delegate defined')
+            return HttpResponseBadRequest('No project name defined')
+        user_role = request.PUT.get('userRole', None)
+        if not user_role:
+            return HttpResponseBadRequest('No new user role defined')
+        user_id = request.PUT.get('userId', None)
+        if not user_id:
+            return HttpResponseBadRequest('No user id defined')
 
         tas_project = get_project_from_name(project_name)
         is_pi = tas_project['pi']['username'] == request.user.username
         if not is_pi:
-            return JsonResponse({'message': 'Forbidden: Delegates can only be assigned by the Project PI.'}, status=403)
+            return JsonResponse({'message': 'Forbidden: Project roles can only be assigned by the Project PI.'}, status=403)
 
         tas_client = self._getSOAPTASClient()
         try:
-            tas_client.service.EditProjectUser(new_delegate, self.DELEGATE_USER)
+            tas_client.service.EditProjectUser(user_id, user_role)
         except Exception:
-            raise Exception(f"Error assigning new delegate {new_delegate} to project {project_name}")
+            raise Exception(f"Error assigning user: {user_id} new role: {user_role} to project: {project_name}")
 
         return JsonResponse({'response': 'ok'})
 
