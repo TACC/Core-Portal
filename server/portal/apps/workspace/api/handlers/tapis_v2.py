@@ -1,55 +1,47 @@
-from portal.libs.agave import operations
-from django.core.exceptions import PermissionDenied
-from portal.libs.agave.utils import service_account
-from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden
 import logging
+import json
+from django.conf import settings
+from portal.apps.workspace.api.operations.tapis_v2 import (get_app, get_applisting)
+
+
 logger = logging.getLogger(__name__)
+METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
-allowed_actions = {
-    'private': ['listing', 'search', 'copy', 'download', 'mkdir',
-                'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'delete'],
-    'public': ['listing', 'search', 'copy', 'download', 'preview'],
-    'community': ['listing', 'search', 'copy', 'download', 'preview'],
-    'projects': ['listing', 'search', 'copy', 'download', 'mkdir',
-                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic']
-}
+def apps_get_handler(client, app_id, user, name, public_only):
+    if app_id:
+        METRICS.debug("user:{} is requesting app id:{}".format(user.username, app_id))
+        return get_app(client, user, app_id)
+    else:
+        METRICS.debug("user:{} is requesting all public apps".format(user.username))
+        return get_applisting(client, public_only, name)
 
-# tapis_client(request.user.agave_oauth.client)
-def tapis_client(request, system):
-    try:
-        client = request.user.agave_oauth.client
-    except AttributeError:
-        # Make sure that we only let unauth'd users see public systems
-        if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                if sys['system'] == system and sys['scheme'] == 'public'):
-            client = service_account()
-        else:
-            return HttpResponseForbidden
-    return client
+def monitor_get_handler():
+    pass
 
+def metadata_get_handler():
+    pass
 
-def tapis_get_handler(client, scheme, system, path, operation, **kwargs):
-    if operation not in allowed_actions[scheme]:
-        raise PermissionDenied
-    op = getattr(operations, operation)
-    return op(client, system, path, **kwargs)
+def metadata_post_handler():
+    pass
 
+def metadata_delete_handler():
+    pass
 
-def tapis_post_handler(client, scheme, system,
-                       path, operation, body=None):
-    if operation not in allowed_actions[scheme]:
-        raise PermissionDenied("")
+def jobs_get_handler():
+    pass
 
-    op = getattr(operations, operation)
-    return op(client, system, path, **body)
+def jobs_delete_handler():
+    pass
 
+def jobs_post_handler():
+    pass
 
-def tapis_put_handler(client, scheme, system,
-                      path, operation, body=None):
-    if operation not in allowed_actions[scheme]:
-        raise PermissionDenied
+def system_get_handler():
+    pass
 
-    op = getattr(operations, operation)
+def system_post_handler():
+    pass
 
-    return op(client, system, path, **body)
+def job_history_get_handler():
+    pass
+

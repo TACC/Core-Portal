@@ -22,11 +22,11 @@ from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
+from portal.apps.workspace.api.handlers.tapis_v2 import (apps_get_handler)
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from server.portal.apps.workspace.api.handlers.tapis_v2 import tapis_client
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -85,38 +85,13 @@ def _get_app(app_id, user):
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        public_only = request.GET.get('publicOnly')
+        name = request.GET.get('name', None)
+        client = request.user.agave_oauth.client
         app_id = request.GET.get('app_id')
-        if app_id:
-            METRICS.debug("user:{} is requesting app id:{}".format(request.user.username, app_id))
-            data = _get_app(app_id, request.user)
-
-            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
-                # check if default system needs keys pushed
-                default_sys = UserSystemsManager(
-                    request.user,
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                )
-                storage_sys = StorageSystem(agave, default_sys.get_system_id())
-                success, result = storage_sys.test()
-                data['systemHasKeys'] = success
-                data['pushKeysSystem'] = storage_sys.to_dict()
-        else:
-            METRICS.debug("user:{} is requesting all public apps".format(request.user.username))
-            public_only = request.GET.get('publicOnly')
-            name = request.GET.get('name', None)
-            list_kwargs = {}
-            if public_only == 'true':
-                list_kwargs['publicOnly'] = 'true'
-            else:
-                list_kwargs['privateOnly'] = True
-            if name:
-                list_kwargs['query'] = {
-                    "name": name
-                }
-            data = {'appListing': agave.apps.list(**list_kwargs)}
-
-        return JsonResponse({"response": data})
+        user = request.user
+        response = apps_get_handler(client, app_id, user, name, public_only)
+        return JsonResponse({"response": response})
 
 
 @method_decorator(login_required, name='dispatch')
