@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from "react-router-dom";
-import { number, bool, func } from 'prop-types';
+import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';

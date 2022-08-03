@@ -5,7 +5,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   getAllocationsUtil,
-  getTeamsUtil,
+  getProjectUsersUtil,
   populateTeamsUtil,
   getUsageUtil,
   teamPayloadUtil,
@@ -46,7 +46,7 @@ describe('Utils', () => {
 
     const fakeProjectId = 1234;
     fakeParams.url = `/api/users/team/${fakeProjectId}`;
-    getTeamsUtil(fakeProjectId);
+    getProjectUsersUtil(fakeProjectId);
     expect(fetchUtil).toHaveBeenCalledWith(fakeParams);
   });
 
@@ -134,7 +134,7 @@ describe('Allocations Sagas', () => {
       .provide({
         call(effect, next) {
           switch (effect.fn) {
-            case getTeamsUtil:
+            case getProjectUsersUtil:
               return testProjectUsers;
             case getUsageUtil:
               if (
