@@ -10,7 +10,10 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import { AllocationsRequestModal, AllocationsTeamViewModal } from './AllocationsModals';
+import {
+  AllocationsRequestModal,
+  AllocationsTeamViewModal,
+} from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 import './Allocations.global.css';

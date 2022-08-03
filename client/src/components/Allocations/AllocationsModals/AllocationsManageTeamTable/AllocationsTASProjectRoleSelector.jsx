@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { useDispatch } from 'react-redux';
 import DropdownSelector from '_common/DropdownSelector';
-import {fetchUtil} from 'utils/fetchUtil';
+import { fetchUtil } from 'utils/fetchUtil';
 import { Button } from '_common';
 import styles from './AllocationsManageTeamTable.module.scss';
-
 
 const setProjectRole = async (projectId, userId, role) => {
   const roleMap = {
@@ -14,14 +13,14 @@ const setProjectRole = async (projectId, userId, role) => {
   };
   const url = `/api/users/tas-users/`;
   const response = await fetchUtil({
-        url,
-        method: 'PUT',
-        body: JSON.stringify({
-            userId,
-            role: roleMap[role],
-            projectId,
-        }),
-    });
+    url,
+    method: 'PUT',
+    body: JSON.stringify({
+      userId,
+      role: roleMap[role],
+      projectId,
+    }),
+  });
   return response;
 };
 
@@ -30,8 +29,8 @@ export const useProjectRole = (projectId, userId) => {
   const mutation = useMutation(async (role) => {
     await setProjectRole(projectId, userId, role);
     dispatch({
-        type: 'GET_PROJECT_USERS',
-        payload: { projectId },
+      type: 'GET_PROJECT_USERS',
+      payload: { projectId },
     });
   });
   return { mutation };

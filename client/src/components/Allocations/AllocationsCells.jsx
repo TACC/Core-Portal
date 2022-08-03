@@ -16,10 +16,7 @@ export const Team = ({ cell: { value } }) => {
   const history = useHistory();
   return (
     <>
-      <Button
-        onClick={() => history.push(`${page}/${projectId}`)}
-        size="small"
-      >
+      <Button onClick={() => history.push(`${page}/${projectId}`)} size="small">
         View Team
       </Button>
     </>

@@ -23,7 +23,6 @@ describe('New Allocations Request Modal', () => {
   });
 });
 
-
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
@@ -32,8 +31,7 @@ jest.mock('react-router-dom', () => ({
   useLocation: () => ({
     pathname: '/allocations/approved',
   }),
-}))
-
+}));
 
 describe('View Team Modal', () => {
   const testProps = {
@@ -104,11 +102,11 @@ describe('View Team Modal', () => {
             loading: true,
           },
         },
-      }
+      },
     });
     const { getByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store,
+      store
     );
 
     expect(getByText(/Loading user list./)).toBeDefined();
@@ -120,7 +118,7 @@ describe('View Team Modal', () => {
     // Render Modal
     const { getByText, queryByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store,
+      store
     );
 
     // Check for the list of users
@@ -148,12 +146,12 @@ describe('View Team Modal', () => {
         errors: {
           teams: { 1234: new Error('Unable to fetch') },
         },
-      }
+      },
     });
 
     const { getByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store,
+      store
     );
 
     expect(getByText(/Unable to retrieve team data./)).toBeDefined();
@@ -168,9 +166,9 @@ describe('View Team Modal', () => {
         },
       },
     });
-    const { queryByText } =renderComponent(
+    const { queryByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store,
+      store
     );
     expect(queryByText(/Manage Team/)).toBeNull();
   });
@@ -186,7 +184,7 @@ describe('View Team Modal', () => {
     });
     const { getByText } = renderComponent(
       <AllocationsTeamViewModal {...testProps} />,
-      store,
+      store
     );
     expect(getByText(/Manage Team/).closest('button')).toBeDefined();
   });

@@ -15,7 +15,9 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
     (state) => state.authenticatedUser.user.username
   );
 
-  const currentUserRole = data.find(u => u.username == authenticatedUser)?.role;
+  const currentUserRole = data.find(
+    (u) => u.username == authenticatedUser
+  )?.role;
   const columns = React.useMemo(
     () => [
       {
@@ -32,7 +34,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       },
       {
         Header: 'Role',
-        accessor: ({id: userId, username, role}) => {
+        accessor: ({ id: userId, username, role }) => {
           // PIs cannot have roles changed.
           // Users cannot change their own roles.
           // Only PIs can change roles.

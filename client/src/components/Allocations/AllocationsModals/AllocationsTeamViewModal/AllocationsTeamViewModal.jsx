@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
@@ -13,10 +13,7 @@ import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 
-const AllocationsTeamViewModal = ({
-  isOpen,
-  toggle,
-}) => {
+const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   const { projectId } = useParams();
   const {
     teams,
@@ -27,9 +24,7 @@ const AllocationsTeamViewModal = ({
     removingUserOperation,
   } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
-  const user = useSelector(
-    (state) => state.authenticatedUser.user.username
-  );
+  const user = useSelector((state) => state.authenticatedUser.user.username);
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
   const [isManager, setManager] = useState(false);

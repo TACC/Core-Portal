@@ -18,8 +18,8 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import (get_allocations, get_project_users_from_name, get_user_data, get_per_user_allocation_usage,
-                                     add_user, remove_user, get_tas_client, get_project_from_id, get_project_users_from_id)
+from portal.apps.users.utils import (get_allocations, get_user_data, get_per_user_allocation_usage,
+                                     add_user, remove_user, get_project_from_id, get_project_users_from_id)
 
 logger = logging.getLogger(__name__)
 
