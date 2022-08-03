@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { shape, arrayOf, number, string } from 'prop-types';
 import { Badge } from 'reactstrap';
-import { Button } from '_common';
-import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { AllocationsTeamViewModal } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -13,30 +11,15 @@ const CELL_PROPTYPES = {
 };
 
 export const Team = ({ cell: { value } }) => {
-  const dispatch = useDispatch();
-  const [teamModal, setTeamModal] = useState(false);
-  const { projectId, name } = value;
+  const { projectId, page } = value;
   return (
     <>
-      <Button
-        onClick={() => {
-          dispatch({
-            type: 'GET_TEAMS',
-            payload: { ...value },
-          });
-          setTeamModal(true);
-        }}
-        size="small"
-        disabled={teamModal}
+      <Link
+        to={`${page}/${projectId}`}
+        className="btn btn-secondary btn-sm"
       >
         View Team
-      </Button>
-      <AllocationsTeamViewModal
-        isOpen={teamModal}
-        projectId={projectId}
-        toggle={() => setTeamModal(!teamModal)}
-        projectName={name}
-      />
+      </Link>
     </>
   );
 };
@@ -44,7 +27,7 @@ Team.propTypes = {
   cell: shape({
     value: shape({
       projectId: number.isRequired,
-      name: string.isRequired,
+      page: string.isRequired,
     }).isRequired,
   }).isRequired,
 };

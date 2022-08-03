@@ -10,7 +10,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import { AllocationsRequestModal } from './AllocationsModals';
+import { AllocationsRequestModal, AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 import './Allocations.global.css';
@@ -87,6 +87,14 @@ export const Layout = ({ page }) => {
           )}
           <Route exact path={`${root}/manage`}>
             <AllocationsRequestModal
+              isOpen
+              toggle={() => {
+                history.push(root);
+              }}
+            />
+          </Route>
+          <Route path={`${root}/:projectId`}>
+            <AllocationsTeamViewModal
               isOpen
               toggle={() => {
                 history.push(root);

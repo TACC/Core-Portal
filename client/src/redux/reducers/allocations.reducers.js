@@ -65,7 +65,7 @@ export function allocations(state = initialState, action) {
           },
         },
       };
-    case 'GET_TEAMS_INIT':
+    case 'GET_PROJECT_USERS_INIT':
       return {
         ...state,
         loadingUsernames: {

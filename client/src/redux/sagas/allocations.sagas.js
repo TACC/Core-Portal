@@ -74,7 +74,7 @@ export const allocationsSelector = (state) => [
 export function* getUsernames(action) {
   try {
     yield put({
-      type: 'GET_TEAMS_INIT',
+      type: 'GET_PROJECT_USERS_INIT',
       payload: action.payload.projectId
     });
     const json = yield call(getTeamsUtil, action.payload.projectId);
@@ -293,12 +293,11 @@ export function* addUser(action) {
     });
     yield call(manageUtil, action.payload.projectId, action.payload.id);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
-    const { projectId, projectName } = action.payload;
+    const { projectId } = action.payload;
     yield put({
       type: 'GET_MANAGE_TEAMS',
       payload: {
         projectId,
-        name: projectName,
       },
     });
   } catch (error) {
@@ -369,7 +368,7 @@ export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
 export function* watchTeams() {
-  yield takeLatest('GET_TEAMS', getUsernames);
+  yield takeLatest('GET_PROJECT_USERS', getUsernames);
 }
 export function* watchManageTeams() {
   yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);

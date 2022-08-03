@@ -30,7 +30,7 @@ export const useProjectRole = (projectId, userId) => {
   const mutation = useMutation(async (role) => {
     await setProjectRole(projectId, userId, role);
     dispatch({
-        type: 'GET_TEAMS',
+        type: 'GET_PROJECT_USERS',
         payload: { projectId },
     });
   });

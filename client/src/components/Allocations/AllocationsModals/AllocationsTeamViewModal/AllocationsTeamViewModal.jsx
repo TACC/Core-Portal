@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from "react-router-dom";
 import { number, bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
@@ -15,9 +16,8 @@ import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTab
 const AllocationsTeamViewModal = ({
   isOpen,
   toggle,
-  projectId,
-  projectName,
 }) => {
+  const { projectId } = useParams();
   const {
     teams,
     loadingUsernames,
@@ -52,6 +52,10 @@ const AllocationsTeamViewModal = ({
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
     });
+    dispatch({
+      type: 'GET_PROJECT_USERS',
+      payload: { projectId },
+    });
   }, [isOpen]);
 
   const onAdd = useCallback(
@@ -61,7 +65,6 @@ const AllocationsTeamViewModal = ({
         payload: {
           projectId,
           id: newUser.user.username,
-          projectName,
         },
       });
     },
@@ -183,7 +186,6 @@ const AllocationsTeamViewModal = ({
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  projectId: number.isRequired,
 };
 
 export default AllocationsTeamViewModal;

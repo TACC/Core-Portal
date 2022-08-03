@@ -301,7 +301,7 @@ describe('Effect Creators', () => {
 
     testSaga(watchTeams)
       .next()
-      .takeLatest('GET_TEAMS', getUsernames)
+      .takeLatest('GET_PROJECT_USERS', getUsernames)
       .next()
       .isDone();
   });
