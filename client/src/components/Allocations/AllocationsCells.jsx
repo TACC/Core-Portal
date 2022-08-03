@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { shape, arrayOf, number, string } from 'prop-types';
 import { Badge } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
+import { Button } from '_common';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -12,14 +13,15 @@ const CELL_PROPTYPES = {
 
 export const Team = ({ cell: { value } }) => {
   const { projectId, page } = value;
+  const history = useHistory();
   return (
     <>
-      <Link
-        to={`${page}/${projectId}`}
-        className="btn btn-secondary btn-sm"
+      <Button
+        onClick={() => history.push(`${page}/${projectId}`)}
+        size="small"
       >
         View Team
-      </Link>
+      </Button>
     </>
   );
 };

@@ -52,6 +52,7 @@ const TASProjectRoleSelector = ({ projectId, userId, role }) => {
         value={selectedRole}
         onChange={(e) => setSelectedRole(e.target.value)}
         disabled={isMutating}
+        className={styles['selector']}
       >
         <option value="Standard">Member</option>
         <option value="Delegate">Allocation Manager</option>

@@ -287,12 +287,7 @@ export const manageUtil = async (pid, uid, add = true) => {
 
 export function* addUser(action) {
   try {
-    yield put({
-      type: 'ALLOCATION_OPERATION_ADD_USER_INIT',
-      payload: {
-        loadingUsernames: { [action.payload.projectId]: { loading: true } },
-      },
-    });
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
     yield call(manageUtil, action.payload.projectId, action.payload.id);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
     const { projectId } = action.payload;

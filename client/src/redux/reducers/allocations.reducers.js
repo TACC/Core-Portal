@@ -135,10 +135,6 @@ export function allocations(state = initialState, action) {
           error: false,
           loading: true,
         },
-        loadingUsernames: {
-          ...state.loadingUsernames,
-          ...action.payload.loadingUsernames,
-        },
       };
     }
     case 'ALLOCATION_OPERATION_ADD_USER_COMPLETE': {

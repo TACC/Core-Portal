@@ -137,7 +137,7 @@ const AllocationsTeamViewModal = ({
               <UserSearchbar
                 members={teams[projectId]}
                 onAdd={onAdd}
-                isLoading={isLoading}
+                isLoading={addUserOperation.loading}
                 onChange={onChange}
                 searchResults={search.results}
                 placeholder=""
