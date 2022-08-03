@@ -42,7 +42,7 @@ export const getAllocationsUtil = async () => {
  * Fetch user data for a project
  * @param {String} projectId - project id
  */
-export const getTeamsUtil = async (projectId) => {
+export const getProjectUsersUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
@@ -75,9 +75,11 @@ export function* getUsernames(action) {
   try {
     yield put({
       type: 'GET_PROJECT_USERS_INIT',
-      payload: action.payload.projectId
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
     });
-    const json = yield call(getTeamsUtil, action.payload.projectId);
+    const json = yield call(getProjectUsersUtil, action.payload.projectId);
     const allocations = yield select(allocationsSelector);
     const allocationIds = chain(allocations)
       .filter({ projectId: action.payload.projectId })
@@ -232,12 +234,12 @@ export const teamPayloadUtil = (
 export function* getUsernamesManage(action) {
   try {
     yield put({
-      type: 'MANAGE_USERS_INIT',
+      type: 'GET_PROJECT_USERS_INIT',
       payload: {
         loadingUsernames: { [action.payload.projectId]: { loading: true } },
       },
     });
-    const json = yield call(getTeamsUtil, action.payload.projectId);
+    const json = yield call(getProjectUsersUtil, action.payload.projectId);
     const payload = {
       data: { [action.payload.projectId]: json },
       loadingUsernames: { [action.payload.projectId]: { loading: false } },

@@ -65,14 +65,6 @@ export function allocations(state = initialState, action) {
           },
         },
       };
-    case 'GET_PROJECT_USERS_INIT':
-      return {
-        ...state,
-        loadingUsernames: {
-          ...state.loadingUsernames,
-         [action.payload.projectId]: { loading: true }
-        },
-      };
     case 'ADD_USERNAMES_TO_TEAM':
       return {
         ...state,
@@ -82,7 +74,7 @@ export function allocations(state = initialState, action) {
           ...action.payload.loadingUsernames,
         },
       };
-    case 'MANAGE_USERS_INIT':
+    case 'GET_PROJECT_USERS_INIT':
       return {
         ...state,
         loadingUsernames: {
