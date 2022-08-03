@@ -73,7 +73,11 @@ export const allocationsSelector = (state) => [
 
 export function* getUsernames(action) {
   try {
-    const json = yield call(getTeamsUtil, action.payload.name);
+    yield put({
+      type: 'GET_TEAMS_INIT',
+      payload: action.payload.projectId
+    });
+    const json = yield call(getTeamsUtil, action.payload.projectId);
     const allocations = yield select(allocationsSelector);
     const allocationIds = chain(allocations)
       .filter({ projectId: action.payload.projectId })
@@ -233,7 +237,7 @@ export function* getUsernamesManage(action) {
         loadingUsernames: { [action.payload.projectId]: { loading: true } },
       },
     });
-    const json = yield call(getTeamsUtil, action.payload.name);
+    const json = yield call(getTeamsUtil, action.payload.projectId);
     const payload = {
       data: { [action.payload.projectId]: json },
       loadingUsernames: { [action.payload.projectId]: { loading: false } },
