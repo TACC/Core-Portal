@@ -13,11 +13,6 @@ export const useAllocations = (page) => {
     if (page === 'expired') return state.allocations.inactive;
     return state.allocations.active;
   });
-  const user = useSelector((state) => {
-    const currentUserData = state.profile.data.demographics;
-    const { firstName, lastName } = currentUserData;
-    return `${firstName} ${lastName}`;
-  });
   const columns = useMemo(
     () => [
       {
@@ -31,10 +26,9 @@ export const useAllocations = (page) => {
       },
       {
         Header: 'Team',
-        accessor: ({ projectName, projectId, systems, pi }) => ({
+        accessor: ({ projectName, projectId, pi }) => ({
           name: projectName.toLowerCase(),
           projectId,
-          isPi: pi === user,
         }),
         Cell: Team,
       },

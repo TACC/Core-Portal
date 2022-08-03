@@ -3,7 +3,7 @@ import { Table } from 'reactstrap';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner, Message, DropdownSelector } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import styles from './AllocationsManageTeamTable.module.scss';
 import TASProjectRoleSelector from './AllocationsTASProjectRoleSelector';
 
@@ -33,7 +33,6 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       {
         Header: 'Role',
         accessor: ({id: userId, username, role}) => {
-
           // PIs cannot have roles changed.
           // Users cannot change their own roles.
           // Only PIs can change roles.
@@ -59,29 +58,6 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
               username={username}
               role={role}
             />
-            // <div>
-            //   <DropdownSelector
-            //     value={selectedRole}
-            //     onChange={(e) => setSelectedRole(e.target.value)}
-            //   >
-            //     {username !== authenticatedUser && (
-            //       <option value="ADMIN">Administrator</option>
-            //     )}
-            //     <option value="USER">User (read/write)</option>
-            //     <option value="GUEST">Guest (read only)</option>
-            //   </DropdownSelector>
-            //   <DropdownSelector
-            //     //onChange={(e) => changeUserRole(user, e.target.value)}
-            //     value=""
-            //   >
-            //     <option value="">{allocationRoles[role]}</option>
-            //     {Object.keys(allocationRoles)
-            //       .filter((userRole) => userRole !== role)
-            //       .map((userRole) => (
-            //         <option value="">{allocationRoles[userRole]}</option>
-            //       ))}
-            //   </DropdownSelector>
-            // </div>
           );
         },
       },

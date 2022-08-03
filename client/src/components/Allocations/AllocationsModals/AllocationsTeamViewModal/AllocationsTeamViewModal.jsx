@@ -27,7 +27,9 @@ const AllocationsTeamViewModal = ({
     removingUserOperation,
   } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.profile.data.demographics.username);
+  const user = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
   const [isManager, setManager] = useState(false);
