@@ -54,7 +54,10 @@ def get_user_onboarding(user):
         # Upon retrieving step data such as viewing the Onboarding page,
         # If a step has the 'retry' setting set to True and the step is not completed,
         # retry the step with asynchronous processing. 
-        if 'retry' in step_instance.settings and step_instance.settings['retry'] and step_instance.state != SetupState.COMPLETED:
+        if step_instance.settings is not None and 'retry' in step_instance.settings \
+            and step_instance.settings['retry'] \
+            and step_instance.state != SetupState.PENDING \
+            and step_instance.state != SetupState.COMPLETED:
             step_instance.state = SetupState.PROCESSING
             execute_single_step.apply_async(args=[user.username, step['step']])
             logger.info("Retrying setup step {} for {}".format(step['step'], user.username))

@@ -24,3 +24,22 @@ def mock_steps(regular_user, settings):
         message="message",
     ).save()
     yield (pending_step, completed_step)
+
+
+@pytest.fixture
+def mock_retry_step(regular_user, settings):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        {
+            'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+            'settings': {
+                'retry': True
+            }
+        }
+    ]
+    retry_step = SetupEvent.objects.create(
+        user=regular_user,
+        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        state=SetupState.USERWAIT,
+        message="message"
+    ).save()
+    yield retry_step

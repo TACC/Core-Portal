@@ -84,6 +84,20 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
     assert len(result["steps"][0]["events"]) == 2
 
 
+def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocker):
+    mock_execute_single_step = mocker.patch("portal.apps.onboarding.api.views.execute_single_step")
+    response = client.get("/api/onboarding/user/{}".format(authenticated_user.username), follow=True)
+    mock_execute_single_step.apply_async.assert_called_with(args=[
+        authenticated_user.username,
+        'portal.apps.onboarding.steps.test_steps.MockStep'
+    ])
+    result = json.loads(response.content)
+    assert result["username"] == authenticated_user.username
+    assert "steps" in result
+    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep' 
+    assert result["steps"][0]["state"] == SetupState.PROCESSING
+
+
 def test_incomplete_post(client, authenticated_user):
     # post should return HttpResponseBadRequest (400) if fields are missing
     response = client.post(
