@@ -13,6 +13,23 @@ logger = logging.getLogger(__name__)
 
 
 class ApcdMembershipStep(AbstractStep):
+    """
+    Configuration:
+
+    _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        {
+            'step': 'portal.apps.onboarding.steps.apcd_membership.ApcdMembershipStep',
+            'settings': {
+                'project_sql_id': 57734,
+                'userlink': {
+                    'url': '/',
+                    'text': 'Request Access'
+                },
+                'retry': True
+            }
+        }
+    ]
+    """
     def __init__(self, user):
         """
         Call super class constructor
