@@ -49,6 +49,8 @@ const OnboardingActions = ({ step }) => {
     );
   }
 
+  console.log("STEP", step);
+
   return (
     <span className={styles.root}>
       {isStaff && step.state === 'staffwait' ? (
@@ -72,14 +74,26 @@ const OnboardingActions = ({ step }) => {
         </>
       ) : null}
       {step.state === 'userwait' ? (
-        <Button
-          color="link"
-          className={styles.action}
-          disabled={isSending}
-          onClick={() => actionCallback('user_confirm', username)}
-        >
-          {step.userConfirm}
-        </Button>
+        step.data?.userlink 
+          ? (
+              <Button
+                color="link"
+                className={styles.action}
+                href={step.data?.userlink?.url}
+              >
+                {step.data?.userlink?.text}
+              </Button>
+            )
+          : (
+            <Button
+              color="link"
+              className={styles.action}
+              disabled={isSending}
+              onClick={() => actionCallback('user_confirm', username)}
+            >
+              {step.userConfirm}
+            </Button>
+          )
       ) : null}
       {isStaff ? (
         <>
