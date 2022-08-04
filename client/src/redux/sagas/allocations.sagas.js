@@ -42,7 +42,7 @@ export const getAllocationsUtil = async () => {
  * Fetch user data for a project
  * @param {String} projectId - project id
  */
-export const getTeamsUtil = async (projectId) => {
+export const getProjectUsersUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
@@ -73,7 +73,13 @@ export const allocationsSelector = (state) => [
 
 export function* getUsernames(action) {
   try {
-    const json = yield call(getTeamsUtil, action.payload.name);
+    yield put({
+      type: 'GET_PROJECT_USERS_INIT',
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
+    });
+    const json = yield call(getProjectUsersUtil, action.payload.projectId);
     const allocations = yield select(allocationsSelector);
     const allocationIds = chain(allocations)
       .filter({ projectId: action.payload.projectId })
@@ -228,12 +234,12 @@ export const teamPayloadUtil = (
 export function* getUsernamesManage(action) {
   try {
     yield put({
-      type: 'MANAGE_USERS_INIT',
+      type: 'GET_PROJECT_USERS_INIT',
       payload: {
         loadingUsernames: { [action.payload.projectId]: { loading: true } },
       },
     });
-    const json = yield call(getTeamsUtil, action.payload.name);
+    const json = yield call(getProjectUsersUtil, action.payload.projectId);
     const payload = {
       data: { [action.payload.projectId]: json },
       loadingUsernames: { [action.payload.projectId]: { loading: false } },
@@ -281,20 +287,14 @@ export const manageUtil = async (pid, uid, add = true) => {
 
 export function* addUser(action) {
   try {
-    yield put({
-      type: 'ALLOCATION_OPERATION_ADD_USER_INIT',
-      payload: {
-        loadingUsernames: { [action.payload.projectId]: { loading: true } },
-      },
-    });
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
     yield call(manageUtil, action.payload.projectId, action.payload.id);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
-    const { projectId, projectName } = action.payload;
+    const { projectId } = action.payload;
     yield put({
       type: 'GET_MANAGE_TEAMS',
       payload: {
         projectId,
-        name: projectName,
       },
     });
   } catch (error) {
@@ -365,7 +365,7 @@ export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
 export function* watchTeams() {
-  yield takeLatest('GET_TEAMS', getUsernames);
+  yield takeLatest('GET_PROJECT_USERS', getUsernames);
 }
 export function* watchManageTeams() {
   yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);

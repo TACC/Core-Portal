@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { number, bool, func } from 'prop-types';
+import { useParams } from 'react-router-dom';
+import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,12 +13,8 @@ import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 
-const AllocationsTeamViewModal = ({
-  isOpen,
-  toggle,
-  projectId,
-  projectName,
-}) => {
+const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
+  const { projectId } = useParams();
   const {
     teams,
     loadingUsernames,
@@ -27,7 +24,7 @@ const AllocationsTeamViewModal = ({
     removingUserOperation,
   } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.profile.data.demographics.username);
+  const user = useSelector((state) => state.authenticatedUser.user.username);
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
   const [isManager, setManager] = useState(false);
@@ -50,6 +47,10 @@ const AllocationsTeamViewModal = ({
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
     });
+    dispatch({
+      type: 'GET_PROJECT_USERS',
+      payload: { projectId },
+    });
   }, [isOpen]);
 
   const onAdd = useCallback(
@@ -59,7 +60,6 @@ const AllocationsTeamViewModal = ({
         payload: {
           projectId,
           id: newUser.user.username,
-          projectName,
         },
       });
     },
@@ -132,7 +132,7 @@ const AllocationsTeamViewModal = ({
               <UserSearchbar
                 members={teams[projectId]}
                 onAdd={onAdd}
-                isLoading={isLoading}
+                isLoading={addUserOperation.loading}
                 onChange={onChange}
                 searchResults={search.results}
                 placeholder=""
@@ -181,7 +181,6 @@ const AllocationsTeamViewModal = ({
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  projectId: number.isRequired,
 };
 
 export default AllocationsTeamViewModal;
