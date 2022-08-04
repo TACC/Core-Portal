@@ -321,3 +321,29 @@ def test_setup_steps_prepared_from_list(settings, authenticated_user, mocker):
     mock_prepare = mocker.patch('portal.apps.onboarding.execute.prepare_setup_steps')
     new_user_setup_check(authenticated_user)
     mock_prepare.assert_called_with(authenticated_user)
+
+
+def test_execute_single_step(mocker, authenticated_user):
+    """
+    Test that the single step executor triggers a follow up execution of
+    the rest of the step queue
+    """
+    mock_execute = mocker.patch('portal.apps.onboarding.execute.execute_setup_steps')
+    execute_single_step(
+        authenticated_user.username,
+        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    )
+    mock_execute.assert_called_with(authenticated_user.username)
+
+
+def test_execute_single_step_does_not_complete(mocker, authenticated_user):
+    """
+    Test that the single step executor does not trigger a follow up execution of
+    the rest of the step queue if the step does not complete
+    """
+    mock_execute = mocker.patch('portal.apps.onboarding.execute.execute_setup_steps')
+    execute_single_step(
+        authenticated_user.username,
+        'portal.apps.onboarding.steps.test_steps.MockUserStep'
+    )
+    mock_execute.assert_not_called()
