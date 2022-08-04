@@ -649,7 +649,7 @@ export const AppSchemaForm = ({ app }) => {
                 </Button>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <Button onClick={handleReset} type="link">
-                  <h6>Reset Fields to Defaults</h6>
+                  Reset Fields to Defaults
                 </Button>
               </FormGroup>
             </Form>

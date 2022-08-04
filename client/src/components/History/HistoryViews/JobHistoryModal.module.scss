@@ -44,9 +44,11 @@
   margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
 }
 
-.submit-button-container {
-  width: 60%;
-  margin: auto;
+.submit-button {
+  --max-width: 100%; /* (temporarily) overwrite `.c-button--...` */
+
+  display: block;
+  width: 100%;
 }
 
 .left-panel {

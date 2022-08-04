@@ -38,6 +38,13 @@
 .icon--after {
   composes: c-button__icon--after from '../../../styles/components/c-button--new.css';
 }
+/* To offer more space between icon and text (especially '-up' and '-down' */
+.icon--before:global([class*='icon-nav-']) {
+  margin-right: 0.75em;
+}
+.icon--after:global([class*='icon-nav-']) {
+  margin-left: 0.75em;
+}
 
 .loading {
   composes: c-button--is-busy from '../../../styles/components/c-button--new.css';

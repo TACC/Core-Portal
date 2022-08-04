@@ -136,9 +136,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
 
   return (
     <>
-      <div className={styles['left-panel']}>
+      <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
-          className={styles['panel-content']}
           density="compact"
           data={{
             Output: !hideDataFiles && (
@@ -152,16 +151,14 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
           }}
         />
         {isTerminalState && (
-          <div className={styles['submit-button-container']}>
-            <Button
-              type="primary"
-              attr="submit"
-              size="large"
-              onClick={resubmitJob}
-            >
-              Resubmit Job
-            </Button>
-          </div>
+          <Button
+            type="primary"
+            attr="submit"
+            className={styles['submit-button']}
+            onClick={resubmitJob}
+          >
+            Resubmit Job
+          </Button>
         )}
       </div>
       <DescriptionList

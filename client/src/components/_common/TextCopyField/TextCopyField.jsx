@@ -40,7 +40,8 @@ const TextCopyField = ({ value, placeholder }) => {
             //style={{ '--transition-duration': `${transitionDuration}s` }}
             onClick={onCopy}
             disabled={isEmpty}
-            type="primary"
+            type="secondary"
+            size="medium"
             iconNameBefore={isCopied ? 'approved-reverse' : 'link'}
           >
             Copy
