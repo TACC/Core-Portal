@@ -87,12 +87,6 @@ def process_setup_step(setup_step):
         setup_step.state = SetupState.ERROR
         setup_step.log("Exception: {err}".format(err=str(err)))
 
-    # If step is not COMPLETED either from this execution or a prior
-    # one, then it could be in USERWAIT, STAFFWAIT or FAIL
-    # at which point we should raise an execption
-    if setup_step.state != SetupState.COMPLETED:
-        raise StepExecuteException(setup_step)
-
 
 @shared_task()
 def execute_setup_steps(username):
@@ -106,9 +100,12 @@ def execute_setup_steps(username):
         # Run step, if waiting for automatic execution
         # should have this state
         if setup_step.state == SetupState.PENDING:
-            # This may generate a StepExecuteException if the step did not
-            # reach COMPLETED state, interrupting further execution of steps
             process_setup_step(setup_step)
+        # If step is not COMPLETED either from this execution or a prior
+        # one, then it could be in USERWAIT, STAFFWAIT or FAIL
+        # at which point we should raise an execption
+        if setup_step.state != SetupState.COMPLETED:
+            raise StepExecuteException(setup_step)
 
     # If execution was not interrupted by a StepExecuteException, such as
     # a step failing to reach the COMPLETED state, mark the user as setup_complete
@@ -132,5 +129,5 @@ def execute_single_step(username, step_name):
     # If execution was not interrupted after processing this step, i.e.
     # if it completed successfully, continue executing the rest of the onboarding
     # steps
-    execute_setup_steps(username)
-
+    if setup_step.state == SetupState.COMPLETED:
+        execute_setup_steps(username)

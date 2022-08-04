@@ -5,6 +5,7 @@ from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.execute import (
     execute_setup_steps,
+    execute_single_step,
     prepare_setup_steps,
     load_setup_step,
     log_setup_state,

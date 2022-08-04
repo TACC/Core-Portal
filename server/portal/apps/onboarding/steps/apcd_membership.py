@@ -76,7 +76,7 @@ class ApcdMembershipStep(AbstractStep):
         else:
             self.state = SetupState.USERWAIT
             data = {}
-            if 'userlink' in self.settings:
+            if self.settings is not None and 'userlink' in self.settings:
                 data['userlink'] = self.settings['userlink']
             self.log(
                 "Please make a request to use this portal.",
