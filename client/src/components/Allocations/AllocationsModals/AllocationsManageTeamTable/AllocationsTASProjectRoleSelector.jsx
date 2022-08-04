@@ -24,7 +24,7 @@ const setProjectRole = async (projectId, userId, role) => {
   return response;
 };
 
-export const useProjectRole = (projectId, userId) => {
+const useProjectRole = (projectId, userId) => {
   const dispatch = useDispatch();
   const mutation = useMutation(async (role) => {
     await setProjectRole(projectId, userId, role);
