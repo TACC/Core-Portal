@@ -1,6 +1,6 @@
 import logging
 import requests
-
+import json
 from zeep import Client
 from zeep.transports import Transport
 from zeep.cache import InMemoryCache
@@ -18,8 +18,8 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import (get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage,
-                                     add_user, remove_user)
+from portal.apps.users.utils import (get_allocations, get_user_data, get_per_user_allocation_usage,
+                                     add_user, remove_user, get_project_from_id, get_project_users_from_id)
 
 logger = logging.getLogger(__name__)
 
@@ -136,13 +136,13 @@ class AllocationsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class TeamView(BaseApiView):
 
-    def get(self, request, project_name):
+    def get(self, request, project_id):
         """Returns usernames for project team
 
         : returns: {'usernames': usernames}
         : rtype: dict
         """
-        usernames = get_usernames(project_name)
+        usernames = get_project_users_from_id(project_id)
         return JsonResponse({'response': usernames}, safe=False)
 
 
@@ -156,19 +156,29 @@ class UserDataView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class TasUsersView(BaseApiView):
-    """SOAP search endpoint for TAS users
-    """
+    """SOAP actions for TAS"""
 
-    def get(self, request):
-        search_term = request.GET.get('search')
-        if search_term is None:
-            raise HttpResponseBadRequest('No search term provided')
+    def _getSOAPTASClient(self):
+        """SOAP client via zeep
+        """
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
 
-        # SOAP client via zeep
-        client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
-                        transport=Transport(session=session, cache=InMemoryCache()))
+        try:
+            client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
+                            transport=Transport(session=session, cache=InMemoryCache()))
+        except Exception:
+            raise Exception("Error instantiating TAS SOAP Client")
+        return client
+
+    def get(self, request):
+        """SOAP search endpoint for TAS users
+        """
+        search_term = request.GET.get('search')
+        if search_term is None:
+            raise HttpResponseBadRequest('No search term provided')
+
+        client = self._getSOAPTASClient()
 
         last_name_result = client.service.GetAccountsByLastName(search_term)
         email_result = client.service.GetAccountsByEmail(search_term)
@@ -195,6 +205,34 @@ class TasUsersView(BaseApiView):
             if entry not in result:
                 result.append(entry)
         return JsonResponse({'result': result})
+
+    def put(self, request):
+        """SOAP endpoint to update TAS project user roles
+        """
+        body = json.loads(request.body)
+        project_id = body.get('projectId', None)
+        if project_id is None:
+            return HttpResponseBadRequest('No project ID provided')
+        user_role = body.get('role', None)
+        if user_role is None:
+            return HttpResponseBadRequest('No user role provided')
+        user_id = body.get('userId', None)
+        if user_id is None:
+            return HttpResponseBadRequest('No user id provided')
+
+        tas_project = get_project_from_id(project_id)
+        project_name = tas_project['title']
+        is_pi = tas_project['pi']['username'] == request.user.username
+        if not is_pi:
+            return JsonResponse({'message': 'Forbidden: Project roles can only be assigned by the Project PI.'}, status=403)
+
+        tas_client = self._getSOAPTASClient()
+        try:
+            tas_client.service.EditProjectUser(user_id, user_role)
+        except Exception:
+            raise Exception(f"Error assigning user: {user_id} new role: {user_role} to project name:id : {project_name}:{project_id}")
+
+        return JsonResponse({'response': 'ok'})
 
 
 @method_decorator(login_required, name='dispatch')
