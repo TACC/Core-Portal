@@ -77,6 +77,23 @@ def prepare_setup_steps(user):
             setup_step.prepare()
 
 
+def process_setup_step(setup_step):
+    setup_step.state = SetupState.PROCESSING
+    setup_step.log("Beginning automated processing")
+    try:
+        setup_step.process()
+    except Exception as err:
+        logger.exception("Problem processing setup step")
+        setup_step.state = SetupState.ERROR
+        setup_step.log("Exception: {err}".format(err=str(err)))
+
+    # If step is not COMPLETED either from this execution or a prior
+    # one, then it could be in USERWAIT, STAFFWAIT or FAIL
+    # at which point we should raise an execption
+    if setup_step.state != SetupState.COMPLETED:
+        raise StepExecuteException(setup_step)
+
+
 @shared_task()
 def execute_setup_steps(username):
     from django.contrib.auth import get_user_model
@@ -86,26 +103,15 @@ def execute_setup_steps(username):
     for step in extra_steps:
         # Restore state of this setup step for this user
         setup_step = load_setup_step(user, step['step'])
-
         # Run step, if waiting for automatic execution
         # should have this state
         if setup_step.state == SetupState.PENDING:
-            setup_step.state = SetupState.PROCESSING
-            setup_step.log("Beginning automated processing")
-            try:
-                setup_step.process()
-            except Exception as err:
-                logger.exception("Problem processing setup step")
-                setup_step.state = SetupState.ERROR
-                setup_step.log("Exception: {err}".format(err=str(err)))
+            # This may generate a StepExecuteException if the step did not
+            # reach COMPLETED state, interrupting further execution of steps
+            process_setup_step(setup_step)
 
-        # If step is not COMPLETED either from this execution or a prior
-        # one, then it could be in USERWAIT, STAFFWAIT or FAIL
-        # at which point we should stop processing the queue
-        if setup_step.state != SetupState.COMPLETED:
-            raise StepExecuteException(setup_step)
-
-    # If execution was not interrupted, make setup_complete true
+    # If execution was not interrupted by a StepExecuteException, such as
+    # a step failing to reach the COMPLETED state, mark the user as setup_complete
     user.profile.setup_complete = True
     user.profile.save()
     log_setup_state(
@@ -114,3 +120,17 @@ def execute_setup_steps(username):
             user=user.username
         )
     )
+
+
+@shared_task()
+def execute_single_step(username, step_name):
+    from django.contrib.auth import get_user_model
+    user = get_user_model().objects.get(username=username)
+    # Process specified setup step
+    setup_step = load_setup_step(user, step_name)
+    process_setup_step(setup_step)
+    # If execution was not interrupted after processing this step, i.e.
+    # if it completed successfully, continue executing the rest of the onboarding
+    # steps
+    execute_setup_steps(username)
+

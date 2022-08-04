@@ -18,6 +18,7 @@ from portal.apps.onboarding.models import (
 from portal.apps.onboarding.execute import (
     log_setup_state,
     load_setup_step,
+    execute_single_step,
     execute_setup_steps
 )
 from portal.apps.onboarding.state import SetupState
@@ -49,6 +50,14 @@ def get_user_onboarding(user):
         ).order_by('-time')
 
         step_instance = load_setup_step(user, step['step'])
+
+        # Upon retrieving step data such as viewing the Onboarding page,
+        # If a step has the 'retry' setting set to True and the step is not completed,
+        # retry the step with asynchronous processing. 
+        if 'retry' in step_instance.settings and step_instance.settings['retry'] and step_instance.state != SetupState.COMPLETED:
+            step_instance.state = SetupState.PROCESSING
+            execute_single_step.apply_async(args=[user.username, step['step']])
+            logger.info("Retrying setup step {} for {}".format(step['step'], user.username))
 
         step_data = {
             "step": step['step'],
