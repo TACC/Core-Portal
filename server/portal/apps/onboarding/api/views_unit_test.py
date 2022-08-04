@@ -94,7 +94,7 @@ def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocke
     result = json.loads(response.content)
     assert result["username"] == authenticated_user.username
     assert "steps" in result
-    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep' 
+    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
     assert result["steps"][0]["state"] == SetupState.PROCESSING
 
 

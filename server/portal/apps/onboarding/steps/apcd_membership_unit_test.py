@@ -1,7 +1,5 @@
 from django.conf import settings
 from portal.apps.onboarding.steps.apcd_membership import ApcdMembershipStep
-from portal.apps.onboarding.models import SetupEvent
-from mock import MagicMock, ANY
 import pytest
 import json
 import os

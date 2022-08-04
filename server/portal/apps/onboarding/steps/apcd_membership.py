@@ -2,9 +2,7 @@ import logging
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
-from requests.auth import HTTPBasicAuth
 from pytas.http import TASClient
-from rt import Rt
 
 
 # pylint: disable=invalid-name
