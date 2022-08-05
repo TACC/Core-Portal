@@ -3,13 +3,21 @@ import { Table } from 'reactstrap';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner, Message, DropdownSelector } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import styles from './AllocationsManageTeamTable.module.scss';
+import TASProjectRoleSelector from './AllocationsTASProjectRoleSelector';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();
   const { removingUserOperation } = useSelector((state) => state.allocations);
   const data = React.useMemo(() => rawData, [rawData]);
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+
+  const currentUserRole = data.find(
+    (u) => u.username == authenticatedUser
+  )?.role;
   const columns = React.useMemo(
     () => [
       {
@@ -26,41 +34,33 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       },
       {
         Header: 'Role',
-        accessor: ({ role }) => {
-          switch (role) {
-            case 'PI':
-              return 'Principal Investigator';
-            case 'Delegate':
-              return 'Allocation Manager';
-            default:
-              return 'Member';
-          } // Selector and ability to change user's role in allocation to be implemented later //
-          /*const changeUserRole = (user,role) => {
-            dispatch({
-              type: ##UPDATE_USER_ROLE_IN_TAS_PROJECT,
-              payload: user, role
-            })
+        accessor: ({ id: userId, username, role }) => {
+          // PIs cannot have roles changed.
+          // Users cannot change their own roles.
+          // Only PIs can change roles.
+          if (
+            role === 'PI' ||
+            username === authenticatedUser ||
+            currentUserRole !== 'PI'
+          ) {
+            switch (role) {
+              case 'PI':
+                return 'Principal Investigator';
+              case 'Delegate':
+                return 'Allocation Manager';
+              case 'Standard':
+              default:
+                return 'Member';
+            }
           }
-          const allocationRoles = {
-            Standard: 'Member',
-            Delegate: 'Allocation Manager',
-            PI: 'Principal Investigator',
-          };
           return (
-            <div>
-              <DropdownSelector
-                //onChange={(e) => changeUserRole(user, e.target.value)}
-                value=""
-              >
-                <option value="">{allocationRoles[role]}</option>
-                {Object.keys(allocationRoles)
-                  .filter((userRole) => userRole !== role)
-                  .map((userRole) => (
-                    <option value="">{allocationRoles[userRole]}</option>
-                  ))}
-              </DropdownSelector>
-            </div>
-          );*/
+            <TASProjectRoleSelector
+              projectId={projectId}
+              userId={userId}
+              username={username}
+              role={role}
+            />
+          );
         },
       },
       {
