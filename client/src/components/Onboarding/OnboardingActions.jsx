@@ -49,8 +49,6 @@ const OnboardingActions = ({ step }) => {
     );
   }
 
-  console.log('STEP', step);
-
   return (
     <span className={styles.root}>
       {isStaff && step.state === 'staffwait' ? (
