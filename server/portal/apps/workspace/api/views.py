@@ -26,6 +26,8 @@ from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from requests.exceptions import HTTPError
+from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -557,3 +559,20 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
+
+
+@method_decorator(login_required, name='dispatch')
+class TapisAppsView(BaseApiView):
+    def get(self, request, operation=None):
+        try:
+            client = request.user.tapis_oauth.client
+        except AttributeError:
+            return JsonResponse(
+                {'message': 'This view requires authentication.'},
+                status=403)
+
+        get_params = request.GET.dict()
+        METRICS.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
+        response = tapis_get_handler(client, operation, **get_params)
+
+        return JsonResponse({'data': response})
