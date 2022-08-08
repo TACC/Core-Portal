@@ -16,8 +16,6 @@ from portal.utils.translations import get_jupyter_url
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
-from portal.libs.agave.utils import service_account
 # from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.systems.storage import StorageSystem
@@ -53,12 +51,6 @@ def get_manager(request, file_mgr_name):
     if fmgr.requires_auth and not request.user.is_authenticated:
         raise ApiException("Login Required", status=403)
     return fmgr
-
-
-def _app_license_type(app_id):
-    app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
-    lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
-    return lic_type
 
 
 @method_decorator(login_required, name='dispatch')
