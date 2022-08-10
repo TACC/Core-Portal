@@ -6,13 +6,14 @@ import logging
 import json
 from urllib.parse import urlparse
 from datetime import timedelta
-from operator import itemgetter
+from more_itertools import one
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from portal.apps.workspace.api import lookups as LookupManager
+from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.workspace.api.handlers.tapis_handlers import tapis_handler
@@ -21,7 +22,7 @@ from portal.apps.workspace.api.handlers.tapis_handlers import tapis_handler
 logger = logging.getLogger(__name__)
 
 
-def _tapis_response(request, view):
+def _tapis_response(request, view, additional_params=None):
     try:
         client = request.user.agave_oauth.client
     except AttributeError:
@@ -34,6 +35,12 @@ def _tapis_response(request, view):
         params = json.loads(request.body)
     else:
         params = request.GET.dict()
+
+    if additional_params:
+        for param in additional_params:
+            first, *_ = param.items()
+            (key, value) = first
+            params[key] = value
 
     return tapis_handler(client, user, operation, view, **params)
 
@@ -84,7 +91,14 @@ class JobsView(BaseApiView):
         return JsonResponse({'response': response})
 
     def post(self, request):
-        response = _tapis_response(request, 'jobs')
+        response = _tapis_response(
+            request,
+            'jobs',
+            [
+                {'wh_base_url': request.build_absolute_uri('/webhooks/')},
+                {'jobs_wh_url': request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))}
+            ])
+
         return JsonResponse({'response': response})
 
     def delete(self, request):
@@ -106,8 +120,7 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        request.GET.set('job_uuid', job_uuid)
-        response = _tapis_response(request, 'job_history')
+        response = _tapis_response(request, 'job_history', [{'job_uuid': job_uuid}])
         return JsonResponse({"response": response})
 
 
@@ -134,6 +147,5 @@ class AppsTrayView(BaseApiView):
             }
         }
         """
-        response = _tapis_response(request, 'apps_tray')
-        tabs, definitions = itemgetter('a', 'b')(response)
+        tabs, definitions = _tapis_response(request, 'apps_tray')
         return JsonResponse({"tabs": tabs, "definitions": definitions})

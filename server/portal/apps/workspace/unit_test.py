@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from mock import patch
 from django.test import TestCase
@@ -6,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 import pytest
 
+logger = logging.getLogger(__name__)
 
 @pytest.mark.django_db(transaction=True)
 class TestAppsApiViews(TestCase):
@@ -89,6 +91,7 @@ class TestAppsApiViews(TestCase):
         data = response.json()
         self.assertTrue("response" in data)
         self.assertTrue(self.mock_client.jobs.submit.called)
+
         self.assertEqual(response.status_code, 200)
         # make sure that the notifications get into the body of the job submission
         args, kwargs = self.mock_client.jobs.submit.call_args

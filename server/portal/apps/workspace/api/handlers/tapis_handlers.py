@@ -8,7 +8,7 @@ allowed_actions = {
     'metadata': ['get', 'post', 'delete'],
     'jobs': ['get', 'post', 'delete'],
     'systems': ['get', 'post'],
-    'jobs_history': ['get'],
+    'job_history': ['get'],
     'apps_tray': ['get']
 }
 

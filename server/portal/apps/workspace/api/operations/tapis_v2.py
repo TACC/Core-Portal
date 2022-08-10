@@ -20,6 +20,7 @@ from agavepy.agave import Agave
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
+
 def _get_app(app_id, client, user):
     data = {'definition': client.apps.get(appId=app_id)}
 
@@ -254,10 +255,9 @@ def get_monitors(client, user, **kwargs):
     return admin_client.monitors.list(target=target)
 
 def get_jobs(client, user, **kwargs):
-    # limit, offset, period, job_id
     job_id = kwargs.get('job_id', None)
-    limit = kwargs.get('limit', 10)
-    offset = kwargs.get('offset', 0)
+    limit = int(kwargs.get('limit', 10))
+    offset = int(kwargs.get('offset', 0))
     period = kwargs.get('period', 'all')
     if job_id:
         data = client.jobs.get(jobId=job_id)
@@ -314,29 +314,35 @@ def delete_jobs(client, user, **kwargs):
     METRICS.info("user:{} is deleting job id:{}".format(user.username, job_id))
     return client.jobs.delete(jobId=job_id)
 
-def post_jobs(client, user, request, **kwargs):
-    job_id = kwargs.get('job_id', None)
-    job_action = kwargs.get('job_action')
-    job_post = kwargs.get('job_post')
-    if job_id and job_action:
-        response = client.jobs.manage(jobId=job_id, body={"action": job_action})
+def post_jobs(client, user, **kwargs):
+    wh_url = kwargs.get('wh_base_url')
+    jobs_url = kwargs.get('jobs_wh_url')
 
+    job_post = kwargs
+    job_id = kwargs.get('job_id')
+    job_action = kwargs.get('job_action')
+
+    if job_id and job_action:
+        # resubmit job
         if job_action == 'resubmit':
             METRICS.info("user:{} is resubmitting job id:{}".format(user.username, job_id))
-            if "id" in response:
-                job = JobSubmission.objects.create(
-                    user=user,
-                    jobId=response["id"]
-                )
-                job.save()
+        # cancel job / stop job
         else: 
-            # cancel job / stop job
             METRICS.info("user:{} is canceling/stopping job id:{}".format(user.username, job_id))
 
-        return response
+        data = client.jobs.manage(jobId=job_id, body={"action": job_action})
+
+        if "id" in data:
+            job = JobSubmission.objects.create(
+                user=user,
+                jobId=data["id"]
+            )
+            job.save()
+
+        return data
     # submit job
     elif job_post:
-        METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
+        METRICS.info("user:{} is submitting job:{}".format(user.username, job_post))
         default_sys = UserSystemsManager(
             user,
             settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
@@ -394,8 +400,8 @@ def post_jobs(client, user, request, **kwargs):
             wh_base_url = settings.WH_BASE_URL + '/webhooks/'
             jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
         else:
-            wh_base_url = request.build_absolute_uri('/webhooks/')
-            jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            wh_base_url = wh_url
+            jobs_wh_url = jobs_url
 
         job_post['parameters']['_webhook_base_url'] = wh_base_url
         job_post['notifications'] = [
@@ -446,7 +452,6 @@ def post_systems(client, user, **kwargs):
 def get_job_history(client, user, **kwargs):
     job_uuid = kwargs.get('job_uuid', None)
     return client.jobs.getHistory(jobId=job_uuid)
-
 
 def get_apps_tray(client, user, **kwargs):
     tabs, definitions = _get_public_apps(client)
