@@ -2,7 +2,6 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
-  Icon,
   LoadingSpinner,
   SectionMessage,
   Message,

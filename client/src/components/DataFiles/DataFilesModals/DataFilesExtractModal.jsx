@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Button, LoadingSpinner, Icon, InlineMessage } from '_common';
+import { Button, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
 import { useExtract } from 'hooks/datafiles/mutations';

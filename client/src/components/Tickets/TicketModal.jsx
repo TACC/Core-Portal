@@ -14,7 +14,6 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
 

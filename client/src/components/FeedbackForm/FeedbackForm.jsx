@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { Alert, FormGroup, Spinner } from 'reactstrap';
+import { Alert, FormGroup } from 'reactstrap';
 import { Button, FormField } from '_common';
 import * as Yup from 'yup';
 import styles from './FeedbackForm.module.scss';

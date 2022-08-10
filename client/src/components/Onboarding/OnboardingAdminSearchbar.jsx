@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon } from '_common';
+import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './OnboardingAdminSearchbar.module.scss';

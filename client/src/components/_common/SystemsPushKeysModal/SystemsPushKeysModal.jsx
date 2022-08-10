@@ -7,7 +7,6 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
 import InlineMessage from '../InlineMessage';
-import LoadingSpinner from '../LoadingSpinner';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -65,10 +64,6 @@ const SystemsPushKeysModal = () => {
     token: '',
   };
 
-  let buttonIcon;
-  if (submitting) {
-    buttonIcon = <LoadingSpinner placement="inline" />;
-  }
 
   return (
     <>
@@ -146,6 +141,7 @@ const SystemsPushKeysModal = () => {
                   attr="submit"
                   type="primary"
                   disabled={submitting}
+                  isLoading={submitting}
                   iconNameBefore={buttonIcon}
                 >
                   Authenticate

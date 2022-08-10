@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Checkbox, Icon, LoadingSpinner } from '_common';
-import { Button } from '_common';
+import { Button, Checkbox, Icon, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import './DataFilesListingCells.scss';
 import '../../Onboarding/OnboardingStep.module.scss';

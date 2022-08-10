@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import queryString from 'query-string';
-import { Button, Icon } from '_common';
+import { Button } from '_common';
 
 import styles from './DataFilesProjectsSearchbar.module.css';
 

@@ -92,7 +92,7 @@ function FileInputDropZone({
               ))}
           </div>
           <Button type="secondary" size="medium" onClick={open}>
-            Select myyyyy File(s)
+            Select File(s)
           </Button>
         </div>
       )}
