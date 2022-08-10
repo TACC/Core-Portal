@@ -6,45 +6,36 @@ import logging
 import json
 from urllib.parse import urlparse
 from datetime import timedelta
-from django.utils import timezone
+from operator import itemgetter
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-from portal.utils.translations import get_jupyter_url
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
-from portal.libs.agave.utils import service_account
-# from agavepy.agave import Agave
-from portal.libs.agave.models.systems.execution import ExecutionSystem
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.apps.workspace.managers.user_applications import UserApplicationsManager
-from portal.apps.workspace.api.handlers.tapis_handlers import (
-    apps_get_handler,
-    monitors_get_handler,
-    job_history_get_handler,
-    metadata_get_handler,
-    jobs_get_handler,
-    systems_get_handler,
-    apps_tray_get_handler,
-    jobs_delete_handler,
-    jobs_post_handler,
-    metadata_delete_handler,
-    metadata_post_handler,
-    systems_post_handler
-)
+from portal.apps.workspace.api.handlers.tapis_handlers import tapis_handler
 
-from portal.utils.translations import url_parse_inputs
-from portal.apps.workspace.models import JobSubmission
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
+
+def _tapis_response(request, view):
+    try:
+        client = request.user.agave_oauth.client
+    except AttributeError:
+        raise ApiException('This view requires authentication', status=403)
+
+    operation = request.method.lower()
+    user = request.user
+
+    if operation == 'post':
+        params = json.loads(request.body)
+    else:
+        params = request.GET.dict()
+
+    return tapis_handler(client, user, operation, view, **params)
 
 def get_manager(request, file_mgr_name):
     """Lookup Manager to handle call"""
@@ -55,115 +46,68 @@ def get_manager(request, file_mgr_name):
     return fmgr
 
 
-def _app_license_type(app_id):
-    app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
-    lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
-    return lic_type
-
-
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        public_only = request.GET.get('publicOnly')
-        name = request.GET.get('name', None)
-        client = request.user.agave_oauth.client
-        app_id = request.GET.get('app_id')
-        user = request.user
-        response = apps_get_handler(client, app_id, user, name, public_only)
-        return JsonResponse({"response": response})
+    def get(self, request):
+        response = _tapis_response(request, 'apps')
+        return JsonResponse({'response': response})
 
 
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        target = request.GET.get('target')
-        logger.info(request.GET)
-        response = monitors_get_handler(target)
-        return JsonResponse({"response": response})
+    def get(self, request):
+        response = _tapis_response(request, 'monitors')
+        return JsonResponse({'response': response})
 
 
 @method_decorator(login_required, name='dispatch')
 class MetadataView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        user = request.user
-        app_id = request.GET.get('app_id')
-        query = request.GET.get('q')
-        response = metadata_get_handler(client, app_id, user, query)
+    def get(self, request):
+        response = _tapis_response(request, 'meta')
         return JsonResponse({'response': {'listing': response, 'default_tab': settings.PORTAL_APPS_DEFAULT_TAB}})
 
-    def post(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        meta_post = json.loads(request.body)
-        meta_uuid = meta_post.get('uuid')
-        response = metadata_post_handler(client, meta_uuid, meta_post)
+    def post(self, request):
+        response = _tapis_response(request, 'meta')
         return JsonResponse({'response': response})
 
-    def delete(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        meta_uuid = request.GET.get('uuid')
+    def delete(self, request):
+        meta_uuid = request.GET.get('uuid', None)
         if meta_uuid:
-            response = metadata_delete_handler(client, meta_uuid)
+            response = _tapis_response(request, 'meta')
             return JsonResponse({'response': response})
 
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        job_id = request.GET.get('job_id')
-        limit = int(request.GET.get('limit', 10))
-        offset = int(request.GET.get('offset', 0))
-        period = request.GET.get('period', 'all')
-        user = request.user
-        response = jobs_get_handler(client, user, job_id, limit, offset, period)
+    def get(self, request):
+        response = _tapis_response(request, 'jobs')
+        return JsonResponse({'response': response})
 
-        return JsonResponse({"response": response})
+    def post(self, request):
+        response = _tapis_response(request, 'jobs')
+        return JsonResponse({'response': response})
 
-    def delete(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        job_id = request.GET.get('job_id')
-        response =  jobs_delete_handler(client, job_id, request.user)
-        return JsonResponse({"response": response})
-
-    def post(self, request, *args, **kwargs):
-        client = request.user.agave_oauth.client
-        job_post = json.loads(request.body)
-        job_id = job_post.get('job_id')
-        job_action = job_post.get('action')
-
-        response = jobs_post_handler(client, request.user, job_post, job_id, job_action, request)
-        return JsonResponse({"response": response})
+    def delete(self, request):
+        response = _tapis_response(request, 'jobs')
+        return JsonResponse({'response': response})
 
 
 @method_decorator(login_required, name='dispatch')
 class SystemsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        roles = request.GET.get('roles')
-        user_role = request.GET.get('user_role')
-        system_id = request.GET.get('system_id')
-        user = request.user
-        response = systems_get_handler(user, roles, user_role, system_id)
-      
-        return JsonResponse({"response": response})
+    def get(self, request):
+        response = _tapis_response(request, 'systems')
+        return JsonResponse({'response': response})
 
-    def post(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-        role = body['role']
-        system_id = body['system_id']
-        role_body = {
-            'username': request.user.username,
-            'role': role
-        }
-        response = systems_post_handler(request.user, system_id, role_body)
-        return JsonResponse({"response": response})
+    def post(self, request):
+        response = _tapis_response(request, 'systems')
+        return JsonResponse({'response': response})
 
 
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        client = request.user.agave_oauth.client
-        response = job_history_get_handler(client, job_uuid)
+        request.GET.set('job_uuid', job_uuid)
+        response = _tapis_response(request, 'job_history')
         return JsonResponse({"response": response})
 
 
@@ -190,6 +134,6 @@ class AppsTrayView(BaseApiView):
             }
         }
         """
-
-        tabs, definitions = apps_tray_get_handler(request.user)
+        response = _tapis_response(request, 'apps_tray')
+        tabs, definitions = itemgetter('a', 'b')(response)
         return JsonResponse({"tabs": tabs, "definitions": definitions})
