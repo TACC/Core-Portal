@@ -135,7 +135,6 @@ const LicenseCell = ({ cell: { value } }) => {
         </ModalHeader>
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
-          Click{' '}
           <Button
             onClick={() =>
               dispatch({
@@ -147,9 +146,8 @@ const LicenseCell = ({ cell: { value } }) => {
             }
             type="link"
           >
-            here
-          </Button>{' '}
-          to open a ticket.
+            New Ticket
+          </Button>
         </ModalBody>
       </Modal>
     </div>
@@ -272,7 +270,7 @@ export const ChangePassword = () => {
           margin: '1rem',
         }}
       >
-        <Button type="primary" size="long" onClick={openModal}>
+        <Button type="primary" onClick={openModal}>
           Change Password
         </Button>
         {lastChanged && (

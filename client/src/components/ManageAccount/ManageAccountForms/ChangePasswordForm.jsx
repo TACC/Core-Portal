@@ -4,7 +4,7 @@ import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
 import { isEmpty } from 'lodash';
 import { bool, oneOfType, func, instanceOf, shape } from 'prop-types';
-import { Button, LoadingSpinner, Message } from '_common';
+import { Button, Message } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
@@ -46,7 +46,6 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
       <Button
         type="primary"
         attr="submit"
-        size="long"
         disabled={!canSubmit}
         isLoading={isChecking}
         dataTestid="submit-button"
