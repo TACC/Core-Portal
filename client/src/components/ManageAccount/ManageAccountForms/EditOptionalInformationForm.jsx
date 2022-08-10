@@ -67,6 +67,7 @@ export default function () {
           type="primary"
           size="medium"
           isLoading={isEditing}
+          dataTestid="optional-submit"
         >
           Submit
         </Button>

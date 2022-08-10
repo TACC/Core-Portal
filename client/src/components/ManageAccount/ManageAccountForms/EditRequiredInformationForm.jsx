@@ -41,7 +41,7 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         size="medium"
         disabled={!canSubmit}
         isLoading={isEditing}
-        aria-label="required-submit"
+        dataTestid="required-submit"
       >
         Submit
       </Button>

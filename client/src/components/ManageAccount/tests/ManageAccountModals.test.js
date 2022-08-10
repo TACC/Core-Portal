@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent, getByTestId } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import {
@@ -210,7 +210,7 @@ describe('Change Password', () => {
 });
 
 describe('Edit Optional Information', () => {
-  let getByText, rerender, getByLabelText;
+  let getByText, rerender, getByLabelText, getByTestId;
   beforeEach(() => {
     const testState = {
       ...dummyState,
@@ -227,6 +227,7 @@ describe('Edit Optional Information', () => {
     getByText = utils.getByText;
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
+    getByTestId = utils.getByTestId;
   });
 
   it('should show the loading spinner when fetching form data', () => {
@@ -257,7 +258,7 @@ describe('Edit Optional Information', () => {
       expect(getByText(label)).toBeDefined();
     });
 
-    const submitButton = getByText(/Submit/);
+    const submitButton = getByTestId(/optional-submit/);
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
@@ -325,7 +326,7 @@ describe('Edit Optional Information', () => {
 
 describe('Edit Required Information', () => {
   const testState = { ...dummyState, modals: { required: true } };
-  let getByText, rerender, getByLabelText;
+  let getByText, rerender, getByLabelText, getByTestId;
   beforeEach(() => {
     const testStore = mockStore({
       profile: testState,
@@ -338,6 +339,7 @@ describe('Edit Required Information', () => {
     getByText = utils.getByText;
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
+    getByTestId = utils.getByTestId;
   });
 
   it('should render a loading spinner when form data is being fetched', () => {
@@ -379,7 +381,7 @@ describe('Edit Required Information', () => {
       expect(getByText(label)).toBeDefined();
     });
 
-    expect(getByText(/Submit/)).toBeDefined();
+    expect(getByTestId(/required-submit/)).toBeDefined();
   });
 
   it('should show users errors if the fields are missing or invalid', async () => {
