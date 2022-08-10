@@ -39,8 +39,7 @@ function UIPatternsButton() {
         <span>No small primary buttons.</span>
         <p>
           <small>
-            Use for regular-height buttons that are alone or are the main action
-            of a pair of buttons.
+            Use for regular-height buttons that are the main actions.
           </small>
         </p>
       </dd>

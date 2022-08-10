@@ -74,7 +74,7 @@ export function allocations(state = initialState, action) {
           ...action.payload.loadingUsernames,
         },
       };
-    case 'MANAGE_USERS_INIT':
+    case 'GET_PROJECT_USERS_INIT':
       return {
         ...state,
         loadingUsernames: {
@@ -134,10 +134,6 @@ export function allocations(state = initialState, action) {
           userName: '',
           error: false,
           loading: true,
-        },
-        loadingUsernames: {
-          ...state.loadingUsernames,
-          ...action.payload.loadingUsernames,
         },
       };
     }
