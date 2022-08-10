@@ -64,7 +64,6 @@ const SystemsPushKeysModal = () => {
     token: '',
   };
 
-
   return (
     <>
       {isOpen && (

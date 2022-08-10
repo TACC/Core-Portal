@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
 
-import { Icon } from '_common';
-
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import styles from './DataFilesModalListingTable.module.scss';

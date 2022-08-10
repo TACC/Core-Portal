@@ -7,7 +7,6 @@ import {
   Button,
   AppIcon,
   FormField,
-  Icon,
   LoadingSpinner,
   SectionMessage,
 } from '_common';

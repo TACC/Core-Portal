@@ -154,7 +154,7 @@ describe('Button', () => {
         <Button type="primary">{TEST_TEXT}</Button>
       );
       const expectedType = 'primary';
-      const expectedSize = 'short';
+      const expectedSize = 'auto';
 
       testClassnamesByType(expectedType, expectedSize, getByRole, getByTestId);
       expect(console.debug).toHaveBeenCalled();

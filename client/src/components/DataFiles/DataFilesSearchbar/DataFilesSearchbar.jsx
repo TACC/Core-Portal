@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Button, Icon, DropdownSelector } from '_common';
+import { Button, DropdownSelector } from '_common';
 import { useSystemDisplayName } from 'hooks/datafiles';
 import styles from './DataFilesSearchbar.module.scss';
 

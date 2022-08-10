@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
-import Icon from '../Icon';
 import styles from './TextCopyField.module.scss';
 
 const TextCopyField = ({ value, placeholder }) => {

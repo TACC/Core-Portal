@@ -7,14 +7,8 @@ import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles } from 'hooks/datafiles';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({
-  text,
-  iconName,
-  onClick,
-  disabled,
-  className,
-}) => {
-  const iconClassName = `icon-action icon-${iconName}`;
+export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+  const iconClassName = `action icon-${iconName}`;
   return (
     <Button
       iconNameBefore={iconClassName}
