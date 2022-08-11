@@ -31,9 +31,8 @@ def mock_retry_step(regular_user, settings):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
             'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
-            'settings': {
-                'retry': True
-            }
+            'retry': True,
+            'settings': {}
         }
     ]
     retry_step = SetupEvent.objects.create(
