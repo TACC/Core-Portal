@@ -6,6 +6,7 @@ import {
   Route,
   useHistory,
   Switch,
+  Redirect,
 } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
@@ -98,7 +99,7 @@ export const Layout = ({ page }) => {
                 }}
               />
             </Route>
-            <Route path={`${root}/:projectId`}>
+            <Route exact path={`${root}/:projectId(\\d+)`}>
               <AllocationsTeamViewModal
                 isOpen
                 toggle={() => {
@@ -106,6 +107,7 @@ export const Layout = ({ page }) => {
                 }}
               />
             </Route>
+            <Redirect to={`${root}`} />
           </Switch>
         </>
       }
