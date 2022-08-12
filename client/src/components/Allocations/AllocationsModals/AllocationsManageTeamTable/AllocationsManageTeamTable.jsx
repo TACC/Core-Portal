@@ -91,7 +91,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
                       type: 'REMOVE_USER_FROM_TAS_PROJECT',
                       payload: {
                         projectId,
-                        id: el.row.original.username,
+                        username: el.row.original.username,
                       },
                     });
                   }}

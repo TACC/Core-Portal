@@ -248,7 +248,9 @@ export function* getUsernamesManage(action) {
       type: 'ADD_USERNAMES_TO_TEAM',
       payload,
     });
-  } catch (error) {}
+  } catch (error) {
+
+  }
 }
 /**
  * Search for users in TAS
@@ -276,8 +278,8 @@ export function* searchUsers(action) {
   }
 }
 
-export const manageUtil = async (pid, uid, add = true) => {
-  const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
+export const manageUtil = async (projectId, username, add = true) => {
+  const r = await fetch(`/api/users/team/manage/${projectId}/${username}`, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: add ? 'POST' : 'DELETE',
   });
@@ -288,7 +290,7 @@ export const manageUtil = async (pid, uid, add = true) => {
 export function* addUser(action) {
   try {
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
-    yield call(manageUtil, action.payload.projectId, action.payload.id);
+    yield call(manageUtil, action.payload.projectId, action.payload.username);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
     const { projectId } = action.payload;
     yield put({
@@ -304,7 +306,7 @@ export function* addUser(action) {
         addUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id,
+          userName: action.payload.username,
         },
       },
     });

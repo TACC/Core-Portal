@@ -55,7 +55,7 @@ export function allocations(state = initialState, action) {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading,
+          ...action.payload.loadingUsernames,
         },
         errors: {
           ...state.errors,

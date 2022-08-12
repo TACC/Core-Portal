@@ -59,7 +59,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
-          id: newUser.user.username,
+          username: newUser.user.username,
         },
       });
     },
