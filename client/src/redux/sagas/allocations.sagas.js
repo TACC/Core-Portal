@@ -306,7 +306,7 @@ export function* addUser(action) {
         addUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.username,
+          username: action.payload.username,
         },
       },
     });
@@ -322,7 +322,7 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: true,
           error: false,
-          userName: action.payload.id,
+          username: action.payload.id,
         },
       },
     });
@@ -337,7 +337,7 @@ export function* removeUser(action) {
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
       payload: {
         teams: updatedTeams,
-        removingUserOperation: { loading: false, error: false, userName: '' },
+        removingUserOperation: { loading: false, error: false, username: '' },
       },
     });
   } catch (error) {
@@ -347,7 +347,7 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id,
+          username: action.payload.id,
         },
       },
     });

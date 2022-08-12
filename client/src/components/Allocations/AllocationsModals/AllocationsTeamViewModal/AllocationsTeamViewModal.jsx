@@ -160,7 +160,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
             <div className={manageStyles['user-operation-error']}>
               {addUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to add user {addUserOperation.userName}.
+                  Unable to add user {addUserOperation.username}.
                 </InlineMessage>
               ) : null}
               {addUserOperation.error && removingUserOperation.error ? (
@@ -168,7 +168,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
               ) : null}
               {removingUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to remove user {removingUserOperation.userName}.
+                  Unable to remove user {removingUserOperation.username}.
                 </InlineMessage>
               ) : null}
             </div>

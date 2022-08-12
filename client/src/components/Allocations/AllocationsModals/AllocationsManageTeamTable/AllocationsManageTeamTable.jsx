@@ -69,10 +69,10 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
         Cell: (el) => {
           const deleteOperationOccuring =
             removingUserOperation.loading &&
-            el.row.original.username === removingUserOperation.userName;
+            el.row.original.username === removingUserOperation.username;
           const deleteOperationFailed =
             removingUserOperation.error &&
-            el.row.original.username === removingUserOperation.userName;
+            el.row.original.username === removingUserOperation.username;
           const removable =
             !deleteOperationOccuring && el.row.original.role !== 'PI';
 

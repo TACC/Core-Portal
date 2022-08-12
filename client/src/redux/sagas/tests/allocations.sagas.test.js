@@ -225,7 +225,7 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: true,
             error: false,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
@@ -234,14 +234,14 @@ describe('Allocations Sagas', () => {
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
         payload: {
           teams: { 1234: teamFixture.filter((i) => i.username !== 'chicken') },
-          removingUserOperation: { loading: false, error: false, userName: '' },
+          removingUserOperation: { loading: false, error: false, username: '' },
         },
       })
       .hasFinalState({
         ...initialState,
         teams: expectedTeam,
         removingUserOperation: {
-          userName: '',
+          username: '',
           error: false,
           loading: false,
         },
@@ -264,7 +264,7 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: true,
             error: false,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
@@ -275,14 +275,14 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: false,
             error: true,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
       .hasFinalState({
         ...initialState,
         removingUserOperation: {
-          userName: 'chicken',
+          username: 'chicken',
           error: true,
           loading: false,
         },
