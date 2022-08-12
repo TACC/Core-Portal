@@ -5,6 +5,7 @@ import {
   NavLink as RRNavLink,
   Route,
   useHistory,
+  Switch,
 } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
@@ -88,22 +89,24 @@ export const Layout = ({ page }) => {
               <AllocationsTable page={page} />
             </SectionTableWrapper>
           )}
-          <Route exact path={`${root}/manage`}>
-            <AllocationsRequestModal
-              isOpen
-              toggle={() => {
-                history.push(root);
-              }}
-            />
-          </Route>
-          <Route path={`${root}/:projectId`}>
-            <AllocationsTeamViewModal
-              isOpen
-              toggle={() => {
-                history.push(root);
-              }}
-            />
-          </Route>
+          <Switch>
+            <Route exact path={`${root}/manage`}>
+              <AllocationsRequestModal
+                isOpen
+                toggle={() => {
+                  history.push(root);
+                }}
+              />
+            </Route>
+            <Route path={`${root}/:projectId`}>
+              <AllocationsTeamViewModal
+                isOpen
+                toggle={() => {
+                  history.push(root);
+                }}
+              />
+            </Route>
+          </Switch>
         </>
       }
     />
