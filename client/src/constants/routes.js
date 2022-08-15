@@ -1,6 +1,7 @@
 export const DASHBOARD = '/dashboard';
 export const TICKETS = '/tickets';
 export const DATA = '/data';
+export const SUBMISSIONS = '/submissions';
 export const ALLOCATIONS = '/allocations';
 export const APPLICATIONS = '/applications';
 export const PUBLICATIONS = '/publications';

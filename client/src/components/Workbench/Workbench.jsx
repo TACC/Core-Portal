@@ -11,6 +11,7 @@ import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
+import Submissions from '../Submissions';
 import History from '../History';
 import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
@@ -34,6 +35,7 @@ function Workbench() {
     hideApps,
     hideDataFiles,
     hideAllocations,
+    hideSubmissions,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,
@@ -44,6 +46,7 @@ function Workbench() {
       hideApps: state.workbench.config.hideApps,
       hideDataFiles: state.workbench.config.hideDataFiles,
       hideAllocations: state.workbench.config.hideAllocations,
+      hideSubmissions: state.workbench.config.hideSubmissions,
     }),
     shallowEqual
   );
@@ -106,6 +109,11 @@ function Workbench() {
                     path={`${path}${ROUTES.ALLOCATIONS}`}
                     component={Allocations}
                   />
+                )}
+                {!hideSubmissions && (
+                  <Route path={`${path}${ROUTES.SUBMISSIONS}`}>
+                    <Submissions />
+                  </Route>
                 )}
                 {!hideApps && (
                   <Route

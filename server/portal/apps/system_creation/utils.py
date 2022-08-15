@@ -77,6 +77,28 @@ def _get_tas_dir(user):
     return tas_user['homeDirectory']
 
 
+def _get_tas_projects_for_user(user):
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
+    return tas_client.projects_for_user(username=user.username)
+
+
+def _get_tas_project(project_id):
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
+    return tas_client.project(project_id)
+
+
 def _create_substitutions(user):
     substitutions = {}
     substitutions["tasdir"] = _get_tas_dir(user)
