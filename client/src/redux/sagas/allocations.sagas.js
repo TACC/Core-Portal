@@ -231,27 +231,7 @@ export const teamPayloadUtil = (
   return { data, loadingUsernames };
 };
 
-export function* getUsernamesManage(action) {
-  try {
-    yield put({
-      type: 'GET_PROJECT_USERS_INIT',
-      payload: {
-        loadingUsernames: { [action.payload.projectId]: { loading: true } },
-      },
-    });
-    const json = yield call(getProjectUsersUtil, action.payload.projectId);
-    const payload = {
-      data: { [action.payload.projectId]: json },
-      loadingUsernames: { [action.payload.projectId]: { loading: false } },
-    };
-    yield put({
-      type: 'ADD_USERNAMES_TO_TEAM',
-      payload,
-    });
-  } catch (error) {
 
-  }
-}
 /**
  * Search for users in TAS
  * @async
@@ -292,11 +272,10 @@ export function* addUser(action) {
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
     yield call(manageUtil, action.payload.projectId, action.payload.username);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
-    const { projectId } = action.payload;
     yield put({
-      type: 'GET_MANAGE_TEAMS',
+      type: 'GET_PROJECT_USERS',
       payload: {
-        projectId,
+        projectId: action.payload.projectId,
       },
     });
   } catch (error) {
@@ -322,17 +301,17 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: true,
           error: false,
-          username: action.payload.id,
+          username: action.payload.username,
         },
       },
     });
-    yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    yield call(manageUtil, action.payload.projectId, action.payload.username, false);
     // remove user from team state
     const teams = yield select(allocationsTeamSelector);
     const updatedTeams = { ...teams };
     updatedTeams[action.payload.projectId] = teams[
       action.payload.projectId
-    ].filter((i) => i.username !== action.payload.id);
+    ].filter((i) => i.username !== action.payload.username);
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
       payload: {
@@ -347,7 +326,7 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: false,
           error: true,
-          username: action.payload.id,
+          username: action.payload.username,
         },
       },
     });
@@ -369,13 +348,10 @@ export function* watchAllocationData() {
 export function* watchTeams() {
   yield takeLatest('GET_PROJECT_USERS', getUsernames);
 }
-export function* watchManageTeams() {
-  yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);
-}
+
 export default [
   watchAllocationData(),
   watchTeams(),
-  watchManageTeams(),
   watchUserSearch(),
   watchAddUser(),
   watchRemoveUser(),
