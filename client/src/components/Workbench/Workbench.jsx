@@ -35,7 +35,7 @@ function Workbench() {
     hideApps,
     hideDataFiles,
     hideAllocations,
-    hideSubmissions,
+    showSubmissions,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,
@@ -46,7 +46,7 @@ function Workbench() {
       hideApps: state.workbench.config.hideApps,
       hideDataFiles: state.workbench.config.hideDataFiles,
       hideAllocations: state.workbench.config.hideAllocations,
-      hideSubmissions: state.workbench.config.hideSubmissions,
+      showSubmissions: state.workbench.config.showSubmissions,
     }),
     shallowEqual
   );
@@ -110,7 +110,7 @@ function Workbench() {
                     component={Allocations}
                   />
                 )}
-                {!hideSubmissions && (
+                {showSubmissions && (
                   <Route path={`${path}${ROUTES.SUBMISSIONS}`}>
                     <Submissions />
                   </Route>

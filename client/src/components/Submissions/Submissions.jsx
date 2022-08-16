@@ -16,9 +16,7 @@ const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  const submissionSystem = allSystems.find((s) => {
-    return s.system && s.system.startsWith('apcd.submissions');
-  });
+  const submissionSystem = allSystems.find((s) => s.site === 'apcd');
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -131,12 +129,10 @@ const Submissions = () => {
         <span>
           For security reasons, files uploaded here cannot be accessed after
           uploading.
+          {/* prettier-ignore */}
           <strong>
-            If a file exceeds 2GB, refer to the{' '}
-            <Link to="/help/data-transfer-guide" className="wb-link">
-              Large Data Transfer Guide
-            </Link>
-            .
+            If a file exceeds 2GB, refer to the
+            <Link to="/help/data-transfer-guide" className="wb-link">Large Data Transfer Guide</Link>.
           </strong>
         </span>
       }
