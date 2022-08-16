@@ -12,10 +12,10 @@ allowed_actions = {
     'apps_tray': ['get']
 }
 
-def tapis_handler(client, user, operation, view, **kwargs):
+def tapis_handler(client, request, operation, view, **kwargs):
     if operation not in allowed_actions[view]:
         raise PermissionDenied
 
     operation = '{}_{}'.format(operation, view)
     op = getattr(operations, operation)
-    return op(client, user, **kwargs)
+    return op(client, request, **kwargs)

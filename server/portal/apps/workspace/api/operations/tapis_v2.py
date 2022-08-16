@@ -17,6 +17,7 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.utils.translations import url_parse_inputs
 from agavepy.agave import Agave
 
+
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
@@ -54,10 +55,16 @@ def _get_app(app_id, client, user):
 
     return data
 
+
+def _get_app_spec(client, app, user):
+    return _get_app(_get_app_id(client, app), client, user)
+
+
 def _app_license_type(app_id):
     app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
+
 
 def _get_app_id_by_spec(client, app):
     # Retrieve the app specified in the portal
@@ -77,6 +84,7 @@ def _get_app_id_by_spec(client, app):
     )
     return app_list[-1]['id']
 
+
 def _get_app_id(client, app):
     if app.appId and len(app.appId) > 0:
         app_id = app.appId
@@ -86,6 +94,7 @@ def _get_app_id(client, app):
         app.lastRetrieved = app_id
         app.save()
     return app_id
+
 
 def _get_private_apps(client, user):
     apps_listing = client.apps.list(privateOnly=True)
@@ -112,6 +121,7 @@ def _get_private_apps(client, user):
             )
             logger.exception(e)
     return my_apps
+
 
 def _get_public_apps(client):
     categories = []
@@ -163,10 +173,12 @@ def _get_public_apps(client):
 
     return categories, definitions
 
-def get_apps(client, user, **kwargs):
+
+def get_apps(client, request, **kwargs):
     public_only = kwargs.get('publicOnly', None)
     name = kwargs.get('name', None)
     app_id = kwargs.get('app_id', None)
+    user = request.user
     if app_id:
         METRICS.debug("user:{} is requesting app id:{}".format(user.username, app_id))
         data = _get_app(app_id, client, user)
@@ -195,9 +207,11 @@ def get_apps(client, user, **kwargs):
         data = {'appListing': client.apps.list(**list_kwargs)}
     return data
 
-def get_meta(client, user, **kwargs):
+
+def get_meta(client, request, **kwargs):
     app_id = kwargs.get('app_id', None)
     query = kwargs.get('query', None)
+    user = request.user
     if app_id:
         METRICS.debug("user:{} is requesting metadata for app id:{}".format(user.username, app_id))
         query = json.dumps({
@@ -234,7 +248,8 @@ def get_meta(client, user, **kwargs):
         data = client.meta.listMetadata(q=query)
     return data
 
-def post_meta(client, user, **kwargs):
+
+def post_meta(client, request, **kwargs):
     meta_uuid = kwargs.get('uuid', None)
     meta_post = kwargs
     if meta_uuid:
@@ -244,17 +259,21 @@ def post_meta(client, user, **kwargs):
         data = client.meta.addMetadata(body=meta_post)
     return data
 
-def delete_meta(client, user, **kwargs):
+
+def delete_meta(client, request, **kwargs):
     meta_uuid = kwargs.get('uuid', None)
     return client.meta.deleteMetadata(uuid=meta_uuid)
 
-def get_monitors(client, user, **kwargs):
+
+def get_monitors(client, request, **kwargs):
     target = kwargs.get('target')
     admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
                             token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
     return admin_client.monitors.list(target=target)
 
-def get_jobs(client, user, **kwargs):
+
+def get_jobs(client, request, **kwargs):
+    user = request.user
     job_id = kwargs.get('job_id', None)
     limit = int(kwargs.get('limit', 10))
     offset = int(kwargs.get('offset', 0))
@@ -309,42 +328,42 @@ def get_jobs(client, user, **kwargs):
 
         return data
 
-def delete_jobs(client, user, **kwargs):
+
+def delete_jobs(client, request, **kwargs):
+    user = request.user
     job_id = kwargs.get('job_id', None)
     METRICS.info("user:{} is deleting job id:{}".format(user.username, job_id))
     return client.jobs.delete(jobId=job_id)
 
-def post_jobs(client, user, **kwargs):
-    wh_url = kwargs.get('wh_base_url')
-    jobs_url = kwargs.get('jobs_wh_url')
 
+def post_jobs(client, request, **kwargs):
     job_post = kwargs
     job_id = kwargs.get('job_id')
     job_action = kwargs.get('job_action')
-
     if job_id and job_action:
         # resubmit job
         if job_action == 'resubmit':
-            METRICS.info("user:{} is resubmitting job id:{}".format(user.username, job_id))
+            METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
         # cancel job / stop job
-        else: 
-            METRICS.info("user:{} is canceling/stopping job id:{}".format(user.username, job_id))
+        else:
+            METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
 
         data = client.jobs.manage(jobId=job_id, body={"action": job_action})
 
-        if "id" in data:
-            job = JobSubmission.objects.create(
-                user=user,
-                jobId=data["id"]
-            )
-            job.save()
+        if job_action == 'resubmit':
+            if "id" in data:
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=data["id"]
+                )
+                job.save()
 
         return data
     # submit job
     elif job_post:
-        METRICS.info("user:{} is submitting job:{}".format(user.username, job_post))
+        METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
         default_sys = UserSystemsManager(
-            user,
+            request.user,
             settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
         )
 
@@ -377,7 +396,7 @@ def post_jobs(client, user, **kwargs):
         if lic_type is not None:
             _, license_models = get_license_info()
             license_model = [x for x in license_models if x.license_type == lic_type][0]
-            lic = license_model.objects.filter(user=user).first()
+            lic = license_model.objects.filter(user=request.user).first()
             if not lic:
                 raise ApiException("You are missing the required license for this application.")
             job_post['parameters']['_license'] = lic.license_as_str()
@@ -387,7 +406,7 @@ def post_jobs(client, user, **kwargs):
             job_post = url_parse_inputs(job_post)
 
         # Get or create application based on allocation and execution system
-        apps_mgr = UserApplicationsManager(user)
+        apps_mgr = UserApplicationsManager(request.user)
         app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
         if app.exec_sys:
@@ -400,8 +419,8 @@ def post_jobs(client, user, **kwargs):
             wh_base_url = settings.WH_BASE_URL + '/webhooks/'
             jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
         else:
-            wh_base_url = wh_url
-            jobs_wh_url = jobs_url
+            wh_base_url = request.build_absolute_uri('/webhooks/')
+            jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
         job_post['parameters']['_webhook_base_url'] = wh_base_url
         job_post['notifications'] = [
@@ -418,14 +437,14 @@ def post_jobs(client, user, **kwargs):
 
         if "id" in response:
             job = JobSubmission.objects.create(
-                user=user,
+                user=request.user,
                 jobId=response["id"]
             )
             job.save()
+        return response
 
-        return response 
-
-def get_systems(client, user, **kwargs):
+def get_systems(client, request, **kwargs):
+    user = request.user
     roles = kwargs.get('roles', None)
     user_role = kwargs.get('user_role', None)
     system_id = kwargs.get('system_id', None)
@@ -438,7 +457,9 @@ def get_systems(client, user, **kwargs):
         METRICS.info("user:{} agave.systems.getRoleForUser system_id:{}".format(user.username, system_id))
         return agc.systems.getRoleForUser(systemId=system_id, username=user.username)
 
-def post_systems(client, user, **kwargs):
+
+def post_systems(client, request, **kwargs):
+    user = request.user
     role = kwargs.get('role', None)
     system_id = kwargs.get('system_id', None)
     METRICS.info("user:{} agave.systems.updateRole system_id:{}".format(user.username, system_id))
@@ -449,9 +470,11 @@ def post_systems(client, user, **kwargs):
     agc = service_account()
     return agc.systems.updateRole(systemId=system_id, body=role_body)
 
-def get_job_history(client, user, **kwargs):
+
+def get_job_history(client, request, **kwargs):
     job_uuid = kwargs.get('job_uuid', None)
     return client.jobs.getHistory(jobId=job_uuid)
+
 
 def get_apps_tray(client, user, **kwargs):
     tabs, definitions = _get_public_apps(client)

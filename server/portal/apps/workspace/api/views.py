@@ -13,7 +13,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from portal.apps.workspace.api import lookups as LookupManager
-from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.workspace.api.handlers.tapis_handlers import tapis_handler
@@ -29,7 +28,6 @@ def _tapis_response(request, view, additional_params=None):
         raise ApiException('This view requires authentication', status=403)
 
     operation = request.method.lower()
-    user = request.user
 
     if operation == 'post':
         params = json.loads(request.body)
@@ -42,7 +40,7 @@ def _tapis_response(request, view, additional_params=None):
             (key, value) = first
             params[key] = value
 
-    return tapis_handler(client, user, operation, view, **params)
+    return tapis_handler(client, request, operation, view, **params)
 
 def get_manager(request, file_mgr_name):
     """Lookup Manager to handle call"""
@@ -91,14 +89,7 @@ class JobsView(BaseApiView):
         return JsonResponse({'response': response})
 
     def post(self, request):
-        response = _tapis_response(
-            request,
-            'jobs',
-            [
-                {'wh_base_url': request.build_absolute_uri('/webhooks/')},
-                {'jobs_wh_url': request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))}
-            ])
-
+        response = _tapis_response(request, 'jobs')
         return JsonResponse({'response': response})
 
     def delete(self, request):
