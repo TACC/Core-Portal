@@ -213,7 +213,9 @@ describe('Allocations Sagas', () => {
     const expectedTeam = {
       1234: teamFixture.filter((i) => i.username !== 'chicken'),
     };
-    expectSaga(removeUser, { payload: { projectId: 1234, username: 'chicken' } })
+    expectSaga(removeUser, {
+      payload: { projectId: 1234, username: 'chicken' },
+    })
       .withReducer(allocationsReducer, { ...initialState })
       .provide([
         [matchers.call.fn(manageUtil), { response: 'ok' }],
@@ -255,7 +257,9 @@ describe('Allocations Sagas', () => {
       teams: { 1234: teamFixture },
     };
     const fakeError = new Error('Unable to remove user');
-    expectSaga(removeUser, { payload: { projectId: 1234, username: 'chicken' } })
+    expectSaga(removeUser, {
+      payload: { projectId: 1234, username: 'chicken' },
+    })
       .withReducer(allocationsReducer, { ...initialState })
       .provide([[matchers.call.fn(manageUtil), throwError(fakeError)]])
       .put({

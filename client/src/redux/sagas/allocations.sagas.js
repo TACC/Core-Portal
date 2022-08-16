@@ -231,7 +231,6 @@ export const teamPayloadUtil = (
   return { data, loadingUsernames };
 };
 
-
 /**
  * Search for users in TAS
  * @async
@@ -305,7 +304,12 @@ export function* removeUser(action) {
         },
       },
     });
-    yield call(manageUtil, action.payload.projectId, action.payload.username, false);
+    yield call(
+      manageUtil,
+      action.payload.projectId,
+      action.payload.username,
+      false
+    );
     // remove user from team state
     const teams = yield select(allocationsTeamSelector);
     const updatedTeams = { ...teams };
