@@ -31,7 +31,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
   React.useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && projectId in teams) {
       const currentUser = teams[projectId].filter((u) => u.username === user);
       if (currentUser.length !== 1) return;
       if (currentUser[0].role === 'PI' || currentUser[0].role === 'Delegate')

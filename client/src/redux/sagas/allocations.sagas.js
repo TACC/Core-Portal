@@ -17,10 +17,6 @@ export function* getAllocations() {
   try {
     const json = yield call(getAllocationsUtil);
     yield put({ type: 'ADD_ALLOCATIONS', payload: json });
-    yield put({
-      type: 'POPULATE_TEAMS',
-      payload: populateTeamsUtil(json),
-    });
   } catch (error) {
     yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
   }
@@ -46,24 +42,6 @@ export const getProjectUsersUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
-};
-
-/**
- * Generate an empty dictionary to look up users from project ID and map loading state
- * to each project
- * @param {{portal_alloc: String, active: Array, inactive: Array, hosts: Object}} data -
- * Allocations data
- * @returns {{teams: Object, loadingTeams: {}}}
- */
-export const populateTeamsUtil = (data) => {
-  const teams = data.active
-    .concat(data.inactive)
-    .reduce((obj, item) => ({ ...obj, [item.projectId]: {} }), {});
-  const loadingTeams = Object.keys(teams).reduce(
-    (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
-    {}
-  );
-  return { teams, loadingTeams };
 };
 
 export const allocationsSelector = (state) => [

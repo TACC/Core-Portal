@@ -6,7 +6,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   getAllocationsUtil,
   getProjectUsersUtil,
-  populateTeamsUtil,
   getUsageUtil,
   teamPayloadUtil,
   allocationsSelector,
@@ -76,7 +75,6 @@ describe('Allocations Sagas', () => {
     active: [],
     inactive: [],
   };
-  const teamsFixture = populateTeamsUtil(emptyAllocationsFixture);
   test('GET Allocations', () => {
     // Success
     expectSaga(getAllocations)
@@ -92,7 +90,6 @@ describe('Allocations Sagas', () => {
       .put({ type: 'START_ADD_ALLOCATIONS' })
       .call(getAllocationsUtil)
       .put({ type: 'ADD_ALLOCATIONS', payload: emptyAllocationsFixture })
-      .put({ type: 'POPULATE_TEAMS', payload: teamsFixture })
       .run();
     // Error
     const testError = new Error('Test Error');
