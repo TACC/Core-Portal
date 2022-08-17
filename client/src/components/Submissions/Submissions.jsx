@@ -16,7 +16,9 @@ const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  const submissionSystem = allSystems.find((s) => s.site === 'apcd');
+  const submissionSystem = allSystems.find(
+    (s) => s.name === 'APCD Submissions'
+  );
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -131,7 +133,7 @@ const Submissions = () => {
           uploading.
           {/* prettier-ignore */}
           <strong>
-            If a file exceeds 2GB, refer to the
+            If a file exceeds 2GB, refer to the{' '}
             <Link to="/help/data-transfer-guide" className="wb-link">Large Data Transfer Guide</Link>.
           </strong>
         </span>
