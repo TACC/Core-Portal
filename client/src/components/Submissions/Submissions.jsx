@@ -75,8 +75,8 @@ const SubmissionsUpload = () => {
   };
 
   return (
-    <div>
-      <div className={styles['container']} disabled={dropZoneDisabled}>
+    <div className={styles['container']}>
+      <div disabled={dropZoneDisabled}>
         <FileInputDropZone
           onSetFiles={selectFiles}
           onRejectedFiles={onRejectedFiles}
@@ -130,11 +130,13 @@ const Submissions = () => {
       introMessageText={
         <span>
           For security reasons, files uploaded here cannot be accessed after
-          uploading.
-          {/* prettier-ignore */}
+          uploading.{' '}
           <strong>
             If a file exceeds 2GB, refer to the{' '}
-            <Link to="/help/data-transfer-guide" className="wb-link">Large Data Transfer Guide</Link>.
+            <Link to="/help/data-transfer-guide" className="wb-link">
+              Large Data Transfer Guide
+            </Link>
+            .
           </strong>
         </span>
       }
