@@ -133,7 +133,7 @@ const Submissions = () => {
           uploading.{' '}
           <strong>
             If a file exceeds 2GB, refer to the{' '}
-            <Link to="/help/data-transfer-guide" className="wb-link">
+            <Link to="/help/data-transfer-guide/" className="wb-link">
               Large Data Transfer Guide
             </Link>
             .
