@@ -65,7 +65,8 @@ describe('workbench', () => {
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
-    expect(getByText(introMessageText.DASHBOARD)).toBeDefined();
+    expect(getByText(/My Recent Jobs/)).toBeDefined();
+    expect(getByText(/My Tickets/)).toBeDefined();
   });
   it('shows loading spinner if systems request not finished', () => {
     const history = createMemoryHistory();
