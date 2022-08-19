@@ -41,7 +41,8 @@ class CustomMessageTemplate(models.Model):
 
     COMPONENTS = [('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'),
                   ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'),
-                  ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account')]
+                  ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account'),
+                  ('UNPROTECTED', 'Unprotected'), ('ONBOARDING', 'Onboarding')]
 
     component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
     message_type = models.CharField(help_text='Message type', max_length=20, choices=MESSAGE_TYPES, default='info')
