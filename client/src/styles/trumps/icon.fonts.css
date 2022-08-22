@@ -22,8 +22,8 @@ Generated using nucleoapp.com
   display: inline-block;
   font: normal normal normal 1em/1 'cortal';
 
-  font-family: cortal !important;
-  
+  font-family: cortal !important; /* TACC: To override `site.header.css` */
+
   color: inherit;
   flex-shrink: 0;
   speak: none;
