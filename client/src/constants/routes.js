@@ -8,7 +8,6 @@ export const HISTORY = '/history';
 export const JOBS = '/jobs';
 export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
-export const USER_GUIDE = '/user-guide';
 export const ONBOARDING = '/onboarding';
 export const ONBOARDINGADMIN = '/onboarding/admin';
 export const ACCOUNT = '/account';
