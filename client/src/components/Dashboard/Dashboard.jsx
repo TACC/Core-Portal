@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch, useStore } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
 import { BrowserChecker, Section, SectionTableWrapper } from '_common';
