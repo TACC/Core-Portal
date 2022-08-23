@@ -13,6 +13,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='custommessagetemplate',
             name='component',
-            field=models.CharField(choices=[('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'), ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'), ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account'), ('UNPROTECTED', 'Unprotected'), ('ONBOARDING', 'Onboarding')], default='Dashboard', help_text='Component type', max_length=20),
+            field=models.CharField(choices=[('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'), ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'), ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account'), (
+                'UNPROTECTED', 'Unprotected'), ('ONBOARDING', 'Onboarding'), ('SUBMISSIONS', 'Submissions'), ('ONBOARDINGADMIN', 'Onboarding Admin'), ('SEARCH', 'Search')], default='Dashboard', help_text='Component type', max_length=20),
+        ),
+        migrations.AlterField(
+            model_name='custommessagetemplate',
+            name='message',
+            field=models.TextField(blank=True, default='', help_text='Message content (max 200 characters)', max_length=200),
         ),
     ]
