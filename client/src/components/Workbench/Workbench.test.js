@@ -17,7 +17,6 @@ import { initialState as systemMonitor } from '../../redux/reducers/systemMonito
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
-import * as introMessageText from '../../constants/messages';
 
 /* state required to render workbench/dashboard */
 const state = {
