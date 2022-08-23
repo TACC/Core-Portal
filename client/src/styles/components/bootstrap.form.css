@@ -22,7 +22,7 @@ textarea.form-control {
 }
 
 .form-control {
-  /* To increase height jsut enough to match height of regular _common Button */
+  /* To increase height just enough to match height of regular _common Button */
   height: calc(1.5em + 0.75rem + 3px); /* 3px ← 2px from Bootstrap _forms.css */
 }
 .form-control-sm {
