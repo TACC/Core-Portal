@@ -52,7 +52,7 @@ Styleguide Components.Button
 [class*='c-button'] {
   --min-width: 75px;
   --mid-width: 110px;
-  --max-width: 135px;
+  --max-width: 136px;
 }
 .c-button {
   display: inline-block;

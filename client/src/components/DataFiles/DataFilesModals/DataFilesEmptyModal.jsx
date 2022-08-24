@@ -43,7 +43,7 @@ const DataFilesEmptyModal = React.memo(() => {
   }, [reloadPage, trashedFiles]);
 
   const status = useSelector((state) => state.files.operationStatus.empty);
-  const isLoading = Object.values(status).some(
+  const isRunning = Object.values(status).some(
     (status) => status === 'RUNNING'
   );
 
@@ -77,7 +77,7 @@ const DataFilesEmptyModal = React.memo(() => {
           onClick={emptyCallback}
           type="primary"
           size="medium"
-          isLoading={isLoading}
+          isLoading={isRunning}
         >
           Delete Files
         </Button>

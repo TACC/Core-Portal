@@ -138,11 +138,9 @@ const DataFilesManageProjectModal = () => {
           <div className={styles['owner-controls']}>
             {isOwner && members.length > 1 ? (
               <Button type="link" onClick={toggleTransferMode}>
-                <h6 className={styles['ownership-toggle']}>
-                  {transferMode
-                    ? 'Cancel Change Ownership'
-                    : 'Change Ownership'}
-                </h6>
+                {transferMode
+                  ? 'Cancel Change Ownership'
+                  : 'Change Ownership'}
               </Button>
             ) : null}
           </div>

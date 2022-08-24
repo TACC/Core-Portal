@@ -33,9 +33,7 @@ const TextCopyField = ({ value, placeholder }) => {
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <Button
-            className={`${styles['copy-button']} ${
-              isCopied ? styles['is-copied'] : ''
-            }`}
+            className={styles['copy-button']}
             // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
             //      - `data-attribute` and `attr()` (pending browser support)
             //      - PostCSS and JSON variables (pending greater need for this)
