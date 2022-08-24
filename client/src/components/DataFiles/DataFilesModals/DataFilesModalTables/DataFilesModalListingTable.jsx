@@ -110,7 +110,7 @@ const DataFilesModalButtonCell = ({
   return (
     formatSupportsOperation && (
       <span>
-        <Button type="primary" disabled={disabled} onClick={onClick}>
+        <Button type="primary" className="float-right data-files-btn" disabled={disabled} onClick={onClick}>
           {operationName}
         </Button>
       </span>

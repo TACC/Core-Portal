@@ -39,6 +39,7 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         attr="submit"
         type="primary"
         size="medium"
+        className="manage-account-submit-button"
         disabled={!canSubmit}
         isLoading={isEditing}
         dataTestid="required-submit"

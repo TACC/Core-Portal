@@ -66,6 +66,7 @@ export default function () {
           attr="submit"
           type="primary"
           size="medium"
+          className='manage-account-submit-button'
           isLoading={isEditing}
           dataTestid="optional-submit"
         >
