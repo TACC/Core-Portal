@@ -249,7 +249,6 @@ flags that will be passed to the frontend to determine what non-standard
 components to render.
 """
 _WORKBENCH_SETTINGS = {
-    "portalNamespace": _PORTAL_NAMESPACE,
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
@@ -261,5 +260,18 @@ _WORKBENCH_SETTINGS = {
     "hideAllocations": False,
     "hideManageAccount": False,
     "onboardingCompleteRedirect": '/workbench/',
-    "noPHISystem": ""
+    "noPHISystem": "",
+    "customDashboardSection": {
+        "header": "My Account",
+        "links": [
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Update Profile and Email Address',
+            },
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Change Password',
+            }
+        ]
+    }
 }

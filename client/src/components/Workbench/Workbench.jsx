@@ -34,7 +34,7 @@ function Workbench() {
     hideApps,
     hideDataFiles,
     hideAllocations,
-    hideManageAccount
+    hideManageAccount,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,

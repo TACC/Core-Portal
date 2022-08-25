@@ -221,7 +221,9 @@ export const AppSchemaForm = ({ app }) => {
     };
   }, shallowEqual);
 
-  const hideManageAccount = useSelector((state) => state.workbench.config.hideManageAccount);
+  const hideManageAccount = useSelector(
+    (state) => state.workbench.config.hideManageAccount
+  );
 
   const { systemHasKeys, pushKeysSystem } = app;
   const missingLicense = app.license.type && !app.license.enabled;

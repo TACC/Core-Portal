@@ -52,6 +52,12 @@ export const LAYOUT_CLASS_MAP = {
    * @tutorial SectionContent.layouts.unequalColumns
    */
   multiColumnUnequal: `${layoutStyles['multi-column']} ${layoutStyles['with-unequal-columns']}`,
+  /**
+   * Like `multiColumn`, but fills columns left to right instead of
+   * top to bottom.
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/column-fill
+   */
+  balance: `${layoutStyles['multi-column']} ${layoutStyles['balance']}`,
 };
 export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
