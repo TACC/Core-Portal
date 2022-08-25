@@ -13,7 +13,9 @@ const MODAL_PROPTYPES = {
 };
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
-  const { showUserGuide } = useSelector((state) => state.systemMonitor);
+  const showUserGuide = useSelector(
+    (state) => state.workbench.config.showUserGuide
+  );
   return (
     <Modal className={styles.container} isOpen={isOpen} toggle={() => toggle()}>
       <ModalHeader

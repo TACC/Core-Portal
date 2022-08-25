@@ -254,6 +254,8 @@ _WORKBENCH_SETTINGS = {
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
+    "hideAllocations": False,
+    "showUserGuide": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": ""
 }
