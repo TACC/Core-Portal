@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, LoadingSpinner, Message } from '_common';
+import { Button as ReactstrapButton } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
@@ -72,14 +73,24 @@ const OnboardingActions = ({ step }) => {
         </>
       ) : null}
       {step.state === 'userwait' ? (
-        <Button
-          type="link"
-          className={styles.action}
-          disabled={isSending}
-          onClick={() => actionCallback('user_confirm', username)}
-        >
-          {step.userConfirm}
-        </Button>
+        step.data?.userlink ? (
+          <ReactstrapButton
+            color="link"
+            className={styles.action}
+            href={step.data?.userlink?.url}
+          >
+            {step.data?.userlink?.text}
+          </ReactstrapButton>
+        ) : (
+          <Button
+            type="link"
+            className={styles.action}
+            disabled={isSending}
+            onClick={() => actionCallback('user_confirm', username)}
+          >
+            {step.userConfirm}
+          </Button>
+        )
       ) : null}
       {isStaff ? (
         <>
