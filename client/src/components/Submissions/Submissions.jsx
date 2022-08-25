@@ -16,9 +16,7 @@ const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  const submissionSystem = allSystems.find(
-    (s) => s.name === 'APCD Submissions'
-  );
+  const submissionSystem = allSystems.find((s) => s.type === 'submission');
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -94,7 +92,6 @@ const SubmissionsUpload = () => {
               uploadedFiles={uploadedFiles}
               rejectedFiles={rejectedFiles}
               setUploadedFiles={setUploadedFiles}
-              submission={true}
             />
           </div>
           {submitDisabled ? (
@@ -127,19 +124,6 @@ const Submissions = () => {
     <Section
       bodyClassName="has-loaded-dashboard"
       messageComponentName="SUBMISSIONS"
-      introMessageText={
-        <span>
-          For security reasons, files uploaded here cannot be accessed after
-          uploading.{' '}
-          <strong>
-            If a file exceeds 2GB, refer to the{' '}
-            <a href="/help/data-transfer-guide/" className="wb-link">
-              Large Data Transfer Guide
-            </a>
-            .
-          </strong>
-        </span>
-      }
       header="Data Submission"
       contentLayoutName="oneColumn"
       contentShouldScroll

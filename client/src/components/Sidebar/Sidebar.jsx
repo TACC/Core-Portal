@@ -18,8 +18,8 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
-  const hideSubmissions = useSelector(
-    (state) => state.workbench.config.hideSubmissions
+  const showSubmissions = useSelector(
+    (state) => state.workbench.config.showSubmissions
   );
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
@@ -50,7 +50,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
       label: 'Data Submission',
       iconName: 'folder',
       disabled: disabled,
-      hidden: hideSubmissions,
+      hidden: !showSubmissions,
     },
     {
       to: path + ROUTES.ALLOCATIONS,
