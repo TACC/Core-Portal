@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { func, bool } from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,7 @@ const MODAL_PROPTYPES = {
 };
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
+  const { showUserGuide } = useSelector((state) => state.systemMonitor);
   return (
     <Modal className={styles.container} isOpen={isOpen} toggle={() => toggle()}>
       <ModalHeader
@@ -29,6 +31,12 @@ const FeedbackModal = React.memo(({ isOpen, toggle }) => {
         </p>
         <p>
           If you need assistance,{' '}
+          {showUserGuide && (
+            <span>
+              refer to the <Link to={`${ROUTES.USER_GUIDE}`}>user guide</Link>,
+              or{' '}
+            </span>
+          )}
           <Link
             onClick={() => toggle()}
             to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
