@@ -86,7 +86,6 @@
   .panels:global(:is(.count--1, .count--2)) > * {
     height: 100%;
     /* So bottom border of table is not flush with bottom of app */
-    /* HELP: …--section-left is used for top spacing which this mirrors */
-    padding-bottom: var(--global-space--section-left);
+    padding-bottom: var(--vertical-buffer);
   }
 }
