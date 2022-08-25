@@ -30,7 +30,7 @@ function Dashboard() {
         )
       }
       contentClassName={styles['panels']}
-      contentLayoutName="twoColumnUnequal"
+      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
       contentShouldScroll
       content={
         <>
