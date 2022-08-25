@@ -36,6 +36,7 @@ function Workbench() {
     hideDataFiles,
     hideAllocations,
     showSubmissions,
+    hideManageAccount,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,
@@ -47,6 +48,7 @@ function Workbench() {
       hideDataFiles: state.workbench.config.hideDataFiles,
       hideAllocations: state.workbench.config.hideAllocations,
       showSubmissions: state.workbench.config.showSubmissions,
+      hideManageAccount: state.workbench.config.hideManageAccount,
     }),
     shallowEqual
   );
@@ -89,10 +91,12 @@ function Workbench() {
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
                   <Dashboard />
                 </Route>
-                <Route
-                  path={`${path}${ROUTES.ACCOUNT}`}
-                  component={ManageAccount}
-                />
+                {!hideManageAccount && (
+                  <Route
+                    path={`${path}${ROUTES.ACCOUNT}`}
+                    component={ManageAccount}
+                  />
+                )}
                 {!hideDataFiles && (
                   <Route path={`${path}${ROUTES.DATA}`}>
                     <DataFiles />

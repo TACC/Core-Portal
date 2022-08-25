@@ -255,6 +255,9 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False,
     "showSubmissions": False,
+    "hideAllocations": False,
+    "hideManageAccount": False,
     "onboardingCompleteRedirect": '/workbench/',
-    "noPHISystem": ""
+    "noPHISystem": "",
+    "customDashboardSection": None
 }

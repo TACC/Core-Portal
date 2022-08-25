@@ -9,9 +9,12 @@ import Sysmon from '../SystemMonitor';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
+import CustomDashboardSection from './CustomDashboardSection';
 
 function Dashboard() {
-  const hideApps = useSelector((state) => state.workbench.config.hideApps);
+  const { hideApps, hideManageAccount, customDashboardSection } = useSelector(
+    (state) => state.workbench.config
+  );
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   return (
     <Section
@@ -20,18 +23,21 @@ function Dashboard() {
       messages={<BrowserChecker />}
       header="Dashboard"
       headerActions={
-        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
-          Manage Account
-        </Link>
+        !hideManageAccount && (
+          <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
+            Manage Account
+          </Link>
+        )
       }
       contentClassName={styles['panels']}
-      contentLayoutName="twoColumn"
+      contentLayoutName={hideApps ? 'balance' : 'twoColumn'}
       contentShouldScroll
       content={
         <>
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           {!hideSystemMonitor && <DashboardSysmon />}
+          {customDashboardSection && <CustomDashboardSection />}
           <DashboardRoutes />
         </>
       }
