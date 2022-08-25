@@ -646,7 +646,11 @@ export const AppSchemaForm = ({ app }) => {
                 >
                   Submit
                 </Button>
-                <Button onClick={handleReset} className='btn-resetForm' type="link">
+                <Button
+                  onClick={handleReset}
+                  className="btn-resetForm"
+                  type="link"
+                >
                   Reset Fields to Defaults
                 </Button>
               </FormGroup>

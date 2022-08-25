@@ -27,7 +27,12 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button type="link" className={styles['link']} iconNameBefore="nav-left" onClick={onClick}>
+    <Button
+      type="link"
+      className={styles['link']}
+      iconNameBefore="nav-left"
+      onClick={onClick}
+    >
       Back
     </Button>
   );
@@ -108,7 +113,12 @@ const DataFilesModalButtonCell = ({
   return (
     formatSupportsOperation && (
       <span>
-        <Button type="primary" className="float-right data-files-btn" disabled={disabled} onClick={onClick}>
+        <Button
+          type="primary"
+          className="float-right data-files-btn"
+          disabled={disabled}
+          onClick={onClick}
+        >
           {operationName}
         </Button>
       </span>

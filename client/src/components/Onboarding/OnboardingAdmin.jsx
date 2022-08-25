@@ -172,7 +172,11 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             />
           </td>
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <Button type="link" className={styles['action-link']} onClick={() => viewLogCallback(user, step)}>
+            <Button
+              type="link"
+              className={styles['action-link']}
+              onClick={() => viewLogCallback(user, step)}
+            >
               View Log
             </Button>
           </td>
