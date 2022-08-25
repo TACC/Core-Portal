@@ -54,13 +54,16 @@ const OnboardingActions = ({ step }) => {
         <>
           <Button
             type="link"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
             {step.staffApprove}
           </Button>
+          &nbsp;&nbsp;&nbsp;
           <Button
             type="link"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
           >
@@ -71,6 +74,7 @@ const OnboardingActions = ({ step }) => {
       {step.state === 'userwait' ? (
         <Button
           type="link"
+          className={styles.action}
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >
@@ -81,6 +85,7 @@ const OnboardingActions = ({ step }) => {
         <>
           <Button
             type="link"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('reset', username)}
           >
@@ -89,6 +94,7 @@ const OnboardingActions = ({ step }) => {
           &nbsp;&nbsp;&nbsp;
           <Button
             type="link"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}
           >

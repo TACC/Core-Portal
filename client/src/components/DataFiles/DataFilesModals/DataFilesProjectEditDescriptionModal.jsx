@@ -119,6 +119,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   attr="submit"
                   type="primary"
                   size="long"
+                  className={styles['update-button']}
                   disabled={!isValid || !dirty}
                   isLoading={isUpdating}
                 >

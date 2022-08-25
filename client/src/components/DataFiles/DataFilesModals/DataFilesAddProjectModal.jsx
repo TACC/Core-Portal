@@ -7,7 +7,6 @@ import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import styles from './DataFilesAddProjectModal.module.scss';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();

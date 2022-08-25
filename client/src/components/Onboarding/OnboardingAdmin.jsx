@@ -21,7 +21,8 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
     <div className={styles['approve-container']}>
       <Button
         type="secondary"
-        size="medium"
+        size="small"
+        className={styles.approve}
         iconNameBefore="approved-reverse"
         onClick={() => callback('staff_approve')}
         disabled={disabled}
@@ -31,7 +32,8 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
       </Button>
       <Button
         type="secondary"
-        size="medium"
+        size="small"
+        className={styles.approve}
         iconNameBefore="denied-reverse"
         onClick={() => callback('staff_deny')}
         disabled={disabled}
@@ -59,15 +61,17 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
     <div className={styles.reset}>
       <Button
         type="link"
+        className={styles['action-link']}
         onClick={() => callback('reset')}
         isLoading={action === 'reset'}
         disabled={disabled}
       >
         Reset
       </Button>
-      <> | </>
+      <>|</>
       <Button
         type="link"
+        className={styles['action-link']}
         disabled={disabled || disableSkip}
         onClick={() => callback('complete')}
         isLoading={action === 'complete'}
@@ -168,7 +172,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             />
           </td>
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <Button type="link" onClick={() => viewLogCallback(user, step)}>
+            <Button type="link" className={styles['action-link']} onClick={() => viewLogCallback(user, step)}>
               View Log
             </Button>
           </td>

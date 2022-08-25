@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import FeedbackModal from './FeedbackModal';
-import styles from './FeedbackButton.module.scss';
 
 const FeedbackButton = () => {
   const [openModal, setOpenModal] = React.useState(false);

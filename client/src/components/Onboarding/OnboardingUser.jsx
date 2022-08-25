@@ -78,7 +78,6 @@ const OnboardingUser = () => {
             &nbsp;&nbsp;&nbsp;&nbsp;
             <ReactstrapButton
               color="primary"
-              className={styles.button}
               href={continueLink}
               disabled={!user.setupComplete}
             >

@@ -27,11 +27,9 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div className={styles['link']}>
-      <Button type="link" iconNameBefore="nav-left" onClick={onClick}>
-        Back
-      </Button>
-    </div>
+    <Button type="link" className={styles['link']} iconNameBefore="nav-left" onClick={onClick}>
+      Back
+    </Button>
   );
 };
 BackLink.propTypes = {

@@ -46,6 +46,7 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
       <Button
         type="primary"
         attr="submit"
+        className="manage-account-submit-button"
         disabled={!canSubmit}
         isLoading={isChecking}
         dataTestid="submit-button"

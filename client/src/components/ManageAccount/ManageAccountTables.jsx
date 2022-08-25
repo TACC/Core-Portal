@@ -84,6 +84,7 @@ export const RequiredInformation = () => {
           actions={
             <Button
               type="link"
+              className="form-button"
               onClick={openModal}
               disabled={errors.fields !== undefined}
             >
@@ -356,6 +357,7 @@ export const OptionalInformation = () => {
           actions={
             <Button
               type="link"
+              className="form-button"
               onClick={openModal}
               disabled={errors.fields !== undefined}
             >
