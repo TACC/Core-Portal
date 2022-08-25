@@ -63,6 +63,7 @@ const FormField = ({
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
   const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
+  const [openMultiAgaveFileModal, setOpenMultiAgaveFileModal] = useState([]);
   const { id, name, multiinput, maxitems, minitems } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
@@ -85,7 +86,12 @@ const FormField = ({
   const FieldNote = () => (
     <>
       {meta.touched && meta.error ? (
-        <div className="form-field__validation-error">{meta.error}</div>
+        <div
+          style={{ whiteSpace: 'pre-wrap' }}
+          className="form-field__validation-error"
+        >
+          {meta.error}
+        </div>
       ) : (
         description && (
           <FormText className="form-field__help" color="muted">
@@ -124,9 +130,9 @@ const FormField = ({
                       {agaveFile ? (
                         <>
                           <SelectModal
-                            isOpen={openAgaveFileModal}
+                            isOpen={openMultiAgaveFileModal.includes(index)}
                             toggle={() => {
-                              setOpenAgaveFileModal((prevState) => !prevState);
+                              setOpenMultiAgaveFileModal([]);
                             }}
                             onSelect={(system, path) => {
                               arrayHelpers.replace(
@@ -142,7 +148,9 @@ const FormField = ({
                                 size="sm"
                                 color="secondary"
                                 type="button"
-                                onClick={() => setOpenAgaveFileModal(true)}
+                                onClick={() =>
+                                  setOpenMultiAgaveFileModal([index])
+                                }
                               >
                                 Select
                               </Button>
@@ -173,13 +181,22 @@ const FormField = ({
                         <>
                           {hasAddon && addonType === 'prepend' ? addon : null}
                           <InputGroup className="multi-form-field">
-                            <Input
-                              {...props}
-                              tag={Field}
-                              name={`${name}.${index}`}
-                              component={props.type}
-                              bsSize="sm"
-                            />
+                            {props.type === 'select' ? (
+                              <Input
+                                {...props}
+                                tag={Field}
+                                name={`${name}.${index}`}
+                                component={props.type}
+                                bsSize="sm"
+                              />
+                            ) : (
+                              <Input
+                                {...props}
+                                tag={Field}
+                                name={`${name}.${index}`}
+                                bsSize="sm"
+                              />
+                            )}
                             <InputGroupAddon addonType="append">
                               <Button
                                 size="sm"
@@ -199,9 +216,12 @@ const FormField = ({
                 ) : (
                   <div>No Inputs</div>
                 )}
-
-                <Button color="link" onClick={() => arrayHelpers.push('')}>
-                  <b>+ Add File Input</b>
+                <Button
+                  style={{ display: 'flex', justifyContent: 'right' }}
+                  color="link"
+                  onClick={() => arrayHelpers.push('')}
+                >
+                  <b>+ Add Input</b>
                 </Button>
               </div>
             )}

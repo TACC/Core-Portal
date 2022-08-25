@@ -91,7 +91,7 @@ const FormSchema = (app) => {
         if (param.semantics.ontology.includes('email')) {
           field.type = 'email';
           appFields.schema.parameters[param.id] = field.multiinput
-            ? Yup.array().of(Yup.email())
+            ? Yup.array().of(Yup.string().email('Must be a valid email.\n'))
             : Yup.string().email('Must be a valid email.');
         } else {
           field.type = 'text';
