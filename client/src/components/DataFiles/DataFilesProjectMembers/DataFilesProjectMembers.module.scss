@@ -11,16 +11,6 @@
   margin-bottom: 1em;
 }
 
-.member-action {
-  display: flex;
-  align-items: center;
-  h6 {
-    margin-bottom: 0;
-    /* NOTE: Table cell content should be 14px like this cell button */
-    font-size: 14px;
-  }
-}
-
 .printed-name {
   font-weight: bold;
 }
@@ -73,18 +63,6 @@
 
 .confirm-controls > * {
   margin-left: 1em;
-}
-
-.ownership-button {
-  height: 18.88px;
-  border-radius: 0;
-  background-color: #f4f4f4;
-  color: #707070;
-  border: 1px solid #afafaf;
-  padding: 2px 8px;
-  font-size: 12px !important;
-  display: flex;
-  align-items: center;
 }
 
 .add-button {
