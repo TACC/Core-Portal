@@ -16,7 +16,10 @@ function getLayoutClass(contentLayoutName) {
   let classNames = LAYOUT_CLASS_MAP[contentLayoutName].split(' ');
 
   classNames = classNames.map((className) => {
-    return `c-section--has-content-layout-${className}`;
+    // FP-1572: HACK: Reverse the CSS module string manipulation
+    // FP-1572: FAQ: We are building a global class; CSS module class causes bug
+    const globalClassName = className.replace(/^_/, '').replace(/_.+?$/, '');
+    return `c-section--has-content-layout-${globalClassName}`;
   });
 
   return classNames.join(' ');
