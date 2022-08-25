@@ -61,7 +61,7 @@
   .multi-column {
     column-gap: var(--column-gap);
     column-rule: 1px solid rgb(112 112 112 / 25%);
-    column-fill: auto;
+    column-fill: balance;
   }
   .two-column > *:not(:last-child),
   .multi-column > *:not(:last-child) {

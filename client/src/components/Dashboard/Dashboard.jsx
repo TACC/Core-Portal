@@ -9,9 +9,10 @@ import Sysmon from '../SystemMonitor';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
+import APCDAccountManagement from './APCDAccountManagement';
 
 function Dashboard() {
-  const hideApps = useSelector((state) => state.workbench.config.hideApps);
+  const { hideApps, hideManageAccount, portalNamespace } = useSelector((state) => state.workbench.config);
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   return (
     <Section
@@ -20,9 +21,11 @@ function Dashboard() {
       messages={<BrowserChecker />}
       header="Dashboard"
       headerActions={
-        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
-          Manage Account
-        </Link>
+        (!hideManageAccount &&
+          <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
+            Manage Account
+          </Link>
+        )
       }
       contentClassName={styles['panels']}
       contentLayoutName="twoColumn"
@@ -32,6 +35,7 @@ function Dashboard() {
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           {!hideSystemMonitor && <DashboardSysmon />}
+          {hideManageAccount && (portalNamespace === 'APCD') && <APCDAccountManagement/>}
           <DashboardRoutes />
         </>
       }

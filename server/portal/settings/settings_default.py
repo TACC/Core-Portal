@@ -246,6 +246,7 @@ flags that will be passed to the frontend to determine what non-standard
 components to render.
 """
 _WORKBENCH_SETTINGS = {
+    "portalNamespace": _PORTAL_NAMESPACE,
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
@@ -254,6 +255,8 @@ _WORKBENCH_SETTINGS = {
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
+    "hideAllocations": False,
+    "hideManageAccount": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": ""
 }
