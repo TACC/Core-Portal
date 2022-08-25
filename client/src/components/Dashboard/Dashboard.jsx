@@ -12,6 +12,7 @@ import styles from './Dashboard.module.css';
 
 function Dashboard() {
   const hideApps = useSelector((state) => state.workbench.config.hideApps);
+  const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -30,7 +31,7 @@ function Dashboard() {
         <>
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
-          <DashboardSysmon />
+          {!hideSystemMonitor && <DashboardSysmon />}
           <DashboardRoutes />
         </>
       }
