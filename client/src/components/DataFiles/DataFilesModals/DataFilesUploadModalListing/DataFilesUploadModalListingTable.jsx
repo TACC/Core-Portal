@@ -40,6 +40,7 @@ function DataFilesUploadModalListingTable({
   uploadedFiles,
   rejectedFiles,
   setUploadedFiles,
+  submission = false,
 }) {
   const removeFile = (id) => {
     setUploadedFiles(uploadedFiles.filter((f) => f.id !== id));
@@ -58,7 +59,9 @@ function DataFilesUploadModalListingTable({
         <tbody>
           {uploadedFiles.map((file, i) => (
             <tr key={file.id}>
-              <td style={{ verticalAlign: 'middle' }}>{file.data.name}</td>
+              <td style={{ verticalAlign: 'middle' }}>
+                {submission ? '[File Name Redacted]' : file.data.name}
+              </td>
               <td style={{ verticalAlign: 'middle' }}>
                 <FileLengthCell cell={{ value: file.data.size }} />
               </td>
@@ -84,6 +87,7 @@ DataFilesUploadModalListingTable.propTypes = {
   uploadedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   setUploadedFiles: PropTypes.func.isRequired,
+  submission: PropTypes.bool,
 };
 
 export default DataFilesUploadModalListingTable;
