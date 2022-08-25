@@ -58,6 +58,15 @@ export const LAYOUT_CLASS_MAP = {
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/column-fill
    */
   balance: `${layoutStyles['multi-column']} ${layoutStyles['balance']}`,
+  /**
+   * Like `balance`, but supports unequal column widths (assembly required)
+   * (when there are two columns, the widths are: large on left, small on right)
+   * (when there are three columns, the widths are still equal)
+   * @see https://stackoverflow.com/a/29156418/11817077
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/column-fill
+   * @tutorial SectionContent.layouts.unequalColumns
+   */
+  balanceUnequal: `${layoutStyles['multi-column']} ${layoutStyles['balance']} ${layoutStyles['with-unequal-columns']}`,
 };
 export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
