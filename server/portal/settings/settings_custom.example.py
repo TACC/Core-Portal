@@ -258,7 +258,7 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
-    "hideUserGuide": True,
+    "hideUserGuide": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": ""
 }
