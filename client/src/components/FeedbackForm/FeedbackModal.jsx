@@ -13,8 +13,8 @@ const MODAL_PROPTYPES = {
 };
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
-  const hideUserGuide = useSelector(
-    (state) => state.workbench.config.hideUserGuide
+  const hasUserGuide = useSelector(
+    (state) => state.workbench.config.hasUserGuide
   );
   return (
     <Modal className={styles.container} isOpen={isOpen} toggle={() => toggle()}>
@@ -33,7 +33,7 @@ const FeedbackModal = React.memo(({ isOpen, toggle }) => {
         </p>
         <p>
           If you need assistance,{' '}
-          {!hideUserGuide && (
+          {hasUserGuide && (
             <span>
               refer to the <Link to={`${ROUTES.USER_GUIDE}`}>user guide</Link>,
               or{' '}
