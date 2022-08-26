@@ -74,12 +74,16 @@
   }
 
   /* Panels */
-  .panels > *:not(.sysmon-panel) {
+  /* WARNING: These width/heights assume these panels are in the right column */
+  .panels > *:not(.sysmon-panel, .custom-panel) {
     width: var(--column-width--large);
     height: calc(50% - var(--vertical-buffer));
   }
-  .sysmon-panel {
+  .sysmon-panel,
+  .custom-panel {
     width: var(--column-width--small);
+  }
+  .sysmon-panel {
     height: auto;
   }
 }

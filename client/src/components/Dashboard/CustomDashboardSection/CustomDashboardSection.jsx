@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { SectionTableWrapper, SectionHeader } from '_common';
-import { shape, string, arrayOf } from 'prop-types';
+import { PropTypes, shape, string, arrayOf } from 'prop-types';
 import { useTable } from 'react-table';
 import { Table } from 'reactstrap';
 import styles from './CustomDashboardSection.module.scss';
 
-function CustomDashboardSection() {
+function CustomDashboardSection({ className }) {
   const { header, links } = useSelector(
     (state) => state.workbench.config.customDashboardSection
   );
@@ -32,13 +32,17 @@ function CustomDashboardSection() {
   return (
     <SectionTableWrapper
       manualHeader={<SectionHeader isForList>{header}</SectionHeader>}
-      className={styles['root']}
+      className={`${styles['root']} ${className}`}
       manualContent
     >
       <TableTemplate attributes={{ columns, data }} />
     </SectionTableWrapper>
   );
 }
+CustomDashboardSection.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string,
+};
 
 const TableTemplate = ({ attributes }) => {
   const { getTableProps, getTableBodyProps, rows, prepareRow } =
