@@ -256,6 +256,7 @@ _WORKBENCH_SETTINGS = {
     "hideDataFiles": False,
     "hideAllocations": False,
     "hideManageAccount": False,
+    "hasUserGuide": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None
