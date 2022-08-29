@@ -47,7 +47,9 @@ function Dashboard() {
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           {!hideSystemMonitor && <DashboardSysmon />}
-          {customDashboardSection && <CustomDashboardSection />}
+          {customDashboardSection && (
+            <CustomDashboardSection className={styles['custom-panel']} />
+          )}
           <DashboardRoutes />
         </>
       }
