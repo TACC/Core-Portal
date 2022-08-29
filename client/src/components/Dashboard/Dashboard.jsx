@@ -11,11 +11,21 @@ import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
 
+function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
+  return standardApps.length + optionalApps.length + customApps.length;
+}
+
 function Dashboard() {
   const { hideApps, hideManageAccount, customDashboardSection } = useSelector(
     (state) => state.workbench.config
   );
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
+  const panelCount = getPanelCount(
+    ['DashboardTickets'],
+    [hideApps, hideSystemMonitor].filter((isHidden) => !isHidden),
+    ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
+  );
+
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -29,8 +39,8 @@ function Dashboard() {
           </Link>
         )
       }
-      contentClassName={styles['panels']}
-      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
+      contentClassName={`${styles['panels']} count--${panelCount}`}
+      contentLayoutName={hideApps ? 'balance' : 'twoColumn'}
       contentShouldScroll
       content={
         <>

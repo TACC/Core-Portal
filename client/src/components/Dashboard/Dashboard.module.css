@@ -86,4 +86,10 @@
   .sysmon-panel {
     height: auto;
   }
+  /* FAQ: Uses `:global` to avoid error on missing (i.e. unused) classes */
+  .panels:global(:is(.count--1, .count--2)) > * {
+    height: 100%;
+    /* So bottom border of table is not flush with bottom of app */
+    padding-bottom: var(--vertical-buffer);
+  }
 }
