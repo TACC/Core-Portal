@@ -20,7 +20,9 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
       return <InlineMessage type="error">Upload Failed</InlineMessage>;
     default:
       return (
-        <Button type="link" onClick={() => removeCallback(i)}>Remove</Button>
+        <Button type="link" onClick={() => removeCallback(i)}>
+          Remove
+        </Button>
       );
   }
 };
