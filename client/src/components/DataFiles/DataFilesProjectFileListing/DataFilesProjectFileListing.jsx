@@ -47,10 +47,15 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     );
   });
 
-  const isUserOrGuest = useSelector(state =>
-    metadata.members.filter((member) =>
-      member.user.username ===  state.authenticatedUser.user.username
-    ).map((currentUser) => currentUser.access === 'edit')[0]
+  const isUserOrGuest = useSelector(
+    (state) =>
+      metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser.user.username
+            : { access: null }
+        )
+        .map((currentUser) => currentUser.access === 'edit')[0]
   );
   const onEdit = () => {
     dispatch({
@@ -93,17 +98,17 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       header={<div className={styles.title}>{metadata.title}</div>}
       headerActions={
         editable && (
-            <div className={styles.controls}>
-              {!isUserOrGuest ? (
-                <>
-                  <Button color="link" className={styles.edit} onClick={onEdit}>
-                    Edit Descriptions
-                  </Button>
-                  <span className={styles.separator}>|</span>
-                </>
-              ) : null }
+          <div className={styles.controls}>
+            {!isUserOrGuest ? (
+              <>
+                <Button color="link" className={styles.edit} onClick={onEdit}>
+                  Edit Descriptions
+                </Button>
+                <span className={styles.separator}>|</span>
+              </>
+            ) : null}
             <Button color="link" className={styles.edit} onClick={onManage}>
-              {isUserOrGuest ? 'View' : 'Manage' } Team
+              {isUserOrGuest ? 'View' : 'Manage'} Team
             </Button>
           </div>
         )

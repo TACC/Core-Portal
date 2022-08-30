@@ -100,7 +100,9 @@ const DataFiles = () => {
 
   const readOnly =
     listingParams.scheme === 'projects' &&
-    (listingParams.system === '' || !listingParams.system || authenticatedUserQuery?.data?.role === 'GUEST');
+    (listingParams.system === '' ||
+      !listingParams.system ||
+      authenticatedUserQuery?.data?.role === 'GUEST');
 
   if (error) {
     return (

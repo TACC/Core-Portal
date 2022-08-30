@@ -28,9 +28,9 @@ const DataFilesManageProjectModal = () => {
     };
   });
 
-  const isUserOrGuest = members.filter((member) =>
-      member.user.username ===  user.username
-    ).map((currentUser) => currentUser.access === 'edit')[0];
+  const isUserOrGuest = members
+    .filter((member) => member.user.username === user.username)
+    .map((currentUser) => currentUser.access === 'edit')[0];
 
   const toggle = useCallback(() => {
     setTransferMode(false);
@@ -120,7 +120,7 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          { isUserOrGuest ? 'View' : 'Manage' } Team
+          {isUserOrGuest ? 'View' : 'Manage'} Team
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
