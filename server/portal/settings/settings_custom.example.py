@@ -258,7 +258,21 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
+    "hideManageAccount": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": '/workbench/',
-    "noPHISystem": ""
+    "noPHISystem": "",
+    "customDashboardSection": {
+        "header": "My Account",
+        "links": [
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Update Profile and Email Address',
+            },
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Change Password',
+            }
+        ]
+    }
 }
