@@ -40,7 +40,7 @@ function Dashboard() {
         )
       }
       contentClassName={`${styles['panels']} count--${panelCount}`}
-      contentLayoutName={hideApps ? 'balance' : 'twoColumn'}
+      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
       contentShouldScroll
       content={
         <>
