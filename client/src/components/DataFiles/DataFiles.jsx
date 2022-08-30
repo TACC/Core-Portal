@@ -19,6 +19,7 @@ import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
+import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelector';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -87,9 +88,19 @@ const DataFiles = () => {
     (state) => state.workbench.config.noPHISystem
   );
 
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+  const systemSplitArr = listingParams.system.split('.');
+  const projectId = systemSplitArr[systemSplitArr.length - 1];
+  const { query: authenticatedUserQuery } = useSystemRole(
+    projectId,
+    authenticatedUser
+  );
+
   const readOnly =
     listingParams.scheme === 'projects' &&
-    (listingParams.system === '' || !listingParams.system);
+    (listingParams.system === '' || !listingParams.system || authenticatedUserQuery?.data?.role === 'GUEST');
 
   if (error) {
     return (
