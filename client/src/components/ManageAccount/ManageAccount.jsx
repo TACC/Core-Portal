@@ -91,7 +91,7 @@ const ManageAccountView = () => {
         )
       }
       contentClassName={`manage-account-content ${styles.panels}`}
-      contentLayoutName={isLoading ? `oneColumn` : `multiColumnUnequal`}
+      contentLayoutName={isLoading ? `oneColumn` : `multiColumn `}
       contentShouldScroll
     />
   );
