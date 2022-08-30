@@ -410,7 +410,7 @@ describe('Edit Required Information', () => {
         <EditRequiredInformationModal />
       </Provider>
     );
-    const submitButton = getByText(/Submit/);
+    const submitButton = getByTestId(/required-submit/);
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
 
