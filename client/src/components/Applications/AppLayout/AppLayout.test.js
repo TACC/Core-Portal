@@ -61,6 +61,9 @@ describe('AppsHeader', () => {
         modals: filesFixture.modals,
         modalProps: filesFixture.modalProps,
       },
+      workbench: {
+        config: { hideManageAccount: false },
+      },
     });
     let { getByText } = renderAppsRoutes(store, 'arraytest-0.1');
     expect(getByText(/Applications \/ Array Test/)).toBeDefined();
