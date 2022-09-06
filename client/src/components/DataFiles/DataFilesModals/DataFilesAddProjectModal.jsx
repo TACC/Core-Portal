@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { LoadingSpinner, InlineMessage } from '_common';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, InlineMessage } from '_common';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import styles from './DataFilesAddProjectModal.module.scss';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -128,12 +127,12 @@ const DataFilesAddProjectModal = () => {
                 </InlineMessage>
               ) : null}
               <Button
-                type="submit"
-                className={`data-files-btn ${styles['add-workspace-btn']}`}
-                disabled={isCreating}
+                type="primary"
+                size="long"
+                attr="submit"
+                isLoading={isCreating}
               >
-                {isCreating ? <LoadingSpinner placement="inline" /> : null} Add
-                Workspace
+                Add Workspace
               </Button>
             </ModalFooter>
           </Form>

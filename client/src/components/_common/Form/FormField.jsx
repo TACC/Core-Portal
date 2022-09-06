@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Button,
   FormGroup,
   Label,
   Input,
@@ -9,6 +8,7 @@ import {
   InputGroup,
   InputGroupAddon,
 } from 'reactstrap';
+import { Button } from '_common';
 
 import { useField, Field, FieldArray } from 'formik';
 import PropTypes from 'prop-types';
@@ -241,9 +241,7 @@ const FormField = ({
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <Button
-                  size="sm"
-                  color="secondary"
-                  type="button"
+                  type="secondary"
                   onClick={() => setOpenAgaveFileModal(true)}
                 >
                   Select

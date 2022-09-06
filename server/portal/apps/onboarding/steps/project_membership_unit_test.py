@@ -43,6 +43,25 @@ def project_membership_step(settings, regular_user, tas_client, mock_rt):
 
 
 @pytest.fixture
+def project_membership_step_with_userlink(settings, regular_user, tas_client):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        {
+            'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+            'settings': {
+                'project_sql_id': 12345,
+                'userlink': {
+                    'url': '/',
+                    'text': 'Request Access'
+                },
+            },
+            'retry': True
+        }
+    ]
+    step = ProjectMembershipStep(regular_user)
+    yield step
+
+
+@pytest.fixture
 def project_membership_log(mocker):
     yield mocker.patch.object(ProjectMembershipStep, 'log')
 
@@ -79,7 +98,24 @@ def test_process_user_is_not_member(monkeypatch, project_membership_step, projec
     monkeypatch.setattr(project_membership_step, 'is_project_member', mock_is_project_member)
     project_membership_step.process()
     project_membership_log.assert_called_with(
-        "Please confirm your request to use this portal."
+        "Please confirm your request to use this portal.",
+        data=None
+    )
+
+
+def test_process_userlink(monkeypatch, project_membership_step_with_userlink, project_membership_log):
+    def mock_is_project_member():
+        return False
+    monkeypatch.setattr(project_membership_step_with_userlink, 'is_project_member', mock_is_project_member)
+    project_membership_step_with_userlink.process()
+    project_membership_log.assert_called_with(
+        "Please confirm your request to use this portal.",
+        data={
+            'userlink': {
+                'url': '/',
+                'text': 'Request Access'
+            }
+        }
     )
 
 

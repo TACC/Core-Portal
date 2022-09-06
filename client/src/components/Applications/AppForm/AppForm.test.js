@@ -43,6 +43,9 @@ const initialMockState = {
     },
     modalProps: { select: {} },
   },
+  workbench: {
+    config: { hideManageAccount: false },
+  },
 };
 
 function renderAppSchemaFormComponent(store, app) {

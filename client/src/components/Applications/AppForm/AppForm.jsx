@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, FormGroup } from 'reactstrap';
+import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
 import { cloneDeep } from 'lodash';
 import {
+  Button,
   AppIcon,
   FormField,
-  Icon,
   LoadingSpinner,
   SectionMessage,
 } from '_common';
@@ -221,6 +221,10 @@ export const AppSchemaForm = ({ app }) => {
     };
   }, shallowEqual);
 
+  const hideManageAccount = useSelector(
+    (state) => state.workbench.config.hideManageAccount
+  );
+
   const { systemHasKeys, pushKeysSystem } = app;
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
@@ -320,7 +324,7 @@ export const AppSchemaForm = ({ app }) => {
           </SectionMessage>
         </div>
       )}
-      {!!(missingLicense && hasStorageSystems) && (
+      {!!(missingLicense && hasStorageSystems && !hideManageAccount) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             Activate your {app.license.type} license in{' '}
@@ -636,19 +640,22 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary" disabled={!isValid}>
-                  {jobSubmission.submitting && (
-                    <LoadingSpinner placement="inline" />
-                  )}{' '}
-                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
-                  <span>Submit</span>
+                <Button
+                  attr="submit"
+                  size="medium"
+                  type="primary"
+                  disabled={!isValid}
+                  isLoading={jobSubmission.submitting}
+                  iconNameBefore={jobSubmission.error ? 'alert' : null}
+                >
+                  Submit
                 </Button>
                 <Button
                   onClick={handleReset}
                   className="btn-resetForm"
-                  color="link"
+                  type="link"
                 >
-                  <h6>Reset Fields to Defaults</h6>
+                  Reset Fields to Defaults
                 </Button>
               </FormGroup>
             </Form>

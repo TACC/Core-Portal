@@ -27,6 +27,9 @@
 .width-long {
   composes: c-button--width-long from '../../../styles/components/c-button--new.css';
 }
+.width-auto {
+  composes: c-button--width-auto from '../../../styles/components/c-button--new.css';
+}
 
 .as-link {
   composes: c-button--as-link from '../../../styles/components/c-button--new.css';
@@ -37,6 +40,13 @@
 }
 .icon--after {
   composes: c-button__icon--after from '../../../styles/components/c-button--new.css';
+}
+/* To offer more space between icon and text (especially '-up' and '-down' */
+.icon--before:global([class*='icon-nav-']) {
+  margin-right: 0.75em;
+}
+.icon--after:global([class*='icon-nav-']) {
+  margin-left: 0.75em;
 }
 
 .loading {
@@ -50,6 +60,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.root.size-small .loading-over-button > div {
+  height: 1rem;
+  width: 1rem;
 }
 
 .text {

@@ -18,7 +18,6 @@ def test_intromessages_get(client, authenticated_user, intromessage_mock):
     response = client.get('/api/portal_messages/intro/')
     data = response.json()
     assert response.status_code == 200
-    print(data)
     assert data["response"] == [{"component": "HISTORY", "unread": False}]
 
 
@@ -92,7 +91,7 @@ def test_custommessages_get(client, authenticated_user, custommessage_mock, cust
     assert data["response"] == {
         'messages': [{
             "template": {
-                'id': 1,
+                'id': custommessagetemplate_mock.id,
                 'component': 'HISTORY',
                 'message_type': 'warning',
                 'dismissible': True,
@@ -120,11 +119,11 @@ def test_custommessages_get_unauthenticated_user(client, regular_user):
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_put(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
-    original_message = CustomMessages.objects.get(template__id='1')
+    original_message = CustomMessages.objects.get(template__id=custommessagetemplate_mock.id)
     assert original_message.unread is True
 
     body = {
-        'templateId': 1,
+        'templateId': custommessagetemplate_mock.id,
         'unread': False
     }
 
