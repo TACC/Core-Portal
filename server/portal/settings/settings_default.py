@@ -254,8 +254,11 @@ _WORKBENCH_SETTINGS = {
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
+    "showSubmissions": False,
     "hideAllocations": False,
+    "hideManageAccount": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": '/workbench/',
-    "noPHISystem": ""
+    "noPHISystem": "",
+    "customDashboardSection": None
 }
