@@ -13,6 +13,17 @@ from portal.exceptions.api import ApiException
 logger = logging.getLogger(__name__)
 
 
+def get_tas_client():
+    """Return a TAS Client with pytas"""
+    return TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
+
+
 def list_to_model_queries(q_comps):
     query = None
     if len(q_comps) > 2:
@@ -144,7 +155,7 @@ def get_allocations(username, force=False):
         return allocations
 
 
-def get_usernames(project_name):
+def get_project_users_from_name(project_name):
     """Returns list of project users
 
     : returns: usernames
@@ -157,6 +168,51 @@ def get_usernames(project_name):
         return resp['result']
     else:
         raise ApiException('Failed to get project users', resp['message'])
+
+
+def get_project_users_from_id(project_id):
+    """Returns list of project users
+
+    : returns: usernames
+    : rtype: list
+    """
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/projects/{1}/users'.format(settings.TAS_URL, project_id), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to get project users', resp['message'])
+
+
+def get_project_from_name(project_name):
+    """Returns a project dictionary object given a Project Name
+
+    : returns: project
+    : rtype: dict
+    """
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/projects/name/{1}'.format(settings.TAS_URL, project_name), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to get project', resp['message'])
+
+
+def get_project_from_id(project_id):
+    """Returns a project dictionary object given a Project ID
+
+    : returns: project
+    : rtype: dict
+    """
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/projects/{1}'.format(settings.TAS_URL, project_id), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to get project', resp['message'])
 
 
 def get_user_data(username):

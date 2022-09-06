@@ -68,6 +68,10 @@
     margin-bottom: var(--vertical-buffer);
   }
 
+  .balance {
+    column-fill: balance;
+  }
+
   .with-unequal-columns {
     /* To make both col's 60% of intrinsic width (small col is resized later) */
     --column-width--container: 120%;

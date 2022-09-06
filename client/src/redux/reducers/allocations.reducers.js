@@ -14,12 +14,12 @@ export const initialState = {
     loading: false,
   },
   removingUserOperation: {
-    userName: '',
+    username: '',
     error: false,
     loading: false,
   },
   addUserOperation: {
-    userName: '',
+    username: '',
     error: false,
     loading: false,
   },
@@ -55,7 +55,7 @@ export function allocations(state = initialState, action) {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading,
+          ...action.payload.loadingUsernames,
         },
         errors: {
           ...state.errors,
@@ -74,7 +74,7 @@ export function allocations(state = initialState, action) {
           ...action.payload.loadingUsernames,
         },
       };
-    case 'MANAGE_USERS_INIT':
+    case 'GET_PROJECT_USERS_INIT':
       return {
         ...state,
         loadingUsernames: {
@@ -115,7 +115,7 @@ export function allocations(state = initialState, action) {
       return {
         ...state,
         removingUserOperation: {
-          userName: '',
+          username: '',
           error: false,
           loading: false,
         },
@@ -131,13 +131,9 @@ export function allocations(state = initialState, action) {
       return {
         ...state,
         addUserOperation: {
-          userName: '',
+          username: '',
           error: false,
           loading: true,
-        },
-        loadingUsernames: {
-          ...state.loadingUsernames,
-          ...action.payload.loadingUsernames,
         },
       };
     }
@@ -145,7 +141,7 @@ export function allocations(state = initialState, action) {
       return {
         ...state,
         addUserOperation: {
-          userName: '',
+          username: '',
           error: false,
           loading: false,
         },
