@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
 import {
   Alert,
-  Button,
   Col,
   Container,
   FormGroup,
@@ -15,7 +14,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
-import { FileInputDropZoneFormField, FormField } from '_common';
+import { Button, FileInputDropZoneFormField, FormField } from '_common';
 import ReCAPTCHA from 'react-google-recaptcha';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
@@ -224,18 +223,12 @@ function TicketCreateForm({
                   </Alert>
                 )}
                 <Button
-                  type="submit"
-                  color="primary"
+                  attr="submit"
+                  type="primary"
+                  size="medium"
                   disabled={!isValid || isSubmitting || creating}
+                  isLoading={creating}
                 >
-                  {creating && (
-                    <Spinner
-                      size="sm"
-                      color="white"
-                      data-testid="creating-spinner"
-                      className="ticket-create-spinner"
-                    />
-                  )}
                   Add Ticket
                 </Button>
               </div>

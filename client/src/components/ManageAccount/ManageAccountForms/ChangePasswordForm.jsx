@@ -1,11 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
 import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
 import { isEmpty } from 'lodash';
 import { bool, oneOfType, func, instanceOf, shape } from 'prop-types';
-import { LoadingSpinner, Message } from '_common';
+import { Button, Message } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
@@ -45,15 +44,14 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
       />
       <Requirements />
       <Button
+        type="primary"
+        attr="submit"
         className="manage-account-submit-button"
-        type="submit"
-        data-testid="submit-button"
         disabled={!canSubmit}
+        isLoading={isChecking}
+        dataTestid="submit-button"
       >
-        {isChecking && <LoadingSpinner placement="inline" />}
-        <span style={isChecking ? { marginLeft: '1rem' } : {}}>
-          Change Password
-        </span>
+        Change Password
       </Button>
     </Form>
   );

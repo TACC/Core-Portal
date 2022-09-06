@@ -62,7 +62,7 @@ describe('TicketCreateForm', () => {
       <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
       store
     );
-    expect(getByTestId('creating-spinner'));
+    expect(getByTestId('loading-spinner'));
   });
 
   it('renders a ticket create ID upon success', () => {

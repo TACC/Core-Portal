@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
-import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
-import { SectionHeader, SectionTableWrapper } from '_common';
+import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 
@@ -83,9 +83,9 @@ export const RequiredInformation = () => {
         <SectionHeader
           actions={
             <Button
-              color="link"
-              onClick={openModal}
+              type="link"
               className="form-button"
+              onClick={openModal}
               disabled={errors.fields !== undefined}
             >
               Edit Required Information
@@ -123,12 +123,7 @@ const LicenseCell = ({ cell: { value } }) => {
         justifyContent: 'flex-end',
       }}
     >
-      <Button
-        color="link"
-        size="sm"
-        onClick={toggle}
-        className="license-button"
-      >
+      <Button type="link" onClick={toggle}>
         {value.current_user_license ? 'View Details' : 'Request Activation'}
       </Button>
       <Modal isOpen={modal} toggle={toggle} className="manage-account-modal">
@@ -141,7 +136,6 @@ const LicenseCell = ({ cell: { value } }) => {
         </ModalHeader>
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
-          Click{' '}
           <Button
             onClick={() =>
               dispatch({
@@ -151,11 +145,10 @@ const LicenseCell = ({ cell: { value } }) => {
                 },
               })
             }
-            color="link"
+            type="link"
           >
-            here
-          </Button>{' '}
-          to open a ticket.
+            New Ticket
+          </Button>
         </ModalBody>
       </Modal>
     </div>
@@ -214,12 +207,7 @@ export const IntegrationCell = ({ cell: { value } }) => {
         </div>
       ) : (
         <div>
-          <Button
-            color="link"
-            size="sm"
-            onClick={toggle}
-            className="license-button"
-          >
+          <Button type="link" onClick={toggle}>
             Setup {label}
           </Button>
         </div>
@@ -283,7 +271,7 @@ export const ChangePassword = () => {
           margin: '1rem',
         }}
       >
-        <Button onClick={openModal} className="manage-account-submit-button">
+        <Button type="primary" onClick={openModal}>
           Change Password
         </Button>
         {lastChanged && (
@@ -368,7 +356,7 @@ export const OptionalInformation = () => {
         <SectionHeader
           actions={
             <Button
-              color="link"
+              type="link"
               className="form-button"
               onClick={openModal}
               disabled={errors.fields !== undefined}

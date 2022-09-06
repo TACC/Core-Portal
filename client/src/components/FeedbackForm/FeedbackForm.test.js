@@ -31,6 +31,6 @@ describe('FeedbackForm', () => {
     });
 
     const { getByTestId } = renderComponent(<FeedbackForm />, store);
-    expect(getByTestId('creating-spinner'));
+    expect(getByTestId('loading-spinner'));
   });
 });

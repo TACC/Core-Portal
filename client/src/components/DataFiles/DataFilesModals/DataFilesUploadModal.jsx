@@ -4,8 +4,8 @@ import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { FileInputDropZone } from '_common';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, FileInputDropZone } from '_common';
 import {
   useSystemDisplayName,
   useFileListing,
@@ -142,9 +142,11 @@ const DataFilesUploadModal = ({ className, layout }) => {
       </ModalBody>
       <ModalFooter>
         <Button
-          className="data-files-btn"
+          type="primary"
+          size="long"
           onClick={uploadStart}
           disabled={uploadButtonDisabled}
+          isLoading={dropZoneDisabled}
         >
           Upload Selected
         </Button>

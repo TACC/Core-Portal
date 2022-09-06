@@ -113,7 +113,7 @@
 }
 
 .approve {
-  display: inline-flex; /* Do not use `inline-block` because value was `flex` */
+  display: inline; /* Do not use `inline-block` because value was `flex` */
   /* Add space below each button */
   margin-bottom: var(--vertical-buffer);
 

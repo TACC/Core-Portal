@@ -1,8 +1,7 @@
 /* FP-993: Allow use by DataFilesUploadModal */
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { InlineMessage } from '_common';
-import { Button } from 'reactstrap';
+import { Button, InlineMessage } from '_common';
 import PropTypes from 'prop-types';
 import './FileInputDropZone.scss';
 
@@ -56,7 +55,7 @@ function FileInputDropZone({
         <div className="no-attachment-view">
           <i className="icon icon-upload" />
           <br />
-          <Button outline onClick={open} className="select-files-button">
+          <Button type="secondary" size="medium" onClick={open}>
             Select File(s)
           </Button>
           <strong>or</strong>
@@ -82,8 +81,7 @@ function FileInputDropZone({
                 <div className="attachment-block" key={[f.name, i].toString()}>
                   <span className="d-inline-block text-truncate">{f.name}</span>
                   <Button
-                    color="link"
-                    className="attachment-remove"
+                    type="link"
                     onClick={() => {
                       removeFile(i);
                     }}
@@ -93,7 +91,7 @@ function FileInputDropZone({
                 </div>
               ))}
           </div>
-          <Button outline onClick={open} className="select-files-button">
+          <Button type="secondary" size="medium" onClick={open}>
             Select File(s)
           </Button>
         </div>

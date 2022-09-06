@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
-import { FormField } from '_common';
+import { Alert, FormGroup } from 'reactstrap';
+import { Button, FormField } from '_common';
 import * as Yup from 'yup';
 import styles from './FeedbackForm.module.scss';
 
@@ -63,18 +63,12 @@ const FeedbackForm = () => {
                 </Alert>
               )}
               <Button
-                type="submit"
-                color="primary"
+                attr="submit"
+                type="primary"
+                size="medium"
                 disabled={!dirty || !isValid || isSubmitting || creating}
+                isLoading={creating}
               >
-                {creating && (
-                  <Spinner
-                    size="sm"
-                    color="white"
-                    className={styles['submit-spinner']}
-                    data-testid="creating-spinner"
-                  />
-                )}
                 Submit
               </Button>
             </div>
