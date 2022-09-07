@@ -15,10 +15,6 @@
     font-size: 1.3em;
   }
 }
-.data-files-toolbar-button.is-empty.btn.btn-secondary {
-  background-color: #7754e8;
-  color: white;
-}
 .data-files-toolbar-button:not(.disabled):hover {
   background-color: #afafaf;
   color: var(--global-color-primary--xx-dark);
@@ -27,7 +23,6 @@
 }
 
 .toolbar-button-text {
-  padding-left: 5px;
   font: bold 14px Roboto, sans-serif;
   display: flex;
 }

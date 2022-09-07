@@ -2,26 +2,21 @@ import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles } from 'hooks/datafiles';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({
-  text,
-  iconName,
-  onClick,
-  disabled,
-  className,
-}) => {
-  const iconClassName = `icon-action icon-${iconName}`;
-  const buttonClassName = className
-    ? `data-files-toolbar-button ${className}`
-    : 'data-files-toolbar-button';
+export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+  const iconClassName = `action icon-${iconName}`;
   return (
-    <Button disabled={disabled} onClick={onClick} className={buttonClassName}>
-      <i className={iconClassName} data-testid="toolbar-icon" />
-      <span className="toolbar-button-text">{text}</span>
+    <Button
+      iconNameBefore={iconClassName}
+      type={text === 'Empty' ? 'primary' : 'secondary'}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {text}
     </Button>
   );
 };

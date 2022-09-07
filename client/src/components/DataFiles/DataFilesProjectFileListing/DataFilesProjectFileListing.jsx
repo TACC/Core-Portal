@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
 import {
+  Button,
   ShowMore,
   LoadingSpinner,
   SectionMessage,
@@ -101,13 +101,13 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           <div className={styles.controls}>
             {!isUserOrGuest ? (
               <>
-                <Button color="link" className={styles.edit} onClick={onEdit}>
+                <Button type="link" onClick={onEdit}>
                   Edit Descriptions
                 </Button>
                 <span className={styles.separator}>|</span>
               </>
             ) : null}
-            <Button color="link" className={styles.edit} onClick={onManage}>
+            <Button type="link" onClick={onManage}>
               {isUserOrGuest ? 'View' : 'Manage'} Team
             </Button>
           </div>

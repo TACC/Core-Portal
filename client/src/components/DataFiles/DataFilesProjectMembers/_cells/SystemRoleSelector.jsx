@@ -86,6 +86,7 @@ const SystemRoleSelector = ({ projectId, username }) => {
       <DropdownSelector
         value={selectedRole}
         onChange={(e) => setSelectedRole(e.target.value)}
+        className={styles['project-role-selector']}
       >
         {username !== authenticatedUser && (
           <option value="ADMIN">Administrator</option>

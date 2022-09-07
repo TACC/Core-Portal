@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
-import { LoadingSpinner, InlineMessage } from '_common';
+import { LoadingSpinner, InlineMessage, Button } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import { useUpload } from 'hooks/datafiles/mutations';
 import styles from './DataFilesUploadModalListingTable.module.scss';
@@ -20,13 +20,9 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
       return <InlineMessage type="error">Upload Failed</InlineMessage>;
     default:
       return (
-        <button
-          type="button"
-          className="btn btn-link"
-          onClick={() => removeCallback(i)}
-        >
+        <Button type="link" onClick={() => removeCallback(i)}>
           Remove
-        </button>
+        </Button>
       );
   }
 };
