@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { SectionMessage } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
+import parse from 'html-react-parser';
 import styles from './CustomMessage.module.scss';
 
 /**
@@ -49,7 +50,7 @@ function CustomMessage({ messageComponentName }) {
           canDismiss={template.dismissible}
           onDismiss={() => onDismiss(message)}
         >
-          {template.message}
+          {parse(template.message)}
         </SectionMessage>
       </div>
     );

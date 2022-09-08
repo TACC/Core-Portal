@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.20.0] - 2022-09-08: APCD Portal; Delegate Management; Common Button
+
+### Added
+- FP-1759: Data Submission (#683)
+- FP-1788: APCD Manage Account (#688)
+- FP-1591: Add pytorch icon for pytorch resnet frontera app (#686)
+- FP-1639: Delegate management (#679)
+
+### Changed
+- FP-546: Use _common Button (#662)
+- FP-1769: Hide empty System Monitor if there are no systems to list (#685)
+- FP-1783: Editable welcome message (#684)
+- FP-1760: APCD project membership (#680)
+- docs(ui): less specific primary button use case (#676)
+
+### Fixed
+- FP-1784: Remove user-guide link from feedback modal (#687)
+- FP-1772: Allocations Modal bugfixes (#682)
+
 ## [2.19.0] - 2022-07-14: Core-Styles; TAP Functions; Bugfixes
 
 ### Changed
@@ -132,7 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- task/FP-200: Trash Modal: Official Design (#549)
+- - FP-200: Trash Modal: Official Design (#549)
 - FP-545: Create _common Button React Component (#584)
 
 ### Fixed
@@ -714,7 +733,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.18.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.20.0...HEAD
+[2.20.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.20.0
+[2.19.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.19.0
 [2.18.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.1
 [2.18.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.0
 [2.17.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.17.0

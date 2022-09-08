@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteScrollTable, LoadingSpinner } from '_common';
+import { Button, InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
-import { Input, Label, Button } from 'reactstrap';
+import { Input, Label } from 'reactstrap';
 import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
@@ -150,11 +150,10 @@ const DataFilesProjectMembers = ({
           ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role) ? (
             <Button
               onClick={(e) => onRemove(el.row.original)}
-              color="link"
-              className={styles['member-action']}
+              type="link"
               disabled={loading}
             >
-              <h6>Remove</h6>
+              Remove
             </Button>
           ) : null}
           {mode === 'transfer' &&
@@ -162,7 +161,7 @@ const DataFilesProjectMembers = ({
           transferUser === null ? (
             <Button
               onClick={() => setTransferUser(el.row.original)}
-              className={styles['ownership-button']}
+              type="link"
             >
               Transfer Ownership
             </Button>
@@ -189,18 +188,11 @@ const DataFilesProjectMembers = ({
         mode === 'transfer' && el.row.original === transferUser ? (
           <div className={styles['confirm-controls']}>
             <span>Confirm Ownership Transfer:</span>
-            <Button
-              onClick={confirmTransfer}
-              className={styles['ownership-button']}
-            >
+            <Button onClick={confirmTransfer} type="link">
               Confirm
             </Button>
-            <Button
-              onClick={() => setTransferUser(null)}
-              color="link"
-              className={styles['member-action']}
-            >
-              <h6>Cancel</h6>
+            <Button onClick={() => setTransferUser(null)} type="link">
+              Cancel
             </Button>
           </div>
         ) : null,
@@ -224,6 +216,7 @@ const DataFilesProjectMembers = ({
             <div className={`input-group ${styles['member-search-group']}`}>
               <div className="input-group-prepend">
                 <Button
+                  type="primary"
                   className={styles['add-button member-search']}
                   onClick={() =>
                     onAddCallback({ user: selectedUser, access: 'edit' })

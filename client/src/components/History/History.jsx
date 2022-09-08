@@ -7,10 +7,10 @@ import {
   NavLink as RRNavLink,
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import queryString from 'query-string';
 
-import { Section } from '_common';
+import { Button, Section } from '_common';
 import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
@@ -30,7 +30,7 @@ const Actions = () => {
 
   return (
     <Button
-      color="link"
+      type="link"
       onClick={() => {
         dispatch({
           type: 'NOTIFICATIONS_READ',

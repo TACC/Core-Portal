@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import {
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
@@ -9,13 +8,7 @@ import {
   Input,
   InputGroupAddon,
 } from 'reactstrap';
-import {
-  LoadingSpinner,
-  FormField,
-  Icon,
-  InlineMessage,
-  SectionMessage,
-} from '_common';
+import { Button, FormField, InlineMessage, SectionMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
@@ -74,14 +67,6 @@ const DataFilesDownloadMessageModal = () => {
     });
   };
 
-  let buttonIcon;
-  if (status === 'RUNNING') {
-    buttonIcon = <LoadingSpinner placement="inline" />;
-  } else if (status === 'ERROR') {
-    buttonIcon = <Icon name="alert" />;
-  } else {
-    buttonIcon = null;
-  }
   const initialValues = {
     filenameDisplay:
       selectedFiles[0] && selectedFiles.length === 1
@@ -173,14 +158,14 @@ const DataFilesDownloadMessageModal = () => {
                   Successfully started compress job
                 </InlineMessage>
                 <Button
-                  className={`data-files-btn ${styles['submit-button']}`}
                   disabled={buttonDisabled}
-                  type="submit"
+                  type="primary"
+                  size={status === 'ERROR' ? 'long' : 'medium'}
+                  isLoading={status === 'RUNNING'}
+                  iconNameBefore={status === 'ERROR' ? 'alert' : null}
+                  attr="submit"
                 >
-                  {buttonIcon}
-                  <span className={buttonIcon ? styles['with-icon'] : ''}>
-                    Compress
-                  </span>
+                  Compress
                 </Button>
               </ModalFooter>
             </Form>

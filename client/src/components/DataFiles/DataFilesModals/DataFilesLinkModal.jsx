@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
@@ -12,7 +11,13 @@ import {
   FormText,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { LoadingSpinner, Message, TextCopyField, InlineMessage } from '_common';
+import {
+  Button,
+  LoadingSpinner,
+  Message,
+  TextCopyField,
+  InlineMessage,
+} from '_common';
 import styles from './DataFilesLinkModal.module.scss';
 import './DataFilesLinkModal.scss';
 
@@ -31,14 +36,16 @@ const DataFilesLinkActions = ({ status, onClick }) => {
       <>
         <Button
           disabled={disabled}
-          className={`data-files-btn ${styles.action}`}
+          type="primary"
+          size="medium"
           onClick={(e) => onClick('delete')}
         >
           Delete
         </Button>
         <Button
           disabled={disabled}
-          className="data-files-btn"
+          type="primary"
+          size="medium"
           onClick={(e) => onClick('put')}
         >
           Replace Link
@@ -50,7 +57,8 @@ const DataFilesLinkActions = ({ status, onClick }) => {
   return (
     <Button
       disabled={disabled}
-      className="data-files-btn"
+      type="primary"
+      size="long"
       onClick={(e) => onClick('post')}
     >
       Generate Link
@@ -197,14 +205,10 @@ const DataFilesLinkModal = () => {
               <span className={styles.warning}>
                 The original link will be disabled.
               </span>
-              <Button
-                className="data-files-btn"
-                color="secondary"
-                onClick={onConfirm}
-              >
+              <Button type="secondary" size="medium" onClick={onConfirm}>
                 Confirm
               </Button>
-              <Button color="link" onClick={onCancel}>
+              <Button type="link" onClick={onCancel}>
                 Cancel
               </Button>
             </>

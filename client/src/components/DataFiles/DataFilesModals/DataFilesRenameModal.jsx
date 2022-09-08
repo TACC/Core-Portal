@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from '_common';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
@@ -77,7 +78,7 @@ const DataFilesRenameModal = () => {
             />
           </ModalBody>
           <ModalFooter>
-            <Button type="submit" className="data-files-btn">
+            <Button attr="submit" type="primary" size="medium">
               Rename
             </Button>
           </ModalFooter>

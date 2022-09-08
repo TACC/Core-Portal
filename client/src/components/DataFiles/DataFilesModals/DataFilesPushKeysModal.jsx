@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
@@ -12,6 +11,7 @@ import {
   Input,
   Label,
 } from 'reactstrap';
+import { Button } from '_common';
 
 const DataFilesPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -82,7 +82,7 @@ const DataFilesPushKeysModal = () => {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <Button type="submit" color="primary" onClick={pushKeys}>
+            <Button attr="submit" type="primary" onClick={pushKeys}>
               Authenticate
             </Button>
           </ModalFooter>

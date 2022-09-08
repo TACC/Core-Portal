@@ -31,7 +31,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
   React.useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && projectId in teams) {
       const currentUser = teams[projectId].filter((u) => u.username === user);
       if (currentUser.length !== 1) return;
       if (currentUser[0].role === 'PI' || currentUser[0].role === 'Delegate')
@@ -59,7 +59,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
-          id: newUser.user.username,
+          username: newUser.user.username,
         },
       });
     },
@@ -160,7 +160,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
             <div className={manageStyles['user-operation-error']}>
               {addUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to add user {addUserOperation.userName}.
+                  Unable to add user {addUserOperation.username}.
                 </InlineMessage>
               ) : null}
               {addUserOperation.error && removingUserOperation.error ? (
@@ -168,7 +168,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
               ) : null}
               {removingUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to remove user {removingUserOperation.userName}.
+                  Unable to remove user {removingUserOperation.username}.
                 </InlineMessage>
               ) : null}
             </div>

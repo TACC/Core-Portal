@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import Cookies from 'js-cookie';
 import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import LoadingSpinner from '_common/LoadingSpinner';
 
 const getProjectRole = async (projectId, username) => {
@@ -71,12 +71,14 @@ const ProjectRoleSelector = ({ projectId, username }) => {
       </DropdownSelector>
       {data.role !== selectedRole && !isFetching && (
         <Button
+          type="primary"
           className="data-files-btn"
           onClick={() =>
             setProjectRole({ oldRole: data.role, newRole: selectedRole })
           }
+          isLoading={isMutating}
         >
-          {isMutating ? <LoadingSpinner placement="inline" /> : 'Update'}
+          Update
         </Button>
       )}
     </div>

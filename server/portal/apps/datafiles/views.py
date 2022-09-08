@@ -42,6 +42,7 @@ class SystemListingView(BaseApiView):
                         {
                             'name': details['name'],
                             'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
+                            'type': details.get('type', None),
                             'scheme': 'private',
                             'api': 'tapis',
                             'icon': details['icon'],
