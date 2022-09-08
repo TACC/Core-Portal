@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { LoadingSpinner, Icon, InlineMessage } from '_common';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
 import { useExtract } from 'hooks/datafiles/mutations';
-import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesExtractModal = () => {
   const history = useHistory();
@@ -39,15 +38,6 @@ const DataFilesExtractModal = () => {
     extract({ file: selected[0] });
   };
 
-  let buttonIcon;
-  if (status === 'RUNNING') {
-    buttonIcon = <LoadingSpinner placement="inline" />;
-  } else if (status === 'ERROR') {
-    buttonIcon = <Icon name="alert" />;
-  } else {
-    buttonIcon = null;
-  }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -72,11 +62,13 @@ const DataFilesExtractModal = () => {
         </InlineMessage>
         <Button
           onClick={extractCallback}
-          className={`data-files-btn ${styles['submit-button']}`}
           disabled={status === 'RUNNING' || status === 'SUCCESS'}
+          isLoading={status === 'RUNNING'}
+          type="primary"
+          size="medium"
+          iconNameBefore={status === 'ERROR' ? 'alert' : null}
         >
-          {buttonIcon}
-          <span className={buttonIcon ? styles['with-icon'] : ''}>Extract</span>
+          Extract
         </Button>
       </ModalFooter>
     </Modal>

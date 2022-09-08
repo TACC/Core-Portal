@@ -8,8 +8,3 @@
 .content > * {
   max-width: 768px; /* ~640px design * 1.2 design-to-app ratio */
 }
-
-/* FP-545: Remove this when Button component is used */
-.button {
-  border-radius: 0;
-}

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import styles from './ShowMore.module.scss';
 
 const ShowMore = ({ className, children }) => {
@@ -29,7 +29,7 @@ const ShowMore = ({ className, children }) => {
         </div>
       }
       {(hasOverflow || expanded) && (
-        <Button color="link" onClick={toggleCallback}>
+        <Button type="link" onClick={toggleCallback}>
           {expanded ? 'Show Less' : 'Show More'}
         </Button>
       )}

@@ -1,5 +1,10 @@
 import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  fireEvent,
+  getByTestId,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import {
@@ -76,12 +81,12 @@ describe('various valid input phone numbers and email addresses', () => {
       const storeWithFields = mockStore({ profile: stateWithFields });
       stateWithFields['data']['demographics']['phone'] = phoneNumber;
       stateWithFields['data']['demographics']['email'] = email;
-      const { getByLabelText, queryByText } = render(
+      const { getByText, queryByText } = render(
         <Provider store={storeWithFields}>
           <EditRequiredInformationModal />
         </Provider>
       );
-      const submitButton = getByLabelText(/required-submit/);
+      const submitButton = getByText(/Submit/);
       const clickSpy = jest.spyOn(submitButton, 'click');
       fireEvent.click(submitButton);
       await waitFor(() => {
@@ -210,7 +215,7 @@ describe('Change Password', () => {
 });
 
 describe('Edit Optional Information', () => {
-  let getByText, rerender, getByLabelText;
+  let getByText, rerender, getByLabelText, getByTestId;
   beforeEach(() => {
     const testState = {
       ...dummyState,
@@ -227,6 +232,7 @@ describe('Edit Optional Information', () => {
     getByText = utils.getByText;
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
+    getByTestId = utils.getByTestId;
   });
 
   it('should show the loading spinner when fetching form data', () => {
@@ -257,9 +263,7 @@ describe('Edit Optional Information', () => {
       expect(getByText(label)).toBeDefined();
     });
 
-    const submitButton = getByLabelText(
-      /edit-optional-information-submit-button/
-    );
+    const submitButton = getByTestId(/optional-submit/);
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
@@ -327,7 +331,7 @@ describe('Edit Optional Information', () => {
 
 describe('Edit Required Information', () => {
   const testState = { ...dummyState, modals: { required: true } };
-  let getByText, rerender, getByLabelText;
+  let getByText, rerender, getByLabelText, getByTestId;
   beforeEach(() => {
     const testStore = mockStore({
       profile: testState,
@@ -340,6 +344,7 @@ describe('Edit Required Information', () => {
     getByText = utils.getByText;
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
+    getByTestId = utils.getByTestId;
   });
 
   it('should render a loading spinner when form data is being fetched', () => {
@@ -381,7 +386,7 @@ describe('Edit Required Information', () => {
       expect(getByText(label)).toBeDefined();
     });
 
-    expect(getByText(/Submit/)).toBeDefined();
+    expect(getByTestId(/required-submit/)).toBeDefined();
   });
 
   it('should show users errors if the fields are missing or invalid', async () => {
@@ -405,7 +410,7 @@ describe('Edit Required Information', () => {
         <EditRequiredInformationModal />
       </Provider>
     );
-    const submitButton = getByLabelText(/required-submit/);
+    const submitButton = getByTestId(/required-submit/);
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
 

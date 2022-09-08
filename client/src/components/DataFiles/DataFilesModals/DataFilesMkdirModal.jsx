@@ -6,7 +6,8 @@ import FormField from '_common/Form/FormField';
 import { useSystemDisplayName } from 'hooks/datafiles';
 import { useModal, useFileListing } from 'hooks/datafiles';
 import { useMkdir } from 'hooks/datafiles/mutations';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from '_common';
 
 const DataFilesMkdirModal = () => {
   const { toggle: toggleModal, getStatus: getModalStatus } = useModal();
@@ -68,7 +69,7 @@ const DataFilesMkdirModal = () => {
               />
             </ModalBody>
             <ModalFooter>
-              <Button type="submit" className="data-files-btn">
+              <Button type="primary" size="long" attr="submit">
                 Create Folder
               </Button>
             </ModalFooter>

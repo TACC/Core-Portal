@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Section } from '_common';
-import { Button } from 'reactstrap';
+import { Button, LoadingSpinner, Section } from '_common';
+import { Button as ReactstrapButton } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
 
@@ -61,8 +61,7 @@ const OnboardingUser = () => {
           ))}
           <div className={styles.access}>
             <Button
-              color="link"
-              className={styles.button}
+              type="link"
               onClick={() =>
                 dispatch({
                   type: 'TICKET_CREATE_OPEN_MODAL',
@@ -74,16 +73,16 @@ const OnboardingUser = () => {
                 })
               }
             >
-              Get Help
+              <h6>Get Help</h6>
             </Button>
-            <Button
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <ReactstrapButton
               color="primary"
-              className={styles.button}
               href={continueLink}
               disabled={!user.setupComplete}
             >
               Continue
-            </Button>
+            </ReactstrapButton>
           </div>
         </>
       }

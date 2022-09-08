@@ -37,6 +37,8 @@ class ProjectMembershipStep(AbstractStep):
         return self.get_tas_client().project(self.settings['project_sql_id'])
 
     def description(self):
+        if self.settings is not None and 'description' in self.settings:
+            return self.settings['description']
         return """This confirms if you have access to the project. If not, request access and
                   wait for the system administrator’s approval."""
 
@@ -199,8 +201,14 @@ class ProjectMembershipStep(AbstractStep):
             self.complete("You have the required project membership to access this portal.")
         else:
             self.state = SetupState.USERWAIT
+            data = None
+            if self.settings is not None and 'userlink' in self.settings:
+                data = {
+                    'userlink': self.settings['userlink']
+                }
             self.log(
                 "Please confirm your request to use this portal.",
+                data=data
             )
 
     def client_action(self, action, data, request):

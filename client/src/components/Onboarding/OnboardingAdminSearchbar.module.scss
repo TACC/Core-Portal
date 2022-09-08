@@ -45,17 +45,6 @@
   /* … */
 }
 
-/* FP-546: When FP-546 uses `_common/Button`, these styles will not exist here */
-.submit-button {
-  composes: c-button--secondary from '../../styles/components/c-button.css';
-}
-.button__icon {
-  composes: c-button__icon--before from '../../styles/components/c-button.css';
-}
-.button__text {
-  /* … */
-}
-
 /* Hacks */
 
 .container,

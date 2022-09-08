@@ -6,7 +6,6 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   getAllocationsUtil,
   getProjectUsersUtil,
-  populateTeamsUtil,
   getUsageUtil,
   teamPayloadUtil,
   allocationsSelector,
@@ -76,7 +75,6 @@ describe('Allocations Sagas', () => {
     active: [],
     inactive: [],
   };
-  const teamsFixture = populateTeamsUtil(emptyAllocationsFixture);
   test('GET Allocations', () => {
     // Success
     expectSaga(getAllocations)
@@ -92,7 +90,6 @@ describe('Allocations Sagas', () => {
       .put({ type: 'START_ADD_ALLOCATIONS' })
       .call(getAllocationsUtil)
       .put({ type: 'ADD_ALLOCATIONS', payload: emptyAllocationsFixture })
-      .put({ type: 'POPULATE_TEAMS', payload: teamsFixture })
       .run();
     // Error
     const testError = new Error('Test Error');
@@ -213,7 +210,9 @@ describe('Allocations Sagas', () => {
     const expectedTeam = {
       1234: teamFixture.filter((i) => i.username !== 'chicken'),
     };
-    expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
+    expectSaga(removeUser, {
+      payload: { projectId: 1234, username: 'chicken' },
+    })
       .withReducer(allocationsReducer, { ...initialState })
       .provide([
         [matchers.call.fn(manageUtil), { response: 'ok' }],
@@ -225,7 +224,7 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: true,
             error: false,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
@@ -234,14 +233,14 @@ describe('Allocations Sagas', () => {
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
         payload: {
           teams: { 1234: teamFixture.filter((i) => i.username !== 'chicken') },
-          removingUserOperation: { loading: false, error: false, userName: '' },
+          removingUserOperation: { loading: false, error: false, username: '' },
         },
       })
       .hasFinalState({
         ...initialState,
         teams: expectedTeam,
         removingUserOperation: {
-          userName: '',
+          username: '',
           error: false,
           loading: false,
         },
@@ -255,7 +254,9 @@ describe('Allocations Sagas', () => {
       teams: { 1234: teamFixture },
     };
     const fakeError = new Error('Unable to remove user');
-    expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
+    expectSaga(removeUser, {
+      payload: { projectId: 1234, username: 'chicken' },
+    })
       .withReducer(allocationsReducer, { ...initialState })
       .provide([[matchers.call.fn(manageUtil), throwError(fakeError)]])
       .put({
@@ -264,7 +265,7 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: true,
             error: false,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
@@ -275,14 +276,14 @@ describe('Allocations Sagas', () => {
           removingUserOperation: {
             loading: false,
             error: true,
-            userName: 'chicken',
+            username: 'chicken',
           },
         },
       })
       .hasFinalState({
         ...initialState,
         removingUserOperation: {
-          userName: 'chicken',
+          username: 'chicken',
           error: true,
           loading: false,
         },

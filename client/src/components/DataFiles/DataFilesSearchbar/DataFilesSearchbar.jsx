@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button } from 'reactstrap';
 import queryString from 'query-string';
-import { Icon, DropdownSelector } from '_common';
+import { Button, DropdownSelector } from '_common';
 import { useSystemDisplayName } from 'hooks/datafiles';
 import styles from './DataFilesSearchbar.module.scss';
 
@@ -101,12 +100,13 @@ const DataFilesSearchbar = ({
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
           <Button
-            type="submit"
-            className={styles['submit-button']}
+            attr="submit"
+            type="secondary"
             disabled={disabled}
+            size="medium"
+            iconNameBefore="search"
           >
-            <Icon name="search" className={styles['button__icon']} />
-            <span className={styles['button__text']}>Search</span>
+            Search
           </Button>
         </div>
         <input
@@ -156,13 +156,7 @@ const DataFilesSearchbar = ({
       )}
       {((hasQuery && !siteSearch) ||
         (filterType && filterType !== 'All Types' && scheme !== 'cms')) && (
-        <Button
-          type="reset"
-          color="link"
-          data-testid="reset"
-          className={styles['clear-button']}
-          onClick={onClear}
-        >
+        <Button attr="reset" type="link" onClick={onClear}>
           Back to All Files
         </Button>
       )}
