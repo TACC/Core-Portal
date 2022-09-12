@@ -76,7 +76,6 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
-    python3 manage.py projects_id --update-using-max-value-found # Update projects id counter
     python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
