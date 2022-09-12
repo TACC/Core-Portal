@@ -49,3 +49,5 @@ HAYSTACK_CONNECTIONS = {
     'KWARGS': {'http_auth': ES_AUTH}
   }
 }
+
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
