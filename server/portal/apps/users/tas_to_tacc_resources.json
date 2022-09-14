@@ -1,6 +1,6 @@
 {
     "Stampede4": {
-        "name": "Stampede 2",
+        "name": "Stampede2",
         "host": "stampede2.tacc.utexas.edu",
         "type": "HPC"
     },
@@ -10,12 +10,12 @@
         "type": "STORAGE"
     },
     "Lonestar5": {
-        "name": "LoneStar 5",
+        "name": "Lonestar5",
         "host": "ls5.tacc.utexas.edu",
         "type": "HPC"
     },
     "Lonestar6": {
-        "name": "LoneStar 6",
+        "name": "Lonestar6",
         "host": "ls6.tacc.utexas.edu",
         "type": "HPC"
     },
@@ -25,7 +25,7 @@
         "type": "HPC"
     },
     "Maverick3": {
-        "name": "Maverick 2",
+        "name": "Maverick2",
         "host": "maverick2.tacc.utexas.edu",
         "type": "HPC"
     },
