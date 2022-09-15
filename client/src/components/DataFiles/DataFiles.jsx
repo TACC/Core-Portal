@@ -91,8 +91,9 @@ const DataFiles = () => {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
-  const systemSplitArr = listingParams.system.split('.');
-  const projectId = systemSplitArr[systemSplitArr.length - 1];
+  const projectId = useSelector((state) =>
+    state.projects.metadata.projectId ? state.projects.metadata.projectId : ''
+  );
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
     authenticatedUser
