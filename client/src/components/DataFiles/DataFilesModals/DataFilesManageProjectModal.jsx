@@ -30,7 +30,10 @@ const DataFilesManageProjectModal = () => {
 
   const isUserOrGuest = members
     .filter((member) => member.user.username === user.username)
-    .map((currentUser) => currentUser.access === 'edit')[0];
+    .map(
+      (currentUser) =>
+        currentUser.access === 'edit' || currentUser.access === 'read'
+    )[0];
 
   const toggle = useCallback(() => {
     setTransferMode(false);

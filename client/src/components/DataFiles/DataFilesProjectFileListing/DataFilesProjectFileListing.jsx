@@ -55,7 +55,10 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             ? member.user.username === state.authenticatedUser.user.username
             : { access: null }
         )
-        .map((currentUser) => currentUser.access === 'edit')[0]
+        .map(
+          (currentUser) =>
+            currentUser.access === 'edit' || currentUser.access === 'read'
+        )[0]
   );
   const onEdit = () => {
     dispatch({
