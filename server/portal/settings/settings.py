@@ -480,7 +480,7 @@ PORTAL_EXEC_SYSTEMS = {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
-    'lonestar5.tacc.utexas.edu': {
+    'ls5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
@@ -496,7 +496,7 @@ PORTAL_EXEC_SYSTEMS = {
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     },
-    'lonestar6.tacc.utexas.edu': {
+    'ls6.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
