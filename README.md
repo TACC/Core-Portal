@@ -27,16 +27,16 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ### Setup local access to the portal:
 
-  1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
+  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
       - `sudo vim /etc/hosts`
 
      _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
 
      _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
-  2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
+  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
 
-     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/login`). After succesful login, you can use the debug server at `https://cep.dev`._
+     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
 
      _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
