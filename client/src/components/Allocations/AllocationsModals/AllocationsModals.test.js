@@ -135,7 +135,7 @@ describe('View Team Modal', () => {
     // View information for the user with usage
     fireEvent.click(getByText(/Test User2/));
     expect(getByText(/Frontera/)).toBeDefined();
-    expect(getByText(/Stampede2/)).toBeDefined();
+    expect(getByText(/Stampede 2/)).toBeDefined();
   });
 
   test('View Team Modal Errors', () => {
