@@ -28,6 +28,13 @@ const DataFilesManageProjectModal = () => {
     };
   });
 
+  const isUserOrGuest = members
+    .filter((member) => member.user.username === user.username)
+    .map(
+      (currentUser) =>
+        currentUser.access === 'edit' || currentUser.access === 'read'
+    )[0];
+
   const toggle = useCallback(() => {
     setTransferMode(false);
     dispatch({
@@ -116,7 +123,7 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          Manage Team
+          {isUserOrGuest ? 'View' : 'Manage'} Team
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
