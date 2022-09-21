@@ -141,7 +141,6 @@ const SystemsPushKeysModal = () => {
                   type="primary"
                   disabled={submitting}
                   isLoading={submitting}
-                  iconNameBefore={buttonIcon}
                 >
                   Authenticate
                 </Button>
