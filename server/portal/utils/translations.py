@@ -92,3 +92,18 @@ def url_parse_inputs(job):
                 parsed_values.append(input)
             job['inputs'][key] = parsed_values
     return job
+
+
+def url_parse_input_v3(source_url):
+    """
+    Translates the source url of a Tapis job to be URL encoded
+    """
+    parsed = urlparse(source_url)
+
+    if parsed.scheme:
+        url = '{}://{}{}'.format(
+            parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
+    else:
+        url = urllib.parse.quote(parsed.path)
+
+    return url

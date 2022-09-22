@@ -21,6 +21,24 @@ class JobSubmission(models.Model):
     jobId = models.CharField(max_length=300)
 
 
+class JobSubmissionV3(models.Model):
+    """Job Submission
+
+    Used for tracking jobs that originate from this portal for filtering purposes
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="+",
+        on_delete=models.CASCADE
+    )
+
+    # Timestamp for event
+    time = models.DateTimeField(default=timezone.now)
+
+    # ID of job returned from Agave
+    jobUuid = models.CharField(max_length=300)
+
+
 class AppTrayCategory(models.Model):
     category = models.CharField(help_text='A category for the app tray', max_length=64)
     priority = models.IntegerField(help_text='Category priority, where higher priority tabs appear before lower ones', default=0)

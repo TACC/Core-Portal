@@ -4,7 +4,7 @@ const getApps = async (operation, params) => {
   const url = `/api/workspace/tapisapps/${operation}`;
   const response = await fetchUtil({
     url,
-    params
+    params,
   });
   return response;
 };
