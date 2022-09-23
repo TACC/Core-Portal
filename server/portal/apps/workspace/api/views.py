@@ -191,183 +191,214 @@ class MetadataView(BaseApiView):
             return JsonResponse({'response': data})
 
 
-# @method_decorator(login_required, name='dispatch')
-# class JobsView(BaseApiView):
-#     def get(self, request, *args, **kwargs):
-#         agave = request.user.tapis_oauth.client
-#         job_id = request.GET.get('job_id')
+@method_decorator(login_required, name='dispatch')
+class JobsView(BaseApiView):
+    def get(self, request, *args, **kwargs):
+        client = request.user.tapis_oauth.client
+        job_uuid = request.GET.get('job_uuid')
 
-#         # get specific job info
-#         if job_id:
-#             data = agave.jobs.get(jobId=job_id)
-#             q = {"associationIds": job_id}
-#             job_meta = agave.meta.listMetadata(q=json.dumps(q))
-#             data['_embedded'] = {"metadata": job_meta}
+        # get specific job info
+        if job_uuid:
+            data = client.jobs.get(jobUuid=job_uuid)
+            job_data = data['result']
+            job_meta = data['metadata']
+            job_data['_embedded'] = {"metadata": job_meta}
 
-#             # TODO: Decouple this from front end somehow
-#             archiveSystem = data.get('archiveSystem', None)
-#             if archiveSystem:
-#                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
-#                 data['archiveUrl'] = '/workbench/data-depot/'
-#                 data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
+            archiveSystem = job_data.get('archiveSystemId', None)
+            if archiveSystem:
+                archive_system_path = '{}/{}'.format(archiveSystem, job_data['archiveSystemDir'])
+                job_data['archiveUrl'] = '/workbench/data-depot/'
+                job_data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
 
-#                 jupyter_url = get_jupyter_url(
-#                     archiveSystem,
-#                     "/" + data['archivePath'],
-#                     request.user.username,
-#                     is_dir=True
-#                 )
-#                 if jupyter_url:
-#                     data['jupyterUrl'] = jupyter_url
+                jupyter_url = get_jupyter_url(
+                    archiveSystem,
+                    "/" + job_data['archiveSystemDir'],
+                    request.user.username,
+                    is_dir=True
+                )
+                if jupyter_url:
+                    job_data['jupyterUrl'] = jupyter_url
+        # list jobs
+        else:
+            limit = int(request.GET.get('limit', 10))
+            offset = int(request.GET.get('offset', 0))
+            period = request.GET.get('period', 'all')
 
-#         # list jobs
-#         else:
-#             limit = int(request.GET.get('limit', 10))
-#             offset = int(request.GET.get('offset', 0))
-#             period = request.GET.get('period', 'all')
+            jobs = JobSubmissionV3.objects.all().filter(user=request.user).order_by('-time')
 
-#             jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
+            if period != "all":
+                enddate = timezone.now()
+                if period == "day":
+                    days = 1
+                elif period == "week":
+                    days = 7
+                elif period == "month":
+                    days = 30
+                startdate = enddate - timedelta(days=days)
+                jobs = jobs.filter(time__range=[startdate, enddate])
 
-#             if period != "all":
-#                 enddate = timezone.now()
-#                 if period == "day":
-#                     days = 1
-#                 elif period == "week":
-#                     days = 7
-#                 elif period == "month":
-#                     days = 30
-#                 startdate = enddate - timedelta(days=days)
-#                 jobs = jobs.filter(time__range=[startdate, enddate])
+            all_user_job_ids = [job.jobId for job in jobs]
+            user_job_ids = all_user_job_ids[offset:offset + limit]
+            if user_job_ids:
+                data = client.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
+                # re-order agave job info to match our time-ordered jobs
+                # while also taking care that tapis in rare cases might no longer
+                # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
+                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
+            else:
+                data = []
 
-#             all_user_job_ids = [job.jobId for job in jobs]
-#             user_job_ids = all_user_job_ids[offset:offset + limit]
-#             if user_job_ids:
-#                 data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
-#                 # re-order agave job info to match our time-ordered jobs
-#                 # while also taking care that tapis in rare cases might no longer
-#                 # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
-#                 data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
-#             else:
-#                 data = []
+        return JsonResponse({"response": data})
 
-#         return JsonResponse({"response": data})
+    def delete(self, request, *args, **kwargs):
+        client = request.user.tapis_oauth.client
+        job_uuid = request.GET.get('job_uuid')
+        METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
+        data = client.jobs.hideJob(jobUuid=job_uuid)
+        return JsonResponse({"response": data})
 
-    # def delete(self, request, *args, **kwargs):
-    #     agave = request.user.tapis_oauth.client
-    #     job_id = request.GET.get('job_id')
-    #     METRICS.info("user:{} is deleting job id:{}".format(request.user.username, job_id))
-    #     data = agave.jobs.delete(jobId=job_id)
-    #     return JsonResponse({"response": data})
+    def post(self, request, *args, **kwargs):
+        client = request.user.tapis_oauth.client
+        job_post = json.loads(request.body)
+        job_uuid = job_post.get('job_uuid')
+        job_action = job_post.get('action')
 
-    # def post(self, request, *args, **kwargs):
-    #     agave = request.user.tapis_oauth.client
-    #     job_post = json.loads(request.body)
-    #     job_id = job_post.get('job_id')
-    #     job_action = job_post.get('action')
+        if job_uuid and job_action:
+            # resubmit job
+            if job_action == 'resubmit':
+                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
 
-    #     if job_id and job_action:
-    #         # resubmit job
-    #         if job_action == 'resubmit':
-    #             METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
-    #         # cancel job / stop job
-    #         else:
-    #             METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
+                data = client.jobs.resubmitJob(jobUuid=job_uuid)
 
-    #         data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
+                if "uuid" in data:
+                    job = JobSubmissionV3.objects.create(
+                        user=request.user,
+                        jobUuid=data["uuid"]
+                    )
+                    job.save()
+            # cancel job / stop job
+            else:
+                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
+                data = client.jobs.cancelJob(jobUuid=job_uuid)
 
-    #         if job_action == 'resubmit':
-    #             if "id" in data:
-    #                 job = JobSubmission.objects.create(
-    #                     user=request.user,
-    #                     jobId=data["id"]
-    #                 )
-    #                 job.save()
+            return JsonResponse({"response": data})
+        # submit job
+        elif job_post:
+            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
+            default_sys = UserSystemsManager(
+                request.user,
+                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+            )
 
-    #         return JsonResponse({"response": data})
-    #     # submit job
-    #     elif job_post:
-    #         METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-    #         default_sys = UserSystemsManager(
-    #             request.user,
-    #             settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-    #         )
+            # cleaning archive path value
+            if job_post.get('archiveSystemDir'):
+                parsed = urlparse(job_post['archiveSystemDir'])
+                if parsed.path.startswith('/') and len(parsed.path) > 1:
+                    # strip leading '/'
+                    archive_path = parsed.path[1:]
+                elif parsed.path == '':
 
-    #         # cleaning archive path value
-    #         if job_post.get('archiveSystemDir'):
-    #             parsed = urlparse(job_post['archiveSystemDir'])
-    #             if parsed.path.startswith('/') and len(parsed.path) > 1:
-    #                 # strip leading '/'
-    #                 archive_path = parsed.path[1:]
-    #             elif parsed.path == '':
-    #                 # if path is blank, set to root of system
-    #                 archive_path = '/'
-    #             else:
-    #                 archive_path = parsed.path
+                    archive_path = '/'
+                else:
+                    archive_path = parsed.path
 
-    #             job_post['archiveSystemDir'] = archive_path
+                job_post['archiveSystemDir'] = archive_path
 
-    #             if parsed.netloc:
-    #                 job_post['archiveSystemId'] = parsed.netloc
-    #             else:
-    #                 job_post['archiveSystemId'] = default_sys.get_system_id()
-    #         else:
-    #             job_post['archiveSystemDir'] = \
-    #                 'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-    #                     timezone.now().strftime('%Y-%m-%d'))
-    #             job_post['archiveSystemId'] = default_sys.get_system_id()
+                if parsed.netloc:
+                    job_post['archiveSystemId'] = parsed.netloc
+                else:
+                    job_post['archiveSystemId'] = default_sys.get_system_id()
+            else:
+                job_post['archiveSystemDir'] = \
+                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
+                        timezone.now().strftime('%Y-%m-%d'))
+                job_post['archiveSystemId'] = default_sys.get_system_id()
 
-    #         # check for running licensed apps
-    #         lic_type = _app_license_type(job_post['appId'])
-    #         if lic_type is not None:
-    #             _, license_models = get_license_info()
-    #             license_model = [x for x in license_models if x.license_type == lic_type][0]
-    #             lic = license_model.objects.filter(user=request.user).first()
-    #             if not lic:
-    #                 raise ApiException("You are missing the required license for this application.")
-    #             job_post['parameterSet']['_license'] = lic.license_as_str()
+            # check for running licensed apps
+            lic_type = _app_license_type(job_post['appId'])
+            if lic_type is not None:
+                _, license_models = get_license_info()
+                license_model = [x for x in license_models if x.license_type == lic_type][0]
+                lic = license_model.objects.filter(user=request.user).first()
+                if not lic:
+                    raise ApiException("You are missing the required license for this application.")
+                # TODO: Fix for v3
+                job_post['parameterSet']['envVariables'].append({
+                    'key': '_license',
+                    'value': lic.license_as_str()
+                })
 
-    #         # url encode inputs
-    #         if job_post['inputs']:
-    #             job_post = url_parse_inputs(job_post)
+            # NOTE: Changed so that it handles fileInputs & fileInputArrays
+            # url encode inputs
+            if job_post.get('fileInputs'):
+                file_inputs = job_post['fileInputs']
+                job_post['fileInputs'] = [
+                    {**input, 'sourceUrl': url_parse_input_v3(input['sourceUrl'])}
+                    for input in file_inputs
+                ]
 
-    #         # Get or create application based on allocation and execution system
-    #         apps_mgr = UserApplicationsManager(request.user)
-    #         app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
+            if job_post.get('fileInputArrays'):
+                file_input_arrays = job_post['fileInputArrays']
+                job_post['fileInputs'] = [
+                    {**input_array,'sourceUrls': [url_parse_input_v3(url) for url in input_array['sourceUrls']]}
+                    for input_array in file_input_arrays
+                ]
 
-    #         if app.exec_sys:
-    #             return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
+            # TODO: Fix for v3
+            # Get or create application based on allocation and execution system
+            apps_mgr = UserApplicationsManager(request.user)
+            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
-    #         job_post['appId'] = app.id
-    #         del job_post['allocation']
+            if app.exec_sys:
+                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
-    #         if settings.DEBUG:
-    #             wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-    #             jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
-    #         else:
-    #             wh_base_url = request.build_absolute_uri('/webhooks/')
-    #             jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            job_post['appId'] = app.id
+            del job_post['allocation']
 
-    #         job_post['parameters']['_webhook_base_url'] = wh_base_url
-    #         job_post['notifications'] = [
-    #             {'url': jobs_wh_url,
-    #              'event': e}
-    #             for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+            # TODO: Fix for v3
+            if settings.DEBUG:
+                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            else:
+                wh_base_url = request.build_absolute_uri('/webhooks/')
+                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-    #         # Remove any params from job_post that are not in appDef
-    #         job_post['parameters'] = {param: job_post['parameters'][param]
-    #                                   for param in job_post['parameters']
-    #                                   if param in [p['id'] for p in app.parameters]}
+            # TODO: Fix for v3 (probably part of appArgs)
+            # TODO: Check if envVariable exists
+            job_post['parameterSet']['envVariables'].append({
+                'key': '_webhook_base_url',
+                'value': wh_base_url
+            })
+            job_post['subscriptions'] = [
+                {
+                    'description': e,
+                    'deliveryTargets': [
+                        {
+                            'deliveryMethod': "WEBHOOK",
+                            'deliveryAddress': jobs_wh_url,
+                        }
+                    ]
+                }
+                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
-    #         response = agave.jobs.submit(body=job_post)
+            # Remove any params from job_post that are not in appDef
+            # TODO: Fix for v3 (because the app parameter environment variables don't have ids)
+            # job_post['parameterSet'] = {param: job_post['parameterSet'][param]
+            #                           for param in job_post['parameterSet']
+            #                           # TODO: Fix for v3
+            #                           # if param in [p['id'] for p in app.parameterSet]}
+            #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
 
-    #         if "id" in response:
-    #             job = JobSubmission.objects.create(
-    #                 user=request.user,
-    #                 jobId=response["id"]
-    #             )
-    #             job.save()
+            response = client.jobs.submit(body=job_post)
 
-    #         return JsonResponse({"response": response})
+            if "uuid" in response:
+                job = JobSubmissionV3.objects.create(
+                    user=request.user,
+                    jobUuid=response["uuid"]
+                )
+                job.save()
+
+            return JsonResponse({"response": response})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -405,8 +436,8 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        agave = request.user.tapis_oauth.client
-        data = agave.jobs.getHistory(jobId=job_uuid)
+        client = request.user.tapis_oauth.client
+        data = client.jobs.getJobHistory(jobUuid=job_uuid)
         return JsonResponse({"response": data})
 
 
@@ -576,239 +607,3 @@ class TapisAppsView(BaseApiView):
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({'data': response})
-
-
-@method_decorator(login_required, name='dispatch')
-class TapisJobsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
-        job_uuid = request.GET.get('job_uuid')
-        # job_id = request.GET.get('job_id')
-
-        # get specific job info
-        if job_uuid:
-            data = client.jobs.get(jobUuid=job_uuid)
-            # q = {"associationIds": job_id}
-            # job_meta = agave.meta.listMetadata(q=json.dumps(q))
-            job_data = data['result']
-            job_meta = data['metadata']
-            # TODO: Replace with metadata
-            # data['_embedded'] = {"metadata": job_meta}
-            job_data['_embedded'] = {"metadata": job_meta}
-
-            # TODO: Decouple this from front end somehow
-            # archiveSystem = data.get('archiveSystem', None)
-            archiveSystem = job_data.get('archiveSystemId', None)
-            if archiveSystem:
-                # archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
-                archive_system_path = '{}/{}'.format(archiveSystem, job_data['archiveSystemDir'])
-                # data['archiveUrl'] = '/workbench/data-depot/'
-                # data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
-                job_data['archiveUrl'] = '/workbench/data-depot/'
-                job_data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
-
-                jupyter_url = get_jupyter_url(
-                    archiveSystem,
-                    # "/" + data['archivePath'],
-                    "/" + job_data['archiveSystemDir'],
-                    request.user.username,
-                    is_dir=True
-                )
-                if jupyter_url:
-                    # data['jupyterUrl'] = jupyter_url
-                    job_data['jupyterUrl'] = jupyter_url
-        # list jobs
-        else:
-            limit = int(request.GET.get('limit', 10))
-            offset = int(request.GET.get('offset', 0))
-            period = request.GET.get('period', 'all')
-
-            jobs = JobSubmissionV3.objects.all().filter(user=request.user).order_by('-time')
-
-            if period != "all":
-                enddate = timezone.now()
-                if period == "day":
-                    days = 1
-                elif period == "week":
-                    days = 7
-                elif period == "month":
-                    days = 30
-                startdate = enddate - timedelta(days=days)
-                jobs = jobs.filter(time__range=[startdate, enddate])
-
-            all_user_job_ids = [job.jobId for job in jobs]
-            user_job_ids = all_user_job_ids[offset:offset + limit]
-            if user_job_ids:
-                # data = client.jobs.list(query={'id.in': ','.join(user_job_ids)})
-                # data = client.jobs.getJoblist(query={'id.in': ','.join(user_job_ids)})
-                data = client.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
-                # re-order agave job info to match our time-ordered jobs
-                # while also taking care that tapis in rare cases might no longer
-                # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
-                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
-            else:
-                data = []
-
-        return JsonResponse({"response": data})
-
-    def delete(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
-        job_uuid = request.GET.get('job_uuid')
-        METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
-        # data = tapis.jobs.delete(jobId=job_id)
-        data = client.jobs.hideJob(jobUuid=job_uuid)
-        return JsonResponse({"response": data})
-
-    def post(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
-        job_post = json.loads(request.body)
-        job_uuid = job_post.get('job_uuid')
-        job_action = job_post.get('action')
-
-        if job_uuid and job_action:
-            # resubmit job
-            if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
-
-                data = client.jobs.resubmitJob(jobUuid=job_uuid)
-
-                if "uuid" in data:
-                    job = JobSubmissionV3.objects.create(
-                        user=request.user,
-                        jobUuid=data["uuid"]
-                    )
-                    job.save()
-            # cancel job / stop job
-            else:
-                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
-                data = client.jobs.cancelJob(jobUuid=job_uuid)
-
-            return JsonResponse({"response": data})
-        # submit job
-        elif job_post:
-            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            default_sys = UserSystemsManager(
-                request.user,
-                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            )
-
-            # cleaning archive path value
-            if job_post.get('archiveSystemDir'):
-                parsed = urlparse(job_post['archiveSystemDir'])
-                if parsed.path.startswith('/') and len(parsed.path) > 1:
-                    # strip leading '/'
-                    archive_path = parsed.path[1:]
-                elif parsed.path == '':
-
-                    archive_path = '/'
-                else:
-                    archive_path = parsed.path
-
-                job_post['archiveSystemDir'] = archive_path
-
-                if parsed.netloc:
-                    job_post['archiveSystemId'] = parsed.netloc
-                else:
-                    job_post['archiveSystemId'] = default_sys.get_system_id()
-            else:
-                job_post['archiveSystemDir'] = \
-                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystemId'] = default_sys.get_system_id()
-
-            # check for running licensed apps
-            lic_type = _app_license_type(job_post['appId'])
-            if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                if not lic:
-                    raise ApiException("You are missing the required license for this application.")
-                # TODO: Fix for v3
-                job_post['parameterSet']['envVariables'].append({
-                    'key': '_license',
-                    'value': lic.license_as_str()
-                })
-
-            # NOTE: Changed so that it handles fileInputs & fileInputArrays
-            # url encode inputs
-            if job_post.get('fileInputs'):
-                file_inputs = job_post['fileInputs']
-                job_post['fileInputs'] = [
-                    {**input, 'sourceUrl': url_parse_input_v3(input['sourceUrl'])}
-                    for input in file_inputs
-                ]
-
-            if job_post.get('fileInputArrays'):
-                file_input_arrays = job_post['fileInputArrays']
-                job_post['fileInputs'] = [
-                    {**input_array,'sourceUrls': [url_parse_input_v3(url) for url in input_array['sourceUrls']]}
-                    for input_array in file_input_arrays
-                ]
-
-            # TODO: Fix for v3
-            # Get or create application based on allocation and execution system
-            apps_mgr = UserApplicationsManager(request.user)
-            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
-
-            if app.exec_sys:
-                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
-
-            job_post['appId'] = app.id
-            del job_post['allocation']
-
-            # TODO: Fix for v3
-            if settings.DEBUG:
-                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
-            else:
-                wh_base_url = request.build_absolute_uri('/webhooks/')
-                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
-
-            # TODO: Fix for v3 (probably part of appArgs)
-            # TODO: Check if envVariable exists
-            job_post['parameterSet']['envVariables'].append({
-                'key': '_webhook_base_url',
-                'value': wh_base_url
-            })
-            # job_post['notifications'] = [
-            job_post['subscriptions'] = [
-                # {'url': jobs_wh_url,
-                #  # 'event': e}
-                {
-                    'description': e,
-                    'deliveryTargets': [
-                        {
-                            'deliveryMethod': "WEBHOOK",
-                            'eliveryAddress': jobs_wh_url,
-                        }
-                    ]
-                }
-                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
-
-            # Remove any params from job_post that are not in appDef
-            # TODO: Fix for v3 (because the app parameter environment variables don't have ids)
-            # job_post['parameterSet'] = {param: job_post['parameterSet'][param]
-            #                           for param in job_post['parameterSet']
-            #                           # TODO: Fix for v3
-            #                           # if param in [p['id'] for p in app.parameterSet]}
-            #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
-
-            response = client.jobs.submit(body=job_post)
-
-            if "uuid" in response:
-                job = JobSubmissionV3.objects.create(
-                    user=request.user,
-                    jobUuid=response["uuid"]
-                )
-                job.save()
-
-            return JsonResponse({"response": response})
-
-
-@method_decorator(login_required, name='dispatch')
-class TapisJobHistoryView(BaseApiView):
-    def get(self, request, job_uuid):
-        client = request.user.tapis_oauth.client
-        data = client.jobs.getJobHistory(jobUuid=job_uuid)
-        return JsonResponse({"response": data})
