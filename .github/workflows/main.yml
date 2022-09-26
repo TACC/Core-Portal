@@ -110,7 +110,11 @@ jobs:
         npm run test
 
     - name: Upload coverage to Codecov
-      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: javascript
+        fail_ci_if_error: true
 
   Client_Side_Linting:
     runs-on: ubuntu-20.04
