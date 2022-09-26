@@ -23,7 +23,6 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs, url_parse_input_v3
-from portal.apps.workspace.models import JobSubmission, JobSubmissionV3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from requests.exceptions import HTTPError
@@ -201,8 +200,7 @@ class JobsView(BaseApiView):
         if job_uuid:
             data = client.jobs.get(jobUuid=job_uuid)
             job_data = data['result']
-            job_meta = data['metadata']
-            job_data['_embedded'] = {"metadata": job_meta}
+            # job_data['_embedded'] = {"metadata": data['result']}
 
             archiveSystem = job_data.get('archiveSystemId', None)
             if archiveSystem:
@@ -222,31 +220,32 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            period = request.GET.get('period', 'all')
+            # period = request.GET.get('period', 'all')
 
-            jobs = JobSubmissionV3.objects.all().filter(user=request.user).order_by('-time')
+            # TODO: Paramters for querying range built-in to tapis v3 but unsupported yet in tapipy in time of writing
+            data = client.jobs.getJobSearchList(limit=limit, startAfter=offset, orderBy='lastUpdated(desc),name(asc)')
 
-            if period != "all":
-                enddate = timezone.now()
-                if period == "day":
-                    days = 1
-                elif period == "week":
-                    days = 7
-                elif period == "month":
-                    days = 30
-                startdate = enddate - timedelta(days=days)
-                jobs = jobs.filter(time__range=[startdate, enddate])
+            # if period != "all":
+            #     enddate = timezone.now()
+            #     if period == "day":
+            #         days = 1
+            #     elif period == "week":
+            #         days = 7
+            #     elif period == "month":
+            #         days = 30
+            #     startdate = enddate - timedelta(days=days)
+            #     jobs = jobs.filter(time__range=[startdate, enddate])
 
-            all_user_job_ids = [job.jobId for job in jobs]
-            user_job_ids = all_user_job_ids[offset:offset + limit]
-            if user_job_ids:
-                data = client.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
-                # re-order agave job info to match our time-ordered jobs
-                # while also taking care that tapis in rare cases might no longer
-                # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
-                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
-            else:
-                data = []
+            # all_user_job_ids = [job.jobId for job in jobs]
+            # user_job_ids = all_user_job_ids[offset:offset + limit]
+            # if user_job_ids:
+            #     # data = client.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
+            #     # re-order agave job info to match our time-ordered jobs
+            #     # while also taking care that tapis in rare cases might no longer
+            #     # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
+            #     data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
+            # else:
+            #     data = []
 
         return JsonResponse({"response": data})
 
@@ -270,12 +269,6 @@ class JobsView(BaseApiView):
 
                 data = client.jobs.resubmitJob(jobUuid=job_uuid)
 
-                if "uuid" in data:
-                    job = JobSubmissionV3.objects.create(
-                        user=request.user,
-                        jobUuid=data["uuid"]
-                    )
-                    job.save()
             # cancel job / stop job
             else:
                 METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
@@ -285,6 +278,7 @@ class JobsView(BaseApiView):
         # submit job
         elif job_post:
             METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
+            # TODO: Fix for v3 (probably will be handled during onboarding so that we could just grab it internally)
             default_sys = UserSystemsManager(
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
@@ -323,9 +317,9 @@ class JobsView(BaseApiView):
                 if not lic:
                     raise ApiException("You are missing the required license for this application.")
                 # TODO: Fix for v3
-                job_post['parameterSet']['envVariables'].append({
-                    'key': '_license',
-                    'value': lic.license_as_str()
+                job_post['parameterSet']['appArgs'].append({
+                    'name': '_license',
+                    'arg': lic.license_as_str()
                 })
 
             # NOTE: Changed so that it handles fileInputs & fileInputArrays
@@ -344,8 +338,8 @@ class JobsView(BaseApiView):
                     for input_array in file_input_arrays
                 ]
 
-            # TODO: Fix for v3
             # Get or create application based on allocation and execution system
+            # TODO: Fix for v3 (probably will be handled during onboarding so that we could just grab it internally)
             apps_mgr = UserApplicationsManager(request.user)
             app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
@@ -365,9 +359,9 @@ class JobsView(BaseApiView):
 
             # TODO: Fix for v3 (probably part of appArgs)
             # TODO: Check if envVariable exists
-            job_post['parameterSet']['envVariables'].append({
-                'key': '_webhook_base_url',
-                'value': wh_base_url
+            job_post['parameterSet']['appArgs'].append({
+                'name': '_webhook_base_url',
+                'arg': wh_base_url
             })
             job_post['subscriptions'] = [
                 {
@@ -390,13 +384,6 @@ class JobsView(BaseApiView):
             #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
 
             response = client.jobs.submit(body=job_post)
-
-            if "uuid" in response:
-                job = JobSubmissionV3.objects.create(
-                    user=request.user,
-                    jobUuid=response["uuid"]
-                )
-                job.save()
 
             return JsonResponse({"response": response})
 
