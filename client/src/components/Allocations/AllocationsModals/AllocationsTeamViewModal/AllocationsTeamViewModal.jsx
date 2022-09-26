@@ -14,7 +14,8 @@ import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 
 const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
-  const { projectId } = useParams();
+  const { projectId: projectIdString } = useParams();
+  const projectId = Number(projectIdString);
   const {
     teams,
     loadingUsernames,
