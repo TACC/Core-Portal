@@ -18,7 +18,7 @@ class TestValidateAgaveJob(TestCase):
         mock_client = MagicMock()
         mock_client.jobs.get.return_value = self.job_event
         mock_user = MagicMock()
-        mock_user.agave_oauth.client = mock_client
+        mock_user.tapis_oauth.client = mock_client
         mock_user_model = MagicMock()
         mock_user_model.objects.get.return_value = mock_user
         self.user_model_patcher = patch(
@@ -79,7 +79,7 @@ class TestInteractiveWebhookView(TestCase):
     fixtures = ['users', 'auth']
 
     def setUp(self):
-        self.mock_agave_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+        self.mock_agave_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
         self.mock_agave_client = self.mock_agave_patcher.start()
 
         self.client.force_login(get_user_model().objects.get(username="username"))

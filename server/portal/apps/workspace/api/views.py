@@ -47,7 +47,7 @@ def _app_license_type(app_id):
 
 
 def _get_app(app_id, user):
-    agave = user.agave_oauth.client
+    agave = user.tapis_oauth.client
     data = {'definition': agave.apps.get(appId=app_id)}
 
     # GET EXECUTION SYSTEM INFO FOR USER APPS
@@ -84,7 +84,7 @@ def _get_app(app_id, user):
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
             METRICS.debug("user:{} is requesting app id:{}".format(request.user.username, app_id))
@@ -132,7 +132,7 @@ class MonitorsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class MetadataView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
             query = json.dumps({
@@ -170,7 +170,7 @@ class MetadataView(BaseApiView):
         return JsonResponse({'response': {'listing': data, 'default_tab': settings.PORTAL_APPS_DEFAULT_TAB}})
 
     def post(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         meta_post = json.loads(request.body)
         meta_uuid = meta_post.get('uuid')
 
@@ -182,7 +182,7 @@ class MetadataView(BaseApiView):
         return JsonResponse({'response': data})
 
     def delete(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         meta_uuid = request.GET.get('uuid')
         if meta_uuid:
             data = agave.meta.deleteMetadata(uuid=meta_uuid)
@@ -192,7 +192,7 @@ class MetadataView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         job_id = request.GET.get('job_id')
 
         # get specific job info
@@ -251,14 +251,14 @@ class JobsView(BaseApiView):
         return JsonResponse({"response": data})
 
     def delete(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         job_id = request.GET.get('job_id')
         METRICS.info("user:{} is deleting job id:{}".format(request.user.username, job_id))
         data = agave.jobs.delete(jobId=job_id)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
@@ -403,7 +403,7 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        agave = request.user.agave_oauth.client
+        agave = request.user.tapis_oauth.client
         data = agave.jobs.getHistory(jobId=job_uuid)
         return JsonResponse({"response": data})
 
@@ -414,7 +414,7 @@ class AppsTrayView(BaseApiView):
         # Retrieve the app specified in the portal
         # Any fields that are left blank assume that we
         # are retrieving the "latest" version
-        agave = user.agave_oauth.client
+        agave = user.tapis_oauth.client
         query = {
             "name": app.name,
             "isPublic": True
@@ -443,7 +443,7 @@ class AppsTrayView(BaseApiView):
         return appId
 
     def getPrivateApps(self, user):
-        agave = user.agave_oauth.client
+        agave = user.tapis_oauth.client
         apps_listing = agave.apps.list(privateOnly=True)
         my_apps = []
         # Get private apps that are not prtl.clone

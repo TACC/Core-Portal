@@ -3,14 +3,14 @@ from mock import MagicMock
 import json
 import os
 import tempfile
-from portal.apps.auth.models import AgaveOAuthToken
+from portal.apps.auth.models import TapisOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from django.conf import settings
 
 
 @pytest.fixture
 def mock_agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
 @pytest.fixture
@@ -26,10 +26,8 @@ def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client
                                           last_name="Lastname",
                                           email="user@user.com")
     user = django_user_model.objects.get(username="username")
-    token = AgaveOAuthToken.objects.create(
+    token = TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
@@ -49,10 +47,8 @@ def regular_user2(django_user_model, django_db_reset_sequences, mock_agave_clien
                                           last_name="Lastname2",
                                           email="user2@user.com")
     user = django_user_model.objects.get(username="username2")
-    token = AgaveOAuthToken.objects.create(
+    token = TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
@@ -72,10 +68,8 @@ def regular_user_with_underscore(django_user_model, django_db_reset_sequences, m
                                           last_name="Lastname3",
                                           email="user_name@user.com")
     user = django_user_model.objects.get(username="user_name")
-    token = AgaveOAuthToken.objects.create(
+    token = TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
@@ -98,10 +92,8 @@ def staff_user(client, django_user_model, django_db_reset_sequences, mock_agave_
     django_user_model.objects.create_user(username='staff', password='password')
     user = django_user_model.objects.get(username='staff')
     user.is_staff = True
-    token = AgaveOAuthToken.objects.create(
+    token = TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
@@ -147,6 +139,11 @@ def agave_file_listing_mock():
 @pytest.fixture
 def agave_listing_mock():
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+
+
+@pytest.fixture
+def tapis_tokens_create_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/auth/create-tokens-response.json')))
 
 
 @pytest.fixture

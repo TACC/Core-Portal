@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture()
 def agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
 @pytest.fixture()

@@ -182,6 +182,6 @@ class SystemRolesView(BaseApiView):
     """
 
     def get(self, request, system_id):
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         data = client.systems.listRoles(systemId=system_id)
         return JsonResponse({"status": 200, "response": data})

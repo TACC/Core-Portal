@@ -15,7 +15,6 @@ const exampleAuthenticatedUser = {
   email: 'max@munster.mann',
   oauth: {
     expires_in: 14400,
-    scope: 'default',
   },
   isStaff: false,
 };

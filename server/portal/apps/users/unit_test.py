@@ -1,7 +1,7 @@
 from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from portal.apps.auth.models import AgaveOAuthToken
+from portal.apps.auth.models import TapisOAuthToken
 from pytas.http import TASClient
 from portal.apps.users.utils import get_tas_allocations, get_allocations
 from elasticsearch.exceptions import NotFoundError
@@ -24,7 +24,7 @@ class AttrDict(dict):
 class TestUserApiViews(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
+        cls.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
         cls.mock_client = cls.mock_client_patcher.start()
 
     @classmethod
@@ -34,9 +34,7 @@ class TestUserApiViews(TestCase):
     def setUp(self):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@test.com', 'test')
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
+        token = TapisOAuthToken(
             access_token="1234fsf",
             refresh_token="123123123",
             expires_in=14400,

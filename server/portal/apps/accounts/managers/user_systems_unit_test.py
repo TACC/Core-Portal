@@ -52,7 +52,7 @@ def test_lookup_methods(test_manager):
 
 
 def test_setup_private_system_exists(test_manager, regular_user_with_underscore):
-    client = regular_user_with_underscore.agave_oauth.client
+    client = regular_user_with_underscore.tapis_oauth.client
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         system = json.load(f)
         client.systems.get.return_value = system
@@ -60,7 +60,7 @@ def test_setup_private_system_exists(test_manager, regular_user_with_underscore)
 
 
 def test_setup_private_system(test_manager, regular_user_with_underscore, mock_404, monkeypatch):
-    client = regular_user_with_underscore.agave_oauth.client
+    client = regular_user_with_underscore.tapis_oauth.client
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         system = json.load(f)
     # Mock all the service functions
@@ -84,7 +84,7 @@ def test_setup_private_system(test_manager, regular_user_with_underscore, mock_4
 
 
 def test_get_system_definition(test_manager, regular_user_with_underscore, mock_404):
-    client = regular_user_with_underscore.agave_oauth.client
+    client = regular_user_with_underscore.tapis_oauth.client
     client.systems.get.side_effect = mock_404
     system = test_manager.get_system_definition("public_key", "private_key")
     assert system.name == "frontera.home.user-name"

@@ -21,7 +21,7 @@ class TestUserApplicationsManager(TransactionTestCase):
     def setUpClass(cls):
         super(TestUserApplicationsManager, cls).setUpClass()
         cls.magave_patcher = patch(
-            'portal.apps.auth.models.AgaveOAuthToken.client',
+            'portal.apps.auth.models.TapisOAuthToken.client',
             autospec=True
         )
         cls.magave = cls.magave_patcher.start()
@@ -85,21 +85,21 @@ class TestUserApplicationsManager(TransactionTestCase):
     #         self.assertIn('/work', exec_sys_def.scratch_dir)
     #         self.assertNotIn('/scratch', exec_sys_def.scratch_dir)
 
-    @patch('portal.apps.auth.models.AgaveOAuthToken.client')
+    @patch('portal.apps.auth.models.TapisOAuthToken.client')
     def test_check_app_for_updates_with_matching_clone_revision(self, mock_client):
         host_app = Application(mock_client, revision=3)
         cloned_app = Application(mock_client, tags=['cloneRevision:3'])
 
         self.assertFalse(self.user_application_manager.check_app_for_updates(cloned_app=cloned_app, host_app=host_app))
 
-    @patch('portal.apps.auth.models.AgaveOAuthToken.client')
+    @patch('portal.apps.auth.models.TapisOAuthToken.client')
     def test_check_app_for_updates_with_wrong_clone_revision(self, mock_client):
         host_app = Application(mock_client, revision=3)
         cloned_app = Application(mock_client, tags=['cloneRevision:2'])
 
         self.assertTrue(self.user_application_manager.check_app_for_updates(cloned_app=cloned_app, host_app=host_app))
 
-    @patch('portal.apps.auth.models.AgaveOAuthToken.client')
+    @patch('portal.apps.auth.models.TapisOAuthToken.client')
     def test_check_app_for_updates_with_missing_clone_revision(self, mock_client):
         host_app = Application(mock_client, revision=3)
         cloned_app = Application(mock_client)

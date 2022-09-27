@@ -112,7 +112,7 @@ class UserSystemsManager():
         :returns: Agave response
         """
         try:
-            private_system = StorageSystem(self.user.agave_oauth.client, self.get_system_id(), ignore_error=None)
+            private_system = StorageSystem(self.user.tapis_oauth.client, self.get_system_id(), ignore_error=None)
             # If system exists and is disabled, reset with config and enable
             if not private_system.available:
                 private_system = self.validate_storage_system(private_system.id)
@@ -179,7 +179,7 @@ class UserSystemsManager():
         """
         username = self.user.username
         system = StorageSystem(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             self.get_system_id()
         )
         system.site = 'portal.dev'

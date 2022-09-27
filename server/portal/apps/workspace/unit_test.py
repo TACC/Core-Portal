@@ -14,7 +14,7 @@ class TestAppsApiViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestAppsApiViews, cls).setUpClass()
-        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
+        cls.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
         cls.mock_client = cls.mock_client_patcher.start()
         cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
         with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:

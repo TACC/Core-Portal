@@ -30,7 +30,7 @@ class TestAgaveSerializers(TestCase):
     def setUpClass(cls):
         super(TestAgaveSerializers, cls).setUpClass()
         cls.magave_patcher = patch(
-            'portal.apps.auth.models.AgaveOAuthToken.client',
+            'portal.apps.auth.models.TapisOAuthToken.client',
             autospec=True
         )
         cls.magave = cls.magave_patcher.start()
@@ -187,7 +187,7 @@ class TestAgaveUtils(TestCase):
     def setUpClass(cls):
         super(TestAgaveUtils, cls).setUpClass()
         cls.magave_patcher = patch(
-            'portal.apps.auth.models.AgaveOAuthToken.client',
+            'portal.apps.auth.models.TapisOAuthToken.client',
             autospect=True
         )
         cls.magave = cls.magave_patcher.start()

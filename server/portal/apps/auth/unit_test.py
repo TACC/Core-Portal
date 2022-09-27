@@ -4,7 +4,7 @@ from django.test import (
 )
 from django.contrib.auth import get_user_model
 from mock import patch, MagicMock
-from portal.apps.auth.backends import AgaveOAuthBackend
+from portal.apps.auth.backends import TapisOAuthBackend
 from requests import Response
 from portal.apps.auth.views import launch_setup_checks
 import pytest
@@ -20,10 +20,10 @@ def test_launch_setup_checks(mocker, regular_user, settings):
     mock_execute.apply_async.assert_called_with(args=['username'])
 
 
-class TestAgaveOAuthBackend(TransactionTestCase):
+class TestTapisOAuthBackend(TransactionTestCase):
     def setUp(self):
-        super(TestAgaveOAuthBackend, self).setUp()
-        self.backend = AgaveOAuthBackend()
+        super(TestTapisOAuthBackend, self).setUp()
+        self.backend = TapisOAuthBackend()
         self.mock_response = MagicMock(autospec=Response)
         self.mock_requests_patcher = patch(
             'portal.apps.auth.backends.requests.get',
@@ -32,15 +32,15 @@ class TestAgaveOAuthBackend(TransactionTestCase):
         self.mock_requests = self.mock_requests_patcher.start()
 
     def tearDown(self):
-        super(TestAgaveOAuthBackend, self).tearDown()
+        super(TestTapisOAuthBackend, self).tearDown()
         self.mock_requests_patcher.stop()
 
     def test_bad_backend_params(self):
         # Test backend authenticate with no params
         result = self.backend.authenticate()
         self.assertIsNone(result)
-        # Test AgaveOAuthBackend if params do not indicate agave
-        result = self.backend.authenticate(backend='not_agave')
+        # Test TapisOAuthBackend if params do not indicate tapis
+        result = self.backend.authenticate(backend='not_tapis')
         self.assertIsNone(result)
 
     def test_bad_response_status(self):
@@ -48,10 +48,10 @@ class TestAgaveOAuthBackend(TransactionTestCase):
 
         # Mock different return values for the backend response
         self.mock_response.json.return_value = {}
-        result = self.backend.authenticate(backend='agave', token='1234')
+        result = self.backend.authenticate(backend='tapis', token='1234')
         self.assertIsNone(result)
         self.mock_response.json.return_value = {"status": "failure"}
-        result = self.backend.authenticate(backend='agave', token='1234')
+        result = self.backend.authenticate(backend='tapis', token='1234')
         self.assertIsNone(result)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
@@ -61,18 +61,18 @@ class TestAgaveOAuthBackend(TransactionTestCase):
             "status": "success",
             "result": {
                 "username": "testuser",
-                "first_name": "test",
+                "given_name": "test",
                 "last_name": "user",
                 "email": "test@user.com"
             }
         }
-        result = self.backend.authenticate(backend='agave', token='1234')
+        result = self.backend.authenticate(backend='tapis', token='1234')
         self.assertEqual(result.username, "testuser")
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_update_existing_user(self):
         # Test that an existing user's information is
-        # updated with from info from the Agave backend response
+        # updated with from info from the Tapis backend response
 
         # Create a pre-existing user with the same username
         user = get_user_model().objects.create_user(
@@ -86,12 +86,12 @@ class TestAgaveOAuthBackend(TransactionTestCase):
             "status": "success",
             "result": {
                 "username": "testuser",
-                "first_name": "test",
+                "given_name": "test",
                 "last_name": "user",
                 "email": "test@user.com"
             }
         }
-        result = self.backend.authenticate(backend='agave', token='1234')
+        result = self.backend.authenticate(backend='tapis', token='1234')
         # Result user object should be the same
         self.assertEqual(result, user)
         # Existing user object should be updated

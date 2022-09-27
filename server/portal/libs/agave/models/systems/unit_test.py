@@ -25,7 +25,7 @@ class TestAgaveSystems(TestCase):
     def setUpClass(cls):
         super(TestAgaveSystems, cls).setUpClass()
         cls.magave_patcher = patch(
-            'portal.apps.auth.models.AgaveOAuthToken.client',
+            'portal.apps.auth.models.TapisOAuthToken.client',
             autospec=True
         )
         cls.magave = cls.magave_patcher.start()

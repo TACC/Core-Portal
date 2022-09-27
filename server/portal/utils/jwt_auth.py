@@ -90,5 +90,5 @@ def login_user_agave_jwt(request):
         login(request, user)
 
         # Refresh agave oauth token
-        if user.agave_oauth.expired:
-            user.agave_oauth.client.token.refresh()
+        if user.tapis_oauth.expired:
+            user.tapis_oauth.client.token.refresh()

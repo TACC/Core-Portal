@@ -119,6 +119,9 @@ class TestUserSetup(TestCase):
 
         self.mock_user = get_user_model().objects.get(username="username")
 
+        self.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
+        self.mock_client = self.mock_client_patcher.start()
+
         # check_user function should be faked
         self.mock_user.profile.setup_complete = False
         self.mock_check_user_patcher = patch('portal.apps.accounts.managers.accounts.check_user', return_value=self.mock_user)
@@ -134,7 +137,8 @@ class TestUserSetup(TestCase):
 
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_systems_manager_patcher.stop)
-        self.addCleanup(self.mock_storage_system.stop)
+        self.addCleanup(self.mock_storage_system_patcher.stop)
+        self.addCleanup(self.mock_client_patcher.stop)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_setup_no_preexisting(self):

@@ -61,13 +61,13 @@ class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
 
     def get(self, request, systemId):
-        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
+        return JsonResponse(request.user.tapis_oauth.client.systems.get(systemId=systemId))
 
 
 class TapisFilesView(BaseApiView):
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
             if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
@@ -116,7 +116,7 @@ class TapisFilesView(BaseApiView):
             handler=None, system=None, path='/'):
         body = json.loads(request.body)
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden
 
@@ -139,7 +139,7 @@ class TapisFilesView(BaseApiView):
              handler=None, system=None, path='/'):
         body = request.FILES.dict()
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden()
 
@@ -196,8 +196,8 @@ class GoogleDriveFilesView(BaseApiView):
 
 def get_client(user, api):
     client_mappings = {
-        'tapis': 'agave_oauth',
-        'shared': 'agave_oauth',
+        'tapis': 'tapis_oauth',
+        'shared': 'tapis_oauth',
         'googledrive': 'googledrive_user_token',
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
@@ -228,7 +228,7 @@ class TransferFilesView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         body = {
             "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
                 tenant=settings.AGAVE_TENANT_BASEURL,
@@ -247,7 +247,7 @@ class LinkView(BaseApiView):
         return postit
 
     def delete_link(self, request, link):
-        client = request.user.agave_oauth.client
+        client = request.user.tapis_oauth.client
         response = client.postits.delete(uuid=link.get_uuid())
         link.delete()
         return response

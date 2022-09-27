@@ -57,7 +57,7 @@ class KeyServiceCreationStep(AbstractStep):
         systemList = []
         for systemId in systems.keys():
             try:
-                success, _ = StorageSystem(self.user.agave_oauth.client, id=systemId, load=False).test()
+                success, _ = StorageSystem(self.user.tapis_oauth.client, id=systemId, load=False).test()
             except RequestException as err:
                 self.logger.error("Test of system '{}' failed unexpectedly! Listing of system returned: {}".format(self.id, str(err)))
                 # we will assume that system needs to be created

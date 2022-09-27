@@ -112,7 +112,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
+    'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
     # Throws an Error.
@@ -155,7 +155,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
-AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
+AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.TapisOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
 
 # Password validation
@@ -187,7 +187,7 @@ IMPERSONATE = {
 # this can be set to just '/' if we're not using core portal to create cms sessions
 LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
 LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
-LOGIN_URL = '/auth/agave/'
+LOGIN_URL = '/auth/tapis/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -282,8 +282,8 @@ LOGGING = {
             'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        'agave': {
-            'format': '[AGAVE] %(levelname)s %(asctime)s UTC %(module)s '
+        'tapis': {
+            'format': '[TAPIS] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
@@ -351,8 +351,15 @@ LOGGING = {
 }
 
 """
-SETTINGS: AGAVE
+SETTINGS: TAPIS
 """
+
+# Tapis Tenant.
+TAPIS_TENANT_BASEURL = settings_secret._TAPIS_TENANT_BASEURL
+
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = settings_secret._TAPIS_CLIENT_ID
+TAPIS_CLIENT_KEY = settings_secret._TAPIS_CLIENT_KEY
 
 # Agave Tenant.
 AGAVE_TENANT_ID = settings_secret._AGAVE_TENANT_ID

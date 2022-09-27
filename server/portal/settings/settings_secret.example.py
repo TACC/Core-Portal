@@ -31,8 +31,15 @@ _RT_UN = 'username'
 _RT_PW = 'password'
 
 ########################
-# AGAVE SETTINGS
+# TAPIS SETTINGS
 ########################
+
+# Tapis Tenant.
+TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
+
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = ''
+TAPIS_CLIENT_KEY = ''
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
