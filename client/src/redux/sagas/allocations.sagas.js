@@ -36,7 +36,7 @@ export const getAllocationsUtil = async () => {
 
 /**
  * Fetch user data for a project
- * @param {String} projectId - project id
+ * @param {Number} projectId - project id
  */
 export const getProjectUsersUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
