@@ -22,7 +22,7 @@ _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
-                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
+                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu', 'ls6.tacc.utexas.edu']
 
 ########################
 # DJANGO SETTINGS LOCAL

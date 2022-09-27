@@ -49,7 +49,7 @@ services:
   postgres:
     image: postgres:11.5
     volumes:
-      - core_portal_postgres_data:/var/lib/postgresql/data/portal
+      - core_portal_v3_postgres_data:/var/lib/postgresql/data/portal
     container_name: core_portal_postgres
     environment:
       - POSTGRES_PASSWORD=dev
@@ -74,8 +74,8 @@ services:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../uwsgi/uwsgi_params:/etc/nginx/uwsgi_params
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
-      - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
-      - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
+      - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
+      - ../nginx/certificates/cep.test.key:/etc/ssl/cep.test.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../../.:/srv/www/portal
     ports:
@@ -90,13 +90,13 @@ services:
     image: taccwma/core-portal:tapisv3
     volumes:
       - ../../../.:/srv/www/portal
-      - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
-      - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
+      - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
+      - ../nginx/certificates/cep.test.key:/etc/ssl/cep.test.key
     container_name: core_portal_websockets
     # ** NOTE: Run this daphne command below to run a production-ready daphne server,
     # ** matching deployed configurations. Be aware there is no autoreload for local
     # ** development with this enabled.
-    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/cep.dev.key:certKey=/etc/ssl/cep.dev.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
+    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/cep.test.key:certKey=/etc/ssl/cep.test.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
@@ -140,5 +140,5 @@ volumes:
   core_portal_redis_data:
   core_portal_es_data:
   core_portal_rabbitmq_data:
-  core_portal_postgres_data:
+  core_portal_v3_postgres_data:
   core_cms_postgres_data:

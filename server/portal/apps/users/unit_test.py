@@ -186,7 +186,7 @@ class TestGetAllocations(TestCase):
                     {
                         'allocation': {'resource': 'Stampede4', 'status': 'Inactive'},
                         'host': 'stampede2.tacc.utexas.edu',
-                        'name': 'Stampede 2',
+                        'name': 'Stampede2',
                         'type': 'HPC'
                     }
                 ],

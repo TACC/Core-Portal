@@ -44,6 +44,7 @@ jsonpickle = "^1.4.1"
 python-magic = "^0.4.18"
 tapipy = "^1.2.5"
 zeep = "^4.1.0"
+tapipy = "^1.2.10"
 
 [tool.poetry.dev-dependencies]
 mock = "^4.0.2"
