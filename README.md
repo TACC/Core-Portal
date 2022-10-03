@@ -12,9 +12,9 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prequisites for running the portal application
 
-* Docker 20.10.7
-* Docker Compose 1.29.2
-* Python 3.7
+* Docker > 20.10.7
+* Docker Compose > 1.29.x
+* Python 3.7.x
 * Nodejs 16.x (LTS)
 
 The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
@@ -31,8 +31,6 @@ Machine, which is required to run Docker on Mac/Windows hosts.
       - `sudo vim /etc/hosts`
 
      _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
-     _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
   
