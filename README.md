@@ -25,28 +25,6 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop](https://www.docker.com/products/docker-desktop), which will install both Docker and Docker Compose as well as Docker
 Machine, which is required to run Docker on Mac/Windows hosts.
 
-### Setup local access to the portal:
-
-  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
-      - `sudo vim /etc/hosts`
-
-     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
-  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
-  
-     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
-      1. Open the Network app utility
-      2. Select network connection you’re on (wifi, ethernet, etc)
-      3. Go to “Advanced”
-      4. Go to “TCP/IP” tab
-      5. Under “Configure IPv6” dropdown, select “Link-local only”
-      6. Hit “OK”
-      7. Hit “Apply”
-
-     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
-
-     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
-
 ### Installing local CA
 
 For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
@@ -88,6 +66,29 @@ NOTE: This may require a computer restart to take effect.
 3. `$DBDIR` differs from browser to browser for more info:
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
+
+### Setup local access to the portal:
+
+  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
+      - `sudo vim /etc/hosts`
+
+     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+
+  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+  
+     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
+      1. Open the Network app utility
+      2. Select network connection you’re on (wifi, ethernet, etc)
+      3. Go to “Advanced”
+      4. Go to “TCP/IP” tab
+      5. Under “Configure IPv6” dropdown, select “Link-local only”
+      6. Hit “OK”
+      7. Hit “Apply”
+
+     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
+
+     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+
 
 ### Code Configuration
 
