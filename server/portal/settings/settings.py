@@ -498,7 +498,7 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'ls6.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
+        'home_dir': '/home1/{}'
     },
 }
 
