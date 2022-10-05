@@ -261,6 +261,6 @@ _WORKBENCH_SETTINGS = {
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,
-    "hideFeeback": False,
+    "hideFeedback": False,
 
 }
