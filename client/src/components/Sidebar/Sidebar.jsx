@@ -24,7 +24,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
   );
-  const hideFeeback = useSelector(
+  const hideFeedback = useSelector(
     (state) => state.workbench.config.hideFeeback
   );
   const sidebarItems = [
@@ -81,7 +81,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const addItems = [
     {
       className: styles['feedback-nav-item'],
-      children: !hideFeeback && <FeedbackButton />,
+      children: !hideFeedback && <FeedbackButton />,
     },
   ];
   return (
