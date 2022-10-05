@@ -14,7 +14,7 @@ describe('New Allocations Request Modal', () => {
         <AllocationsRequestModal isOpen toggle={() => null} />
       </BrowserRouter>
     );
-    const xrasLink = 'https://tacc-submit.xras.xsede.org/';
+    const xrasLink = 'https://submit-tacc.xras.org/';
     expect(getByText(/Manage Allocations/)).toBeDefined();
     expect(getAllByText(/You can manage your allocation/)).toBeDefined();
     expect(getAllByText(/You can manage your allocation/)).toHaveLength(2);

@@ -47,6 +47,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     );
   });
 
+  const isUserOrGuest = useSelector(
+    (state) =>
+      metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser.user.username
+            : { access: null }
+        )
+        .map(
+          (currentUser) =>
+            currentUser.access === 'edit' || currentUser.access === 'read'
+        )[0]
+  );
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -89,12 +102,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       headerActions={
         editable && (
           <div className={styles.controls}>
-            <Button type="link" onClick={onEdit}>
-              Edit Descriptions
-            </Button>
-            <span className={styles.separator}>|</span>
+            {!isUserOrGuest ? (
+              <>
+                <Button type="link" onClick={onEdit}>
+                  Edit Descriptions
+                </Button>
+                <span className={styles.separator}>|</span>
+              </>
+            ) : null}
             <Button type="link" onClick={onManage}>
-              Manage Team
+              {isUserOrGuest ? 'View' : 'Manage'} Team
             </Button>
           </div>
         )

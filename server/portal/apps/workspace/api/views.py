@@ -193,12 +193,12 @@ class MetadataView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
+        agave = request.user.tapis_oauth.client
         job_uuid = request.GET.get('job_uuid')
 
         # get specific job info
         if job_uuid:
-            data = client.jobs.get(jobUuid=job_uuid)
+            data = agave.jobs.get(jobUuid=job_uuid)
             job_data = data['result']
             # job_data['_embedded'] = {"metadata": data['result']}
 
@@ -223,7 +223,7 @@ class JobsView(BaseApiView):
             # period = request.GET.get('period', 'all')
 
             # TODO: Paramters for querying range built-in to tapis v3 but unsupported yet in tapipy in time of writing
-            data = client.jobs.getJobSearchList(limit=limit, startAfter=offset, orderBy='lastUpdated(desc),name(asc)')
+            data = agave.jobs.getJobSearchList(limit=limit, startAfter=offset, orderBy='lastUpdated(desc),name(asc)')
 
             # if period != "all":
             #     enddate = timezone.now()
@@ -239,7 +239,7 @@ class JobsView(BaseApiView):
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
             # if user_job_ids:
-            #     # data = client.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
+            #     # data = agave.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
             #     # re-order agave job info to match our time-ordered jobs
             #     # while also taking care that tapis in rare cases might no longer
             #     # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
@@ -250,14 +250,14 @@ class JobsView(BaseApiView):
         return JsonResponse({"response": data})
 
     def delete(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
+        agave = request.user.tapis_oauth.client
         job_uuid = request.GET.get('job_uuid')
         METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
-        data = client.jobs.hideJob(jobUuid=job_uuid)
+        data = agave.jobs.hideJob(jobUuid=job_uuid)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
-        client = request.user.tapis_oauth.client
+        agave = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
         job_uuid = job_post.get('job_uuid')
         job_action = job_post.get('action')
@@ -267,12 +267,12 @@ class JobsView(BaseApiView):
             if job_action == 'resubmit':
                 METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
 
-                data = client.jobs.resubmitJob(jobUuid=job_uuid)
+                data = agave.jobs.resubmitJob(jobUuid=job_uuid)
 
             # cancel job / stop job
             else:
                 METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
-                data = client.jobs.cancelJob(jobUuid=job_uuid)
+                data = agave.jobs.cancelJob(jobUuid=job_uuid)
 
             return JsonResponse({"response": data})
         # submit job
@@ -383,7 +383,7 @@ class JobsView(BaseApiView):
             #                           # if param in [p['id'] for p in app.parameterSet]}
             #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
 
-            response = client.jobs.submit(body=job_post)
+            response = agave.jobs.submit(body=job_post)
 
             return JsonResponse({"response": response})
 
@@ -423,8 +423,8 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        client = request.user.tapis_oauth.client
-        data = client.jobs.getJobHistory(jobUuid=job_uuid)
+        agave = request.user.tapis_oauth.client
+        data = agave.jobs.getJobHistory(jobUuid=job_uuid)
         return JsonResponse({"response": data})
 
 
@@ -577,20 +577,3 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
-
-
-@method_decorator(login_required, name='dispatch')
-class TapisAppsView(BaseApiView):
-    def get(self, request, operation=None):
-        try:
-            client = request.user.tapis_oauth.client
-        except AttributeError:
-            return JsonResponse(
-                {'message': 'This view requires authentication.'},
-                status=403)
-
-        get_params = request.GET.dict()
-        METRICS.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
-        response = tapis_get_handler(client, operation, **get_params)
-
-        return JsonResponse({'data': response})
