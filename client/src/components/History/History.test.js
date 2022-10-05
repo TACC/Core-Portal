@@ -1,17 +1,16 @@
-import React from 'react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import { Provider } from 'react-redux';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
-import Routes from './History';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
-import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
+import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
+import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
-import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
+import Routes from './History';
 
 const mockStore = configureStore();
 
@@ -62,7 +61,7 @@ describe('History Routes', () => {
       notifications,
       jobs,
       jobDetail: {
-        jobId: 'job_id',
+        jobUuid: 'job_uuid',
         app: appDetailFixture,
         job: jobDetailFixture,
         display: jobDetailDisplayFixture,

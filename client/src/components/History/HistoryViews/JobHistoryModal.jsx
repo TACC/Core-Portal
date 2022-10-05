@@ -1,26 +1,25 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  useHistory,
-  useLocation,
   NavLink as RRNavLink,
+  useHistory,
+  useLocation
 } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader, NavLink } from 'reactstrap';
+import { isOutputState } from 'utils/jobsUtil';
+import { formatDateTime } from 'utils/timeFormat';
 import {
   Button,
   DescriptionList,
-  LoadingSpinner,
   Expand,
-  Message,
+  LoadingSpinner,
+  Message
 } from '_common';
-import PropTypes from 'prop-types';
-import { formatDateTime } from 'utils/timeFormat';
-import { isOutputState } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
-import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
+import styles from './JobHistoryModal.module.scss';
 
 const placeHolder = '...';
 
@@ -55,9 +54,10 @@ const reduceInputParameters = (data) =>
     return acc;
   }, {});
 
+// TODO: Should be able to remove jobDisplay
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
-  const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
+  const outputPath = `${jobDetails.archiveSystemId}/${jobDetails.archiveSystemDir}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -70,8 +70,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
   };
   const inputAndParamsDataObj = {
-    ...reduceInputParameters(jobDisplay.inputs),
-    ...reduceInputParameters(jobDisplay.parameters),
+    // This is in jobDetails
+    ...reduceInputParameters(jobDisplay.fileInputs),
+    ...reduceInputParameters(jobDisplay.parameterSet),
   };
   const configDataObj = {};
   const outputDataObj = {
@@ -82,7 +83,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
     <Expand
       detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-      message={<pre>${jobDetails.lastStatusMessage}</pre>}
+      message={<pre>${jobDetails.lastMessage}</pre>}
     />
   );
 
@@ -90,7 +91,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     dispatch({
       type: 'SUBMIT_JOB',
       payload: {
-        job_id: jobDetails.id,
+        job_uuid: jobDetails.uuid,
         action: 'resubmit',
         onSuccess: {
           type: 'GET_JOBS',
@@ -103,23 +104,31 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     toggle();
   };
 
+  // TODO: This should be in jobDetails
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  configDataObj['Max Hours'] = jobDetails.maxHours;
+  // TODO: Convert to hours
+  configDataObj['Max Hours'] = jobDetails.maxMinutes;
 
+  // TODO: This should be in jobDetails
   if ('processorsPerNode' in jobDisplay) {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
+
+  // TODO: This should be in jobDetails
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
+
+  // TODO: This should be in jobDetails
   if ('allocation' in jobDisplay) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
   if (jobDetails.status !== 'FINISHED')
+    // TODO: Switch to tapisv3
     configDataObj['Temporary Working Directory'] = jobDetails.workPath;
 
   const isTerminalState =
@@ -181,10 +190,11 @@ JobHistoryContent.defaultProps = {
   jobName: '',
 };
 
-function JobHistoryModal({ jobId }) {
+function JobHistoryModal({ jobUuid }) {
   const loading = useSelector((state) => state.jobDetail.loading);
   const loadingError = useSelector((state) => state.jobDetail.loadingError);
-  const { job, display } = useSelector((state) => state.jobDetail);
+  // const { job, display } = useSelector((state) => state.jobDetail);
+  const { result: job, metadata } = useSelector((state) => state.jobDetail);
   const { state } = useLocation();
 
   let jobName = job ? job.name : placeHolder;
@@ -203,7 +213,7 @@ function JobHistoryModal({ jobId }) {
   };
 
   const headerData = {
-    'Job ID': jobId,
+    'Job UUID': jobUuid,
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
   };
@@ -247,7 +257,7 @@ function JobHistoryModal({ jobId }) {
 }
 
 JobHistoryModal.propTypes = {
-  jobId: PropTypes.string.isRequired,
+  jobUuid: PropTypes.string.isRequired,
 };
 
 export default JobHistoryModal;

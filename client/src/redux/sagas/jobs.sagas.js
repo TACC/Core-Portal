@@ -1,5 +1,5 @@
-import { put, takeLatest, takeLeading, call, select } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
+import { call, put, select, takeLatest, takeLeading } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 
@@ -33,7 +33,7 @@ export function* getJobs(action) {
     );
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
+      payload: { list: jobs.result, reachedEnd: jobs.result.length < LIMIT },
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
@@ -93,10 +93,10 @@ export function* submitJob(action) {
   }
 }
 
-export async function fetchJobDetailsUtil(jobId) {
+export async function fetchJobDetailsUtil(jobUuid) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
-    params: { job_id: jobId },
+    params: { job_id: jobUuid },
   });
   return result.response;
 }
@@ -109,13 +109,13 @@ export async function fetchSystemUtil(system) {
 }
 
 export function* getJobDetails(action) {
-  const { jobId } = action.payload;
+  const { jobUuid } = action.payload;
   yield put({
     type: 'JOB_DETAILS_FETCH_STARTED',
-    payload: jobId,
+    payload: jobUuid,
   });
   try {
-    const job = yield call(fetchJobDetailsUtil, jobId);
+    const job = yield call(fetchJobDetailsUtil, jobUuid);
     let app = null;
 
     try {

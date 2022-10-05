@@ -95,13 +95,32 @@ export function jobs(state = initialState, action) {
 }
 
 const initialJobDetail = {
-  jobId: null,
-  app: null,
-  job: null,
-  display: null,
-  loading: false,
-  loadingError: false,
-  loadingErrorMessage: '',
+  // jobId: null,
+  // app: null,
+  // job: null,
+  // display: null,
+  // loading: false,
+  // loadingError: false,
+  // loadingErrorMessage: '',
+  status: '',
+  message: '',
+  metadata: null,
+  result: {
+    id: '',
+    name: '',
+    uuid: '',
+    appId: '',
+    description: '',
+    lastMessage: '',
+    appVersion: '',
+    archiveSystemId: '',
+    archiveSystemDir: '',
+    created: '',
+    lastUpdated: '',
+    fileInputs: '',
+    parameterSet: '',
+    status: '',
+  },
 };
 
 export function jobDetail(state = initialJobDetail, action) {

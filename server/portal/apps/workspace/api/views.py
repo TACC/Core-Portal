@@ -219,21 +219,24 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            # period = request.GET.get('period', 'all')
+            period = request.GET.get('period', 'all')
+            range_str = None
 
             # TODO: Paramters for querying range built-in to tapis v3 but unsupported yet in tapipy in time of writing
-            data = agave.jobs.getJobSearchList(limit=limit, startAfter=offset, orderBy='lastUpdated(desc),name(asc)')
+            # t.jobs.getJobSearchList(limit=5, orderBy='lastUpdated(desc),name(asc)', _tapis_query_parameters={'key': 'value'})
 
-            # if period != "all":
-            #     enddate = timezone.now()
-            #     if period == "day":
-            #         days = 1
-            #     elif period == "week":
-            #         days = 7
-            #     elif period == "month":
-            #         days = 30
-            #     startdate = enddate - timedelta(days=days)
-            #     jobs = jobs.filter(time__range=[startdate, enddate])
+            if period != "all":
+                enddate = timezone.now()
+                if period == "day":
+                    days = 1
+                elif period == "week":
+                    days = 7
+                elif period == "month":
+                    days = 30
+                startdate = enddate - timedelta(days=days)
+                enddate_str = enddate.strftime("%Y-%m-%d")
+                startdate_str = startdate.strftime("%Y-%m-%d")
+                range_str = '{},{}'.format(startdate_str, enddate_str)
 
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
@@ -245,6 +248,11 @@ class JobsView(BaseApiView):
             #     data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
             # else:
             #     data = []
+
+            data = agave.jobs.getJobSearchList(limit=limit,
+                                               startAfter=offset,
+                                               orderBy='lastUpdated(desc),name(asc)',
+                                               _tapis_query_parameters={'key': 'created.between', 'value': range_str} if range_str else None)
 
         return JsonResponse({"response": data})
 
