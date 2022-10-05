@@ -1,14 +1,12 @@
 """Workpace API Urls
 """
 from django.conf.urls import url
-from django.urls import path
 from portal.apps.workspace.api import views
 
 
 app_name = 'workspace_api'
 urlpatterns = [
-    path('tapisapps/<str:operation>/<str:scheme>/<str:system>/',
-         views.TapisFilesView.as_view()),
+    # url(r'^(?P<service>[a-z]+?)/$', views.call_api, name='call_api'),
     url(r'^apps/?', views.AppsView.as_view()),
     url(r'^meta/?', views.MetadataView.as_view()),
     url(

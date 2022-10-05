@@ -26,7 +26,6 @@ from portal.utils.translations import url_parse_inputs, url_parse_input_v3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from requests.exceptions import HTTPError
-from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
