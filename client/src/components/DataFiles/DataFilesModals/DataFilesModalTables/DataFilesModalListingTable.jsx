@@ -212,7 +212,7 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
-  const hasBackButton = params.path.length > 0;
+  const hasBackButton = isNotRoot;
 
   const BackHeader = useCallback(
     () => (
