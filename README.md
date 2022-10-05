@@ -132,7 +132,7 @@ OR
     npm ci
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version. You will also need the port 8080 available locally._
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
 
 #### Initialize the application in the `core_portal_django` container:
@@ -141,7 +141,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
-    python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
+    python3 manage.py import-apps # Add set of example apps used in Frontera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
 
