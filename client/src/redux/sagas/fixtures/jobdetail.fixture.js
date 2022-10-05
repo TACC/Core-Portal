@@ -6,7 +6,7 @@ const jobDetailFixture = {
     name: 'compress-0.1u3_2020-07-09T15:56:37',
     owner: 'username',
     tenant: 'portals',
-    // TODO: Use as applicationName in jobDisplay?
+    // TODO: Maybe use as applicationName in jobDisplay?
     description: 'Compress folder',
     status: 'FAILED',
     lastMessage: 'My last job status',
@@ -76,7 +76,52 @@ const jobDetailFixture = {
   message:
     'JOBS_RETRIEVED Job ba34f946-8a18-44c4-9b25-19e21dfadf69-007 retrieved.',
   version: '1.0.0-rc1',
-  metadata: null,
+  metadata: {
+    display: {
+      applicationName: 'Compress folder',
+      systemName: 'Stampede',
+      allocation: 'TACC-ACI',
+      queue: 'normal',
+      processorsPerNode: 20,
+      nodeCount: 1,
+    },
+    archiveUrl:
+      '/workbench/data-depot/agave/frontera.home.username/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007/',
+    jupyterUrl:
+      'https://jupyter.tacc.cloud/user/username/tree/tacc-work/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
+    _links: {
+      self: {
+        href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
+      },
+      app: {
+        href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0',
+      },
+      executionSystem: {
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/username.FORK.exec.stampede2.CLI',
+      },
+      archiveSystem: {
+        href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
+      },
+      archiveData: {
+        href: 'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.username/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
+      },
+      owner: {
+        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
+      },
+      permissions: {
+        href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007/pems',
+      },
+      history: {
+        href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007/history',
+      },
+      metadata: {
+        href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22c55ecc23-a098-40f5-aea9-9baa99306e3a-007%22%7D',
+      },
+      notifications: {
+        href: 'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
+      },
+    },
+  },
 };
 
 export default jobDetailFixture;
