@@ -10,13 +10,11 @@ urlpatterns = [
     path('tapisapps/<str:operation>/<str:scheme>/<str:system>/',
          views.TapisFilesView.as_view()),
     url(r'^apps/?', views.AppsView.as_view()),
-    url(r'^meta/?', views.MetadataView.as_view()),
     url(
         r'^jobs/(?P<job_uuid>[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\-[0-9a-fA-F]{3})/history/?$',
         views.JobHistoryView.as_view()
     ),
     url(r'^jobs/?', views.JobsView.as_view()),
-    url(r'^monitors/?', views.MonitorsView.as_view()),
     url(r'^systems/?', views.SystemsView.as_view()),
     url(r'^tray/?', views.AppsTrayView.as_view())
 
