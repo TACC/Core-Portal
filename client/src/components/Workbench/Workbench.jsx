@@ -136,9 +136,7 @@ function Workbench() {
                   />
                 )}
                 {showUIPatterns && (
-                  <Route path={`${path}${ROUTES.UI}`} 
-                  component={UIPatterns} 
-                  />
+                  <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
                 )}
                 <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
               </Switch>
