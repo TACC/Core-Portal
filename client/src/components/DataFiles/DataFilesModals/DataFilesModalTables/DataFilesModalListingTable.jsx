@@ -145,7 +145,7 @@ const DataFilesModalListingTable = ({
   disabled,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
-  const isNotRoot = (params.path !== '' && params.path !== '/')
+  const isNotRoot = params.path !== '' && params.path !== '/';
 
   const displayName = useSystemDisplayName(params);
 
