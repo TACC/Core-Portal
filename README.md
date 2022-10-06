@@ -12,9 +12,9 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prequisites for running the portal application
 
-* Docker 20.10.7
-* Docker Compose 1.29.2
-* Python 3.7
+* Docker > 20.10.7
+* Docker Compose > 1.29.x
+* Python 3.7.x
 * Nodejs 16.x (LTS)
 
 The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
@@ -24,30 +24,6 @@ on.
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop](https://www.docker.com/products/docker-desktop), which will install both Docker and Docker Compose as well as Docker
 Machine, which is required to run Docker on Mac/Windows hosts.
-
-### Setup local access to the portal:
-
-  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
-      - `sudo vim /etc/hosts`
-
-     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
-     _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
-
-  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
-  
-     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
-      1. Open the Network app utility
-      2. Select network connection you’re on (wifi, ethernet, etc)
-      3. Go to “Advanced”
-      4. Go to “TCP/IP” tab
-      5. Under “Configure IPv6” dropdown, select “Link-local only”
-      6. Hit “OK”
-      7. Hit “Apply”
-
-     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
-
-     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
 ### Installing local CA
 
@@ -91,6 +67,29 @@ NOTE: This may require a computer restart to take effect.
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
+### Setup local access to the portal:
+
+  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
+      - `sudo vim /etc/hosts`
+
+     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+
+  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+  
+     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
+      1. Open the Network app utility
+      2. Select network connection you’re on (wifi, ethernet, etc)
+      3. Go to “Advanced”
+      4. Go to “TCP/IP” tab
+      5. Under “Configure IPv6” dropdown, select “Link-local only”
+      6. Hit “OK”
+      7. Hit “Apply”
+
+     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
+
+     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+
+
 ### Code Configuration
 
 After you clone the repository locally, there are several configuration steps required to prepare the project.
@@ -133,7 +132,7 @@ OR
     npm ci
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version. You will also need the port 8080 available locally._
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
 
 #### Initialize the application in the `core_portal_django` container:
@@ -142,7 +141,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
-    python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
+    python3 manage.py import-apps # Add set of example apps used in Frontera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
 

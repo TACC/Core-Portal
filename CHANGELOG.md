@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.21.0] - 2022-10-06: Bugfixes for Allocations, Systems, Roles
+
+### Changed
+- FP-267: Reconfigure local dev to use cep.test (#697)
+- Use codecov github action instead of deprecated bash script (#703)
+- FP-1856: update xras link for requesting new allocations (#700)
+
+### Fixed
+- FP-1823: Update poetry and base docker image (#695)
+- FP-1829: Add lonestar6 to list of known tacc systems (#696)
+- FP-1836: Fix SystemPushKeysModal (#699)
+- FP-1729: Apply user roles to "Edit Descriptions" and "Add" Files buttons (#692)
+- FP-1855: Fix allocation usage dialog (#701)
+- FP-1870: Fix LS6 home dir #706
+
 ## [2.20.0] - 2022-09-08: APCD Portal; Delegate Management; Common Button
 
 ### Added
@@ -733,7 +748,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.20.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.21.0...HEAD
+[2.21.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.21.0
 [2.20.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.20.0
 [2.19.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.19.0
 [2.18.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.1
