@@ -11,33 +11,8 @@ import * as ROUTES from '../../constants/routes';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
-  // const isLoading = useSelector((state) => state.jobs.loading);
-  const isLoading = false;
-  // const jobs = useSelector((state) => state.jobs.list);
-
-  const { list: jobs } = {
-    error: null,
-    list: [
-      {
-        appId: 'hello-world',
-        appVersion: '0.0.1',
-        archiveSystemId: 'cloud.corral.community',
-        created: '2022-10-03T22:21:58.219Z',
-        ended: '2022-10-03T22:22:09.255Z',
-        execSystemId: 'frontera',
-        lastUpdated: '2022-10-03T22:22:09.255Z',
-        name: 'hello - world - test',
-        owner: 'ipark',
-        remoteStarted: null,
-        status: 'FAILED',
-        tenant: 'a2cps',
-        uuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
-      },
-    ],
-    loading: false,
-    reachedEnd: false,
-    submit: { submitting: false },
-  };
+  const isLoading = useSelector((state) => state.jobs.loading);
+  const jobs = useSelector((state) => state.jobs.list);
   const error = useSelector((state) => state.jobs.error);
   // const hideDataFiles = useSelector(
   //   (state) => state.workbench.config.hideDataFiles
