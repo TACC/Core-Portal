@@ -103,38 +103,13 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'Community Data',
-        'system': 'cep.storage.community',
-        'scheme': 'community',
+        'name': 'My Data (secure.corral)',
+        'system': 'a2cps.secure.corral.dev',
+        'scheme': 'private',
         'api': 'tapis',
         'icon': None,
         'siteSearchPriority': 1
     },
-    {
-        'name': 'Public Data',
-        'system': 'cep.storage.public',
-        'scheme': 'public',
-        'api': 'tapis',
-        'icon': 'publications',
-        'siteSearchPriority': 0
-    },
-    {
-        'name': 'Shared Workspaces',
-        'scheme': 'projects',
-        'api': 'tapis',
-        'icon': 'publications',
-        'privilegeRequired': False,
-        'readOnly': False,
-        'hideSearchBar': False
-    },
-    {
-        'name': 'Google Drive',
-        'system': 'googledrive',
-        'scheme': 'private',
-        'api': 'googledrive',
-        'icon': None,
-        'integration': 'portal.apps.googledrive_integration'
-    }
 ]
 
 ########################
