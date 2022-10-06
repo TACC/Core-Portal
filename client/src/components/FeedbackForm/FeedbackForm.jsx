@@ -59,7 +59,7 @@ const FeedbackForm = () => {
             <div className="ticket-create-button-row">
               {creating && (
                   <Alert color="success" className="ticket-create-info-alert">
-                    "Message successfully sent. Thank you for your feedback!"
+                    Message successfully sent. Thank you for your feedback!
                   </Alert>
               )}
               {submitCount > 0 && creatingError && (
