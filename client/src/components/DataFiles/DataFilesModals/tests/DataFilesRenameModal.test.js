@@ -105,7 +105,7 @@ describe('DataFilesRenameModal', () => {
 
     expect(
       getByText(
-        'Please enter a valid file name (accepted characters are A-Z a-z 0-9 - _ .)'
+        'Please enter a valid file name (accepted characters are A-Z a-z 0-9 () - _ .)'
       )
     ).toBeDefined();
 
