@@ -69,7 +69,11 @@ const Sidebar = ({ sidebarItems, addItems, loading }) => {
         )}
       {addItems
         ? addItems.map((item) => (
-            <NavItem className={item.className} key={item.className} hidden={item.hidden}>
+            <NavItem
+              className={item.className}
+              key={item.className}
+              hidden={item.hidden}
+            >
               {item.children}
             </NavItem>
           ))
