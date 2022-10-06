@@ -11,12 +11,37 @@ import * as ROUTES from '../../constants/routes';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.jobs.loading);
-  const jobs = useSelector((state) => state.jobs.list);
+  // const isLoading = useSelector((state) => state.jobs.loading);
+  const isLoading = false;
+  // const jobs = useSelector((state) => state.jobs.list);
+
+  const { list: jobs } = {
+    error: null,
+    list: [
+      {
+        appId: 'hello-world',
+        appVersion: '0.0.1',
+        archiveSystemId: 'cloud.corral.community',
+        created: '2022-10-03T22:21:58.219Z',
+        ended: '2022-10-03T22:22:09.255Z',
+        execSystemId: 'frontera',
+        lastUpdated: '2022-10-03T22:22:09.255Z',
+        name: 'hello - world - test',
+        owner: 'ipark',
+        remoteStarted: null,
+        status: 'FAILED',
+        tenant: 'a2cps',
+        uuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
+      },
+    ],
+    loading: false,
+    reachedEnd: false,
+    submit: { submitting: false },
+  };
   const error = useSelector((state) => state.jobs.error);
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  // const hideDataFiles = useSelector(
+  //   (state) => state.workbench.config.hideDataFiles
+  // );
 
   const noDataText = (
     <>
@@ -41,12 +66,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { id, name },
+        original: { uuid, name },
       },
     }) => (
       <Link
         to={{
-          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
           state: { jobName: name },
         }}
         className="wb-link"
@@ -96,14 +121,14 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
-          jobId={el.row.original.id}
+          jobId={el.row.original.uuid}
         />
       ),
       id: 'jobStatusCol',
     },
     {
       Header: 'Job Details',
-      accessor: 'id',
+      accessor: 'uuid',
       show: showDetails,
       Cell: jobDetailLink,
     },
@@ -112,9 +137,10 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: (el) => {
-        const outputPath =
-          el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputPath && !hideDataFiles ? (
+        console.log(el);
+        const outputPath = '//data/awesome';
+        // el.row.original.outputLocation || getOutputPathFromHref(el.value);
+        return outputPath && false ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"

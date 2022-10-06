@@ -10,6 +10,7 @@ export async function fetchJobs(offset, limit) {
     url: '/api/workspace/jobs/',
     params: { offset, limit },
   });
+  console.log(result.response);
   return result.response;
 }
 
@@ -33,7 +34,7 @@ export function* getJobs(action) {
     );
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: jobs.result, reachedEnd: jobs.result.length < LIMIT },
+      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
@@ -96,7 +97,7 @@ export function* submitJob(action) {
 export async function fetchJobDetailsUtil(jobUuid) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
-    params: { job_id: jobUuid },
+    params: { job_uuid: jobUuid },
   });
   return result.response;
 }
@@ -119,7 +120,7 @@ export function* getJobDetails(action) {
     let app = null;
 
     try {
-      app = yield call(fetchAppDefinitionUtil, job.appId);
+      app = yield call(fetchAppDefinitionUtil, job.appId, job.appVersion);
     } catch (ignore) {
       // ignore if we cannot get app or execution system information
     }

@@ -127,7 +127,7 @@ export function jobDetail(state = initialJobDetail, action) {
   switch (action.type) {
     case 'JOB_DETAILS_FETCH_STARTED':
       return {
-        jobId: action.payload,
+        jobUuid: action.payload,
         app: null,
         job: null,
         display: null,
@@ -139,6 +139,7 @@ export function jobDetail(state = initialJobDetail, action) {
       return {
         ...state,
         jobId: action.payload.job.id,
+        jobUuid: action.payload.job.uuid,
         job: action.payload.job,
         display: getJobDisplayInformation(
           action.payload.job,

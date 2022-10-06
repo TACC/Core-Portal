@@ -38,21 +38,27 @@ export function getAllocatonFromDirective(directive) {
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
+  const fileInputs = JSON.parse(job.fileInputs);
+  const parameterSet = JSON.parse(job.parameterSet);
+  const parameters = parameterSet.appArgs;
+  const envVariables = parameterSet.envVariables;
+  const schedulerOptions = parameterSet.schedulerOptions;
   const display = {
     applicationName: job.appId,
-    systemName: job.systemId,
-    inputs: Object.entries(job.inputs)
-      .map(([key, val]) => ({
-        label: key,
-        id: key,
-        value: val,
+    systemName: job.execSystemId,
+    inputs: fileInputs
+      .map((input) => ({
+        label: input.name,
+        id: input.name,
+        value: input.sourceUrl,
       }))
       .filter((obj) => !obj.id.startsWith('_')),
-    parameters: Object.entries(job.parameters)
-      .map(([key, val]) => ({
-        label: key,
-        id: key,
-        value: val,
+
+    parameters: parameters
+      .map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
       }))
       .filter((obj) => !obj.id.startsWith('_')),
   };
@@ -61,69 +67,84 @@ export function getJobDisplayInformation(job, app) {
     // Improve any values with app information
     try {
       try {
-        display.systemName = getSystemName(app.exec_sys.login.host);
+        display.systemName = getSystemName(app.exec_sys.host);
       } catch (ignore) {
         // ignore if there is problem improving the system name
       }
 
-      display.applicationName = app.definition.label;
+      display.applicationName = app.definition.notes.label;
+
+      // TODO: Unsure if needed for v3
 
       // Improve input/parameters
-      display.inputs.forEach((input) => {
-        const matchingParameter = app.definition.inputs.find((obj) => {
-          return input.id === obj.id;
-        });
-        if (matchingParameter) {
-          // eslint-disable-next-line no-param-reassign
-          input.label = matchingParameter.details.label;
-        }
-      });
-      display.parameters.forEach((input) => {
-        const matchingParameter = app.definition.parameters.find((obj) => {
-          return input.id === obj.id;
-        });
-        if (matchingParameter) {
-          // eslint-disable-next-line no-param-reassign
-          input.label = matchingParameter.details.label;
-        }
-      });
-      // filter non-visible
-      display.inputs.filter((input) => {
-        const matchingParameter = app.definition.inputs.find((obj) => {
-          return input.id === obj.id;
-        });
-        if (matchingParameter) {
-          return matchingParameter.value.visible;
-        }
-        return true;
-      });
-      display.parameters.filter((input) => {
-        const matchingParameter = app.definition.parameters.find((obj) => {
-          return input.id === obj.id;
-        });
-        if (matchingParameter) {
-          return matchingParameter.value.visible;
-        }
-        return true;
-      });
+      // display.inputs.forEach((input) => {
+      //   const matchingParameter = app.definition.jobAttributes.fileInputs.find((obj) => {
+      //     return input.id === obj.name;
+      //   });
+      //   if (matchingParameter) {
+      //     // eslint-disable-next-line no-param-reassign
+      //     input.label = matchingParameter.details.label;
+      //   }
+      // });
+      // display.parameters.forEach((input) => {
+      //   const matchingParameter = app.definition.parameters.find((obj) => {
+      //     return input.id === obj.id;
+      //   });
+      //   if (matchingParameter) {
+      //     // eslint-disable-next-line no-param-reassign
+      //     input.label = matchingParameter.details.label;
+      //   }
+      // });
 
-      if (app.exec_sys.scheduler === 'SLURM') {
-        const matchingQueue = app.exec_sys.queues.find(
-          (queue) => queue.name === job.remoteQueue
+      // TODO: Maybe should filter with includes? some have null/array values
+
+      // filter non-visible
+      // display.inputs.filter((input) => {
+      //   const matchingParameter = app.definition.inputs.find((obj) => {
+      //     return input.id === obj.id;
+      //   });
+      //   if (matchingParameter) {
+      //     return matchingParameter.value.visible;
+      //   }
+      //   return true;
+      // });
+      // display.parameters.filter((input) => {
+      //   const matchingParameter = app.definition.parameters.find((obj) => {
+      //     return input.id === obj.id;
+      //   });
+      //   if (matchingParameter) {
+      //     return matchingParameter.value.visible;
+      //   }
+      //   return true;
+      // });
+
+      const workPath = envVariables.find(
+        (env) => env.key === '_tapisJobWorkingDir'
+      );
+      display.workPath = workPath ? workPath.value : '';
+
+      if (app.exec_sys.batchScheduler === 'SLURM') {
+        const allocationParam = schedulerOptions.find(
+          (opt) => opt.name === 'TACC Allocation'
         );
-        const allocation = getAllocatonFromDirective(
-          matchingQueue.customDirectives
-        );
+        const allocation = getAllocatonFromDirective(allocationParam.arg);
         if (allocation) {
           display.allocation = allocation;
         }
-        display.queue = job.remoteQueue;
+        display.queue = job.execSystemLogicalQueue;
       }
 
-      if (app.definition.parallelism === 'PARALLEL') {
-        display.processorsPerNode = job.processorsPerNode;
-        display.nodeCount = job.nodeCount;
-      }
+      // TODO: Unsure if parallelism exists in v3
+      // if (app.definition.parallelism === 'PARALLEL') {
+      //   display.processorsPerNode = job.processorsPerNode;
+      //   display.nodeCount = job.nodeCount;
+      // }
+
+      // if (app.definition.parallelism === 'PARALLEL') {
+      // display.processorsPerNode = job.processorsPerNode;
+      display.processorsPerNode = job.coresPerNode;
+      display.nodeCount = job.nodeCount;
+      // }
     } catch (ignore) {
       // ignore if there is problem using the app definition to improve display
     }

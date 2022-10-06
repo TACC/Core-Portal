@@ -1,9 +1,10 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   NavLink as RRNavLink,
   useHistory,
-  useLocation
+  useLocation,
 } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader, NavLink } from 'reactstrap';
 import { isOutputState } from 'utils/jobsUtil';
@@ -13,7 +14,7 @@ import {
   DescriptionList,
   Expand,
   LoadingSpinner,
-  Message
+  Message,
 } from '_common';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
@@ -61,18 +62,20 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  // const hideDataFiles = useSelector(
+  //   (state) => state.workbench.config.hideDataFiles
+  // );
+  const hideDataFiles = true;
 
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
   };
+
   const inputAndParamsDataObj = {
     // This is in jobDetails
-    ...reduceInputParameters(jobDisplay.fileInputs),
-    ...reduceInputParameters(jobDisplay.parameterSet),
+    ...reduceInputParameters(jobDisplay.inputs),
+    ...reduceInputParameters(jobDisplay.parameters),
   };
   const configDataObj = {};
   const outputDataObj = {
@@ -129,7 +132,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
 
   if (jobDetails.status !== 'FINISHED')
     // TODO: Switch to tapisv3
-    configDataObj['Temporary Working Directory'] = jobDetails.workPath;
+    configDataObj['Temporary Working Directory'] = jobDisplay.workPath;
 
   const isTerminalState =
     jobDetails.status === 'FINISHED' ||
@@ -190,11 +193,10 @@ JobHistoryContent.defaultProps = {
   jobName: '',
 };
 
-function JobHistoryModal({ jobUuid }) {
+function JobHistoryModal({ uuid }) {
   const loading = useSelector((state) => state.jobDetail.loading);
   const loadingError = useSelector((state) => state.jobDetail.loadingError);
-  // const { job, display } = useSelector((state) => state.jobDetail);
-  const { result: job, metadata } = useSelector((state) => state.jobDetail);
+  const { job, display } = useSelector((state) => state.jobDetail);
   const { state } = useLocation();
 
   let jobName = job ? job.name : placeHolder;
@@ -213,7 +215,7 @@ function JobHistoryModal({ jobUuid }) {
   };
 
   const headerData = {
-    'Job UUID': jobUuid,
+    'Job UUID': uuid,
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
   };
@@ -246,7 +248,7 @@ function JobHistoryModal({ jobUuid }) {
             <JobHistoryContent
               jobName={jobName}
               jobDetails={job}
-              jobDisplay={display}
+              jobDisplay={display ? display : {}}
               toggle={close}
             />
           )}
@@ -257,7 +259,7 @@ function JobHistoryModal({ jobUuid }) {
 }
 
 JobHistoryModal.propTypes = {
-  jobUuid: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
 };
 
 export default JobHistoryModal;

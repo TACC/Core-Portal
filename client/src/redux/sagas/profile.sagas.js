@@ -32,12 +32,12 @@ export function* getProfileData(action) {
 }
 
 export function* getFormFields(action) {
-  try {
-    const response = yield call(fetchUtil, { url: `${ROOT_SLUG}/fields/` });
-    yield put({ type: 'POPULATE_FIELDS', payload: response });
-  } catch (error) {
-    yield put({ type: 'POPULATE_FIELDS_ERROR', payload: error });
-  }
+  // try {
+  //   const response = yield call(fetchUtil, { url: `${ROOT_SLUG}/fields/` });
+  //   yield put({ type: 'POPULATE_FIELDS', payload: response });
+  // } catch (error) {
+  //   yield put({ type: 'POPULATE_FIELDS_ERROR', payload: error });
+  // }
 }
 
 export function* changePassword(action) {
@@ -110,10 +110,10 @@ export function* watchChangePassword() {
   yield takeLatest('CHANGE_PASSWORD', changePassword);
 }
 export function* watchFormFields() {
-  yield takeLatest('GET_FORM_FIELDS', getFormFields);
+  // yield takeLatest('GET_FORM_FIELDS', getFormFields);
 }
 export function* watchProfileData() {
-  yield takeLatest('GET_PROFILE_DATA', getProfileData);
+  // yield takeLatest('GET_PROFILE_DATA', getProfileData);
 }
 
 export default [
