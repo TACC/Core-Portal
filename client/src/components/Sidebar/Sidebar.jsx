@@ -81,7 +81,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const addItems = [
     {
       className: styles['feedback-nav-item'],
-      children:  <FeedbackButton/>,
+      children: <FeedbackButton />,
       hidden: hideFeedback,
     },
   ];
