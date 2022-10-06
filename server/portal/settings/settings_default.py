@@ -262,5 +262,4 @@ _WORKBENCH_SETTINGS = {
     "noPHISystem": "",
     "customDashboardSection": None,
     "hideFeedback": False,
-
 }
