@@ -170,7 +170,7 @@ def test_date_filter(rf, authenticated_user, mock_agave_client):
     assert len(jobs) == 1
 
 
-def test_get_appid_by_spec(authenticated_user, mock_agave_client):
+def test_tray_get_appid_by_spec(authenticated_user, mock_agave_client):
     compress_01u1 = {
         'id': 'compress-0.1u1',
         'name': 'compress',
@@ -198,7 +198,7 @@ def test_get_appid_by_spec(authenticated_user, mock_agave_client):
         MagicMock(name='compress', version='0.1'), authenticated_user) == 'compress-0.2u1'
 
 
-def test_get_app(mocker, authenticated_user):
+def test_tray_get_app(mocker, client, authenticated_user):
     mock_get_by_spec = mocker.patch.object(AppsTrayView, 'getAppIdBySpec')
     mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
     view = AppsTrayView()
@@ -218,7 +218,7 @@ def test_get_app(mocker, authenticated_user):
     mock_get_app.assert_called_with('compress-0.2u1', authenticated_user)
 
 
-def test_get_private_apps(authenticated_user, mock_agave_client, mocker):
+def test_tray_get_private_apps(authenticated_user, mock_agave_client, mocker):
     view = AppsTrayView()
     mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
     app = {
@@ -243,7 +243,7 @@ def test_get_private_apps(authenticated_user, mock_agave_client, mocker):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_get_public_apps(django_db_setup, django_db_blocker, mocker,
+def test_tray_get_public_apps(django_db_setup, django_db_blocker, mocker,
                          mock_agave_client, authenticated_user):
     # Load fixtures
     with django_db_blocker.unblock():
