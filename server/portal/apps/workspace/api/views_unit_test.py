@@ -258,3 +258,8 @@ def test_tray_get_public_apps(django_db_setup, django_db_blocker, mocker,
     assert len(categories) == 3
     assert categories[0]['title'] == 'Simulation'
     assert len(categories[0]['apps']) == 1
+
+
+def test_get_app_unauthenticated(client):
+    response = client.get('/api/workspace/apps/')
+    assert response.status_code == 302 # redirect to login
