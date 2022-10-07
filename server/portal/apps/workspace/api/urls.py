@@ -7,8 +7,8 @@ from portal.apps.workspace.api import views
 
 app_name = 'workspace_api'
 urlpatterns = [
-    path('tapisapps/<str:operation>/<str:scheme>/<str:system>/',
-         views.TapisFilesView.as_view()),
+    #path('tapisapps/<str:operation>/<str:scheme>/<str:system>/',
+    #     views.TapisFilesView.as_view()),
     url(r'^apps/?', views.AppsView.as_view()),
     url(
         r'^jobs/(?P<job_uuid>[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\-[0-9a-fA-F]{3})/history/?$',
