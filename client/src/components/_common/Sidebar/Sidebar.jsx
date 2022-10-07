@@ -67,7 +67,8 @@ const Sidebar = ({ sidebarItems, addItems, loading }) => {
               </SidebarItem>
             )
         )}
-      {addItems
+
+      {!loading && addItems
         ? addItems.map(
             (item) =>
               !item.hidden && (
