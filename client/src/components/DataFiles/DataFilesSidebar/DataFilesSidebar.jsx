@@ -94,7 +94,9 @@ const DataFilesSidebar = ({ readOnly }) => {
                 onClick={toggleUploadModal}
                 disabled={disabled}
               >
-                <i className={`icon-upload ${styles[writeItemStyle]}`} />
+                <span className={`${styles[writeItemStyle]}`}>
+                  <i className={`icon-upload`} />
+                </span>
                 <span className="multiline-menu-item-wrapper">
                   <span className={styles[writeItemStyle]}>Upload</span>
                   <small className={styles[writeItemStyle]}>
