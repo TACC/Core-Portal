@@ -246,7 +246,7 @@ def test_tray_get_private_apps(authenticated_user, mock_agave_client, mocker):
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.skip(reason="Tray endpoint and related tests need to be updated")
 def test_tray_get_public_apps(django_db_setup, django_db_blocker, mocker,
-                         mock_agave_client, authenticated_user):
+                              mock_agave_client, authenticated_user):
     # Load fixtures
     with django_db_blocker.unblock():
         call_command('loaddata', 'app-tray.json')
@@ -262,4 +262,4 @@ def test_tray_get_public_apps(django_db_setup, django_db_blocker, mocker,
 
 def test_get_app_unauthenticated(client):
     response = client.get('/api/workspace/apps/')
-    assert response.status_code == 302 # redirect to login
+    assert response.status_code == 302  # redirect to login
