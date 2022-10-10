@@ -35,6 +35,11 @@ def _app_license_type(app_def):
     return lic_type
 
 
+def _app_license_type_TODO_REFACTOR(app_id):
+    # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
+    return None
+
+
 def _get_app(app_id, app_version, user):
     tapis = user.tapis_oauth.client
     if app_version:
@@ -219,7 +224,7 @@ class JobsView(BaseApiView):
                 job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
-            lic_type = _app_license_type(job_post['appId'])
+            lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = [x for x in license_models if x.license_type == lic_type][0]
