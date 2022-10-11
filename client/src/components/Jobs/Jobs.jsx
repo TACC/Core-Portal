@@ -96,7 +96,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
-          jobId={el.row.original.uuid}
+          jobUuid={el.row.original.uuid}
         />
       ),
       id: 'jobStatusCol',
