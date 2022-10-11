@@ -145,7 +145,7 @@ const DataFilesModalListingTable = ({
   disabled,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
-  const isNotRoot = params.path.length > 0;
+  const isNotRoot = params.path !== '' && params.path !== '/';
 
   const displayName = useSystemDisplayName(params);
 
@@ -212,7 +212,7 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
-  const hasBackButton = params.path.length > 0;
+  const hasBackButton = isNotRoot;
 
   const BackHeader = useCallback(
     () => (
