@@ -57,11 +57,8 @@ const FeedbackForm = () => {
               />
             </FormGroup>
             <div className="ticket-create-button-row">
-              {creating && (
-                <InlineMessage type="success">
-                  Message successfully sent. 
-                </InlineMessage>
-              )}
+              {creating  
+              }
               {submitCount > 0 && creatingError && (
                 <InlineMessage type="warning">
                   Error submitting feedback: {creatingErrorMessage}
