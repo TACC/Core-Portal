@@ -13,7 +13,7 @@ function updateJobFromNotification(job, notification) {
   const updatedJob = { ...job, status: notification.status };
   if (isOutputState(notification.status)) {
     // add archive data path to job
-    updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
+    updatedJob.outputLocation = `${notification.archiveSystemId}/${notification.archiveSystemDir}`;
   }
   return updatedJob;
 }

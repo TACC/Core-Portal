@@ -62,7 +62,7 @@ export function getBadgeColor(status) {
   }
 }
 
-function JobsStatus({ status, fancy, jobId }) {
+function JobsStatus({ status, fancy, jobUuid }) {
   const [modal, setModal] = React.useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -91,7 +91,7 @@ function JobsStatus({ status, fancy, jobId }) {
         n.event_type === 'interactive_session_ready' &&
         !jobConcluded.includes(n.extra.status) // need to account for the possibility of session ready and job status notifs coming out of order
     );
-    const notif = interactiveNotifs.find((n) => n.extra.id === jobId);
+    const notif = interactiveNotifs.find((n) => n.extra.uuid === jobUuid);
     interactiveSessionLink = notif ? notif.action_link : null;
   }
 
@@ -127,7 +127,7 @@ function JobsStatus({ status, fancy, jobId }) {
 JobsStatus.propTypes = {
   status: PropTypes.string.isRequired,
   fancy: PropTypes.bool,
-  jobId: PropTypes.string.isRequired,
+  jobUuid: PropTypes.string.isRequired,
 };
 JobsStatus.defaultProps = {
   fancy: false,

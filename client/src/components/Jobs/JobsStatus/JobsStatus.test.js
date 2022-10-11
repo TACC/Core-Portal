@@ -16,7 +16,7 @@ const mockStore = configureStore();
 function renderJobsStatus(store, props) {
   return render(
     <Provider store={store}>
-      <JobsStatus {...props} jobId="1234-5678-90AZ" />
+      <JobsStatus {...props} jobUuid="1234-5678-90AZ" />
     </Provider>
   );
 }
@@ -86,7 +86,7 @@ describe('JobsStatus', () => {
             notifs: [
               {
                 event_type: 'interactive_session_ready',
-                extra: { status, id: '1234-5678-90AZ' },
+                extra: { status, uuid: '1234-5678-90AZ' },
                 action_link: 'https://test',
               },
             ],

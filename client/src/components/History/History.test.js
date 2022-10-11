@@ -1,3 +1,4 @@
+import React from 'react';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { Provider } from 'react-redux';
@@ -55,7 +56,9 @@ describe('History Routes', () => {
 
   it('should dispatch the get job detail event type when opening the job detail modal', () => {
     const history = createMemoryHistory();
-    history.push('/workbench/history/jobs/1');
+    history.push(
+      '/workbench/history/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007'
+    );
 
     const store = mockStore({
       notifications,
@@ -73,7 +76,11 @@ describe('History Routes', () => {
     });
 
     renderComponent(
-      <MemoryRouter initialEntries={['/workbench/history/jobs/1']}>
+      <MemoryRouter
+        initialEntries={[
+          '/workbench/history/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007',
+        ]}
+      >
         <Routes />
       </MemoryRouter>,
       store,
@@ -84,7 +91,7 @@ describe('History Routes', () => {
       {
         type: 'GET_JOB_DETAILS',
         payload: {
-          jobId: '1',
+          jobUuid: 'ba34f946-8a18-44c4-9b25-19e21dfadf69-007',
         },
       },
     ]);

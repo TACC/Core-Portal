@@ -112,8 +112,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  // TODO: Convert to hours
-  configDataObj['Max Hours'] = jobDetails.maxMinutes;
+  configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
   // TODO: This should be in jobDetails
   if ('processorsPerNode' in jobDisplay) {
@@ -130,9 +129,12 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
-  if (jobDetails.status !== 'FINISHED')
+  if (jobDetails.status !== 'FINISHED') {
     // TODO: Switch to tapisv3
-    configDataObj['Temporary Working Directory'] = jobDisplay.workPath;
+    configDataObj['Execution Directory'] = jobDisplay.execSystemExecDir;
+    configDataObj['Input Directory'] = jobDisplay.execSystemInputDir;
+    configDataObj['Output Directory'] = jobDisplay.execSystemOutputDir;
+  }
 
   const isTerminalState =
     jobDetails.status === 'FINISHED' ||

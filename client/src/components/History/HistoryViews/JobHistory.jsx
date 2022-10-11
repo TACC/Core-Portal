@@ -22,7 +22,6 @@ const JobHistory = ({ className }) => {
 
   const loading = false;
   const rowProps = (row) => {
-    console.log(row);
     return {
       className: '',
       // className: unreadIds.includes(row.original.id) ? 'unread' : '',
