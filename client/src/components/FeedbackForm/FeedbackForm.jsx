@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import { Alert, FormGroup } from 'reactstrap';
-import { Button, FormField } from '_common';
+import { Button, FormField, InlineMessage } from '_common';
 import * as Yup from 'yup';
 import styles from './FeedbackForm.module.scss';
 
@@ -58,14 +58,14 @@ const FeedbackForm = () => {
             </FormGroup>
             <div className="ticket-create-button-row">
               {creating && (
-                <Alert color="success" className="ticket-create-info-alert">
-                  Message successfully sent. Thank you for your feedback!
-                </Alert>
+                <InlineMessage type="success">
+                  Message successfully sent. 
+                </InlineMessage>
               )}
               {submitCount > 0 && creatingError && (
-                <Alert color="warning">
+                <InlineMessage type="warning">
                   Error submitting feedback: {creatingErrorMessage}
-                </Alert>
+                </InlineMessage>
               )}
               <Button
                 attr="submit"
