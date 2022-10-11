@@ -79,10 +79,8 @@ const DataFilesSidebar = ({ readOnly }) => {
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={toggleMkdirModal} disabled={disabled}>
-                <span className={styles[writeItemStyle]}>
+              <DropdownItem className={styles[writeItemStyle]} onClick={toggleMkdirModal} disabled={disabled}>
                   <i className="icon-folder" /> Folder
-                </span>
               </DropdownItem>
               {sharedWorkspaces && !sharedWorkspaces.readOnly && (
                 <DropdownItem onClick={toggleAddProjectModal}>
@@ -90,16 +88,14 @@ const DataFilesSidebar = ({ readOnly }) => {
                 </DropdownItem>
               )}
               <DropdownItem
-                className="complex-dropdown-item"
+                className={`complex-dropdown-item ${styles[writeItemStyle]}`}
                 onClick={toggleUploadModal}
                 disabled={disabled}
               >
-                <span className={`${styles[writeItemStyle]}`}>
-                  <i className={`icon-upload`} />
-                </span>
+                <i className={`icon-upload`} />
                 <span className="multiline-menu-item-wrapper">
-                  <span className={styles[writeItemStyle]}>Upload</span>
-                  <small className={styles[writeItemStyle]}>
+                  Upload
+                  <small>
                     {' '}
                     Up to 500mb{' '}
                   </small>
