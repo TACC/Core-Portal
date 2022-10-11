@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { FormGroup } from 'reactstrap';
+import { FormGroup, ModalFooter } from 'reactstrap';
 import { Button, FormField, InlineMessage } from '_common';
 import * as Yup from 'yup';
 import styles from './FeedbackForm.module.scss';
@@ -56,8 +56,7 @@ const FeedbackForm = () => {
                 required
               />
             </FormGroup>
-            <div className="ticket-create-button-row">
-
+            <ModalFooter>
               {submitCount > 0 && creatingError && (
                 <InlineMessage type="warning">
                   Error submitting feedback: {creatingErrorMessage}
@@ -72,7 +71,7 @@ const FeedbackForm = () => {
               >
                 Submit
               </Button>
-            </div>
+            </ModalFooter>
           </Form>
         );
       }}
