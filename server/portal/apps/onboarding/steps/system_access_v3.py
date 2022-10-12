@@ -1,5 +1,5 @@
 
-from urllib.error import HTTPError
+from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 import requests
@@ -12,8 +12,6 @@ import logging
    :synopsis: Utilities to handle encryption and ssh keys
 """
 
-
-DEV_SYSTEM_ID = "a2cps.cloud.corral.dev.jarosenb"
 
 def create_private_key(bits=2048):
     """Creates a brand new RSA key
@@ -121,7 +119,7 @@ class SystemAccessStepV3(AbstractStep):
             self.push_system_credentials(pub, priv, system_id)
         except HTTPError as e:
             self.logger.error(e)
-            self.fail()
+            self.fail(f"Failed to push credentials to system: {system_id}")
 
     def process(self):
         self.log("processing user")
@@ -129,6 +127,7 @@ class SystemAccessStepV3(AbstractStep):
         for storage in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
             try:
                 self.check_system(storage['system'])
+                self.log(f"Access already granted for system: {storage['system']}")
             except HTTPError:
                 self.generate_and_push_credentials(storage['system'])
 
