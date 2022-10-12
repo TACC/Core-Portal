@@ -95,11 +95,11 @@ const DataFilesDownloadMessageModal = () => {
       onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
-      size="lg"
+      size="md"
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Download Folder
+        Download
       </ModalHeader>
       <Formik
         innerRef={formRef}
