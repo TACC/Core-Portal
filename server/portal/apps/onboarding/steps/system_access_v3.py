@@ -5,43 +5,13 @@ from portal.apps.onboarding.state import SetupState
 import requests
 from Crypto.PublicKey import RSA
 from django.conf import settings
+from portal.utils.encryption import create_private_key, create_public_key, export_key
 import logging
 
 """
 .. :module:: portal.utils.encryption
    :synopsis: Utilities to handle encryption and ssh keys
 """
-
-
-def create_private_key(bits=2048):
-    """Creates a brand new RSA key
-
-    :param int bits: Key bits
-    """
-    key = RSA.generate(bits)
-    return key
-
-
-def create_public_key(key):
-    """Returns public key
-
-    :param key: RSA key
-    """
-    pub_key = key.publickey()
-    return pub_key
-
-
-def export_key(key, format='PEM'):  # pylint: disable=redefined-builtin
-    """Exports private key
-
-    :param key: RSA key
-    :param str format: Format to export key
-
-    .. note::
-        Use `format='PEM'` for exporting private keys
-        and `format='OpenSSH' for exporting public keys
-    """
-    return key.exportKey(format).decode('utf-8')
 
 
 def formatKeys(privateKey, publicKey):
