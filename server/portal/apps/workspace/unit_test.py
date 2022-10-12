@@ -64,8 +64,8 @@ class TestAppsApiViews(TestCase):
 
         # need to do a return_value on the mock_client because
         # the calling signature is something like client = Agave(**kwargs).apps.list()
-        self.mock_client.apps.list.return_value = apps
-        response = self.client.get('/api/workspace/apps/', follow=True)
+        self.mock_client.apps.getApps.return_value = apps
+        response = self.client.get('/api/workspace/apps/')
         data = response.json()
         # If the request is sent successfully, then I expect a response to be returned.
         self.assertEqual(response.status_code, 200)
