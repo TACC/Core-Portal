@@ -3,16 +3,10 @@ from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 import requests
-from Crypto.PublicKey import RSA
 from django.conf import settings
 from portal.utils.encryption import create_private_key, create_public_key, export_key
 from tapipy.errors import BaseTapyException
 import logging
-
-"""
-.. :module:: portal.utils.encryption
-   :synopsis: Utilities to handle encryption and ssh keys
-"""
 
 
 def formatKeys(privateKey, publicKey):
@@ -91,10 +85,10 @@ class SystemAccessStepV3(AbstractStep):
 
     def process(self):
         self.log("processing user")
-        self.complete("user is processed.")
         for storage in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
             try:
                 self.check_system(storage['system'])
                 self.log(f"Access already granted for system: {storage['system']}")
             except BaseTapyException:
                 self.generate_and_push_credentials(storage['system'])
+        self.complete("user is processed.")
