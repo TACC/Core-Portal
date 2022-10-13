@@ -97,7 +97,7 @@ const FormField = ({
         )
       )}
     </>
-);
+  );
 
   // Allowing ineffectual prop combinations would lead to confusion
   if (addon && agaveFile) {
