@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
-import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import Routes from './History';
-import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
+import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
