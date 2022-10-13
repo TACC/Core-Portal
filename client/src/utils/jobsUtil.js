@@ -76,9 +76,10 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      display.applicationName = app.definition.notes.label;
+      // TODO V3: Undefined for now
+      // display.applicationName = app.definition.notes.label;
 
-      // TODO: Unsure if needed for v3
+      // TODO V3: Unsure if needed
 
       // Improve input/parameters
       // display.inputs.forEach((input) => {
@@ -100,7 +101,7 @@ export function getJobDisplayInformation(job, app) {
       //   }
       // });
 
-      // TODO: Maybe should filter with includes? some have null/array values
+      // TODO V3: Maybe should filter with includes? some have null/array values
 
       // filter non-visible
       // display.inputs.filter((input) => {
@@ -138,7 +139,7 @@ export function getJobDisplayInformation(job, app) {
         display.queue = job.execSystemLogicalQueue;
       }
 
-      // TODO: Unsure if parallelism exists in v3
+      // TODO V3: Unsure if parallelism exists
       // if (app.definition.parallelism === 'PARALLEL') {
       //   display.processorsPerNode = job.processorsPerNode;
       //   display.nodeCount = job.nodeCount;

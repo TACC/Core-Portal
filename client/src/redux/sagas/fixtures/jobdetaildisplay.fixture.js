@@ -1,20 +1,31 @@
+// TODO V3: Fix
 const jobDetailDisplayFixture = {
-  applicationName: 'Compress folder',
-  systemName: 'Stampede2',
+  allocation: 'TACC-ACI',
+  applicationName: 'hello-world',
   inputs: [
     {
-      label: 'Target Path to be Compressed',
-      id: 'workingDirectory',
-      value: 'agave://cep.home.username/COE332',
+      id: 'File to modify',
+      label: 'File to modify',
+      value: 'tapis://test.community/system/1/user/test/in.txt',
     },
   ],
   parameters: [
     {
-      label: 'Compression Type',
-      id: 'compression_type',
-      value: 'tgz',
+      label: 'Greeting',
+      id: 'Greeting',
+      value: 'hello',
+    },
+    {
+      label: 'Target',
+      id: 'Target',
+      value: 'world',
     },
   ],
+  nodeCount: 1,
+  processorsPerNode: 1,
+  queue: 'development',
+  systemName: 'Frontera',
+  workPath: '/system/1/user/tapis/1/jobs/1/output',
 };
 
 export default jobDetailDisplayFixture;
