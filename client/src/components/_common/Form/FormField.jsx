@@ -85,7 +85,10 @@ const FormField = ({
   const FieldNote = () => (
     <>
       {meta.touched && meta.error ? (
-        <div className="form-field__validation-error">{meta.error}</div>
+        <FormText className="form-field__help" color="muted">
+          {description}
+          <div className="form-field__validation-error">{meta.error} </div>
+        </FormText>
       ) : (
         description && (
           <FormText className="form-field__help" color="muted">
@@ -94,7 +97,7 @@ const FormField = ({
         )
       )}
     </>
-  );
+);
 
   // Allowing ineffectual prop combinations would lead to confusion
   if (addon && agaveFile) {
