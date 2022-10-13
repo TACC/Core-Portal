@@ -86,7 +86,7 @@ function Workbench() {
           <LoadingSpinner />
         ) : (
           <>
-            {true ? (
+            {setupComplete ? (
               <Switch>
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
                   <Dashboard />

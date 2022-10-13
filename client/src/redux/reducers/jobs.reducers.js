@@ -95,13 +95,6 @@ export function jobs(state = initialState, action) {
 }
 
 const initialJobDetail = {
-  // jobId: null,
-  // app: null,
-  // job: null,
-  // display: null,
-  // loading: false,
-  // loadingError: false,
-  // loadingErrorMessage: '',
   status: '',
   message: '',
   metadata: null,

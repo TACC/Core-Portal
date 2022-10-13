@@ -9,22 +9,20 @@ import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
 const JobHistory = ({ className }) => {
-  // const { notifs, loading } = useSelector(
-  //   (state) => ({
-  //     notifs: state.notifications.list.notifs,
-  //     loading: state.notifications.loading,
-  //   }),
-  //   shallowEqual
-  // );
-  // const unreadIds = notifs
-  //   .filter((n) => !n.read && n.event_type === 'job')
-  //   .map((n) => n.extra.id);
+  const { notifs, loading } = useSelector(
+    (state) => ({
+      notifs: state.notifications.list.notifs,
+      loading: state.notifications.loading,
+    }),
+    shallowEqual
+  );
+  const unreadIds = notifs
+    .filter((n) => !n.read && n.event_type === 'job')
+    .map((n) => n.extra.id);
 
-  const loading = false;
   const rowProps = (row) => {
     return {
-      className: '',
-      // className: unreadIds.includes(row.original.id) ? 'unread' : '',
+      className: unreadIds.includes(row.original.id) ? 'unread' : '',
     };
   };
 

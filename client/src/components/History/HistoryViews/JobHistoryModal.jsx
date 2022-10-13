@@ -1,26 +1,26 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import {
-  NavLink as RRNavLink,
   useHistory,
   useLocation,
+  NavLink as RRNavLink,
 } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalBody, ModalHeader, NavLink } from 'reactstrap';
-import { isOutputState } from 'utils/jobsUtil';
-import { formatDateTime } from 'utils/timeFormat';
 import {
   Button,
   DescriptionList,
-  Expand,
   LoadingSpinner,
+  Expand,
   Message,
 } from '_common';
+import PropTypes from 'prop-types';
+import { formatDateTime } from 'utils/timeFormat';
+import { isOutputState } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
-import './JobHistoryModal.css';
 import styles from './JobHistoryModal.module.scss';
+import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
@@ -62,19 +62,16 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
-  // const hideDataFiles = useSelector(
-  //   (state) => state.workbench.config.hideDataFiles
-  // );
-  const hideDataFiles = true;
+  const hideDataFiles = useSelector(
+    (state) => state.workbench.config.hideDataFiles
+  );
 
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
   };
-
   const inputAndParamsDataObj = {
     // This is in jobDetails
-    ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters),
   };
   const configDataObj = {};
@@ -107,24 +104,22 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     toggle();
   };
 
-  // TODO: This should be in jobDetails
+  // TODO V3: This should be in jobDetails
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
   configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
-  // TODO: This should be in jobDetails
+  // TODO V3: This should be in jobDetails
   if ('processorsPerNode' in jobDisplay) {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
-
-  // TODO: This should be in jobDetails
+  // TODO V3: This should be in jobDetails
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
-
-  // TODO: This should be in jobDetails
+  // TODO V3: This should be in jobDetails
   if ('allocation' in jobDisplay) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
