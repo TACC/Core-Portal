@@ -261,6 +261,7 @@ _WORKBENCH_SETTINGS = {
     "showSubmissions": False,
     "hideManageAccount": False,
     "hasUserGuide": True,
+    "hideFeedback": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": {
