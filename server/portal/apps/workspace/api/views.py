@@ -13,38 +13,24 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from portal.utils.translations import get_jupyter_url
-from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from agavepy.agave import Agave
-from portal.libs.agave.models.systems.execution import ExecutionSystem
-from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs, url_parse_input_v3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from requests.exceptions import HTTPError
+from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
-def get_manager(request, file_mgr_name):
-    """Lookup Manager to handle call"""
-    fmgr_cls = LookupManager.lookup_manager(file_mgr_name)
-    fmgr = fmgr_cls(request)
-    if fmgr.requires_auth and not request.user.is_authenticated:
-        raise ApiException("Login Required", status=403)
-    return fmgr
-
-
-def _app_license_type(app_id):
-    app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
-    lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
-    return lic_type
+def _app_license_type_TODO_REFACTOR(app_id):
+    # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
+    return None
 
 
 def _get_app(app_id, app_version, user):
@@ -55,10 +41,10 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
     data = {'definition': app_def}
 
+    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
     data['exec_sys'] = tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
 
-    lic_type = _app_license_type(app_id)
-
+    lic_type = _app_license_type(app_def)
     data['license'] = {
         'type': lic_type
     }
@@ -74,15 +60,14 @@ def _get_app(app_id, app_version, user):
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         app_id = request.GET.get('appId')
         app_version = request.GET.get('appVersion')
-
         if app_id:
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODO V3
+            # TODO: Test user default storage system (for archiving)
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(
@@ -93,22 +78,9 @@ class AppsView(BaseApiView):
             #     success, _ = storage_sys.test()
             #     data['systemHasKeys'] = success
             #     data['pushKeysSystem'] = storage_sys.to_dict()
-
-
-            # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
-            #     # check if default system needs keys pushed
-            #     default_sys = UserSystemsManager(
-            #         request.user,
-            #         settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            #     )
-            #     storage_sys = StorageSystem(agave, default_sys.get_system_id())
-            #     success, result = storage_sys.test()
-            #     data['systemHasKeys'] = success
-            #     data['pushKeysSystem'] = storage_sys.to_dict()
         else:
             METRICS.debug("user:{} is requesting all apps".format(request.user.username))
-            data = {'appListing': agave.apps.getApps()}
-
+            data = {'appListing': tapis.apps.getApps()}
 
         return JsonResponse(
             {
@@ -117,77 +89,6 @@ class AppsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
-
-
-@method_decorator(login_required, name='dispatch')
-class MonitorsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        target = request.GET.get('target')
-        logger.info(request.GET)
-        admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                             token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = admin_client.monitors.list(target=target)
-        return JsonResponse({"response": data})
-
-
-@method_decorator(login_required, name='dispatch')
-class MetadataView(BaseApiView):
-    def get(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
-        app_id = request.GET.get('app_id')
-        if app_id:
-            query = json.dumps({
-                '$and': [
-                    {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
-                    {'value.definition.available': True},
-                    {'value.definition.id': app_id}
-                ]
-            })
-
-            data = agave.meta.listMetadata(q=query)
-
-            assert len(data) == 1, "Expected single app response, got {}.".format(len(data))
-            data = data[0]
-
-            lic_type = _app_license_type(app_id)
-            data['license'] = {
-                'type': lic_type
-            }
-            if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                data['license']['enabled'] = lic is not None
-        else:
-            query = request.GET.get('q')
-            if not query:
-                query = json.dumps({
-                    '$and': [
-                        {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
-                        {'value.definition.available': True}
-                    ]
-                })
-            data = agave.meta.listMetadata(q=query)
-        return JsonResponse({'response': {'listing': data, 'default_tab': settings.PORTAL_APPS_DEFAULT_TAB}})
-
-    def post(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
-        meta_post = json.loads(request.body)
-        meta_uuid = meta_post.get('uuid')
-
-        if meta_uuid:
-            del meta_post['uuid']
-            data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
-        else:
-            data = agave.meta.addMetadata(body=meta_post)
-        return JsonResponse({'response': data})
-
-    def delete(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
-        meta_uuid = request.GET.get('uuid')
-        if meta_uuid:
-            data = agave.meta.deleteMetadata(uuid=meta_uuid)
-            return JsonResponse({'response': data})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -337,7 +238,7 @@ class JobsView(BaseApiView):
                 job_post['archiveSystemId'] = default_sys.get_system_id()
 
             # check for running licensed apps
-            lic_type = _app_license_type(job_post['appId'])
+            lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = [x for x in license_models if x.license_type == lic_type][0]
@@ -425,7 +326,6 @@ class JobsView(BaseApiView):
 class SystemsView(BaseApiView):
 
     def get(self, request, *args, **kwargs):
-
         roles = request.GET.get('roles')
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
@@ -613,3 +513,20 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
+
+
+@method_decorator(login_required, name='dispatch')
+class TapisAppsView(BaseApiView):
+    def get(self, request, operation=None):
+        try:
+            client = request.user.tapis_oauth.client
+        except AttributeError:
+            return JsonResponse(
+                {'message': 'This view requires authentication.'},
+                status=403)
+
+        get_params = request.GET.dict()
+        METRICS.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
+        response = tapis_get_handler(client, operation, **get_params)
+
+        return JsonResponse({'data': response})
