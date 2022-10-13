@@ -444,6 +444,24 @@ class AppsTrayView(BaseApiView):
             }
         }
         """
+        # TODO providing examplem tabs before getPublicApps/getPrivateApps is tested/working.  Note that we add appVersion to app
+        fake_tabs = [
+            {
+                "title": "My V3 Test Apps",
+                "apps": [
+                    {
+                        "label": "hello world",
+                        "version": "0.0.2",
+                        "revision": 12,
+                        "shortDescription": "Run our hello world app.",
+                        "type": "agave",
+                        "appId": "hello-world",
+                        "appVersion": "0.0.1"   # TODO:  Note that this is NEW parameter
+                    }
+                ]
+        }]
+        return JsonResponse({"tabs": fake_tabs, "definitions": {}})
+
         tabs, definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
         tabs.insert(
