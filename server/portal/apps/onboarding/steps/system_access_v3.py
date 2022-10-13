@@ -6,6 +6,7 @@ import requests
 from django.conf import settings
 from portal.utils.encryption import create_private_key, create_public_key, export_key
 from tapipy.errors import BaseTapyException
+from portal.apps.onboarding.state import SetupState
 import logging
 
 
@@ -91,4 +92,6 @@ class SystemAccessStepV3(AbstractStep):
                 self.log(f"Access already granted for system: {storage['system']}")
             except BaseTapyException:
                 self.generate_and_push_credentials(storage['system'])
-        self.complete("user is processed.")
+
+        if self.state != SetupState.FAILED:
+            self.complete("user is processed.")
