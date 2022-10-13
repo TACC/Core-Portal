@@ -342,6 +342,7 @@ class AppsTrayView(BaseApiView):
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
             # Retrieve all apps known to the portal in that directory
+            # TODO: FIX ORDER BY
             tapis_apps = AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis', order_by=Coalesce('label', 'appId'))
             html_apps = AppTrayEntry.objects.all().filter(available=True, category=category, appType='html', order_by=Coalesce('label', 'appId'))
 

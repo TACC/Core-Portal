@@ -16,10 +16,10 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
         ('Display Options', {
             'fields': ('label', 'category', 'icon', 'appType', 'available')
         }),
-        ('Agave App Specification', {
-            'fields': ('name', 'version', 'revision', 'appId')
+        ('Tapis App Specification', {
+            'fields': ('appId', 'version')
         }),
         ('HTML - all fields required', {
-            'fields': ('shortDescription', 'htmlId', 'html', )
+            'fields': ('description', 'html')
         })
     )
