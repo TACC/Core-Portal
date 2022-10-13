@@ -58,7 +58,7 @@ const FeedbackForm = () => {
             </FormGroup>
             <ModalFooter>
               {submitCount > 0 && creatingError && (
-                <InlineMessage type="warning">
+                <InlineMessage type="error">
                   Error submitting feedback: {creatingErrorMessage}
                 </InlineMessage>
               )}
