@@ -10,20 +10,13 @@ from portal.apps.onboarding.state import SetupState
 import logging
 
 
-def formatKeys(privateKey, publicKey):
-    """Replace newline characters with a literal \n"""
-    #publicKey = publicKey.replace("\n", "\\n")
-    #privateKey = privateKey.replace("\n", "\\n")
-    return privateKey, publicKey
-
-
 def createKeyPair():
     private_key = create_private_key()
     priv_key_str = export_key(private_key, 'PEM')
     public_key = create_public_key(private_key)
     publ_key_str = export_key(public_key, 'OpenSSH')
 
-    return formatKeys(priv_key_str, publ_key_str)
+    return priv_key_str, publ_key_str
 
 
 class SystemAccessStepV3(AbstractStep):
