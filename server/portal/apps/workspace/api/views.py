@@ -319,47 +319,23 @@ class JobHistoryView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
-    def getAppIdBySpec(self, app, user):
-        # Retrieve the app specified in the portal
-        # Any fields that are left blank assume that we
-        # are retrieving the "latest" version
-        # TODO: make sure to grab public apps only here
-        tapis = user.tapis_oauth.client
-        if app.version and len(app.version):
-            app = tapis.apps.getAppLatestVersion('')
-        if app.revision and len(app.revision):
-            query['revision'] = app.revision
-        appList = tapis.apps.list(query=query)
-        appList.sort(
-            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [int(appDef['revision'])]
-        )
-        return appList[-1]['id']
-
-    def getAppId(self, app, user):
-        if app.appId and len(app.appId) > 0:
-            appId = app.appId
-        else:
-            appId = self.getAppIdBySpec(app, user)
-        if appId != app.lastRetrieved:
-            app.lastRetrieved = appId
-            app.save()
-        return appId
-
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # TODO: make sure to exclude public apps
-        apps_listing = tapis.apps.getApps(search=f"(owner.eq.{user.username})~(enabled.eq.true)")
-        my_apps = map(lambda app: {
-            "label": app['id'],
-            "version": app['version'],
-            "description": app['description'],
+        # TODO: update label if label is ever added to tapis apps spec
+        apps_listing = tapis.apps.getApps(select="version.description.id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        my_apps = list(map(lambda app: {
+            "label": app.id,
+            "version": app.version,
+            "description": app.description,
             "type": "tapis",
-            "appId": app['id'],
-        }, apps_listing)
+            "appId": app.id,
+        }, apps_listing))
 
         return my_apps
 
     def getPublicApps(self, user):
+        # TODO: make tapipy request for public apps to compare against apps in AppTrayEntry
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
@@ -408,6 +384,7 @@ class AppsTrayView(BaseApiView):
         """
         tabs, html_definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
+        logger.debug(my_apps)
         tabs.insert(
             0,
             {
@@ -415,6 +392,8 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
+        logger.debug(tabs)
+        logger.debug(type(tabs))
         # Only return tabs that are non-empty
         tabs = list(
             filter(
