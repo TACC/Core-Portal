@@ -306,7 +306,7 @@ class JobsView(BaseApiView):
         # submit job
         elif job_post:
             METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            # TODO: Fix for v3 (probably will be handled during onboarding so that we could just grab it internally)
+            # TODO V3: probably will be handled during onboarding so that we could just grab it internally
             default_sys = UserSystemsManager(
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
@@ -404,10 +404,9 @@ class JobsView(BaseApiView):
                 for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             # Remove any params from job_post that are not in appDef
-            # TODO: Fix for v3 (because the app parameter environment variables don't have ids)
+            # TODO V3: because the app parameter environment variables don't have ids
             # job_post['parameterSet'] = {param: job_post['parameterSet'][param]
             #                           for param in job_post['parameterSet']
-            #                           # TODO: Fix for v3
             #                           # if param in [p['id'] for p in app.parameterSet]}
             #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
 

@@ -130,7 +130,6 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   }
 
   if (jobDetails.status !== 'FINISHED') {
-    // TODO: Switch to tapisv3
     configDataObj['Execution Directory'] = jobDisplay.execSystemExecDir;
     configDataObj['Input Directory'] = jobDisplay.execSystemInputDir;
     configDataObj['Output Directory'] = jobDisplay.execSystemOutputDir;
