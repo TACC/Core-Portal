@@ -6,6 +6,7 @@ import requests
 from Crypto.PublicKey import RSA
 from django.conf import settings
 from portal.utils.encryption import create_private_key, create_public_key, export_key
+from tapipy.errors import BaseTapyException
 import logging
 
 """
@@ -66,28 +67,25 @@ class SystemAccessStepV3(AbstractStep):
         """
         Set an RSA key pair as the user's auth credential on a Tapis system.
         """
-        credentials_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/systems/credential/{system_id}/user/{self.user.username}"
-        headers = {'X-Tapis-Token': self.user.tapis_oauth.access_token}
         data = {'privateKey': private_key, 'publicKey': public_key}
-        response = requests.post(credentials_endpoint, headers=headers, json=data)
-        response.raise_for_status()
-        return response.status_code
+        self.user.tapis_oauth.client.systems.createUserCredential(
+            systemId=system_id,
+            userName=self.user.username,
+            **data
+            )
 
     def check_system(self, system_id) -> None:
         """
         Check whether a user already has access to a storage system by attempting a listing.
         """
-        headers = {'X-Tapis-Token': self.user.tapis_oauth.access_token}
-        check_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/{system_id}/"
-        response = requests.get(check_endpoint, headers=headers)
-        response.raise_for_status()
+        self.user.tapis_oauth.client.files.listFiles(systemId=system_id, path="/")
 
     def generate_and_push_credentials(self, system_id):
         (priv, pub) = createKeyPair()
         try:
             self.register_public_key(pub, system_id)
             self.push_system_credentials(pub, priv, system_id)
-        except HTTPError as e:
+        except (HTTPError, BaseTapyException) as e:
             self.logger.error(e)
             self.fail(f"Failed to push credentials to system: {system_id}")
 
@@ -98,6 +96,5 @@ class SystemAccessStepV3(AbstractStep):
             try:
                 self.check_system(storage['system'])
                 self.log(f"Access already granted for system: {storage['system']}")
-            except HTTPError:
+            except BaseTapyException:
                 self.generate_and_push_credentials(storage['system'])
-
