@@ -28,6 +28,12 @@ logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
+def _app_license_type(app_def):
+    app_lic_type = getattr(app_def.notes, 'licenseType', None)
+    lic_type = app_lic_type if app_lic_type in LICENSE_TYPES else None
+    return lic_type
+
+
 def _app_license_type_TODO_REFACTOR(app_id):
     # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
     return None
