@@ -1,5 +1,3 @@
-// NOTE: Missing allocation,queue(maybe remoteQueue?),processorsPerNode from jobDisplay
-// NOTE: Missing roles,display,workPath(maybe from parameterSet?),links,archiveUrl,jupyterUrl
 const jobDetailFixture = {
   id: 0,
   name: 'compress-0.1u3_2020-07-09T15:56:37',
@@ -34,8 +32,6 @@ const jobDetailFixture = {
   maxMinutes: 120,
   fileInputs:
     '[{"name": "Target Path to be Compressed", "sourceUrl": "agave://cep.home.username/COE332/in.txt", "targetPath", "in.txt"}]',
-  // parameterSet:
-  //   '{"appArgs": [{"name": "compression_type", "arg": "tgz"}], "envVariables": [], "archiveFilter": {}, "containerArgs": [], "schedulerOptions": []}',
   parameterSet:
     '{"appArgs": [], "envVariables": [{"key": "_tapisAppId", "value": "SyRunSleepSecondsNoIPFiles-2"}, {"key": "_tapisAppVersion", "value": "0.0.1"}, {"key": "_tapisArchiveOnAppError", "value": "true"}, {"key": "_tapisArchiveSystemDir", "value": "/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007/archive"}, {"key": "_tapisArchiveSystemId", "value": "tapisv3-exec"}, {"key": "_tapisCoresPerNode", "value": "1"}, {"key": "_tapisDynamicExecSystem", "value": "false"}, {"key": "_tapisEffeciveUserId", "value": "testuser2"}, {"key": "_tapisExecSystemExecDir", "value": "/workdir/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007"}, {"key": "_tapisExecSystemId", "value": "tapisv3-exec2"}, {"key": "_tapisExecSystemInputDir", "value": "/workdir/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007"}, {"key": "_tapisExecSystemOutputDir", "value": "/workdir/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007/output"}, {"key": "_tapisJobCreateDate", "value": "2021-07-12Z"}, {"key": "_tapisJobCreateTime", "value": "23:56:01.790165454Z"}, {"key": "_tapisJobCreateTimestamp", "value": "2021-07-12T23:56:01.790165454Z"}, {"key": "_tapisJobName", "value": "SyRunSleepSecondsNoIPFiles-2"}, {"key": "_tapisJobOwner", "value": "testuser2"}, {"key": "_tapisJobUUID", "value": "ba34f946-8a18-44c4-9b25-19e21dfadf69-007"}, {"key": "_tapisJobWorkingDir", "value": "workdir"}, {"key": "_tapisMaxMinutes", "value": "240"}, {"key": "_tapisMemoryMB", "value": "100"}, {"key": "_tapisNodes", "value": "1"}, {"key": "_tapisSysHost", "value": "129.114.17.113"}, {"key": "_tapisSysRootDir", "value": "/home/testuser2"}, {"key": "_tapisTenant", "value": "dev"}, {"key": "JOBS_PARMS", "value": "15"}, {"key": "MAIN_CLASS", "value": "edu.utexas.tacc.testapps.tapis.SleepSecondsSy"}], "archiveFilter": {"excludes": [], "includes": ["Sleep*", "tapisjob.*"], "includeLaunchFiles": true}, "containerArgs": [], "schedulerOptions": []}',
   execSystemConstraints: null,

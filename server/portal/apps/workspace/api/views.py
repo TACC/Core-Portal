@@ -82,7 +82,7 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODO: Test user default storage system (for archiving)
+            # TODO V3
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(
@@ -200,6 +200,7 @@ class JobsView(BaseApiView):
         if job_uuid:
             data = agave.jobs.getJob(jobUuid=job_uuid)
 
+            # TODO: V3
             # job_data = data.get('result')
             # job_data['_embedded'] = {"metadata": data['result']}
 
@@ -243,6 +244,7 @@ class JobsView(BaseApiView):
                 range = '{},{}'.format(startdate_str, enddate_str)
                 query['_tapis_query_parameters'] = {'created.between': range}
 
+            # TODO V3
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
             # if user_job_ids:
@@ -348,7 +350,7 @@ class JobsView(BaseApiView):
                     'arg': lic.license_as_str()
                 })
 
-            # NOTE: Changed so that it handles fileInputs & fileInputArrays
+            # NOTE V3: Changed so that it handles fileInputs & fileInputArrays
             # url encode inputs
             if job_post.get('fileInputs'):
                 file_inputs = job_post['fileInputs']
@@ -365,7 +367,7 @@ class JobsView(BaseApiView):
                 ]
 
             # Get or create application based on allocation and execution system
-            # TODO: Fix for v3 (probably will be handled during onboarding so that we could just grab it internally)
+            # TODO V3
             apps_mgr = UserApplicationsManager(request.user)
             app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
@@ -375,7 +377,7 @@ class JobsView(BaseApiView):
             job_post['appId'] = app.id
             del job_post['allocation']
 
-            # TODO: Fix for v3
+            # TODO V3
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
                 jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
@@ -383,8 +385,8 @@ class JobsView(BaseApiView):
                 wh_base_url = request.build_absolute_uri('/webhooks/')
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            # TODO: Fix for v3 (probably part of appArgs)
-            # TODO: Check if envVariable exists
+            # TODO V3
+            # TODO V3: Check if envVariable exists
             job_post['parameterSet']['appArgs'].append({
                 'name': '_webhook_base_url',
                 'arg': wh_base_url

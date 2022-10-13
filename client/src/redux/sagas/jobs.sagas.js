@@ -10,7 +10,6 @@ export async function fetchJobs(offset, limit) {
     url: '/api/workspace/jobs/',
     params: { offset, limit },
   });
-  console.log(result.response);
   return result.response;
 }
 

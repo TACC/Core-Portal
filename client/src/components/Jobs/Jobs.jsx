@@ -112,8 +112,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: (el) => {
-        const outputPath = '//data/awesome';
-        // el.row.original.outputLocation || getOutputPathFromHref(el.value);
+        // TODO V3: Handle links differently (also in jobsUtil)
+        const outputPath =
+          el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath && false ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
