@@ -19,7 +19,6 @@ const JobHistory = ({ className }) => {
   const unreadIds = notifs
     .filter((n) => !n.read && n.event_type === 'job')
     .map((n) => n.extra.id);
-
   const rowProps = (row) => {
     return {
       className: unreadIds.includes(row.original.id) ? 'unread' : '',
