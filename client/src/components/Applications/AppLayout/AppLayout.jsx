@@ -74,7 +74,7 @@ const AppsRoutes = () => {
           {Object.keys(categoryDict).length ? (
             <Route
               exact
-              path={`${path}/:appId`}
+              path={`${path}/:appId/:appVersion`}
               render={({ match: { params } }) => {
                 const appDef = appDict[params.appId];
                 if (appDef && 'html' in appDef) {
@@ -87,6 +87,7 @@ const AppsRoutes = () => {
                     type: 'GET_APP',
                     payload: {
                       appId: params.appId,
+                      appVersion: params.appVersion
                     },
                   });
                 }

@@ -2,10 +2,10 @@ import { put, takeLatest, call, select } from 'redux-saga/effects';
 import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
-export async function fetchAppDefinitionUtil(appId) {
+export async function fetchAppDefinitionUtil(appId, appVersion) {
   const result = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { app_id: appId },
+    params: { appId, appVersion },
   });
   return result.response;
 }
@@ -25,7 +25,7 @@ function* getApp(action) {
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
   try {
-    const app = yield call(fetchAppDefinitionUtil, appId);
+    const app = yield call(fetchAppDefinitionUtil, appId, appVersion);
     yield put({ type: 'LOAD_APP', payload: app });
   } catch (error) {
     yield put({ type: 'GET_APP_ERROR', payload: error });
