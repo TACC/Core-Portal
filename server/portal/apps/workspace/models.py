@@ -30,21 +30,16 @@ class AppTrayCategory(models.Model):
 
 
 class AppTrayEntry(models.Model):
-    APP_TYPES = [('agave', 'agave'), ('html', 'html')]
-    name = models.CharField(help_text='The short name of the Agave app', max_length=64, blank=True)
-    label = models.CharField(help_text='The display name of this app in the App Tray', max_length=64)
+    APP_TYPES = [('tapis', 'Tapis'), ('html', 'HTML')]
+    label = models.CharField(help_text='The display name of this app in the App Tray', max_length=64, blank=True)
     icon = models.CharField(help_text='The icon to apply to this application', max_length=64, blank=True)
     version = models.CharField(help_text='The version number of the app', max_length=64, blank=True)
-    revision = models.CharField(help_text='The revision of the app', max_length=3, blank=True)
-    appId = models.CharField(help_text='Specifying an app by id will override'
-                             ' all other app specifications', max_length=64, blank=True)
-    lastRetrieved = models.CharField(help_text='The latest retrieved version of this app', max_length=64)
-    appType = models.CharField(help_text='Application type', max_length=10, choices=APP_TYPES, default='agave')
+    appId = models.CharField(help_text='The id of this app. The app id + version denotes a unique app', max_length=64)
+    appType = models.CharField(help_text='Application type', max_length=10, choices=APP_TYPES, default='tapis')
     html = models.TextField(help_text='HTML definition to display when Application is loaded',
                             default="", blank=True)
-    htmlId = models.CharField(help_text='A non-agave portal specific ID for an HTML app', max_length=64, blank=True)
     available = models.BooleanField(help_text='App visibility in app tray', default=True)
-    shortDescription = models.TextField(help_text='App short description', default='', blank=True)
+    description = models.TextField(help_text='App description', default='', blank=True)
 
     category = models.ForeignKey(
         AppTrayCategory,
@@ -56,4 +51,4 @@ class AppTrayEntry(models.Model):
     def __str__(self):
         if self.appType == "html":
             return "%s: %s (HTML)" % (self.label, self.htmlId)
-        return "%s: %s-%su%s" % (self.label, self.name, self.version, self.revision)
+        return "%s: %s-%su%s" % (self.label or self.id, self.name, self.version, self.revision)
