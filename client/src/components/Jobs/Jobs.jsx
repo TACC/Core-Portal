@@ -112,7 +112,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: (el) => {
-        console.log(el);
         const outputPath = '//data/awesome';
         // el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath && false ? (

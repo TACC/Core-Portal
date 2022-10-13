@@ -9,7 +9,6 @@
       "sourceUrl": "tapis://cep.home.test/test_folder/in.txt",
       "targetPath": "in.txt"
     }
-
   ],
   "parameterSet": {
     "appArgs": [
@@ -17,8 +16,30 @@
         "name": "Compression Type",
         "description": "Type of compression",
         "include": true,
-        "arg": "zip",
+        "arg": "zip"
       }
     ],
+    "schedulerOptions": [
+      {
+        "name": "TACC Allocation",
+        "description": "The TACC Allocation associated with this job execution",
+        "include": true,
+        "arg": "-A TACC-ACI"
+      }
+    ],
+    "subscriptions": [
+      {
+        "description": "Email notification",
+        "enabled": false,
+        "eventCategoryFilter": "JOB_NEW_STATUS",
+        "ttlMinutes": 1,
+        "deliveryTargets": [
+          {
+            "deliveryMethod": "EMAIL",
+            "deliveryAddress": "user@tacc.utexas.edu"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -6,6 +6,7 @@ from portal.apps.workspace.models import (
 )
 
 
+# NOTE: Don't need for v3
 def test_job_submission_model(django_db_reset_sequences, regular_user):
     event = JobSubmission.objects.create(
         user=regular_user,

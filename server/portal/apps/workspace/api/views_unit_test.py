@@ -89,28 +89,18 @@ def request_jobs_util(rf, authenticated_user, query_params={}):
 
 
 def test_get_no_tapis_jobs(rf, authenticated_user, mock_agave_client):
-    mock_agave_client.jobs.list.return_value = []
-    jobs = request_jobs_util(rf, authenticated_user)
-    assert len(jobs) == 0
-
-
-def test_get_no_portal_jobs(rf, authenticated_user, mock_agave_client):
-    JobSubmission.objects.create(
-        user=authenticated_user,
-        jobId="9876"
-    )
-    mock_agave_client.jobs.list.return_value = [
-    ]
+    mock_agave_client.jobs.getJobSearchList.return_value = []
     jobs = request_jobs_util(rf, authenticated_user)
     assert len(jobs) == 0
 
 
 def test_get_jobs_bad_offset(rf, authenticated_user, mock_agave_client):
-    mock_agave_client.jobs.list.return_value = []
+    mock_agave_client.jobs.getJobSearchList.return_value = []
     jobs = request_jobs_util(rf, authenticated_user, query_params={"offset": 100})
     assert len(jobs) == 0
 
 
+# NOTE: This is handled by search query in v3 (should be tested in tapipy?)
 def test_date_filter(rf, authenticated_user, mock_agave_client):
     test_time = timezone.now()
 
