@@ -188,60 +188,59 @@ class JobsView(BaseApiView):
     def post(self, request, *args, **kwargs):
         agave = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
-        job_uuid = job_post.get('job_uuid')
+        job_id = job_post.get('job_id')
         job_action = job_post.get('action')
 
-        if job_uuid and job_action:
+        if job_id and job_action:
             # resubmit job
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
-
-                data = agave.jobs.resubmitJob(jobUuid=job_uuid)
-
+                METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
             # cancel job / stop job
             else:
-                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
-                data = agave.jobs.cancelJob(jobUuid=job_uuid)
+                METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
 
-            return JsonResponse(
-                {
-                    'status': 200,
-                    'response': data,
-                },
-                encoder=BaseTapisResultSerializer
-            )
+            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
+
+            if job_action == 'resubmit':
+                if "id" in data:
+                    job = JobSubmission.objects.create(
+                        user=request.user,
+                        jobId=data["id"]
+                    )
+                    job.save()
+
+            return JsonResponse({"response": data})
         # submit job
         elif job_post:
             METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            # TODO V3: probably will be handled during onboarding so that we could just grab it internally
             default_sys = UserSystemsManager(
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
 
             # cleaning archive path value
-            if job_post.get('archiveSystemDir'):
-                parsed = urlparse(job_post['archiveSystemDir'])
+            if job_post.get('archivePath'):
+                parsed = urlparse(job_post['archivePath'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
                 elif parsed.path == '':
-
+                    # if path is blank, set to root of system
                     archive_path = '/'
                 else:
                     archive_path = parsed.path
 
-                job_post['archiveSystemDir'] = archive_path
+                job_post['archivePath'] = archive_path
 
                 if parsed.netloc:
-                    job_post['archiveSystemId'] = parsed.netloc
+                    job_post['archiveSystem'] = parsed.netloc
                 else:
-                    job_post['archiveSystemId'] = default_sys.get_system_id()
+                    job_post['archiveSystem'] = default_sys.get_system_id()
             else:
-                job_post['archiveSystemDir'] = \
+                job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystemId'] = default_sys.get_system_id()
+                job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
             lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
@@ -251,30 +250,13 @@ class JobsView(BaseApiView):
                 lic = license_model.objects.filter(user=request.user).first()
                 if not lic:
                     raise ApiException("You are missing the required license for this application.")
-                # TODO: Fix for v3
-                job_post['parameterSet']['appArgs'].append({
-                    'name': '_license',
-                    'arg': lic.license_as_str()
-                })
+                job_post['parameters']['_license'] = lic.license_as_str()
 
-            # NOTE V3: Changed so that it handles fileInputs & fileInputArrays
             # url encode inputs
-            if job_post.get('fileInputs'):
-                file_inputs = job_post['fileInputs']
-                job_post['fileInputs'] = [
-                    {**input, 'sourceUrl': url_parse_input_v3(input['sourceUrl'])}
-                    for input in file_inputs
-                ]
-
-            if job_post.get('fileInputArrays'):
-                file_input_arrays = job_post['fileInputArrays']
-                job_post['fileInputs'] = [
-                    {**input_array,'sourceUrls': [url_parse_input_v3(url) for url in input_array['sourceUrls']]}
-                    for input_array in file_input_arrays
-                ]
+            if job_post['inputs']:
+                job_post = url_parse_inputs(job_post)
 
             # Get or create application based on allocation and execution system
-            # TODO V3
             apps_mgr = UserApplicationsManager(request.user)
             app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
@@ -284,7 +266,6 @@ class JobsView(BaseApiView):
             job_post['appId'] = app.id
             del job_post['allocation']
 
-            # TODO V3
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
                 jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
@@ -292,40 +273,27 @@ class JobsView(BaseApiView):
                 wh_base_url = request.build_absolute_uri('/webhooks/')
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            # TODO V3
-            # TODO V3: Check if envVariable exists
-            job_post['parameterSet']['appArgs'].append({
-                'name': '_webhook_base_url',
-                'arg': wh_base_url
-            })
-            job_post['subscriptions'] = [
-                {
-                    'description': e,
-                    'deliveryTargets': [
-                        {
-                            'deliveryMethod': "WEBHOOK",
-                            'deliveryAddress': jobs_wh_url,
-                        }
-                    ]
-                }
+            job_post['parameters']['_webhook_base_url'] = wh_base_url
+            job_post['notifications'] = [
+                {'url': jobs_wh_url,
+                 'event': e}
                 for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             # Remove any params from job_post that are not in appDef
-            # TODO V3: because the app parameter environment variables don't have ids
-            # job_post['parameterSet'] = {param: job_post['parameterSet'][param]
-            #                           for param in job_post['parameterSet']
-            #                           # if param in [p['id'] for p in app.parameterSet]}
-            #                           if param in [p['id'] for p in app.jobAttributes.parameterSet.appArgs]}
+            job_post['parameters'] = {param: job_post['parameters'][param]
+                                      for param in job_post['parameters']
+                                      if param in [p['id'] for p in app.parameters]}
 
             response = agave.jobs.submit(body=job_post)
 
-            return JsonResponse(
-                {
-                    'status': 200,
-                    'response': response,
-                },
-                encoder=BaseTapisResultSerializer
-            )
+            if "id" in response:
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=response["id"]
+                )
+                job.save()
+
+            return JsonResponse({"response": response})
 
 
 @method_decorator(login_required, name='dispatch')
