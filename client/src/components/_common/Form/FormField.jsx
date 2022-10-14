@@ -86,10 +86,8 @@ const FormField = ({
     <>
       <FormText className="form-field__help" color="muted">
         {description}
-        {meta.touched && meta.error ? (
+        {meta.touched && meta.error && (
           <div className="form-field__validation-error">{meta.error} </div>
-        ) : (
-          description && null
         )}
       </FormText>
     </>
