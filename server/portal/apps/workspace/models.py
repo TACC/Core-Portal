@@ -50,4 +50,8 @@ class AppTrayEntry(models.Model):
     def __str__(self):
         if self.appType == "html":
             return "%s: %s (HTML)" % (self.label, self.appId)
-        return "%s %s" % (self.id, self.version)
+        return "%s%s%s" % (
+            f"{self.label}: " if self.label else "",
+            self.appId,
+            f"-{self.version}" if self.version else ""
+        )

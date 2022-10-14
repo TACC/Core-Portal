@@ -20,6 +20,6 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
             'fields': ('appId', 'version')
         }),
         ('HTML - all fields required', {
-            'fields': ('description', 'html')
+            'fields': ['html']
         })
     )
