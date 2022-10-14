@@ -404,7 +404,7 @@ class AppsTrayView(BaseApiView):
         return JsonResponse(
             {
                 "tabs": tabs,
-                "definitions": html_definitions
+                "htmlDefinitions": html_definitions
             },
             encoder=BaseTapisResultSerializer
         )
