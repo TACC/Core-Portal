@@ -30,11 +30,6 @@ class Migration(migrations.Migration):
             model_name='apptrayentry',
             name='shortDescription',
         ),
-        migrations.AddField(
-            model_name='apptrayentry',
-            name='description',
-            field=models.TextField(blank=True, default='', help_text='App description'),
-        ),
         migrations.AlterField(
             model_name='apptrayentry',
             name='appId',

@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
+from django.core.serializers import serialize
 from portal.utils.translations import get_jupyter_url
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
@@ -323,11 +324,10 @@ class AppsTrayView(BaseApiView):
         tapis = user.tapis_oauth.client
         # TODO: make sure to exclude public apps
         # TODO: update label if label is ever added to tapis apps spec
-        apps_listing = tapis.apps.getApps(select="version.description.id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        apps_listing = tapis.apps.getApps(select="version,id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
         my_apps = list(map(lambda app: {
             "label": app.id,
             "version": app.version,
-            "description": app.description,
             "type": "tapis",
             "appId": app.id,
         }, apps_listing))
@@ -342,9 +342,10 @@ class AppsTrayView(BaseApiView):
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
             # Retrieve all apps known to the portal in that directory
-            # TODO: FIX ORDER BY
-            tapis_apps = AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis', order_by=Coalesce('label', 'appId'))
-            html_apps = AppTrayEntry.objects.all().filter(available=True, category=category, appType='html', order_by=Coalesce('label', 'appId'))
+            tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+            html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
+                             .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             categoryResult = {
                 "title": category.category,
@@ -353,9 +354,7 @@ class AppsTrayView(BaseApiView):
 
             # Add html apps to html_definitions
             for app in html_apps:
-                html_definitions[app.htmlId] = {
-                    app
-                }
+                html_definitions[app['appId']] = app
 
                 categoryResult["apps"].append(app)
 
@@ -385,7 +384,7 @@ class AppsTrayView(BaseApiView):
         """
         tabs, html_definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
-        logger.debug(my_apps)
+
         tabs.insert(
             0,
             {
@@ -393,8 +392,7 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
-        logger.debug(tabs)
-        logger.debug(type(tabs))
+
         # Only return tabs that are non-empty
         tabs = list(
             filter(
@@ -403,7 +401,13 @@ class AppsTrayView(BaseApiView):
             )
         )
 
-        return JsonResponse({"tabs": tabs, "definitions": html_definitions})
+        return JsonResponse(
+            {
+                "tabs": tabs,
+                "definitions": html_definitions
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 @method_decorator(login_required, name='dispatch')

@@ -39,7 +39,6 @@ class AppTrayEntry(models.Model):
     html = models.TextField(help_text='HTML definition to display when Application is loaded',
                             default="", blank=True)
     available = models.BooleanField(help_text='App visibility in app tray', default=True)
-    description = models.TextField(help_text='App description', default='', blank=True)
 
     category = models.ForeignKey(
         AppTrayCategory,
