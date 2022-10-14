@@ -51,13 +51,13 @@
   text-decoration: unset;
 }
 
-.workbench-content .wb-link:has(.icon):hover > span{
-  text-decoration: underline;
-}
 .workbench-content .wb-link:has(.icon) > span {
   text-decoration: unset;
 }
-  
+
+.workbench-content .wb-link:has(.icon):hover > span {
+  text-decoration: underline;
+}
 
 .workbench-content .btn-secondary {
   background-color: #f4f4f4;
