@@ -12,14 +12,14 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-from portal.utils.translations import get_jupyter_url
+# from portal.utils.translations import get_jupyter_url
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
-from portal.utils.translations import url_parse_inputs, url_parse_input_v3
+from portal.utils.translations import url_parse_inputs
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from .handlers.tapis_handlers import tapis_get_handler
@@ -201,13 +201,13 @@ class JobsView(BaseApiView):
 
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
 
-            if job_action == 'resubmit':
-                if "id" in data:
-                    job = JobSubmission.objects.create(
-                        user=request.user,
-                        jobId=data["id"]
-                    )
-                    job.save()
+            # if job_action == 'resubmit':
+            #     if "id" in data:
+            #         job = JobSubmission.objects.create(
+            #             user=request.user,
+            #             jobId=data["id"]
+            #         )
+            #         job.save()
 
             return JsonResponse({"response": data})
         # submit job
@@ -286,12 +286,12 @@ class JobsView(BaseApiView):
 
             response = agave.jobs.submit(body=job_post)
 
-            if "id" in response:
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=response["id"]
-                )
-                job.save()
+            # if "id" in response:
+            #     job = JobSubmission.objects.create(
+            #         user=request.user,
+            #         jobId=response["id"]
+            #     )
+            #     job.save()
 
             return JsonResponse({"response": response})
 
