@@ -6,7 +6,7 @@ from portal.apps.workspace.models import JobSubmission
 import json
 import os
 import pytest
-import copy
+from tapipy.tapis import TapisResult
 from datetime import timedelta
 from django.utils import timezone
 from django.core.management import call_command
@@ -170,34 +170,6 @@ def test_date_filter(rf, authenticated_user, mock_tapis_client):
     assert len(jobs) == 1
 
 
-def test_tray_get_appid_by_spec(authenticated_user, mock_tapis_client):
-    compress_01u1 = {
-        'id': 'compress-0.1u1',
-        'name': 'compress',
-        'version': '0.1',
-        'revision': '1'
-    }
-    compress_01u2 = {
-        'id': 'compress-0.1u2',
-        'name': 'compress',
-        'version': '0.1',
-        'revision': '2'
-    }
-    compress_02u1 = {
-        'id': 'compress-0.2u1',
-        'name': 'compress',
-        'version': '0.2',
-        'revision': 1
-    }
-    view = AppsTrayView()
-    mock_tapis_client.apps.list.return_value = [compress_01u1, compress_01u2]
-    assert view.getAppIdBySpec(
-        MagicMock(name='compress', version='0.1'), authenticated_user) == 'compress-0.1u2'
-    mock_tapis_client.apps.list.return_value = [compress_01u2, compress_02u1]
-    assert view.getAppIdBySpec(
-        MagicMock(name='compress', version='0.1'), authenticated_user) == 'compress-0.2u1'
-
-
 @pytest.mark.skip(reason="Tray endpoint and related tests need to be updated")
 def test_tray_get_app(mocker, client, authenticated_user):
     mock_get_by_spec = mocker.patch.object(AppsTrayView, 'getAppIdBySpec')
@@ -221,25 +193,19 @@ def test_tray_get_app(mocker, client, authenticated_user):
 
 def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
     view = AppsTrayView()
-    mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
-    app = {
+    app = TapisResult(**{
         'id': 'myapp-0.1',
-        'label': 'My App',
         'version': '0.1',
-        'revision': '1',
-        'shortDescription': 'My App',
-    }
-    mock_tapis_client.apps.list.return_value = [
+    })
+    mock_tapis_client.apps.getApps.return_value = [app]
+    expected_list = [
         {
-            'id': 'prtl.clone.hidden'
-        },
-        app
+            "label": app.id,
+            "version": app.version,
+            "type": "tapis",
+            "appId": app.id,
+        }
     ]
-    mock_get_app.return_value = app
-    expected_list = [copy.deepcopy(app)]
-    expected_list[0]['type'] = 'agave'
-    expected_list[0]['appId'] = 'myapp-0.1'
-    expected_list[0].pop('id', None)
     assert view.getPrivateApps(authenticated_user) == expected_list
 
 
