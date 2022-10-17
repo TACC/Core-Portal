@@ -57,7 +57,7 @@ describe('History Routes', () => {
   it('should dispatch the get job detail event type when opening the job detail modal', () => {
     const history = createMemoryHistory();
     history.push(
-      '/workbench/history/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007'
+      '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007'
     );
 
     const store = mockStore({
@@ -78,7 +78,7 @@ describe('History Routes', () => {
     renderComponent(
       <MemoryRouter
         initialEntries={[
-          '/workbench/history/jobs/ba34f946-8a18-44c4-9b25-19e21dfadf69-007',
+          '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007',
         ]}
       >
         <Routes />
@@ -91,7 +91,7 @@ describe('History Routes', () => {
       {
         type: 'GET_JOB_DETAILS',
         payload: {
-          jobUuid: 'ba34f946-8a18-44c4-9b25-19e21dfadf69-007',
+          jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         },
       },
     ]);

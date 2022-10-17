@@ -10,7 +10,7 @@ import appDetailFixture from '../../../../redux/sagas/fixtures/appdetail.fixture
 import { initialState as workbench } from '../../../../redux/reducers/workbench.reducers';
 
 const mockInitialState = {
-  uuid: 'ba34f946-8a18-44c4-9b25-19e21dfadf69-007',
+  uuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
   app: appDetailFixture,
   job: jobDetailFixture,
   display: jobDetailDisplayFixture,
@@ -35,14 +35,13 @@ describe('Job History Modal', () => {
             },
           })}
         >
-          <JobHistoryModal uuid="ba34f946-8a18-44c4-9b25-19e21dfadf69-007" />
+          <JobHistoryModal uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007" />
         </Provider>
       </BrowserRouter>
     );
-    expect(getByText(/Compress folder/)).toBeDefined();
-    expect(getByText(/Target Path to be Compressed/)).toBeDefined();
-    expect(getByText(/Compression Type/)).toBeDefined();
-    expect(getByText(/Failure Report/)).toBeDefined();
+    expect(getByText(/Greeting/)).toBeDefined();
+    expect(getByText(/Target/)).toBeDefined();
+    expect(getByText(/Last Status Message/)).toBeDefined();
     expect(getByText(/Max Minutes/)).toBeDefined();
     expect(getByText(/Execution Directory/)).toBeDefined();
     expect(getByText(/Input Directory/)).toBeDefined();
