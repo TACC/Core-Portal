@@ -4,8 +4,8 @@ import {
   useLocation,
   NavLink as RRNavLink,
 } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Modal, ModalBody, ModalHeader, NavLink } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import {
   Button,
   DescriptionList,
