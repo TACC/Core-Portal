@@ -3,8 +3,8 @@ from django.conf import settings
 from portal.libs.agave.models.systems.storage import StorageSystem
 
 
-def test_system_success(mock_agave_client):
-    storage = StorageSystem(mock_agave_client, id="systemId", load=False)
+def test_system_success(mock_tapis_client):
+    storage = StorageSystem(mock_tapis_client, id="systemId", load=False)
     success, result = storage.test()
     assert success
     assert result == 'SUCCESS'

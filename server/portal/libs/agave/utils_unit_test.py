@@ -16,6 +16,6 @@ def test_text_preview_non_ascii(requests_mock, NON_ASCII_TEXT):
         text_preview(POSTIT_URL)
 
 
-def test_get_file_size(mock_agave_client, agave_file_listing_mock):
-    mock_agave_client.files.list.return_value = agave_file_listing_mock
-    assert get_file_size(mock_agave_client, "system", "file") == 5
+def test_get_file_size(mock_tapis_client, agave_file_listing_mock):
+    mock_tapis_client.files.list.return_value = agave_file_listing_mock
+    assert get_file_size(mock_tapis_client, "system", "file") == 5
