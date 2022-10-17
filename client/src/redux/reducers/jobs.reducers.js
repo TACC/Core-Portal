@@ -131,7 +131,6 @@ export function jobDetail(state = initialJobDetail, action) {
     case 'JOB_DETAILS_FETCH_SUCCESS':
       return {
         ...state,
-        jobId: action.payload.job.id,
         jobUuid: action.payload.job.uuid,
         job: action.payload.job,
         display: getJobDisplayInformation(
