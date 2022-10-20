@@ -160,7 +160,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStepV3',
+        'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
             'tapis_systems': ['frontera', 'stampede2.community'],    # Tapis systems to grant user credentials
         }
@@ -178,7 +178,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStepV3',
+        'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
             'tapis_systems': ['frontera', 'stampede2.community', 'cloud.corral.community'],
         }
