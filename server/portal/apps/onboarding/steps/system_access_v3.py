@@ -1,13 +1,12 @@
 
+import logging
+import requests
 from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
-import requests
 from django.conf import settings
 from portal.utils.encryption import create_private_key, create_public_key, export_key
 from tapipy.errors import BaseTapyException
-from portal.apps.onboarding.state import SetupState
-import logging
 
 
 def createKeyPair():
@@ -29,14 +28,14 @@ class SystemAccessStepV3(AbstractStep):
         super(SystemAccessStepV3, self).__init__(user)
 
     def display_name(self):
-        return "Storage"
+        return "System Access"
 
     def description(self):
-        return "Setting up access to data files on the storage systems (V3). No action required."
+        return "Setting up access to TACC storage and execution systems. No action required."
 
     def prepare(self):
         self.state = SetupState.PENDING
-        self.log("Awaiting storage system access (V3)")
+        self.log("Awaiting TACC systems access.")
 
     def register_public_key(self, publicKey, system_id) -> int:
         """
@@ -46,8 +45,6 @@ class SystemAccessStepV3(AbstractStep):
         headers = {'Authorization': 'Bearer {}'.format(settings.KEY_SERVICE_TOKEN)}
         data = {'key_value': publicKey, 'tags': [{'name': 'system', 'value': system_id}]}
         response = requests.post(url, json=data, headers=headers)
-        print("Key service post data: {}".format(data))
-        print("Key service response {}: {}".format(response.status_code, response.content))
         response.raise_for_status
         return response.status_code
 
@@ -78,13 +75,14 @@ class SystemAccessStepV3(AbstractStep):
             self.fail(f"Failed to push credentials to system: {system_id}")
 
     def process(self):
-        self.log("processing user")
-        for storage in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
+        self.log("Processing system access for user")
+        for system in self.settings.get('tapis_systems') or []:
             try:
-                self.check_system(storage['system'])
-                self.log(f"Access already granted for system: {storage['system']}")
+                self.check_system(system)
+                self.log(f"Access already granted for system: {system}")
             except BaseTapyException:
-                self.generate_and_push_credentials(storage['system'])
+                self.generate_and_push_credentials(system)
+                self.log(f"Access granted for system: {system}")
 
         if self.state != SetupState.FAILED:
-            self.complete("user is processed.")
+            self.complete("User is processed.")
