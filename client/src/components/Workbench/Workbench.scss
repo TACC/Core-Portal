@@ -47,8 +47,7 @@
 .workbench-content .wb-link {
   color: var(--global-color-accent--normal);
 }
-.workbench-content .wb-link:has(.icon):hover,
-.workbench-content .wb-link:has(.icon) > span {
+.workbench-content .wb-link:has(.icon):hover {
   text-decoration: unset;
 }
 .workbench-content .wb-link:has(.icon):hover > span {
