@@ -187,6 +187,7 @@ JobHistoryContent.propTypes = {
 };
 JobHistoryContent.defaultProps = {
   jobName: '',
+  jobDisplay: {},
 };
 
 function JobHistoryModal({ uuid }) {
@@ -244,7 +245,7 @@ function JobHistoryModal({ uuid }) {
             <JobHistoryContent
               jobName={jobName}
               jobDetails={job}
-              jobDisplay={display ? display : {}}
+              jobDisplay={display}
               toggle={close}
             />
           )}

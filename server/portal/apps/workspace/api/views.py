@@ -12,7 +12,6 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-# from portal.utils.translations import get_jupyter_url
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -20,6 +19,7 @@ from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
+from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from .handlers.tapis_handlers import tapis_get_handler
@@ -100,31 +100,13 @@ class AppsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         job_uuid = request.GET.get('job_uuid')
 
         # get specific job info
         if job_uuid:
-            data = agave.jobs.getJob(jobUuid=job_uuid)
+            data = tapis.jobs.getJob(jobUuid=job_uuid)
 
-            # TODO: V3
-            # job_data = data.get('result')
-            # job_data['_embedded'] = {"metadata": data['result']}
-
-            # archiveSystem = job_data.get('archiveSystemId', None)
-            # if archiveSystem:
-            #     archive_system_path = '{}/{}'.format(archiveSystem, job_data['archiveSystemDir'])
-            #     job_data['archiveUrl'] = '/workbench/data-depot/'
-            #     job_data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
-
-            #     jupyter_url = get_jupyter_url(
-            #         archiveSystem,
-            #         "/" + job_data['archiveSystemDir'],
-            #         request.user.username,
-            #         is_dir=True
-            #     )
-            #     if jupyter_url:
-            #         job_data['jupyterUrl'] = jupyter_url
         # list jobs
         else:
             limit = int(request.GET.get('limit', 10))
@@ -151,12 +133,12 @@ class JobsView(BaseApiView):
                 range = '{},{}'.format(startdate_str, enddate_str)
                 query['_tapis_query_parameters'] = {'created.between': range}
 
-            # TODO V3
+            # TODO V3: Might have to use to get portal-specific jobs minus the time attributes
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
             # if user_job_ids:
-            #     # data = agave.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
-            #     # re-order agave job info to match our time-ordered jobs
+            #     # data = tapis.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
+            #     # re-order tapis job info to match our time-ordered jobs
             #     # while also taking care that tapis in rare cases might no longer
             #     # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
             #     data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
@@ -173,10 +155,10 @@ class JobsView(BaseApiView):
         )
 
     def delete(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         job_uuid = request.GET.get('job_uuid')
         METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
-        data = agave.jobs.hideJob(jobUuid=job_uuid)
+        data = tapis.jobs.hideJob(jobUuid=job_uuid)
         return JsonResponse(
             {
                 'status': 200,
@@ -201,13 +183,13 @@ class JobsView(BaseApiView):
 
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
 
-            # if job_action == 'resubmit':
-            #     if "id" in data:
-            #         job = JobSubmission.objects.create(
-            #             user=request.user,
-            #             jobId=data["id"]
-            #         )
-            #         job.save()
+            if job_action == 'resubmit':
+                if "id" in data:
+                    job = JobSubmission.objects.create(
+                        user=request.user,
+                        jobId=data["id"]
+                    )
+                    job.save()
 
             return JsonResponse({"response": data})
         # submit job
@@ -286,12 +268,12 @@ class JobsView(BaseApiView):
 
             response = agave.jobs.submit(body=job_post)
 
-            # if "id" in response:
-            #     job = JobSubmission.objects.create(
-            #         user=request.user,
-            #         jobId=response["id"]
-            #     )
-            #     job.save()
+            if "id" in response:
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=response["id"]
+                )
+                job.save()
 
             return JsonResponse({"response": response})
 
@@ -330,8 +312,8 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        agave = request.user.tapis_oauth.client
-        data = agave.jobs.getJobHistory(jobUuid=job_uuid)
+        tapis = request.user.tapis_oauth.client
+        data = tapis.jobs.getJobHistory(jobUuid=job_uuid)
         return JsonResponse(
             {
                 'status': 200,

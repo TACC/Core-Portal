@@ -3,7 +3,6 @@ from django.conf import settings
 from django.utils import timezone
 
 
-# NOTE: Unneeded for v3
 class JobSubmission(models.Model):
     """Job Submission
 
@@ -14,9 +13,6 @@ class JobSubmission(models.Model):
         related_name="+",
         on_delete=models.CASCADE
     )
-
-    # Timestamp for event
-    time = models.DateTimeField(default=timezone.now)
 
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)

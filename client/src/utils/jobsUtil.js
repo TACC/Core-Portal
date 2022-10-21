@@ -76,32 +76,16 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      // TODO V3: Undefined for now
+      // TODO V3: Undefined for now, appId is used above for now.
+      //          So will comment until we have something
       // display.applicationName = app.definition.notes.label;
 
-      // TODO V3: Unsure if needed
-
-      // Improve input/parameters
-      // display.inputs.forEach((input) => {
-      //   const matchingParameter = app.definition.jobAttributes.fileInputs.find((obj) => {
-      //     return input.id === obj.name;
-      //   });
-      //   if (matchingParameter) {
-      //     // eslint-disable-next-line no-param-reassign
-      //     input.label = matchingParameter.details.label;
-      //   }
-      // });
-      // display.parameters.forEach((input) => {
-      //   const matchingParameter = app.definition.parameters.find((obj) => {
-      //     return input.id === obj.id;
-      //   });
-      //   if (matchingParameter) {
-      //     // eslint-disable-next-line no-param-reassign
-      //     input.label = matchingParameter.details.label;
-      //   }
-      // });
-
       // TODO V3: Maybe should filter with includes? some have null/array values
+      // NOTE: From Sal: We'll probably have to filter with a flag we create
+      //                 ourselves with whatever meta object they allow us to
+      //                 attach to job input args in the future. For example,
+      //                 a webhookUrl will be a required input for interactive jobs,
+      //                 but we want to hide that input
 
       // filter non-visible
       // display.inputs.filter((input) => {
@@ -139,17 +123,10 @@ export function getJobDisplayInformation(job, app) {
         display.queue = job.execSystemLogicalQueue;
       }
 
-      // TODO V3: Unsure if parallelism exists
-      // if (app.definition.parallelism === 'PARALLEL') {
-      //   display.processorsPerNode = job.processorsPerNode;
-      //   display.nodeCount = job.nodeCount;
-      // }
-
-      // if (app.definition.parallelism === 'PARALLEL') {
-      // display.processorsPerNode = job.processorsPerNode;
-      display.processorsPerNode = job.coresPerNode;
-      display.nodeCount = job.nodeCount;
-      // }
+      if (app.definition.jobAttributes.isMpi) {
+        display.processorsPerNode = job.processorsPerNode;
+        display.nodeCount = job.nodeCount;
+      }
     } catch (ignore) {
       // ignore if there is problem using the app definition to improve display
     }
