@@ -61,6 +61,11 @@ const Searchbar = ({
         if (siteSearch) window.dispatchEvent(new Event('portal.search'));
       };
 
+      // Reset form field on route change
+      useEffect(() => {
+        !hasQuery && !siteSearch && setQuery('');
+      }, [hasQuery, location, siteSearch]);
+
       const onSubmit = (e) => {
         routeSearch();
         e.preventDefault();
