@@ -11,17 +11,8 @@ export function isOutputState(status) {
   return isTerminalState(status) && status !== 'STOPPED';
 }
 
-// TODO V3: Handle links differently (also in Jobs.jsx)
-export function getOutputPathFromHref(href) {
-  // get output path from href (i.e. _links.archiveData.href )
-  if (href) {
-    const path = href.split('/').slice(7).filter(Boolean).join('/');
-    if (path === 'listings') {
-      return null;
-    }
-    return path;
-  }
-  return null;
+export function getOutputPath(job) {
+  return `${job.archiveSystemId}/${job.archiveSystemDir}`;
 }
 
 export function getAllocatonFromDirective(directive) {
@@ -123,8 +114,8 @@ export function getJobDisplayInformation(job, app) {
         display.queue = job.execSystemLogicalQueue;
       }
 
-      if (app.definition.jobAttributes.isMpi) {
-        display.processorsPerNode = job.processorsPerNode;
+      if (job.isMpi) {
+        display.processorsPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
       }
     } catch (ignore) {

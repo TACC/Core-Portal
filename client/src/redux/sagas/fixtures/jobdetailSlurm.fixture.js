@@ -59,7 +59,7 @@ const jobDetailSlurmFixture = {
   createdbyTenant: 'a2cps',
   tags: null,
   jobType: 'BATCH',
-  isMpi: false,
+  isMpi: true,
   mpiCmd: null,
   cmdPrefix: null,
   sharedAppCtx: true,

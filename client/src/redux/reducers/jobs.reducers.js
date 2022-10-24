@@ -1,4 +1,8 @@
-import { getJobDisplayInformation, isOutputState } from 'utils/jobsUtil';
+import {
+  getJobDisplayInformation,
+  isOutputState,
+  getOutputPath,
+} from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -13,7 +17,7 @@ function updateJobFromNotification(job, notification) {
   const updatedJob = { ...job, status: notification.status };
   if (isOutputState(notification.status)) {
     // add archive data path to job
-    updatedJob.outputLocation = `${notification.archiveSystemId}/${notification.archiveSystemDir}`;
+    updatedJob.outputLocation = getOutputPath(notification);
   }
   return updatedJob;
 }
@@ -43,8 +47,8 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.id === action.payload.job.id
-            ? { ...action.payload.job, outputLocation: job.outputLocation }
+          job.uuid === action.payload.job.uuid
+            ? { ...action.payload.job, outputLocation: getOutputPath(job) }
             : job
         ),
       };

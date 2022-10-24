@@ -21,8 +21,6 @@ const jobDetailDisplayFixture = {
       value: 'world',
     },
   ],
-  nodeCount: 1,
-  processorsPerNode: 1,
   queue: 'development',
   systemName: 'Frontera',
   workPath: '/system/1/user/tapis/1/jobs/1/output',

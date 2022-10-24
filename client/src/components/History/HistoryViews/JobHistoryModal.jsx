@@ -58,7 +58,7 @@ const reduceInputParameters = (data) =>
 // TODO: Should be able to remove jobDisplay
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
-  const outputPath = `${jobDetails.archiveSystemId}/${jobDetails.archiveSystemDir}`;
+  const outputLocation = jobDetails.outputLocation;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -77,7 +77,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const configDataObj = {};
   const outputDataObj = {
     'Job Name': jobName,
-    'Output Location': outputPath,
+    'Output Location': outputLocation,
   };
 
   statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
@@ -150,7 +150,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
           data={{
             Output: !hideDataFiles && (
               <DataFilesLink
-                path={outputPath}
+                path={outputLocation}
                 disabled={!isOutputState(jobDetails.status)}
               >
                 View in Data Files

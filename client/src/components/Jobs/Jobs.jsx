@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
-import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
@@ -110,17 +109,15 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
-      accessor: '_links.archiveData.href',
+      accessor: 'outputLocation',
       Cell: (el) => {
-        // TODO V3: Handle links differently (also in jobsUtil)
-        const outputPath =
-          el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputPath && !hideDataFiles ? (
+        const outputLocation = el.row.original.outputLocation;
+        return outputLocation && !hideDataFiles ? (
           <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
+            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
             className="wb-link job__path"
           >
-            {outputPath}
+            {outputLocation}
           </Link>
         ) : null;
       },
