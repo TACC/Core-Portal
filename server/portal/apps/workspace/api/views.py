@@ -145,7 +145,7 @@ class JobsView(BaseApiView):
             # else:
             #     data = []
 
-            data = agave.jobs.getJobSearchList(**query)
+            data = tapis.jobs.getJobSearchList(**query)
         return JsonResponse(
             {
                 'status': 200,

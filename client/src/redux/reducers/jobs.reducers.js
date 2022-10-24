@@ -48,7 +48,10 @@ export function jobs(state = initialState, action) {
         ...state,
         list: state.list.map((job) =>
           job.uuid === action.payload.job.uuid
-            ? { ...action.payload.job, outputLocation: getOutputPath(job) }
+            ? {
+                ...action.payload.job,
+                outputLocation: getOutputPath(action.payload.job),
+              }
             : job
         ),
       };

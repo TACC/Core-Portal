@@ -1,11 +1,9 @@
 import logging
-import os
 import urllib.request
 import urllib.parse
 import urllib.error
 from urllib.parse import urlparse
 import copy
-from django.conf import settings
 
 
 LOGGER = logging.getLogger(__name__)

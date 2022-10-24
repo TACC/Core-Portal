@@ -58,7 +58,10 @@ const reduceInputParameters = (data) =>
 // TODO: Should be able to remove jobDisplay
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
-  const outputLocation = jobDetails.outputLocation;
+  const outputLocation = useSelector((state) => {
+    return state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
+      .outputLocation;
+  });
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -74,6 +77,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     // This is in jobDetails
     ...reduceInputParameters(jobDisplay.parameters),
   };
+
   const configDataObj = {};
   const outputDataObj = {
     'Job Name': jobName,
@@ -125,9 +129,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   }
 
   if (jobDetails.status !== 'FINISHED') {
-    configDataObj['Execution Directory'] = jobDisplay.execSystemExecDir;
-    configDataObj['Input Directory'] = jobDisplay.execSystemInputDir;
-    configDataObj['Output Directory'] = jobDisplay.execSystemOutputDir;
+    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
+    configDataObj['Input Directory'] = jobDetails.execSystemInputDir;
+    configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
   }
 
   const isTerminalState =
