@@ -9,7 +9,7 @@ from django.conf import settings
 
 
 @pytest.fixture
-def mock_agave_client(mocker):
+def mock_tapis_client(mocker):
     yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
@@ -19,7 +19,7 @@ def mock_googledrive_client(mocker):
 
 
 @pytest.fixture
-def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="username",
                                           password="password",
                                           first_name="Firstname",
@@ -40,7 +40,7 @@ def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client
 
 
 @pytest.fixture
-def regular_user2(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user2(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="username2",
                                           password="password",
                                           first_name="Firstname2",
@@ -61,7 +61,7 @@ def regular_user2(django_user_model, django_db_reset_sequences, mock_agave_clien
 
 
 @pytest.fixture
-def regular_user_with_underscore(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user_with_underscore(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="user_name",
                                           password="password",
                                           first_name="Firstname3",
@@ -88,7 +88,7 @@ def authenticated_user(client, regular_user):
 
 
 @pytest.fixture
-def staff_user(client, django_user_model, django_db_reset_sequences, mock_agave_client):
+def staff_user(client, django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username='staff', password='password')
     user = django_user_model.objects.get(username='staff')
     user.is_staff = True
