@@ -9,6 +9,7 @@ import Routes from './History';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
+import { default as jobsList } from '../Jobs/Jobs.fixture';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
@@ -21,8 +22,11 @@ describe('History Routes', () => {
       <Provider
         store={mockStore({
           notifications,
-          jobs,
+          jobs: { ...jobs, list: jobsList },
           workbench: { ...workbench, config: { hideDataFiles: false } },
+          apps: {
+            appIcons: {},
+          },
         })}
       >
         <BrowserRouter>
@@ -36,8 +40,11 @@ describe('History Routes', () => {
   it('should dispatch the get jobs event', () => {
     const store = mockStore({
       notifications,
-      jobs,
+      jobs: { ...jobs, list: jobsList },
       workbench: { ...workbench, config: { hideDataFiles: false } },
+      apps: {
+        appIcons: {},
+      },
     });
 
     render(
@@ -62,7 +69,7 @@ describe('History Routes', () => {
 
     const store = mockStore({
       notifications,
-      jobs,
+      jobs: { ...jobs, list: jobsList },
       jobDetail: {
         jobUuid: 'job_uuid',
         app: appDetailFixture,
@@ -71,6 +78,9 @@ describe('History Routes', () => {
         loading: false,
         loadingError: false,
         loadingErrorMessage: '',
+      },
+      apps: {
+        appIcons: {},
       },
       workbench: { ...workbench, config: { hideDataFiles: false } },
     });

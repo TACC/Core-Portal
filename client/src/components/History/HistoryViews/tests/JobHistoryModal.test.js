@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { default as jobsList } from '../../../Jobs/Jobs.fixture';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import JobHistoryModal from '../JobHistoryModal';
@@ -28,6 +29,9 @@ describe('Job History Modal', () => {
           store={mockStore({
             jobDetail: {
               ...mockInitialState,
+            },
+            jobs: {
+              list: jobsList,
             },
             workbench: {
               ...workbench,
