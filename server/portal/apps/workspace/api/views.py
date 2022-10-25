@@ -75,7 +75,7 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODO: Test user default storage system (for archiving)
+            # TODOv3: Test user default storage system (for archiving)
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(
@@ -321,8 +321,8 @@ class JobHistoryView(BaseApiView):
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
-        # TODO: make sure to exclude public apps
-        # TODO: update label if label is ever added to tapis apps spec
+        # TODOv3: make sure to exclude public apps
+        # TODOv3: update label if label is ever added to tapis apps spec
         apps_listing = tapis.apps.getApps(select="version,id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
         my_apps = list(map(lambda app: {
             "label": app.id,
@@ -334,7 +334,7 @@ class AppsTrayView(BaseApiView):
         return my_apps
 
     def getPublicApps(self, user):
-        # TODO: make tapipy request for public apps to compare against apps in AppTrayEntry
+        # TODOv3: make tapipy request for public apps to compare against apps in AppTrayEntry
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority

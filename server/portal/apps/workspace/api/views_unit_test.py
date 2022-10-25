@@ -170,27 +170,6 @@ def test_date_filter(rf, authenticated_user, mock_tapis_client):
     assert len(jobs) == 1
 
 
-@pytest.mark.skip(reason="Tray endpoint and related tests need to be updated")
-def test_tray_get_app(mocker, client, authenticated_user):
-    mock_get_by_spec = mocker.patch.object(AppsTrayView, 'getAppIdBySpec')
-    mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
-    view = AppsTrayView()
-
-    # Try retrieving an app spec without a specific appId
-    mock_spec = MagicMock(
-        name='compress', version='0.1', appId=None, lastRetrieved='compress-0.1u1'
-    )
-    mock_get_by_spec.return_value = 'compress-0.1u1'
-    view.getApp(mock_spec, authenticated_user)
-    mock_get_app.assert_called_with('compress-0.1u1', authenticated_user)
-
-    # Try retrieving a specific app ID and see that the lastRetrieved field is updated
-    mock_spec.appId = 'compress-0.2u1'
-    view.getApp(mock_spec, authenticated_user)
-    assert mock_spec.lastRetrieved == 'compress-0.2u1'
-    mock_get_app.assert_called_with('compress-0.2u1', authenticated_user)
-
-
 def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
     view = AppsTrayView()
     app = TapisResult(**{
