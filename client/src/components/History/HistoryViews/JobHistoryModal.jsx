@@ -75,6 +75,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   };
   const inputAndParamsDataObj = {
     // This is in jobDetails
+    ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters),
   };
 
