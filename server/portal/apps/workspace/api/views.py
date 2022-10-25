@@ -73,7 +73,7 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODO: Test user default storage system (for archiving)
+            # TODOv3: Test user default storage system (for archiving)
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(
@@ -133,7 +133,7 @@ class JobsView(BaseApiView):
                 range = '{},{}'.format(startdate_str, enddate_str)
                 query['_tapis_query_parameters'] = {'created.between': range}
 
-            # TODO V3: Might have to use to get portal-specific jobs minus the time attributes
+            # TODOv3: Might have to use to get portal-specific jobs minus the time attributes
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
             # if user_job_ids:

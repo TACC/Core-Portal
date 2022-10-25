@@ -1,4 +1,3 @@
-// TODO V3: Fix
 const jobDetailSlurmFixture = {
   id: 1,
   name: 'hello-world-test',

@@ -1,4 +1,3 @@
-// TODO V3: Fix
 const appDetailSlurmFixture = {
   definition: {
     sharedAppCtx: true,

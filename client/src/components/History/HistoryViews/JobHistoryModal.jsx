@@ -55,7 +55,6 @@ const reduceInputParameters = (data) =>
     return acc;
   }, {});
 
-// TODO: Should be able to remove jobDisplay
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
   const outputLocation = useSelector((state) => {
@@ -74,11 +73,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
   };
   const inputAndParamsDataObj = {
-    // This is in jobDetails
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters),
   };
-
   const configDataObj = {};
   const outputDataObj = {
     'Job Name': jobName,
@@ -109,22 +106,18 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     toggle();
   };
 
-  // TODO V3: This should be in jobDetails
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
   configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
-  // TODO V3: This should be in jobDetails
   if ('processorsPerNode' in jobDisplay) {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
-  // TODO V3: This should be in jobDetails
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
-  // TODO V3: This should be in jobDetails
   if ('allocation' in jobDisplay) {
     configDataObj.Allocation = jobDisplay.allocation;
   }

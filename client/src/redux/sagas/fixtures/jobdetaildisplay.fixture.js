@@ -1,4 +1,3 @@
-// TODO V3: Fix
 const jobDetailDisplayFixture = {
   allocation: 'TACC-ACI',
   applicationName: 'hello-world',

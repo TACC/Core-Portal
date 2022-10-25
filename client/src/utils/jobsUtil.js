@@ -67,12 +67,12 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      // TODO V3: Undefined for now, appId is used above for now.
+      // TODOv3: Undefined for now, appId is used above for now.
       //          So will comment until we have something
       // display.applicationName = app.definition.notes.label;
 
-      // TODO V3: Maybe should filter with includes? some have null/array values
-      // NOTE: From Sal: We'll probably have to filter with a flag we create
+      // TODOv3: Maybe should filter with includes? some have null/array values
+      // Note from Sal: We'll probably have to filter with a flag we create
       //                 ourselves with whatever meta object they allow us to
       //                 attach to job input args in the future. For example,
       //                 a webhookUrl will be a required input for interactive jobs,
