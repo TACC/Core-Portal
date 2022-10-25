@@ -16,7 +16,7 @@ def create_ticket(username, first_name, last_name, email, cc, subject,
     metadata = "{}\n\n".format(METADATA_HEADER)
     metadata += "Client info:\n{}\n\n".format(info)
 
-    for key in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
+    for key in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'HTTP_HOST']:
         metadata += "{}:\n{}\n\n".format(key, meta.get(key, "None"))
 
     if username:
