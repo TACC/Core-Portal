@@ -73,6 +73,7 @@ class TestAppsApiViews(TestCase):
         self.assertEqual(len(data["response"]['appListing']), 2)
         self.assertTrue(data["response"]['appListing'] == apps)
 
+    @pytest.mark.skip(reason="job post/notifications not implemented yet")
     @patch('portal.apps.accounts.managers.user_systems.get_user_data')
     def test_job_submit_notifications(self, tas_mock):
         tas_mock.return_value = self.tas_user
@@ -100,6 +101,7 @@ class TestAppsApiViews(TestCase):
         self.assertTrue(pending in notifications)
         self.assertTrue(finished in notifications)
 
+    @pytest.mark.skip(reason="job post not implemented yet")
     @patch('portal.apps.accounts.managers.user_systems.get_user_data')
     def test_job_submit_parse_urls(self, tas_mock):
         tas_mock.return_value = self.tas_user

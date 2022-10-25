@@ -48,6 +48,7 @@ def logging_metric_mock(mocker):
     yield mocker.patch('portal.apps.workspace.api.views.logging.Logger.info')
 
 
+@pytest.mark.skip(reason="job post not implemented yet")
 def test_job_post(client, authenticated_user, get_user_data, mock_agave_client,
                   apps_manager, job_submmission_definition):
     mock_agave_client.jobs.submit.return_value = {"id": "1234"}
@@ -100,7 +101,7 @@ def test_get_jobs_bad_offset(rf, authenticated_user, mock_agave_client):
     assert len(jobs) == 0
 
 
-# NOTE: This is handled by search query in v3 (should be tested in tapipy?)
+@pytest.mark.skip(reason="unsure of implementation yet could rely on tapis for this")
 def test_date_filter(rf, authenticated_user, mock_agave_client):
     test_time = timezone.now()
 
