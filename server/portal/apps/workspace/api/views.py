@@ -36,9 +36,13 @@ def _app_license_type(app_def):
     return lic_type
 
 
-def _app_license_type_TODO_REFACTOR(app_id):
-    # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
-    return None
+def _get_user_app_license(license_type, user):
+    _, license_models = get_license_info()
+    license_model = [x for x in license_models if x.license_type == license_type]
+    if not license_model:
+        return None
+    lic = license_model.objects.filter(user=user).first()
+    return lic
 
 
 def _get_app(app_id, app_version, user):
@@ -57,9 +61,7 @@ def _get_app(app_id, app_version, user):
         'type': lic_type
     }
     if lic_type is not None:
-        _, license_models = get_license_info()
-        license_model = list(filter(lambda x: x.license_type == lic_type, license_models))[0]
-        lic = license_model.objects.filter(user=user).first()
+        lic = _get_user_app_license(lic_type, user)
         data['license']['enabled'] = lic is not None
 
     return data
@@ -225,14 +227,13 @@ class JobsView(BaseApiView):
                 job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
-            lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
+            lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
             if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                if not lic:
+                lic = _get_user_app_license(lic_type, request.user)
+                if lic is None:
                     raise ApiException("You are missing the required license for this application.")
                 job_post['parameters']['_license'] = lic.license_as_str()
+                del job_post['licenseType']
 
             # url encode inputs
             if job_post['inputs']:
