@@ -20,23 +20,20 @@ def test_app_tray_models(django_db_reset_sequences):
     category = AppTrayCategory.objects.create(
         category="test_category"
     )
-    category.save()
     assert str(AppTrayCategory.objects.all()[0]) == "test_category"
-    app = AppTrayEntry.objects.create(
+    AppTrayEntry.objects.create(
         category=category,
-        name="matlab",
         label="Matlab Latest",
-        appType="agave",
         icon="matlab",
-        version="latest",
-        revision="latest"
+        version="0.0.1",
+        appId="matlab",
+        appType="tapis",
     )
-    app.save()
-    assert str(AppTrayEntry.objects.all()[0]) == "Matlab Latest: matlab-latestulatest"
+    assert str(AppTrayEntry.objects.all()[0]) == "Matlab Latest: matlab-0.0.1"
     htmlApp = AppTrayEntry.objects.create(
         category=category,
         appType="html",
         label="Jupyter",
-        htmlId="jupyterhub"
+        appId="jupyterhub"
     )
     assert str(htmlApp) == "Jupyter: jupyterhub (HTML)"

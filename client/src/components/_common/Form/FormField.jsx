@@ -84,15 +84,12 @@ const FormField = ({
   );
   const FieldNote = () => (
     <>
-      {meta.touched && meta.error ? (
-        <div className="form-field__validation-error">{meta.error}</div>
-      ) : (
-        description && (
-          <FormText className="form-field__help" color="muted">
-            {description}
-          </FormText>
-        )
-      )}
+      <FormText className="form-field__help" color="muted">
+        {description}
+        {meta.touched && meta.error && (
+          <div className="form-field__validation-error">{meta.error}</div>
+        )}
+      </FormText>
     </>
   );
 
