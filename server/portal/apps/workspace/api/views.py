@@ -232,7 +232,12 @@ class JobsView(BaseApiView):
                 lic = _get_user_app_license(lic_type, request.user)
                 if lic is None:
                     raise ApiException("You are missing the required license for this application.")
-                job_post['parameters']['_license'] = lic.license_as_str()
+                job_post['parameterSet']['envVariables'].append(
+                    {
+                        "key": "_license",
+                        "value": lic.license_as_str()
+                    }
+                )
                 del job_post['licenseType']
 
             # url encode inputs
