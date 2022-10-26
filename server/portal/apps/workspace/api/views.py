@@ -322,10 +322,9 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # TODOv3: make sure to exclude public apps
-        # TODOv3: update label if label is ever added to tapis apps spec
-        apps_listing = tapis.apps.getApps(select="version,id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
         my_apps = list(map(lambda app: {
-            "label": app.id,
+            "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
             "type": "tapis",
             "appId": app.id,
