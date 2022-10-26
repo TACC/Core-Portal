@@ -22,5 +22,6 @@ class TestJobHistoryView(TestCase):
         self.mock_tapis_client.jobs.getJobHistory.return_value = "mock_response"
         response = self.client.get("/api/workspace/jobs/{}/history".format(job_uuid))
         self.mock_tapis_client.jobs.getJobHistory.assert_called_with(jobUuid=job_uuid)
+
         data = json.loads(response.content)
         self.assertEqual(data, {"status": 200, "response": "mock_response"})

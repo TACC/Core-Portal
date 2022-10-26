@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
+from django.db.models.functions import Coalesce
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -325,115 +326,51 @@ class JobHistoryView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
-    def getAppIdBySpec(self, app, user):
-        # Retrieve the app specified in the portal
-        # Any fields that are left blank assume that we
-        # are retrieving the "latest" version
-        agave = user.tapis_oauth.client
-        query = {
-            "name": app.name,
-            "isPublic": True
-        }
-        if app.version and len(app.version):
-            query['version'] = app.version
-        if app.revision and len(app.revision):
-            query['revision'] = app.revision
-        appList = agave.apps.list(query=query)
-        appList.sort(
-            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [int(appDef['revision'])]
-        )
-        return appList[-1]['id']
-
-    def getAppId(self, app, user):
-        if app.appId and len(app.appId) > 0:
-            appId = app.appId
-        else:
-            appId = self.getAppIdBySpec(app, user)
-        if appId != app.lastRetrieved:
-            app.lastRetrieved = appId
-            app.save()
-        return appId
-
     def getPrivateApps(self, user):
-        agave = user.tapis_oauth.client
-        apps_listing = agave.apps.list(privateOnly=True)
-        my_apps = []
-        # Get private apps that are not prtl.clone
-        for app in filter(lambda app: not app['id'].startswith("prtl.clone"), apps_listing):
-            # Create an app "metadata" record
-            try:
-                my_apps.append(
-                    {
-                        "label": app['label'] or app['id'],
-                        "version": app['version'],
-                        "revision": app['revision'],
-                        "shortDescription": app['shortDescription'],
-                        "type": "agave",
-                        "appId": app['id'],
-                    }
-                )
-            except Exception as e:
-                logger.error(
-                    "User {} was unable to retrieve their private app {}".format(
-                        user.username, app['id']
-                    )
-                )
-                logger.exception(e)
+        tapis = user.tapis_oauth.client
+        # TODOv3: make sure to exclude public apps
+        # TODOv3: update label if label is ever added to tapis apps spec
+        apps_listing = tapis.apps.getApps(select="version,id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        my_apps = list(map(lambda app: {
+            "label": app.id,
+            "version": app.version,
+            "type": "tapis",
+            "appId": app.id,
+        }, apps_listing))
+
         return my_apps
 
     def getPublicApps(self, user):
+        # TODOv3: make tapipy request for public apps to compare against apps in AppTrayEntry
         categories = []
-        definitions = {}
+        html_definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
-            categoryResult = {
-                "title": category.category,
-                "apps": []
-            }
 
             # Retrieve all apps known to the portal in that directory
-            apps = AppTrayEntry.objects.all().filter(available=True, category=category)
-            for app in apps:
-                # Create something similar to the old metadata record
-                appRecord = {
-                    "label": app.label or app.name,
-                    "icon": app.icon,
-                    "version": app.version,
-                    "revision": app.revision,
-                    "type": app.appType
-                }
+            tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+            html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
+                             .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
-                try:
-                    if str(app.appType).lower() == 'html':
-                        # If this is an HTML app, create a definition for it
-                        # that has the 'html' field
-                        appRecord["appId"] = app.htmlId
-                        definitions[app.htmlId] = {
-                            "html": app.html,
-                            "id": app.htmlId,
-                            "label": app.label,
-                            "shortDescription": app.shortDescription,
-                            "appType": "html"
-                        }
-                    elif str(app.appType).lower() == 'agave':
-                        # If this is an agave app, retrieve the definition
-                        # from the tenant, with any license or queue
-                        # post processing
-                        appId = self.getAppId(app, user)
-                        appRecord["appId"] = appId
+            categoryResult = {
+                "title": category.category,
+                "apps": tapis_apps
+            }
 
-                    categoryResult["apps"].append(appRecord)
-                except Exception:
-                    logger.info("Could not retrieve app {}".format(app))
+            # Add html apps to html_definitions
+            for app in html_apps:
+                html_definitions[app['appId']] = app
 
-            categoryResult["apps"].sort(key=lambda app: app['label'])
+                categoryResult["apps"].append(app)
+
             categories.append(categoryResult)
 
-        return categories, definitions
+        return categories, html_definitions
 
     def get(self, request):
         """
-        Returns a structure containing app tray categories with metadata, and app definitions
+        Returns a structure containing app tray categories with metadata, and html definitions
 
         {
             "categories": {
@@ -446,13 +383,14 @@ class AppsTrayView(BaseApiView):
                     }
                 ]
             }
-            "definitions": {
+            "html_definitions": {
                 "jupyterhub": { ... }
             }
         }
         """
-        tabs, definitions = self.getPublicApps(request.user)
+        tabs, html_definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
+
         tabs.insert(
             0,
             {
@@ -460,6 +398,7 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
+
         # Only return tabs that are non-empty
         tabs = list(
             filter(
@@ -468,7 +407,13 @@ class AppsTrayView(BaseApiView):
             )
         )
 
-        return JsonResponse({"tabs": tabs, "definitions": definitions})
+        return JsonResponse(
+            {
+                "tabs": tabs,
+                "htmlDefinitions": html_definitions
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 @method_decorator(login_required, name='dispatch')
