@@ -23,7 +23,7 @@ const SystemsList = () => {
         Cell: Operational,
       },
       {
-        accessor: 'load_percentage',
+        accessor: 'load',
         Header: 'Load',
         Cell: Load,
       },
