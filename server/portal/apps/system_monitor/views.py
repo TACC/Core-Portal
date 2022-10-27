@@ -47,30 +47,28 @@ class System:
 
     def __init__(self, system_dict):
         try:
-            self.display_name = system_dict.get('display_name')
-            self.tas_name = system_dict.get('tas_name')
             self.hostname = system_dict.get('hostname')
-            self.waiting = system_dict.get('waiting')
-            self.online = system_dict.get('online')
-            self.reachable = system_dict.get('reachable')
-            self.
+            self.display_name = system_dict.get('displayName')
             if 'ssh' in system_dict.keys():
                 self.ssh = system_dict.get('ssh')
             if 'heartbeat' in system_dict.keys():
                 self.heartbeat = system_dict.get('heartbeat')
             if 'tests' in system_dict.keys():
                 self.status_tests = system_dict.get('tests')
-            if 'system_type' in system_dict.keys() == 'compute':
+            if 'jobs' in system_dict.keys():
                 self.resource_type = 'compute'
+                self.jobs = system_dict.get('jobs')
                 self.load_percentage = system_dict.get('load')
-                self.running = system_dict.get('running')
-                self.waiting = system_dict.get('waiting')
                 if isinstance(self.load_percentage, (float, int)):
                     self.load_percentage = int((self.load_percentage * 100))
                 else:
                     self.load_percentage = None
+                self.cpu_count = system_dict.get('totalCpu')
+                self.cpu_used = system_dict.get('usedCpu')
             else:
                 self.resource_type = 'storage'
+                self.cpu_count = 0
+            self.is_operational = self.is_up()
         except Exception as exc:
             logger.error(exc)
 
@@ -79,17 +77,17 @@ class System:
         Checks each uptime metric to determine if the system is available
         '''
         if self.resource_type == 'compute':
-            if not self.load_percentage: #or not self.jobs:
+            if not self.load_percentage or not self.jobs:
                 return False
-            if self.load_percentage > 99 and self.running.get('running', 0) < 1:
+            if self.load_percentage > 99 and self.jobs.get('running', 0) < 1:
                 return False
         # let's check each test:
-        for st in self.reachable:
+        for st in self.status_tests:
             test = self.status_tests.get(st)
             if not test.get('status'):
                 return False
             # now, let's check that the status has been updated recently
-            if not self.status_updated_recently(last_updated=self.get('timestamp')):
+            if not self.status_updated_recently(last_updated=test.get('timestamp')):
                 return False
         return True
 
