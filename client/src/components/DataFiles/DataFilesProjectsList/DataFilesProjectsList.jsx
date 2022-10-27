@@ -11,6 +11,7 @@ import {
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
+import Searchbar from '_common/Searchbar';
 
 const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
@@ -116,7 +117,15 @@ const DataFilesProjectsList = ({ modal }) => {
       contentShouldScroll
       manualContent
     >
-      {!modal && <DataFilesProjectsSearchbar />}
+      {!modal && (
+        <Searchbar
+          api="tapis"
+          scheme="projects"
+          system=""
+          resultCount={projects.length}
+          infiniteScroll
+        />
+      )}
       <ConditionalWrapper
         condition={!modal}
         wrapper={(children) => {

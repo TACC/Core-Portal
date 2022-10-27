@@ -150,7 +150,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scheme={scheme}
           system={system}
           resultCount={files.length}
-          dataType='Files'
+          dataType="Files"
           filterTypes={fileTypes}
           infiniteScroll
           disabled={loading || !!error}
