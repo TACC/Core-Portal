@@ -67,9 +67,7 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      // TODOv3: Undefined for now, appId is used above for now.
-      //          So will comment until we have something
-      // display.applicationName = app.definition.notes.label;
+      display.applicationName = app.definition.notes.label;
 
       // TODOv3: Maybe should filter with includes? some have null/array values
       // Note from Sal: We'll probably have to filter with a flag we create
@@ -115,6 +113,7 @@ export function getJobDisplayInformation(job, app) {
       }
 
       if (job.isMpi) {
+        // TODOv3: Replace processorsPerNode with coresPerNode in the frontend
         display.processorsPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
       }
