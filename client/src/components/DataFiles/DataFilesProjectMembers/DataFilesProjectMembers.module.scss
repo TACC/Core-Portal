@@ -19,11 +19,6 @@
   width: 70%;
 }
 
-.member-search {
-  margin-bottom: 1em;
-  font-size: 12px !important;
-}
-
 .addremove-list {
   /* title */
   th:nth-child(1),
@@ -63,10 +58,6 @@
 
 .confirm-controls > * {
   margin-left: 1em;
-}
-
-.add-button {
-  composes: c-button--secondary from '../../../styles/components/c-button.css';
 }
 
 div > .project-role-selector {

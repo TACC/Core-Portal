@@ -217,7 +217,6 @@ const DataFilesProjectMembers = ({
               <div className="input-group-prepend">
                 <Button
                   type="primary"
-                  className={styles['add-button member-search']}
                   onClick={() =>
                     onAddCallback({ user: selectedUser, access: 'edit' })
                   }
