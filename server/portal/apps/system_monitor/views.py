@@ -41,8 +41,7 @@ class SysmonDataView(BaseApiView):
                 systems.append(system)
             except Exception:
                 logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
-                systems.append(_get_unoperational_system(sys))
-        print(systems_json)
+                systems.append(_get_unoperational_system(sys))        
         return JsonResponse(systems, safe=False)
 
 
@@ -69,20 +68,11 @@ class System:
             else:
                 self.resource_type = system_dict.get('storage')
             self.is_operational = self.is_up()
-            print(self.is_operational)
 
         except Exception as exc:
             logger.error(exc)
 
     def is_up(self):
-        '''
-        Checks each uptime metric to determine if the system is available
-        '''
-        '''if self.resource_type == 'compute':
-            if not self.load: #or not self.jobs:
-                return False
-            if self.load > 99 and self.running < 1:
-                return False'''
         self.online = self.get('online')
         self.reachable = self.get('reachable')
         self.queues_down = self.get('queues_down')
