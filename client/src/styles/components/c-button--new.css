@@ -1,14 +1,10 @@
 @import url('@tacc/core-styles/src/lib/_imports/components/c-button.css');
 
-
-
 /* Base */
 
 .c-button {
   --max-width: 136px;
 }
-
-
 
 /* Modifiers */
 
