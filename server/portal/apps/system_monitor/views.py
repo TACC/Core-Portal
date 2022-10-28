@@ -1,3 +1,4 @@
+from random import SystemRandom
 from django.conf import settings
 from datetime import datetime, timedelta
 from portal.views.base import BaseApiView
@@ -17,7 +18,8 @@ def _get_unoperational_system(hostname):
             'is_operational': False,
             'load': 0,
             'running': 0, 
-            'waiting': 0}
+            'waiting': 0,
+            'other': 0}
 
 
 class SysmonDataView(BaseApiView):
@@ -49,60 +51,35 @@ class System:
 
     def __init__(self, system_dict):
         try:
+            self.cpu_count = None
+            self.cpu_used = None
             self.display_name = system_dict.get('display_name')
-            self.tas_name = system_dict.get('tas_name')
             self.hostname = system_dict.get('hostname')
-            self.running = system_dict.get("running")
-
-            self.waiting = system_dict.get('waiting')
-            if self.waiting == 0:
-                self.waiting = 0
+            self.ssh = { 'status': None, 'timestamp': system_dict.get('timestamp'), "type": None }
+            self.heartbeat = { 'status': None, 'timestamp': system_dict.get('timestamp'), "type": None }
+            self.status_tests = None
+            self.resource_type = 'compute'
+            self.jobs = {'other': None, 'running': system_dict.get('running'),
+                         'queued': system_dict.get('waiting')}
+            self.load_percentage = system_dict.get('load')
+            if isinstance(self.load_percentage, (float, int)):
+                self.load_percentage = int((self.load_percentage * 100))
+            else:
+                self.load_percentage = None
+            self.online = system_dict.get('online')
+            self.reachable = system_dict.get('reachable')
+            self.queues_down = system_dict.get('queues_down')
+            self.in_maintenance = system_dict.get('in_maintenance')
             self.next_maintenance = system_dict.get('next_maintenance')
-            self.load = system_dict.get('load')
-            if isinstance(self.load, (float, int)):
-                self.load = int((self.load * 100))
-            else:
-                self.load = None
-            if 'system_type' in system_dict.get() == 'compute':
-                self.resource_type = 'compute'
-            else:
-                self.resource_type = system_dict.get('storage')
             self.is_operational = self.is_up()
-
         except Exception as exc:
             logger.error(exc)
 
     def is_up(self):
-        self.online = self.get('online')
-        self.reachable = self.get('reachable')
-        self.queues_down = self.get('queues_down')
-        self.in_maintenance = self.get('in_maintenance')
-        if self.online & self.reachable & self.queues_down & (not self.in_maintenance): 
+        if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance): 
                 return True
         else:
             return False
-        # let's check each test:
-        
-        for st in self.status_tests:
-            test = self.status_tests.get(st)
-            if not test.get('status'):
-                return False
-            # now, let's check that the status has been updated recently
-            if not self.status_updated_recently(last_updated=self.timestamp.get('timestamp')):
-                return False
-        return True
-
-    def status_updated_recently(self, last_updated=None):
-        '''
-        Checks whether system availability metrics are being updated regularly
-        '''
-        if not last_updated:
-            return False
-        last_updated = dateutil.parser.parse(last_updated)
-        current_time = datetime.now()
-        # if we want to change the update interval, we can do it below
-        expire_time = last_updated + timedelta(minutes=10)
-        return pytz.utc.localize(current_time) < expire_time
 
 
     def to_dict(self):
