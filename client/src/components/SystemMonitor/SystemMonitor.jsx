@@ -28,11 +28,11 @@ const SystemsList = () => {
         Cell: Load,
       },
       {
-        accessor: ({ jobs }) => (jobs ? jobs.running : '--'),
+        accessor: ({ running }) => (running ? running : '--'),
         Header: 'Running',
       },
       {
-        accessor: ({ jobs }) => (jobs ? jobs.queued : '--'),
+        accessor: ({ waiting }) => (waiting ? waiting : '--'),
         Header: 'Queued',
       },
     ],

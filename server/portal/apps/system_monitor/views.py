@@ -15,9 +15,9 @@ def _get_unoperational_system(hostname):
     return {'hostname': hostname,
             'display_name': hostname.split('.')[0].capitalize(),
             'is_operational': False,
-            'load_percentage': 0,
-            'jobs': {'running': 0, 'queued': 0, 'other': 0},
-            }
+            'load': 0,
+            'running': 0, 
+            'waiting': 0}
 
 
 class SysmonDataView(BaseApiView):
@@ -28,7 +28,9 @@ class SysmonDataView(BaseApiView):
         '''
         systems = []
         requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
-        systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
+        systems_json = requests.get(settings.NEW_SYSTEM_MONITOR_URL).json()
+        print(requested_systems)
+        print(systems_json)
         for sys in requested_systems:
             if sys not in systems_json:
                 logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
@@ -40,6 +42,7 @@ class SysmonDataView(BaseApiView):
             except Exception:
                 logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
                 systems.append(_get_unoperational_system(sys))
+        print(systems_json)
         return JsonResponse(systems, safe=False)
 
 
@@ -47,27 +50,26 @@ class System:
 
     def __init__(self, system_dict):
         try:
+            self.display_name = system_dict.get('display_name')
+            self.tas_name = system_dict.get('tas_name')
             self.hostname = system_dict.get('hostname')
-            self.display_name = system_dict.get('displayName')
-            if 'ssh' in system_dict.keys():
-                self.ssh = system_dict.get('ssh')
-            if 'heartbeat' in system_dict.keys():
-                self.heartbeat = system_dict.get('heartbeat')
-            if 'tests' in system_dict.keys():
-                self.status_tests = system_dict.get('tests')
-            if 'jobs' in system_dict.keys():
-                self.resource_type = 'compute'
-                self.jobs = system_dict.get('jobs')
-                self.load_percentage = system_dict.get('load')
-                if isinstance(self.load_percentage, (float, int)):
-                    self.load_percentage = int((self.load_percentage * 100))
-                else:
-                    self.load_percentage = None
-                self.cpu_count = system_dict.get('totalCpu')
-                self.cpu_used = system_dict.get('usedCpu')
+
+
+            self.waiting = system_dict.get('waiting')
+            self.next_maintenance = system_dict.get('next_maintenance')
+            self.load = system_dict.get('load')
+
+            if isinstance(self.load, (float, int)):
+                self.load = int((self.load * 100))
             else:
-                self.resource_type = 'storage'
-                self.cpu_count = 0
+                self.load = None
+            
+            self.running = system_dict.get('running')
+            self.waiting = system_dict.get('waiting')
+            if 'system_type' in system_dict.get() == 'compute':
+                self.resource_type = 'compute'
+            else:
+                self.resource_type = system_dict.get('storage')
             self.is_operational = self.is_up()
         except Exception as exc:
             logger.error(exc)
@@ -76,18 +78,28 @@ class System:
         '''
         Checks each uptime metric to determine if the system is available
         '''
+        self.running = self.get('running')
         if self.resource_type == 'compute':
-            if not self.load_percentage or not self.jobs:
+            if not self.load: #or not self.jobs:
                 return False
-            if self.load_percentage > 99 and self.jobs.get('running', 0) < 1:
+            if self.load > 99 and self.running < 1:
                 return False
+        self.online = self.get('online')
+        self.reachable = self.get('reachable')
+        self.queues_down = self.get('queues_down')
+        self.in_maintenance = self.get('in_maintenance')
+        if self.online & self.reachable & self.queues_down & (not self.in_maintenance): 
+                return True
+        else:
+            return False
         # let's check each test:
+        
         for st in self.status_tests:
             test = self.status_tests.get(st)
             if not test.get('status'):
                 return False
             # now, let's check that the status has been updated recently
-            if not self.status_updated_recently(last_updated=test.get('timestamp')):
+            if not self.status_updated_recently(last_updated=self.timestamp.get('timestamp')):
                 return False
         return True
 
@@ -103,6 +115,9 @@ class System:
         expire_time = last_updated + timedelta(minutes=10)
         return pytz.utc.localize(current_time) < expire_time
 
+
     def to_dict(self):
         r = json.dumps(self.__dict__)
         return json.loads(r)
+    
+
