@@ -53,24 +53,24 @@ class System:
             self.display_name = system_dict.get('display_name')
             self.tas_name = system_dict.get('tas_name')
             self.hostname = system_dict.get('hostname')
-
+            self.running = system_dict.get("running")
 
             self.waiting = system_dict.get('waiting')
+            if self.waiting == 0:
+                self.waiting = 0
             self.next_maintenance = system_dict.get('next_maintenance')
             self.load = system_dict.get('load')
-
             if isinstance(self.load, (float, int)):
                 self.load = int((self.load * 100))
             else:
                 self.load = None
-            
-            self.running = system_dict.get('running')
-            self.waiting = system_dict.get('waiting')
             if 'system_type' in system_dict.get() == 'compute':
                 self.resource_type = 'compute'
             else:
                 self.resource_type = system_dict.get('storage')
             self.is_operational = self.is_up()
+            print(self.is_operational)
+
         except Exception as exc:
             logger.error(exc)
 
@@ -78,12 +78,11 @@ class System:
         '''
         Checks each uptime metric to determine if the system is available
         '''
-        self.running = self.get('running')
-        if self.resource_type == 'compute':
+        '''if self.resource_type == 'compute':
             if not self.load: #or not self.jobs:
                 return False
             if self.load > 99 and self.running < 1:
-                return False
+                return False'''
         self.online = self.get('online')
         self.reachable = self.get('reachable')
         self.queues_down = self.get('queues_down')

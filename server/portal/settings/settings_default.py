@@ -22,7 +22,7 @@ _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
 _SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Longhorn',
-                                'LoneStar6', 'Frontera', 'Maverick2']
+                                'Lonestar6', 'Frontera', 'Maverick2']
 
 ########################
 # DJANGO SETTINGS LOCAL
