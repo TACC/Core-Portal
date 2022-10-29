@@ -4,6 +4,8 @@
 
 .c-button {
   --max-width: 136px;
+
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 }
 
 /* Modifiers */
