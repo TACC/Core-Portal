@@ -132,11 +132,9 @@
     },
     "status_tests": null,
     "resource_type": "compute",
-    "jobs": {
       "running": 14,
       "queued": 0,
-      "other": ""
-    },
+      "other": "",
     "load_percentage": 46,
     "online": true,
     "reachable": true,
