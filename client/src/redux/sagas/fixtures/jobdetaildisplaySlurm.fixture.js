@@ -1,6 +1,6 @@
 const jobDisplaySlurmFixture = {
   allocation: 'TACC-ACI',
-  applicationName: 'hello-world',
+  applicationName: 'Hello World',
   inputs: [
     {
       id: 'File to modify',
@@ -21,7 +21,7 @@ const jobDisplaySlurmFixture = {
     },
   ],
   nodeCount: 1,
-  processorsPerNode: 1,
+  coresPerNode: 1,
   queue: 'development',
   systemName: 'Frontera',
   workPath: '/system/1/user/tapis/1/jobs/1/output',

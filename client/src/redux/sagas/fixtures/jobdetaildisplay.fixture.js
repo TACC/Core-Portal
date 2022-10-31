@@ -1,6 +1,6 @@
 const jobDetailDisplayFixture = {
   allocation: 'TACC-ACI',
-  applicationName: 'hello-world',
+  applicationName: 'Hello World',
   inputs: [
     {
       id: 'File to modify',

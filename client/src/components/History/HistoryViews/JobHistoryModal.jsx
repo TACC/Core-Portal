@@ -112,8 +112,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
 
   configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
-  if ('processorsPerNode' in jobDisplay) {
-    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
+  if ('coresPerNode' in jobDisplay) {
+    configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
   }
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;

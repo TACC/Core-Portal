@@ -81,7 +81,9 @@ const appDetailSlurmFixture = {
       tags: [],
     },
     tags: [],
-    notes: {},
+    notes: {
+      label: 'Hello World',
+    },
     uuid: '408dcb15-8343-4b11-acf5-a3bd1cb07957',
     deleted: false,
     created: '2022-09-22T22:18:45.638022Z',
