@@ -5,7 +5,8 @@
 import logging
 import json
 from urllib.parse import urlparse
-from datetime import timedelta
+# TODOv3: Commented for now because unsure if it will be implemented on frontend
+# from datetime import timedelta
 from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
