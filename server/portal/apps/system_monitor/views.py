@@ -30,7 +30,7 @@ class SysmonDataView(BaseApiView):
         '''
         systems = []
         requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
-        systems_json = requests.get(settings.NEW_SYSTEM_MONITOR_URL).json()
+        systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
         print(requested_systems)
         print(systems_json)
         for sys in requested_systems:
@@ -59,8 +59,8 @@ class System:
             self.heartbeat = { 'status': None, 'timestamp': system_dict.get('timestamp'), "type": None }
             self.status_tests = None
             self.resource_type = 'compute'
-            self.jobs = {'other': None, 'running': system_dict.get('running'),
-                         'queued': system_dict.get('waiting')}
+            self.jobs = {'running': system_dict.get('running'),
+                         'queued': system_dict.get('waiting'), 'other': ''}
             self.load_percentage = system_dict.get('load')
             if isinstance(self.load_percentage, (float, int)):
                 self.load_percentage = int((self.load_percentage * 100))
