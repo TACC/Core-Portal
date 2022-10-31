@@ -112,29 +112,38 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            period = request.GET.get('period', 'all')
+            # TODOv3: Commented for now because unsure if it will be implemented on frontend
+            # period = request.GET.get('period', 'all')
+
+            # TODOv3: Query portal
+            # portal_name = settings.PORTAL_NAMESPACE
 
             query = {
                 'limit': limit,
                 'startAfter': offset,
-                'orderBy': 'lastUpdated(desc),name(asc)'
+                'orderBy': 'lastUpdated(desc),name(asc)',
+                # TODOv3: Query portal
+                # '_tapis_query_parameters': {'tags.contains': portal_name}
             }
 
-            if period != "all":
-                enddate = timezone.now()
-                if period == "day":
-                    days = 1
-                elif period == "week":
-                    days = 7
-                elif period == "month":
-                    days = 30
-                startdate = enddate - timedelta(days=days)
-                enddate_str = enddate.strftime("%Y-%m-%d")
-                startdate_str = startdate.strftime("%Y-%m-%d")
-                range = '{},{}'.format(startdate_str, enddate_str)
-                query['_tapis_query_parameters'] = {'created.between': range}
+            # # TODOv3: Commented for now because unsure if it will be implemented on frontend
+            # if period != "all":
+            #     enddate = timezone.now()
+            #     if period == "day":
+            #         days = 1
+            #     elif period == "week":
+            #         days = 7
+            #     elif period == "month":
+            #         days = 30
+            #     startdate = enddate - timedelta(days=days)
+            #     enddate_str = enddate.strftime("%Y-%m-%d")
+            #     startdate_str = startdate.strftime("%Y-%m-%d")
+            #     range = '{},{}'.format(startdate_str, enddate_str)
+            #     query['_tapis_query_parameters'] = {'created.between': range}
+            #     # TODOv3: Query portal
+            #     # query['_tapis_query_parameters'] = {**query['_tapis_query_parameter'], 'created.between': range}
 
-            # TODOv3: Might have to use to get portal-specific jobs minus the time attributes
+            # # TODOv3: Query portal (in v2)
             # all_user_job_ids = [job.jobId for job in jobs]
             # user_job_ids = all_user_job_ids[offset:offset + limit]
             # if user_job_ids:
