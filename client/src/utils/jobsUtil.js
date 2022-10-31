@@ -67,7 +67,9 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      display.applicationName = app.definition.notes.label;
+      display.applicationName = app.definition.notes.label
+        ? app.definition.notes.label
+        : display.applicationName;
 
       // TODOv3: Maybe should filter with includes? some have null/array values
       // Note from Sal: We'll probably have to filter with a flag we create
