@@ -13,7 +13,7 @@ def _get_unoperational_system(hostname):
             'display_name': hostname.split('.')[0].capitalize(),
             'is_operational': False,
             'load': 0,
-            'running': 0, 
+            'running': 0,
             'waiting': 0,
             'other': 0
             }
@@ -76,8 +76,8 @@ class System:
                 return False
             if self.load_percentage > 99 and self.jobs.get('running', 0) < 1:
                 return False
-        if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance): 
-                return True
+        if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance):
+            return True
         else:
             return False
 
