@@ -19,7 +19,7 @@ def system_status(system_status_old, scope="module"):
     system = altered_system_status['Frontera']
     for test_entry in system['tests']:
         system['tests'][test_entry]['timestamp'] = str(pytz.utc.localize(datetime.now()))
-    yield altered_system_status   
+    yield altered_system_status
 
 
 @pytest.fixture

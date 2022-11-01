@@ -1,13 +1,9 @@
-from random import SystemRandom
 from django.conf import settings
-from datetime import datetime, timedelta
 from portal.views.base import BaseApiView
 from django.http import JsonResponse
-import dateutil.parser
 import requests
 import json
 import logging
-import pytz
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +15,8 @@ def _get_unoperational_system(hostname):
             'load': 0,
             'running': 0, 
             'waiting': 0,
-            'other': 0}
+            'other': 0
+            }
 
 
 class SysmonDataView(BaseApiView):
@@ -41,7 +38,7 @@ class SysmonDataView(BaseApiView):
                 systems.append(system)
             except Exception:
                 logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
-                systems.append(_get_unoperational_system(sys))        
+                systems.append(_get_unoperational_system(sys))
         return JsonResponse(systems, safe=False)
 
 
@@ -53,8 +50,8 @@ class System:
             self.cpu_used = None
             self.display_name = system_dict.get('display_name')
             self.hostname = system_dict.get('hostname')
-            self.ssh = { 'status': None, 'timestamp': system_dict.get('timestamp'), "type": None }
-            self.heartbeat = { 'status': None, 'timestamp': system_dict.get('timestamp'), "type": None }
+            self.ssh = {'status': None, 'timestamp': system_dict.get('timestamp'), "type": None}
+            self.heartbeat = {'status': None, 'timestamp': system_dict.get('timestamp'), "type": None}
             self.status_tests = None
             self.resource_type = 'compute'
             self.jobs = {'running': system_dict.get('running'),
@@ -84,9 +81,6 @@ class System:
         else:
             return False
 
-
     def to_dict(self):
         r = json.dumps(self.__dict__)
         return json.loads(r)
-    
-
