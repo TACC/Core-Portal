@@ -113,9 +113,6 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            # TODOv3: Commented for now because unsure if it will be implemented on frontend
-            # period = request.GET.get('period', 'all')
-
             # TODOv3: Query portal
             # portal_name = settings.PORTAL_NAMESPACE
 
@@ -123,38 +120,8 @@ class JobsView(BaseApiView):
                 'limit': limit,
                 'startAfter': offset,
                 'orderBy': 'lastUpdated(desc),name(asc)',
-                # TODOv3: Query portal
                 # '_tapis_query_parameters': {'tags.contains': portal_name}
             }
-
-            # # TODOv3: Commented for now because unsure if it will be implemented on frontend
-            # if period != "all":
-            #     enddate = timezone.now()
-            #     if period == "day":
-            #         days = 1
-            #     elif period == "week":
-            #         days = 7
-            #     elif period == "month":
-            #         days = 30
-            #     startdate = enddate - timedelta(days=days)
-            #     enddate_str = enddate.strftime("%Y-%m-%d")
-            #     startdate_str = startdate.strftime("%Y-%m-%d")
-            #     range = '{},{}'.format(startdate_str, enddate_str)
-            #     query['_tapis_query_parameters'] = {'created.between': range}
-            #     # TODOv3: Query portal
-            #     # query['_tapis_query_parameters'] = {**query['_tapis_query_parameter'], 'created.between': range}
-
-            # # TODOv3: Query portal (in v2)
-            # all_user_job_ids = [job.jobId for job in jobs]
-            # user_job_ids = all_user_job_ids[offset:offset + limit]
-            # if user_job_ids:
-            #     # data = tapis.jobs.getJobSearchList(query={'id.in': ','.join(user_job_ids)})
-            #     # re-order tapis job info to match our time-ordered jobs
-            #     # while also taking care that tapis in rare cases might no longer
-            #     # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
-            #     data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
-            # else:
-            #     data = []
 
             data = tapis.jobs.getJobSearchList(**query)
         return JsonResponse(
