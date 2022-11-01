@@ -13,9 +13,7 @@ export async function fetchJobs(offset, limit) {
   return result.response;
 }
 
-export const notificationsSelector = (state) => {
-  state.notifications.list.notifs;
-};
+export const notificationsSelector = (state) => state.notifications.list.notifs;
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
