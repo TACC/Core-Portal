@@ -10,10 +10,10 @@ import {
 } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
-  const normalQueue = namdAppFixture.exec_sys.queues.find(
+  const normalQueue = namdAppFixture.batchLogicalQueues.queues.find(
     (q) => q.name === 'normal'
   );
-  const smallQueue = namdAppFixture.exec_sys.queues.find(
+  const smallQueue = namdAppFixture.batchLogicalQueues.queues.find(
     (q) => q.name === 'small'
   );
 

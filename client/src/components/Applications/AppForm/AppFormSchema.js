@@ -3,11 +3,12 @@ import * as Yup from 'yup';
 const FormSchema = (app) => {
   const appFields = {
     parameters: {},
-    inputs: {},
-    defaults: { inputs: {}, parameters: {} },
-    schema: { inputs: {}, parameters: {} },
+    fileInputs: {},
+    defaults: { fileInputs: {}, parameters: {} },
+    schema: { fileInputs: {}, parameters: {} },
   };
 
+  /* TODOv3  app.definition.jobAttributes
   (app.definition.parameters || []).forEach((parameter) => {
     const param = parameter;
     if (!param.value.visible || param.id.startsWith('_')) {
@@ -83,50 +84,72 @@ const FormSchema = (app) => {
         ? ''
         : param.value.default;
   });
+  */
 
-  (app.definition.inputs || []).forEach((i) => {
+  (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
-    if (input.id.startsWith('_') || !input.value.visible) {
+    /* TODOv3 consider hidden file inputs
+    if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
       return;
     }
+    */
+    /* TODOv3 consider validation
     try {
       RegExp(input.value.validator);
     } catch (e) {
       input.value.validator = null;
     }
+     */
     const field = {
-      label: input.details.label,
-      description: input.details.description,
-      required: input.value.required,
+      label: input.name,
+      description: ' ', /* TODOv3 consider file description.  previously this was: input.details.description */
+      required: input.inputMode === 'REQUIRED ' // TODOv3   check this.  // input.value.required,
     };
+
+    field.type = 'text'; /* TODOv3 consider cardinality
     if (input.semantics.maxCardinality === 1) {
       field.type = 'text';
     } else {
       field.type = 'array';
       field.maxItems = input.semantics.maxCardinality;
     }
-    appFields.schema.inputs[input.id] = Yup.string();
-    if (input.value.required) {
-      appFields.schema.inputs[input.id] =
-        appFields.schema.inputs[input.id].required('Required');
+    */
+    appFields.schema.fileInputs[input.name] = Yup.string();
+
+    // TODOv3 consider validation
+    appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
+      input.name
+      ].matches(
+      /^tapis:\/\//g,
+      "Input file must be a valid Tapis URI, starting with 'tapis://'"
+    );
+
+    /* TODOv3 as above we need additional metadata to determine if its required or validation
+    if (field.required) {
+      appFields.schema.inputs[input.name] =
+        appFields.schema.inputs[input.name].required('Required');
     }
     if (input.value.validator) {
-      appFields.schema.inputs[input.id] = appFields.schema.inputs[
-        input.id
+      appFields.schema.inputs[input.name] = appFields.schema.inputs[
+        input.name
       ].matches(input.value.validator);
     } else {
-      appFields.schema.inputs[input.id] = appFields.schema.inputs[
-        input.id
+      appFields.schema.inputs[input.name] = appFields.schema.inputs[
+        input.name
       ].matches(
-        /^agave:\/\//g,
-        "Input file must be a valid Tapis URI, starting with 'agave://'"
+        /^tapis:\/\//g,
+        "Input file must be a valid Tapis URI, starting with 'tapis://'"
       );
     }
-    appFields.inputs[input.id] = field;
-    appFields.defaults.inputs[input.id] =
-      input.value.default === null || typeof input.value.default === 'undefined'
+     */
+
+    appFields.fileInputs[input.name] = field;
+
+    // TODOv3  check defaults. I don't think there is a default for files (just not posting with the param?) but using sourceUrl as a default (?)
+    appFields.defaults.fileInputs[input.name] =
+      input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
-        : input.value.default;
+        : input.sourceUrl;
   });
   return appFields;
 };

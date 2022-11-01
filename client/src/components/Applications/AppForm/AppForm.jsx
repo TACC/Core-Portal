@@ -19,10 +19,10 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
-  getMaxQueueRunTime,
-  createMaxRunTimeRegex,
+  getQueueMaxMinutes,
+  getMaxMinutesValidation,
   getNodeCountValidation,
-  getProcessorsOnEachNodeValidation,
+  getCoresPerNodeValidation,
   getQueueValidation,
   updateValuesForQueue,
 } from './AppFormUtils';
@@ -35,13 +35,13 @@ const appShape = PropTypes.shape({
   definition: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
-    longDescription: PropTypes.string,
+    description: PropTypes.string,
     helpURI: PropTypes.string,
     defaultQueue: PropTypes.string,
-    defaultNodeCount: PropTypes.number,
+    nodeCount: PropTypes.number,
     parallelism: PropTypes.string,
-    defaultProcessorsPerNode: PropTypes.number,
-    defaultMaxRunTime: PropTypes.string,
+    coresPerNode: PropTypes.number,
+    maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
   }),
   systemHasKeys: PropTypes.bool,
@@ -152,7 +152,7 @@ const AppInfo = ({ app }) => {
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.definition.longDescription || '')}
+        {parse(app.definition.description || '')}
       </div>
       {app.definition.helpURI ? (
         <a
@@ -190,8 +190,8 @@ export const AppSchemaForm = ({ app }) => {
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
-        app.exec_sys.login.host === host ||
-        app.exec_sys.login.host.endsWith(`.${host}`)
+        app.exec_sys.host === host ||
+        app.exec_sys.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =
@@ -217,7 +217,7 @@ export const AppSchemaForm = ({ app }) => {
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.login.host : '',
+      execSystem: state.app ? state.app.exec_sys.host : '',
     };
   }, shallowEqual);
 
@@ -225,8 +225,12 @@ export const AppSchemaForm = ({ app }) => {
     (state) => state.workbench.config.hideManageAccount
   );
 
-  const { systemHasKeys, pushKeysSystem } = app;
-  const missingLicense = app.license.type && !app.license.enabled;
+  // TODOv3 confirm and drop
+  //const { systemHasKeys, pushKeysSystem } = app;
+  const systemHasKeys = true;
+  const pushKeysSystem = '';
+
+  const missingLicense = false; // TODOv3 change hello world app to drop license;  app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
     e.preventDefault();
     dispatch({
@@ -247,30 +251,24 @@ export const AppSchemaForm = ({ app }) => {
     ...appFields.defaults,
     name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
     batchQueue: (
-      (app.definition.defaultQueue
-        ? app.exec_sys.queues.find(
-            (q) => q.name === app.definition.defaultQueue
+      (app.definition.jobAttributes.execSystemLogicalQueue
+        ? app.exec_sys.batchLogicalQueues.find(
+            (q) => q.name === app.definition.jobAttributes.execSystemLogicalQueue
           )
-        : app.exec_sys.queues.find((q) => q.default === true)) ||
-      app.exec_sys.queues[0]
+        : app.exec_sys.batchLogicalQueues.find((q) => q.name === app.exec_sys.batchDefaultLogicalQueue)) ||
+      app.exec_sys.batchLogicalQueues[0]
     ).name,
-    nodeCount: app.definition.defaultNodeCount,
-    processorsOnEachNode:
-      app.definition.parallelism === 'PARALLEL'
-        ? Math.floor(
-            app.definition.defaultProcessorsPerNode /
-              app.definition.defaultNodeCount
-          )
-        : 1,
-    maxRunTime: app.definition.defaultMaxRunTime || '',
-    archivePath: '',
+    nodeCount: app.definition.jobAttributes.nodeCount,
+    coresPerNode: app.definition.jobAttributes.coresPerNode, // TODOv3 check
+    maxMinutes: app.definition.jobAttributes.maxMinutes ,  // TODOv3 check can we have empty?
+    archiveSystemDir: '',  // TODOv3  does '' trigger the "default" from tapis
     archive: true,
     archiveOnAppError: true,
     appId: app.definition.id,
   };
 
   let missingAllocation = false;
-  if (app.exec_sys.scheduler === 'SLURM') {
+  if (app.exec_sys.batchScheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
@@ -294,7 +292,7 @@ export const AppSchemaForm = ({ app }) => {
       missingAllocation = true;
     }
   } else {
-    initialValues.allocation = app.exec_sys.scheduler;
+    initialValues.allocation = app.exec_sys.batchScheduler;
   }
   return (
     <div id="appForm-wrapper">
@@ -397,30 +395,25 @@ export const AppSchemaForm = ({ app }) => {
             return Yup.mixed().notRequired();
           }
           return Yup.lazy((values) => {
-            const queue = app.exec_sys.queues.find(
+            const queue = app.exec_sys.batchLogicalQueues.find(
               (q) => q.name === values.batchQueue
             );
-            const maxQueueRunTime = getMaxQueueRunTime(app, values.batchQueue);
+            const maxQueueRunTime = getQueueMaxMinutes(app, values.batchQueue);
             const schema = Yup.object({
               parameters: Yup.object({ ...appFields.schema.parameters }),
-              inputs: Yup.object({ ...appFields.schema.inputs }),
+              fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
               batchQueue: getQueueValidation(queue, app),
               nodeCount: getNodeCountValidation(queue, app),
-              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
-              maxRunTime: Yup.string()
-                .matches(
-                  createMaxRunTimeRegex(maxQueueRunTime),
-                  `Must be in format HH:MM:SS and not exceed ${maxQueueRunTime} (hrs:min:sec).`
-                )
-                .required('Required'),
-              archivePath: Yup.string(),
+              coresPerNode: getCoresPerNodeValidation(queue),
+              maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              archiveSystemDir: Yup.string(),
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.exec_sys.scheduler]),
+                  allocations.concat([app.exec_sys.batchSscheduler]),
                   'Please select an allocation from the dropdown.'
                 ),
             });
@@ -430,15 +423,15 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
           /* remove falsy input */
-          Object.entries(job.inputs).forEach(([k, v]) => {
+          Object.entries(job.fileInputs).forEach(([k, v]) => {
             let val = v;
             if (Array.isArray(val)) {
               val = val.filter(Boolean);
               if (val.length === 0) {
-                delete job.inputs[k];
+                delete job.fileInputs[k];
               }
             } else if (!val) {
-              delete job.inputs[k];
+              delete job.fileInputs[k];
             }
           });
           /* remove falsy parameter */
@@ -491,7 +484,7 @@ export const AppSchemaForm = ({ app }) => {
             missingLicense ||
             !hasStorageSystems ||
             jobSubmission.submitting ||
-            (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
+            (app.exec_sys.batchScheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
@@ -500,15 +493,16 @@ export const AppSchemaForm = ({ app }) => {
                   <div className="appSchema-header">
                     <span>Inputs</span>
                   </div>
-                  {Object.entries(appFields.inputs).map(([id, field]) => {
+                  {Object.entries(appFields.fileInputs).map(([name, field]) => {
+                    // TODOv3 fix how fileInput is defined
                     return (
                       <FormField
                         {...field}
-                        name={`inputs.${id}`}
+                        name={`fileInputs.${name}`}
                         agaveFile
                         SelectModal={DataFilesSelectModal}
                         placeholder="Browse Data Files"
-                        key={`inputs.${id}`}
+                        key={`fileInputs.${name}`}
                       />
                     );
                   })}
@@ -549,56 +543,55 @@ export const AppSchemaForm = ({ app }) => {
                     type="select"
                     required
                   >
-                    {app.exec_sys.queues
+                    {app.exec_sys.batchLogicalQueues
                       .map((q) => q.name)
+                      /* TODOv3  no concept of SERIAL/PARALLEL app in app definition
                       .filter(
                         (q) =>
-                          /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
+                          // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed
                           !(
-                            getSystemName(app.exec_sys.login.host) ===
+                            getSystemName(app.exec_sys.host) ===
                               'Frontera' &&
                             q === 'normal' &&
                             app.definition.parallelism === 'SERIAL'
                           )
-                      )
+                      ) */
                       .sort()
-                      .map((queue) => (
-                        <option key={queue} value={queue}>
-                          {queue}
+                      .map((queueName) => (
+                        <option key={queueName} value={queueName}>
+                          {queueName}
                         </option>
                       ))
                       .sort()}
                   </FormField>
-                  {!app.definition.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? ( // TODOv3 consider where we'll put 'Interactive'
                     <FormField
                       label="Maximum Job Runtime"
-                      description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
-                        app,
+                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(app,
                         values.batchQueue
-                      )} (hrs:min:sec). After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                      name="maxRunTime"
-                      type="text"
-                      placeholder="HH:MM:SS"
+                      )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                      name="maxMinutes"
+                      type="integer"
                       required
                     />
                   ) : null}
-                  {app.definition.parallelism === 'PARALLEL' ? (
+                  {app.definition.parallelism === 'PARALLEL'  ? (  // TODOv3  no concept of SERIAL/PARALLEL app in app definition
                     <>
                       <FormField
-                        label="Processors On Each Node"
+                        label="Processors On Each Node"  // TODOv3 should we change "processors" to "core" to match tapis docs (kinda the same difference?)
                         description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
-                        name="processorsOnEachNode"
+                        name="coresPerNode"
                         type="number"
                       />
                       <FormField
                         label="Node Count"
                         description="Number of requested process nodes for the job."
-                        name="nodeCount"
+                        name="nodeCount"   //TODOv3 update
                         type="number"
                       />
                     </>
                   ) : null}
-                  {app.exec_sys.scheduler === 'SLURM' ? (
+                  {app.exec_sys.batchScheduler === 'SLURM' ? (  /* TODOv3  no concept of is slurm job in app definition; nathan: assumes it is at the moment? */
                     <FormField
                       label="Allocation"
                       name="allocation"
@@ -628,7 +621,7 @@ export const AppSchemaForm = ({ app }) => {
                     type="text"
                     required
                   />
-                  {!app.definition.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? ( //TODOv3 consider where we'll put 'Interactive'
                     <FormField
                       label="Output Location"
                       description={parse(

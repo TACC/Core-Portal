@@ -7,7 +7,7 @@ import json
 from urllib.parse import urlparse
 from datetime import timedelta
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -69,8 +69,11 @@ class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get('appId')
-        app_version = request.GET.get('appVersion')
         if app_id:
+            app_version = request.GET.get('appVersion')
+            if app_version is None:
+                # TODOv3  consider if we want to allow now appVersion and get the latest version
+                return HttpResponseBadRequest()
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 

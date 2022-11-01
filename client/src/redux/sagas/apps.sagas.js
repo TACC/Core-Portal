@@ -13,14 +13,14 @@ export async function fetchAppDefinitionUtil(appId, appVersion) {
 const getCurrentApp = (state) => state.app;
 
 function* getApp(action) {
-  const { appId } = action.payload;
-  const currentApp = yield select(getCurrentApp);
+  const { appId, appVersion } = action.payload;
+  const currentApp = yield select(getCurrentApp);  // see TODO below
 
   if (
     currentApp.definition.id === appId &&
     currentApp.definition.systemHasKeys
   ) {
-    return;
+    return;  // TODO i never see this running?  is this optimization not working?
   }
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });

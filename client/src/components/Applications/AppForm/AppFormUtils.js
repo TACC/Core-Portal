@@ -1,10 +1,32 @@
 import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
-export const getMaxQueueRunTime = (app, queueName) => {
-  return app.exec_sys.queues.find((q) => q.name === queueName).maxRequestedTime;
+
+export const getQueueMaxMinutes = (app, queueName) => {
+  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName).maxMinutes;
 };
 
+
+/**
+ * Get validator for max minutes of a queue
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of max minutes
+ */
+export const getMaxMinutesValidation = (queue) => {
+  return Yup.number()
+    .min(
+      queue.minMinutes,
+      `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
+    )
+    .max(
+      queue.maxMinutes,
+      `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
+    );
+};
+
+// TODOv3  Create ticket for us/Design to decide if we want to continue to present max run time as hh:mm:ss and translate to maxMinutes
 /**
  * Create regex pattern for maxRunTime
  * @function
@@ -56,7 +78,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  */
 const getMinNodeCount = (queue, app) => {
   // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node count of 3
-  return getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+  return getSystemName(app.exec_sys.host) === 'Frontera' &&
     queue.name === 'normal'
     ? 3
     : 1;
@@ -77,29 +99,23 @@ export const getNodeCountValidation = (queue, app) => {
       `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
     )
     .max(
-      queue.maxNodes,
-      `Node Count must be less than or equal to ${queue.maxNodes} for the ${queue.name} queue`
+      queue.maxNodeCount,
+      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue`
     );
 };
 
 /**
- * Get min node count for queue
- */
-const getMaxProcessorsOnEachNode = (queue) =>
-  Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes);
-
-/**
- * Get validator for processors on each node
+ * Get validator for cores on each node
  *
  * @function
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
  */
-export const getProcessorsOnEachNodeValidation = (queue) => {
-  if (queue.maxProcessorsPerNode === -1) {
+export const getCoresPerNodeValidation = (queue) => {
+  if (queue.maxCoresPerNode === -1) {
     return Yup.number();
   }
-  return Yup.number().min(1).max(getMaxProcessorsOnEachNode(queue));
+  return Yup.number().min(1).max(queue.maxCoresPerNode);
 };
 
 /**
@@ -114,13 +130,14 @@ export const getProcessorsOnEachNodeValidation = (queue) => {
 export const getQueueValidation = (queue, app) => {
   return Yup.string()
     .required('Required')
-    .oneOf(app.exec_sys.queues.map((q) => q.name))
+    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
     .test(
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) => {
+        return true; // TODOv3 consider SERIAL jobs with v3
         return !(
-          getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+          getSystemName(app.exec_sys.host) === 'Frontera' &&
           queue.name === 'normal' &&
           app.definition.parallelism === 'SERIAL'
         );
@@ -140,9 +157,12 @@ export const getQueueValidation = (queue, app) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const updatedValues = { ...values };
-  const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
+  // TODO v3 rework this dependent on new paramters (i.e. maxMinutes, maxNodeCount, minCorePerNode */
+  return updatedValues;
+
+  const queue = app.batchLogicalQueues.queues.find((q) => q.name === values.batchQueue);
   const minNode = getMinNodeCount(queue, app);
-  const maxProcessorsOnEachNode = getMaxProcessorsOnEachNode(queue);
+  const maxCoresPerNode = queue.maxCoresPerNode;
 
   if (values.nodeCount < minNode) {
     updatedValues.nodeCount = minNode;
@@ -153,10 +173,10 @@ export const updateValuesForQueue = (app, values) => {
   }
 
   if (
-    queue.maxProcessorsPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.processorsOnEachNode > maxProcessorsOnEachNode
+    queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
+    values.coresPerNode > maxCoresPerNode
   ) {
-    updatedValues.processorsOnEachNode = maxProcessorsOnEachNode;
+    updatedValues.coresPerNode = queue.maxCoresPerNode;
   }
 
   /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
