@@ -13,6 +13,10 @@ export async function fetchJobs(offset, limit) {
   return result.response;
 }
 
+export const notificationsSelector = (state) => {
+  state.notifications.list.notifs;
+};
+
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_LIST_INIT' });
@@ -37,7 +41,7 @@ export function* getJobs(action) {
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
-    const notifs = yield select((state) => state.notifications.list.notifs);
+    const notifs = yield select(notificationsSelector);
     yield put({ type: 'UPDATE_JOBS_FROM_NOTIFICATIONS', payload: notifs });
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });

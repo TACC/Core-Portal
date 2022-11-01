@@ -1,5 +1,6 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { select } from 'redux-saga/effects';
 import {
   jobs as jobsReducer,
   jobDetail as jobDetailReducer,
@@ -12,6 +13,9 @@ import {
   postSubmitJobUtil,
   watchJobDetails,
   submitJob,
+  getJobs,
+  fetchJobs,
+  notificationsSelector,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import executionSystemDetailFixture from './fixtures/executionsystemdetail.fixture';
@@ -19,8 +23,12 @@ import jobDetailFixture from './fixtures/jobdetail.fixture';
 import appDetailFixture from './fixtures/appdetail.fixture';
 import jobSubmitFixture from './fixtures/jobSubmit.fixture';
 import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
+import jobsListFixture from './fixtures/jobsList.fixture';
+import { notificationsListFixture } from './fixtures/notificationsList.fixture';
 
 jest.mock('cross-fetch');
+
+const JOBS_LIST_LIMIT = 50;
 
 const initialJobDetail = {
   jobId: null,
@@ -30,6 +38,14 @@ const initialJobDetail = {
   loading: false,
   loadingError: false,
   loadingErrorMessage: '',
+};
+
+const initialJobsState = {
+  list: [],
+  submit: { submitting: false },
+  loading: false,
+  reachedEnd: false,
+  error: null,
 };
 
 describe('getJobDetails Saga', () => {
@@ -144,6 +160,43 @@ describe('submitJob Saga', () => {
           ...jobsInitalState.submit,
           submitting: false,
         },
+      })
+      .run());
+});
+
+describe('getJobs Saga with offset = 0', () => {
+  it('should fetch jobs list and set jobs state appropriately', () =>
+    expectSaga(getJobs, { params: { offset: 0 } })
+      .withReducer(jobsReducer)
+      .provide([
+        [matchers.call.fn(fetchJobs), jobsListFixture],
+        [
+          matchers.select.selector(notificationsSelector),
+          notificationsListFixture.notifs,
+        ],
+      ])
+      .put({ type: 'JOBS_LIST_INIT' })
+      .put({ type: 'JOBS_LIST_START' })
+      .call(fetchJobs, 0, JOBS_LIST_LIMIT)
+      .put({
+        type: 'JOBS_LIST',
+        payload: {
+          list: jobsListFixture,
+          reachedEnd: jobsListFixture.length < JOBS_LIST_LIMIT,
+        },
+      })
+      .put({ type: 'JOBS_LIST_FINISH' })
+      .put({
+        type: 'UPDATE_JOBS_FROM_NOTIFICATIONS',
+        payload: notificationsListFixture.notifs,
+      })
+
+      .hasFinalState({
+        list: jobsListFixture,
+        submit: { submitting: false },
+        loading: false,
+        reachedEnd: true,
+        error: null,
       })
       .run());
 });
