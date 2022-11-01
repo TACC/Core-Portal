@@ -31,8 +31,6 @@ class SysmonDataView(BaseApiView):
         systems = []
         requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
         systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
-        print(requested_systems)
-        print(systems_json)
         for sys in requested_systems:
             if sys not in systems_json:
                 logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
