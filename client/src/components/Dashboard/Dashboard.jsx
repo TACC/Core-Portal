@@ -9,9 +9,23 @@ import Sysmon from '../SystemMonitor';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
+import CustomDashboardSection from './CustomDashboardSection';
+
+function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
+  return standardApps.length + optionalApps.length + customApps.length;
+}
 
 function Dashboard() {
-  const hideApps = useSelector((state) => state.workbench.config.hideApps);
+  const { hideApps, hideManageAccount, customDashboardSection } = useSelector(
+    (state) => state.workbench.config
+  );
+  const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
+  const panelCount = getPanelCount(
+    ['DashboardTickets'],
+    [hideApps, hideSystemMonitor].filter((isHidden) => !isHidden),
+    ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
+  );
+
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -19,18 +33,23 @@ function Dashboard() {
       messages={<BrowserChecker />}
       header="Dashboard"
       headerActions={
-        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
-          Manage Account
-        </Link>
+        !hideManageAccount && (
+          <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
+            Manage Account
+          </Link>
+        )
       }
-      contentClassName={styles['panels']}
-      contentLayoutName="twoColumn"
+      contentClassName={`${styles['panels']} count--${panelCount}`}
+      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
       contentShouldScroll
       content={
         <>
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
-          <DashboardSysmon />
+          {!hideSystemMonitor && <DashboardSysmon />}
+          {customDashboardSection && (
+            <CustomDashboardSection className={styles['custom-panel']} />
+          )}
           <DashboardRoutes />
         </>
       }

@@ -17,10 +17,6 @@ export function* getAllocations() {
   try {
     const json = yield call(getAllocationsUtil);
     yield put({ type: 'ADD_ALLOCATIONS', payload: json });
-    yield put({
-      type: 'POPULATE_TEAMS',
-      payload: populateTeamsUtil(json),
-    });
   } catch (error) {
     yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
   }
@@ -40,30 +36,12 @@ export const getAllocationsUtil = async () => {
 
 /**
  * Fetch user data for a project
- * @param {String} projectId - project id
+ * @param {Number} projectId - project id
  */
-export const getTeamsUtil = async (projectId) => {
+export const getProjectUsersUtil = async (projectId) => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
-};
-
-/**
- * Generate an empty dictionary to look up users from project ID and map loading state
- * to each project
- * @param {{portal_alloc: String, active: Array, inactive: Array, hosts: Object}} data -
- * Allocations data
- * @returns {{teams: Object, loadingTeams: {}}}
- */
-export const populateTeamsUtil = (data) => {
-  const teams = data.active
-    .concat(data.inactive)
-    .reduce((obj, item) => ({ ...obj, [item.projectId]: {} }), {});
-  const loadingTeams = Object.keys(teams).reduce(
-    (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
-    {}
-  );
-  return { teams, loadingTeams };
 };
 
 export const allocationsSelector = (state) => [
@@ -73,7 +51,13 @@ export const allocationsSelector = (state) => [
 
 export function* getUsernames(action) {
   try {
-    const json = yield call(getTeamsUtil, action.payload.name);
+    yield put({
+      type: 'GET_PROJECT_USERS_INIT',
+      payload: {
+        loadingUsernames: { [action.payload.projectId]: { loading: true } },
+      },
+    });
+    const json = yield call(getProjectUsersUtil, action.payload.projectId);
     const allocations = yield select(allocationsSelector);
     const allocationIds = chain(allocations)
       .filter({ projectId: action.payload.projectId })
@@ -225,25 +209,6 @@ export const teamPayloadUtil = (
   return { data, loadingUsernames };
 };
 
-export function* getUsernamesManage(action) {
-  try {
-    yield put({
-      type: 'MANAGE_USERS_INIT',
-      payload: {
-        loadingUsernames: { [action.payload.projectId]: { loading: true } },
-      },
-    });
-    const json = yield call(getTeamsUtil, action.payload.name);
-    const payload = {
-      data: { [action.payload.projectId]: json },
-      loadingUsernames: { [action.payload.projectId]: { loading: false } },
-    };
-    yield put({
-      type: 'ADD_USERNAMES_TO_TEAM',
-      payload,
-    });
-  } catch (error) {}
-}
 /**
  * Search for users in TAS
  * @async
@@ -251,9 +216,8 @@ export function* getUsernamesManage(action) {
  */
 export const searchUsersUtil = async (term) => {
   const res = await fetchUtil({
-    url: '/api/users/tas-users',
+    url: '/api/users/tas-users/',
     params: { search: term },
-    init: { fetchParams: null },
   });
   const json = res.result;
   return json;
@@ -271,8 +235,8 @@ export function* searchUsers(action) {
   }
 }
 
-export const manageUtil = async (pid, uid, add = true) => {
-  const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
+export const manageUtil = async (projectId, username, add = true) => {
+  const r = await fetch(`/api/users/team/manage/${projectId}/${username}`, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: add ? 'POST' : 'DELETE',
   });
@@ -282,20 +246,13 @@ export const manageUtil = async (pid, uid, add = true) => {
 
 export function* addUser(action) {
   try {
-    yield put({
-      type: 'ALLOCATION_OPERATION_ADD_USER_INIT',
-      payload: {
-        loadingUsernames: { [action.payload.projectId]: { loading: true } },
-      },
-    });
-    yield call(manageUtil, action.payload.projectId, action.payload.id);
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
+    yield call(manageUtil, action.payload.projectId, action.payload.username);
     yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
-    const { projectId, projectName } = action.payload;
     yield put({
-      type: 'GET_MANAGE_TEAMS',
+      type: 'GET_PROJECT_USERS',
       payload: {
-        projectId,
-        name: projectName,
+        projectId: action.payload.projectId,
       },
     });
   } catch (error) {
@@ -305,7 +262,7 @@ export function* addUser(action) {
         addUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id,
+          username: action.payload.username,
         },
       },
     });
@@ -321,22 +278,27 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: true,
           error: false,
-          userName: action.payload.id,
+          username: action.payload.username,
         },
       },
     });
-    yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    yield call(
+      manageUtil,
+      action.payload.projectId,
+      action.payload.username,
+      false
+    );
     // remove user from team state
     const teams = yield select(allocationsTeamSelector);
     const updatedTeams = { ...teams };
     updatedTeams[action.payload.projectId] = teams[
       action.payload.projectId
-    ].filter((i) => i.username !== action.payload.id);
+    ].filter((i) => i.username !== action.payload.username);
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
       payload: {
         teams: updatedTeams,
-        removingUserOperation: { loading: false, error: false, userName: '' },
+        removingUserOperation: { loading: false, error: false, username: '' },
       },
     });
   } catch (error) {
@@ -346,7 +308,7 @@ export function* removeUser(action) {
         removingUserOperation: {
           loading: false,
           error: true,
-          userName: action.payload.id,
+          username: action.payload.username,
         },
       },
     });
@@ -366,15 +328,12 @@ export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
 export function* watchTeams() {
-  yield takeLatest('GET_TEAMS', getUsernames);
+  yield takeLatest('GET_PROJECT_USERS', getUsernames);
 }
-export function* watchManageTeams() {
-  yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);
-}
+
 export default [
   watchAllocationData(),
   watchTeams(),
-  watchManageTeams(),
   watchUserSearch(),
   watchAddUser(),
   watchRemoveUser(),

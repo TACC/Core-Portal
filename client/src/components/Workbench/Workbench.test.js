@@ -17,8 +17,6 @@ import { initialState as systemMonitor } from '../../redux/reducers/systemMonito
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
-import * as introMessageText from '../../constants/messages';
-
 /* state required to render workbench/dashboard */
 const state = {
   authenticatedUser,
@@ -65,7 +63,8 @@ describe('workbench', () => {
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
-    expect(getByText(introMessageText.DASHBOARD)).toBeDefined();
+    expect(getByText(/My Recent Jobs/)).toBeDefined();
+    expect(getByText(/My Tickets/)).toBeDefined();
   });
   it('shows loading spinner if systems request not finished', () => {
     const history = createMemoryHistory();

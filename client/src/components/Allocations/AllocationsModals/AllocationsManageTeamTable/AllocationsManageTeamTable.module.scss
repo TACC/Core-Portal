@@ -22,6 +22,10 @@
   thead th /* specificity overwrites bootstrap */ {
     border-bottom: 1px solid var(--global-color-primary--dark);
   }
+  /* role */
+  tr > *:nth-child(2) {
+    min-width: 17em;
+  }
   /* action */
   tr > *:nth-child(3) {
     text-align: right;
@@ -63,4 +67,11 @@
 .user-operation-error {
   padding-top: 14px;
   padding-bottom: 14px;
+}
+.action-button {
+  margin-left: 5px;
+}
+div > .selector {
+  width: 11em;
+  height: auto;
 }

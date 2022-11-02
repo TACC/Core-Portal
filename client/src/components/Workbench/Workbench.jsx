@@ -11,12 +11,15 @@ import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
+import Submissions from '../Submissions';
 import History from '../History';
 import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import './Workbench.scss';
+// Core Styles needs to be imported last for Rollup to compile the CSS correctly.
+import '../../index.css';
 
 function Workbench() {
   const { path } = useRouteMatch();
@@ -32,6 +35,8 @@ function Workbench() {
     hideApps,
     hideDataFiles,
     hideAllocations,
+    showSubmissions,
+    hideManageAccount,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading | loadingSystems,
@@ -42,6 +47,8 @@ function Workbench() {
       hideApps: state.workbench.config.hideApps,
       hideDataFiles: state.workbench.config.hideDataFiles,
       hideAllocations: state.workbench.config.hideAllocations,
+      showSubmissions: state.workbench.config.showSubmissions,
+      hideManageAccount: state.workbench.config.hideManageAccount,
     }),
     shallowEqual
   );
@@ -84,10 +91,12 @@ function Workbench() {
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
                   <Dashboard />
                 </Route>
-                <Route
-                  path={`${path}${ROUTES.ACCOUNT}`}
-                  component={ManageAccount}
-                />
+                {!hideManageAccount && (
+                  <Route
+                    path={`${path}${ROUTES.ACCOUNT}`}
+                    component={ManageAccount}
+                  />
+                )}
                 {!hideDataFiles && (
                   <Route path={`${path}${ROUTES.DATA}`}>
                     <DataFiles />
@@ -104,6 +113,11 @@ function Workbench() {
                     path={`${path}${ROUTES.ALLOCATIONS}`}
                     component={Allocations}
                   />
+                )}
+                {showSubmissions && (
+                  <Route path={`${path}${ROUTES.SUBMISSIONS}`}>
+                    <Submissions />
+                  </Route>
                 )}
                 {!hideApps && (
                   <Route

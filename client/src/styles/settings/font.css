@@ -1,4 +1,4 @@
-@import url('@tacc/core-styles/source/_imports/settings/font.css');
+@import url('@tacc/core-styles/src/lib/_imports/settings/font.css');
 
 :root {
   /* stylelint-disable value-keyword-case */

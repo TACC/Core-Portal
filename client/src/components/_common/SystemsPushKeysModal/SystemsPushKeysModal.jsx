@@ -1,12 +1,12 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from '_common';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
 import InlineMessage from '../InlineMessage';
-import LoadingSpinner from '../LoadingSpinner';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -63,11 +63,6 @@ const SystemsPushKeysModal = () => {
     password: '',
     token: '',
   };
-
-  let buttonIcon;
-  if (submitting) {
-    buttonIcon = <LoadingSpinner placement="inline" />;
-  }
 
   return (
     <>
@@ -142,11 +137,12 @@ const SystemsPushKeysModal = () => {
                   <InlineMessage type="error">{error.message}</InlineMessage>
                 )}
                 <Button
-                  type="submit"
-                  className="data-files-btn"
+                  attr="submit"
+                  type="primary"
                   disabled={submitting}
+                  isLoading={submitting}
                 >
-                  {buttonIcon} <span>Authenticate</span>
+                  Authenticate
                 </Button>
               </ModalFooter>
             </Form>

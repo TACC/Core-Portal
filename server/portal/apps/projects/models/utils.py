@@ -32,7 +32,7 @@ def get_latest_project_storage(max_project_id=None):
         )
         if '-' not in prj_id:
             continue
-        _, prj_id = prj_id.rsplit('-')
+        prj_id = prj_id.rsplit('-')[-1]
         prj_id = int(prj_id)
 
         if prj_id > latest and (max_project_id is None or prj_id < max_project_id):

@@ -12,10 +12,10 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prequisites for running the portal application
 
-* Docker 20.10.7
-* Docker Compose 1.29.2
-* Python 3.7.12
-* Nodejs 12.x (LTS)
+* Docker > 20.10.7
+* Docker Compose > 1.29.x
+* Python 3.7.x
+* Nodejs 16.x (LTS)
 
 The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
 need both Docker and Docker Compose pre-installed on the system you wish to run the portal
@@ -24,6 +24,71 @@ on.
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop](https://www.docker.com/products/docker-desktop), which will install both Docker and Docker Compose as well as Docker
 Machine, which is required to run Docker on Mac/Windows hosts.
+
+### Installing local CA
+
+For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
+Every file needed is in `conf/nginx/certificates`.
+
+NOTE: This may require a computer restart to take effect.
+
+#### OSX
+
+1. Open mac's Keychain Access
+2. With Default Keychains > login selected, choose File > Import Items... from the menu.
+3. Navigate to `./server/conf/nginx/certificates`
+4. Select `ca.pem`
+5. Search for CEP and double click on the certificate
+6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
+7. Close the window to save.
+
+#### Linux
+
+1. `$ cd ./server/conf/nginx/certificates`
+2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
+3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/cepCA.pem`
+4. `$ sudo update-ca-certificates`
+
+#### Firefox UI
+
+1. Go to preferences
+3. Search for Authorities
+4. Click on "View Certificates" under "Certificates"
+5. On the Certificate Manager go to the "Authorities" tab
+6. Click on "Import..."
+7. Browse to `./server/conf/nginx/certificates`
+8. Select `ca.pem`
+
+#### Firefox CLI (not tested)
+
+1. `sudo apt-get install libnss3-tools` (or proper package manager)
+2. `certutil -A -n "cepCA" -t "TCu,Cu,Tu" -i ca.pem -d ${DBDIR}`
+3. `$DBDIR` differs from browser to browser for more info:
+    Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
+    Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
+
+### Setup local access to the portal:
+
+  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
+      - `sudo vim /etc/hosts`
+
+     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+
+  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+  
+     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
+      1. Open the Network app utility
+      2. Select network connection you’re on (wifi, ethernet, etc)
+      3. Go to “Advanced”
+      4. Go to “TCP/IP” tab
+      5. Under “Configure IPv6” dropdown, select “Link-local only”
+      6. Hit “OK”
+      7. Hit “Apply”
+
+     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
+
+     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+
 
 ### Code Configuration
 
@@ -34,7 +99,7 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### Portal
 
-- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu)
+- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
     - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
@@ -61,13 +126,13 @@ OR
     docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
-#### Install client-side dependencies and bundle code with webpack:
+#### Install client-side dependencies and bundle code:
 
     cd client
     npm ci
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version. You will also need the port 8080 available locally._
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
 
 #### Initialize the application in the `core_portal_django` container:
@@ -76,8 +141,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
-    python3 manage.py projects_id --update-using-max-value-found # Update projects id counter
-    python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
+    python3 manage.py import-apps # Add set of example apps used in Frontera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
 
@@ -128,63 +192,6 @@ ngrok http 443
 ```
 2. Then, take the `https` url generated by ngrok and paste it into the `WH_BASE_URL` setting in `settings_local.py`
 
-
-### Setup local access to the portal:
-
-  1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
-      - `sudo vim /etc/hosts`
-
-     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
-     _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
-
-  2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
-
-     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/login`). After succesful login, you can use the debug server at `https://cep.dev`._
-
-     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
-
-### Installing local CA
-
-For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
-Every file needed is in `conf/nginx/certificates`.
-
-NOTE: This may require a computer restart to take effect.
-
-#### OSX
-
-1. Open mac's Keychain Access
-2. With Default Keychains > login selected, choose File > Import Items... from the menu.
-3. Navigate to `./server/conf/nginx/certificates`
-4. Select `ca.pem`
-5. Search for CEP and double click on the certificate
-6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
-7. Close the window to save.
-
-#### Linux
-
-1. `$ cd ./server/conf/nginx/certificates`
-2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
-3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/cepCA.pem`
-4. `$ sudo update-ca-certificates`
-
-#### Firefox UI
-
-1. Go to preferences
-3. Search for Authorities
-4. Click on "View Certificates" under "Certificates"
-5. On the Certificate Manager go to the "Authorities" tab
-6. Click on "Import..."
-7. Browse to `./server/conf/nginx/certificates`
-8. Select `ca.pem`
-
-#### Firefox CLI (not tested)
-
-1. `sudo apt-get install libnss3-tools` (or proper package manager)
-2. `certutil -A -n "cepCA" -t "TCu,Cu,Tu" -i ca.pem -d ${DBDIR}`
-3. `$DBDIR` differs from browser to browser for more info:
-    Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
-    Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
 ### Linting and Formatting Conventions
 
@@ -276,6 +283,6 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Camino]: https://github.com/TACC/Camino
 [Core CMS]: https://github.com/TACC/Core-CMS
 [Core Portal]: https://github.com/TACC/Core-Portal
-[Core Styles]: https://github.com/TACC/Core-Styles
+[Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/

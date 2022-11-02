@@ -26,7 +26,7 @@ describe('SystemRoleSelector', () => {
     );
     expect(await screen.findByTestId('loading-spinner')).toBeDefined();
     await waitFor(async () => {
-      const query = await screen.findByText('GUEST');
+      const query = await screen.findByText(/Guest/);
       expect(query).toBeDefined();
     });
   });

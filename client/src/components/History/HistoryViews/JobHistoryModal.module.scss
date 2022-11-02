@@ -45,15 +45,10 @@
 }
 
 .submit-button {
-  composes: c-button--primary from '../../../styles/components/c-button.css';
-  width: 80%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-size: 14px;
-  margin: auto;
-  --transition-duration: 0;
-  transition: color var(--transition-duration),
-    background-color var(--transition-duration);
+  --max-width: 100%; /* (temporarily) overwrite `.c-button--...` */
+
+  display: block;
+  width: 100%;
 }
 
 .left-panel {

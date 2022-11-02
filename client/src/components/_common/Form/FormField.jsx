@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Button,
   FormGroup,
   Label,
   Input,
@@ -9,6 +8,7 @@ import {
   InputGroup,
   InputGroupAddon,
 } from 'reactstrap';
+import { Button } from '_common';
 
 import { useField } from 'formik';
 import PropTypes from 'prop-types';
@@ -84,15 +84,12 @@ const FormField = ({
   );
   const FieldNote = () => (
     <>
-      {meta.touched && meta.error ? (
-        <div className="form-field__validation-error">{meta.error}</div>
-      ) : (
-        description && (
-          <FormText className="form-field__help" color="muted">
-            {description}
-          </FormText>
-        )
-      )}
+      <FormText className="form-field__help" color="muted">
+        {description}
+        {meta.touched && meta.error && (
+          <div className="form-field__validation-error">{meta.error}</div>
+        )}
+      </FormText>
     </>
   );
 
@@ -126,9 +123,7 @@ const FormField = ({
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <Button
-                  size="sm"
-                  color="secondary"
-                  type="button"
+                  type="secondary"
                   onClick={() => setOpenAgaveFileModal(true)}
                 >
                   Select

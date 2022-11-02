@@ -307,6 +307,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
         "system_list": [
             {
                 "name": "My Data (Frontera)",
+                "type": None,
                 "system": "frontera.home.username",
                 "scheme": "private",
                 "api": "tapis",
@@ -315,6 +316,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
             },
             {
                 "name": "My Data (Longhorn)",
+                "type": None,
                 "system": "longhorn.home.username",
                 "scheme": "private",
                 "api": "tapis",
@@ -323,6 +325,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
             },
             {
                 "name": "My Data (Work)",
+                "type": None,
                 "system": "cloud.corral.work.username",
                 "scheme": "private",
                 "api": "tapis",

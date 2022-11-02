@@ -22,7 +22,7 @@ _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
-                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
+                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu', 'ls6.tacc.utexas.edu']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -258,6 +258,23 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
+    "showSubmissions": False,
+    "hideManageAccount": False,
+    "hasUserGuide": True,
+    "hideFeedback": False,
     "onboardingCompleteRedirect": '/workbench/',
-    "noPHISystem": ""
+    "noPHISystem": "",
+    "customDashboardSection": {
+        "header": "My Account",
+        "links": [
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Update Profile and Email Address',
+            },
+            {
+                "href": 'https://utexas.edu',
+                "text": 'Change Password',
+            }
+        ]
+    }
 }

@@ -18,6 +18,7 @@ export const SIZE_MAP = {
   short: 'width-short',
   medium: 'width-medium',
   long: 'width-long',
+  auto: 'width-auto',
   small: 'size-small',
 };
 export const SIZES = [''].concat(Object.keys(SIZE_MAP));
@@ -72,11 +73,11 @@ const Button = ({
     );
   }
   if (type !== 'link' && !size) {
-    size = 'short';
+    size = 'auto';
     // Component will work, except `size` is auto-set
     console.debug(
       'A <Button> that is not `type="link"` and has no `size` ' +
-        'is automatically assigned `size="short"`.'
+        'is automatically assigned `size="auto"`.'
     );
   }
   /* eslint-enable no-console */
@@ -88,6 +89,7 @@ const Button = ({
         ${TYPE_MAP[type] ? styles[TYPE_MAP[type]] : ''}
         ${SIZE_MAP[size] ? styles[SIZE_MAP[size]] : ''}
         ${isLoading ? styles['loading'] : ''}
+        ${className}
       `}
       disabled={disabled || isLoading}
       type={attr}

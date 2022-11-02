@@ -54,7 +54,7 @@
             "projectName": "TACC-Team",
             "systems": [
                 {
-                    "name": "Maverick 2",
+                    "name": "Maverick2",
                     "host": "maverick2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -92,7 +92,7 @@
             "projectName": "DesignSafe-Community",
             "systems": [
                 {
-                    "name": "Stampede 2",
+                    "name": "Stampede2",
                     "host": "stampede2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -280,7 +280,7 @@
                     }
                 },
                 {
-                    "name": "Stampede 2",
+                    "name": "Stampede2",
                     "host": "stampede2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -358,7 +358,7 @@
             "projectName": "DesignSafe-Community",
             "systems": [
                 {
-                    "name": "LoneStar 5",
+                    "name": "Lonestar5",
                     "host": "ls5.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -388,7 +388,7 @@
                     }
                 },
                 {
-                    "name": "Stampede 2",
+                    "name": "Stampede2",
                     "host": "stampede2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -448,7 +448,7 @@
                     }
                 },
                 {
-                    "name": "LoneStar 5",
+                    "name": "Lonestar5",
                     "host": "ls5.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -478,7 +478,7 @@
                     }
                 },
                 {
-                    "name": "Stampede 2",
+                    "name": "Stampede2",
                     "host": "stampede2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -538,7 +538,7 @@
                     }
                 },
                 {
-                    "name": "Stampede 2",
+                    "name": "Stampede2",
                     "host": "stampede2.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {
@@ -568,7 +568,7 @@
                     }
                 },
                 {
-                    "name": "LoneStar 5",
+                    "name": "Lonestar5",
                     "host": "ls5.tacc.utexas.edu",
                     "type": "HPC",
                     "allocation": {

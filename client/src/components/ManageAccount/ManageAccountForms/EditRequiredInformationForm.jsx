@@ -1,10 +1,9 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
 import { pick, isEmpty } from 'lodash';
-import { LoadingSpinner } from '_common';
+import { Button, LoadingSpinner } from '_common';
 import { bool } from 'prop-types';
 import { ManageAccountInput } from './ManageAccountFields';
 
@@ -37,13 +36,15 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
       <ManageAccountInput label="Gender" name="gender" type="select" />
       <Button
-        type="submit"
+        attr="submit"
+        type="primary"
+        size="medium"
         className="manage-account-submit-button"
         disabled={!canSubmit}
-        aria-label="required-submit"
+        isLoading={isEditing}
+        dataTestid="required-submit"
       >
-        {isEditing && <LoadingSpinner placement="inline" />}
-        <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
+        Submit
       </Button>
     </Form>
   );

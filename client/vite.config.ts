@@ -23,10 +23,11 @@ export default defineConfig({
   },
 
   server: {
-    host: "cep.dev",
+    host: "cep.test",
+    port: 3000,
     https: {
-      key: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.key'),
-      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.crt')
+      key: fs.readFileSync('../server/conf/nginx/certificates/cep.test.key'),
+      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.test.crt')
     },
     hmr: {
       port: 3000,

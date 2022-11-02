@@ -7,6 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.21.0] - 2022-10-06: Bugfixes for Allocations, Systems, Roles
+
+### Changed
+- FP-267: Reconfigure local dev to use cep.test (#697)
+- Use codecov github action instead of deprecated bash script (#703)
+- FP-1856: update xras link for requesting new allocations (#700)
+
+### Fixed
+- FP-1823: Update poetry and base docker image (#695)
+- FP-1829: Add lonestar6 to list of known tacc systems (#696)
+- FP-1836: Fix SystemPushKeysModal (#699)
+- FP-1729: Apply user roles to "Edit Descriptions" and "Add" Files buttons (#692)
+- FP-1855: Fix allocation usage dialog (#701)
+- FP-1870: Fix LS6 home dir #706
+
+## [2.20.0] - 2022-09-08: APCD Portal; Delegate Management; Common Button
+
+### Added
+- FP-1759: Data Submission (#683)
+- FP-1788: APCD Manage Account (#688)
+- FP-1591: Add pytorch icon for pytorch resnet frontera app (#686)
+- FP-1639: Delegate management (#679)
+
+### Changed
+- FP-546: Use _common Button (#662)
+- FP-1769: Hide empty System Monitor if there are no systems to list (#685)
+- FP-1783: Editable welcome message (#684)
+- FP-1760: APCD project membership (#680)
+- docs(ui): less specific primary button use case (#676)
+
+### Fixed
+- FP-1784: Remove user-guide link from feedback modal (#687)
+- FP-1772: Allocations Modal bugfixes (#682)
+
+## [2.19.0] - 2022-07-14: Core-Styles; TAP Functions; Bugfixes
+
+### Changed
+
+- TUP-271: Use Core-Styles from TUP UI (#651)
+- Bump lxml from 4.6.5 to 4.9.1 in /server (#671)
+- docs(README): do not mention webpack (#668)
+- FP-1633: Alter webhook and job name to use new tap functions (#669)
+
+### Fixed
+
+- FP-1694: Fix background icon in FileInputDropdownSelector (#667)
+- FP-1696: Manage Team modal bugfixes (#672)
+- FP-1722: Fix Shared Workspaces id and accept any amount of hyphens in PORTAL_PROJECTS_ID_PREFIX (#673)
+
+## [2.18.1] - 2022-07-06: Hotfix: Fix `fetchUtil`
+
+### Fixed
+
+- FP-1715: Fix `fetchUtil` (#670)
+
+## [2.18.0] - 2022-06-28: Manage Allocations
+
+### Added
+
+- FP-737: Manage Allocations (#568)
+- FP-1650: Test Cases for _common/Button (#640)
+
+### Fixed
+
+- FP-1702: CSS Load Order Differs on Dev vs Local (#665)
+- FP-1539: Fix Undesired `<Pill>` truncation (#666)
+
 ## [2.17.0] - 2022-06-14: Admin Messages; Member Roles for Shared Workspaces
 
 ### Added
@@ -99,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- task/FP-200: Trash Modal: Official Design (#549)
+- - FP-200: Trash Modal: Official Design (#549)
 - FP-545: Create _common Button React Component (#584)
 
 ### Fixed
@@ -681,7 +748,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.17.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.21.0...HEAD
+[2.21.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.21.0
+[2.20.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.20.0
+[2.19.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.19.0
+[2.18.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.1
+[2.18.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.18.0
 [2.17.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.17.0
 [2.16.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.16.0
 [2.15.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.15.0
