@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Message } from '_common';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Message } from '_common';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
 
@@ -28,6 +28,13 @@ const DataFilesManageProjectModal = () => {
     };
   });
 
+  const isUserOrGuest = members
+    .filter((member) => member.user.username === user.username)
+    .map(
+      (currentUser) =>
+        currentUser.access === 'edit' || currentUser.access === 'read'
+    )[0];
+
   const toggle = useCallback(() => {
     setTransferMode(false);
     dispatch({
@@ -51,6 +58,9 @@ const DataFilesManageProjectModal = () => {
     },
     [projectId, dispatch]
   );
+
+  const onOpen = () =>
+    dispatch({ type: 'PROJECTS_SET_MEMBER_RESET', payload: {} });
 
   const onRemove = useCallback(
     (removedUser) => {
@@ -106,13 +116,14 @@ const DataFilesManageProjectModal = () => {
   return (
     <div className={styles.root}>
       <Modal
-        size="lg"
+        size="xl"
         isOpen={isOpen}
+        onOpened={onOpen}
         toggle={toggle}
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          Manage Team
+          {isUserOrGuest ? 'View' : 'Manage'} Team
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -132,13 +143,9 @@ const DataFilesManageProjectModal = () => {
             </div>
           ) : null}
           <div className={styles['owner-controls']}>
-            {isOwner ? (
-              <Button color="link" onClick={toggleTransferMode}>
-                <h6 className={styles['ownership-toggle']}>
-                  {transferMode
-                    ? 'Cancel Change Ownership'
-                    : 'Change Ownership'}
-                </h6>
+            {isOwner && members.length > 1 ? (
+              <Button type="link" onClick={toggleTransferMode}>
+                {transferMode ? 'Cancel Change Ownership' : 'Change Ownership'}
               </Button>
             ) : null}
           </div>

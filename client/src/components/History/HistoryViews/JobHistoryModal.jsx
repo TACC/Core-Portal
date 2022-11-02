@@ -5,8 +5,14 @@ import {
   NavLink as RRNavLink,
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, NavLink, Button } from 'reactstrap';
-import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
+import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
+import {
+  Button,
+  DescriptionList,
+  LoadingSpinner,
+  Expand,
+  Message,
+} from '_common';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
 import { isOutputState } from 'utils/jobsUtil';
@@ -130,9 +136,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
 
   return (
     <>
-      <div className={styles['left-panel']}>
+      <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
-          className={styles['panel-content']}
           density="compact"
           data={{
             Output: !hideDataFiles && (
@@ -147,8 +152,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
         />
         {isTerminalState && (
           <Button
-            color="primary"
-            type="submit"
+            type="primary"
+            attr="submit"
             className={styles['submit-button']}
             onClick={resubmitJob}
           >

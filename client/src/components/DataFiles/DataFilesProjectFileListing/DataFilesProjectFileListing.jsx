@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
 import {
+  Button,
   ShowMore,
   LoadingSpinner,
   SectionMessage,
@@ -47,6 +47,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     );
   });
 
+  const isUserOrGuest = useSelector(
+    (state) =>
+      metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser.user.username
+            : { access: null }
+        )
+        .map(
+          (currentUser) =>
+            currentUser.access === 'edit' || currentUser.access === 'read'
+        )[0]
+  );
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -89,12 +102,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       headerActions={
         editable && (
           <div className={styles.controls}>
-            <Button color="link" className={styles.edit} onClick={onEdit}>
-              Edit Descriptions
-            </Button>
-            <span className={styles.separator}>|</span>
-            <Button color="link" className={styles.edit} onClick={onManage}>
-              Manage Team
+            {!isUserOrGuest ? (
+              <>
+                <Button type="link" onClick={onEdit}>
+                  Edit Descriptions
+                </Button>
+                <span className={styles.separator}>|</span>
+              </>
+            ) : null}
+            <Button type="link" onClick={onManage}>
+              {isUserOrGuest ? 'View' : 'Manage'} Team
             </Button>
           </div>
         )

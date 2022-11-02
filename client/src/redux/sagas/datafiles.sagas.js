@@ -1091,7 +1091,7 @@ export function* compressFiles(action) {
       });
       yield put({
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'compress', props: {} },
+        payload: { operation: 'downloadMessage', props: {} },
       });
     } else {
       throw new Error('Unable to compress files');

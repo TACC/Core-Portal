@@ -76,19 +76,28 @@
 [class*='icon-nav-'] {
   border: solid var(--color, var(--global-color-primary--xx-dark));
   border-width: 0 0.25em 0.25em 0;
-  font-size: 8px;
+  font-size: 8px; /* thus 1px = 0.125em */
   /* display: inline-block; */ /* let `.icon`'s `display: inline-flex;` do it */
   /* padding: var(--size); */ /* let `.icon`'s equal `width` & `height` do it */
 }
+/* To rotate icon each direction and move graphic to stay within icon box */
+/* NOTE: For '-up' and '-down':
+         - translate gave (sub-pixel) better horz. align than relative position
+         - relative position gave  easier vertical alignment
+         So 'left' and 'right' (for consistency) use translate for horz. move */
 .icon-nav-up {
-  transform: rotate(-135deg);
+  position: relative;
+  top: 2px;
+  transform: rotate(-135deg) translate(-1px, 1px);
 }
 .icon-nav-left {
-  transform: rotate(135deg);
+  transform: rotate(135deg) translate(-1px, -1px);
 }
 .icon-nav-down {
-  transform: rotate(45deg);
+  position: relative;
+  top: -2px;
+  transform: rotate(45deg) translate(1px, -1px);
 }
 .icon-nav-right {
-  transform: rotate(-45deg);
+  transform: rotate(-45deg) translate(-1px, -1px);
 }

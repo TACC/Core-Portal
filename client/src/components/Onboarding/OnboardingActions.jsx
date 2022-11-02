@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { LoadingSpinner, Message } from '_common';
-import { Button } from 'reactstrap';
+import { Button, LoadingSpinner, Message } from '_common';
+import { Button as ReactstrapButton } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
@@ -54,15 +54,16 @@ const OnboardingActions = ({ step }) => {
       {isStaff && step.state === 'staffwait' ? (
         <>
           <Button
-            color="link"
+            type="link"
             className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
             {step.staffApprove}
           </Button>
+          &nbsp;&nbsp;&nbsp;
           <Button
-            color="link"
+            type="link"
             className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
@@ -72,27 +73,38 @@ const OnboardingActions = ({ step }) => {
         </>
       ) : null}
       {step.state === 'userwait' ? (
-        <Button
-          color="link"
-          className={styles.action}
-          disabled={isSending}
-          onClick={() => actionCallback('user_confirm', username)}
-        >
-          {step.userConfirm}
-        </Button>
+        step.data?.userlink ? (
+          <ReactstrapButton
+            color="link"
+            className={styles.action}
+            href={step.data?.userlink?.url}
+          >
+            {step.data?.userlink?.text}
+          </ReactstrapButton>
+        ) : (
+          <Button
+            type="link"
+            className={styles.action}
+            disabled={isSending}
+            onClick={() => actionCallback('user_confirm', username)}
+          >
+            {step.userConfirm}
+          </Button>
+        )
       ) : null}
       {isStaff ? (
         <>
           <Button
-            color="link"
+            type="link"
             className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('reset', username)}
           >
             Admin Reset
           </Button>
+          &nbsp;&nbsp;&nbsp;
           <Button
-            color="link"
+            type="link"
             className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}

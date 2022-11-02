@@ -18,12 +18,12 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
         allocation or request more time on a machine by using your TACC user
         account credentials to access the Resource Allocation System at&nbsp;
         <a
-          href="https://tacc-submit.xras.xsede.org/"
+          href="https://submit-tacc.xras.org/"
           target="_blank"
           rel="noopener noreferrer"
           className={styles.link}
         >
-          https://tacc-submit.xras.xsede.org/
+          https://submit-tacc.xras.org/
         </a>
         .
       </p>

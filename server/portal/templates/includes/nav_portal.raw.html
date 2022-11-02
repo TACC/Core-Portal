@@ -1,4 +1,6 @@
 {# @var user #}
+{# @var settings #}
+
 <!-- FAQ: This template loads independently at a unique url (see `urls.py`)
           so CMS and User Guide can render this markup into their markup. -->
 
@@ -32,9 +34,11 @@
       <i class="icon icon-approved-boxed"></i> Onboarding Admin
     </a>
     {% endif %}
+    {% if not settings.WORKBENCH_SETTINGS.hideManageAccount %}
     <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
       <i class="icon icon-user"></i> My Account
     </a>
+    {% endif %}
     {% if user.is_impersonate %}
     <a class="dropdown-item" href="{% url 'impersonate-stop' %}">
       <i class="icon icon-user-reverse"></i> Stop impersonating {{user.get_username}}

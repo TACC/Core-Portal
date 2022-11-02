@@ -9,6 +9,7 @@ import styles from '../DataFilesProjectMembers.module.scss';
 import LoadingSpinner from '_common/LoadingSpinner';
 
 const getSystemRole = async (projectId, username) => {
+  if (!projectId || !username) return {};
   const url = `/api/projects/${projectId}/system-role/${username}/`;
   const request = await fetch(url, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -46,6 +47,12 @@ export const useSystemRole = (projectId, username) => {
 };
 
 const SystemRoleSelector = ({ projectId, username }) => {
+  const roleMap = {
+    OWNER: 'Owner',
+    ADMIN: 'Administrator',
+    USER: 'User (read/write)',
+    GUEST: 'Guest (read only)',
+  };
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
@@ -73,16 +80,19 @@ const SystemRoleSelector = ({ projectId, username }) => {
     username === authenticatedUser ||
     !['OWNER', 'ADMIN'].includes(currentUserRole)
   )
-    return <span>{data.role}</span>;
+    return <span>{roleMap[data.role]}</span>;
   return (
     <div style={{ display: 'inline-flex' }}>
       <DropdownSelector
         value={selectedRole}
         onChange={(e) => setSelectedRole(e.target.value)}
+        className={styles['project-role-selector']}
       >
-        {username !== authenticatedUser && <option value="ADMIN">ADMIN</option>}
-        <option value="USER">USER</option>
-        <option value="GUEST">GUEST</option>
+        {username !== authenticatedUser && (
+          <option value="ADMIN">Administrator</option>
+        )}
+        <option value="USER">User (read/write)</option>
+        <option value="GUEST">Guest (read only)</option>
       </DropdownSelector>
       {data.role !== selectedRole && !isFetching && (
         <Button

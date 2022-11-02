@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
-
-import { Icon } from '_common';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
@@ -29,9 +27,13 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button className={styles.link} color="link" onClick={onClick}>
-      <Icon className={styles['link-icon']} name="nav-left" />
-      <span className={styles['path']}>Back</span>
+    <Button
+      type="link"
+      className={styles['link']}
+      iconNameBefore="nav-left"
+      onClick={onClick}
+    >
+      Back
     </Button>
   );
 };
@@ -112,8 +114,9 @@ const DataFilesModalButtonCell = ({
     formatSupportsOperation && (
       <span>
         <Button
-          disabled={disabled}
+          type="primary"
           className="float-right data-files-btn"
+          disabled={disabled}
           onClick={onClick}
         >
           {operationName}
@@ -142,7 +145,7 @@ const DataFilesModalListingTable = ({
   disabled,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
-  const isNotRoot = params.path.length > 0;
+  const isNotRoot = params.path !== '' && params.path !== '/';
 
   const displayName = useSystemDisplayName(params);
 
@@ -209,7 +212,7 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
-  const hasBackButton = params.path.length > 0;
+  const hasBackButton = isNotRoot;
 
   const BackHeader = useCallback(
     () => (

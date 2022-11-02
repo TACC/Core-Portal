@@ -67,12 +67,16 @@ const Sidebar = ({ sidebarItems, addItems, loading }) => {
               </SidebarItem>
             )
         )}
-      {addItems
-        ? addItems.map((item) => (
-            <NavItem className={item.className} key={item.className}>
-              {item.children}
-            </NavItem>
-          ))
+
+      {!loading && addItems
+        ? addItems.map(
+            (item) =>
+              !item.hidden && (
+                <NavItem className={item.className} key={item.className}>
+                  {item.children}
+                </NavItem>
+              )
+          )
         : null}
     </Nav>
   );

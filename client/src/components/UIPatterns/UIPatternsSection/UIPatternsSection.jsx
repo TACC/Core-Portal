@@ -8,7 +8,7 @@ import {
   InlineMessage,
   SectionMessage,
 } from '_common';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import { useDispatch } from 'react-redux';
 
 import styles from './UIPatternsSection.module.css';
@@ -177,7 +177,7 @@ function UIPatternsSection() {
           contentLayoutName="oneColumn"
           headerActions={
             <Button
-              color="link"
+              type="link"
               onClick={() =>
                 dispatch({
                   type: 'TICKET_CREATE_OPEN_MODAL',

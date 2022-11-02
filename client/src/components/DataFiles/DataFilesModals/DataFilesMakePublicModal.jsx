@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { SectionMessage } from '_common';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, SectionMessage } from '_common';
 
 const DataFilesMakePublicModal = () => {
   const isOpen = useSelector((state) => state.files.modals.makePublic);
@@ -55,7 +55,7 @@ const DataFilesMakePublicModal = () => {
         </SectionMessage>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={makePublic} className="data-files-btn">
+        <Button onClick={makePublic} type="primary" size="medium">
           Proceed
         </Button>
       </ModalFooter>

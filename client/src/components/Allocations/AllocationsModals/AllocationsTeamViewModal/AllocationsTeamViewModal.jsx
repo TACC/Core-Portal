@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { number, bool, func } from 'prop-types';
+import { useParams } from 'react-router-dom';
+import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
 import { Tab, Tabs } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,12 +13,9 @@ import { UserSearchbar } from '_common';
 import styles from './AllocationsTeamViewModal.module.scss';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 
-const AllocationsTeamViewModal = ({
-  isOpen,
-  toggle,
-  projectId,
-  projectName,
-}) => {
+const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
+  const { projectId: projectIdString } = useParams();
+  const projectId = Number(projectIdString);
   const {
     teams,
     loadingUsernames,
@@ -27,14 +25,14 @@ const AllocationsTeamViewModal = ({
     removingUserOperation,
   } = useSelector((state) => state.allocations);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.profile.data.demographics.username);
+  const user = useSelector((state) => state.authenticatedUser.user.username);
   const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
   const [isManager, setManager] = useState(false);
   const isLoading =
     loadingUsernames[projectId] && loadingUsernames[projectId].loading;
   React.useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && projectId in teams) {
       const currentUser = teams[projectId].filter((u) => u.username === user);
       if (currentUser.length !== 1) return;
       if (currentUser[0].role === 'PI' || currentUser[0].role === 'Delegate')
@@ -50,6 +48,10 @@ const AllocationsTeamViewModal = ({
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT',
     });
+    dispatch({
+      type: 'GET_PROJECT_USERS',
+      payload: { projectId },
+    });
   }, [isOpen]);
 
   const onAdd = useCallback(
@@ -58,8 +60,7 @@ const AllocationsTeamViewModal = ({
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
-          id: newUser.user.username,
-          projectName,
+          username: newUser.user.username,
         },
       });
     },
@@ -132,7 +133,7 @@ const AllocationsTeamViewModal = ({
               <UserSearchbar
                 members={teams[projectId]}
                 onAdd={onAdd}
-                isLoading={isLoading}
+                isLoading={addUserOperation.loading}
                 onChange={onChange}
                 searchResults={search.results}
                 placeholder=""
@@ -160,7 +161,7 @@ const AllocationsTeamViewModal = ({
             <div className={manageStyles['user-operation-error']}>
               {addUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to add user {addUserOperation.userName}.
+                  Unable to add user {addUserOperation.username}.
                 </InlineMessage>
               ) : null}
               {addUserOperation.error && removingUserOperation.error ? (
@@ -168,7 +169,7 @@ const AllocationsTeamViewModal = ({
               ) : null}
               {removingUserOperation.error ? (
                 <InlineMessage type="error">
-                  Unable to remove user {removingUserOperation.userName}.
+                  Unable to remove user {removingUserOperation.username}.
                 </InlineMessage>
               ) : null}
             </div>
@@ -181,7 +182,6 @@ const AllocationsTeamViewModal = ({
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  projectId: number.isRequired,
 };
 
 export default AllocationsTeamViewModal;

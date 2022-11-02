@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteScrollTable, LoadingSpinner } from '_common';
+import { Button, InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
-import { Input, Label, Button } from 'reactstrap';
+import { Input, Label } from 'reactstrap';
 import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
@@ -23,9 +23,10 @@ const DataFilesProjectMembers = ({
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
-  const { query: authenticatedUserQuery } = !projectId
-    ? {}
-    : useSystemRole(projectId, authenticatedUser);
+  const { query: authenticatedUserQuery } = useSystemRole(
+    projectId ?? null,
+    authenticatedUser ?? null
+  );
 
   const [selectedUser, setSelectedUser] = useState('');
 
@@ -144,14 +145,15 @@ const DataFilesProjectMembers = ({
       className: 'project-members__cell',
       Cell: (el) => (
         <>
-          {mode === 'addremove' && el.row.original.access !== 'owner' ? (
+          {mode === 'addremove' &&
+          el.row.original.access !== 'owner' &&
+          ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role) ? (
             <Button
               onClick={(e) => onRemove(el.row.original)}
-              color="link"
-              className={styles['member-action']}
+              type="link"
               disabled={loading}
             >
-              <h6>Remove</h6>
+              Remove
             </Button>
           ) : null}
           {mode === 'transfer' &&
@@ -159,7 +161,7 @@ const DataFilesProjectMembers = ({
           transferUser === null ? (
             <Button
               onClick={() => setTransferUser(el.row.original)}
-              className={styles['ownership-button']}
+              type="link"
             >
               Transfer Ownership
             </Button>
@@ -186,18 +188,11 @@ const DataFilesProjectMembers = ({
         mode === 'transfer' && el.row.original === transferUser ? (
           <div className={styles['confirm-controls']}>
             <span>Confirm Ownership Transfer:</span>
-            <Button
-              onClick={confirmTransfer}
-              className={styles['ownership-button']}
-            >
+            <Button onClick={confirmTransfer} type="link">
               Confirm
             </Button>
-            <Button
-              onClick={() => setTransferUser(null)}
-              color="link"
-              className={styles['member-action']}
-            >
-              <h6>Cancel</h6>
+            <Button onClick={() => setTransferUser(null)} type="link">
+              Cancel
             </Button>
           </div>
         ) : null,
@@ -211,51 +206,57 @@ const DataFilesProjectMembers = ({
 
   return (
     <div className={styles.root}>
-      <Label className="form-field__label" size="sm">
-        Add Member
-      </Label>
-      <div className={styles['user-search']}>
-        <div className={`input-group ${styles['member-search-group']}`}>
-          <div className="input-group-prepend">
-            <Button
-              className={styles['add-button member-search']}
-              onClick={() =>
-                onAddCallback({ user: selectedUser, access: 'edit' })
-              }
-              disabled={
-                !selectedUser ||
-                loading ||
-                alreadyMember(selectedUser) ||
-                mode === 'transfer'
-              }
-            >
-              Add
-            </Button>
+      {['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role) && (
+        <>
+          <Label className="form-field__label" size="sm">
+            Add Member
+          </Label>
+
+          <div className={styles['user-search']}>
+            <div className={`input-group ${styles['member-search-group']}`}>
+              <div className="input-group-prepend">
+                <Button
+                  type="primary"
+                  className={styles['add-button member-search']}
+                  onClick={() =>
+                    onAddCallback({ user: selectedUser, access: 'edit' })
+                  }
+                  disabled={
+                    !selectedUser ||
+                    loading ||
+                    alreadyMember(selectedUser) ||
+                    mode === 'transfer'
+                  }
+                >
+                  Add
+                </Button>
+              </div>
+              <Input
+                list="user-search-list"
+                type="text"
+                onChange={(e) => userSearch(e)}
+                placeholder="Search by name"
+                className={styles['member-search']}
+                disabled={loading || mode === 'transfer'}
+                autoComplete="false"
+                value={inputUser}
+              />
+              <datalist id="user-search-list">
+                {
+                  /* eslint-disable */
+                  // Need to replace this component with a generalized solution from FP-743
+                  userSearchResults
+                    .filter((user) => !alreadyMember(user))
+                    .map((user) => (
+                      <option value={formatUser(user)} key={user.username} />
+                    ))
+                  /* eslint-enable */
+                }
+              </datalist>
+            </div>
           </div>
-          <Input
-            list="user-search-list"
-            type="text"
-            onChange={(e) => userSearch(e)}
-            placeholder="Search by name"
-            className={styles['member-search']}
-            disabled={loading || mode === 'transfer'}
-            autoComplete="false"
-            value={inputUser}
-          />
-          <datalist id="user-search-list">
-            {
-              /* eslint-disable */
-              // Need to replace this component with a generalized solution from FP-743
-              userSearchResults
-                .filter((user) => !alreadyMember(user))
-                .map((user) => (
-                  <option value={formatUser(user)} key={user.username} />
-                ))
-              /* eslint-enable */
-            }
-          </datalist>
-        </div>
-      </div>
+        </>
+      )}
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={existingMembers}

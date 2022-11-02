@@ -18,8 +18,14 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
+  const showSubmissions = useSelector(
+    (state) => state.workbench.config.showSubmissions
+  );
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
+  );
+  const hideFeedback = useSelector(
+    (state) => state.workbench.config.hideFeedback
   );
   const sidebarItems = [
     {
@@ -41,6 +47,13 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
       iconName: 'applications',
       disabled: disabled,
       hidden: hideApps,
+    },
+    {
+      to: path + ROUTES.SUBMISSIONS,
+      label: 'Data Submission',
+      iconName: 'folder',
+      disabled: disabled,
+      hidden: !showSubmissions,
     },
     {
       to: path + ROUTES.ALLOCATIONS,
@@ -69,6 +82,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
     {
       className: styles['feedback-nav-item'],
       children: <FeedbackButton />,
+      hidden: hideFeedback,
     },
   ];
   return (
