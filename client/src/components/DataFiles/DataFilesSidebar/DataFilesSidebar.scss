@@ -90,7 +90,7 @@
 
   .dropdown-item {
     padding: 10px 6px;
-    color: #707070;
+    color: var(--global-color-primary--x-dark);
     font-size: 14px;
     i {
       padding-right: 19px;
@@ -98,7 +98,7 @@
       vertical-align: middle;
     }
     &:hover {
-      color: #707070;
+      color: var(--global-color-primary--x-dark);
     }
   }
   .dropdown-item:focus,
@@ -121,6 +121,6 @@
   line-height: 1.1em;
   small {
     display: block;
-    color: var(--global-color-primary--dark);
+    color: var(--global-color-primary--x-dark);
   }
 }
