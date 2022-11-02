@@ -57,7 +57,10 @@ const reduceInputParameters = (data) =>
 
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
-  const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
+  const outputLocation = useSelector((state) => {
+    return state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
+      .outputLocation;
+  });
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -76,13 +79,13 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const configDataObj = {};
   const outputDataObj = {
     'Job Name': jobName,
-    'Output Location': outputPath,
+    'Output Location': outputLocation,
   };
 
   statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
     <Expand
       detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-      message={<pre>${jobDetails.lastStatusMessage}</pre>}
+      message={<pre>${jobDetails.lastMessage}</pre>}
     />
   );
 
@@ -90,7 +93,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     dispatch({
       type: 'SUBMIT_JOB',
       payload: {
-        job_id: jobDetails.id,
+        job_uuid: jobDetails.uuid,
         action: 'resubmit',
         onSuccess: {
           type: 'GET_JOBS',
@@ -107,10 +110,10 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  configDataObj['Max Hours'] = jobDetails.maxHours;
+  configDataObj['Max Minutes'] = jobDetails.maxMinutes;
 
-  if ('processorsPerNode' in jobDisplay) {
-    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
+  if ('coresPerNode' in jobDisplay) {
+    configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
   }
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;
@@ -119,8 +122,11 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
-  if (jobDetails.status !== 'FINISHED')
-    configDataObj['Temporary Working Directory'] = jobDetails.workPath;
+  if (jobDetails.status !== 'FINISHED') {
+    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
+    configDataObj['Input Directory'] = jobDetails.execSystemInputDir;
+    configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
+  }
 
   const isTerminalState =
     jobDetails.status === 'FINISHED' ||
@@ -142,7 +148,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
           data={{
             Output: !hideDataFiles && (
               <DataFilesLink
-                path={outputPath}
+                path={outputLocation}
                 disabled={!isOutputState(jobDetails.status)}
               >
                 View in Data Files
@@ -179,9 +185,10 @@ JobHistoryContent.propTypes = {
 };
 JobHistoryContent.defaultProps = {
   jobName: '',
+  jobDisplay: {},
 };
 
-function JobHistoryModal({ jobId }) {
+function JobHistoryModal({ uuid }) {
   const loading = useSelector((state) => state.jobDetail.loading);
   const loadingError = useSelector((state) => state.jobDetail.loadingError);
   const { job, display } = useSelector((state) => state.jobDetail);
@@ -203,7 +210,7 @@ function JobHistoryModal({ jobId }) {
   };
 
   const headerData = {
-    'Job ID': jobId,
+    'Job UUID': uuid,
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
   };
@@ -247,7 +254,7 @@ function JobHistoryModal({ jobId }) {
 }
 
 JobHistoryModal.propTypes = {
-  jobId: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
 };
 
 export default JobHistoryModal;

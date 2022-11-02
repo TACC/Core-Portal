@@ -1,7 +1,7 @@
 import {
   getAllocatonFromDirective,
   getJobDisplayInformation,
-  getOutputPathFromHref,
+  getOutputPath,
   isTerminalState,
   isOutputState,
 } from './jobsUtil';
@@ -31,19 +31,10 @@ describe('jobsUtil', () => {
     ).toEqual(jobDetailDisplayFixture);
   });
 
-  it('get output path from _links.archiveData.href', () => {
-    expect(
-      getOutputPathFromHref(
-        'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder'
-      )
-    ).toEqual(
-      'frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder'
+  it('get output path from job', () => {
+    expect(getOutputPath(jobDetailFixture)).toEqual(
+      'test.community//archive/1/user/system/archive/1'
     );
-    expect(
-      getOutputPathFromHref(
-        'https://portals-api.tacc.utexas.edu/jobs/v2/df589633-73a8-4e34-a670-5967474d91df-007/outputs/listings'
-      )
-    ).toEqual(null);
   });
 
   it('determine if terminal state', () => {
