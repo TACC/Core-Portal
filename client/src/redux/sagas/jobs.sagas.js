@@ -1,4 +1,4 @@
-import { put, takeLatest, takeLeading, call, select } from 'redux-saga/effects';
+import { call, put, select, takeLatest, takeLeading } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
@@ -93,10 +93,10 @@ export function* submitJob(action) {
   }
 }
 
-export async function fetchJobDetailsUtil(jobId) {
+export async function fetchJobDetailsUtil(jobUuid) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
-    params: { job_id: jobId },
+    params: { job_uuid: jobUuid },
   });
   return result.response;
 }
@@ -109,17 +109,17 @@ export async function fetchSystemUtil(system) {
 }
 
 export function* getJobDetails(action) {
-  const { jobId } = action.payload;
+  const { jobUuid } = action.payload;
   yield put({
     type: 'JOB_DETAILS_FETCH_STARTED',
-    payload: jobId,
+    payload: jobUuid,
   });
   try {
-    const job = yield call(fetchJobDetailsUtil, jobId);
+    const job = yield call(fetchJobDetailsUtil, jobUuid);
     let app = null;
 
     try {
-      app = yield call(fetchAppDefinitionUtil, job.appId);
+      app = yield call(fetchAppDefinitionUtil, job.appId, job.appVersion);
     } catch (ignore) {
       // ignore if we cannot get app or execution system information
     }

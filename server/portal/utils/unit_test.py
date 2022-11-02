@@ -1,7 +1,6 @@
 from django.test import TestCase, override_settings
 from mock import patch, Mock
 from django.contrib.auth import get_user_model
-from portal.utils.translations import get_jupyter_url
 from portal.utils.translations import url_parse_inputs
 from portal.utils.jwt_auth import login_user_agave_jwt
 
@@ -23,93 +22,6 @@ class TestTranslations(TestCase):
                 ]
             }
         }
-
-    @override_settings(
-        PORTAL_JUPYTER_URL=None,
-        PORTAL_JUPYTER_SYSTEM_MAP=None
-    )
-    def test_no_jupyter_config(self):
-        result = get_jupyter_url(
-            "data-tacc-work-mock",
-            "/filename.txt", self.user.username
-        )
-        self.assertIsNone(result)
-
-    @override_settings(
-        PORTAL_JUPYTER_URL="https://mock.jupyter.url",
-        PORTAL_JUPYTER_SYSTEM_MAP={
-            "data-tacc-work-{username}": "/tacc-work",
-            "data-sd2e-projects-users": "/sd2e-projects",
-            "data-sd2e-community": "/sd2e-community"
-        }
-    )
-    def test_get_jupyter_url(self):
-        """Test get_jupyter_url.
-
-        Should return None if there is no
-        file manager -> jupyter mount point mapping for
-        the requested file manager
-        """
-        result = get_jupyter_url(
-            "unknown",
-            "/filename.txt",
-            self.user.username
-        )
-        self.assertIsNone(result)
-
-        # If username is None, should return None
-        result = get_jupyter_url(
-            "unknown",
-            "/filename.txt",
-            None
-        )
-        self.assertIsNone(result)
-
-        # On a valid request and server side configuration,
-        # return a jupyter url for a file
-        result = get_jupyter_url(
-            "data-tacc-work-username",
-            "/filename.txt",
-            self.user.username
-        )
-        url = "https://mock.jupyter.url/user/{username}/edit/tacc-work/filename.txt".format(
-            username=self.user.username
-        )
-        self.assertEqual(result, url)
-
-        # If the filename ends with .ipynb, it should generate a /notebooks url
-        result = get_jupyter_url(
-            "data-tacc-work-username",
-            "/notebook.ipynb",
-            self.user.username
-        )
-        url = "https://mock.jupyter.url/user/{username}/notebooks/tacc-work/notebook.ipynb".format(
-            username=self.user.username
-        )
-        self.assertEqual(result, url)
-
-        # If the filename has no extension,
-        # it still be edited as a regular file
-        result = get_jupyter_url(
-            "data-tacc-work-username",
-            "/regular", self.user.username
-        )
-        url = "https://mock.jupyter.url/user/{username}/edit/tacc-work/regular".format(
-            username=self.user.username
-        )
-        self.assertEqual(result, url)
-
-        # If the filepath is a directory, it should generate a /tree url
-        result = get_jupyter_url(
-            "data-tacc-work-username",
-            "/directory",
-            self.user.username,
-            is_dir=True
-        )
-        url = "https://mock.jupyter.url/user/{username}/tree/tacc-work/directory".format(
-            username=self.user.username
-        )
-        self.assertEqual(result, url)
 
     def test_url_parse_inputs(self):
         result = url_parse_inputs(self.job)

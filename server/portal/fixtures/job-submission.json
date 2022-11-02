@@ -1,15 +1,45 @@
 {
-    "inputs": {
-        "workingDirectory": "agave://cep.home.test/test_folder"
-    },
-    "name": "zip_test",
-    "parameters": {
-        "compression_type": "zip"
-    },
-    "maxRunTime": "00:30:00",
-    "archivePath": "/",
-    "archiveSystem": "cep.home.test",
-    "appId": "compress-0.1",
-    "archive": "true",
-    "allocation": "FORK"
+  "name": "zip_test",
+  "appId": "compress-0.1",
+  "appVersion": "0.0.1",
+  "description": "test compression job 1",
+  "fileInputs": [
+    {
+      "name": "Target",
+      "sourceUrl": "tapis://cep.home.test/test_folder/in.txt",
+      "targetPath": "in.txt"
+    }
+  ],
+  "parameterSet": {
+    "appArgs": [
+      {
+        "name": "Compression Type",
+        "description": "Type of compression",
+        "include": true,
+        "arg": "zip"
+      }
+    ],
+    "schedulerOptions": [
+      {
+        "name": "TACC Allocation",
+        "description": "The TACC Allocation associated with this job execution",
+        "include": true,
+        "arg": "-A TACC-ACI"
+      }
+    ],
+    "subscriptions": [
+      {
+        "description": "Email notification",
+        "enabled": false,
+        "eventCategoryFilter": "JOB_NEW_STATUS",
+        "ttlMinutes": 1,
+        "deliveryTargets": [
+          {
+            "deliveryMethod": "EMAIL",
+            "deliveryAddress": "user@tacc.utexas.edu"
+          }
+        ]
+      }
+    ]
+  }
 }

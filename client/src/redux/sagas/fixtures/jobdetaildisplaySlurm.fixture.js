@@ -1,24 +1,30 @@
 const jobDisplaySlurmFixture = {
-  applicationName: 'QGIS',
-  systemName: 'Stampede2',
+  allocation: 'TACC-ACI',
+  applicationName: 'Hello World',
   inputs: [
     {
-      label: 'Working Directory',
-      id: 'workingDirectory',
-      value: 'agave://frontera.home.maxmunstermann/5MB.txt',
+      id: 'File to modify',
+      label: 'File to modify',
+      value: 'tapis://test.community/system/1/user/test/in.txt',
     },
   ],
   parameters: [
     {
-      label: 'Desktop Resolution',
-      id: 'desktop_resolution',
-      value: '1280x800',
+      label: 'Greeting',
+      id: 'Greeting',
+      value: 'hello',
+    },
+    {
+      label: 'Target',
+      id: 'Target',
+      value: 'world',
     },
   ],
-  allocation: 'TACC-ACI',
-  queue: 'normal',
-  processorsPerNode: 20,
   nodeCount: 1,
+  coresPerNode: 1,
+  queue: 'development',
+  systemName: 'Frontera',
+  workPath: '/system/1/user/tapis/1/jobs/1/output',
 };
 
 export default jobDisplaySlurmFixture;
