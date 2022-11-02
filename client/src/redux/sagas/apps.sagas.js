@@ -5,7 +5,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 export async function fetchAppDefinitionUtil(appId) {
   const result = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { app_id: appId },
+    params: { appId: appId },
   });
   return result.response;
 }

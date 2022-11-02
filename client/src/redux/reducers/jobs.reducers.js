@@ -1,4 +1,8 @@
-import { getJobDisplayInformation, isOutputState } from 'utils/jobsUtil';
+import {
+  getJobDisplayInformation,
+  isOutputState,
+  getOutputPath,
+} from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -13,7 +17,7 @@ function updateJobFromNotification(job, notification) {
   const updatedJob = { ...job, status: notification.status };
   if (isOutputState(notification.status)) {
     // add archive data path to job
-    updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
+    updatedJob.outputLocation = getOutputPath(notification);
   }
   return updatedJob;
 }
@@ -43,8 +47,11 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.id === action.payload.job.id
-            ? { ...action.payload.job, outputLocation: job.outputLocation }
+          job.uuid === action.payload.job.uuid
+            ? {
+                ...action.payload.job,
+                outputLocation: getOutputPath(action.payload.job),
+              }
             : job
         ),
       };
@@ -95,20 +102,32 @@ export function jobs(state = initialState, action) {
 }
 
 const initialJobDetail = {
-  jobId: null,
-  app: null,
-  job: null,
-  display: null,
-  loading: false,
-  loadingError: false,
-  loadingErrorMessage: '',
+  status: '',
+  message: '',
+  metadata: null,
+  result: {
+    id: '',
+    name: '',
+    uuid: '',
+    appId: '',
+    description: '',
+    lastMessage: '',
+    appVersion: '',
+    archiveSystemId: '',
+    archiveSystemDir: '',
+    created: '',
+    lastUpdated: '',
+    fileInputs: '',
+    parameterSet: '',
+    status: '',
+  },
 };
 
 export function jobDetail(state = initialJobDetail, action) {
   switch (action.type) {
     case 'JOB_DETAILS_FETCH_STARTED':
       return {
-        jobId: action.payload,
+        jobUuid: action.payload,
         app: null,
         job: null,
         display: null,
@@ -119,7 +138,7 @@ export function jobDetail(state = initialJobDetail, action) {
     case 'JOB_DETAILS_FETCH_SUCCESS':
       return {
         ...state,
-        jobId: action.payload.job.id,
+        jobUuid: action.payload.job.uuid,
         job: action.payload.job,
         display: getJobDisplayInformation(
           action.payload.job,

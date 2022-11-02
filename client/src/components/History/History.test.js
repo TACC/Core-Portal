@@ -9,6 +9,7 @@ import Routes from './History';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
+import { default as jobsList } from '../Jobs/Jobs.fixture';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../redux/sagas/fixtures/appdetail.fixture';
@@ -21,8 +22,11 @@ describe('History Routes', () => {
       <Provider
         store={mockStore({
           notifications,
-          jobs,
+          jobs: { ...jobs, list: jobsList },
           workbench: { ...workbench, config: { hideDataFiles: false } },
+          apps: {
+            appIcons: {},
+          },
         })}
       >
         <BrowserRouter>
@@ -36,8 +40,11 @@ describe('History Routes', () => {
   it('should dispatch the get jobs event', () => {
     const store = mockStore({
       notifications,
-      jobs,
+      jobs: { ...jobs, list: jobsList },
       workbench: { ...workbench, config: { hideDataFiles: false } },
+      apps: {
+        appIcons: {},
+      },
     });
 
     render(
@@ -56,13 +63,15 @@ describe('History Routes', () => {
 
   it('should dispatch the get job detail event type when opening the job detail modal', () => {
     const history = createMemoryHistory();
-    history.push('/workbench/history/jobs/1');
+    history.push(
+      '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007'
+    );
 
     const store = mockStore({
       notifications,
-      jobs,
+      jobs: { ...jobs, list: jobsList },
       jobDetail: {
-        jobId: 'job_id',
+        jobUuid: 'job_uuid',
         app: appDetailFixture,
         job: jobDetailFixture,
         display: jobDetailDisplayFixture,
@@ -70,11 +79,18 @@ describe('History Routes', () => {
         loadingError: false,
         loadingErrorMessage: '',
       },
+      apps: {
+        appIcons: {},
+      },
       workbench: { ...workbench, config: { hideDataFiles: false } },
     });
 
     renderComponent(
-      <MemoryRouter initialEntries={['/workbench/history/jobs/1']}>
+      <MemoryRouter
+        initialEntries={[
+          '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007',
+        ]}
+      >
         <Routes />
       </MemoryRouter>,
       store,
@@ -85,7 +101,7 @@ describe('History Routes', () => {
       {
         type: 'GET_JOB_DETAILS',
         payload: {
-          jobId: '1',
+          jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         },
       },
     ]);

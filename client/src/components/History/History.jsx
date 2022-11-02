@@ -112,17 +112,17 @@ export const Routes = () => {
             <>
               <JobHistory className={styles.content} />
               <Route
-                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobUuid`}
                 render={({
                   match: {
-                    params: { jobId },
+                    params: { jobUuid },
                   },
                 }) => {
                   dispatch({
                     type: 'GET_JOB_DETAILS',
-                    payload: { jobId },
+                    payload: { jobUuid },
                   });
-                  return <JobHistoryModal jobId={jobId} />;
+                  return <JobHistoryModal uuid={jobUuid} />;
                 }}
               />
             </>
