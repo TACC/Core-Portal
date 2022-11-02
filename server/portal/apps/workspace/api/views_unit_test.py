@@ -7,8 +7,6 @@ import json
 import os
 import pytest
 from tapipy.tapis import TapisResult
-from datetime import timedelta
-from django.utils import timezone
 from django.core.management import call_command
 
 
@@ -109,66 +107,6 @@ def test_get_jobs_bad_offset(rf, authenticated_user, mock_tapis_client):
     mock_tapis_client.jobs.getJobSearchList.return_value = []
     jobs = request_jobs_util(rf, authenticated_user, query_params={"offset": 100})
     assert len(jobs) == 0
-
-
-@pytest.mark.skip(reason="unsure of implementation yet could rely on tapis for this")
-def test_date_filter(rf, authenticated_user, mock_tapis_client):
-    test_time = timezone.now()
-
-    # today_job
-    JobSubmission.objects.create(
-        user=authenticated_user,
-        jobId="9876"
-    )
-    JobSubmission.objects.filter(jobId="9876").update(time=test_time)
-
-    # recent_job
-    JobSubmission.objects.create(
-        user=authenticated_user,
-        jobId="1234",
-    )
-    JobSubmission.objects.filter(jobId="1234").update(time=test_time - timedelta(days=3))
-
-    # older_job
-    JobSubmission.objects.create(
-        user=authenticated_user,
-        jobId="2345",
-    )
-    JobSubmission.objects.filter(jobId="2345").update(time=test_time - timedelta(days=15))
-
-    # oldest_job
-    JobSubmission.objects.create(
-        user=authenticated_user,
-        jobId="3456",
-    )
-    JobSubmission.objects.filter(jobId="3456").update(time=test_time - timedelta(days=120))
-
-    mock_tapis_client.jobs.list.return_value = [
-        {"id": "9876"},
-        {"id": "1234"},
-        {"id": "2345"},
-        {"id": "3456"}
-    ]
-
-    # Test request for jobs with no period query param
-    jobs = request_jobs_util(rf, authenticated_user)
-    assert len(jobs) == 4
-
-    # Test request for jobs with query for all jobs
-    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "all"})
-    assert len(jobs) == 4
-
-    # Test request for jobs within one month
-    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "month"})
-    assert len(jobs) == 3
-
-    # Test request for jobs within one week
-    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "week"})
-    assert len(jobs) == 2
-
-    # Test request for jobs from today
-    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "day"})
-    assert len(jobs) == 1
 
 
 def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):

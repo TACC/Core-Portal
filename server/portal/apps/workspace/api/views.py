@@ -5,8 +5,6 @@
 import logging
 import json
 from urllib.parse import urlparse
-# TODOv3: Commented for now because unsure if it will be implemented on frontend
-# from datetime import timedelta
 from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
@@ -116,14 +114,13 @@ class JobsView(BaseApiView):
             # TODOv3: Query portal
             # portal_name = settings.PORTAL_NAMESPACE
 
-            query = {
-                'limit': limit,
-                'startAfter': offset,
-                'orderBy': 'lastUpdated(desc),name(asc)',
-                # '_tapis_query_parameters': {'tags.contains': portal_name}
-            }
+            data = tapis.jobs.getJobSearchList(
+                limit=limit,
+                startAfter=offset,
+                orderBy='lastUpdated(desc),name(asc)'
+                # _tapis_query_parameters={'tags.contains': portal_name}
+            )
 
-            data = tapis.jobs.getJobSearchList(**query)
         return JsonResponse(
             {
                 'status': 200,
