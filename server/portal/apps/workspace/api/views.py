@@ -34,9 +34,13 @@ def _app_license_type(app_def):
     return lic_type
 
 
-def _app_license_type_TODO_REFACTOR(app_id):
-    # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
-    return None
+def _get_user_app_license(license_type, user):
+    _, license_models = get_license_info()
+    license_model = [x for x in license_models if x.license_type == license_type]
+    if not license_model:
+        return None
+    lic = license_model.objects.filter(user=user).first()
+    return lic
 
 
 def _get_app(app_id, app_version, user):
@@ -55,9 +59,7 @@ def _get_app(app_id, app_version, user):
         'type': lic_type
     }
     if lic_type is not None:
-        _, license_models = get_license_info()
-        license_model = list(filter(lambda x: x.license_type == lic_type, license_models))[0]
-        lic = license_model.objects.filter(user=user).first()
+        lic = _get_user_app_license(lic_type, user)
         data['license']['enabled'] = lic is not None
 
     return data
@@ -200,14 +202,20 @@ class JobsView(BaseApiView):
                 job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
-            lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
+            lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
             if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                if not lic:
+                lic = _get_user_app_license(lic_type, request.user)
+                if lic is None:
                     raise ApiException("You are missing the required license for this application.")
-                job_post['parameters']['_license'] = lic.license_as_str()
+                license_var = {
+                    "key": "_license",
+                    "value": lic.license_as_str()
+                }
+                if 'envVariables' in job_post['parameterSet']:
+                    job_post['parameterSet']['envVariables'].append(license_var)
+                else:
+                    job_post['parameterSet']['envVariables'] = [license_var]
+                del job_post['licenseType']
 
             # url encode inputs
             if job_post['inputs']:
@@ -303,10 +311,9 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # TODOv3: make sure to exclude public apps
-        # TODOv3: update label if label is ever added to tapis apps spec
-        apps_listing = tapis.apps.getApps(select="version,id", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
         my_apps = list(map(lambda app: {
-            "label": app.id,
+            "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
             "type": "tapis",
             "appId": app.id,

@@ -114,11 +114,14 @@ def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
     app = TapisResult(**{
         'id': 'myapp-0.1',
         'version': '0.1',
+        'notes': {
+            'label': 'Matlab'
+        }
     })
     mock_tapis_client.apps.getApps.return_value = [app]
     expected_list = [
         {
-            "label": app.id,
+            "label": app.notes.label,
             "version": app.version,
             "type": "tapis",
             "appId": app.id,
