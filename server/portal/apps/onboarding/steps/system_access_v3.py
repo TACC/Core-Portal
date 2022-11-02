@@ -69,6 +69,7 @@ class SystemAccessStepV3(AbstractStep):
         try:
             self.register_public_key(pub, system_id)
             self.push_system_credentials(pub, priv, system_id)
+            self.log(f"Access granted for system: {system_id}")
         except (HTTPError, BaseTapyException) as e:
             self.logger.error(e)
             self.fail(f"Failed to push credentials to system: {system_id}")
@@ -81,7 +82,6 @@ class SystemAccessStepV3(AbstractStep):
                 self.log(f"Access already granted for system: {system}")
             except BaseTapyException:
                 self.generate_and_push_credentials(system)
-                self.log(f"Access granted for system: {system}")
 
         if self.state != SetupState.FAILED:
             self.complete("User is processed.")
