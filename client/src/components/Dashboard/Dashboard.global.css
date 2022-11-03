@@ -12,3 +12,7 @@ body.has-loaded-dashboard {
   /* HACK: Should instead (ask Design) have a responsive sidebar */
   --min-width: 730px; /* just before My Tickets Number column value overflows */
 }
+
+.has-common-sidebar {
+  padding-left: 0px;
+}

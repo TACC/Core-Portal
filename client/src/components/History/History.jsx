@@ -15,6 +15,7 @@ import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
+import { Sidebar as CommonSidebar } from '_common';
 
 import './History.global.css';
 import styles from './History.module.scss';
@@ -48,21 +49,23 @@ const Actions = () => {
 
 const Sidebar = () => {
   const { unreadJobs } = useSelector((state) => state.notifications.list);
+
+  const sidebarItems = [
+    {
+      to: `${root}/jobs`,
+      label: 'Jobs',
+      iconName: 'jobs',
+      disabled: false,
+      hidden: false,
+      children: <HistoryBadge unread={unreadJobs} />,
+    }
+  ]
+
   return (
-    <Nav className={styles.sidebar} vertical>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          to={`${root}/jobs`}
-          activeClassName={styles.active}
-          className="nav-content"
-        >
-          <i className="icon icon-jobs" />
-          <span className={styles['link-text']}>Jobs</span>
-          <HistoryBadge unread={unreadJobs} />
-        </NavLink>
-      </NavItem>
-    </Nav>
+    <CommonSidebar
+      sidebarItems={sidebarItems}
+      backgroundColor="white"
+    />
   );
 };
 
@@ -151,6 +154,7 @@ const Layout = () => {
       messageComponentName="HISTORY"
       header={`History / ${historyType}`}
       headerClassName={styles['header']}
+      contentClassName="has-common-sidebar"
       headerActions={<Actions />}
       content={
         <>

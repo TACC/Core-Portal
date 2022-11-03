@@ -49,9 +49,20 @@ SidebarItem.defaultProps = {
   hidden: false,
 };
 
-const Sidebar = ({ sidebarItems, addItems, loading }) => {
+const Sidebar = ({ sidebarItems, addItemsBefore, addItemsAfter, loading, backgroundColor }) => {
   return (
-    <Nav className={styles['root']} vertical>
+    <Nav className={`${styles['root']}`} style={{background: backgroundColor}} vertical>
+      {!loading && addItemsBefore
+        ? addItemsBefore.map(
+            (item) =>
+              !item.hidden && (
+                <NavItem className={item.className} key={item.className}>
+                  {item.children}
+                </NavItem>
+              )
+          )
+        : null}
+
       {!loading &&
         sidebarItems.map(
           (item) =>
@@ -68,8 +79,8 @@ const Sidebar = ({ sidebarItems, addItems, loading }) => {
             )
         )}
 
-      {!loading && addItems
-        ? addItems.map(
+      {!loading && addItemsAfter
+        ? addItemsAfter.map(
             (item) =>
               !item.hidden && (
                 <NavItem className={item.className} key={item.className}>
@@ -84,11 +95,13 @@ const Sidebar = ({ sidebarItems, addItems, loading }) => {
 
 Sidebar.propTypes = {
   sidebarItems: PropTypes.arrayOf(PropTypes.object).isRequired,
-  addItems: PropTypes.arrayOf(PropTypes.object),
+  addItemsBefore: PropTypes.arrayOf(PropTypes.object),
+  addItemsAfter: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
 };
 Sidebar.defaultProps = {
-  addItems: [],
+  addItemsBefore: [],
+  addItemsAfter: [],
   loading: false,
 };
 

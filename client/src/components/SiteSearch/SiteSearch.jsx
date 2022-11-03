@@ -5,6 +5,9 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SiteSearchSidebar from './SiteSearchSidebar/SiteSearchSidebar';
 import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
+import './SiteSearch.global.css';
+
+import { Section } from '_common';
 
 export const SiteSearchComponent = ({ filterPriorityList }) => {
   const dispatch = useDispatch();
@@ -42,26 +45,29 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   }, [completed, results, location.search]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
-      <div className="col-md-2">
-        <SiteSearchSidebar
-          queryString={query_string}
-          schemes={Object.keys(results).filter((key) => results[key].include)}
-          authenticated={Boolean(user)}
-          searching={loading}
-          results={results}
-        />
-      </div>
-      <div className="col-md-8" style={{ display: 'flex' }}>
-        <SiteSearchListing
-          loading={loading}
-          error={error}
-          filter={filter || 'cms'}
-          results={results[filter] || results[filterPriorityList[0]]}
-        />
-      </div>
-      <div className="col-md-2" />
-    </div>
+    <Section
+      contentClassName="has-common-sidebar"
+      className="site-search-section"
+      content={
+        <>
+          <SiteSearchSidebar
+            queryString={query_string}
+            schemes={Object.keys(results).filter((key) => results[key].include)}
+            authenticated={Boolean(user)}
+            searching={loading}
+            results={results}
+          />          
+        
+          <SiteSearchListing
+            loading={loading}
+            error={error}
+            filter={filter || 'cms'}
+            results={results[filter] || results[filterPriorityList[0]]}
+          />
+          
+        </>
+      }
+    />
   );
 };
 SiteSearchComponent.propTypes = {

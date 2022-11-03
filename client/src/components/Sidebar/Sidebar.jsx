@@ -88,7 +88,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   return (
     <CommonSidebar
       sidebarItems={sidebarItems}
-      addItems={addItems}
+      addItemsAfter={addItems}
       loading={loading}
     />
   );
