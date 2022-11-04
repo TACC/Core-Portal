@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
-import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
@@ -41,12 +40,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { id, name },
+        original: { uuid, name },
       },
     }) => (
       <Link
         to={{
-          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
           state: { jobName: name },
         }}
         className="wb-link"
@@ -96,30 +95,29 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
-          jobId={el.row.original.id}
+          jobUuid={el.row.original.uuid}
         />
       ),
       id: 'jobStatusCol',
     },
     {
       Header: 'Job Details',
-      accessor: 'id',
+      accessor: 'uuid',
       show: showDetails,
       Cell: jobDetailLink,
     },
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
-      accessor: '_links.archiveData.href',
+      accessor: 'outputLocation',
       Cell: (el) => {
-        const outputPath =
-          el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputPath && !hideDataFiles ? (
+        const outputLocation = el.row.original.outputLocation;
+        return outputLocation && !hideDataFiles ? (
           <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
+            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
             className="wb-link job__path"
           >
-            {outputPath}
+            {outputLocation}
           </Link>
         ) : null;
       },

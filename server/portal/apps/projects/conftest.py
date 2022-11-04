@@ -22,11 +22,11 @@ def project_model(mocker):
 
 
 @pytest.fixture()
-def mock_projects(project_model, service_account, mock_storage_system, mock_agave_client, regular_user):
-    prj1 = Project.create(mock_agave_client, 'First Project', 'test.project-123', regular_user)
+def mock_projects(project_model, service_account, mock_storage_system, mock_tapis_client, regular_user):
+    prj1 = Project.create(mock_tapis_client, 'First Project', 'test.project-123', regular_user)
     prj1.storage.name = 'test.project-123'
     prj1.storage.id = 'test.project-123'
-    prj2 = Project.create(mock_agave_client, 'Second Project', 'test.project-124', regular_user)
+    prj2 = Project.create(mock_tapis_client, 'Second Project', 'test.project-124', regular_user)
     prj2.storage.name = 'test.project-124'
     prj2.storage.id = 'test.project-124'
     yield [prj1, prj2]

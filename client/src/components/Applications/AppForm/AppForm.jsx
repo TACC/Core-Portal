@@ -454,6 +454,9 @@ export const AppSchemaForm = ({ app }) => {
           if (app.definition.tags.includes('VNC')) {
             job.name += 'tap_';
           }
+          if (app.license.type && app.license.enabled) {
+            job.licenseType = app.license.type;
+          }
           dispatch({
             type: 'SUBMIT_JOB',
             payload: job,

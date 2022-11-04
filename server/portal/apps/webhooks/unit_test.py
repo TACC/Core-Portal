@@ -80,7 +80,7 @@ class TestInteractiveWebhookView(TestCase):
 
     def setUp(self):
         self.mock_agave_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
-        self.mock_agave_client = self.mock_agave_patcher.start()
+        self.mock_tapis_client = self.mock_agave_patcher.start()
 
         self.client.force_login(get_user_model().objects.get(username="username"))
 
@@ -117,14 +117,14 @@ class TestInteractiveWebhookView(TestCase):
         self.assertTrue(response.status_code == 400)
 
     def test_webhook_vnc_post(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
                                     content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(self.mock_agave_client.meta.addMetadata.called)
+        self.assertFalse(self.mock_tapis_client.meta.addMetadata.called)
         self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
@@ -141,14 +141,14 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'vnc_session_start')
 
     def test_webhook_web_post(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),
                                     content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(self.mock_agave_client.meta.addMetadata.called)
+        self.assertFalse(self.mock_tapis_client.meta.addMetadata.called)
         self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
@@ -157,7 +157,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'web_link')
 
     def test_webhook_vnc_post_no_matching_job(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_failed
+        self.mock_tapis_client.jobs.get.return_value = self.agave_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
@@ -167,7 +167,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(Notification.objects.count(), 0)
 
     def test_webhook_web_post_no_matching_job(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_failed
+        self.mock_tapis_client.jobs.get.return_value = self.agave_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),

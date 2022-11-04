@@ -658,7 +658,8 @@ SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
     'DEBUG',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
-    'PORTAL_NAMESPACE'
+    'PORTAL_NAMESPACE',
+    'WORKBENCH_SETTINGS'
 ]
 
 """
@@ -749,3 +750,5 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
+
+KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')

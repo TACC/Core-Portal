@@ -78,7 +78,7 @@ const AppBrowser = () => {
                   >
                     <span className="nav-content">
                       <AppIcon appId={app.appId} />
-                      <span className="nav-text">{app.label}</span>
+                      <span className="nav-text">{app.label || app.appId}</span>
                     </span>
                   </NavLink>
                 </div>

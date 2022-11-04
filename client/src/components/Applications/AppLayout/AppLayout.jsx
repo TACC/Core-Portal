@@ -51,7 +51,7 @@ const AppsHeader = (categoryDict) => {
 const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  const appDict = useSelector((state) => state.apps.appDict, shallowEqual);
+  const htmlDict = useSelector((state) => state.apps.htmlDict, shallowEqual);
   const categoryDict = useSelector(
     (state) => state.apps.categoryDict,
     shallowEqual
@@ -76,11 +76,11 @@ const AppsRoutes = () => {
               exact
               path={`${path}/:appId/:appVersion`}
               render={({ match: { params } }) => {
-                const appDef = appDict[params.appId];
+                const appDef = htmlDict[params.appId];
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: { definition: appDict[params.appId] },
+                    payload: { definition: htmlDict[params.appId] },
                   });
                 } else {
                   dispatch({

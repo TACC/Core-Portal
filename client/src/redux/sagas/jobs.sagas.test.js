@@ -23,7 +23,6 @@ import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
 jest.mock('cross-fetch');
 
 const initialJobDetail = {
-  jobId: null,
   app: null,
   job: null,
   display: null,
@@ -34,18 +33,20 @@ const initialJobDetail = {
 
 describe('getJobDetails Saga', () => {
   it("should fetch a job's detail and transform it to a displayable state", () =>
-    expectSaga(getJobDetails, { payload: { jobId: 'job_id' } })
+    expectSaga(getJobDetails, {
+      payload: { jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007' },
+    })
       .withReducer(jobDetailReducer)
       .provide([
         [matchers.call.fn(fetchJobDetailsUtil), jobDetailFixture],
         [matchers.call.fn(fetchAppDefinitionUtil), appDetailFixture],
       ])
-      .put({ type: 'JOB_DETAILS_FETCH_STARTED', payload: 'job_id' })
-      .call(fetchJobDetailsUtil, 'job_id')
-      .call(
-        fetchAppDefinitionUtil,
-        'prtl.clone.username.FORK.compress-0.1u3-3.0'
-      )
+      .put({
+        type: 'JOB_DETAILS_FETCH_STARTED',
+        payload: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
+      })
+      .call(fetchJobDetailsUtil, '793e9e90-53c3-4168-a26b-17230e2e4156-007')
+      .call(fetchAppDefinitionUtil, 'hello-world', '0.0.1')
       .put({
         type: 'JOB_DETAILS_FETCH_SUCCESS',
         payload: {
@@ -62,7 +63,7 @@ describe('getJobDetails Saga', () => {
 
       .hasFinalState({
         ...initialJobDetail,
-        jobId: 'job_id',
+        jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         loading: false,
         loadingError: false,
         loadingErrorMessage: '',

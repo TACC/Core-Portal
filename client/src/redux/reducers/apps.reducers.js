@@ -1,6 +1,6 @@
 export const initialState = {
   categoryDict: {},
-  appDict: {},
+  htmlDict: {},
   appIcons: {},
   error: { isError: false },
   loading: false,
@@ -33,7 +33,7 @@ export function apps(state = initialState, action) {
       return {
         ...state,
         categoryDict: unpackCategoryDict(action.payload.tabs),
-        appDict: action.payload.definitions,
+        htmlDict: action.payload.htmlDefinitions,
         appIcons: unpackAppIcons(action.payload.tabs),
         loading: false,
       };

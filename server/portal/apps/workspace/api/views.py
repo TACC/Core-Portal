@@ -5,14 +5,13 @@
 import logging
 import json
 from urllib.parse import urlparse
-from datetime import timedelta
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-from portal.utils.translations import get_jupyter_url
+from django.db.models.functions import Coalesce
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -35,9 +34,13 @@ def _app_license_type(app_def):
     return lic_type
 
 
-def _app_license_type_TODO_REFACTOR(app_id):
-    # job submission wants to do a check from app (using app_id) if user needs license before submitting job.
-    return None
+def _get_user_app_license(license_type, user):
+    _, license_models = get_license_info()
+    license_model = [x for x in license_models if x.license_type == license_type]
+    if not license_model:
+        return None
+    lic = license_model.objects.filter(user=user).first()
+    return lic
 
 
 def _get_app(app_id, app_version, user):
@@ -56,9 +59,7 @@ def _get_app(app_id, app_version, user):
         'type': lic_type
     }
     if lic_type is not None:
-        _, license_models = get_license_info()
-        license_model = list(filter(lambda x: x.license_type == lic_type, license_models))[0]
-        lic = license_model.objects.filter(user=user).first()
+        lic = _get_user_app_license(lic_type, user)
         data['license']['enabled'] = lic is not None
 
     return data
@@ -77,7 +78,7 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODO: Test user default storage system (for archiving)
+            # TODOv3: Test user default storage system (for archiving)
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(
@@ -104,70 +105,47 @@ class AppsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
-        job_id = request.GET.get('job_id')
+        tapis = request.user.tapis_oauth.client
+        job_uuid = request.GET.get('job_uuid')
 
         # get specific job info
-        if job_id:
-            data = agave.jobs.get(jobId=job_id)
-            q = {"associationIds": job_id}
-            job_meta = agave.meta.listMetadata(q=json.dumps(q))
-            data['_embedded'] = {"metadata": job_meta}
-
-            # TODO: Decouple this from front end somehow
-            archiveSystem = data.get('archiveSystem', None)
-            if archiveSystem:
-                archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
-                data['archiveUrl'] = '/workbench/data-depot/'
-                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
-
-                jupyter_url = get_jupyter_url(
-                    archiveSystem,
-                    "/" + data['archivePath'],
-                    request.user.username,
-                    is_dir=True
-                )
-                if jupyter_url:
-                    data['jupyterUrl'] = jupyter_url
+        if job_uuid:
+            data = tapis.jobs.getJob(jobUuid=job_uuid)
 
         # list jobs
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            period = request.GET.get('period', 'all')
+            # TODOv3: Query portal
+            # portal_name = settings.PORTAL_NAMESPACE
 
-            jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
+            data = tapis.jobs.getJobSearchList(
+                limit=limit,
+                startAfter=offset,
+                orderBy='lastUpdated(desc),name(asc)'
+                # _tapis_query_parameters={'tags.contains': portal_name}
+            )
 
-            if period != "all":
-                enddate = timezone.now()
-                if period == "day":
-                    days = 1
-                elif period == "week":
-                    days = 7
-                elif period == "month":
-                    days = 30
-                startdate = enddate - timedelta(days=days)
-                jobs = jobs.filter(time__range=[startdate, enddate])
-
-            all_user_job_ids = [job.jobId for job in jobs]
-            user_job_ids = all_user_job_ids[offset:offset + limit]
-            if user_job_ids:
-                data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
-                # re-order agave job info to match our time-ordered jobs
-                # while also taking care that tapis in rare cases might no longer
-                # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
-                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
-            else:
-                data = []
-
-        return JsonResponse({"response": data})
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': data,
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
     def delete(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
-        job_id = request.GET.get('job_id')
-        METRICS.info("user:{} is deleting job id:{}".format(request.user.username, job_id))
-        data = agave.jobs.delete(jobId=job_id)
-        return JsonResponse({"response": data})
+        tapis = request.user.tapis_oauth.client
+        job_uuid = request.GET.get('job_uuid')
+        METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
+        data = tapis.jobs.hideJob(jobUuid=job_uuid)
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': data,
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
     def post(self, request, *args, **kwargs):
         agave = request.user.tapis_oauth.client
@@ -227,14 +205,20 @@ class JobsView(BaseApiView):
                 job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
-            lic_type = _app_license_type_TODO_REFACTOR(job_post['appId'])
+            lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
             if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                if not lic:
+                lic = _get_user_app_license(lic_type, request.user)
+                if lic is None:
                     raise ApiException("You are missing the required license for this application.")
-                job_post['parameters']['_license'] = lic.license_as_str()
+                license_var = {
+                    "key": "_license",
+                    "value": lic.license_as_str()
+                }
+                if 'envVariables' in job_post['parameterSet']:
+                    job_post['parameterSet']['envVariables'].append(license_var)
+                else:
+                    job_post['parameterSet']['envVariables'] = [license_var]
+                del job_post['licenseType']
 
             # url encode inputs
             if job_post['inputs']:
@@ -314,122 +298,63 @@ class SystemsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
-        agave = request.user.tapis_oauth.client
-        data = agave.jobs.getHistory(jobId=job_uuid)
-        return JsonResponse({"response": data})
+        tapis = request.user.tapis_oauth.client
+        data = tapis.jobs.getJobHistory(jobUuid=job_uuid)
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': data,
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
-    def getAppIdBySpec(self, app, user):
-        # Retrieve the app specified in the portal
-        # Any fields that are left blank assume that we
-        # are retrieving the "latest" version
-        agave = user.tapis_oauth.client
-        query = {
-            "name": app.name,
-            "isPublic": True
-        }
-        if app.version and len(app.version):
-            query['version'] = app.version
-        if app.revision and len(app.revision):
-            query['revision'] = app.revision
-        appList = agave.apps.list(query=query)
-        appList.sort(
-            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [int(appDef['revision'])]
-        )
-        return appList[-1]['id']
-
-    def getAppId(self, app, user):
-        if app.appId and len(app.appId) > 0:
-            appId = app.appId
-        else:
-            appId = self.getAppIdBySpec(app, user)
-        if appId != app.lastRetrieved:
-            app.lastRetrieved = appId
-            app.save()
-        return appId
-
     def getPrivateApps(self, user):
-        agave = user.tapis_oauth.client
-        apps_listing = agave.apps.list(privateOnly=True)
-        my_apps = []
-        # Get private apps that are not prtl.clone
-        for app in filter(lambda app: not app['id'].startswith("prtl.clone"), apps_listing):
-            # Create an app "metadata" record
-            try:
-                my_apps.append(
-                    {
-                        "label": app['label'] or app['id'],
-                        "version": app['version'],
-                        "revision": app['revision'],
-                        "shortDescription": app['shortDescription'],
-                        "type": "agave",
-                        "appId": app['id'],
-                    }
-                )
-            except Exception as e:
-                logger.error(
-                    "User {} was unable to retrieve their private app {}".format(
-                        user.username, app['id']
-                    )
-                )
-                logger.exception(e)
+        tapis = user.tapis_oauth.client
+        # TODOv3: make sure to exclude public apps
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        my_apps = list(map(lambda app: {
+            "label": getattr(app.notes, 'label', app.id),
+            "version": app.version,
+            "type": "tapis",
+            "appId": app.id,
+        }, apps_listing))
+
         return my_apps
 
     def getPublicApps(self, user):
+        # TODOv3: make tapipy request for public apps to compare against apps in AppTrayEntry
         categories = []
-        definitions = {}
+        html_definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
-            categoryResult = {
-                "title": category.category,
-                "apps": []
-            }
 
             # Retrieve all apps known to the portal in that directory
-            apps = AppTrayEntry.objects.all().filter(available=True, category=category)
-            for app in apps:
-                # Create something similar to the old metadata record
-                appRecord = {
-                    "label": app.label or app.name,
-                    "icon": app.icon,
-                    "version": app.version,
-                    "revision": app.revision,
-                    "type": app.appType
-                }
+            tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+            html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
+                             .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
-                try:
-                    if str(app.appType).lower() == 'html':
-                        # If this is an HTML app, create a definition for it
-                        # that has the 'html' field
-                        appRecord["appId"] = app.htmlId
-                        definitions[app.htmlId] = {
-                            "html": app.html,
-                            "id": app.htmlId,
-                            "label": app.label,
-                            "shortDescription": app.shortDescription,
-                            "appType": "html"
-                        }
-                    elif str(app.appType).lower() == 'agave':
-                        # If this is an agave app, retrieve the definition
-                        # from the tenant, with any license or queue
-                        # post processing
-                        appId = self.getAppId(app, user)
-                        appRecord["appId"] = appId
+            categoryResult = {
+                "title": category.category,
+                "apps": tapis_apps
+            }
 
-                    categoryResult["apps"].append(appRecord)
-                except Exception:
-                    logger.info("Could not retrieve app {}".format(app))
+            # Add html apps to html_definitions
+            for app in html_apps:
+                html_definitions[app['appId']] = app
 
-            categoryResult["apps"].sort(key=lambda app: app['label'])
+                categoryResult["apps"].append(app)
+
             categories.append(categoryResult)
 
-        return categories, definitions
+        return categories, html_definitions
 
     def get(self, request):
         """
-        Returns a structure containing app tray categories with metadata, and app definitions
+        Returns a structure containing app tray categories with metadata, and html definitions
 
         {
             "categories": {
@@ -442,31 +367,14 @@ class AppsTrayView(BaseApiView):
                     }
                 ]
             }
-            "definitions": {
+            "html_definitions": {
                 "jupyterhub": { ... }
             }
         }
         """
-        # TODO providing examplem tabs before getPublicApps/getPrivateApps is tested/working.  Note that we add appVersion to app
-        fake_tabs = [
-            {
-                "title": "My V3 Test Apps",
-                "apps": [
-                    {
-                        "label": "hello world",
-                        "version": "0.0.2",
-                        "revision": 12,
-                        "shortDescription": "Run our hello world app.",
-                        "type": "agave",
-                        "appId": "hello-world",
-                        "appVersion": "0.0.1"   # TODO:  Note that this is NEW parameter
-                    }
-                ]
-        }]
-        return JsonResponse({"tabs": fake_tabs, "definitions": {}})
-
-        tabs, definitions = self.getPublicApps(request.user)
+        tabs, html_definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
+
         tabs.insert(
             0,
             {
@@ -474,6 +382,7 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
+
         # Only return tabs that are non-empty
         tabs = list(
             filter(
@@ -482,7 +391,13 @@ class AppsTrayView(BaseApiView):
             )
         )
 
-        return JsonResponse({"tabs": tabs, "definitions": definitions})
+        return JsonResponse(
+            {
+                "tabs": tabs,
+                "htmlDefinitions": html_definitions
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 @method_decorator(login_required, name='dispatch')

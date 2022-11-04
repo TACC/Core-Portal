@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { default as jobsList } from '../../../Jobs/Jobs.fixture';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import JobHistoryModal from '../JobHistoryModal';
@@ -10,7 +11,7 @@ import appDetailFixture from '../../../../redux/sagas/fixtures/appdetail.fixture
 import { initialState as workbench } from '../../../../redux/reducers/workbench.reducers';
 
 const mockInitialState = {
-  jobId: 'job_id',
+  uuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
   app: appDetailFixture,
   job: jobDetailFixture,
   display: jobDetailDisplayFixture,
@@ -21,7 +22,7 @@ const mockInitialState = {
 
 describe('Job History Modal', () => {
   const mockStore = configureStore();
-  it('renders job history information given the job ID', () => {
+  it('renders job history information given the job UUID', () => {
     const { getByText } = render(
       <BrowserRouter>
         <Provider
@@ -29,21 +30,25 @@ describe('Job History Modal', () => {
             jobDetail: {
               ...mockInitialState,
             },
+            jobs: {
+              list: jobsList,
+            },
             workbench: {
               ...workbench,
               config: { hideDataFiles: false },
             },
           })}
         >
-          <JobHistoryModal jobId="job_id" />
+          <JobHistoryModal uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007" />
         </Provider>
       </BrowserRouter>
     );
-    expect(getByText(/Compress folder/)).toBeDefined();
-    expect(getByText(/Target Path to be Compressed/)).toBeDefined();
-    expect(getByText(/Compression Type/)).toBeDefined();
-    expect(getByText(/Failure Report/)).toBeDefined();
-    expect(getByText(/Max Hours/)).toBeDefined();
-    expect(getByText(/Temporary Working Directory/)).toBeDefined();
+    expect(getByText(/Greeting/)).toBeDefined();
+    expect(getByText(/Target/)).toBeDefined();
+    expect(getByText(/Last Status Message/)).toBeDefined();
+    expect(getByText(/Max Minutes/)).toBeDefined();
+    expect(getByText(/Execution Directory/)).toBeDefined();
+    expect(getByText(/Input Directory/)).toBeDefined();
+    expect(getByText(/Output Directory/)).toBeDefined();
   });
 });

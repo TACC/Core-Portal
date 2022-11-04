@@ -1664,7 +1664,7 @@ python-versions = "*"
 
 [[package]]
 name = "tapipy"
-version = "1.2.11"
+version = "1.2.15"
 description = "Python lib for interacting with an instance of the Tapis API Framework"
 category = "main"
 optional = false
@@ -1893,7 +1893,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c56ea51cb90bd134ea6d5e3116cab7ba3544bf00b53756073bfca4cceff17b13"
+content-hash = "a78c505d004aafee2fa931c5d81d4255213ad9caa93c13bc88ad719e62295881"
 
 [metadata.files]
 agavepy = [
