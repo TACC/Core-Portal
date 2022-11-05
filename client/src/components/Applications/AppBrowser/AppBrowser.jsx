@@ -73,7 +73,7 @@ const AppBrowser = () => {
                 <div key={app.appId} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}/${app.appVersion}`}
+                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}?appVersion=${app.version}`}
                     activeClassName="active"
                   >
                     <span className="nav-content">

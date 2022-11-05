@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, useRouteMatch } from 'react-router-dom';
+import { Route, useRouteMatch, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import './AppLayout.global.css';
@@ -48,7 +48,14 @@ const AppsHeader = (categoryDict) => {
   return `Applications ${path}`;
 };
 
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 const AppsRoutes = () => {
+  const query = useQuery();
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const htmlDict = useSelector((state) => state.apps.htmlDict, shallowEqual);
@@ -74,7 +81,7 @@ const AppsRoutes = () => {
           {Object.keys(categoryDict).length ? (
             <Route
               exact
-              path={`${path}/:appId/:appVersion`}
+              path={`${path}/:appId`}
               render={({ match: { params } }) => {
                 const appDef = htmlDict[params.appId];
                 if (appDef && 'html' in appDef) {
@@ -87,7 +94,7 @@ const AppsRoutes = () => {
                     type: 'GET_APP',
                     payload: {
                       appId: params.appId,
-                      appVersion: params.appVersion
+                      appVersion: query.get("appVersion")
                     },
                   });
                 }
