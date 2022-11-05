@@ -262,11 +262,9 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode, // TODOv3 check
     maxMinutes: app.definition.jobAttributes.maxMinutes ,  // TODOv3 check can we have empty?
     archiveSystemDir: '',  // TODOv3  does '' trigger the "default" from tapis
-    archive: true,
     archiveOnAppError: true,
     appId: app.definition.id,
   };
-
   let missingAllocation = false;
   if (app.exec_sys.batchScheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
