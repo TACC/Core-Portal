@@ -153,7 +153,7 @@ class JobsView(BaseApiView):
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
 
-        if job_id and job_action:
+        if job_id and job_action: # TODOv3 cancel/resubmit
             # resubmit job
             if job_action == 'resubmit':
                 METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
@@ -179,10 +179,17 @@ class JobsView(BaseApiView):
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
-
-            # cleaning archive path value
-            if job_post.get('archivePath'):
-                parsed = urlparse(job_post['archivePath'])
+            if True: # TODOv3 ignoring archiving for the moment
+                if job_post.get('archiveSystemDir'):
+                    del job_post['archiveSystemDir']
+                if job_post.get('archiveOnAppError'):
+                    job_post['archiveOnAppError'] = False
+                if job_post.get('archive'):
+                    del job_post['archive']
+                # TODOv3 check if cleaning is still needed below (maybe better to do on frontend?)
+                # cleaning archive path value
+            elif job_post.get('archiveSystemDir'):
+                parsed = urlparse(job_post['archiveSystemDir'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
@@ -192,17 +199,17 @@ class JobsView(BaseApiView):
                 else:
                     archive_path = parsed.path
 
-                job_post['archivePath'] = archive_path
+                job_post['archiveSystemDir'] = archive_path
 
                 if parsed.netloc:
-                    job_post['archiveSystem'] = parsed.netloc
+                    job_post['archiveSystemId'] = parsed.netloc
                 else:
-                    job_post['archiveSystem'] = default_sys.get_system_id()
+                    job_post['archiveSystemId'] = default_sys.get_system_id()
             else:
-                job_post['archivePath'] = \
+                job_post['archiveSystemDir'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = default_sys.get_system_id()
+                job_post['archiveSystemId'] = default_sys.get_system_id()
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -221,47 +228,62 @@ class JobsView(BaseApiView):
                 del job_post['licenseType']
 
             # url encode inputs
-            if job_post['inputs']:
-                job_post = url_parse_inputs(job_post)
+            # TODOv3 update for v3
+            #if job_post['inputs']:
+            #    job_post = url_parse_inputs(job_post)
 
+            # TODOv3 potentially remove UserApplicationsManager but need to check if execution system needs keys
             # Get or create application based on allocation and execution system
-            apps_mgr = UserApplicationsManager(request.user)
-            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
+            #apps_mgr = UserApplicationsManager(request.user)
+            #app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
-            if app.exec_sys:
-                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
+            # TODOv3 update to determine if keys need to be pushed (as not using above code or replacement for abouve
+            # code: UserApplicationsManager get_or_create_app)
+            #if app.exec_sys:
+            #    return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
-            job_post['appId'] = app.id
+            # TODOv3
+            if 'schedulerOptions' not in job_post['parameterSet']:
+                job_post['parameterSet']['schedulerOptions'] = []
+            job_post['parameterSet']['schedulerOptions'].append({"name": "Allocation",
+                                                                 "description": "The allocation associated with this job execution",
+                                                                 "include": True,
+                                                                 "arg": f"-A {job_post['allocation']}" })
             del job_post['allocation']
 
-            if settings.DEBUG:
-                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
-            else:
-                wh_base_url = request.build_absolute_uri('/webhooks/')
-                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            # TODOv3 Webhooks/notifications
+            # if settings.DEBUG:
+            #    wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+            #    jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            #else:
+            #    wh_base_url = request.build_absolute_uri('/webhooks/')
+            #    jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameters']['_webhook_base_url'] = wh_base_url
-            job_post['notifications'] = [
-                {'url': jobs_wh_url,
-                 'event': e}
-                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+            # TODOv3 webhook for wrapper (determine where this will go in the job (envVariables, right?)
+            #job_post['parameters']['_webhook_base_url'] = wh_base_url
 
+            # TODOv3 Webhooks/notifications continues
+            #job_post['notifications'] = [
+            #    {'url': jobs_wh_url,
+            #     'event': e}
+            #    for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+
+            # TODOv3 do we have any? can drop right?
             # Remove any params from job_post that are not in appDef
-            job_post['parameters'] = {param: job_post['parameters'][param]
-                                      for param in job_post['parameters']
-                                      if param in [p['id'] for p in app.parameters]}
-
-            response = agave.jobs.submit(body=job_post)
-
-            if "id" in response:
+            #job_post['parameters'] = {param: job_post['parameters'][param]
+            #                          for param in job_post['parameters']
+            #                          if param in [p['id'] for p in app.parameters]}
+            logger.info(f"submitting this job: f{job_post}")
+            response = agave.jobs.submitJob(**job_post)
+            job_response = vars(response)
+            if "id" in job_response:
                 job = JobSubmission.objects.create(
                     user=request.user,
-                    jobId=response["id"]
+                    jobId=job_response["id"]
                 )
                 job.save()
 
-            return JsonResponse({"response": response})
+            return JsonResponse({"response": response}, encoder=BaseTapisResultSerializer)
 
 
 @method_decorator(login_required, name='dispatch')
