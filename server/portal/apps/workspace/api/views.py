@@ -36,7 +36,7 @@ def _app_license_type(app_def):
 
 def _get_user_app_license(license_type, user):
     _, license_models = get_license_info()
-    license_model = [x for x in license_models if x.license_type == license_type]
+    license_model = next((x for x in license_models if x.license_type == license_type), None)
     if not license_model:
         return None
     lic = license_model.objects.filter(user=user).first()
