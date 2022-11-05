@@ -2,15 +2,15 @@ import * as Yup from 'yup';
 
 const FormSchema = (app) => {
   const appFields = {
-    parameters: {},
+    parameterSet: {},
     fileInputs: {},
-    defaults: { fileInputs: {}, parameters: {} },
-    schema: { fileInputs: {}, parameters: {} },
+    defaults: { fileInputs: {}, parameterSet: {} },
+    schema: { fileInputs: {}, parameterSet: {} },
   };
 
   /* TODOv3  app.definition.jobAttributes
-  (app.definition.parameters || []).forEach((parameter) => {
-    const param = parameter;
+  (app.definition.parameterSet || []).forEach((p) => {
+    const param = p;
     if (!param.value.visible || param.id.startsWith('_')) {
       return;
     }
@@ -31,13 +31,13 @@ const FormSchema = (app) => {
       case 'flag':
         field.type = 'checkbox';
         field.checked = param.value.default || false;
-        appFields.schema.parameters[param.id] = Yup.boolean();
+        appFields.schema.parameterSet[param.id] = Yup.boolean();
         break;
 
       case 'enumeration':
         field.type = 'select';
         field.options = param.value.enum_values;
-        appFields.schema.parameters[param.id] = Yup.string().oneOf(
+        appFields.schema.parameterSet[param.id] = Yup.string().oneOf(
           field.options.map((enumVal) => {
             if (typeof enumVal === 'string') {
               return enumVal;
@@ -48,7 +48,7 @@ const FormSchema = (app) => {
         break;
 
       case 'number':
-        appFields.schema.parameters[param.id] = Yup.number();
+        appFields.schema.parameterSet[param.id] = Yup.number();
         field.type = 'number';
         break;
 
@@ -56,30 +56,30 @@ const FormSchema = (app) => {
         field.agaveFile = param.semantics.ontology.includes('agaveFile');
         if (param.semantics.ontology.includes('email')) {
           field.type = 'email';
-          appFields.schema.parameters[param.id] = Yup.string().email(
+          appFields.schema.parameterSet[param.id] = Yup.string().email(
             'Must be a valid email.'
           );
         } else {
           field.type = 'text';
-          appFields.schema.parameters[param.id] = Yup.string();
+          appFields.schema.parameterSet[param.id] = Yup.string();
         }
         break;
       default:
-        appFields.schema.parameters[param.id] = Yup.string();
+        appFields.schema.parameterSet[param.id] = Yup.string();
         field.type = 'text';
     }
 
     if (param.value.required) {
-      appFields.schema.parameters[param.id] =
-        appFields.schema.parameters[param.id].required('Required');
+      appFields.schema.parameterSet[param.id] =
+        appFields.schema.parameterSet[param.id].required('Required');
     }
     if (param.value.validator) {
-      appFields.schema.parameters[param.id] = appFields.schema.parameters[
+      appFields.schema.parameterSet[param.id] = appFields.schema.parameterSet[
         param.id
       ].matches(param.value.validator);
     }
-    appFields.parameters[param.id] = field;
-    appFields.defaults.parameters[param.id] =
+    appFields.parameterSet[param.id] = field;
+    appFields.defaults.parameterSet[param.id] =
       param.value.default === null || typeof param.value.default === 'undefined'
         ? ''
         : param.value.default;

@@ -398,7 +398,7 @@ export const AppSchemaForm = ({ app }) => {
             );
             const maxQueueRunTime = getQueueMaxMinutes(app, values.batchQueue);
             const schema = Yup.object({
-              parameters: Yup.object({ ...appFields.schema.parameters }),
+              parameterSet: Yup.object({ ...appFields.schema.parameterSet }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
@@ -434,15 +434,15 @@ export const AppSchemaForm = ({ app }) => {
           });
           /* remove falsy parameter */
           // TODO: allow falsy parameters for parameters of type bool
-          // Object.entries(job.parameters).forEach(([k, v]) => {
+          // Object.entries(job.parameterSet).forEach(([k, v]) => {
           //   let val = v;
           //   if (Array.isArray(v)) {
           //     val = val.filter(Boolean);
           //     if (val.length === 0) {
-          //       delete job.parameters[k];
+          //       delete job.parameterSet[k];
           //     }
           //   } else if (val === null || val === undefined) {
-          //     delete job.parameters[k];
+          //     delete job.parameterSet[k];
           //   }
           // });
           /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
@@ -507,12 +507,12 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     );
                   })}
-                  {Object.entries(appFields.parameters).map(([id, field]) => {
+                  {Object.entries(appFields.parameterSet).map(([id, field]) => {
                     return (
                       <FormField
                         {...field}
-                        name={`parameters.${id}`}
-                        key={`parameters.${id}`}
+                        name={`parameterSet.${id}`}
+                        key={`parameterSet.${id}`}
                       >
                         {field.options
                           ? field.options.map((item) => {
