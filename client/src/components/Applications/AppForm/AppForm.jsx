@@ -420,19 +420,12 @@ export const AppSchemaForm = ({ app }) => {
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
-          /* remove falsy input */
-          Object.entries(job.fileInputs).forEach(([k, v]) => {
-            let val = v;
-            if (Array.isArray(val)) {
-              val = val.filter(Boolean);
-              if (val.length === 0) {
-                delete job.fileInputs[k];
-              }
-            } else if (!val) {
-              delete job.fileInputs[k];
-            }
+
+          job.appVersion = app.definition.version;
+          job.fileInputs = Object.entries(job.fileInputs).map(([k, v]) => {
+            return {name: k, sourceUrl: v};
           });
-          /* remove falsy parameter */
+          /* remove falsy parameter */  // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
           // Object.entries(job.parameterSet).forEach(([k, v]) => {
           //   let val = v;
