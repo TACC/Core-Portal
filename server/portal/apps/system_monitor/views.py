@@ -72,14 +72,10 @@ class System:
 
     def is_up(self):
         if self.resource_type == 'compute':
-            if not self.load_percentage:
+            if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance):
+                return True
+            else:
                 return False
-            if self.load_percentage > 99 and self.jobs.get('running', 0) < 1:
-                return False
-        if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance):
-            return True
-        else:
-            return False
 
     def to_dict(self):
         r = json.dumps(self.__dict__)
