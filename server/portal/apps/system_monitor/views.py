@@ -8,14 +8,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def _get_unoperational_system(hostname):
-    return {'hostname': hostname,
-            'display_name': hostname.split('.')[0].capitalize(),
+def _get_unoperational_system(display_name):
+    return {'display_name': display_name,
             'is_operational': False,
             'load': 0,
-            'running': 0,
-            'waiting': 0,
-            'other': 0
+            'running': 0, 'waiting': 0,
             }
 
 
@@ -46,36 +43,30 @@ class System:
 
     def __init__(self, system_dict):
         try:
-            self.cpu_count = None
-            self.cpu_used = None
             self.display_name = system_dict.get('display_name')
             self.hostname = system_dict.get('hostname')
-            self.ssh = {'status': None, 'timestamp': system_dict.get('timestamp'), "type": None}
-            self.heartbeat = {'status': None, 'timestamp': system_dict.get('timestamp'), "type": None}
-            self.status_tests = None
             self.resource_type = 'compute'
-            self.jobs = {'running': system_dict.get('running'),
-                         'queued': system_dict.get('waiting'), 'other': ''}
-            self.load_percentage = system_dict.get('load')
-            if isinstance(self.load_percentage, (float, int)):
-                self.load_percentage = int((self.load_percentage * 100))
+            self.running = system_dict.get('running')
+            self.waiting = system_dict.get('waiting')
+            self.load = system_dict.get('load')
+            if isinstance(self.load, (float, int)):
+                self.load = int((self.load * 100))
             else:
-                self.load_percentage = None
+                self.load = 0
             self.online = system_dict.get('online')
             self.reachable = system_dict.get('reachable')
             self.queues_down = system_dict.get('queues_down')
             self.in_maintenance = system_dict.get('in_maintenance')
-            self.next_maintenance = system_dict.get('next_maintenance')
             self.is_operational = self.is_up()
         except Exception as exc:
             logger.error(exc)
 
     def is_up(self):
         if self.resource_type == 'compute':
-            if self.online and self.reachable and (not self.queues_down) and (not self.in_maintenance):
-                return True
-            else:
+            if (not self.online) or (not self.reachable) or self.queues_down or self.in_maintenance:
                 return False
+            else:
+                return True
 
     def to_dict(self):
         r = json.dumps(self.__dict__)

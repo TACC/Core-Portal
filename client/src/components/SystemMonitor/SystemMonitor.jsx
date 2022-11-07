@@ -23,16 +23,16 @@ const SystemsList = () => {
         Cell: Operational,
       },
       {
-        accessor: 'load_percentage',
+        accessor: 'load',
         Header: 'Load',
         Cell: Load,
       },
       {
-        accessor: ({ jobs }) => (jobs ? jobs.running : '0'),
+        accessor: ({ running }) => (running ? running : '0'),
         Header: 'Running',
       },
       {
-        accessor: ({ jobs }) => (jobs ? jobs.queued : '0'),
+        accessor: ({ waiting }) => (waiting ? waiting : '0'),
         Header: 'Queued',
       },
     ],

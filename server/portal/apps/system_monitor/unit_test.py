@@ -17,8 +17,6 @@ def system_status(system_status_old, scope="module"):
     # alter time stamps so that the system status looks like it was collected recently
     altered_system_status = system_status_old.copy()
     system = altered_system_status['Frontera']
-    for test_entry in system['tests']:
-        system['tests'][test_entry]['timestamp'] = str(pytz.utc.localize(datetime.now()))
     yield altered_system_status
 
 
@@ -34,42 +32,25 @@ def test_system_monitor_get(client, settings, requests_mock, system_status):
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
-    assert system['hostname'] == 'frontera.tacc.utexas.edu'
     assert system['display_name'] == 'Frontera'
-    assert system['load_percentage'] == 98
-    assert system['jobs']['running'] == 402
-    assert system['jobs']['queued'] == 506
-    assert system['jobs']['other'] == 110
+    assert system['hostname'] == 'frontera.tacc.utexas.edu'
+    assert system['load'] == 97
+    assert system['running'] == 365
+    assert system['waiting'] == 247
     assert system['is_operational']
-
-
-@pytest.mark.django_db()
-def test_system_monitor_get_old_timestamp_triggers_non_operational(client, settings, requests_mock, system_status_old):
-    settings.SYSTEM_MONITOR_DISPLAY_LIST = ['Frontera']
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status_old)
-    response = client.get('/api/system-monitor/')
-    assert response.status_code == 200
-    system = response.json()[0]
-    assert system['hostname'] == 'frontera.tacc.utexas.edu'
-    assert system['display_name'] == 'Frontera'
-    assert not system['is_operational']
-
 
 @pytest.mark.django_db()
 def test_system_monitor_when_missing_system(client, settings, requests_mock, system_status_missing_frontera):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['Frontera']
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status_missing_frontera)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL,  json=system_status_missing_frontera)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
-    assert system['hostname'] == 'frontera.tacc.utexas.edu'
     assert system['display_name'] == 'Frontera'
     assert not system['is_operational']
-    assert system['load_percentage'] == 0
-    assert system['jobs']['running'] == 0
-    assert system['jobs']['queued'] == 0
-    assert system['jobs']['other'] == 0
-
+    assert system['load'] == 0
+    assert system['running'] == 0
+    assert system['waiting'] == 0
 
 @pytest.mark.django_db()
 def test_system_monitor_when_display_list_is_empty(client, settings, requests_mock, system_status):

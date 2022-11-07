@@ -9,20 +9,22 @@ const list = [
   {
     display_name: 'Frontera',
     is_operational: true,
-    jobs: { running: 1, queued: 2 },
-    load_percentage: 100,
+    running: 1,
+    waiting: 2,
+    load: 100,
   },
   {
     display_name: 'Lonestar',
     is_operational: false,
-    jobs: { running: 1 },
-    load_percentage: 100,
+    running: 1,
+    load: 100,
   },
   {
     display_name: 'Stampede',
     is_operational: true,
-    jobs: { running: 1, queued: 2 },
-    load_percentage: 100,
+    running: 1,
+    queued: 2,
+    load: 100,
   },
 ];
 
