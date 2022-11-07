@@ -1,8 +1,6 @@
 import pytest
 import json
 import os
-import pytz
-from datetime import datetime
 from django.conf import settings
 from django.http import Http404
 
@@ -14,10 +12,8 @@ def system_status_old(scope="module"):
 
 @pytest.fixture
 def system_status(system_status_old, scope="module"):
-    # alter time stamps so that the system status looks like it was collected recently
-    altered_system_status = system_status_old.copy()
-    system = altered_system_status['Frontera']
-    yield altered_system_status
+    sys_status = system_status_old.copy()
+    yield sys_status
 
 
 @pytest.fixture
@@ -39,6 +35,7 @@ def test_system_monitor_get(client, settings, requests_mock, system_status):
     assert system['waiting'] == 247
     assert system['is_operational']
 
+
 @pytest.mark.django_db()
 def test_system_monitor_when_missing_system(client, settings, requests_mock, system_status_missing_frontera):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['Frontera']
@@ -51,6 +48,7 @@ def test_system_monitor_when_missing_system(client, settings, requests_mock, sys
     assert system['load'] == 0
     assert system['running'] == 0
     assert system['waiting'] == 0
+
 
 @pytest.mark.django_db()
 def test_system_monitor_when_display_list_is_empty(client, settings, requests_mock, system_status):

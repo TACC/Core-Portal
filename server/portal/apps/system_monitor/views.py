@@ -12,7 +12,8 @@ def _get_unoperational_system(display_name):
     return {'display_name': display_name,
             'is_operational': False,
             'load': 0,
-            'running': 0, 'waiting': 0,
+            'running': 0,
+            'waiting': 0,
             }
 
 
