@@ -229,7 +229,7 @@ export const AppSchemaForm = ({ app }) => {
   const systemHasKeys = true;
   const pushKeysSystem = '';
 
-  const missingLicense = false; // TODOv3 change hello world app to drop license;  app.license.type && !app.license.enabled;
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
     e.preventDefault();
     dispatch({
