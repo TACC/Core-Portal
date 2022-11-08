@@ -39,7 +39,7 @@ def test_system_monitor_get(client, settings, requests_mock, system_status):
 @pytest.mark.django_db()
 def test_system_monitor_when_missing_system(client, settings, requests_mock, system_status_missing_frontera):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['Frontera']
-    requests_mock.get(settings.SYSTEM_MONITOR_URL,  json=system_status_missing_frontera)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status_missing_frontera)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
