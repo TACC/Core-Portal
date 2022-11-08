@@ -80,7 +80,6 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
       <CommonSidebar
         sidebarItems={sidebarItems}
         loading={searching}
-        backgroundColor="white"
       />
     </>
   );

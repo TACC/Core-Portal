@@ -64,7 +64,6 @@ const Sidebar = () => {
   return (
     <CommonSidebar
       sidebarItems={sidebarItems}
-      backgroundColor="white"
     />
   );
 };

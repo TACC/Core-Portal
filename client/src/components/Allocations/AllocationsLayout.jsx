@@ -76,7 +76,6 @@ export const Layout = ({ page }) => {
         <>
           <CommonSidebar
             sidebarItems={sidebarItems}
-            backgroundColor="white"
           />
           {loading ? (
             <LoadingSpinner className="allocations-loading-icon" />

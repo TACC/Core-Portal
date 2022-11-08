@@ -90,6 +90,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
       sidebarItems={sidebarItems}
       addItemsAfter={addItems}
       loading={loading}
+      graySidebar
     />
   );
 };

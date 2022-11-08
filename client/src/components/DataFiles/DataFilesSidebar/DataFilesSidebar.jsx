@@ -139,7 +139,6 @@ const DataFilesSidebar = ({ readOnly }) => {
       <CommonSidebar
         sidebarItems={sidebarItems}
         addItemsBefore={addItems}
-        backgroundColor="white"
       />
     </div>
   );

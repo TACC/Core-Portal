@@ -5,9 +5,18 @@
   min-width: var(--width);
   max-width: var(--width);
   width: var(--width);
-  background: #f4f4f4;
+  background: transparent;
   border-right: 1px solid rgb(112 112 112 / 25%);
   padding-top: 20px;
+}
+
+/* when there is a sidebar inside a section */
+:global(.c-section--has-content-layout-has-sidebar) main {
+  padding-left: 0;
+}
+
+.gray {
+  background: #f4f4f4;
 }
 
 .link {
