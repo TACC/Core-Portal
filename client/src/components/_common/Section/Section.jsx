@@ -142,7 +142,13 @@ function Section({
   // }
 
   useEffect(() => {
-    if (bodyClassName) document.body.classList.add(bodyClassName);
+    if (bodyClassName) {
+      if (Array.isArray(bodyClassName)) {
+        document.body.classList.add(...bodyClassName);
+      } else {
+        document.body.classList.add(bodyClassName);
+      }
+    }
 
     return function cleanup() {
       if (bodyClassName) document.body.classList.remove(bodyClassName);
@@ -198,8 +204,11 @@ function Section({
   );
 }
 Section.propTypes = {
-  /** Name of class to append to body when section is active */
-  bodyClassName: PropTypes.string,
+  /** Name of class(es) to append to body when section is active */
+  bodyClassName: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string)
+  ]),
   /** Alternate way to pass `manualContent` and `content` */
   children: PropTypes.node,
   /** Any additional className(s) for the root element */
