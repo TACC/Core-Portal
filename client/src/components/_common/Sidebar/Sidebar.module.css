@@ -15,8 +15,8 @@
   padding-left: 0;
 }
 
-.gray {
-  background: #f4f4f4;
+.main {
+  background: var(--global-color-primary--x-light);
 }
 
 .link {

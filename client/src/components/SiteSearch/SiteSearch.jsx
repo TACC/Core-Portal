@@ -46,7 +46,6 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
 
   return (
     <Section
-      contentClassName="has-common-sidebar"
       className="site-search-section"
       content={
         <>

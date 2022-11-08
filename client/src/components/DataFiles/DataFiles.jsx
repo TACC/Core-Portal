@@ -135,7 +135,6 @@ const DataFiles = () => {
       messageComponentName={
         listingParams.system === noPHISystem ? 'UNPROTECTED' : 'DATA'
       }
-      contentClassName="has-common-sidebar"
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}

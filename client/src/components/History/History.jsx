@@ -153,7 +153,6 @@ const Layout = () => {
       messageComponentName="HISTORY"
       header={`History / ${historyType}`}
       headerClassName={styles['header']}
-      contentClassName="has-common-sidebar"
       headerActions={<Actions />}
       content={
         <>

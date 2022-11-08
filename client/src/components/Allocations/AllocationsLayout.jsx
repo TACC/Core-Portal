@@ -70,7 +70,6 @@ export const Layout = ({ page }) => {
       messageComponentName="ALLOCATIONS"
       header={<Header page={page} />}
       headerClassName="allocations-header"
-      contentClassName="has-common-sidebar"
       headerActions={<Actions page={page} />}
       content={
         <>
