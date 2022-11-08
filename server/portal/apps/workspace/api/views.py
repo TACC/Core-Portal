@@ -17,7 +17,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-# from portal.apps.workspace.managers.user_applications import UserApplicationsManager  # TODOv3
+from portal.apps.workspace.managers.user_applications import UserApplicationsManager  # TODOv3
 # from portal.utils.translations import url_parse_inputs  # TODOv3
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
@@ -234,7 +234,8 @@ class JobsView(BaseApiView):
 
             # TODOv3 potentially remove UserApplicationsManager but need to check if execution system needs keys
             # Get or create application based on allocation and execution system
-            # apps_mgr = UserApplicationsManager(request.user)
+            apps_mgr = UserApplicationsManager(request.user)
+            print.debug(apps_mgr)  # TODOv3 testing workaround
             # app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
             # TODOv3 update to determine if keys need to be pushed (as not using above code or replacement for abouve
