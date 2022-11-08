@@ -94,7 +94,7 @@ const AppsRoutes = () => {
                     type: 'GET_APP',
                     payload: {
                       appId: params.appId,
-                      appVersion: query.get("appVersion")
+                      appVersion: query.get('appVersion'),
                     },
                   });
                 }

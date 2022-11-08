@@ -102,8 +102,9 @@ const FormSchema = (app) => {
      */
     const field = {
       label: input.name,
-      description: ' ', /* TODOv3 consider file description.  previously this was: input.details.description */
-      required: input.inputMode === 'REQUIRED ' // TODOv3   check this.  // input.value.required,
+      description:
+        ' ' /* TODOv3 consider file description.  previously this was: input.details.description */,
+      required: input.inputMode === 'REQUIRED ', // TODOv3   check this.  // input.value.required,
     };
 
     field.type = 'text'; /* TODOv3 consider cardinality
@@ -119,7 +120,7 @@ const FormSchema = (app) => {
     // TODOv3 consider validation
     appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
       input.name
-      ].matches(
+    ].matches(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );

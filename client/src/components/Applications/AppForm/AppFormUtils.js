@@ -1,11 +1,10 @@
 import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
-
 export const getQueueMaxMinutes = (app, queueName) => {
-  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName).maxMinutes;
+  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
+    .maxMinutes;
 };
-
 
 /**
  * Get validator for max minutes of a queue
@@ -160,7 +159,9 @@ export const updateValuesForQueue = (app, values) => {
   // TODO v3 rework this dependent on new paramters (i.e. maxMinutes, maxNodeCount, minCorePerNode */
   return updatedValues;
 
-  const queue = app.batchLogicalQueues.queues.find((q) => q.name === values.batchQueue);
+  const queue = app.batchLogicalQueues.queues.find(
+    (q) => q.name === values.batchQueue
+  );
   const minNode = getMinNodeCount(queue, app);
   const maxCoresPerNode = queue.maxCoresPerNode;
 

@@ -190,8 +190,7 @@ export const AppSchemaForm = ({ app }) => {
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
-        app.exec_sys.host === host ||
-        app.exec_sys.host.endsWith(`.${host}`)
+        app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =
@@ -253,15 +252,17 @@ export const AppSchemaForm = ({ app }) => {
     batchQueue: (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
-            (q) => q.name === app.definition.jobAttributes.execSystemLogicalQueue
+            (q) =>
+              q.name === app.definition.jobAttributes.execSystemLogicalQueue
           )
-        : app.exec_sys.batchLogicalQueues.find((q) => q.name === app.exec_sys.batchDefaultLogicalQueue)) ||
-      app.exec_sys.batchLogicalQueues[0]
+        : app.exec_sys.batchLogicalQueues.find(
+            (q) => q.name === app.exec_sys.batchDefaultLogicalQueue
+          )) || app.exec_sys.batchLogicalQueues[0]
     ).name,
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode, // TODOv3 check
-    maxMinutes: app.definition.jobAttributes.maxMinutes ,  // TODOv3 check can we have empty?
-    archiveSystemDir: '',  // TODOv3  does '' trigger the "default" from tapis
+    maxMinutes: app.definition.jobAttributes.maxMinutes, // TODOv3 check can we have empty?
+    archiveSystemDir: '', // TODOv3  does '' trigger the "default" from tapis
     archiveOnAppError: true,
     appId: app.definition.id,
   };
@@ -423,9 +424,9 @@ export const AppSchemaForm = ({ app }) => {
 
           job.appVersion = app.definition.version;
           job.fileInputs = Object.entries(job.fileInputs).map(([k, v]) => {
-            return {name: k, sourceUrl: v};
+            return { name: k, sourceUrl: v };
           });
-          /* remove falsy parameter */  // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
+          /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
           // Object.entries(job.parameterSet).forEach(([k, v]) => {
           //   let val = v;
@@ -561,7 +562,8 @@ export const AppSchemaForm = ({ app }) => {
                   {!app.definition.tags.includes('Interactive') ? ( // TODOv3 consider where we'll put 'Interactive'
                     <FormField
                       label="Maximum Job Runtime"
-                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(app,
+                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+                        app,
                         values.batchQueue
                       )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
                       name="maxMinutes"
@@ -569,10 +571,10 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                   ) : null}
-                  {app.definition.parallelism === 'PARALLEL'  ? (  // TODOv3  no concept of SERIAL/PARALLEL app in app definition
+                  {app.definition.parallelism === 'PARALLEL' ? ( // TODOv3  no concept of SERIAL/PARALLEL app in app definition
                     <>
                       <FormField
-                        label="Processors On Each Node"  // TODOv3 should we change "processors" to "core" to match tapis docs (kinda the same difference?)
+                        label="Processors On Each Node" // TODOv3 should we change "processors" to "core" to match tapis docs (kinda the same difference?)
                         description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
                         name="coresPerNode"
                         type="number"
@@ -580,12 +582,13 @@ export const AppSchemaForm = ({ app }) => {
                       <FormField
                         label="Node Count"
                         description="Number of requested process nodes for the job."
-                        name="nodeCount"   //TODOv3 update
+                        name="nodeCount" //TODOv3 update
                         type="number"
                       />
                     </>
                   ) : null}
-                  {app.exec_sys.batchScheduler === 'SLURM' ? (  /* TODOv3  no concept of is slurm job in app definition; nathan: assumes it is at the moment? */
+                  {app.exec_sys.batchScheduler ===
+                  'SLURM' /* TODOv3  no concept of is slurm job in app definition; nathan: assumes it is at the moment? */ ? (
                     <FormField
                       label="Allocation"
                       name="allocation"

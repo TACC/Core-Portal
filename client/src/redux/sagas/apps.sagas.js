@@ -14,13 +14,13 @@ const getCurrentApp = (state) => state.app;
 
 function* getApp(action) {
   const { appId, appVersion } = action.payload;
-  const currentApp = yield select(getCurrentApp);  // see TODO below
+  const currentApp = yield select(getCurrentApp); // see TODO below
 
   if (
     currentApp.definition.id === appId &&
     currentApp.definition.systemHasKeys
   ) {
-    return;  // TODO i never see this running?  is this optimization not working?
+    return; // TODOv3 Nathan never sees this running?  is this optimization not in use anymore?  if we keep, need add appVersion
   }
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
