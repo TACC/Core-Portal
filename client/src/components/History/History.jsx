@@ -58,14 +58,10 @@ const Sidebar = () => {
       disabled: false,
       hidden: false,
       children: <HistoryBadge unread={unreadJobs} />,
-    }
-  ]
+    },
+  ];
 
-  return (
-    <CommonSidebar
-      sidebarItems={sidebarItems}
-    />
-  );
+  return <CommonSidebar sidebarItems={sidebarItems} />;
 };
 
 export const Routes = () => {

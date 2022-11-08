@@ -61,8 +61,8 @@ export const Layout = ({ page }) => {
       iconName: 'pending',
       disabled: false,
       hidden: false,
-    }
-  ]
+    },
+  ];
 
   return (
     <Section
@@ -73,9 +73,7 @@ export const Layout = ({ page }) => {
       headerActions={<Actions page={page} />}
       content={
         <>
-          <CommonSidebar
-            sidebarItems={sidebarItems}
-          />
+          <CommonSidebar sidebarItems={sidebarItems} />
           {loading ? (
             <LoadingSpinner className="allocations-loading-icon" />
           ) : (

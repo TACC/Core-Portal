@@ -13,12 +13,11 @@ import {
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar as CommonSidebar } from '_common';
 
-
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
 import './DataFilesSidebar.scss';
 
-const DataFilesAddButton = ({readOnly}) => {
+const DataFilesAddButton = ({ readOnly }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -69,43 +68,43 @@ const DataFilesAddButton = ({readOnly}) => {
 
   return (
     <div id="add-button-wrapper">
-    <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-      <DropdownToggle
-        color="primary"
-        id="data-files-add"
-        className="data-files-btn"
-      >
-        + Add
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem
-          className={styles[writeItemStyle]}
-          onClick={toggleMkdirModal}
-          disabled={disabled}
+      <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+        <DropdownToggle
+          color="primary"
+          id="data-files-add"
+          className="data-files-btn"
         >
-          <i className="icon-folder" /> Folder
-        </DropdownItem>
-        {sharedWorkspaces && !sharedWorkspaces.readOnly && (
-          <DropdownItem onClick={toggleAddProjectModal}>
-            <i className="icon-folder" /> Shared Workspace
+          + Add
+        </DropdownToggle>
+        <DropdownMenu>
+          <DropdownItem
+            className={styles[writeItemStyle]}
+            onClick={toggleMkdirModal}
+            disabled={disabled}
+          >
+            <i className="icon-folder" /> Folder
           </DropdownItem>
-        )}
-        <DropdownItem
-          className={`complex-dropdown-item ${styles[writeItemStyle]}`}
-          onClick={toggleUploadModal}
-          disabled={disabled}
-        >
-          <i className={`icon-upload`} />
-          <span className="multiline-menu-item-wrapper">
-            Upload
-            <small> Up to 500mb </small>
-          </span>
-        </DropdownItem>
-      </DropdownMenu>
-    </ButtonDropdown>
-  </div>
-  )
-}
+          {sharedWorkspaces && !sharedWorkspaces.readOnly && (
+            <DropdownItem onClick={toggleAddProjectModal}>
+              <i className="icon-folder" /> Shared Workspace
+            </DropdownItem>
+          )}
+          <DropdownItem
+            className={`complex-dropdown-item ${styles[writeItemStyle]}`}
+            onClick={toggleUploadModal}
+            disabled={disabled}
+          >
+            <i className={`icon-upload`} />
+            <span className="multiline-menu-item-wrapper">
+              Upload
+              <small> Up to 500mb </small>
+            </span>
+          </DropdownItem>
+        </DropdownMenu>
+      </ButtonDropdown>
+    </div>
+  );
+};
 
 const DataFilesSidebar = ({ readOnly }) => {
   const systems = useSelector(
@@ -117,29 +116,28 @@ const DataFilesSidebar = ({ readOnly }) => {
 
   var sidebarItems = [];
 
-  systems.forEach(sys => {
+  systems.forEach((sys) => {
     sidebarItems.push({
-      to: `${match.path}/${sys.api}/${sys.scheme}/${sys.system ? `${sys.system}/` : ''}`,
+      to: `${match.path}/${sys.api}/${sys.scheme}/${
+        sys.system ? `${sys.system}/` : ''
+      }`,
       label: sys.name,
       iconName: sys.icon || 'my-data',
       disabled: false,
       hidden: false,
-    })
-  })
+    });
+  });
 
   const addItems = [
     {
       className: styles['add-button-item'],
-      children: <DataFilesAddButton readOnly={readOnly}/>,
-    }
-  ]
+      children: <DataFilesAddButton readOnly={readOnly} />,
+    },
+  ];
 
   return (
     <div className={styles['root']}>
-      <CommonSidebar
-        sidebarItems={sidebarItems}
-        addItemsBefore={addItems}
-      />
+      <CommonSidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
     </div>
   );
 };

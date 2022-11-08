@@ -7,7 +7,6 @@ import { Icon, Pill } from '_common';
 import './SiteSearchSidebar.scss';
 import { Sidebar as CommonSidebar } from '_common';
 
-
 export const SiteSearchSidebarItem = ({
   to,
   label,
@@ -33,20 +32,18 @@ export const SiteSearchSidebarItem = ({
   );
 };
 
-const SiteSearchSidebarItemPill = ({count}) => {
+const SiteSearchSidebarItemPill = ({ count }) => {
   return (
     <div className={`search-count-pill`} data-testid="count-pill">
       <Pill>{count.toString()}</Pill>
     </div>
-  )
-} 
-
+  );
+};
 
 const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
   const queryParams = queryStringParser.parse(useLocation().search);
   // Reset pagination on browse
   const query = queryStringParser.stringify({ ...queryParams, page: 1 });
-
 
   const sidebarItems = [
     {
@@ -55,7 +52,7 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
       iconName: 'browser',
       disabled: false,
       hidden: false,
-      children: <SiteSearchSidebarItemPill count={results.cms.count} />
+      children: <SiteSearchSidebarItemPill count={results.cms.count} />,
     },
     {
       to: `/search/public/?${query}`,
@@ -63,7 +60,7 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
       iconName: 'folder',
       disabled: false,
       hidden: !schemes.includes('public'),
-      children:  <SiteSearchSidebarItemPill count={results.public.count} />
+      children: <SiteSearchSidebarItemPill count={results.public.count} />,
     },
     {
       to: `/search/community/?${query}`,
@@ -71,16 +68,13 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
       iconName: 'folder',
       disabled: false,
       hidden: !authenticated && !schemes.includes('community'),
-      children: <SiteSearchSidebarItemPill count={results.community.count} />
+      children: <SiteSearchSidebarItemPill count={results.community.count} />,
     },
-  ]
+  ];
 
   return (
     <>
-      <CommonSidebar
-        sidebarItems={sidebarItems}
-        loading={searching}
-      />
+      <CommonSidebar sidebarItems={sidebarItems} loading={searching} />
     </>
   );
 };

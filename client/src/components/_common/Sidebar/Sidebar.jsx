@@ -49,9 +49,18 @@ SidebarItem.defaultProps = {
   hidden: false,
 };
 
-const Sidebar = ({ sidebarItems, addItemsBefore, addItemsAfter, loading, isMain }) => {
+const Sidebar = ({
+  sidebarItems,
+  addItemsBefore,
+  addItemsAfter,
+  loading,
+  isMain,
+}) => {
   return (
-    <Nav className={`${styles['root']} ${isMain ? styles['main'] : ''}`} vertical>
+    <Nav
+      className={`${styles['root']} ${isMain ? styles['main'] : ''}`}
+      vertical
+    >
       {!loading && addItemsBefore
         ? addItemsBefore.map(
             (item) =>

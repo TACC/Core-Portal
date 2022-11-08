@@ -55,15 +55,14 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
             authenticated={Boolean(user)}
             searching={loading}
             results={results}
-          />          
-        
+          />
+
           <SiteSearchListing
             loading={loading}
             error={error}
             filter={filter || 'cms'}
             results={results[filter] || results[filterPriorityList[0]]}
           />
-          
         </>
       }
     />
