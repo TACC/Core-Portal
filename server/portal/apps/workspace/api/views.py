@@ -10,15 +10,15 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.urls import reverse
+# from django.urls import reverse  # TODOv3
 from django.db.models.functions import Coalesce
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from portal.apps.workspace.managers.user_applications import UserApplicationsManager
-from portal.utils.translations import url_parse_inputs
+# from portal.apps.workspace.managers.user_applications import UserApplicationsManager  # TODOv3
+# from portal.utils.translations import url_parse_inputs  # TODOv3
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
@@ -153,7 +153,7 @@ class JobsView(BaseApiView):
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
 
-        if job_id and job_action: # TODOv3 cancel/resubmit
+        if job_id and job_action:  # TODOv3 cancel/resubmit
             # resubmit job
             if job_action == 'resubmit':
                 METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
@@ -179,7 +179,7 @@ class JobsView(BaseApiView):
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
-            if True: # TODOv3 ignoring archiving for the moment
+            if True:  # TODOv3 ignoring archiving for the moment
                 if job_post.get('archiveSystemDir'):
                     del job_post['archiveSystemDir']
                 if job_post.get('archiveOnAppError'):
@@ -229,18 +229,18 @@ class JobsView(BaseApiView):
 
             # url encode inputs
             # TODOv3 update for v3
-            #if job_post['inputs']:
-            #    job_post = url_parse_inputs(job_post)
+            # if job_post['inputs']:
+            #     job_post = url_parse_inputs(job_post)
 
             # TODOv3 potentially remove UserApplicationsManager but need to check if execution system needs keys
             # Get or create application based on allocation and execution system
-            #apps_mgr = UserApplicationsManager(request.user)
-            #app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
+            # apps_mgr = UserApplicationsManager(request.user)
+            # app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
             # TODOv3 update to determine if keys need to be pushed (as not using above code or replacement for abouve
             # code: UserApplicationsManager get_or_create_app)
-            #if app.exec_sys:
-            #    return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
+            # if app.exec_sys:
+            #     return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
             # TODOv3
             if 'schedulerOptions' not in job_post['parameterSet']:
@@ -248,31 +248,31 @@ class JobsView(BaseApiView):
             job_post['parameterSet']['schedulerOptions'].append({"name": "Allocation",
                                                                  "description": "The allocation associated with this job execution",
                                                                  "include": True,
-                                                                 "arg": f"-A {job_post['allocation']}" })
+                                                                 "arg": f"-A {job_post['allocation']}"})
             del job_post['allocation']
 
             # TODOv3 Webhooks/notifications
-            # if settings.DEBUG:
-            #    wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-            #    jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
-            #else:
-            #    wh_base_url = request.build_absolute_uri('/webhooks/')
-            #    jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            #  if settings.DEBUG:
+            #     wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+            #     jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            # else:
+            #     wh_base_url = request.build_absolute_uri('/webhooks/')
+            #     jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
             # TODOv3 webhook for wrapper (determine where this will go in the job (envVariables, right?)
-            #job_post['parameters']['_webhook_base_url'] = wh_base_url
+            # job_post['parameters']['_webhook_base_url'] = wh_base_url
 
             # TODOv3 Webhooks/notifications continues
-            #job_post['notifications'] = [
-            #    {'url': jobs_wh_url,
-            #     'event': e}
-            #    for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+            # job_post['notifications'] = [
+            #     {'url': jobs_wh_url,
+            #      'event': e}
+            #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             # TODOv3 do we have any? can drop right?
             # Remove any params from job_post that are not in appDef
-            #job_post['parameters'] = {param: job_post['parameters'][param]
-            #                          for param in job_post['parameters']
-            #                          if param in [p['id'] for p in app.parameters]}
+            # job_post['parameters'] = {param: job_post['parameters'][param]
+            #                           for param in job_post['parameters']
+            #                           if param in [p['id'] for p in app.parameters]}
             logger.info(f"submitting this job: f{job_post}")
             response = agave.jobs.submitJob(**job_post)
             job_response = vars(response)
