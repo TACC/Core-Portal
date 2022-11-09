@@ -1,15 +1,15 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FeedbackButton } from '../FeedbackForm';
-import * as ROUTES from '../../constants/routes';
-import HistoryBadge from '../History/HistoryBadge';
-import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
-import styles from './Sidebar.module.css';
-import { Sidebar as CommonSidebar } from '_common';
+import { FeedbackButton } from '../../FeedbackForm';
+import * as ROUTES from '../../../constants/routes';
+import HistoryBadge from '../../History/HistoryBadge';
+import './WorkbenchSidebar.global.scss'; // XXX: Global stylesheet imported in component
+import styles from './WorkbenchSidebar.module.css';
+import { Sidebar } from '_common';
 
 /** A navigation list for the application */
-const Sidebar = ({ disabled, showUIPatterns, loading }) => {
+const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
@@ -86,7 +86,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
     },
   ];
   return (
-    <CommonSidebar
+    <Sidebar
       sidebarItems={sidebarItems}
       addItemsAfter={addItems}
       loading={loading}
@@ -95,4 +95,4 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   );
 };
 
-export default Sidebar;
+export default WorkbenchSidebar;

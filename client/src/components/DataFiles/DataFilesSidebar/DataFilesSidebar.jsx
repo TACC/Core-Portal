@@ -11,7 +11,7 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import styles from './DataFilesSidebar.module.scss';
-import { Sidebar as CommonSidebar } from '_common';
+import { Sidebar } from '_common';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
@@ -137,7 +137,7 @@ const DataFilesSidebar = ({ readOnly }) => {
 
   return (
     <div className={styles['root']}>
-      <CommonSidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
+      <Sidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
     </div>
   );
 };

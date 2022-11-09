@@ -17,7 +17,7 @@ import {
   AllocationsTeamViewModal,
 } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
-import { Sidebar as CommonSidebar } from '_common';
+import { Sidebar } from '_common';
 
 import './Allocations.global.css';
 
@@ -73,7 +73,7 @@ export const Layout = ({ page }) => {
       headerActions={<Actions page={page} />}
       content={
         <>
-          <CommonSidebar sidebarItems={sidebarItems} />
+          <Sidebar sidebarItems={sidebarItems} />
           {loading ? (
             <LoadingSpinner className="allocations-loading-icon" />
           ) : (

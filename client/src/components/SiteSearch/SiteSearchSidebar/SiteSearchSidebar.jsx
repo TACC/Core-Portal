@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { useLocation, NavLink as RRNavLink } from 'react-router-dom';
 import { Icon, Pill } from '_common';
 import './SiteSearchSidebar.scss';
-import { Sidebar as CommonSidebar } from '_common';
+import { Sidebar } from '_common';
 
 export const SiteSearchSidebarItem = ({
   to,
@@ -74,7 +74,7 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
 
   return (
     <>
-      <CommonSidebar sidebarItems={sidebarItems} loading={searching} />
+      <Sidebar sidebarItems={sidebarItems} loading={searching} />
     </>
   );
 };

@@ -15,7 +15,7 @@ import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
-import { Sidebar as CommonSidebar } from '_common';
+import { Sidebar } from '_common';
 
 import './History.global.css';
 import styles from './History.module.scss';
@@ -47,7 +47,7 @@ const Actions = () => {
   );
 };
 
-const Sidebar = () => {
+const HistorySidebar = () => {
   const { unreadJobs } = useSelector((state) => state.notifications.list);
 
   const sidebarItems = [
@@ -61,7 +61,7 @@ const Sidebar = () => {
     },
   ];
 
-  return <CommonSidebar sidebarItems={sidebarItems} />;
+  return <Sidebar sidebarItems={sidebarItems} />;
 };
 
 export const Routes = () => {
@@ -152,7 +152,7 @@ const Layout = () => {
       headerActions={<Actions />}
       content={
         <>
-          <Sidebar />
+          <HistorySidebar />
           <Routes />
         </>
       }
