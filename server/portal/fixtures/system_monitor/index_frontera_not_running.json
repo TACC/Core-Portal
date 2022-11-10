@@ -10,7 +10,7 @@
     "queues_down": false,
     "load": 0.5865,
     "running": 13,
-    "waiting": 6,
+    "queued": 6,
     "in_maintenance": false,
     "next_maintenance": null,
     "reservations": []
@@ -26,7 +26,7 @@
     "queues_down": false,
     "load": 0.5965,
     "running": 412,
-    "waiting": 437,
+    "queued": 437,
     "in_maintenance": false,
     "next_maintenance": null,
     "reservations": [
@@ -48,7 +48,7 @@
     "queues_down": false,
     "load": 0.2,
     "running": 6,
-    "waiting": 0,
+    "queued": 0,
     "in_maintenance": false,
     "next_maintenance": null,
     "reservations": []
@@ -64,7 +64,7 @@
     "queues_down": true,
     "load": 0.971,
     "running": 365,
-    "waiting": 247,
+    "queued": 247,
     "in_maintenance": true,
     "next_maintenance": null,
     "reservations": [
@@ -96,7 +96,7 @@
     "queues_down": false,
     "load": 0.6007,
     "running": 161,
-    "waiting": 38,
+    "queued": 38,
     "in_maintenance": false,
     "next_maintenance": null,
     "reservations": []

@@ -6,14 +6,8 @@ from django.http import Http404
 
 
 @pytest.fixture
-def system_status_old(scope="module"):
+def system_status(scope="module"):
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index.json')))
-
-
-@pytest.fixture
-def system_status(system_status_old, scope="module"):
-    sys_status = system_status_old.copy()
-    yield sys_status
 
 
 @pytest.fixture
@@ -30,9 +24,8 @@ def test_system_monitor_get(client, settings, requests_mock, system_status):
     system = response.json()[0]
     assert system['display_name'] == 'Frontera'
     assert system['hostname'] == 'frontera.tacc.utexas.edu'
-    assert system['load'] == 97
-    assert system['running'] == 365
-    assert system['waiting'] == 247
+    assert system['load_percentage'] == 97
+    assert system['jobs'] == {'running': 365, 'queued': 247}
     assert system['is_operational']
 
 
@@ -45,9 +38,7 @@ def test_system_monitor_when_missing_system(client, settings, requests_mock, sys
     system = response.json()[0]
     assert system['display_name'] == 'Frontera'
     assert not system['is_operational']
-    assert system['load'] == 0
-    assert system['running'] == 0
-    assert system['waiting'] == 0
+    assert system['jobs'] == {'running': 0, 'queued': 0}
 
 
 @pytest.mark.django_db()

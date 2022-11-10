@@ -10,12 +10,11 @@ logger = logging.getLogger(__name__)
 
 def _get_unoperational_system(display_name):
     return {'display_name': display_name,
+            'hostname': display_name.lower() + '.tacc.utexas.edu',
             'is_operational': False,
-            'load': 0,
-            'running': 0,
-            'waiting': 0,
+            'load_percentage': 0,
+            'jobs': {'running': 0, 'queued': 0},
             }
-
 
 class SysmonDataView(BaseApiView):
 
@@ -46,14 +45,16 @@ class System:
         try:
             self.display_name = system_dict.get('display_name')
             self.hostname = system_dict.get('hostname')
-            self.resource_type = 'compute'
-            self.running = system_dict.get('running')
-            self.waiting = system_dict.get('waiting')
-            self.load = system_dict.get('load')
-            if isinstance(self.load, (float, int)):
-                self.load = int((self.load * 100))
+            self.resource_type = system_dict.get("system_type")
+            self.load_percentage = system_dict.get('load')
+            if isinstance(self.load_percentage, (float, int)):
+                self.load_percentage= int((self.load_percentage * 100))
             else:
-                self.load = 0
+                self.load_percentage = 0
+            self.jobs = {
+                'running': system_dict.get('running'),
+                'queued': system_dict.get('waiting'),
+            }
             self.online = system_dict.get('online')
             self.reachable = system_dict.get('reachable')
             self.queues_down = system_dict.get('queues_down')
@@ -63,11 +64,10 @@ class System:
             logger.error(exc)
 
     def is_up(self):
-        if self.resource_type == 'compute':
-            if (not self.online) or (not self.reachable) or self.queues_down or self.in_maintenance:
-                return False
-            else:
-                return True
+        if (not self.online) or (not self.reachable) or self.queues_down or self.in_maintenance:
+            return False
+        else:
+            return True
 
     def to_dict(self):
         r = json.dumps(self.__dict__)
