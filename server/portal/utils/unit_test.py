@@ -3,6 +3,7 @@ from mock import patch, Mock
 from django.contrib.auth import get_user_model
 from portal.utils.translations import url_parse_inputs
 from portal.utils.jwt_auth import login_user_agave_jwt
+from datetime import timedelta
 
 
 class TestTranslations(TestCase):
@@ -145,11 +146,13 @@ class TestAgaveJWTAuth(TestCase):
         def refresh_token(*args, **kwargs):
             user.tapis_oauth.expires_in = 13253919840009999
             user.tapis_oauth.save()
-            return user.tapis_oauth.refresh_token
+            return user.tapis_oauth.refresh_token # todo
 
-        mock_client.token.refresh.side_effect = refresh_token
+        mock_client.access_token.access_token = "XYZXYZXYZ",
+        mock_client.access_token.expires_in.return_value = timedelta(seconds=2000)
 
         mock_request = Mock()
         login_user_agave_jwt(mock_request)
-        mock_client.token.refresh.assert_called_once_with()
+        user = get_user_model().objects.get(username='wma_prtl')
+        mock_client.refresh_tokens.assert_called_once_with()
         self.assertFalse(user.tapis_oauth.expired)
