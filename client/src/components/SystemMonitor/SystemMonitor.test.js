@@ -9,21 +9,19 @@ const list = [
   {
     display_name: 'Frontera',
     is_operational: true,
-    running: 1,
-    queued: 2,
+    jobs: { running: 1, queued: 2 },
     load_percentage: 100,
   },
   {
     display_name: 'Lonestar',
     is_operational: false,
-    queued: 1,
+    jobs: { running: 1, queued: 1 },
     load_percentage: 100,
   },
   {
     display_name: 'Stampede',
     is_operational: true,
-    running: 1,
-    queued: 2,
+    jobs: { running: 1, queued: 2 },
     load_percentage: 100,
   },
 ];
