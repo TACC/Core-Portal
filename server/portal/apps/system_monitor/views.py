@@ -49,7 +49,7 @@ class System:
             self.resource_type = system_dict.get("system_type")
             self.load_percentage = system_dict.get('load')
             if isinstance(self.load_percentage, (float, int)):
-                self.load_percentage = int((self.load_percentage * 100))
+                self.load_percentage = int(self.load_percentage * 100)
             else:
                 self.load_percentage = 0
             self.jobs = {
