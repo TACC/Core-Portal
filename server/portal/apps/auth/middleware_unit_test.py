@@ -30,9 +30,8 @@ def authenticated_user_with_expired_token(authenticated_user):
 
 @pytest.fixture
 def authenticated_user_with_valid_token(authenticated_user):
-    token = authenticated_user.tapis_oauth
-    token.created = time.time()
-    token.save()
+    authenticated_user.tapis_oauth.created = time.time()
+    authenticated_user.tapis_oauth.save()
     yield authenticated_user
 
 

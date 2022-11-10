@@ -143,11 +143,6 @@ class TestAgaveJWTAuth(TestCase):
         user.tapis_oauth.save()
         self.assertTrue(user.tapis_oauth.expired)
 
-        def refresh_token(*args, **kwargs):
-            user.tapis_oauth.expires_in = 13253919840009999
-            user.tapis_oauth.save()
-            return user.tapis_oauth.refresh_token # todo
-
         mock_client.access_token.access_token = "XYZXYZXYZ",
         mock_client.access_token.expires_in.return_value = timedelta(seconds=2000)
 
