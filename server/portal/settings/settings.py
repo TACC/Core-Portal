@@ -643,7 +643,6 @@ SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_
 
 SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
-
 """
 SETTINGS: EXPORTS
 """
