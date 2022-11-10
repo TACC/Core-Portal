@@ -235,7 +235,7 @@ class JobsView(BaseApiView):
             # TODOv3 potentially remove UserApplicationsManager but need to check if execution system needs keys
             # Get or create application based on allocation and execution system
             apps_mgr = UserApplicationsManager(request.user)
-            print.debug(apps_mgr)  # TODOv3 testing workaround
+            print(apps_mgr)  # TODOv3 testing workaround
             # app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
             # TODOv3 update to determine if keys need to be pushed (as not using above code or replacement for abouve
