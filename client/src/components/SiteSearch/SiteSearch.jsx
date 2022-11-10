@@ -5,7 +5,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SiteSearchSidebar from './SiteSearchSidebar/SiteSearchSidebar';
 import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
-import './SiteSearch.global.css';
+import styles from './SiteSearch.module.css';
 
 import { Section } from '_common';
 
@@ -46,7 +46,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
 
   return (
     <Section
-      className="site-search-section"
+      className={styles['root']}
       content={
         <>
           <SiteSearchSidebar

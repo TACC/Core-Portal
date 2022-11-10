@@ -67,7 +67,7 @@ const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
       label: 'Community Data',
       iconName: 'folder',
       disabled: false,
-      hidden: !authenticated && !schemes.includes('community'),
+      hidden: !authenticated || !schemes.includes('community'),
       children: <SiteSearchSidebarItemPill count={results.community.count} />,
     },
   ];

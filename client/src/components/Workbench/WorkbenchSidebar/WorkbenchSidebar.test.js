@@ -3,9 +3,9 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
-import { initialState as workbench } from 'redux/reducers/workbench.reducers';
-import { initialState as notifications } from 'redux/reducers/notifications.reducers';
-import { initialTicketCreateState as ticketCreate } from 'redux/reducers/tickets.reducers';
+import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
+import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
 import WorkbenchSidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
 
