@@ -16,6 +16,7 @@ def _get_unoperational_system(display_name):
             'jobs': {'running': 0, 'queued': 0},
             }
 
+
 class SysmonDataView(BaseApiView):
 
     def get(self, request):
@@ -48,7 +49,7 @@ class System:
             self.resource_type = system_dict.get("system_type")
             self.load_percentage = system_dict.get('load')
             if isinstance(self.load_percentage, (float, int)):
-                self.load_percentage= int((self.load_percentage * 100))
+                self.load_percentage = int((self.load_percentage * 100))
             else:
                 self.load_percentage = 0
             self.jobs = {
@@ -64,10 +65,7 @@ class System:
             logger.error(exc)
 
     def is_up(self):
-        if (not self.online) or (not self.reachable) or self.queues_down or self.in_maintenance:
-            return False
-        else:
-            return True
+        return self.online and self.reachable and not (self.queues_down or self.in_maintenance)
 
     def to_dict(self):
         r = json.dumps(self.__dict__)
