@@ -1,7 +1,8 @@
 import pytest
 from tapipy.errors import BaseTapyException
 import time
-
+from datetime import timedelta
+from portal.apps.auth.models import TapisOAuthToken
 
 ROUTE = '/workbench/account/'
 
@@ -44,7 +45,8 @@ def logout_mock(mocker):
 @pytest.fixture()
 def tapis_client_mock(mocker):
     mock_client = mocker.patch('portal.apps.auth.models.TapisOAuthToken.client')
-    mock_client.refresh_tokens.return_value = {"Todo": True}
+    mock_client.access_token.access_token = "XYZXYZXYZ",
+    mock_client.access_token.expires_in.return_value = timedelta(seconds=2000)
     yield mock_client
 
 
@@ -58,6 +60,13 @@ def test_expired_user(client, authenticated_user_with_expired_token, tapis_clien
     response = client.get(ROUTE)
     assert response.status_code == 200
     assert tapis_client_mock.refresh_tokens.called, 'method should be called'
+
+    # check that token is updated in model
+    tapis_oauth = TapisOAuthToken.objects.filter(user=authenticated_user_with_expired_token).select_for_update().get()
+    assert not tapis_oauth.expired
+    assert authenticated_user_with_expired_token.tapis_oauth.created != tapis_oauth.created
+    assert authenticated_user_with_expired_token.tapis_oauth.access_token != tapis_oauth.access_token
+    assert authenticated_user_with_expired_token.tapis_oauth.refresh_token == tapis_oauth.refresh_token
 
 
 def test_expired_user_but_refresh_error(client, authenticated_user_with_expired_token, tapis_client_mock, logout_mock):
