@@ -1,7 +1,5 @@
 import { cloneDeep } from 'lodash';
-import {
-  helloWorldAppFixture,
-} from './fixtures/AppForm.app.fixture';
+import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
 import {
   getNodeCountValidation,
   getQueueValidation,
@@ -23,7 +21,7 @@ describe('AppFormUtils', () => {
       ...helloWorldAppFixture.definition,
       jobAttributes: {
         ...helloWorldAppFixture.definition.jobAttributes,
-        isMpi: true,  // TODOv3 check if this can be considered PARALLEL
+        isMpi: true, // TODOv3 check if this can be considered PARALLEL
       },
     },
   };
@@ -72,7 +70,9 @@ describe('AppFormUtils', () => {
     ).toEqual(true);
      */
     expect(
-      getQueueValidation(normalQueue, helloWorldAppFixture).isValidSync('normal')
+      getQueueValidation(normalQueue, helloWorldAppFixture).isValidSync(
+        'normal'
+      )
     ).toEqual(false);
   });
 

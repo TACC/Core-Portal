@@ -1,192 +1,190 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 export const helloWorldAppFixture = {
-  "definition": {
-    "sharedAppCtx": true,
-    "tenant": "a2cps",
-    "id": "hello-world",
-    "version": "0.0.1",
-    "description": "Sleeps for 3m. Then prints a configurable Hello World greeting to a target file.",
-    "owner": "wma_prtl",
-    "enabled": true,
-    "runtime": "SINGULARITY",
-    "runtimeVersion": "3.7.2",
-    "runtimeOptions": [
-      "SINGULARITY_RUN"
-    ],
-    "containerImage": "library://rstijerina/taccapps/hello-world:latest",
-    "jobType": "BATCH",
-    "maxJobs": 2147483647,
-    "maxJobsPerUser": 2147483647,
-    "strictFileInputs": true,
-    "jobAttributes": {
-      "description": "Hello world from ${JobOwner}",
-      "dynamicExecSystem": false,
-      "execSystemConstraints": null,
-      "execSystemId": "frontera",
-      "execSystemExecDir": "${JobWorkingDir}/jobs/${JobUUID}",
-      "execSystemInputDir": "${JobWorkingDir}/jobs/${JobUUID}",
-      "execSystemOutputDir": "${JobWorkingDir}/jobs/${JobUUID}/output",
-      "execSystemLogicalQueue": "development",
-      "archiveSystemId": "cloud.corral.community",
-      "archiveSystemDir": "HOST_EVAL($WORK)/archive/${JobUUID}",
-      "archiveOnAppError": true,
-      "isMpi": false,
-      "mpiCmd": null,
-      "cmdPrefix": null,
-      "parameterSet": {
-        "appArgs": [
+  definition: {
+    sharedAppCtx: true,
+    tenant: 'a2cps',
+    id: 'hello-world',
+    version: '0.0.1',
+    description:
+      'Sleeps for 3m. Then prints a configurable Hello World greeting to a target file.',
+    owner: 'wma_prtl',
+    enabled: true,
+    runtime: 'SINGULARITY',
+    runtimeVersion: '3.7.2',
+    runtimeOptions: ['SINGULARITY_RUN'],
+    containerImage: 'library://rstijerina/taccapps/hello-world:latest',
+    jobType: 'BATCH',
+    maxJobs: 2147483647,
+    maxJobsPerUser: 2147483647,
+    strictFileInputs: true,
+    jobAttributes: {
+      description: 'Hello world from ${JobOwner}',
+      dynamicExecSystem: false,
+      execSystemConstraints: null,
+      execSystemId: 'frontera',
+      execSystemExecDir: '${JobWorkingDir}/jobs/${JobUUID}',
+      execSystemInputDir: '${JobWorkingDir}/jobs/${JobUUID}',
+      execSystemOutputDir: '${JobWorkingDir}/jobs/${JobUUID}/output',
+      execSystemLogicalQueue: 'development',
+      archiveSystemId: 'cloud.corral.community',
+      archiveSystemDir: 'HOST_EVAL($WORK)/archive/${JobUUID}',
+      archiveOnAppError: true,
+      isMpi: false,
+      mpiCmd: null,
+      cmdPrefix: null,
+      parameterSet: {
+        appArgs: [
           {
-            "arg": "hello",
-            "name": "Greeting",
-            "description": "Choose a greeting to give to your target",
-            "inputMode": "REQUIRED",
-            "notes": {
-              "visible": true,
-              "enum_values": [
+            arg: 'hello',
+            name: 'Greeting',
+            description: 'Choose a greeting to give to your target',
+            inputMode: 'REQUIRED',
+            notes: {
+              visible: true,
+              enum_values: [
                 {
-                  "hello": "Hello"
+                  hello: 'Hello',
                 },
                 {
-                  "hola": "Hola"
+                  hola: 'Hola',
                 },
                 {
-                  "wassup": "Wassup"
-                }
-              ]
-            }
+                  wassup: 'Wassup',
+                },
+              ],
+            },
           },
           {
-            "arg": "world",
-            "name": "Target",
-            "description": "Whom to address your greeting",
-            "inputMode": "REQUIRED",
-            "notes": {}
-          }
+            arg: 'world',
+            name: 'Target',
+            description: 'Whom to address your greeting',
+            inputMode: 'REQUIRED',
+            notes: {},
+          },
         ],
-        "containerArgs": [],
-        "schedulerOptions": [
+        containerArgs: [],
+        schedulerOptions: [
           {
-            "arg": "--tapis-profile tacc",
-            "name": "tacc Scheduler Profile",
-            "description": "Scheduler profile for HPC clusters at TACC",
-            "inputMode": "FIXED",
-            "notes": {}
-          }
+            arg: '--tapis-profile tacc',
+            name: 'tacc Scheduler Profile',
+            description: 'Scheduler profile for HPC clusters at TACC',
+            inputMode: 'FIXED',
+            notes: {},
+          },
         ],
-        "envVariables": [],
-        "archiveFilter": {
-          "includes": [],
-          "excludes": [],
-          "includeLaunchFiles": true
-        }
+        envVariables: [],
+        archiveFilter: {
+          includes: [],
+          excludes: [],
+          includeLaunchFiles: true,
+        },
       },
-      "fileInputs": [
+      fileInputs: [
         {
-          "name": "File to modify",
-          "description": "The full greeting will be appended to the target .txt file",
-          "inputMode": "OPTIONAL",
-          "autoMountLocal": true,
-          "sourceUrl": null,
-          "targetPath": "in.txt"
-        }
+          name: 'File to modify',
+          description:
+            'The full greeting will be appended to the target .txt file',
+          inputMode: 'OPTIONAL',
+          autoMountLocal: true,
+          sourceUrl: null,
+          targetPath: 'in.txt',
+        },
       ],
-      "fileInputArrays": [],
-      "nodeCount": 1,
-      "coresPerNode": 1,
-      "memoryMB": 100,
-      "maxMinutes": 10,
-      "subscriptions": [],
-      "tags": []
+      fileInputArrays: [],
+      nodeCount: 1,
+      coresPerNode: 1,
+      memoryMB: 100,
+      maxMinutes: 10,
+      subscriptions: [],
+      tags: [],
     },
-    "tags": [],
-    "notes": {
-      "label": "Hello World (Sleep 3m)"
+    tags: [],
+    notes: {
+      label: 'Hello World (Sleep 3m)',
     },
-    "uuid": "408dcb15-8343-4b11-acf5-a3bd1cb07957",
-    "deleted": false,
-    "created": "2022-09-22T22:18:45.638022Z",
-    "updated": "2022-11-10T20:54:23.173360Z"
+    uuid: '408dcb15-8343-4b11-acf5-a3bd1cb07957',
+    deleted: false,
+    created: '2022-09-22T22:18:45.638022Z',
+    updated: '2022-11-10T20:54:23.173360Z',
   },
-  "exec_sys": {
-    "tenant": "a2cps",
-    "id": "frontera",
-    "description": "System for running jobs on the Frontera HPC system.",
-    "systemType": "LINUX",
-    "owner": "wma_prtl",
-    "host": "frontera.tacc.utexas.edu",
-    "enabled": true,
-    "effectiveUserId": "nathanf",
-    "defaultAuthnMethod": "PKI_KEYS",
-    "authnCredential": null,
-    "bucketName": null,
-    "rootDir": "/",
-    "port": 22,
-    "useProxy": false,
-    "proxyHost": null,
-    "proxyPort": -1,
-    "dtnSystemId": null,
-    "dtnMountPoint": null,
-    "dtnMountSourcePath": null,
-    "isDtn": false,
-    "canExec": true,
-    "canRunBatch": true,
-    "mpiCmd": null,
-    "jobRuntimes": [
+  exec_sys: {
+    tenant: 'a2cps',
+    id: 'frontera',
+    description: 'System for running jobs on the Frontera HPC system.',
+    systemType: 'LINUX',
+    owner: 'wma_prtl',
+    host: 'frontera.tacc.utexas.edu',
+    enabled: true,
+    effectiveUserId: 'nathanf',
+    defaultAuthnMethod: 'PKI_KEYS',
+    authnCredential: null,
+    bucketName: null,
+    rootDir: '/',
+    port: 22,
+    useProxy: false,
+    proxyHost: null,
+    proxyPort: -1,
+    dtnSystemId: null,
+    dtnMountPoint: null,
+    dtnMountSourcePath: null,
+    isDtn: false,
+    canExec: true,
+    canRunBatch: true,
+    mpiCmd: null,
+    jobRuntimes: [
       {
-        "runtimeType": "SINGULARITY",
-        "version": null
-      }
+        runtimeType: 'SINGULARITY',
+        version: null,
+      },
     ],
-    "jobWorkingDir": "HOST_EVAL($SCRATCH)/tapis/${JobUUID}",
-    "jobEnvVariables": [],
-    "jobMaxJobs": 2147483647,
-    "jobMaxJobsPerUser": 2147483647,
-    "batchScheduler": "SLURM",
-    "batchLogicalQueues": [
+    jobWorkingDir: 'HOST_EVAL($SCRATCH)/tapis/${JobUUID}',
+    jobEnvVariables: [],
+    jobMaxJobs: 2147483647,
+    jobMaxJobsPerUser: 2147483647,
+    batchScheduler: 'SLURM',
+    batchLogicalQueues: [
       {
-        "name": "normal",
-        "hpcQueueName": "normal",
-        "maxJobs": -1,
-        "maxJobsPerUser": 100,
-        "minNodeCount": 3,
-        "maxNodeCount": 512,
-        "minCoresPerNode": 1,
-        "maxCoresPerNode": 56,
-        "minMemoryMB": 1,
-        "maxMemoryMB": 192000,
-        "minMinutes": 1,
-        "maxMinutes": 2880
+        name: 'normal',
+        hpcQueueName: 'normal',
+        maxJobs: -1,
+        maxJobsPerUser: 100,
+        minNodeCount: 3,
+        maxNodeCount: 512,
+        minCoresPerNode: 1,
+        maxCoresPerNode: 56,
+        minMemoryMB: 1,
+        maxMemoryMB: 192000,
+        minMinutes: 1,
+        maxMinutes: 2880,
       },
       {
-        "name": "development",
-        "hpcQueueName": "development",
-        "maxJobs": -1,
-        "maxJobsPerUser": 1,
-        "minNodeCount": 1,
-        "maxNodeCount": 40,
-        "minCoresPerNode": 1,
-        "maxCoresPerNode": 56,
-        "minMemoryMB": 1,
-        "maxMemoryMB": 192000,
-        "minMinutes": 1,
-        "maxMinutes": 120
-      }
+        name: 'development',
+        hpcQueueName: 'development',
+        maxJobs: -1,
+        maxJobsPerUser: 1,
+        minNodeCount: 1,
+        maxNodeCount: 40,
+        minCoresPerNode: 1,
+        maxCoresPerNode: 56,
+        minMemoryMB: 1,
+        maxMemoryMB: 192000,
+        minMinutes: 1,
+        maxMinutes: 120,
+      },
     ],
-    "batchDefaultLogicalQueue": "normal",
-    "batchSchedulerProfile": "tacc",
-    "jobCapabilities": [],
-    "tags": [],
-    "notes": {},
-    "importRefId": null,
-    "uuid": "9452b7a6-c341-4da6-b559-74acc67a2a6c",
-    "deleted": false,
-    "created": "2022-08-23T22:32:16.161269Z",
-    "updated": "2022-09-26T19:12:21.863620Z"
+    batchDefaultLogicalQueue: 'normal',
+    batchSchedulerProfile: 'tacc',
+    jobCapabilities: [],
+    tags: [],
+    notes: {},
+    importRefId: null,
+    uuid: '9452b7a6-c341-4da6-b559-74acc67a2a6c',
+    deleted: false,
+    created: '2022-08-23T22:32:16.161269Z',
+    updated: '2022-09-26T19:12:21.863620Z',
   },
-  "license": {
-    "type": null
-  }
+  license: {
+    type: null,
+  },
 };
-
-

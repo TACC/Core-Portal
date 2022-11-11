@@ -135,9 +135,11 @@ export const getQueueValidation = (queue, app) => {
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) => {
         return !(
-          getSystemName(app.exec_sys.host) === 'Frontera' &&
-          queue.name === 'normal' &&
-          !app.definition.jobAttributes.isMpi // TODOv3 consider SERIAL/PARALLEL jobs with v3
+          (
+            getSystemName(app.exec_sys.host) === 'Frontera' &&
+            queue.name === 'normal' &&
+            !app.definition.jobAttributes.isMpi
+          ) // TODOv3 consider SERIAL/PARALLEL jobs with v3
         );
       }
     );
@@ -186,7 +188,8 @@ export const updateValuesForQueue = (app, values) => {
       .map((queue) => queue.maxMinutes)
       .sort()
       .at(-1);
-    if (Number.isInteger(values.maxMinutes) &&
+    if (
+      Number.isInteger(values.maxMinutes) &&
       values.maxMinutes <= longestMaxRequestedTime &&
       values.maxMinutes > queue.maxMinutes
     ) {
