@@ -27,7 +27,6 @@ const Searchbar = ({
     location.search
   );
 
-
   let displayName;
   if (!sectionName) {
     displayName = useSystemDisplayName({ system, scheme });
