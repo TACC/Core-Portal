@@ -134,11 +134,10 @@ export const getQueueValidation = (queue, app) => {
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) => {
-        return true; // TODOv3 consider SERIAL jobs with v3
         return !(
           getSystemName(app.exec_sys.host) === 'Frontera' &&
           queue.name === 'normal' &&
-          app.definition.parallelism === 'SERIAL'
+          !app.definition.jobAttributes.isMpi // TODOv3 consider SERIAL/PARALLEL jobs with v3
         );
       }
     );
