@@ -309,9 +309,9 @@ class JobHistoryView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
+        # TODOv3: Ensure `listType` includes both private and shared apps
         tapis = user.tapis_oauth.client
-        # TODOv3: make sure to exclude public apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="OWNED")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -322,7 +322,9 @@ class AppsTrayView(BaseApiView):
         return my_apps
 
     def getPublicApps(self, user):
-        # TODOv3: make tapipy request for public apps to compare against apps in AppTrayEntry
+        # TODOv3: Ensure `listType` only includes PUBLIC apps
+        tapis = user.tapis_oauth.client
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
@@ -331,6 +333,8 @@ class AppsTrayView(BaseApiView):
             # Retrieve all apps known to the portal in that directory
             tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+
+            tapis_apps = [x for x in tapis_apps if any(x['appId'] == y.id for y in apps_listing)]
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
