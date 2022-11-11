@@ -75,12 +75,13 @@ class SystemAccessStepV3(AbstractStep):
             self.fail(f"Failed to push credentials to system: {system_id}")
 
     def process(self):
-        self.log("Processing system access for user")
+        self.log(f"Processing system access for user {self.user.username}")
         for system in self.settings.get('tapis_systems') or []:
             try:
                 self.check_system(system)
                 self.log(f"Access already granted for system: {system}")
             except BaseTapyException:
+                self.log(f"Granting access for system: {system}")
                 self.generate_and_push_credentials(system)
 
         if self.state != SetupState.FAILED:
