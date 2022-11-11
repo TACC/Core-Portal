@@ -125,6 +125,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
       <Searchbar
         api="tapis"
         scheme={filter}
+        sectionName="Site"
         system=""
         siteSearch
         filterTypes={filter === 'cms' ? [] : fileTypes}

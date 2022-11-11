@@ -121,7 +121,7 @@ const DataFilesProjectsList = ({ modal }) => {
         <Searchbar
           api="tapis"
           scheme="projects"
-          system=""
+          sectionName="Workspace"
           resultCount={projects.length}
           infiniteScroll
         />

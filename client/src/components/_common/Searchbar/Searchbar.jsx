@@ -16,6 +16,7 @@ const Searchbar = ({
   infiniteScroll,
   className,
   siteSearch,
+  sectionName,
   disabled,
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
@@ -26,18 +27,14 @@ const Searchbar = ({
     location.search
   );
 
-  const displayName = useSystemDisplayName({ system, scheme });
-  let sectionName;
 
-  if (siteSearch) {
-    sectionName = 'Site';
-  } else if (scheme === 'projects') {
-    sectionName = 'Workspace';
-  } else if (scheme === 'jobs') {
-    sectionName = 'Jobs';
-  } else {
+  let displayName;
+  if (!sectionName) {
+    displayName = useSystemDisplayName({ system, scheme });
     sectionName = displayName;
   }
+
+  const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
 
   const applyFilter = (newFilter) => {
     const prevQuery = queryString.parse(location.search);
@@ -73,7 +70,7 @@ const Searchbar = ({
 
   const onClear = (e) => {
     e.preventDefault();
-    if (filterType && filterType !== 'All Types') {
+    if (filterType && filterType !== allFilterTypesValue) {
       applyFilter(undefined);
     }
     setQuery('');
@@ -129,7 +126,7 @@ const Searchbar = ({
             value={filterType ?? ''}
             disabled={disabled}
           >
-            <option value="">All Types</option>
+            <option value="">{allFilterTypesValue}</option>
             {filterTypes.map((item) => (
               <option key={`fileTypeFilter${item}`}>{item}</option>
             ))}
@@ -137,7 +134,7 @@ const Searchbar = ({
         </div>
       )}
       {((hasQuery && !siteSearch) ||
-        (filterType && filterType !== 'All Types')) && (
+        (filterType && filterType !== allFilterTypesValue)) && (
         <div
           aria-label="Summary of Search Results"
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
@@ -147,7 +144,7 @@ const Searchbar = ({
         </div>
       )}
       {((hasQuery && !siteSearch) ||
-        (filterType && filterType !== 'All Types' && filterTypes)) && (
+        (filterType && filterType !== allFilterTypesValue && filterTypes)) && (
         <Button attr="reset" type="link" onClick={onClear}>
           <span data-testid="clear-button">
             Back to All {dataType ? dataType : 'Results'}
@@ -167,6 +164,7 @@ Searchbar.propTypes = {
   filterTypes: PropTypes.arrayOf(PropTypes.string),
   infiniteScroll: PropTypes.bool,
   dataType: PropTypes.string.isRequired,
+  sectionName: PropTypes.string,
   /** Additional className(s) for the root element */
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
