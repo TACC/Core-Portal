@@ -45,8 +45,8 @@ describe.skip('AppFormUtils', () => {
   });
 
   it('handles node count validation on non-Frontera HPCs', () => {
-    const stampede2App = cloneDeep(namdAppFixture);
-    stampede2App.exec_sys.login.host = 'stampede2.tacc.utexas.edu';
+    const stampede2App = cloneDeep(parallelFronteraApp);
+    stampede2App.exec_sys.host = 'stampede2.tacc.utexas.edu';
     expect(
       getNodeCountValidation(normalQueue, stampede2App).isValidSync(1)
     ).toEqual(true);

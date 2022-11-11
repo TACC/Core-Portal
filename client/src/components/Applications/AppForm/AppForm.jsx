@@ -285,7 +285,7 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          app.exec_sys.login.host
+          app.exec_sys.host
         )} to run this application.`,
       };
       missingAllocation = true;
