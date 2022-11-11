@@ -156,21 +156,19 @@ export const getQueueValidation = (queue, app) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const updatedValues = { ...values };
-  // TODO v3 rework this dependent on new paramters (i.e. maxMinutes, maxNodeCount, minCorePerNode */
-  return updatedValues;
 
-  const queue = app.batchLogicalQueues.queues.find(
-    (q) => q.name === values.batchQueue
+  const queue = app.exec_sys.batchLogicalQueues.find(
+    (q) => q.name === values.execSystemLogicalQueue
   );
-  const minNode = getMinNodeCount(queue, app);
+  const minNodeCount = getMinNodeCount(queue, app);
   const maxCoresPerNode = queue.maxCoresPerNode;
 
-  if (values.nodeCount < minNode) {
-    updatedValues.nodeCount = minNode;
+  if (values.nodeCount < minNodeCount) {
+    updatedValues.nodeCount = minNodeCount;
   }
 
-  if (values.nodeCount > queue.maxNodes) {
-    updatedValues.nodeCount = queue.maxNodes;
+  if (values.nodeCount > queue.maxNodeCount) {
+    updatedValues.nodeCount = queue.maxNodeCount;
   }
 
   if (
@@ -184,20 +182,30 @@ export const updateValuesForQueue = (app, values) => {
   for all the queues, then we should check if the time works for the new queue and update
   it if it doesn't.
    */
-  if (values.maxRunTime) {
-    const longestMaxRequestedTime = app.exec_sys.queues
-      .map((queue) => queue.maxRequestedTime)
+  if (values.maxMinutes) {
+    const longestMaxRequestedTime = app.exec_sys.batchLogicalQueues
+      .map((queue) => queue.maxMinutes)
       .sort()
       .at(-1);
+    if (Number.isInteger(values.maxMinutes) &&
+      values.maxMinutes <= longestMaxRequestedTime &&
+      values.maxMinutes > queue.maxMinutes
+    ) {
+      updatedValues.maxMinutes = queue.maxMinutes;
+    }
+
+    /* // TODOv3  HH:MM:SS form
+
     const runtimeRegExp = new RegExp(
       createMaxRunTimeRegex(longestMaxRequestedTime)
     );
     if (
-      runtimeRegExp.test(values.maxRunTime) &&
-      values.maxRunTime > queue.maxRequestedTime
+      runtimeRegExp.test(values.maxMinutes) &&
+      values.maxMinutes > queue.maxMinutes
     ) {
-      updatedValues.maxRunTime = queue.maxRequestedTime;
+      updatedValues.maxMinutes = queue.maxMinutes;
     }
+     */
   }
 
   return updatedValues;
