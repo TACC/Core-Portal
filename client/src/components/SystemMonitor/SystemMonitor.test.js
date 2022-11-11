@@ -15,7 +15,7 @@ const list = [
   {
     display_name: 'Lonestar',
     is_operational: false,
-    jobs: { running: 1 },
+    jobs: { running: 1, queued: 1 },
     load_percentage: 100,
   },
   {
