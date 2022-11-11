@@ -89,6 +89,6 @@ def login_user_agave_jwt(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
 
-        # Refresh agave oauth token
+        # Refresh tapis oauth token
         if user.tapis_oauth.expired:
             user.tapis_oauth.refresh_tokens()
