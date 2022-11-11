@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useLocation, NavLink as RRNavLink } from 'react-router-dom';
 import { Icon, Pill } from '_common';
 import './SiteSearchSidebar.scss';
+import { Sidebar } from '_common';
 
 export const SiteSearchSidebarItem = ({
   to,
@@ -31,43 +32,49 @@ export const SiteSearchSidebarItem = ({
   );
 };
 
+const SiteSearchSidebarItemPill = ({ count }) => {
+  return (
+    <div className={`search-count-pill`} data-testid="count-pill">
+      <Pill>{count.toString()}</Pill>
+    </div>
+  );
+};
+
 const SiteSearchSidebar = ({ authenticated, schemes, results, searching }) => {
   const queryParams = queryStringParser.parse(useLocation().search);
   // Reset pagination on browse
   const query = queryStringParser.stringify({ ...queryParams, page: 1 });
+
+  const sidebarItems = [
+    {
+      to: `/search/cms/?${query}`,
+      label: 'Web Content',
+      iconName: 'browser',
+      disabled: false,
+      hidden: false,
+      children: <SiteSearchSidebarItemPill count={results.cms.count} />,
+    },
+    {
+      to: `/search/public/?${query}`,
+      label: 'Public Files',
+      iconName: 'folder',
+      disabled: false,
+      hidden: !schemes.includes('public'),
+      children: <SiteSearchSidebarItemPill count={results.public.count} />,
+    },
+    {
+      to: `/search/community/?${query}`,
+      label: 'Community Data',
+      iconName: 'folder',
+      disabled: false,
+      hidden: !authenticated || !schemes.includes('community'),
+      children: <SiteSearchSidebarItemPill count={results.community.count} />,
+    },
+  ];
+
   return (
     <>
-      <div className="site-search-sidebar">
-        <div className="site-search-nav">
-          <Nav vertical>
-            <SiteSearchSidebarItem
-              to={`/search/cms/?${query}`}
-              label="Web Content"
-              icon="browser"
-              count={results.cms.count}
-              searching={searching}
-            />
-            {schemes.includes('public') && (
-              <SiteSearchSidebarItem
-                to={`/search/public/?${query}`}
-                label="Public Files"
-                icon="folder"
-                count={results.public.count}
-                searching={searching}
-              />
-            )}
-            {authenticated && schemes.includes('community') && (
-              <SiteSearchSidebarItem
-                to={`/search/community/?${query}`}
-                label="Community Data"
-                icon="folder"
-                count={results.community.count}
-                searching={searching}
-              />
-            )}
-          </Nav>
-        </div>
-      </div>
+      <Sidebar sidebarItems={sidebarItems} loading={searching} />
     </>
   );
 };

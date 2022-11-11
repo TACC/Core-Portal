@@ -9,7 +9,7 @@ import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
-import Sidebar from '../Sidebar';
+import WorkbenchSidebar from './WorkbenchSidebar';
 import DataFiles from '../DataFiles';
 import Submissions from '../Submissions';
 import History from '../History';
@@ -76,7 +76,7 @@ function Workbench() {
   return (
     <div className="workbench-wrapper">
       <NotificationToast />
-      <Sidebar
+      <WorkbenchSidebar
         disabled={!setupComplete}
         showUIPatterns={showUIPatterns}
         loading={loading}
