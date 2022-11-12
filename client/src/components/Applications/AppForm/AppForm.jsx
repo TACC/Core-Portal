@@ -48,7 +48,6 @@ const appShape = PropTypes.shape({
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
       host: PropTypes.string,
-    }),
     scheduler: PropTypes.string,
     batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
   }),
