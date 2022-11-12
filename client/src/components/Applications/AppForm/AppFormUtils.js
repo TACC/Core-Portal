@@ -157,7 +157,6 @@ export const getQueueValidation = (queue, app) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const updatedValues = { ...values };
-
   const queue = app.exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
   );

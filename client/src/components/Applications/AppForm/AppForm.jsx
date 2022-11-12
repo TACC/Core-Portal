@@ -47,11 +47,10 @@ const appShape = PropTypes.shape({
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
-    login: PropTypes.shape({
       host: PropTypes.string,
     }),
     scheduler: PropTypes.string,
-    queues: PropTypes.arrayOf(PropTypes.shape({})),
+    batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   license: PropTypes.shape({
     type: PropTypes.string,
@@ -139,7 +138,7 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
   // Grab values and update if queue changes
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
-    if (previousValues && previousValues.batchQueue !== values.batchQueue) {
+    if (previousValues && previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue) {
       setValues(updateValuesForQueue(app, values));
     }
     setPreviousValues(values);
@@ -249,7 +248,7 @@ export const AppSchemaForm = ({ app }) => {
   const initialValues = {
     ...appFields.defaults,
     name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
-    batchQueue: (
+    execSystemLogicalQueue: (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
             (q) =>
@@ -395,16 +394,16 @@ export const AppSchemaForm = ({ app }) => {
           }
           return Yup.lazy((values) => {
             const queue = app.exec_sys.batchLogicalQueues.find(
-              (q) => q.name === values.batchQueue
+              (q) => q.name === values.execSystemLogicalQueue
             );
-            const maxQueueRunTime = getQueueMaxMinutes(app, values.batchQueue);
+            const maxQueueRunTime = getQueueMaxMinutes(app, values.execSystemLogicalQueue);
             const schema = Yup.object({
               parameterSet: Yup.object({ ...appFields.schema.parameterSet }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: getQueueValidation(queue, app),
+              execSystemLogicalQueue: getQueueValidation(queue, app),
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue),
               maxMinutes: getMaxMinutesValidation(queue).required('Required'),
@@ -533,7 +532,7 @@ export const AppSchemaForm = ({ app }) => {
                   </div>
                   <FormField
                     label="Queue"
-                    name="batchQueue"
+                    name="execSystemLogicalQueue"
                     description="Select the queue this job will execute on."
                     type="select"
                     required
@@ -564,7 +563,7 @@ export const AppSchemaForm = ({ app }) => {
                       label="Maximum Job Runtime"
                       description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
                         app,
-                        values.batchQueue
+                        values.execSystemLogicalQueue
                       )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
                       name="maxMinutes"
                       type="integer"
