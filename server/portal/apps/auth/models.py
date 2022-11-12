@@ -24,15 +24,6 @@ class TapisOAuthToken(models.Model):
     created = models.BigIntegerField()
 
     @property
-    def masked_token(self):
-        """Masked token.
-
-        :return: Masked token with only the last 8 digits visible.
-        :rtype: str
-        """
-        return self.access_token[:8].ljust(len(self.access_token), '-')
-
-    @property
     def expired(self):
         """Check if token is expired
 
@@ -90,3 +81,14 @@ class TapisOAuthToken(models.Model):
         for k, v in kwargs.items():
             setattr(self, k, v)
         self.save()
+
+    def refresh_tokens(self):
+        self.client.refresh_tokens()
+        self.update(created=int(time.time()),
+                    access_token=self.client.access_token.access_token,
+                    expires_in=self.client.access_token.expires_in().total_seconds())
+
+    def __str__(self):
+        access_token_masked = self.access_token[-5:]
+        refresh_token_masked = self.refresh_token[-5:]
+        return f'access_token:{access_token_masked} refresh_token:{refresh_token_masked} expires_in:{self.expires_in} created:{self.created}'

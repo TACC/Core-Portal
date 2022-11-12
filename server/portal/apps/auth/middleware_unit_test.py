@@ -1,77 +1,82 @@
-from django.test import (
-    TransactionTestCase,
-    RequestFactory
-)
-from mock import patch, MagicMock
-from portal.apps.auth.middleware import TapisTokenRefreshMiddleware
-from requests.exceptions import RequestException, HTTPError
-from django.core.exceptions import ObjectDoesNotExist
+import pytest
+from tapipy.errors import BaseTapyException
+import time
+from datetime import timedelta
+from portal.apps.auth.models import TapisOAuthToken
+
+ROUTE = '/workbench/account/'
 
 
-class TestTapisOAuthMiddleware(TransactionTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestTapisOAuthMiddleware, cls).setUpClass()
-        cls.request = RequestFactory().get("/api/data-depot")
-        cls.mock_logout_patcher = patch('portal.apps.auth.middleware.logout')
-        cls.mock_logout = cls.mock_logout_patcher.start()
+@pytest.fixture(autouse=True)
+def configure_settings_with_middleware(settings):
+    settings.MIDDLEWARE = [
+        # Django core middleware.
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',  #
+        'impersonate.middleware.ImpersonateMiddleware'
+    ]
 
-    @classmethod
-    def tearDownClass(cls):
-        super(TestTapisOAuthMiddleware, cls).tearDownClass()
-        cls.mock_logout_patcher.stop()
 
-    def setUp(self):
-        super(TestTapisOAuthMiddleware, self).setUp()
-        self.get_user_patcher = patch('portal.apps.auth.middleware.get_user')
-        self.mock_get_user = self.get_user_patcher.start()
-        self.mock_get_user.return_value = MagicMock(
-            is_authenticated=lambda: True,
-            username="MOCK_USER"
-        )
+@pytest.fixture
+def authenticated_user_with_expired_token(authenticated_user):
+    yield authenticated_user
 
-        # Mock the atomically retrieved TapisOAuthToken object
-        self.mock_tapis_oauth = MagicMock()
-        self.TapisOAuthToken_patcher = patch('portal.apps.auth.middleware.TapisOAuthToken.objects')
-        self.mock_TapisOAuthToken = self.TapisOAuthToken_patcher.start()
-        self.mock_TapisOAuthToken.filter.return_value.select_for_update.return_value.get.return_value = \
-            self.mock_tapis_oauth
 
-        self.mock_get_response = MagicMock(return_value="MOCK_RESPONSE")
-        self.middleware = TapisTokenRefreshMiddleware(self.mock_get_response)
+@pytest.fixture
+def authenticated_user_with_valid_token(authenticated_user):
+    authenticated_user.tapis_oauth.created = time.time()
+    authenticated_user.tapis_oauth.save()
+    yield authenticated_user
 
-    def tearDown(self):
-        super(TestTapisOAuthMiddleware, self).tearDown()
-        self.get_user_patcher.stop()
-        self.TapisOAuthToken_patcher.stop()
 
-    def test_valid_user(self):
-        # Test middleware for user that is fully authenticated
-        self.mock_tapis_oauth.expired = False
-        response = self.middleware.__call__(self.request)
-        self.assertEqual(response, "MOCK_RESPONSE")
+@pytest.fixture()
+def logout_mock(mocker):
+    mock_logout_patcher = mocker.patch('portal.apps.auth.middleware.logout')
+    yield mock_logout_patcher
 
-    def test_expired_user(self):
-        self.mock_tapis_oauth.expired = True
-        response = self.middleware.__call__(self.request)
-        self.assertEqual(response, "MOCK_RESPONSE")
-        self.mock_tapis_oauth.client.token.refresh.assert_called_with()
 
-    def test_refresh_error(self):
-        self.mock_tapis_oauth.expired = True
-        self.mock_tapis_oauth.client.token.refresh.side_effect = HTTPError
-        response = self.middleware.__call__(self.request)
-        self.assertEqual(response.status_code, 401)
-        self.mock_logout.assert_called_with(self.request)
+@pytest.fixture()
+def tapis_client_mock(mocker):
+    mock_client = mocker.patch('portal.apps.auth.models.TapisOAuthToken.client')
+    mock_client.access_token.access_token = "XYZXYZXYZ",
+    mock_client.access_token.expires_in.return_value = timedelta(seconds=2000)
+    yield mock_client
 
-    @patch('portal.apps.auth.middleware.transaction')
-    def test_logouts(self, mock_transaction):
-        mock_transaction.atomic.side_effect = RequestException
-        response = self.middleware.__call__(self.request)
-        self.assertEqual(response.status_code, 401)
-        self.mock_logout.assert_called_with(self.request)
 
-        mock_transaction.atomic.side_effect = ObjectDoesNotExist
-        response = self.middleware.__call__(self.request)
-        self.assertEqual(response.status_code, 401)
-        self.mock_logout.assert_called_with(self.request)
+def test_valid_user(client, authenticated_user_with_valid_token, tapis_client_mock):
+    response = client.get(ROUTE)
+    assert response.status_code == 200
+    assert not tapis_client_mock.client.refresh_tokens.called, 'method should not be called'
+
+
+def test_expired_user(client, authenticated_user_with_expired_token, tapis_client_mock):
+    response = client.get(ROUTE)
+    assert response.status_code == 200
+    assert tapis_client_mock.refresh_tokens.called, 'method should be called'
+
+    # check that token is updated in model
+    tapis_oauth = TapisOAuthToken.objects.filter(user=authenticated_user_with_expired_token).select_for_update().get()
+    assert not tapis_oauth.expired
+    assert authenticated_user_with_expired_token.tapis_oauth.created != tapis_oauth.created
+    assert authenticated_user_with_expired_token.tapis_oauth.access_token != tapis_oauth.access_token
+    assert authenticated_user_with_expired_token.tapis_oauth.refresh_token == tapis_oauth.refresh_token
+
+
+def test_expired_user_but_refresh_error(client, authenticated_user_with_expired_token, tapis_client_mock, logout_mock):
+    tapis_client_mock.refresh_tokens.side_effect = BaseTapyException
+    response = client.get(ROUTE)
+    assert response.status_code == 401
+    assert logout_mock.called
+
+
+def test_expired_user_but_unkown_error(client, authenticated_user_with_expired_token, tapis_client_mock, logout_mock):
+    tapis_client_mock.refresh_tokens.side_effect = Exception
+    response = client.get(ROUTE)
+    assert response.status_code == 401
+    assert logout_mock.called
