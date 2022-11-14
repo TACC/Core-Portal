@@ -27,10 +27,8 @@ const Searchbar = ({
     location.search
   );
 
-  let displayName;
   if (!sectionName) {
-    displayName = useSystemDisplayName({ system, scheme });
-    sectionName = displayName;
+    sectionName = useSystemDisplayName({ system, scheme });
   }
 
   const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
