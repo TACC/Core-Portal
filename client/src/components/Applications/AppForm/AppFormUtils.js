@@ -108,13 +108,13 @@ export const getNodeCountValidation = (queue, app) => {
  *
  * @function
  * @param {Object} queue
- * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
+ * @returns {Yup.number()} min/max validation of coresPerNode
  */
 export const getCoresPerNodeValidation = (queue) => {
   if (queue.maxCoresPerNode === -1) {
     return Yup.number();
   }
-  return Yup.number().min(1).max(queue.maxCoresPerNode);
+  return Yup.number().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
 };
 
 /**
