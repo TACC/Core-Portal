@@ -39,7 +39,6 @@ const appShape = PropTypes.shape({
     helpURI: PropTypes.string,
     defaultQueue: PropTypes.string,
     nodeCount: PropTypes.number,
-    parallelism: PropTypes.string,
     coresPerNode: PropTypes.number,
     maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
@@ -538,7 +537,6 @@ export const AppSchemaForm = ({ app }) => {
                   >
                     {app.exec_sys.batchLogicalQueues
                       .map((q) => q.name)
-                      /* TODOv3  no concept of SERIAL/PARALLEL app in app definition
                       .filter(
                         (q) =>
                           // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed
@@ -546,9 +544,9 @@ export const AppSchemaForm = ({ app }) => {
                             getSystemName(app.exec_sys.host) ===
                               'Frontera' &&
                             q === 'normal' &&
-                            app.definition.parallelism === 'SERIAL'
+                            !app.definition.jobAttributes.isMpi  // TODOv3 parallelism: review
                           )
-                      ) */
+                      )
                       .sort()
                       .map((queueName) => (
                         <option key={queueName} value={queueName}>
@@ -569,7 +567,7 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                   ) : null}
-                  {app.definition.parallelism === 'PARALLEL' ? ( // TODOv3  no concept of SERIAL/PARALLEL app in app definition
+                  {app.definition.jobAttributes.isMpi ? ( // TODOv3 parallelism:  prev was (parallelism === 'PARALLEL' ) now isMpi?  no concept of SERIAL/PARALLEL app in app definition
                     <>
                       <FormField
                         label="Processors On Each Node" // TODOv3 should we change "processors" to "core" to match tapis docs (kinda the same difference?)

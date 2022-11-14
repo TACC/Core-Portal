@@ -139,7 +139,7 @@ export const getQueueValidation = (queue, app) => {
             getSystemName(app.exec_sys.host) === 'Frontera' &&
             queue.name === 'normal' &&
             !app.definition.jobAttributes.isMpi
-          ) // TODOv3 consider SERIAL/PARALLEL jobs with v3
+          ) // TODOv3 parallelism: consider SERIAL/PARALLEL jobs with v3
         );
       }
     );

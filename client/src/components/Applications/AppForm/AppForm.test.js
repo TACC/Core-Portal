@@ -243,7 +243,7 @@ describe.skip('AppSchemaForm', () => {
         ...namdAppFixture.definition,
         defaultNodeCount: 1,
         defaultQueue: 'normal',
-        parallelism: 'SERIAL',
+        jobAttributes: {...namdAppFixture.definition.jobAttributes, isMpi: false}  // TODOv3 parallelism: review
       },
     };
 
