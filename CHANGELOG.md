@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [2.22.1] - 2022-11-15: Increase CustomMessageTemplate length
+
+### Fixed
+
+- FP-1922: Increase CustomMessageTemplate max_length to 1000 characters
+
 ## [2.22.0] - 2022-11-15: Common Searchbar; Common Sidebar; TAP Sysmon
 
 ### Added
@@ -17,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - FP-1839: Feedback link in portal is configurable (#707)
-- FP-1537: Download modal adjustments
+- FP-1537: Download modal adjustments (#716)
 - FP-1877: Replace alert with inline (#717)
 - FP-1886: Remove My Account from pulldown at the top right (#723)
 - Quick: Move prettier config to .prettierrc file (#725)
@@ -775,7 +781,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.22.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.22.1...HEAD
+[2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
 [2.22.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.0
 [2.21.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.21.0
 [2.20.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.20.0
