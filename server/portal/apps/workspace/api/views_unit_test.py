@@ -49,7 +49,7 @@ def logging_metric_mock(mocker):
 @pytest.mark.skip(reason="job post not implemented yet")
 def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
                   apps_manager, job_submmission_definition):
-    mock_tapis_client.jobs.submit.return_value = {"id": "1234"}
+    mock_tapis_client.jobs.resubmitJob.return_value = {"uuid": "1234"}
 
     response = client.post(
         "/api/workspace/jobs",
@@ -57,11 +57,33 @@ def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
         content_type="application/json"
     )
     assert response.status_code == 200
-    assert response.json() == {"response": {"id": "1234"}}
+    assert response.json() == {"response": {"uuid": "1234"}}
 
-    # The job submission request
-    job = JobSubmission.objects.all()[0]
-    assert job.jobId == "1234"
+
+def test_job_post_cancel(client, authenticated_user, get_user_data, mock_tapis_client,
+                         apps_manager, job_submmission_definition):
+    mock_tapis_client.jobs.cancelJob.return_value = {"uuid": "1234"}
+
+    response = client.post(
+        "/api/workspace/jobs",
+        data=json.dumps({"action": "cancel", "job_uuid": "1234"}),
+        content_type="application/json"
+    )
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": {"uuid": "1234"}}
+
+
+def test_job_post_resubmit(client, authenticated_user, get_user_data, mock_tapis_client,
+                           apps_manager, job_submmission_definition):
+    mock_tapis_client.jobs.resubmitJob.return_value = {"uuid": "1234"}
+
+    response = client.post(
+        "/api/workspace/jobs",
+        data=json.dumps({"action": "resubmit", "job_uuid": "1234"}),
+        content_type="application/json"
+    )
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": {"uuid": "1234"}}
 
 
 def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_data, mock_tapis_client,
