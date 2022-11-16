@@ -75,13 +75,6 @@ const FormSchema = (app) => {
         return;
       }
       */
-    /* TODOv3 consider validation
-    try {
-      RegExp(input.value.validator);
-    } catch (e) {
-      input.value.validator = null;
-    }
-     */
     const field = {
       label: input.name,
       description:
