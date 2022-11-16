@@ -257,9 +257,9 @@ export const AppSchemaForm = ({ app }) => {
           )) || app.exec_sys.batchLogicalQueues[0]
     ).name,
     nodeCount: app.definition.jobAttributes.nodeCount,
-    coresPerNode: app.definition.jobAttributes.coresPerNode, // TODOv3 check
+    coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes, // TODOv3 check can we have empty?
-    archiveSystemDir: '', // TODOv3  does '' trigger the "default" from tapis
+    archiveSystemDir: '',
     archiveOnAppError: true,
     appId: app.definition.id,
   };
@@ -394,7 +394,6 @@ export const AppSchemaForm = ({ app }) => {
             const queue = app.exec_sys.batchLogicalQueues.find(
               (q) => q.name === values.execSystemLogicalQueue
             );
-            const maxQueueRunTime = getQueueMaxMinutes(app, values.execSystemLogicalQueue);
             const schema = Yup.object({
               appArgs: Yup.object({ ...appFields.schema.appArgs }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
@@ -431,17 +430,6 @@ export const AppSchemaForm = ({ app }) => {
           // TODOv3 add envVariables
           /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
-          // Object.entries(job.parameterSet).forEach(([k, v]) => {
-          //   let val = v;
-          //   if (Array.isArray(v)) {
-          //     val = val.filter(Boolean);
-          //     if (val.length === 0) {
-          //       delete job.parameterSet[k];
-          //     }
-          //   } else if (val === null || val === undefined) {
-          //     delete job.parameterSet[k];
-          //   }
-          // });
           /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
           if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
@@ -492,7 +480,7 @@ export const AppSchemaForm = ({ app }) => {
                     <span>Inputs</span>
                   </div>
                   {Object.entries(appFields.fileInputs).map(([name, field]) => {
-                    // TODOv3 fix how fileInput is defined
+                    // TODOv3 handle fileInputArrays
                     return (
                       <FormField
                         {...field}
