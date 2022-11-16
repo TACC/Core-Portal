@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 export const helloWorldAppFixture = {
   definition: {
     sharedAppCtx: true,

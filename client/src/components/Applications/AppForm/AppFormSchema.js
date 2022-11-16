@@ -11,7 +11,10 @@ const FormSchema = (app) => {
   /* TODOv3  envVariables */
   (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
-    if (!(param.notes.visible === undefined || param.notes.visible) || param.name.startsWith('_')) {
+    if (
+      !(param.notes.visible === undefined || param.notes.visible) ||
+      param.name.startsWith('_')
+    ) {
       // TODOv3 should we rename 'visible' to 'hidden' so that we default to showing argument
       return;
     }
@@ -51,35 +54,32 @@ const FormSchema = (app) => {
        *           field.agaveFile = param.semantics.ontology.includes('agaveFile');
        */
     }
-      if (field.required) {
-        appFields.schema.appArgs[param.name] =
-          appFields.schema.appArgs[param.name].required('Required');
-      }
-      /* TODOv3
+    if (field.required) {
+      appFields.schema.appArgs[param.name] =
+        appFields.schema.appArgs[param.name].required('Required');
+    }
+    /* TODOv3
       if (param.value.validator) {
         appFields.schema.appArgs[param.name] = appFields.schema.appArgs[
           param.name
         ].matches(param.value.validator);
       }*/
-      appFields.appArgs[param.name] = field;
-      appFields.defaults.appArgs[param.name] =
-        param.arg === null || typeof param.arg === 'undefined'
-          ? ''
-          : param.arg;
-    });
+    appFields.appArgs[param.name] = field;
+    appFields.defaults.appArgs[param.name] =
+      param.arg === null || typeof param.arg === 'undefined' ? '' : param.arg;
+  });
 
-    (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
-      const input = i;
-      /* TODOv3 consider hidden file inputs
+  (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
+    const input = i;
+    /* TODOv3 consider hidden file inputs
       if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
         return;
       }
       */
     const field = {
       label: input.name,
-      description:
-        ' ' /* TODOv3 consider file description.  previously this was: input.details.description */,
-      required: input.inputMode === 'REQUIRED ', // TODOv3   check this.  // input.value.required,
+      description: input.description,
+      required: input.inputMode === 'REQUIRED ',
     };
 
     field.type = 'text'; /* TODOv3 consider cardinality
@@ -100,24 +100,24 @@ const FormSchema = (app) => {
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
 
-    /* TODOv3 as above we need additional metadata to determine if its required or validation
     if (field.required) {
       appFields.schema.inputs[input.name] =
         appFields.schema.inputs[input.name].required('Required');
     }
-    if (input.value.validator) {
-      appFields.schema.inputs[input.name] = appFields.schema.inputs[
-        input.name
-      ].matches(input.value.validator);
-    } else {
-      appFields.schema.inputs[input.name] = appFields.schema.inputs[
-        input.name
-      ].matches(
-        /^tapis:\/\//g,
-        "Input file must be a valid Tapis URI, starting with 'tapis://'"
-      );
-    }
-     */
+    /* TODOv3 as above we need additional metadata to determine if its required or validation
+      if (input.value.validator) {
+        appFields.schema.inputs[input.name] = appFields.schema.inputs[
+          input.name
+        ].matches(input.value.validator);
+      } else {
+        appFields.schema.inputs[input.name] = appFields.schema.inputs[
+          input.name
+        ].matches(
+          /^tapis:\/\//g,
+          "Input file must be a valid Tapis URI, starting with 'tapis://'"
+        );
+      }
+       */
 
     appFields.fileInputs[input.name] = field;
 

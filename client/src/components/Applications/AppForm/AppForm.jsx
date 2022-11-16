@@ -46,7 +46,7 @@ const appShape = PropTypes.shape({
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
-      host: PropTypes.string,
+    host: PropTypes.string,
     scheduler: PropTypes.string,
     batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
   }),
@@ -136,7 +136,10 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
   // Grab values and update if queue changes
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
-    if (previousValues && previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue) {
+    if (
+      previousValues &&
+      previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
+    ) {
       setValues(updateValuesForQueue(app, values));
     }
     setPreviousValues(values);
@@ -423,9 +426,11 @@ export const AppSchemaForm = ({ app }) => {
             return { name: k, sourceUrl: v };
           });
           job.parameterSet = {};
-          job.parameterSet.appArgs = Object.entries(job.appArgs).map(([k, v]) => {
-            return { name: k, arg: v };
-          });
+          job.parameterSet.appArgs = Object.entries(job.appArgs).map(
+            ([k, v]) => {
+              return { name: k, arg: v };
+            }
+          );
           delete job.appArgs;
           // TODOv3 add envVariables
           /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
@@ -536,10 +541,11 @@ export const AppSchemaForm = ({ app }) => {
                         (q) =>
                           // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed
                           !(
-                            getSystemName(app.exec_sys.host) ===
-                              'Frontera' &&
-                            q === 'normal' &&
-                            !app.definition.jobAttributes.isMpi  // TODOv3 parallelism: review
+                            (
+                              getSystemName(app.exec_sys.host) === 'Frontera' &&
+                              q === 'normal' &&
+                              !app.definition.jobAttributes.isMpi
+                            ) // TODOv3 parallelism: review
                           )
                       )
                       .sort()
