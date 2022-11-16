@@ -279,11 +279,10 @@ class JobsView(BaseApiView):
             #                           if param in [p['id'] for p in app.parameters]}
             logger.info(f"submitting this job: f{job_post}")
             response = agave.jobs.submitJob(**job_post)
-            job_response = vars(response)
-            if "id" in job_response:
+            if hasattr(response, "id"):
                 job = JobSubmission.objects.create(
                     user=request.user,
-                    jobId=job_response["id"]
+                    jobId=response.id
                 )
                 job.save()
 
