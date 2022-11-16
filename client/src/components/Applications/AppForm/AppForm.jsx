@@ -396,7 +396,7 @@ export const AppSchemaForm = ({ app }) => {
             );
             const maxQueueRunTime = getQueueMaxMinutes(app, values.execSystemLogicalQueue);
             const schema = Yup.object({
-              parameterSet: Yup.object({ ...appFields.schema.parameterSet }),
+              appArgs: Yup.object({ ...appFields.schema.appArgs }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
@@ -423,6 +423,12 @@ export const AppSchemaForm = ({ app }) => {
           job.fileInputs = Object.entries(job.fileInputs).map(([k, v]) => {
             return { name: k, sourceUrl: v };
           });
+          job.parameterSet = {};
+          job.parameterSet.appArgs = Object.entries(job.appArgs).map(([k, v]) => {
+            return { name: k, arg: v };
+          });
+          delete job.appArgs;
+          // TODOv3 add envVariables
           /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
           // Object.entries(job.parameterSet).forEach(([k, v]) => {
@@ -498,12 +504,12 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     );
                   })}
-                  {Object.entries(appFields.parameterSet).map(([id, field]) => {
+                  {Object.entries(appFields.appArgs).map(([name, field]) => {
                     return (
                       <FormField
                         {...field}
-                        name={`parameterSet.${id}`}
-                        key={`parameterSet.${id}`}
+                        name={`appArgs.${name}`}
+                        key={`appArgs.${name}`}
                       >
                         {field.options
                           ? field.options.map((item) => {
@@ -523,6 +529,7 @@ export const AppSchemaForm = ({ app }) => {
                       </FormField>
                     );
                   })}
+                  {/* TODOv3 handle parameterSet.envVariables */}
                 </div>
                 <div className="appSchema-section">
                   <div className="appSchema-header">

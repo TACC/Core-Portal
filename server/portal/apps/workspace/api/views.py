@@ -244,6 +244,9 @@ class JobsView(BaseApiView):
             #     return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
             # TODOv3
+
+            if 'parameterSet' not in job_post:
+                job_post['parameterSet'] = {}
             if 'schedulerOptions' not in job_post['parameterSet']:
                 job_post['parameterSet']['schedulerOptions'] = []
             job_post['parameterSet']['schedulerOptions'].append({"name": "Allocation",

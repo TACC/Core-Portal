@@ -2,97 +2,79 @@ import * as Yup from 'yup';
 
 const FormSchema = (app) => {
   const appFields = {
-    parameterSet: {},
+    appArgs: {},
+    envVariables: {},
     fileInputs: {},
-    defaults: { fileInputs: {}, parameterSet: {} },
-    schema: { fileInputs: {}, parameterSet: {} },
+    defaults: { fileInputs: {}, appArgs: {} },
+    schema: { fileInputs: {}, appArgs: {} },
   };
-
-  /* TODOv3  app.definition.jobAttributes
-  (app.definition.parameterSet || []).forEach((p) => {
+  /* TODOv3  envVariables */
+  (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
-    if (!param.value.visible || param.id.startsWith('_')) {
+    if (!(param.notes.visible === undefined || param.notes.visible) || param.name.startsWith('_')) {
+      // TODOv3 should we rename 'visible' to 'hidden' so that we default to showing argument
       return;
-    }
-    try {
-      RegExp(param.value.validator);
-    } catch (e) {
-      param.value.validator = null;
     }
 
     const field = {
-      label: param.details.label,
-      description: param.details.description,
-      required: param.value.required,
+      label: param.name,
+      description: param.description,
+      required: param.inputMode === 'REQUIRED',
     };
 
-    switch (param.value.type) {
-      case 'bool':
-      case 'flag':
-        field.type = 'checkbox';
-        field.checked = param.value.default || false;
-        appFields.schema.parameterSet[param.id] = Yup.boolean();
-        break;
-
-      case 'enumeration':
-        field.type = 'select';
-        field.options = param.value.enum_values;
-        appFields.schema.parameterSet[param.id] = Yup.string().oneOf(
-          field.options.map((enumVal) => {
-            if (typeof enumVal === 'string') {
-              return enumVal;
-            }
-            return Object.keys(enumVal)[0];
-          })
-        );
-        break;
-
-      case 'number':
-        appFields.schema.parameterSet[param.id] = Yup.number();
-        field.type = 'number';
-        break;
-
-      case 'string':
-        field.agaveFile = param.semantics.ontology.includes('agaveFile');
-        if (param.semantics.ontology.includes('email')) {
-          field.type = 'email';
-          appFields.schema.parameterSet[param.id] = Yup.string().email(
-            'Must be a valid email.'
-          );
-        } else {
-          field.type = 'text';
-          appFields.schema.parameterSet[param.id] = Yup.string();
-        }
-        break;
-      default:
-        appFields.schema.parameterSet[param.id] = Yup.string();
-        field.type = 'text';
+    if (param.notes.enum_values) {
+      field.type = 'select';
+      field.options = param.notes.enum_values;
+      appFields.schema.appArgs[param.name] = Yup.string().oneOf(
+        field.options.map((enumVal) => {
+          if (typeof enumVal === 'string') {
+            return enumVal;
+          }
+          return Object.keys(enumVal)[0];
+        })
+      );
+    } else {
+      field.type = 'text';
+      appFields.schema.appArgs[param.name] = Yup.string();
+      /* TODOv3 email. previously was:
+       *   if (param.semantics.ontology.includes('email')) {
+       *     field.type = 'email';
+       *     appFields.schema.appArgs[param.name] = Yup.string().email(
+       *        'Must be a valid email.'
+       *      );
+       *
+       *  TODOv3 number. was this ever used? previously was:
+       *       appFields.schema.appArgs[param.name] = Yup.number();
+       *       field.type = 'number';
+       *
+       *  TODOV3 agaveFile was:
+       *           field.agaveFile = param.semantics.ontology.includes('agaveFile');
+       */
     }
+      if (field.required) {
+        appFields.schema.appArgs[param.name] =
+          appFields.schema.appArgs[param.name].required('Required');
+      }
+      /* TODOv3
+      if (param.value.validator) {
+        appFields.schema.appArgs[param.name] = appFields.schema.appArgs[
+          param.name
+        ].matches(param.value.validator);
+      }*/
+      appFields.appArgs[param.name] = field;
+      appFields.defaults.appArgs[param.name] =
+        param.arg === null || typeof param.arg === 'undefined'
+          ? ''
+          : param.arg;
+    });
 
-    if (param.value.required) {
-      appFields.schema.parameterSet[param.id] =
-        appFields.schema.parameterSet[param.id].required('Required');
-    }
-    if (param.value.validator) {
-      appFields.schema.parameterSet[param.id] = appFields.schema.parameterSet[
-        param.id
-      ].matches(param.value.validator);
-    }
-    appFields.parameterSet[param.id] = field;
-    appFields.defaults.parameterSet[param.id] =
-      param.value.default === null || typeof param.value.default === 'undefined'
-        ? ''
-        : param.value.default;
-  });
-  */
-
-  (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
-    const input = i;
-    /* TODOv3 consider hidden file inputs
-    if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
-      return;
-    }
-    */
+    (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
+      const input = i;
+      /* TODOv3 consider hidden file inputs
+      if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
+        return;
+      }
+      */
     /* TODOv3 consider validation
     try {
       RegExp(input.value.validator);
