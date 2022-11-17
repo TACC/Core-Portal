@@ -72,9 +72,6 @@ class AppsView(BaseApiView):
         app_id = request.GET.get('appId')
         if app_id:
             app_version = request.GET.get('appVersion')
-            if app_version is None:
-                # TODOv3  consider if we want to allow now appVersion and get the latest version
-                return HttpResponseBadRequest()
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
