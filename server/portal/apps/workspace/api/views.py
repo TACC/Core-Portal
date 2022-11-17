@@ -148,7 +148,7 @@ class JobsView(BaseApiView):
         )
 
     def post(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
@@ -161,7 +161,7 @@ class JobsView(BaseApiView):
             else:
                 METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
 
-            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
+            data = tapis.jobs.manage(jobId=job_id, body={"action": job_action})
 
             if job_action == 'resubmit':
                 if "id" in data:
@@ -278,7 +278,7 @@ class JobsView(BaseApiView):
             #                           for param in job_post['parameters']
             #                           if param in [p['id'] for p in app.parameters]}
             logger.info(f"submitting this job: f{job_post}")
-            response = agave.jobs.submitJob(**job_post)
+            response = tapis.jobs.submitJob(**job_post)
             if hasattr(response, "id"):
                 job = JobSubmission.objects.create(
                     user=request.user,
@@ -297,11 +297,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info("user:{} agave.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info("user:{} agave.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -310,7 +310,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info("user:{} agave.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        METRICS.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
