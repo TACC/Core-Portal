@@ -12,8 +12,24 @@ import {
   FileIconCell,
   ViewPathCell,
 } from './DataFilesListingCells';
-import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
+import Searchbar from '_common/Searchbar';
+
+const fileTypes = [
+  'Audio',
+  'Code',
+  'Documents',
+  'Folders',
+  'Images',
+  'Jupyter Notebook',
+  'PDF',
+  'Presentation',
+  'Spreadsheet',
+  'Shape File',
+  'Text',
+  'ZIP',
+  '3D Visualization',
+];
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
@@ -129,12 +145,14 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   return (
     <>
       {!hideSearchBar && (
-        <DataFilesSearchbar
+        <Searchbar
           api={api}
           scheme={scheme}
           system={system}
           resultCount={files.length}
-          publicData={isPublic}
+          dataType="Files"
+          filterTypes={fileTypes}
+          infiniteScroll
           disabled={loading || !!error}
         />
       )}
