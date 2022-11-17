@@ -12,6 +12,23 @@ import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPrev
 import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import styles from './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
+import Searchbar from '_common/Searchbar';
+
+const fileTypes = [
+  'Audio',
+  'Code',
+  'Documents',
+  'Folders',
+  'Images',
+  'Jupyter Notebook',
+  'PDF',
+  'Presentation',
+  'Spreadsheet',
+  'Shape File',
+  'Text',
+  'ZIP',
+  '3D Visualization',
+];
 
 export const CMSListingItem = ({ title, url, highlight }) => (
   <article
@@ -105,11 +122,14 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   const lastPageIndex = Math.ceil(count / 10);
   return (
     <div className={containerStyleNames}>
-      <DataFilesSearchbar
+      <Searchbar
         api="tapis"
         scheme={filter}
+        sectionName="Site"
         system=""
         siteSearch
+        filterTypes={filter === 'cms' ? [] : fileTypes}
+        infiniteScroll={false}
         disabled={loading || !!error}
       />
       <h5 className={styles.header}>{FILTER_MAPPING[filter]}</h5>
