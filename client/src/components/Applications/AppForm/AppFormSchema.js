@@ -104,24 +104,8 @@ const FormSchema = (app) => {
       appFields.schema.inputs[input.name] =
         appFields.schema.inputs[input.name].required('Required');
     }
-    /* TODOv3 as above we need additional metadata to determine if its required or validation
-      if (input.value.validator) {
-        appFields.schema.inputs[input.name] = appFields.schema.inputs[
-          input.name
-        ].matches(input.value.validator);
-      } else {
-        appFields.schema.inputs[input.name] = appFields.schema.inputs[
-          input.name
-        ].matches(
-          /^tapis:\/\//g,
-          "Input file must be a valid Tapis URI, starting with 'tapis://'"
-        );
-      }
-       */
 
     appFields.fileInputs[input.name] = field;
-
-    // TODOv3  check defaults. I don't think there is a default for files (just not posting with the param?) but using sourceUrl as a default (?)
     appFields.defaults.fileInputs[input.name] =
       input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
