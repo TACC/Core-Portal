@@ -261,7 +261,7 @@ export const AppSchemaForm = ({ app }) => {
     ).name,
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
-    maxMinutes: app.definition.jobAttributes.maxMinutes, // TODOv3 check can we have empty?
+    maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemDir: '',
     archiveOnAppError: true,
     appId: app.definition.id,
@@ -400,6 +400,7 @@ export const AppSchemaForm = ({ app }) => {
             const schema = Yup.object({
               appArgs: Yup.object({ ...appFields.schema.appArgs }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
+              // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
@@ -485,7 +486,7 @@ export const AppSchemaForm = ({ app }) => {
                     <span>Inputs</span>
                   </div>
                   {Object.entries(appFields.fileInputs).map(([name, field]) => {
-                    // TODOv3 handle fileInputArrays
+                    // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
                     return (
                       <FormField
                         {...field}
