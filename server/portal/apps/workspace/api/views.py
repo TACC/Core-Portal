@@ -6,7 +6,7 @@ import logging
 import json
 from urllib.parse import urlparse
 from django.utils import timezone
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -254,10 +254,10 @@ class JobsView(BaseApiView):
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-                #jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+                # jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
             else:
                 wh_base_url = request.build_absolute_uri('/webhooks/')
-                #jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+                # jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
             if 'envVariables' not in job_post['parameterSet']:
                 job_post['parameterSet']['envVariables'] = []
@@ -269,11 +269,6 @@ class JobsView(BaseApiView):
             #      'event': e}
             #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
-            # TODOv3 do we have any? can drop right?
-            # Remove any params from job_post that are not in appDef
-            # job_post['parameters'] = {param: job_post['parameters'][param]
-            #                           for param in job_post['parameters']
-            #                           if param in [p['id'] for p in app.parameters]}
             logger.info(f"submitting this job: f{job_post}")
             response = tapis.jobs.submitJob(**job_post)
             if hasattr(response, "id"):
