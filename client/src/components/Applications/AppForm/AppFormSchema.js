@@ -11,11 +11,8 @@ const FormSchema = (app) => {
   /* TODOv3  envVariables */
   (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
-    if (
-      !(param.notes.visible === undefined || param.notes.visible) ||
-      param.name.startsWith('_')
-    ) {
-      // TODOv3 should we rename 'visible' to 'hidden' so that we default to showing argument
+    // TODOv3 should we rename 'visible' to 'hidden' so that we default to showing argument
+    if (!(param.notes.visible === undefined || param.notes.visible)) {
       return;
     }
 
