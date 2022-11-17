@@ -252,16 +252,16 @@ class JobsView(BaseApiView):
                                                                  "arg": f"-A {job_post['allocation']}"})
             del job_post['allocation']
 
-            # TODOv3 Webhooks/notifications
-            #  if settings.DEBUG:
-            #     wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-            #     jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
-            # else:
-            #     wh_base_url = request.build_absolute_uri('/webhooks/')
-            #     jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            if settings.DEBUG:
+                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                #jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            else:
+                wh_base_url = request.build_absolute_uri('/webhooks/')
+                #jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            # TODOv3 webhook for wrapper (determine where this will go in the job (envVariables, right?)
-            # job_post['parameters']['_webhook_base_url'] = wh_base_url
+            if 'envVariables' not in job_post['parameterSet']:
+                job_post['parameterSet']['envVariables'] = []
+            job_post['parameters']['envVariables'].append({'key': '_webhook_base_url', 'value':  wh_base_url})
 
             # TODOv3 Webhooks/notifications continues
             # job_post['notifications'] = [
