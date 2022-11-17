@@ -86,6 +86,17 @@ def test_job_post_resubmit(client, authenticated_user, get_user_data, mock_tapis
     assert response.json() == {"status": 200, "response": {"uuid": "1234"}}
 
 
+def test_job_post_invalid(client, authenticated_user, get_user_data, mock_tapis_client,
+                          apps_manager, job_submmission_definition):
+    response = client.post(
+        "/api/workspace/jobs",
+        data=json.dumps({"action": "invalid action", "job_uuid": "1234"}),
+        content_type="application/json"
+    )
+    assert response.status_code == 400
+    assert response.json() == {"message": "user:username is trying to run an unsupported job action: invalid action for job uuid: 1234"}
+
+
 def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_data, mock_tapis_client,
                                         apps_manager, job_submmission_definition, logging_metric_mock):
     mock_tapis_client.jobs.submit.return_value = {"id": "1234"}

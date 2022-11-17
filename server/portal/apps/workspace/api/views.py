@@ -151,14 +151,24 @@ class JobsView(BaseApiView):
         job_action = job_post.get('action')
 
         if job_uuid and job_action:
-            # resubmit job
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_uuid))
+                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
-            # cancel job / stop job
-            else:
-                METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_uuid))
+
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=data["uuid"]
+                )
+                job.save()
+            elif job_action == 'cancel':
+                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid)
+            else:
+                raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
+                    request.user.username,
+                    job_action,
+                    job_uuid
+                ), status=400)
 
             return JsonResponse(
                 {
