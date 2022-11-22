@@ -113,14 +113,13 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            # TODOv3: Query portal
-            # portal_name = settings.PORTAL_NAMESPACE
+            portal_name = settings.PORTAL_NAMESPACE
 
             data = tapis.jobs.getJobSearchList(
                 limit=limit,
                 startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)'
-                # _tapis_query_parameters={'tags.contains': portal_name}
+                orderBy='lastUpdated(desc),name(asc)',
+                _tapis_query_parameters={'tags.contains': portal_name}
             )
 
         return JsonResponse(
@@ -159,14 +158,6 @@ class JobsView(BaseApiView):
                 METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
 
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
-
-            if job_action == 'resubmit':
-                if "id" in data:
-                    job = JobSubmission.objects.create(
-                        user=request.user,
-                        jobId=data["id"]
-                    )
-                    job.save()
 
             return JsonResponse({"response": data})
         # submit job
@@ -249,14 +240,13 @@ class JobsView(BaseApiView):
                                       for param in job_post['parameters']
                                       if param in [p['id'] for p in app.parameters]}
 
-            response = agave.jobs.submit(body=job_post)
+            portal_name = settings.PORTAL_NAMESPACE
+            if job_post['tags'] and job_post['tags'].length > 0:
+                job_post['tags'].append(portal_name)
+            else:
+                job_post['tags'] = [portal_name]
 
-            if "id" in response:
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=response["id"]
-                )
-                job.save()
+            response = agave.jobs.submit(body=job_post)
 
             return JsonResponse({"response": response})
 
