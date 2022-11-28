@@ -241,10 +241,7 @@ class JobsView(BaseApiView):
                                       if param in [p['id'] for p in app.parameters]}
 
             portal_name = settings.PORTAL_NAMESPACE
-            if job_post['tags'] and job_post['tags'].length > 0:
-                job_post['tags'].append(portal_name)
-            else:
-                job_post['tags'] = [portal_name]
+            job_post['tags'] = job_post.get('tags', []).append(portal_name)
 
             response = agave.jobs.submit(body=job_post)
 
