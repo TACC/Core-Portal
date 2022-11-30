@@ -1,20 +1,4 @@
 {
-  "Longhorn": {
-    "display_name": "Longhorn",
-    "tas_name": "longhorn3",
-    "hostname": "longhorn.tacc.utexas.edu",
-    "system_type": "COMPUTE",
-    "timestamp": "2022-11-07T14:30:02.709924+00:00",
-    "online": true,
-    "reachable": true,
-    "queues_down": false,
-    "load": 0.5865,
-    "running": 13,
-    "queued": 6,
-    "in_maintenance": false,
-    "next_maintenance": null,
-    "reservations": []
-  },
   "Stampede2": {
     "display_name": "Stampede2",
     "tas_name": "stampede4",
