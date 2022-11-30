@@ -157,7 +157,7 @@ class JobsView(BaseApiView):
 
                 job = JobSubmission.objects.create(
                     user=request.user,
-                    jobId=data["uuid"]
+                    jobId=data.uuid
                 )
                 job.save()
             elif job_action == 'cancel':

@@ -49,7 +49,9 @@ def logging_metric_mock(mocker):
 @pytest.mark.skip(reason="job post not implemented yet")
 def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
                   apps_manager, job_submmission_definition):
-    mock_tapis_client.jobs.resubmitJob.return_value = {"uuid": "1234"}
+    mock_tapis_client.jobs.resubmitJob.return_value = TapisResult(**{
+        'uuid': '1234',
+    })
 
     response = client.post(
         "/api/workspace/jobs",
@@ -62,7 +64,9 @@ def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
 
 def test_job_post_cancel(client, authenticated_user, get_user_data, mock_tapis_client,
                          apps_manager, job_submmission_definition):
-    mock_tapis_client.jobs.cancelJob.return_value = {"uuid": "1234"}
+    mock_tapis_client.jobs.cancelJob.return_value = TapisResult(**{
+        'uuid': '1234',
+    })
 
     response = client.post(
         "/api/workspace/jobs",
@@ -75,7 +79,9 @@ def test_job_post_cancel(client, authenticated_user, get_user_data, mock_tapis_c
 
 def test_job_post_resubmit(client, authenticated_user, get_user_data, mock_tapis_client,
                            apps_manager, job_submmission_definition):
-    mock_tapis_client.jobs.resubmitJob.return_value = {"uuid": "1234"}
+    mock_tapis_client.jobs.resubmitJob.return_value = TapisResult(**{
+        'uuid': '1234',
+    })
 
     response = client.post(
         "/api/workspace/jobs",
