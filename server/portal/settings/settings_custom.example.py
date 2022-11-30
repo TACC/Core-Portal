@@ -89,18 +89,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'icon': None,
         'hidden': False,
     },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'cep',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-        'hidden': False,
-    }
 }
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
