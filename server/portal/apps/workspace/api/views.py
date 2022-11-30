@@ -143,22 +143,33 @@ class JobsView(BaseApiView):
         )
 
     def post(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
-        job_id = job_post.get('job_id')
+        job_uuid = job_post.get('job_uuid')
         job_action = job_post.get('action')
 
-        if job_id and job_action:
-            # resubmit job
+        if job_uuid and job_action:
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
-            # cancel job / stop job
+                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
+                data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
+
+            elif job_action == 'cancel':
+                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
+                data = tapis.jobs.cancelJob(jobUuid=job_uuid)
             else:
-                METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
+                raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
+                    request.user.username,
+                    job_action,
+                    job_uuid
+                ), status=400)
 
-            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
-
-            return JsonResponse({"response": data})
+            return JsonResponse(
+                {
+                    'status': 200,
+                    'response': data,
+                },
+                encoder=BaseTapisResultSerializer
+            )
         # submit job
         elif job_post:
             METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
@@ -242,7 +253,7 @@ class JobsView(BaseApiView):
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []).append(portal_name)
 
-            response = agave.jobs.submit(body=job_post)
+            response = tapis.jobs.submit(body=job_post)
 
             return JsonResponse({"response": response})
 

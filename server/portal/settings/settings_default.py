@@ -21,8 +21,7 @@ _WH_BASE_URL = ''
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Longhorn',
-                                'Lonestar6', 'Frontera', 'Maverick2']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera', 'Maverick2']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -86,17 +85,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
         'port': 22,
-        'icon': None,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'cep',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
         'icon': None,
     }
 }

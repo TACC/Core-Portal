@@ -136,7 +136,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   ];
 
   return (
-    <div className={styles['root']}>
+    <div className={`data-files-sidebar ${styles['root']}`}>
       <Sidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
     </div>
   );
