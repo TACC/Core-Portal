@@ -271,10 +271,10 @@ class JobsView(BaseApiView):
 
             logger.info(f"submitting this job: f{job_post}")
             response = tapis.jobs.submitJob(**job_post)
-            if hasattr(response, "id"):
+            if hasattr(response, "uuid"):
                 job = JobSubmission.objects.create(
                     user=request.user,
-                    jobId=response.id
+                    jobId=response.uuid
                 )
                 job.save()
 
