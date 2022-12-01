@@ -580,7 +580,7 @@ export const AppSchemaForm = ({ app }) => {
                       <FormField
                         label="Node Count"
                         description="Number of requested process nodes for the job."
-                        name="nodeCount" //TODOv3 update
+                        name="nodeCount"
                         type="number"
                       />
                     </>
