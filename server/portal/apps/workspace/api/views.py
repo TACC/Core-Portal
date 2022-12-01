@@ -175,28 +175,36 @@ class JobsView(BaseApiView):
     def post(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
-        job_id = job_post.get('job_id')
+        job_uuid = job_post.get('job_uuid')
         job_action = job_post.get('action')
 
-        if job_id and job_action:
-            # resubmit job
+        if job_uuid and job_action:
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job id:{}".format(request.user.username, job_id))
-            # cancel job / stop job
+                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
+                data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
+
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=data.uuid
+                )
+                job.save()
+            elif job_action == 'cancel':
+                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
+                data = tapis.jobs.cancelJob(jobUuid=job_uuid)
             else:
-                METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
+                raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
+                    request.user.username,
+                    job_action,
+                    job_uuid
+                ), status=400)
 
-            data = tapis.jobs.manage(jobId=job_id, body={"action": job_action})
-
-            if job_action == 'resubmit':
-                if "id" in data:
-                    job = JobSubmission.objects.create(
-                        user=request.user,
-                        jobId=data["id"]
-                    )
-                    job.save()
-
-            return JsonResponse({"response": data})
+            return JsonResponse(
+                {
+                    'status': 200,
+                    'response': data,
+                },
+                encoder=BaseTapisResultSerializer
+            )
         # submit job
         elif job_post:
             METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
