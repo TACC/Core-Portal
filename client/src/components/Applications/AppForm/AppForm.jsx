@@ -190,8 +190,7 @@ export const AppSchemaForm = ({ app }) => {
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
-        app.exec_sys.login.host === host ||
-        app.exec_sys.login.host.endsWith(`.${host}`)
+        app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =

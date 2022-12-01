@@ -170,10 +170,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
         }
     },
-    {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
-    }
 ]
 """
 
