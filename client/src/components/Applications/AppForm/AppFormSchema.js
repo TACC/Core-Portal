@@ -36,7 +36,7 @@ const FormSchema = (app) => {
     } else {
       field.type = 'text';
       appFields.schema.appArgs[param.name] = Yup.string();
-      /* TODOv3 email. previously was:
+      /* TODOv3 https://jira.tacc.utexas.edu/browse/TV3-92
        *   if (param.semantics.ontology.includes('email')) {
        *     field.type = 'email';
        *     appFields.schema.appArgs[param.name] = Yup.string().email(
@@ -55,7 +55,7 @@ const FormSchema = (app) => {
       appFields.schema.appArgs[param.name] =
         appFields.schema.appArgs[param.name].required('Required');
     }
-    /* TODOv3
+    /* TODOv3 https://jira.tacc.utexas.edu/browse/TV3-92
       if (param.value.validator) {
         appFields.schema.appArgs[param.name] = appFields.schema.appArgs[
           param.name
