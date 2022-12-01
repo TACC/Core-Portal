@@ -296,7 +296,13 @@ class JobsView(BaseApiView):
                 )
                 job.save()
 
-            return JsonResponse({"response": response})
+            return JsonResponse(
+                {
+                    'status': 200,
+                    'response': response,
+                },
+                encoder=BaseTapisResultSerializer
+            )
 
 
 @method_decorator(login_required, name='dispatch')
