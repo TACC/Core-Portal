@@ -412,7 +412,7 @@ export const AppSchemaForm = ({ app }) => {
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.exec_sys.batchSscheduler]),
+                  allocations.concat([app.exec_sys.batchScheduler]),
                   'Please select an allocation from the dropdown.'
                 ),
             });
