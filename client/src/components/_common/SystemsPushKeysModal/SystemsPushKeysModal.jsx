@@ -35,22 +35,16 @@ const SystemsPushKeysModal = () => {
   };
 
   const pushKeys = ({ password, token }) => {
-    const hostnames = system.login
-      ? [system.login.host, system.storage.host]
-      : [system.storage.host];
-    [...new Set(hostnames)].forEach((hostname) => {
-      dispatch({
-        type: 'SYSTEMS_PUSH_KEYS',
-        payload: {
-          systemId: system.id,
-          hostname,
-          password,
-          token,
-          type: system.type,
-          reloadCallback: reloadPage,
-          onSuccess,
-        },
-      });
+    dispatch({
+      type: 'SYSTEMS_PUSH_KEYS',
+      payload: {
+        systemId: system.id,
+        hostname: system.host,
+        password,
+        token,
+        reloadCallback: reloadPage,
+        onSuccess,
+      },
     });
   };
 
@@ -93,30 +87,16 @@ const SystemsPushKeysModal = () => {
                   will allow you to access this system from this portal.{' '}
                 </p>
                 <FormField
-                  name="pushKeysSysId"
+                  name="id"
                   label="System ID"
                   disabled
                   value={system.id}
                 />
                 <FormField
-                  name="pushKeysSysType"
-                  label="System Type"
+                  name="host"
+                  label="Host"
                   disabled
-                  value={system.type}
-                />
-                {system.login && (
-                  <FormField
-                    name="pushKeysSysLogin"
-                    label="Login Host"
-                    disabled
-                    value={system.login.host}
-                  />
-                )}
-                <FormField
-                  name="pushKeysSysStorage"
-                  label="Storage Host"
-                  disabled
-                  value={system.storage.host}
+                  value={system.host}
                 />
                 <FormField
                   name="password"

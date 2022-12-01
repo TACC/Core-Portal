@@ -4,17 +4,20 @@ from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
-from portal.utils.encryption import create_private_key, create_public_key, export_key
+from portal.utils.encryption import createKeyPair
 from tapipy.errors import BaseTapyException
 
 
-def createKeyPair():
-    private_key = create_private_key()
-    priv_key_str = export_key(private_key, 'PEM')
-    public_key = create_public_key(private_key)
-    publ_key_str = export_key(public_key, 'OpenSSH')
-
-    return priv_key_str, publ_key_str
+def push_system_credentials(user, public_key, private_key, system_id) -> int:
+    """
+    Set an RSA key pair as the user's auth credential on a Tapis system.
+    """
+    data = {'privateKey': private_key, 'publicKey': public_key}
+    user.tapis_oauth.client.systems.createUserCredential(
+        systemId=system_id,
+        userName=user.username,
+        **data
+        )
 
 
 class SystemAccessStepV3(AbstractStep):
@@ -47,32 +50,11 @@ class SystemAccessStepV3(AbstractStep):
         response.raise_for_status
         return response.status_code
 
-    def push_system_credentials(self, public_key, private_key, system_id) -> int:
-        """
-        Set an RSA key pair as the user's auth credential on a Tapis system.
-        """
-        data = {'privateKey': private_key, 'publicKey': public_key}
-        self.user.tapis_oauth.client.systems.createUserCredential(
-            systemId=system_id,
-            userName=self.user.username,
-            **data
-            )
-
     def check_system(self, system_id) -> None:
         """
         Check whether a user already has access to a storage system by attempting a listing.
         """
         self.user.tapis_oauth.client.files.listFiles(systemId=system_id, path="/")
-
-    def generate_and_push_credentials(self, system_id):
-        (priv, pub) = createKeyPair()
-        try:
-            self.register_public_key(pub, system_id)
-            self.push_system_credentials(pub, priv, system_id)
-            self.log(f"Access granted for system: {system_id}")
-        except (HTTPError, BaseTapyException) as e:
-            self.logger.error(e)
-            self.fail(f"Failed to push credentials to system: {system_id}")
 
     def process(self):
         self.log(f"Processing system access for user {self.user.username}")
@@ -82,7 +64,22 @@ class SystemAccessStepV3(AbstractStep):
                 self.log(f"Access already granted for system: {system}")
             except BaseTapyException:
                 self.log(f"Granting access for system: {system}")
-                self.generate_and_push_credentials(system)
+
+            (priv, pub) = createKeyPair()
+
+            try:
+                push_system_credentials(self.user, pub, priv, system)
+                self.log(f"Created credentials for system: {system}")
+            except BaseTapyException as e:
+                self.logger.error(e)
+                self.fail(f"Failed to push credentials to system: {system}")
+
+            try:
+                self.register_public_key(pub, system)
+                self.log(f"Public key registered for system: {system}")
+            except HTTPError as e:
+                self.logger.error(e)
+                self.fail(f"Failed to push public key to key service: {system}")
 
         if self.state != SetupState.FAILED:
             self.complete("User is processed.")

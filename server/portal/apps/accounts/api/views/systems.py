@@ -117,10 +117,9 @@ class SystemKeysView(BaseApiView):
         """
         body = json.loads(request.body)
         action = body['action']
-        op = getattr(self, action)  # pylint: disable=invalid-name
+        op = getattr(self, action)
         return op(request, system_id, body)
 
-    # pylint: disable=no-self-use, unused-argument
     def reset(self, request, system_id, body):
         """Resets a system's set of keys
 
@@ -128,7 +127,7 @@ class SystemKeysView(BaseApiView):
         :param str system_id: System id
         """
         pub_key = AccountsManager.reset_system_keys(
-            request.user.username,
+            request.user,
             system_id
         )
         return JsonResponse({
@@ -144,26 +143,17 @@ class SystemKeysView(BaseApiView):
         """
 
         AccountsManager.reset_system_keys(
-            request.user.username,
+            request.user,
             system_id
         )
 
-        success, result, http_status = AccountsManager.add_pub_key_to_resource(
-            request.user.username,
+        _, result, http_status = AccountsManager.add_pub_key_to_resource(
+            request.user,
             password=body['form']['password'],
             token=body['form']['token'],
             system_id=system_id,
             hostname=body['form']['hostname']
         )
-        # if success and body['form']['type'] == 'STORAGE':
-        #     # Index the user's home directory once keys are successfully pushed.
-        #     # Schedule indexing for 11:59:59 today.
-        #     index_time = datetime.now().replace(hour=11, minute=59, second=59)
-        #     agave_indexer.apply_async(args=[system_id], eta=index_time)
-        #     return JsonResponse({
-        #         'systemId': system_id,
-        #         'message': 'OK'
-        #     })
 
         return JsonResponse(
             {

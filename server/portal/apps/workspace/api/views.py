@@ -12,16 +12,18 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
+from django.core.exceptions import ObjectDoesNotExist
+from tapipy.errors import BaseTapyException, InternalServerError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
 from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
@@ -65,6 +67,28 @@ def _get_app(app_id, app_version, user):
     return data
 
 
+def _test_listing_with_existing_keypair(system, user):
+    # TODOv3: Add Tapis system test utility method with proper error handling
+    tapis = user.tapis_oauth.client
+
+    # Check for existing keypair stored for this hostname
+    try:
+        keys = user.ssh_keys.for_hostname(hostname=system.host)
+        priv_key_str = keys.private_key()
+        publ_key_str = keys.public
+    except ObjectDoesNotExist:
+        return False
+
+    # Attempt listing a second time after credentials are added to system
+    try:
+        push_system_credentials(user, publ_key_str, priv_key_str, system.id)
+        tapis.files.listFiles(systemId=system.id, path="/")
+    except BaseTapyException:
+        return False
+
+    return True
+
+
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -75,17 +99,21 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODOv3: Test user default storage system (for archiving)
-            # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
-            #     # check if default system needs keys pushed
-            #     default_sys = UserSystemsManager(
-            #         request.user,
-            #         settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            #     )
-            #     storage_sys = StorageSystem(tapis, default_sys.get_system_id())
-            #     success, _ = storage_sys.test()
-            #     data['systemHasKeys'] = success
-            #     data['pushKeysSystem'] = storage_sys.to_dict()
+            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS and settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT:
+                # check if default system needs keys pushed
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
+                system_id = default_sys.get_system_id()
+                system_def = tapis.systems.getSystem(systemId=system_id)
+
+                try:
+                    tapis.files.listFiles(systemId=system_id, path="/")
+                except InternalServerError:
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    data['systemHasKeys'] = success
+                    data['pushKeysSystem'] = system_def
         else:
             METRICS.debug("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
@@ -145,7 +173,7 @@ class JobsView(BaseApiView):
         )
 
     def post(self, request, *args, **kwargs):
-        agave = request.user.tapis_oauth.client
+        tapis = request.user.tapis_oauth.client
         job_post = json.loads(request.body)
         job_id = job_post.get('job_id')
         job_action = job_post.get('action')
@@ -158,7 +186,7 @@ class JobsView(BaseApiView):
             else:
                 METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
 
-            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
+            data = tapis.jobs.manage(jobId=job_id, body={"action": job_action})
 
             if job_action == 'resubmit':
                 if "id" in data:
@@ -221,15 +249,22 @@ class JobsView(BaseApiView):
             if job_post['inputs']:
                 job_post = url_parse_inputs(job_post)
 
-            # Get or create application based on allocation and execution system
-            apps_mgr = UserApplicationsManager(request.user)
-            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
-
-            if app.exec_sys:
-                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
-
-            job_post['appId'] = app.id
-            del job_post['allocation']
+            # Test file listing on relevant systems to determine whether keys need to be pushed manually
+            for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
+                system_def = tapis.systems.getSystem(system_id)
+                try:
+                    tapis.files.listFiles(systemId=system_id, path="/")
+                except InternalServerError:
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    if not success:
+                        logger.info(f"Keys for user {request.user.username} must be manually pushed to system: {system_id}")
+                        return JsonResponse(
+                            {
+                                'status': 200,
+                                'response': {"execSys": system_def},
+                            },
+                            encoder=BaseTapisResultSerializer
+                        )
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
@@ -244,12 +279,7 @@ class JobsView(BaseApiView):
                  'event': e}
                 for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
-            # Remove any params from job_post that are not in appDef
-            job_post['parameters'] = {param: job_post['parameters'][param]
-                                      for param in job_post['parameters']
-                                      if param in [p['id'] for p in app.parameters]}
-
-            response = agave.jobs.submit(body=job_post)
+            response = tapis.jobs.submit(body=job_post)
 
             if "id" in response:
                 job = JobSubmission.objects.create(
