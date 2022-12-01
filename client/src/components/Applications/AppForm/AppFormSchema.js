@@ -79,23 +79,17 @@ const FormSchema = (app) => {
       required: input.inputMode === 'REQUIRED ',
     };
 
-    field.type = 'text'; /* TODOv3 consider cardinality
-    if (input.semantics.maxCardinality === 1) {
-      field.type = 'text';
-    } else {
-      field.type = 'array';
-      field.maxItems = input.semantics.maxCardinality;
-    }
-    */
+    field.type = 'text';
     appFields.schema.fileInputs[input.name] = Yup.string();
 
-    // TODOv3 consider validation
+    /* TODOv3 handle fileInput validation https://jira.tacc.utexas.edu/browse/TV3-91
     appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
       input.name
     ].matches(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
+    */
 
     if (field.required) {
       appFields.schema.inputs[input.name] =
