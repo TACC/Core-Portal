@@ -269,7 +269,7 @@ class JobsView(BaseApiView):
 
             if 'envVariables' not in job_post['parameterSet']:
                 job_post['parameterSet']['envVariables'] = []
-            job_post['parameters']['envVariables'].append({'key': '_webhook_base_url', 'value':  wh_base_url})
+            job_post['parameterSet']['envVariables'].append({'key': '_webhook_base_url', 'value':  wh_base_url})
 
             # TODOv3 Webhooks/notifications continues
             # job_post['notifications'] = [
