@@ -21,7 +21,6 @@ function* getApp(action) {
     currentApp.definition.version === appVersion &&
     currentApp.systemHasKeys
   ) {
-
     return;
   }
   yield put({ type: 'FLUSH_SUBMIT' });
