@@ -1,10 +1,7 @@
-from django.test import (
-    TestCase,
-    override_settings
-)
+from django.test import TestCase
 from mock import MagicMock, patch
 from django.core.exceptions import ObjectDoesNotExist
-from portal.apps.accounts.managers.accounts import add_pub_key_to_resource, setup
+from portal.apps.accounts.managers.accounts import add_pub_key_to_resource
 from portal.apps.accounts.managers.ssh_keys import KeysManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -43,13 +40,14 @@ class AddPubKeyTests(TestCase):
         self.addCleanup(self.patch_lookup_keys_manager.stop)
         self.addCleanup(self.patch_check_user.stop)
 
+        self.mock_user = get_user_model().objects.get(username="username")
+
     def run_add_pub_key_to_resource(self):
-        username = "testuser"
         password = "testpassword"
         token = "123456"
         system_id = "portal-home.testuser"
         hostname = "data.tacc.utexas.edu"
-        return add_pub_key_to_resource(username, password, token, system_id, hostname)
+        return add_pub_key_to_resource(self.mock_user, password, token, system_id, hostname)
 
     # Patch KeysManager.ssh_keys.for_system function to throw Exception.
     # In reality, accessing ssh_keys attribute would throw RelatedOjbectDoesNotExist,
@@ -139,17 +137,3 @@ class TestUserSetup(TestCase):
         self.addCleanup(self.mock_systems_manager_patcher.stop)
         self.addCleanup(self.mock_storage_system_patcher.stop)
         self.addCleanup(self.mock_client_patcher.stop)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
-    def test_setup_no_preexisting(self):
-        self.mock_storage_system.return_value.test.return_value = (False, None)
-        setup("username", "system")
-        self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
-        self.mock_systems_manager.return_value.setup_private_system.assert_called_with(self.mock_user)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
-    def test_setup_preexisting(self):
-        self.mock_storage_system.return_value.test.return_value = (True, None)
-        setup("username", "system")
-        self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
-        self.mock_systems_manager.return_value.setup_private_system.assert_not_called()
