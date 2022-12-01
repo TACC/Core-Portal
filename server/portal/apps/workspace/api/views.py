@@ -75,7 +75,8 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODOv3: Test user default storage system (for archiving)
+            # TODOv3: Test user default storage system (for archiving)  https://jira.tacc.utexas.edu/browse/TV3-94
+            data['systemHasKeys'] = True
             # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
             #     # check if default system needs keys pushed
             #     default_sys = UserSystemsManager(

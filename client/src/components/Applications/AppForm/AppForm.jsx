@@ -224,10 +224,7 @@ export const AppSchemaForm = ({ app }) => {
     (state) => state.workbench.config.hideManageAccount
   );
 
-  // TODOv3 confirm and drop
-  //const { systemHasKeys, pushKeysSystem } = app;
-  const systemHasKeys = true;
-  const pushKeysSystem = '';
+  const { systemHasKeys, pushKeysSystem } = app;
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
