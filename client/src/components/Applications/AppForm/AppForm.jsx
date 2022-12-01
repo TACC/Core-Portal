@@ -557,7 +557,7 @@ export const AppSchemaForm = ({ app }) => {
                       ))
                       .sort()}
                   </FormField>
-                  {!app.definition.tags.includes('Interactive') ? ( // TODOv3 consider where we'll put 'Interactive'
+                  {!app.definition.notes.isInteractive ? (
                     <FormField
                       label="Maximum Job Runtime"
                       description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
@@ -616,7 +616,7 @@ export const AppSchemaForm = ({ app }) => {
                     type="text"
                     required
                   />
-                  {!app.definition.tags.includes('Interactive') ? ( //TODOv3 consider where we'll put 'Interactive'
+                  {!app.definition.notes.isInteractive ? (
                     <FormField
                       label="Output Location"
                       description={parse(
