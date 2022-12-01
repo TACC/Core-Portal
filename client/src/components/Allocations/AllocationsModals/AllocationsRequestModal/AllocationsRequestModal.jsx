@@ -14,9 +14,9 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
     </ModalHeader>
     <ModalBody className={styles['modal-body']}>
       <p>
-        <strong>For Frontera or Longhorn:</strong> You can manage your
-        allocation or request more time on a machine by using your TACC user
-        account credentials to access the Resource Allocation System at&nbsp;
+        <strong>For Frontera:</strong> You can manage your allocation or request
+        more time on a machine by using your TACC user account credentials to
+        access the Resource Allocation System at&nbsp;
         <a
           href="https://submit-tacc.xras.org/"
           target="_blank"
