@@ -19,9 +19,20 @@ describe('AppFormUtils', () => {
     ...helloWorldAppFixture,
     definition: {
       ...helloWorldAppFixture.definition,
-      jobAttributes: {
-        ...helloWorldAppFixture.definition.jobAttributes,
-        isMpi: true, // TODOv3 check if this can be considered PARALLEL
+      notes: {
+        ...helloWorldAppFixture.definition.notes,
+        hideNodeCountAndCoresPerNode: false,
+      },
+    },
+  };
+
+  const serialFronteraApp = {
+    ...helloWorldAppFixture,
+    definition: {
+      ...helloWorldAppFixture.definition,
+      notes: {
+        ...helloWorldAppFixture.definition.notes,
+        hideNodeCountAndCoresPerNode: true,
       },
     },
   };
@@ -73,6 +84,9 @@ describe('AppFormUtils', () => {
       getQueueValidation(normalQueue, helloWorldAppFixture).isValidSync(
         'normal'
       )
+    ).toEqual(true);
+    expect(
+      getQueueValidation(normalQueue, serialFronteraApp).isValidSync('normal')
     ).toEqual(false);
   });
 

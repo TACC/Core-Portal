@@ -537,13 +537,11 @@ export const AppSchemaForm = ({ app }) => {
                       .map((q) => q.name)
                       .filter(
                         (q) =>
-                          // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed
+                          // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed if app is fixed to single node
                           !(
-                            (
-                              getSystemName(app.exec_sys.host) === 'Frontera' &&
-                              q === 'normal' &&
-                              !app.definition.jobAttributes.isMpi
-                            ) // TODOv3 parallelism: review
+                            getSystemName(app.exec_sys.host) === 'Frontera' &&
+                            q === 'normal' &&
+                            app.definition.notes.hideNodeCountAndCoresPerNode
                           )
                       )
                       .sort()
@@ -566,7 +564,7 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                   ) : null}
-                  {app.definition.jobAttributes.isMpi ? ( // TODOv3 parallelism:  prev was (parallelism === 'PARALLEL' ) now isMpi?  no concept of SERIAL/PARALLEL app in app definition
+                  {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
                     <>
                       <FormField
                         label="Cores Per Node"

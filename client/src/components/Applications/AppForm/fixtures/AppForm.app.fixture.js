@@ -175,7 +175,7 @@ export const helloWorldAppFixture = {
     batchSchedulerProfile: 'tacc',
     jobCapabilities: [],
     tags: [],
-    notes: {},
+    notes: { hideNodeCountAndCoresPerNode: true },
     importRefId: null,
     uuid: '9452b7a6-c341-4da6-b559-74acc67a2a6c',
     deleted: false,
