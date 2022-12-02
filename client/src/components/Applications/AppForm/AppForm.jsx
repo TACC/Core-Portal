@@ -569,7 +569,7 @@ export const AppSchemaForm = ({ app }) => {
                   {app.definition.jobAttributes.isMpi ? ( // TODOv3 parallelism:  prev was (parallelism === 'PARALLEL' ) now isMpi?  no concept of SERIAL/PARALLEL app in app definition
                     <>
                       <FormField
-                        label="Processors On Each Node" // TODOv3 should we change "processors" to "core" to match tapis docs (kinda the same difference?)
+                        label="Cores Per Node"
                         description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
                         name="coresPerNode"
                         type="number"
