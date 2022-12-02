@@ -35,8 +35,6 @@ describe('Section', () => {
             headerClassName="header-test"
             content={<p>Content</p>}
             contentClassName="content-test"
-            // sidebar={<nav>Sidebar</nav>}
-            // sidebarClassName="sidebar-test"
             messages={
               <>
                 <strong>Message</strong>
