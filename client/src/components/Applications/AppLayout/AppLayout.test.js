@@ -43,7 +43,7 @@ describe('AppsLayout', () => {
   });
 });
 
-/* TODOv3 stop skipping tests; update fixtures */
+/* TODOv3 stop skipping tests; update fixtures https://jira.tacc.utexas.edu/browse/TV3-98 */
 describe.skip('AppsHeader', () => {
   it('renders breadcrumbs', () => {
     const store = mockStore({

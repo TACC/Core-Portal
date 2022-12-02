@@ -58,7 +58,7 @@ function renderAppSchemaFormComponent(store, app) {
   );
 }
 
-/* TODOv3 stop skipping tests; update fixtures */
+/* TODOv3 stop skipping tests; update fixtures https://jira.tacc.utexas.edu/browse/TV3-98 */
 describe.skip('AppSchemaForm', () => {
   it('renders the AppSchemaForm', async () => {
     const store = mockStore({
