@@ -443,6 +443,18 @@ export const AppSchemaForm = ({ app }) => {
           if (app.license.type && app.license.enabled) {
             job.licenseType = app.license.type;
           }
+          if (job.allocation) {
+            if (!job.parameterSet.schedulerOptions) {
+              job.parameterSet.schedulerOptions = [];
+            }
+            job.parameterSet.schedulerOptions.push({
+              name: 'Allocation',
+              description: 'The allocation associated with this job execution',
+              include: true,
+              arg: `-A ${job.allocation}`,
+            });
+            delete job.allocation;
+          }
           dispatch({
             type: 'SUBMIT_JOB',
             payload: job,

@@ -253,13 +253,6 @@ class JobsView(BaseApiView):
 
             if 'parameterSet' not in job_post:
                 job_post['parameterSet'] = {}
-            if 'schedulerOptions' not in job_post['parameterSet']:
-                job_post['parameterSet']['schedulerOptions'] = []
-            job_post['parameterSet']['schedulerOptions'].append({"name": "Allocation",
-                                                                 "description": "The allocation associated with this job execution",
-                                                                 "include": True,
-                                                                 "arg": f"-A {job_post['allocation']}"})
-            del job_post['allocation']
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
