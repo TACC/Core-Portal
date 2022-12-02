@@ -3,9 +3,13 @@ import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchAppDefinitionUtil(appId, appVersion) {
+  let params = { appId };
+  if (appVersion) {
+    params.appVersion = appVersion;
+  }
   const result = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { appId, appVersion },
+    params,
   });
   return result.response;
 }
