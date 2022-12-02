@@ -19,7 +19,6 @@ from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager  # TODOv3
 # from portal.utils.translations import url_parse_inputs  # TODOv3
-from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from .handlers.tapis_handlers import tapis_get_handler
@@ -114,14 +113,13 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            # TODOv3: Query portal
-            # portal_name = settings.PORTAL_NAMESPACE
+            portal_name = settings.PORTAL_NAMESPACE
 
             data = tapis.jobs.getJobSearchList(
                 limit=limit,
                 startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)'
-                # _tapis_query_parameters={'tags.contains': portal_name}
+                orderBy='lastUpdated(desc),name(asc)',
+                _tapis_query_parameters={'tags.contains': portal_name}
             )
 
         return JsonResponse(
@@ -156,11 +154,6 @@ class JobsView(BaseApiView):
                 METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
 
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=data.uuid
-                )
-                job.save()
             elif job_action == 'cancel':
                 METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid)
@@ -258,6 +251,9 @@ class JobsView(BaseApiView):
                 job_post['parameterSet']['envVariables'] = []
             job_post['parameterSet']['envVariables'].append({'key': '_webhook_base_url', 'value':  wh_base_url})
 
+            portal_name = settings.PORTAL_NAMESPACE
+            job_post['tags'] = job_post.get('tags', []).append(portal_name)
+
             # TODOv3 Webhooks/notifications continues
             # job_post['notifications'] = [
             #     {'url': jobs_wh_url,
@@ -265,12 +261,6 @@ class JobsView(BaseApiView):
             #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             response = tapis.jobs.submitJob(**job_post)
-            if hasattr(response, "uuid"):
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=response.uuid
-                )
-                job.save()
 
             return JsonResponse({"response": response}, encoder=BaseTapisResultSerializer)
 
