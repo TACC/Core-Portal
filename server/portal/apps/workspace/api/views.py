@@ -20,7 +20,6 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.utils.translations import url_parse_inputs
-from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
@@ -141,14 +140,13 @@ class JobsView(BaseApiView):
         else:
             limit = int(request.GET.get('limit', 10))
             offset = int(request.GET.get('offset', 0))
-            # TODOv3: Query portal
-            # portal_name = settings.PORTAL_NAMESPACE
+            portal_name = settings.PORTAL_NAMESPACE
 
             data = tapis.jobs.getJobSearchList(
                 limit=limit,
                 startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)'
-                # _tapis_query_parameters={'tags.contains': portal_name}
+                orderBy='lastUpdated(desc),name(asc)',
+                _tapis_query_parameters={'tags.contains': portal_name}
             )
 
         return JsonResponse(
@@ -183,11 +181,6 @@ class JobsView(BaseApiView):
                 METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
 
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=data.uuid
-                )
-                job.save()
             elif job_action == 'cancel':
                 METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid)
@@ -287,14 +280,10 @@ class JobsView(BaseApiView):
                  'event': e}
                 for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
-            response = tapis.jobs.submit(body=job_post)
+            portal_name = settings.PORTAL_NAMESPACE
+            job_post['tags'] = job_post.get('tags', []).append(portal_name)
 
-            if "id" in response:
-                job = JobSubmission.objects.create(
-                    user=request.user,
-                    jobId=response["id"]
-                )
-                job.save()
+            response = tapis.jobs.submit(body=job_post)
 
             return JsonResponse(
                 {
