@@ -580,8 +580,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.exec_sys.batchScheduler ===
-                  'SLURM' /* TODOv3  no concept of is slurm job in app definition; nathan: assumes it is at the moment? */ ? (
+                  {app.exec_sys.batchScheduler === 'SLURM' ? (
                     <FormField
                       label="Allocation"
                       name="allocation"
