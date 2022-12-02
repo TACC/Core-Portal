@@ -271,7 +271,6 @@ class JobsView(BaseApiView):
             #      'event': e}
             #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
-            logger.info(f"submitting this job: f{job_post}")
             response = tapis.jobs.submitJob(**job_post)
             if hasattr(response, "uuid"):
                 job = JobSubmission.objects.create(
