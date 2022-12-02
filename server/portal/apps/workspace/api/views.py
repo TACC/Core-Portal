@@ -185,7 +185,7 @@ class JobsView(BaseApiView):
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
-            if True:  # TODOv3 ignoring archiving for the moment
+            if True:  # TODOv3 ignoring archiving for the moment (https://jira.tacc.utexas.edu/browse/TV3-94)
                 if job_post.get('archiveSystemDir'):
                     del job_post['archiveSystemDir']
                 if job_post.get('archiveOnAppError'):
@@ -233,23 +233,16 @@ class JobsView(BaseApiView):
                     job_post['parameterSet']['envVariables'] = [license_var]
                 del job_post['licenseType']
 
-            # url encode inputs
-            # TODOv3 update for v3
-            # if job_post['inputs']:
-            #     job_post = url_parse_inputs(job_post)
-
-            # TODOv3 potentially remove UserApplicationsManager but need to check if execution system needs keys
+            # TODOv3 need to check if execution system needs keys (https://jira.tacc.utexas.edu/browse/TV3-94)
             # Get or create application based on allocation and execution system
             apps_mgr = UserApplicationsManager(request.user)
-            print(apps_mgr)  # TODOv3 testing workaround
+            print(apps_mgr)  # TODOv3 testing workaround (to avoid flake8 error)
             # app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
-            # TODOv3 update to determine if keys need to be pushed (as not using above code or replacement for abouve
+            # TODOv3 need to check if execution system needs keys (https://jira.tacc.utexas.edu/browse/TV3-94)
             # code: UserApplicationsManager get_or_create_app)
             # if app.exec_sys:
             #     return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
-
-            # TODOv3
 
             if 'parameterSet' not in job_post:
                 job_post['parameterSet'] = {}
