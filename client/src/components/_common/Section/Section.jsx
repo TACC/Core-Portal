@@ -110,9 +110,6 @@ function Section({
   headerClassName,
   manualContent,
   manualHeader,
-  // manualSidebar,
-  // sidebar,
-  // sidebarClassName,
   messages,
   messagesClassName,
   messageComponentName,
@@ -135,11 +132,6 @@ function Section({
       'When passing `manualHeader`, the following props are ineffectual: `header`, `headerClassName`, `headerActions`'
     );
   }
-  // if (manualSidebar && (sidebar || sidebarClassName)) {
-  //   throw new Error(
-  //     'When passing `manualSidebar`, the following props are ineffectual: `sidebar`, `sidebarClassName`'
-  //   );
-  // }
 
   useEffect(() => {
     if (bodyClassName) document.body.classList.add(bodyClassName);
@@ -159,13 +151,6 @@ function Section({
       >
         {messages}
       </SectionMessages>
-      {/* {manualSidebar ? (
-        <>{manualSidebar}</>
-      ) : (
-        <Sidebar styleName="sidebar" className={sidebarClassName}>
-          {sidebar}
-        </Sidebar>
-      )} */}
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
@@ -224,18 +209,12 @@ Section.propTypes = {
   manualContent: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]),
   /** The section header (built by user) element */
   manualHeader: PropTypes.element,
-  // /** The page-specific sidebar */
-  // sidebar: PropTypes.node,
-  // /** Additional className for the sidebar element */
-  // sidebarClassName: PropTypes.string,
   /** Any message(s) (e.g. <Message>) (but NOT a intro message) */
   messages: PropTypes.node,
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
   /** The name of the message to use */
   messageComponentName: PropTypes.string,
-  /** Any additional className(s) for the sidebar list */
-  // sidebarClassName: '',
   /** Custom intro text (can overwrite message from `messageComponentName`) */
   introMessageText: PropTypes.string,
 };
@@ -255,7 +234,6 @@ Section.defaultProps = {
   messages: '',
   messagesClassName: '',
   messageComponentName: '',
-  // sidebarClassName: '',
   introMessageText: '',
 };
 
