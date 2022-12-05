@@ -1,43 +1,3 @@
-.data-files-sidebar {
-  --horizontal-buffer: var(--global-space--section-left);
-  /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
-  --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
-
-  --min-width: 200px;
-
-  margin-left: calc(var(--horizontal-buffer) * -1);
-  border-right: 1px solid rgb(112 112 112 / 25%);
-
-  padding-top: var(--vertical-buffer);
-}
-
-.data-files-sidebar .nav-link {
-  min-width: var(--min-width);
-
-  padding-left: var(--horizontal-buffer);
-  color: var(--global-color-primary--dark);
-  font-weight: 500;
-}
-
-.data-files-sidebar .nav-link.active,
-.data-files-sidebar .nav-link:hover {
-  color: var(--global-color-primary--x-dark);
-  background: var(--global-color-accent--weak);
-}
-
-.data-files-sidebar .nav-link.active {
-  font-weight: 700;
-}
-
-.data-files-sidebar .nav-link:active {
-  font-weight: 700;
-}
-
-.data-files-sidebar .nav-text {
-  padding-left: 16px;
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-}
-
 .data-files-btn {
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-accent--normal);
@@ -90,7 +50,7 @@
 
   .dropdown-item {
     padding: 10px 6px;
-    color: #707070;
+    color: var(--global-color-primary--x-dark);
     font-size: 14px;
     i {
       padding-right: 19px;
@@ -98,7 +58,7 @@
       vertical-align: middle;
     }
     &:hover {
-      color: #707070;
+      color: var(--global-color-primary--x-dark);
     }
   }
   .dropdown-item:focus,
@@ -121,6 +81,6 @@
   line-height: 1.1em;
   small {
     display: block;
-    color: var(--global-color-primary--xx-dark);
+    color: var(--global-color-primary--x-dark);
   }
 }

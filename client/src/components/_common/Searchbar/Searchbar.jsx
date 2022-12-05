@@ -4,31 +4,19 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, DropdownSelector } from '_common';
 import { useSystemDisplayName } from 'hooks/datafiles';
-import styles from './DataFilesSearchbar.module.scss';
+import styles from './Searchbar.module.scss';
 
-const fileTypes = [
-  'Audio',
-  'Code',
-  'Documents',
-  'Folders',
-  'Images',
-  'Jupyter Notebook',
-  'PDF',
-  'Presentation',
-  'Spreadsheet',
-  'Shape File',
-  'Text',
-  'ZIP',
-  '3D Visualization',
-];
-
-const DataFilesSearchbar = ({
+const Searchbar = ({
   api,
   scheme,
   system,
   resultCount,
+  dataType,
+  filterTypes,
+  infiniteScroll,
   className,
   siteSearch,
+  sectionName,
   disabled,
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
@@ -39,34 +27,28 @@ const DataFilesSearchbar = ({
     location.search
   );
 
-  const displayName = useSystemDisplayName({ system, scheme });
-
-  let sectionName;
-  if (siteSearch) {
-    sectionName = 'Site';
-  } else if (scheme === 'projects') {
-    sectionName = 'Workspace';
-  } else {
-    sectionName = displayName;
+  if (!sectionName) {
+    sectionName = useSystemDisplayName({ system, scheme });
   }
+
+  const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
 
   const applyFilter = (newFilter) => {
     const prevQuery = queryString.parse(location.search);
     const updatedQuery = queryString.stringify({
       ...prevQuery,
       filter: newFilter || undefined,
-      page: siteSearch ? 1 : undefined,
+      page: !infiniteScroll ? 1 : undefined,
     });
     history.push(`${location.pathname}?${updatedQuery}`);
   };
 
   const routeSearch = () => {
-    // Site Search query
     const prevQuery = queryString.parse(location.search);
     const updatedQuery = queryString.stringify({
       ...prevQuery,
       query_string: query || undefined,
-      page: siteSearch ? 1 : undefined,
+      page: !infiniteScroll ? 1 : undefined,
     });
     history.push(`${location.pathname}?${updatedQuery}`);
 
@@ -82,13 +64,16 @@ const DataFilesSearchbar = ({
     routeSearch();
     e.preventDefault();
   };
+
   const onClear = (e) => {
     e.preventDefault();
-    if (!siteSearch) {
-      setQuery('');
-      history.push(location.pathname);
-    } else applyFilter(undefined);
+    if (filterType && filterType !== allFilterTypesValue) {
+      applyFilter(undefined);
+    }
+    setQuery('');
+    history.push(location.pathname);
   };
+
   const onChange = (e) => setQuery(e.target.value);
 
   return (
@@ -129,23 +114,24 @@ const DataFilesSearchbar = ({
           disabled={disabled}
         />
       </div>
-      {scheme !== 'cms' && api === 'tapis' && (
+
+      {filterTypes && filterTypes.length > 0 && api === 'tapis' && (
         <div className={styles['file-filter']}>
-          <span>File Type:</span>
+          <span>Filter:</span>
           <DropdownSelector
             onChange={(e) => applyFilter(e.target.value)}
             value={filterType ?? ''}
             disabled={disabled}
           >
-            <option value="">All Types</option>
-            {fileTypes.map((item) => (
+            <option value="">{allFilterTypesValue}</option>
+            {filterTypes.map((item) => (
               <option key={`fileTypeFilter${item}`}>{item}</option>
             ))}
           </DropdownSelector>
         </div>
       )}
       {((hasQuery && !siteSearch) ||
-        (filterType && filterType !== 'All Types')) && (
+        (filterType && filterType !== allFilterTypesValue)) && (
         <div
           aria-label="Summary of Search Results"
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
@@ -155,30 +141,40 @@ const DataFilesSearchbar = ({
         </div>
       )}
       {((hasQuery && !siteSearch) ||
-        (filterType && filterType !== 'All Types' && scheme !== 'cms')) && (
+        (filterType && filterType !== allFilterTypesValue && filterTypes)) && (
         <Button attr="reset" type="link" onClick={onClear}>
-          Back to All Files
+          <span data-testid="clear-button">
+            Back to All {dataType ? dataType : 'Results'}
+          </span>
         </Button>
       )}
     </form>
   );
 };
-DataFilesSearchbar.propTypes = {
+
+Searchbar.propTypes = {
   /* API endpoint values */
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   resultCount: PropTypes.number,
+  filterTypes: PropTypes.arrayOf(PropTypes.string),
+  infiniteScroll: PropTypes.bool,
+  dataType: PropTypes.string.isRequired,
+  sectionName: PropTypes.string,
   /** Additional className(s) for the root element */
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
   disabled: PropTypes.bool,
 };
-DataFilesSearchbar.defaultProps = {
+
+Searchbar.defaultProps = {
   className: '',
   resultCount: 0,
   siteSearch: false,
   disabled: false,
+  infiniteScroll: true,
+  dataType: '',
 };
 
-export default DataFilesSearchbar;
+export default Searchbar;

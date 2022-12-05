@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [2.22.1] - 2022-11-15: Increase CustomMessageTemplate length
+
+### Fixed
+
+- FP-1922: Increase CustomMessageTemplate max_length to 1000 characters
+
+## [2.22.0] - 2022-11-15: Common Searchbar; Common Sidebar; TAP Sysmon
+
+### Added
+
+- FP-1902: Common Searchbar component (#724)
+
+### Changed
+
+- FP-1839: Feedback link in portal is configurable (#707)
+- FP-1537: Download modal adjustments (#716)
+- FP-1877: Replace alert with inline (#717)
+- FP-1886: Remove My Account from pulldown at the top right (#723)
+- Quick: Move prettier config to .prettierrc file (#725)
+- FP-1901: Replace system monitor endpoint with TAP (#729)
+- FP-1560: Use _common Sidebar (#731)
+
+### Fixed
+
+- FP-1668: Added () to accepted characters and changed error message to reflect (#709)
+- FP-1669: Fix back button in copy modal (#710)
+- FP-1859: Fix upload icon color (#714)
+- FP-1584: Populating source portal name in ticket data (#718)
+- FP-1629: Allow helper text to display with error message while creating a job (#719)
+- FP-1861: Remove app icon underline on hover (#721)
+- FP-1860: Match css text color for 'Up to 500mb' text (#728)
+
 ## [2.21.0] - 2022-10-06: Bugfixes for Allocations, Systems, Roles
 
 ### Changed
@@ -748,7 +781,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.21.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.22.1...HEAD
+[2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
+[2.22.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.0
 [2.21.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.21.0
 [2.20.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.20.0
 [2.19.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.19.0

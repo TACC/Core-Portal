@@ -3,10 +3,10 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
-import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
-import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
-import Sidebar from './index';
+import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
+import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
+import WorkbenchSidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
 
 const PUBLIC_PAGES = [
@@ -37,7 +37,7 @@ function renderSideBar(store, showUIPatterns) {
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
         <Route path="/workbench">
-          <Sidebar showUIPatterns={showUIPatterns} loading={false} />
+          <WorkbenchSidebar showUIPatterns={showUIPatterns} loading={false} />
         </Route>
       </MemoryRouter>
     </Provider>
