@@ -8,7 +8,6 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 import Searchbar from '_common/Searchbar';

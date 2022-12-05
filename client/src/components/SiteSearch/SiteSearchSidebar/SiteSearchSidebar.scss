@@ -1,46 +1,6 @@
 $data-files-wrapper-horizontal-padding: 50px;
 $core-portal-color-primary: var(--global-color-accent--normal);
 
-.site-search-sidebar {
-  background: #ffffff;
-  padding-right: 50px;
-  display: flex;
-}
-
-.site-search-sidebar .nav-link {
-  padding-left: $data-files-wrapper-horizontal-padding;
-  color: var(--global-color-primary--dark);
-  font-weight: 500;
-}
-
-.site-search-sidebar .nav-link.active,
-.site-search-sidebar .nav-link:hover {
-  color: var(--global-color-primary--x-dark);
-  background: var(--global-color-accent--weak);
-}
-
-.site-search-sidebar .nav-link:active,
-.site-search-sidebar .nav-link.active {
-  font-weight: 700;
-}
-
-.site-search-sidebar .nav-text {
-  padding-left: 15px;
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-}
-
-.site-search-sidebar .nav-content {
-  padding-left: 20px;
-}
-
-.site-search-nav {
-  padding-top: 20px;
-  /* Pull back sidebar to the left, so it can use (as UI design dictactes)
-      the negative space created from `data-files-wrapper`'s `padding` */
-  margin-left: -$data-files-wrapper-horizontal-padding;
-  flex-grow: 1;
-}
-
 .search-count-pill {
   display: flex;
   flex-grow: 1;
