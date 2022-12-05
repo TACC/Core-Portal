@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 
-const LIMIT = 50;
+export const LIMIT = 50;
 
 export async function fetchJobs(offset, limit) {
   const result = await fetchUtil({

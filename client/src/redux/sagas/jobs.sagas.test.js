@@ -18,6 +18,7 @@ import {
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
   watchJobs,
+  LIMIT,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import executionSystemDetailFixture from './fixtures/executionsystemdetail.fixture';
@@ -29,8 +30,6 @@ import jobsListFixture from './fixtures/jobsList.fixture';
 import { notificationsListFixture } from './fixtures/notificationsList.fixture';
 
 jest.mock('cross-fetch');
-
-const JOBS_LIST_LIMIT = 50;
 
 const initialJobDetail = {
   jobId: null,
@@ -178,12 +177,12 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, JOBS_LIST_LIMIT)
+      .call(fetchJobs, 0, LIMIT)
       .put({
         type: 'JOBS_LIST',
         payload: {
           list: jobsListFixture,
-          reachedEnd: jobsListFixture.length < JOBS_LIST_LIMIT,
+          reachedEnd: jobsListFixture.length < LIMIT,
         },
       })
       .put({ type: 'JOBS_LIST_FINISH' })
@@ -199,7 +198,7 @@ describe('getJobs Saga', () => {
         error: null,
       })
       .run());
-  it('with offset = 51, it should return without updating the jobs state', () =>
+  it('with offset = 51 and reachedEnd = true, it should return without updating the jobs state', () =>
     expectSaga(getJobs, { params: { offset: 51 } })
       .withReducer(jobsReducer)
       .provide([[matchers.select.selector(selectorJobsReachedEnd), true]])
@@ -207,7 +206,7 @@ describe('getJobs Saga', () => {
         ...jobsInitalState,
       })
       .run());
-  it('with error from fetchJobs, the saga should catch the error and set the jobs state appropriately', () =>
+  it('with error from fetchJobs, the saga should catch the error and set the jobs state accordingly', () =>
     expectSaga(getJobs, { params: { offset: 0 } })
       .withReducer(jobsReducer)
       .provide([
@@ -215,7 +214,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, JOBS_LIST_LIMIT)
+      .call(fetchJobs, 0, LIMIT)
       .put({ type: 'JOBS_LIST_ERROR', payload: 'error' })
       .put({ type: 'JOBS_LIST_FINISH' })
       .hasFinalState({
