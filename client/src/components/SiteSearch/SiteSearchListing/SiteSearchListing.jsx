@@ -9,7 +9,6 @@ import {
 } from '../../DataFiles/DataFilesListing/DataFilesListingCells';
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
-import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import styles from './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 import Searchbar from '_common/Searchbar';
