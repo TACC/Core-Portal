@@ -252,7 +252,7 @@ class JobsView(BaseApiView):
             job_post['parameterSet']['envVariables'].append({'key': '_webhook_base_url', 'value':  wh_base_url})
 
             portal_name = settings.PORTAL_NAMESPACE
-            job_post['tags'] = job_post.get('tags', []).append(portal_name)
+            job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
             # TODOv3 Webhooks/notifications continues
             # job_post['notifications'] = [
