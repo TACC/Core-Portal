@@ -1,6 +1,6 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { select } from 'redux-saga/effects';
 import {
   jobs as jobsReducer,
   jobDetail as jobDetailReducer,
@@ -15,7 +15,9 @@ import {
   submitJob,
   getJobs,
   fetchJobs,
-  notificationsSelector,
+  selectorNotificationsListNotifs,
+  selectorJobsReachedEnd,
+  watchJobs,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import executionSystemDetailFixture from './fixtures/executionsystemdetail.fixture';
@@ -38,14 +40,6 @@ const initialJobDetail = {
   loading: false,
   loadingError: false,
   loadingErrorMessage: '',
-};
-
-const initialJobsState = {
-  list: [],
-  submit: { submitting: false },
-  loading: false,
-  reachedEnd: false,
-  error: null,
 };
 
 describe('getJobDetails Saga', () => {
@@ -92,6 +86,13 @@ test('Effect Creators should dispatch sagas', () => {
   testSaga(watchJobDetails)
     .next()
     .takeLatest('GET_JOB_DETAILS', getJobDetails)
+    .next()
+    .isDone();
+  testSaga(watchJobs)
+    .next()
+    .takeLatest('GET_JOBS', getJobs)
+    .next()
+    .takeLeading('SUBMIT_JOB', submitJob)
     .next()
     .isDone();
 });
@@ -164,14 +165,14 @@ describe('submitJob Saga', () => {
       .run());
 });
 
-describe('getJobs Saga with offset = 0', () => {
-  it('should fetch jobs list and set jobs state appropriately', () =>
+describe('getJobs Saga', () => {
+  it('with offset = 0, it should fetch jobs list and set jobs state appropriately', () =>
     expectSaga(getJobs, { params: { offset: 0 } })
       .withReducer(jobsReducer)
       .provide([
         [matchers.call.fn(fetchJobs), jobsListFixture],
         [
-          matchers.select.selector(notificationsSelector),
+          matchers.select.selector(selectorNotificationsListNotifs),
           notificationsListFixture.notifs,
         ],
       ])
@@ -190,13 +191,36 @@ describe('getJobs Saga with offset = 0', () => {
         type: 'UPDATE_JOBS_FROM_NOTIFICATIONS',
         payload: notificationsListFixture.notifs,
       })
-
       .hasFinalState({
         list: jobsListFixture,
         submit: { submitting: false },
         loading: false,
         reachedEnd: true,
         error: null,
+      })
+      .run());
+  it('with offset = 51, it should return without updating the jobs state', () =>
+    expectSaga(getJobs, { params: { offset: 51 } })
+      .withReducer(jobsReducer)
+      .provide([[matchers.select.selector(selectorJobsReachedEnd), true]])
+      .hasFinalState({
+        ...jobsInitalState,
+      })
+      .run());
+  it('with error from fetchJobs, the saga should catch the error and set the jobs state appropriately', () =>
+    expectSaga(getJobs, { params: { offset: 0 } })
+      .withReducer(jobsReducer)
+      .provide([
+        [matchers.call.fn(fetchJobs), throwError(new Error('test error'))],
+      ])
+      .put({ type: 'JOBS_LIST_INIT' })
+      .put({ type: 'JOBS_LIST_START' })
+      .call(fetchJobs, 0, JOBS_LIST_LIMIT)
+      .put({ type: 'JOBS_LIST_ERROR', payload: 'error' })
+      .put({ type: 'JOBS_LIST_FINISH' })
+      .hasFinalState({
+        ...jobsInitalState,
+        error: 'error',
       })
       .run());
 });
