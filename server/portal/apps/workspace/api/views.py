@@ -247,7 +247,7 @@ class JobsView(BaseApiView):
                 wh_base_url = request.build_absolute_uri('/webhooks/')
                 # jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameterSet']['envVariables'] = jop_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
+            job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []) + [portal_name]
