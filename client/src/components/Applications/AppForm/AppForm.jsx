@@ -36,7 +36,6 @@ const appShape = PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
     description: PropTypes.string,
-    helpURI: PropTypes.string,
     defaultQueue: PropTypes.string,
     nodeCount: PropTypes.number,
     coresPerNode: PropTypes.number,
@@ -154,10 +153,10 @@ const AppInfo = ({ app }) => {
       <div className="appInfo-description">
         {parse(app.definition.description || '')}
       </div>
-      {app.definition.helpURI ? (
+      {app.definition.notes.helpUrl ? (
         <a
           className="wb-link appInfo-documentation"
-          href={app.definition.helpURI}
+          href={app.definition.notes.helpUrl}
           target="_blank"
           rel="noreferrer noopener"
         >
