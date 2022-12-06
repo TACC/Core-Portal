@@ -11,7 +11,7 @@ const FormSchema = (app) => {
   /* TODOv3 envVariables  https://jira.tacc.utexas.edu/browse/TV3-97 */
   (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
-    if (param.notes.hidden) {
+    if (param.notes.isHidden) {
       return;
     }
 
