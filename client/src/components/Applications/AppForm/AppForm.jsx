@@ -431,9 +431,11 @@ export const AppSchemaForm = ({ app }) => {
             })
             .filter(
               (appArg) =>
-                appArg.arg === '' ||
-                appArg.arg === null ||
-                appArg.arg === undefined
+                !(
+                  appArg.arg === '' ||
+                  appArg.arg === null ||
+                  appArg.arg === undefined
+                )
             ); // filter out any empty values
           delete job.appArgs;
           // TODOv3 add envVariables
