@@ -421,13 +421,13 @@ export const AppSchemaForm = ({ app }) => {
           job.appVersion = app.definition.version;
           job.fileInputs = Object.entries(job.fileInputs).map(([k, v]) => {
             return { name: k, sourceUrl: v };
-          });
+          }).filter(fileInput => fileInput.sourceUrl); // filter out any empty values
           job.parameterSet = {};
           job.parameterSet.appArgs = Object.entries(job.appArgs).map(
             ([k, v]) => {
               return { name: k, arg: v };
             }
-          );
+          ).filter(appArg => appArg.arg);  // filter out any empty values
           delete job.appArgs;
           // TODOv3 add envVariables
           /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
