@@ -7,22 +7,20 @@ import JobsSessionModal from '../JobsSessionModal';
 import styles from './JobsStatus.module.scss';
 
 export const STATUS_TEXT_MAP = {
-  ACCEPTED: 'Processing',
   PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
   STAGING_INPUTS: 'Staging',
-  STAGED: 'Staging',
   STAGING_JOB: 'Staging',
-  SUBMITTING: 'Submitted',
+  SUBMITTING_JOB: 'Submitted',
   QUEUED: 'Queued',
   RUNNING: 'Running',
-  CLEANING_UP: 'Finishing',
   ARCHIVING: 'Finishing',
   FINISHED: 'Finished',
   STOPPED: 'Stopped',
   FAILED: 'Failure',
   BLOCKED: 'Blocked',
   PAUSED: 'Paused',
+  CANCELLED: 'Cancelled',
   toastMap(status) {
     /* Post-process mapped status message to get a toast message translation. */
     const mappedStatus = getStatusText(status);

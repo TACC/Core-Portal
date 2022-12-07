@@ -21,14 +21,18 @@ const NotificationToast = () => {
   );
 
   useEffect(() => {
-    if (toasts.length && !notification) {
-      // Set a new toast when we don't have an active one
-      setNotification({ ...toasts[0] });
-      setTransition(() => (props) => <Slide {...props} direction="right" />);
-      setOpen(true);
-    } else if (toasts.length && notification && open) {
-      // Close an active toast when a new one is added
-      setOpen(false);
+    if (toasts.length) {
+      if (STATUS_TEXT_MAP.toastMap(toasts[0].extra.status) !== STATUS_TEXT_MAP.toastMap(toasts[0].extra.old_status)) {
+        if (!notification) {
+          // Set a new toast when we don't have an active one
+          setNotification({ ...toasts[0] });
+          setTransition(() => (props) => <Slide {...props} direction="right" />);
+          setOpen(true);
+        } else if (notification && open) {
+          // Close an active toast when a new one is added
+          setOpen(false);
+        }
+      }
     }
   }, [toasts]);
 

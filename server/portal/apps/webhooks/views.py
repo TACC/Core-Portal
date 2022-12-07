@@ -26,8 +26,10 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+terminal_job_states = ["FINISHED", "CANCELLED", "FAILED"]
 
-def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
+
+def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     """
     Verifies that a job UUID is both visible to the owner and belongs to the owner
 
@@ -38,13 +40,13 @@ def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
 
     """
     user = get_user_model().objects.get(username=job_owner)
-    agave = user.tapis_oauth.client
-    job_data = agave.jobs.get(jobId=job_uuid)
+    client = user.tapis_oauth.client
+    job_data = client.jobs.getJob(jobUuid=job_uuid)
 
     # Validate the job ID against the owner
     if job_data['owner'] != job_owner:
         logger.error(
-            "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
+            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
                                                                                                  job_data['status'],
                                                                                                  job_owner))
         raise PortalLibException("Unable to find a related valid job for this notification.")
@@ -75,23 +77,16 @@ class JobsWebhookView(BaseApiView):
             job (dict): Dictionary containing the webhook data.
 
         """
-        job = json.loads(request.body)
+        subscription = json.loads(request.body)
+
+        job = json.loads(subscription['event']['data'])
 
         try:
-            username = job['owner']
-            job_id = job['id']
-            archiveSystem = job['archiveSystem']
-            archivePath = job['archivePath']
-            job_status = job['status']
-            job_name = job['name']
-
-            try:
-                job['remoteSubmitted'] = str(job['remoteSubmitted'])
-                job['ended'] = str(job['ended'])
-            except KeyError:
-                pass
-
-            logger.debug(job_status)
+            username = job['jobOwner']
+            job_id = job['jobUuid']
+            job_status = job['newJobStatus']
+            job_name = job['jobName']
+            job_old_status = job['oldJobStatus']
 
             event_data = {
                 Notification.EVENT_TYPE: 'job',
@@ -99,21 +94,30 @@ class JobsWebhookView(BaseApiView):
                 Notification.STATUS: '',
                 Notification.USER: username,
                 Notification.MESSAGE: '',
-                Notification.EXTRA: job
+                Notification.EXTRA: {
+                    "name": job_name,
+                    "owner": username,
+                    "status": job_status,
+                    "uuid": job_id,
+                    "old_status": job_old_status
+                }
             }
 
-            archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-            target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
+            if job_status in terminal_job_states:
+                user = get_user_model().objects.get(username=username)
+                client = user.tapis_oauth.client
+                job_details = client.jobs.getJob(jobUuid=job_id)
 
-            # Verify the job UUID against the username
-            valid_state = validate_agave_job(job_id, username)
+                event_data[Notification.EXTRA]['remoteSubmitted'] = str(job['remoteSubmitted'])
+                event_data[Notification.EXTRA]['ended'] = str(job['remoteEnded'])
+                event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
+                event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
 
-            # Verify that the job status should generate a notification
-            valid_state = valid_state is not None and job_status in settings.PORTAL_JOB_NOTIFICATION_STATES
 
-            # If the job state is not valid for generating a notification,
-            # return an OK response
-            if not valid_state:
+            # archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
+            # target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
+
+            if not job_status in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.debug(
                     "Job ID {} for owner {} entered {} state (no notification sent)".format(
                         job_id, username, job_status
@@ -123,22 +127,16 @@ class JobsWebhookView(BaseApiView):
 
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
-                logger.debug('archivePath: {}'.format(archivePath))
                 event_data[Notification.STATUS] = Notification.ERROR
                 event_data[Notification.MESSAGE] = "Job '{}' Failed. Please try again...".format(job_name)
                 event_data[Notification.OPERATION] = 'job_failed'
-                event_data[Notification.EXTRA]['target_path'] = target_path
-                event_data[Notification.ACTION_LINK] = target_path
 
                 with transaction.atomic():
-                    last_notification = Notification.objects.filter(jobId=job_id).last()
                     should_notify = True
-
-                    if last_notification:
-                        last_status = last_notification.to_dict()['extra']['status']
-                        logger.debug('last status: ' + last_status)
-
-                        if job_status == last_status:
+                    if job_old_status:
+                        logger.debug('last status: ' + job_old_status)
+                        
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -149,60 +147,71 @@ class JobsWebhookView(BaseApiView):
             elif job_status == 'FINISHED':
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
 
-                logger.debug('archivePath: {}'.format(archivePath))
+                # logger.debug('archivePath: {}'.format(archivePath))
 
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
-                event_data[Notification.EXTRA]['target_path'] = target_path
                 event_data[Notification.MESSAGE] = "Job '{}' finished".format(job_name)
                 event_data[Notification.OPERATION] = 'job_finished'
-                event_data[Notification.ACTION_LINK] = target_path
 
                 with transaction.atomic():
-                    last_notification = Notification.objects.filter(jobId=job_id).last()
+
                     should_notify = True
 
-                    if last_notification:
-                        last_status = last_notification.to_dict()['extra']['status']
-                        logger.debug('last status: ' + last_status)
-
-                        if job_status == last_status:
+                    if job_old_status:
+                        logger.debug('last status: ' + job_old_status)
+                        
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
                     if should_notify:
                         n = Notification.objects.create(**event_data)
                         n.save()
-                        logger.debug('Event data with action link {}'.format(event_data))
+                    
 
-                        try:
-                            logger.debug('Preparing to Index Job Output job={}'.format(job_name))
+                    # TODO: Likely have to get job output location here in order to do the indexing
 
-                            agave_indexer.apply_async(args=[archiveSystem],
-                                                      kwargs={'filePath': archivePath})
-                            logger.debug(
-                                'Finished Indexing Job Output job={}'.format(job_name))
-                        except Exception as e:
-                            logger.exception('Error indexing job output: {}'.format(e))
-                            return HttpResponse(json.dumps(e), content_type='application/json', status=400)
+                    # last_notification = Notification.objects.filter(jobId=job_id).last()
+                    # should_notify = True
+
+                    # if last_notification:
+                    #     last_status = last_notification.to_dict()['extra']['status']
+                    #     logger.debug('last status: ' + last_status)
+
+                    #     if job_status == last_status:
+                    #         logger.debug('duplicate notification received.')
+                    #         should_notify = False
+
+                    # if should_notify:
+                    #     n = Notification.objects.create(**event_data)
+                    #     n.save()
+                    #     logger.debug('Event data with action link {}'.format(event_data))
+
+                    # try:
+                    #     logger.debug('Preparing to Index Job Output job={}'.format(job_name))
+
+                    #     agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
+                    #                                 kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
+                    #     logger.debug(
+                    #         'Finished Indexing Job Output job={}'.format(job_name))
+                    # except Exception as e:
+                    #     logger.exception('Error indexing job output: {}'.format(e))
+                    #     return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             else:
-                # notify
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
                 event_data[Notification.STATUS] = Notification.INFO
                 event_data[Notification.MESSAGE] = "Job '{}' updated to {}.".format(job_name, job_status)
                 event_data[Notification.OPERATION] = 'job_status_update'
 
                 with transaction.atomic():
-                    last_notification = Notification.objects.filter(jobId=job_id).last()
 
                     should_notify = True
-
-                    if last_notification:
-                        last_status = last_notification.to_dict()['extra']['status']
-                        logger.debug('last status: ' + last_status)
-
-                        if job_status == last_status:
+                    if job_old_status:
+                        logger.debug('last status: ' + job_old_status)
+                        
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -271,9 +280,9 @@ class InteractiveWebhookView(BaseApiView):
             logger.info("Unexpected event type")
             return HttpResponse("ERROR", status=400)
 
-        # confirm that there is a corresponding running agave job before sending notification
+        # confirm that there is a corresponding running tapis job before sending notification
         try:
-            valid_state = validate_agave_job(
+            valid_state = validate_tapis_job(
                 job_uuid, job_owner, ['FINISHED', 'FAILED', 'STOPPED']
             )
             if not valid_state:
