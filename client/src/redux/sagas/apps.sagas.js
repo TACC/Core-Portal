@@ -3,7 +3,7 @@ import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchAppDefinitionUtil(appId, appVersion) {
-  let params = { appId };
+  const params = { appId };
   if (appVersion) {
     params.appVersion = appVersion;
   }
