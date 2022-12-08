@@ -83,6 +83,7 @@ const appDetailFixture = {
     tags: [],
     notes: {
       label: 'Hello World',
+      hideNodeCountAndCoresPerNode: true,
     },
     uuid: '408dcb15-8343-4b11-acf5-a3bd1cb07957',
     deleted: false,
