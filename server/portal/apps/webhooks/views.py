@@ -170,34 +170,16 @@ class JobsWebhookView(BaseApiView):
                         n.save()
                     
 
-                    # TODO: Likely have to get job output location here in order to do the indexing
+                    try:
+                        logger.debug('Preparing to Index Job Output job={}'.format(job_name))
 
-                    # last_notification = Notification.objects.filter(jobId=job_id).last()
-                    # should_notify = True
-
-                    # if last_notification:
-                    #     last_status = last_notification.to_dict()['extra']['status']
-                    #     logger.debug('last status: ' + last_status)
-
-                    #     if job_status == last_status:
-                    #         logger.debug('duplicate notification received.')
-                    #         should_notify = False
-
-                    # if should_notify:
-                    #     n = Notification.objects.create(**event_data)
-                    #     n.save()
-                    #     logger.debug('Event data with action link {}'.format(event_data))
-
-                    # try:
-                    #     logger.debug('Preparing to Index Job Output job={}'.format(job_name))
-
-                    #     agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
-                    #                                 kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
-                    #     logger.debug(
-                    #         'Finished Indexing Job Output job={}'.format(job_name))
-                    # except Exception as e:
-                    #     logger.exception('Error indexing job output: {}'.format(e))
-                    #     return HttpResponse(json.dumps(e), content_type='application/json', status=400)
+                        agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
+                                                    kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
+                        logger.debug(
+                            'Finished Indexing Job Output job={}'.format(job_name))
+                    except Exception as e:
+                        logger.exception('Error indexing job output: {}'.format(e))
+                        return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             else:
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))

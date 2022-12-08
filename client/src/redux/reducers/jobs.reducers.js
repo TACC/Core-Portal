@@ -88,7 +88,7 @@ export function jobs(state = initialState, action) {
     case 'UPDATE_JOBS_FROM_NOTIFICATIONS': {
       const events = action.payload;
       const list = state.list.map((job) => {
-        const event = events.find((e) => e.extra.uuid === job.id);
+        const event = events.find((e) => e.extra.uuid === job.uuid);
         return event ? updateJobFromNotification(job, event.extra) : job;
       });
       return {

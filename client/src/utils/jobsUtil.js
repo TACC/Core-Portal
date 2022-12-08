@@ -1,6 +1,6 @@
 import { getSystemName } from './systems';
 
-const TERMINAL_STATES = [`FINISHED`, `STOPPED`, `FAILED`];
+const TERMINAL_STATES = [`FINISHED`, `CANCELLED`, `FAILED`];
 
 export function isTerminalState(status) {
   return TERMINAL_STATES.includes(status);
@@ -8,11 +8,11 @@ export function isTerminalState(status) {
 
 // determine if state of job has output
 export function isOutputState(status) {
-  return isTerminalState(status) && status !== 'STOPPED';
+  return isTerminalState(status) && status !== 'CANCELLED';
 }
 
 export function getOutputPath(job) {
-  return `${job.archiveSystemId}/${job.archiveSystemDir}`;
+  return `${job.archiveSystemId}${job.archiveSystemDir}`;
 }
 
 export function getAllocatonFromDirective(directive) {
