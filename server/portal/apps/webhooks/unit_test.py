@@ -9,7 +9,7 @@ from django.urls import reverse
 from portal.apps.notifications.models import Notification
 from portal.apps.signals.receivers import send_notification_ws
 from portal.libs.exceptions import PortalLibException
-from portal.apps.webhooks.views import validate_agave_job
+from portal.apps.webhooks.views import validate_tapis_job
 
 
 class TestValidateAgaveJob(TestCase):
@@ -33,14 +33,14 @@ class TestValidateAgaveJob(TestCase):
 
     def test_valid_job(self):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        self.assertEqual(validate_agave_job("id", "sal"), job_event)
+        self.assertEqual(validate_tapis_job("id", "sal"), job_event)
 
     def test_valid_job_invalid_user(self):
         with self.assertRaises(PortalLibException):
-            validate_agave_job("id", "wronguser")
+            validate_tapis_job("id", "wronguser")
 
     def test_invalid_state(self):
-        self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), None)
+        self.assertEqual(validate_tapis_job("id", "sal", disallowed_states=['STAGING']), None)
 
 
 class TestJobsWebhookView(TransactionTestCase):
@@ -52,10 +52,10 @@ class TestJobsWebhookView(TransactionTestCase):
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING"])
-    @patch('portal.apps.webhooks.views.validate_agave_job')
-    def test_webhook_job_post(self, mock_validate_agave_job):
+    @patch('portal.apps.webhooks.views.validate_tapis_job')
+    def test_webhook_job_post(self, mock_validate_tapis_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = job_event
+        mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -65,10 +65,10 @@ class TestJobsWebhookView(TransactionTestCase):
         self.assertEqual(n_status, job_event['status'])
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["RUNNING"])
-    @patch('portal.apps.webhooks.views.validate_agave_job')
-    def test_webhook_job_post_invalid_state(self, mock_validate_agave_job):
+    @patch('portal.apps.webhooks.views.validate_tapis_job')
+    def test_webhook_job_post_invalid_state(self, mock_validate_tapis_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = job_event
+        mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)

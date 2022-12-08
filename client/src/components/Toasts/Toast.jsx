@@ -22,6 +22,7 @@ const NotificationToast = () => {
 
   useEffect(() => {
     if (toasts.length) {
+      // avoid showing multiple toasts with same status
       if (STATUS_TEXT_MAP.toastMap(toasts[0].extra.status) !== STATUS_TEXT_MAP.toastMap(toasts[0].extra.old_status)) {
         if (!notification) {
           // Set a new toast when we don't have an active one

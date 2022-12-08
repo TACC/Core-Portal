@@ -103,6 +103,7 @@ class JobsWebhookView(BaseApiView):
                 }
             }
 
+            # get additional job information only after the job has reached a terminal state
             if job_status in terminal_job_states:
                 user = get_user_model().objects.get(username=username)
                 client = user.tapis_oauth.client
@@ -112,10 +113,6 @@ class JobsWebhookView(BaseApiView):
                 event_data[Notification.EXTRA]['ended'] = str(job['remoteEnded'])
                 event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
                 event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
-
-
-            # archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-            # target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
 
             if not job_status in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.debug(
@@ -147,7 +144,7 @@ class JobsWebhookView(BaseApiView):
             elif job_status == 'FINISHED':
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
 
-                # logger.debug('archivePath: {}'.format(archivePath))
+                logger.debug('archivePath: {}'.format(event_data[Notification.EXTRA]['archiveSystemDir']))
 
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
