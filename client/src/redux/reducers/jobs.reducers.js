@@ -101,6 +101,63 @@ export function jobs(state = initialState, action) {
   }
 }
 
+export const initialStateV2 = {
+  list: [],
+  submit: { submitting: false },
+  loading: false,
+  reachedEnd: false,
+  error: null,
+};
+
+export function jobsv2(state = initialStateV2, action) {
+  switch (action.type) {
+    case 'JOBS_V2_LIST_INIT':
+      return {
+        ...state,
+        list: [],
+        error: null,
+        reachedEnd: false,
+      };
+    case 'JOBS_V2_LIST_START':
+      return {
+        ...state,
+        error: null,
+        loading: true,
+      };
+    case 'JOBS_V2_LIST':
+      return {
+        ...state,
+        list: state.list.concat(action.payload.list),
+        reachedEnd: action.payload.reachedEnd,
+      };
+    case 'JOBS_V2_LIST_UPDATE_JOB':
+      return {
+        ...state,
+        list: state.list
+        // list: state.list.map((job) =>
+        //   job.uuid === action.payload.job.uuid
+        //     ? {
+        //         ...action.payload.job,
+        //         outputLocation: getOutputPath(action.payload.job),
+        //       }
+        //     : job
+        // ),
+      };
+    case 'JOBS_V2_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case 'JOBS_V2_LIST_FINISH':
+      return {
+        ...state,
+        loading: false,
+      };
+    default:
+      return state;
+  }
+}
+
 const initialJobDetail = {
   status: '',
   message: '',

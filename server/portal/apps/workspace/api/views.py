@@ -5,6 +5,7 @@
 import logging
 import json
 from urllib.parse import urlparse
+from datetime import timedelta
 from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
@@ -18,6 +19,7 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
+from portal.apps.workspace.models import JobSubmission
 from portal.utils.translations import url_parse_inputs
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
@@ -96,6 +98,32 @@ class AppsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
+
+
+# TODOV3: Should remove after we drop temporary support for v2 jobs
+@method_decorator(login_required, name='dispatch')
+class HistoricalJobsView(BaseApiView):
+    def get(self, request, *args, **kwargs):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        period = request.GET.get('period', 'all')
+
+        jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
+
+        if period != "all":
+            enddate = timezone.now()
+            if period == "day":
+                days = 1
+            elif period == "week":
+                days = 7
+            elif period == "month":
+                days = 30
+            startdate = enddate - timedelta(days=days)
+            jobs = jobs.filter(time__range=[startdate, enddate])
+
+        data = jobs[offset:offset + limit]
+
+        return JsonResponse({"response": data})
 
 
 @method_decorator(login_required, name='dispatch')

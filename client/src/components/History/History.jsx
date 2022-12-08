@@ -59,6 +59,13 @@ const HistorySidebar = () => {
       hidden: false,
       children: <HistoryBadge unread={unreadJobs} />,
     },
+    {
+      to: `${root}/jobsv2`,
+      label: 'Historic Jobs',
+      iconName: 'jobs',
+      disabled: false,
+      hidden: false,
+    },
   ];
 
   return <Sidebar sidebarItems={sidebarItems} />;
@@ -121,6 +128,38 @@ export const Routes = () => {
                     payload: { jobUuid },
                   });
                   return <JobHistoryModal uuid={jobUuid} />;
+                }}
+              />
+            </>
+          );
+        }}
+      />
+
+      <Route
+        path={`${root}${ROUTES.JOBSV2}`}
+        render={({ location: { pathname, state } }) => {
+          const locationState = state || {};
+          // Only mark as read if in pure job history view
+          if (
+            pathname === `${root}${ROUTES.JOBSV2}` &&
+            !locationState.fromJobHistoryModal
+          ) {
+            dispatch({
+              type: 'GET_V2_JOBS',
+              params: { offset: 0 },
+            });
+          }
+          return (
+            <>
+              <JobHistory className={styles.content} />
+              <Route
+                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}/:jobId`}
+                render={({
+                  match: {
+                    params: { jobId },
+                  },
+                }) => {
+                  return <JobHistoryModal uuid={jobId} />;
                 }}
               />
             </>
