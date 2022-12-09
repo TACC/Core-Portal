@@ -1,10 +1,31 @@
 import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
-export const getMaxQueueRunTime = (app, queueName) => {
-  return app.exec_sys.queues.find((q) => q.name === queueName).maxRequestedTime;
+export const getQueueMaxMinutes = (app, queueName) => {
+  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
+    .maxMinutes;
 };
 
+/**
+ * Get validator for max minutes of a queue
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of max minutes
+ */
+export const getMaxMinutesValidation = (queue) => {
+  return Yup.number()
+    .min(
+      queue.minMinutes,
+      `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
+    )
+    .max(
+      queue.maxMinutes,
+      `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
+    );
+};
+
+// TODOv3  Create ticket for us/Design to decide if we want to continue to present max run time as hh:mm:ss and translate to maxMinutes
 /**
  * Create regex pattern for maxRunTime
  * @function
@@ -56,7 +77,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  */
 const getMinNodeCount = (queue, app) => {
   // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node count of 3
-  return getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+  return getSystemName(app.exec_sys.host) === 'Frontera' &&
     queue.name === 'normal'
     ? 3
     : 1;
@@ -77,29 +98,23 @@ export const getNodeCountValidation = (queue, app) => {
       `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
     )
     .max(
-      queue.maxNodes,
-      `Node Count must be less than or equal to ${queue.maxNodes} for the ${queue.name} queue`
+      queue.maxNodeCount,
+      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue`
     );
 };
 
 /**
- * Get min node count for queue
- */
-const getMaxProcessorsOnEachNode = (queue) =>
-  Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes);
-
-/**
- * Get validator for processors on each node
+ * Get validator for cores on each node
  *
  * @function
  * @param {Object} queue
- * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
+ * @returns {Yup.number()} min/max validation of coresPerNode
  */
-export const getProcessorsOnEachNodeValidation = (queue) => {
-  if (queue.maxProcessorsPerNode === -1) {
+export const getCoresPerNodeValidation = (queue) => {
+  if (queue.maxCoresPerNode === -1) {
     return Yup.number();
   }
-  return Yup.number().min(1).max(getMaxProcessorsOnEachNode(queue));
+  return Yup.number().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
 };
 
 /**
@@ -114,15 +129,15 @@ export const getProcessorsOnEachNodeValidation = (queue) => {
 export const getQueueValidation = (queue, app) => {
   return Yup.string()
     .required('Required')
-    .oneOf(app.exec_sys.queues.map((q) => q.name))
+    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
     .test(
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) => {
         return !(
-          getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+          getSystemName(app.exec_sys.host) === 'Frontera' &&
           queue.name === 'normal' &&
-          app.definition.parallelism === 'SERIAL'
+          app.definition.notes.hideNodeCountAndCoresPerNode
         );
       }
     );
@@ -140,43 +155,56 @@ export const getQueueValidation = (queue, app) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const updatedValues = { ...values };
-  const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
-  const minNode = getMinNodeCount(queue, app);
-  const maxProcessorsOnEachNode = getMaxProcessorsOnEachNode(queue);
+  const queue = app.exec_sys.batchLogicalQueues.find(
+    (q) => q.name === values.execSystemLogicalQueue
+  );
+  const minNodeCount = getMinNodeCount(queue, app);
+  const maxCoresPerNode = queue.maxCoresPerNode;
 
-  if (values.nodeCount < minNode) {
-    updatedValues.nodeCount = minNode;
+  if (values.nodeCount < minNodeCount) {
+    updatedValues.nodeCount = minNodeCount;
   }
 
-  if (values.nodeCount > queue.maxNodes) {
-    updatedValues.nodeCount = queue.maxNodes;
+  if (values.nodeCount > queue.maxNodeCount) {
+    updatedValues.nodeCount = queue.maxNodeCount;
   }
 
   if (
-    queue.maxProcessorsPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.processorsOnEachNode > maxProcessorsOnEachNode
+    queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
+    values.coresPerNode > maxCoresPerNode
   ) {
-    updatedValues.processorsOnEachNode = maxProcessorsOnEachNode;
+    updatedValues.coresPerNode = queue.maxCoresPerNode;
   }
 
   /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
   for all the queues, then we should check if the time works for the new queue and update
   it if it doesn't.
    */
-  if (values.maxRunTime) {
-    const longestMaxRequestedTime = app.exec_sys.queues
-      .map((queue) => queue.maxRequestedTime)
+  if (values.maxMinutes) {
+    const longestMaxRequestedTime = app.exec_sys.batchLogicalQueues
+      .map((queue) => queue.maxMinutes)
       .sort()
       .at(-1);
+    if (
+      Number.isInteger(values.maxMinutes) &&
+      values.maxMinutes <= longestMaxRequestedTime &&
+      values.maxMinutes > queue.maxMinutes
+    ) {
+      updatedValues.maxMinutes = queue.maxMinutes;
+    }
+
+    /* // TODOv3  HH:MM:SS form
+
     const runtimeRegExp = new RegExp(
       createMaxRunTimeRegex(longestMaxRequestedTime)
     );
     if (
-      runtimeRegExp.test(values.maxRunTime) &&
-      values.maxRunTime > queue.maxRequestedTime
+      runtimeRegExp.test(values.maxMinutes) &&
+      values.maxMinutes > queue.maxMinutes
     ) {
-      updatedValues.maxRunTime = queue.maxRequestedTime;
+      updatedValues.maxMinutes = queue.maxMinutes;
     }
+     */
   }
 
   return updatedValues;

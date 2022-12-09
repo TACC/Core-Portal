@@ -113,8 +113,7 @@ export function getJobDisplayInformation(job, app) {
         display.queue = job.execSystemLogicalQueue;
       }
 
-      if (job.isMpi) {
-        // TODOv3: Replace processorsPerNode with coresPerNode in the frontend
+      if (!app.definition.notes.hideNodeCountAndCoresPerNode) {
         display.coresPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
       }
