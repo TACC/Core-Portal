@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.urls import reverse
+# from django.urls import reverse  # TODOv3
 from django.db.models.functions import Coalesce
 from django.core.exceptions import ObjectDoesNotExist
 from tapipy.errors import BaseTapyException, InternalServerError
@@ -19,7 +19,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from portal.utils.translations import url_parse_inputs
+# from portal.utils.translations import url_parse_inputs  # TODOv3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
@@ -37,7 +37,7 @@ def _app_license_type(app_def):
 
 def _get_user_app_license(license_type, user):
     _, license_models = get_license_info()
-    license_model = [x for x in license_models if x.license_type == license_type]
+    license_model = next((x for x in license_models if x.license_type == license_type), None)
     if not license_model:
         return None
     lic = license_model.objects.filter(user=user).first()
@@ -93,8 +93,8 @@ class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get('appId')
-        app_version = request.GET.get('appVersion')
         if app_id:
+            app_version = request.GET.get('appVersion')
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
@@ -206,9 +206,10 @@ class JobsView(BaseApiView):
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
 
+            # TODOv3: maybe better to do on frontend?
             # cleaning archive path value
-            if job_post.get('archivePath'):
-                parsed = urlparse(job_post['archivePath'])
+            if job_post.get('archiveSystemDir'):
+                parsed = urlparse(job_post['archiveSystemDir'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
@@ -218,17 +219,17 @@ class JobsView(BaseApiView):
                 else:
                     archive_path = parsed.path
 
-                job_post['archivePath'] = archive_path
+                job_post['archiveSystemDir'] = archive_path
 
                 if parsed.netloc:
-                    job_post['archiveSystem'] = parsed.netloc
+                    job_post['archiveSystemId'] = parsed.netloc
                 else:
-                    job_post['archiveSystem'] = default_sys.get_system_id()
+                    job_post['archiveSystemId'] = default_sys.get_system_id()
             else:
-                job_post['archivePath'] = \
+                job_post['archiveSystemDir'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = default_sys.get_system_id()
+                job_post['archiveSystemId'] = default_sys.get_system_id()
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -245,10 +246,6 @@ class JobsView(BaseApiView):
                 else:
                     job_post['parameterSet']['envVariables'] = [license_var]
                 del job_post['licenseType']
-
-            # url encode inputs
-            if job_post['inputs']:
-                job_post = url_parse_inputs(job_post)
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
@@ -269,22 +266,23 @@ class JobsView(BaseApiView):
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+                # jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
             else:
                 wh_base_url = request.build_absolute_uri('/webhooks/')
-                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+                # jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameters']['_webhook_base_url'] = wh_base_url
-            job_post['notifications'] = [
-                {'url': jobs_wh_url,
-                 'event': e}
-                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+            job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
             portal_name = settings.PORTAL_NAMESPACE
-            job_post['tags'] = job_post.get('tags', []).append(portal_name)
+            job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
-            response = tapis.jobs.submit(body=job_post)
+            # TODOv3 Webhooks/notifications continues
+            # job_post['notifications'] = [
+            #     {'url': jobs_wh_url,
+            #      'event': e}
+            #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
+            response = tapis.jobs.submitJob(**job_post)
             return JsonResponse(
                 {
                     'status': 200,
@@ -302,11 +300,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info("user:{} agave.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info("user:{} agave.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -315,7 +313,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info("user:{} agave.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        METRICS.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
