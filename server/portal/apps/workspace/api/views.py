@@ -205,16 +205,10 @@ class JobsView(BaseApiView):
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             )
-            if True:  # TODOv3 ignoring archiving for the moment (https://jira.tacc.utexas.edu/browse/TV3-94)
-                if job_post.get('archiveSystemDir'):
-                    del job_post['archiveSystemDir']
-                if job_post.get('archiveOnAppError'):
-                    job_post['archiveOnAppError'] = False
-                if job_post.get('archive'):
-                    del job_post['archive']
-                # TODOv3 check if cleaning is still needed below (maybe better to do on frontend?)
-                # cleaning archive path value
-            elif job_post.get('archiveSystemDir'):
+
+            # TODOv3: maybe better to do on frontend?
+            # cleaning archive path value
+            if job_post.get('archiveSystemDir'):
                 parsed = urlparse(job_post['archiveSystemDir'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
