@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.postgres.fields import JSONField
 
 
 class JobSubmission(models.Model):
@@ -19,6 +20,9 @@ class JobSubmission(models.Model):
 
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)
+
+    # TODOV3: For retaining job data during v3 transition
+    data = JSONField(null=True)
 
 
 class AppTrayCategory(models.Model):
