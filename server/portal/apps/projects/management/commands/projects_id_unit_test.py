@@ -27,15 +27,23 @@ def mock_iterate_listings(mocker):
     yield iterate_listing_mock
 
 
-def test_get_latest_project_storage(mock_project_listing):
+@pytest.fixture()
+def mock_service_account(mocker):
+    yield mocker.patch('portal.apps.projects.models.utils.service_account', autospec=True)
+
+
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_get_latest_project_storage(mock_project_listing, mock_service_account):
     assert get_latest_project_storage() == -1
 
 
-def test_get_latest_project_directory(mock_iterate_listings):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_get_latest_project_directory(mock_iterate_listings, mock_service_account):
     assert get_latest_project_directory() == -1
 
 
-def test_default_command_with_no_projects(mock_iterate_listings, mock_project_listing):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_default_command_with_no_projects(mock_iterate_listings, mock_project_listing, mock_service_account):
     out = StringIO()
     call_command("projects_id", stdout=out)
     output = out.getvalue()
@@ -46,7 +54,8 @@ def test_default_command_with_no_projects(mock_iterate_listings, mock_project_li
     assert "Latest project id in ProjectId model: None" in output
 
 
-def test_default_command_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_default_command_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects, mock_service_account):
     out = StringIO()
     call_command("projects_id", stdout=out)
     output = out.getvalue()
@@ -55,21 +64,24 @@ def test_default_command_with_two_projects(mock_iterate_listings, mock_project_l
     assert "Latest project id in ProjectId model: None" in output
 
 
-def test_update(mock_iterate_listings, mock_project_listing):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_update(mock_iterate_listings, mock_project_listing, mock_service_account):
     out = StringIO()
     call_command("projects_id", "--update", "42", stdout=out)
     output = out.getvalue()
     assert "Updating to user provided value of: 42" in output
 
 
-def test_update_using_storage_system_id(mock_iterate_listings, mock_project_listing):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_update_using_storage_system_id(mock_iterate_listings, mock_project_listing, mock_service_account):
     out = StringIO()
     call_command("projects_id", "--update-using-max-value-found", stdout=out)
     output = out.getvalue()
     assert "Updating to value latest storage system id: 0" in output
 
 
-def test_update_using_storage_system_id_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects):
+@pytest.mark.skip(reason="TODOv3: update test after projects implemented")
+def test_update_using_storage_system_id_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects, mock_service_account):
     out = StringIO()
     call_command("projects_id", "--update-using-max-value-found", stdout=out)
     output = out.getvalue()
