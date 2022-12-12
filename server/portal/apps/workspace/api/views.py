@@ -19,7 +19,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from portal.utils.translations import url_parse_inputs  # TODOv3
+# from portal.utils.translations import url_parse_inputs  # TODOv3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
@@ -246,11 +246,6 @@ class JobsView(BaseApiView):
                 else:
                     job_post['parameterSet']['envVariables'] = [license_var]
                 del job_post['licenseType']
-
-            # TODOv3: URL Encode inputs
-            # url encode inputs
-            if job_post['inputs']:
-                job_post = url_parse_inputs(job_post)
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
