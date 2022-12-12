@@ -8,12 +8,10 @@ import urllib.request
 import urllib.parse
 import urllib.error
 from django.conf import settings
-from agavepy.agave import Agave
+from tapipy.tapis import Tapis
 import requests
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 def to_camel_case(input_str):
@@ -194,10 +192,10 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
 
 
 def service_account():
-    """Return an agave instance with the admin account."""
-    return Agave(
-        api_server=settings.AGAVE_TENANT_BASEURL,
-        token=settings.AGAVE_SUPER_TOKEN)
+    """Return a Tapis instance with the admin account."""
+    return Tapis(
+        base_url=settings.TAPIS_TENANT_BASEURL,
+        access_token=settings.TAPIS_ADMIN_JWT)
 
 
 def text_preview(url):
