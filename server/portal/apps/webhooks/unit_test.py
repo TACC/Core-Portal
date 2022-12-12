@@ -16,7 +16,7 @@ class TestValidateAgaveJob(TestCase):
     def setUp(self):
         self.job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
         mock_client = MagicMock()
-        mock_client.jobs.get.return_value = self.job_event
+        mock_client.jobs.getJob.return_value = self.job_event
         mock_user = MagicMock()
         mock_user.tapis_oauth.client = mock_client
         mock_user_model = MagicMock()
@@ -54,7 +54,7 @@ class TestJobsWebhookView(TransactionTestCase):
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING"])
     @patch('portal.apps.webhooks.views.validate_tapis_job')
     def test_webhook_job_post(self, mock_validate_tapis_job):
-        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_event.json')))
         mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
@@ -62,12 +62,13 @@ class TestJobsWebhookView(TransactionTestCase):
 
         n = Notification.objects.last()
         n_status = n.to_dict()['extra']['status']
-        self.assertEqual(n_status, job_event['status'])
+        job_data = json.loads(job_event['event']['data'])
+        self.assertEqual(n_status, job_data['newJobStatus'])
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["RUNNING"])
     @patch('portal.apps.webhooks.views.validate_tapis_job')
     def test_webhook_job_post_invalid_state(self, mock_validate_tapis_job):
-        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_event.json')))
         mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
@@ -117,7 +118,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertTrue(response.status_code == 400)
 
     def test_webhook_vnc_post(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.getJob.return_value = self.agave_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
@@ -141,7 +142,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'vnc_session_start')
 
     def test_webhook_web_post(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.getJob.return_value = self.agave_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),
