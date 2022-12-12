@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
@@ -114,7 +113,7 @@ class JobsWebhookView(BaseApiView):
                 event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
                 event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
 
-            if not job_status in settings.PORTAL_JOB_NOTIFICATION_STATES:
+            if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.debug(
                     "Job ID {} for owner {} entered {} state (no notification sent)".format(
                         job_id, username, job_status
@@ -132,7 +131,6 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        
                         if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
@@ -157,7 +155,6 @@ class JobsWebhookView(BaseApiView):
 
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        
                         if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
@@ -165,13 +162,11 @@ class JobsWebhookView(BaseApiView):
                     if should_notify:
                         n = Notification.objects.create(**event_data)
                         n.save()
-                    
-
                     try:
                         logger.debug('Preparing to Index Job Output job={}'.format(job_name))
 
                         agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
-                                                    kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
+                                                  kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
                         logger.debug(
                             'Finished Indexing Job Output job={}'.format(job_name))
                     except Exception as e:
@@ -189,11 +184,9 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        
                         if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
-
                     if should_notify:
                         n = Notification.objects.create(**event_data)
                         n.save()
