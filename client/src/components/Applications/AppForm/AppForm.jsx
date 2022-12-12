@@ -19,10 +19,10 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
-  getMaxQueueRunTime,
-  createMaxRunTimeRegex,
+  getQueueMaxMinutes,
+  getMaxMinutesValidation,
   getNodeCountValidation,
-  getProcessorsOnEachNodeValidation,
+  getCoresPerNodeValidation,
   getQueueValidation,
   updateValuesForQueue,
 } from './AppFormUtils';
@@ -35,23 +35,19 @@ const appShape = PropTypes.shape({
   definition: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
-    longDescription: PropTypes.string,
-    helpURI: PropTypes.string,
+    description: PropTypes.string,
     defaultQueue: PropTypes.string,
-    defaultNodeCount: PropTypes.number,
-    parallelism: PropTypes.string,
-    defaultProcessorsPerNode: PropTypes.number,
-    defaultMaxRunTime: PropTypes.string,
+    nodeCount: PropTypes.number,
+    coresPerNode: PropTypes.number,
+    maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
   }),
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
-    login: PropTypes.shape({
-      host: PropTypes.string,
-    }),
+    host: PropTypes.string,
     scheduler: PropTypes.string,
-    queues: PropTypes.arrayOf(PropTypes.shape({})),
+    batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   license: PropTypes.shape({
     type: PropTypes.string,
@@ -139,7 +135,10 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
   // Grab values and update if queue changes
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
-    if (previousValues && previousValues.batchQueue !== values.batchQueue) {
+    if (
+      previousValues &&
+      previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
+    ) {
       setValues(updateValuesForQueue(app, values));
     }
     setPreviousValues(values);
@@ -152,12 +151,12 @@ const AppInfo = ({ app }) => {
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.definition.longDescription || '')}
+        {parse(app.definition.description || '')}
       </div>
-      {app.definition.helpURI ? (
+      {app.definition.notes.helpUrl ? (
         <a
           className="wb-link appInfo-documentation"
-          href={app.definition.helpURI}
+          href={app.definition.notes.helpUrl}
           target="_blank"
           rel="noreferrer noopener"
         >
@@ -190,8 +189,7 @@ export const AppSchemaForm = ({ app }) => {
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
-        app.exec_sys.login.host === host ||
-        app.exec_sys.login.host.endsWith(`.${host}`)
+        app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =
@@ -217,7 +215,7 @@ export const AppSchemaForm = ({ app }) => {
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.login.host : '',
+      execSystem: state.app ? state.app.exec_sys.host : '',
     };
   }, shallowEqual);
 
@@ -226,6 +224,7 @@ export const AppSchemaForm = ({ app }) => {
   );
 
   const { systemHasKeys, pushKeysSystem } = app;
+
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
     e.preventDefault();
@@ -246,31 +245,25 @@ export const AppSchemaForm = ({ app }) => {
   const initialValues = {
     ...appFields.defaults,
     name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
-    batchQueue: (
-      (app.definition.defaultQueue
-        ? app.exec_sys.queues.find(
-            (q) => q.name === app.definition.defaultQueue
+    execSystemLogicalQueue: (
+      (app.definition.jobAttributes.execSystemLogicalQueue
+        ? app.exec_sys.batchLogicalQueues.find(
+            (q) =>
+              q.name === app.definition.jobAttributes.execSystemLogicalQueue
           )
-        : app.exec_sys.queues.find((q) => q.default === true)) ||
-      app.exec_sys.queues[0]
+        : app.exec_sys.batchLogicalQueues.find(
+            (q) => q.name === app.exec_sys.batchDefaultLogicalQueue
+          )) || app.exec_sys.batchLogicalQueues[0]
     ).name,
-    nodeCount: app.definition.defaultNodeCount,
-    processorsOnEachNode:
-      app.definition.parallelism === 'PARALLEL'
-        ? Math.floor(
-            app.definition.defaultProcessorsPerNode /
-              app.definition.defaultNodeCount
-          )
-        : 1,
-    maxRunTime: app.definition.defaultMaxRunTime || '',
-    archivePath: '',
-    archive: true,
+    nodeCount: app.definition.jobAttributes.nodeCount,
+    coresPerNode: app.definition.jobAttributes.coresPerNode,
+    maxMinutes: app.definition.jobAttributes.maxMinutes,
+    archiveSystemDir: '',
     archiveOnAppError: true,
     appId: app.definition.id,
   };
-
   let missingAllocation = false;
-  if (app.exec_sys.scheduler === 'SLURM') {
+  if (app.exec_sys.batchScheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
@@ -288,13 +281,13 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          app.exec_sys.login.host
+          app.exec_sys.host
         )} to run this application.`,
       };
       missingAllocation = true;
     }
   } else {
-    initialValues.allocation = app.exec_sys.scheduler;
+    initialValues.allocation = app.exec_sys.batchScheduler;
   }
   return (
     <div id="appForm-wrapper">
@@ -397,30 +390,25 @@ export const AppSchemaForm = ({ app }) => {
             return Yup.mixed().notRequired();
           }
           return Yup.lazy((values) => {
-            const queue = app.exec_sys.queues.find(
-              (q) => q.name === values.batchQueue
+            const queue = app.exec_sys.batchLogicalQueues.find(
+              (q) => q.name === values.execSystemLogicalQueue
             );
-            const maxQueueRunTime = getMaxQueueRunTime(app, values.batchQueue);
             const schema = Yup.object({
-              parameters: Yup.object({ ...appFields.schema.parameters }),
-              inputs: Yup.object({ ...appFields.schema.inputs }),
+              appArgs: Yup.object({ ...appFields.schema.appArgs }),
+              fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
+              // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: getQueueValidation(queue, app),
+              execSystemLogicalQueue: getQueueValidation(queue, app),
               nodeCount: getNodeCountValidation(queue, app),
-              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
-              maxRunTime: Yup.string()
-                .matches(
-                  createMaxRunTimeRegex(maxQueueRunTime),
-                  `Must be in format HH:MM:SS and not exceed ${maxQueueRunTime} (hrs:min:sec).`
-                )
-                .required('Required'),
-              archivePath: Yup.string(),
+              coresPerNode: getCoresPerNodeValidation(queue),
+              maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              archiveSystemDir: Yup.string(),
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.exec_sys.scheduler]),
+                  allocations.concat([app.exec_sys.batchScheduler]),
                   'Please select an allocation from the dropdown.'
                 ),
             });
@@ -429,31 +417,30 @@ export const AppSchemaForm = ({ app }) => {
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
-          /* remove falsy input */
-          Object.entries(job.inputs).forEach(([k, v]) => {
-            let val = v;
-            if (Array.isArray(val)) {
-              val = val.filter(Boolean);
-              if (val.length === 0) {
-                delete job.inputs[k];
-              }
-            } else if (!val) {
-              delete job.inputs[k];
-            }
-          });
-          /* remove falsy parameter */
+
+          job.appVersion = app.definition.version;
+          job.fileInputs = Object.entries(job.fileInputs)
+            .map(([k, v]) => {
+              return { name: k, sourceUrl: v };
+            })
+            .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
+          job.parameterSet = {};
+          job.parameterSet.appArgs = Object.entries(job.appArgs)
+            .map(([k, v]) => {
+              return { name: k, arg: v };
+            })
+            .filter(
+              (appArg) =>
+                !(
+                  appArg.arg === '' ||
+                  appArg.arg === null ||
+                  appArg.arg === undefined
+                )
+            ); // filter out any empty values
+          delete job.appArgs;
+          // TODOv3 add envVariables
+          /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
-          // Object.entries(job.parameters).forEach(([k, v]) => {
-          //   let val = v;
-          //   if (Array.isArray(v)) {
-          //     val = val.filter(Boolean);
-          //     if (val.length === 0) {
-          //       delete job.parameters[k];
-          //     }
-          //   } else if (val === null || val === undefined) {
-          //     delete job.parameters[k];
-          //   }
-          // });
           /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
           if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
@@ -463,6 +450,18 @@ export const AppSchemaForm = ({ app }) => {
           }
           if (app.license.type && app.license.enabled) {
             job.licenseType = app.license.type;
+          }
+          if (job.allocation) {
+            if (!job.parameterSet.schedulerOptions) {
+              job.parameterSet.schedulerOptions = [];
+            }
+            job.parameterSet.schedulerOptions.push({
+              name: 'Allocation',
+              description: 'The allocation associated with this job execution',
+              include: true,
+              arg: `-A ${job.allocation}`,
+            });
+            delete job.allocation;
           }
           dispatch({
             type: 'SUBMIT_JOB',
@@ -494,7 +493,7 @@ export const AppSchemaForm = ({ app }) => {
             missingLicense ||
             !hasStorageSystems ||
             jobSubmission.submitting ||
-            (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
+            (app.exec_sys.batchScheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
@@ -503,24 +502,25 @@ export const AppSchemaForm = ({ app }) => {
                   <div className="appSchema-header">
                     <span>Inputs</span>
                   </div>
-                  {Object.entries(appFields.inputs).map(([id, field]) => {
+                  {Object.entries(appFields.fileInputs).map(([name, field]) => {
+                    // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
                     return (
                       <FormField
                         {...field}
-                        name={`inputs.${id}`}
+                        name={`fileInputs.${name}`}
                         agaveFile
                         SelectModal={DataFilesSelectModal}
                         placeholder="Browse Data Files"
-                        key={`inputs.${id}`}
+                        key={`fileInputs.${name}`}
                       />
                     );
                   })}
-                  {Object.entries(appFields.parameters).map(([id, field]) => {
+                  {Object.entries(appFields.appArgs).map(([name, field]) => {
                     return (
                       <FormField
                         {...field}
-                        name={`parameters.${id}`}
-                        key={`parameters.${id}`}
+                        name={`appArgs.${name}`}
+                        key={`appArgs.${name}`}
                       >
                         {field.options
                           ? field.options.map((item) => {
@@ -540,6 +540,7 @@ export const AppSchemaForm = ({ app }) => {
                       </FormField>
                     );
                   })}
+                  {/* TODOv3 handle parameterSet.envVariables */}
                 </div>
                 <div className="appSchema-section">
                   <div className="appSchema-header">
@@ -547,50 +548,48 @@ export const AppSchemaForm = ({ app }) => {
                   </div>
                   <FormField
                     label="Queue"
-                    name="batchQueue"
+                    name="execSystemLogicalQueue"
                     description="Select the queue this job will execute on."
                     type="select"
                     required
                   >
-                    {app.exec_sys.queues
+                    {app.exec_sys.batchLogicalQueues
                       .map((q) => q.name)
                       .filter(
                         (q) =>
-                          /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
+                          // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed if app is fixed to single node
                           !(
-                            getSystemName(app.exec_sys.login.host) ===
-                              'Frontera' &&
+                            getSystemName(app.exec_sys.host) === 'Frontera' &&
                             q === 'normal' &&
-                            app.definition.parallelism === 'SERIAL'
+                            app.definition.notes.hideNodeCountAndCoresPerNode
                           )
                       )
                       .sort()
-                      .map((queue) => (
-                        <option key={queue} value={queue}>
-                          {queue}
+                      .map((queueName) => (
+                        <option key={queueName} value={queueName}>
+                          {queueName}
                         </option>
                       ))
                       .sort()}
                   </FormField>
-                  {!app.definition.tags.includes('Interactive') ? (
+                  {!app.definition.notes.isInteractive ? (
                     <FormField
                       label="Maximum Job Runtime"
-                      description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
+                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
                         app,
-                        values.batchQueue
-                      )} (hrs:min:sec). After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                      name="maxRunTime"
-                      type="text"
-                      placeholder="HH:MM:SS"
+                        values.execSystemLogicalQueue
+                      )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                      name="maxMinutes"
+                      type="integer"
                       required
                     />
                   ) : null}
-                  {app.definition.parallelism === 'PARALLEL' ? (
+                  {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
                     <>
                       <FormField
-                        label="Processors On Each Node"
+                        label="Cores Per Node"
                         description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
-                        name="processorsOnEachNode"
+                        name="coresPerNode"
                         type="number"
                       />
                       <FormField
@@ -601,7 +600,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.exec_sys.scheduler === 'SLURM' ? (
+                  {app.exec_sys.batchScheduler === 'SLURM' ? (
                     <FormField
                       label="Allocation"
                       name="allocation"
@@ -631,7 +630,7 @@ export const AppSchemaForm = ({ app }) => {
                     type="text"
                     required
                   />
-                  {!app.definition.tags.includes('Interactive') ? (
+                  {!app.definition.notes.isInteractive ? (
                     <FormField
                       label="Output Location"
                       description={parse(
