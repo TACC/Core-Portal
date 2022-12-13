@@ -59,7 +59,7 @@ class KeysManager(AbstractKeysManager):
         """
         answers = {
             'password': self.password,
-            'tacc_token_code': self.token
+            'tacc_token': self.token
         }
         resp = []
         logger.debug('title: %s', title)

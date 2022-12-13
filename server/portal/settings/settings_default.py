@@ -71,7 +71,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Work)',
         'description': 'My Data on Stockyard for {username}',
         'site': 'cep',
-        'systemId': 'cloud.corral.work.{username}',
+        'systemId': 'cloud.data.community',
         'host': 'cloud.corral.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,

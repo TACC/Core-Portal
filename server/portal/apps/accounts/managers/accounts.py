@@ -98,7 +98,7 @@ def setup(username, system):
     return home_dir
 
 
-def reset_system_keys(user, system_id):
+def reset_system_keys(user, system_id, hostname=None):
     """Reset system's Keys
 
     Creates a new set of keys, saves the set of keys to the DB
@@ -112,15 +112,18 @@ def reset_system_keys(user, system_id):
         This because there might be some specific actions to do
         when managing home directories
     """
-
-    sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
+    logger.info(f"Resetting credentials for user {user.username} on system {system_id}")
     (priv_key_str, publ_key_str) = createKeyPair()
-    push_system_credentials(user, publ_key_str, priv_key_str, system_id)
+    push_system_credentials(user, publ_key_str, priv_key_str, system_id, skipCredentialCheck=True)
 
-    # Update keys for hostname too
+    if hostname is None:
+        sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
+        hostname = sys.host
+
+    # Update keys for hostname
     SSHKeys.objects.update_hostname_keys(
         user,
-        hostname=sys.host,
+        hostname=hostname,
         priv_key=priv_key_str,
         pub_key=publ_key_str
     )
@@ -182,14 +185,16 @@ def add_pub_key_to_resource(
     :raises: :class:`~portal.apps.accounts.managers.`
 
     """
-    if hostname is None:
-        sys = get_system(user, system_id)
-        hostname = sys.host
-
     success = True
     mgr = _lookup_keys_manager(user, password, token)
     message = "add_pub_key_to_resource"
+
+    logger.info(f"Adding public key for user {user.username} on system {system_id}")
     try:
+        if hostname is None:
+            sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
+            hostname = sys.host
+
         transport = mgr.get_transport(hostname, port)
         try:
             pub_key = user.ssh_keys.for_hostname(hostname).public

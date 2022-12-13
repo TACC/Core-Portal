@@ -144,7 +144,8 @@ class SystemKeysView(BaseApiView):
 
         AccountsManager.reset_system_keys(
             request.user,
-            system_id
+            system_id,
+            hostname=body['form']['hostname']
         )
 
         _, result, http_status = AccountsManager.add_pub_key_to_resource(
