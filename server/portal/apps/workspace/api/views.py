@@ -111,7 +111,7 @@ class AppsView(BaseApiView):
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except InternalServerError:
                     success = _test_listing_with_existing_keypair(system_def, request.user)
-                    data['systemHasKeys'] = success
+                    data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
             METRICS.debug("user:{} is requesting all apps".format(request.user.username))
@@ -415,13 +415,14 @@ class AppsTrayView(BaseApiView):
             }
         )
 
+        # TODOv3: Reenable empty tab filtering once getApps is fixed and returns shared apps
         # Only return tabs that are non-empty
-        tabs = list(
-            filter(
-                lambda tab: len(tab["apps"]) > 0,
-                tabs
-            )
-        )
+        # tabs = list(
+        #     filter(
+        #         lambda tab: len(tab["apps"]) > 0,
+        #         tabs
+        #     )
+        # )
 
         return JsonResponse(
             {

@@ -23,7 +23,7 @@ function* getApp(action) {
   if (
     currentApp.definition.id === appId &&
     currentApp.definition.version === appVersion &&
-    currentApp.systemHasKeys
+    !currentApp.systemNeedsKeys
   ) {
     return;
   }

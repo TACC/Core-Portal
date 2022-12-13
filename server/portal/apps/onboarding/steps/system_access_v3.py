@@ -8,20 +8,24 @@ from portal.utils.encryption import createKeyPair
 from tapipy.errors import BaseTapyException
 
 
-def push_system_credentials(user, public_key, private_key, system_id) -> int:
+logger = logging.getLogger(__name__)
+
+
+def push_system_credentials(user, public_key, private_key, system_id, skipCredentialCheck=False) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
+    logger.info(f"Adding user credential for {user.username} to Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
     user.tapis_oauth.client.systems.createUserCredential(
         systemId=system_id,
         userName=user.username,
+        skipCredentialCheck=skipCredentialCheck,
         **data
-        )
+    )
 
 
 class SystemAccessStepV3(AbstractStep):
-    logger = logging.getLogger(__name__)
 
     def __init__(self, user):
         """
