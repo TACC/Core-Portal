@@ -16,6 +16,11 @@ LOGGER = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
+@pytest.fixture
+def mock_service_account(mocker):
+    yield mocker.patch('portal.apps.projects.models.base.service_account', autospec=True)
+
+
 @pytest.fixture()
 def agave_client(mocker):
     yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
@@ -71,7 +76,7 @@ def test_project_create(mock_owner, mock_tapis_client, service_account, mock_sto
                                                     '-----END RSA PRIVATE KEY-----')
 
 
-def test_listing(mock_storage_system, mock_signal, mock_projects_storage_systems):
+def test_listing(mock_storage_system, mock_signal, mock_projects_storage_systems, mock_service_account):
     'Test projects listing.'
     mock_storage_system.search.return_value = mock_projects_storage_systems
 
@@ -87,7 +92,7 @@ def test_listing(mock_storage_system, mock_signal, mock_projects_storage_systems
     assert len(lst) == 2
 
 
-def test_add_member(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_member(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
     'Test add member.'
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -106,7 +111,7 @@ def test_add_member(mock_owner, django_user_model, mock_tapis_client, mock_stora
         prj.metadata.team_members.get(username='teamMember')
 
 
-def test_add_member_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_member_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
     'Test add member.'
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -123,7 +128,7 @@ def test_add_member_unauthorized(mock_owner, django_user_model, mock_tapis_clien
     assert prj.metadata.team_members.all().count() == 0
 
 
-def test_add_copi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_copi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
     prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
@@ -141,7 +146,7 @@ def test_add_copi(mock_owner, django_user_model, mock_tapis_client, mock_storage
         prj.metadata.team_members.get(username='teamMember')
 
 
-def test_add_copi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_copi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
     'Test add member.'
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -158,7 +163,7 @@ def test_add_copi_unauthorized(mock_owner, django_user_model, mock_tapis_client,
     assert prj.metadata.co_pis.all().count() == 0
 
 
-def test_add_pi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_pi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
     prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
@@ -175,7 +180,7 @@ def test_add_pi(mock_owner, django_user_model, mock_tapis_client, mock_storage_s
     assert not prj.metadata.pi
 
 
-def test_add_pi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_add_pi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
     'Test add member.'
 
     prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
