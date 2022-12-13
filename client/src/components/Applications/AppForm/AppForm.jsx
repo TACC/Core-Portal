@@ -42,7 +42,7 @@ const appShape = PropTypes.shape({
     maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
   }),
-  systemHasKeys: PropTypes.bool,
+  systemNeedsKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
     host: PropTypes.string,
@@ -223,7 +223,7 @@ export const AppSchemaForm = ({ app }) => {
     (state) => state.workbench.config.hideManageAccount
   );
 
-  const { systemHasKeys, pushKeysSystem } = app;
+  const { systemNeedsKeys, pushKeysSystem } = app;
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
@@ -293,7 +293,7 @@ export const AppSchemaForm = ({ app }) => {
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand
           is interpreted as a literal 0 if not. */}
-      {!!(!systemHasKeys && hasStorageSystems) && (
+      {!!(systemNeedsKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
@@ -497,7 +497,7 @@ export const AppSchemaForm = ({ app }) => {
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
-              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
+              <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Inputs</span>
