@@ -255,7 +255,7 @@ class InteractiveWebhookView(BaseApiView):
         # confirm that there is a corresponding running tapis job before sending notification
         try:
             valid_state = validate_tapis_job(
-                job_uuid, job_owner, ['FINISHED', 'FAILED', 'STOPPED']
+                job_uuid, job_owner, terminal_job_states
             )
             if not valid_state:
                 raise PortalLibException(
