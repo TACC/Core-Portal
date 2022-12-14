@@ -285,6 +285,8 @@ TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 TAPIS_CLIENT_ID = 'test'
 TAPIS_CLIENT_KEY = 'test'
 
+TAPIS_ADMIN_JWT = 'test'
+
 # Agave Tenant.
 AGAVE_TENANT_ID = 'portal'
 AGAVE_TENANT_BASEURL = 'https://api.example.com'
