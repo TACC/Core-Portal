@@ -1,5 +1,6 @@
 import {
   getJobDisplayInformation,
+  getJobDisplayInformationV2,
   isOutputState,
   getOutputPath,
 } from 'utils/jobsUtil';
@@ -101,6 +102,7 @@ export function jobs(state = initialState, action) {
   }
 }
 
+// TODOV3: For retaining job data during v3 transition
 export const initialStateV2 = {
   list: [],
   submit: { submitting: false },
@@ -109,6 +111,7 @@ export const initialStateV2 = {
   error: null,
 };
 
+// TODOV3: For retaining job data during v3 transition
 export function jobsv2(state = initialStateV2, action) {
   switch (action.type) {
     case 'JOBS_V2_LIST_INIT':
@@ -127,21 +130,18 @@ export function jobsv2(state = initialStateV2, action) {
     case 'JOBS_V2_LIST':
       return {
         ...state,
-        list: state.list.concat(action.payload.list),
+        list: state.list.concat(
+          action.payload.list.map((job) => {
+            job.display = getJobDisplayInformationV2(job);
+            return job;
+          })
+        ),
         reachedEnd: action.payload.reachedEnd,
       };
     case 'JOBS_V2_LIST_UPDATE_JOB':
       return {
         ...state,
-        list: state.list
-        // list: state.list.map((job) =>
-        //   job.uuid === action.payload.job.uuid
-        //     ? {
-        //         ...action.payload.job,
-        //         outputLocation: getOutputPath(action.payload.job),
-        //       }
-        //     : job
-        // ),
+        list: state.list,
       };
     case 'JOBS_V2_LIST_ERROR':
       return {

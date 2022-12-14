@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 
 import { LoadingSpinner, SectionTableWrapper } from '_common';
 import JobsView from '../../Jobs';
@@ -16,6 +17,8 @@ const JobHistory = ({ className }) => {
     }),
     shallowEqual
   );
+  const location = useLocation();
+  const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const unreadIds = notifs
     .filter((n) => !n.read && n.event_type === 'job')
     .map((n) => n.extra.id);
@@ -35,7 +38,12 @@ const JobHistory = ({ className }) => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <JobsView showDetails showFancyStatus rowProps={rowProps} />
+        <JobsView
+          showDetails
+          showFancyStatus
+          rowProps={rowProps}
+          version={version}
+        />
       )}
     </SectionTableWrapper>
   );

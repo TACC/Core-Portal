@@ -15,6 +15,14 @@ export function getOutputPath(job) {
   return `${job.archiveSystemId}/${job.archiveSystemDir}`;
 }
 
+export function getOutputPathFromHref(href) {
+  const path = href.split('/').slice(7).filter(Boolean).join('/');
+  if (path === 'listings') {
+    return null;
+  }
+  return path;
+}
+
 export function getAllocatonFromDirective(directive) {
   /* Return allocation
 
@@ -122,5 +130,28 @@ export function getJobDisplayInformation(job, app) {
       // ignore if there is problem using the app definition to improve display
     }
   }
+  return display;
+}
+
+// TODOV3: For retaining job data during v3 transition
+export function getJobDisplayInformationV2(job) {
+  const display = {
+    applicationName: job.appId,
+    systemName: job.systemId,
+    inputs: Object.entries(job.inputs)
+      .map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val,
+      }))
+      .filter((obj) => !obj.id.startsWith('_')),
+    parameters: Object.entries(job.parameters)
+      .map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val,
+      }))
+      .filter((obj) => !obj.id.startsWith('_')),
+  };
   return display;
 }

@@ -100,9 +100,9 @@ class AppsView(BaseApiView):
         )
 
 
-# TODOV3: Should remove after we drop temporary support for v2 jobs
+# TODOV3: For retaining job data during v3 transition
 @method_decorator(login_required, name='dispatch')
-class HistoricalJobsView(BaseApiView):
+class HistoricJobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))

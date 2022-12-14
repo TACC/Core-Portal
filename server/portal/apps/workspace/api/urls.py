@@ -12,6 +12,7 @@ urlpatterns = [
         views.JobHistoryView.as_view()
     ),
     url(r'^jobs/?', views.JobsView.as_view()),
+    url(r'^jobsv2/?', views.HistoricJobsView.as_view()),
     url(r'^systems/?', views.SystemsView.as_view()),
     url(r'^tray/?', views.AppsTrayView.as_view())
 

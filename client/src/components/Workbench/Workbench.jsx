@@ -64,7 +64,7 @@ function Workbench() {
       },
     });
 
-    if (setupComplete) {
+    if (true) {
       dispatch({ type: 'GET_ALLOCATIONS' });
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
@@ -77,7 +77,7 @@ function Workbench() {
     <div className="workbench-wrapper">
       <NotificationToast />
       <WorkbenchSidebar
-        disabled={!setupComplete}
+        disabled={false}
         showUIPatterns={showUIPatterns}
         loading={loading}
       />
@@ -86,7 +86,7 @@ function Workbench() {
           <LoadingSpinner />
         ) : (
           <>
-            {setupComplete ? (
+            {true ? (
               <Switch>
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
                   <Dashboard />

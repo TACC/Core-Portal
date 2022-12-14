@@ -3,16 +3,20 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
+import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView({ showDetails, showFancyStatus, rowProps }) {
+function JobsView({ showDetails, showFancyStatus, rowProps, version }) {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.jobs.loading);
-  const jobs = useSelector((state) => state.jobs.list);
-  const error = useSelector((state) => state.jobs.error);
+  const { isLoading, error, jobs } = useSelector((state) => {
+    return version === 'v3'
+      ? { ...state.jobs, jobs: state.jobs.list }
+      : { ...state.jobsv2, jobs: state.jobsv2.list };
+  });
+
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
@@ -31,28 +35,46 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   );
 
   const infiniteScrollCallback = useCallback(() => {
-    dispatch({
-      type: 'GET_JOBS',
-      params: { offset: jobs.length },
-    });
+    if (version === 'v3') {
+      dispatch({
+        type: 'GET_JOBS',
+        params: { offset: jobs.length },
+      });
+    } else {
+      dispatch({
+        type: 'GET_V2_JOBS',
+        params: { offset: jobs.length },
+      });
+    }
   }, [jobs]);
 
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { uuid, name },
+        original: { id, uuid, name },
       },
-    }) => (
-      <Link
-        to={{
-          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
-          state: { jobName: name },
-        }}
-        className="wb-link"
-      >
-        View Details
-      </Link>
-    ),
+    }) =>
+      version === 'v3' ? (
+        <Link
+          to={{
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
+            state: { jobName: name },
+          }}
+          className="wb-link"
+        >
+          View Details
+        </Link>
+      ) : (
+        <Link
+          to={{
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobsv2/${id}`,
+            state: { jobName: name },
+          }}
+          className="wb-link"
+        >
+          View Details
+        </Link>
+      ),
     []
   );
 
@@ -95,7 +117,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
-          jobUuid={el.row.original.uuid}
+          jobUuid={version === 'v3' ? el.row.original.uuid : el.row.original.id}
         />
       ),
       id: 'jobStatusCol',
@@ -109,9 +131,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
-      accessor: 'outputLocation',
+      accessor: version === 'v3' ? 'outputLocation' : '_links.archiveData.href',
       Cell: (el) => {
-        const outputLocation = el.row.original.outputLocation;
+        const outputLocation =
+          version === 'v3'
+            ? el.row.original.outputLocation
+            : el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputLocation && !hideDataFiles ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
@@ -152,6 +177,7 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
+  version: PropTypes.string,
 };
 JobsView.defaultProps = {
   showDetails: false,

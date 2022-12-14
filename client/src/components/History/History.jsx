@@ -127,7 +127,7 @@ export const Routes = () => {
                     type: 'GET_JOB_DETAILS',
                     payload: { jobUuid },
                   });
-                  return <JobHistoryModal uuid={jobUuid} />;
+                  return <JobHistoryModal uuid={jobUuid} version="v3" />;
                 }}
               />
             </>
@@ -159,7 +159,7 @@ export const Routes = () => {
                     params: { jobId },
                   },
                 }) => {
-                  return <JobHistoryModal uuid={jobId} />;
+                  return <JobHistoryModal uuid={jobId} version="v2" />;
                 }}
               />
             </>

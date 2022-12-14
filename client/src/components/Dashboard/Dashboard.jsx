@@ -111,7 +111,7 @@ function DashboardJobs() {
       }
       contentShouldScroll
     >
-      <JobsView />
+      <JobsView version="v3" />
     </SectionTableWrapper>
   );
 }

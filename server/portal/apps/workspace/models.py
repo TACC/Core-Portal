@@ -17,8 +17,6 @@ class JobSubmission(models.Model):
     # Timestamp for event
     time = models.DateTimeField(default=timezone.now)
 
-    data = models.JSONField(null=True)
-
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)
 
