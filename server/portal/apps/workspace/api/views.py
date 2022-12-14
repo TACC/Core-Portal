@@ -415,14 +415,13 @@ class AppsTrayView(BaseApiView):
             }
         )
 
-        # TODOv3: Reenable empty tab filtering once getApps is fixed and returns shared apps
         # Only return tabs that are non-empty
-        # tabs = list(
-        #     filter(
-        #         lambda tab: len(tab["apps"]) > 0,
-        #         tabs
-        #     )
-        # )
+        tabs = list(
+            filter(
+                lambda tab: len(tab["apps"]) > 0,
+                tabs
+            )
+        )
 
         return JsonResponse(
             {
