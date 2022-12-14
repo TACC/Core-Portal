@@ -5,6 +5,7 @@ from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from portal.utils.encryption import createKeyPair
+from portal.libs.agave.utils import service_account
 from tapipy.errors import BaseTapyException
 
 
@@ -17,13 +18,28 @@ def push_system_credentials(user, public_key, private_key, system_id, skipCreden
     """
     logger.info(f"Adding user credential for {user.username} to Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
-    user.tapis_oauth.client.systems.createUserCredential(
+    client = service_account()
+    client.systems.createUserCredential(
         systemId=system_id,
         userName=user.username,
         skipCredentialCheck=skipCredentialCheck,
         **data
     )
 
+def set_user_permissions(user, system_id):
+    """Apply read/write/execute permissions to a user on a system."""
+    logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
+    client = service_account()
+    client.systems.grantUserPerms(
+        systemId=system_id,
+        userName=user.username,
+        permissions=['READ', 'MODIFY', 'EXECUTE'])
+    client.files.grantPermissions(
+        systemId=system_id,
+        path="/",
+        username=user.username,
+        permission='MODIFY'
+    )
 
 class SystemAccessStepV3(AbstractStep):
 
@@ -72,18 +88,19 @@ class SystemAccessStepV3(AbstractStep):
             (priv, pub) = createKeyPair()
 
             try:
-                push_system_credentials(self.user, pub, priv, system)
-                self.log(f"Created credentials for system: {system}")
-            except BaseTapyException as e:
-                self.logger.error(e)
-                self.fail(f"Failed to push credentials to system: {system}")
-
-            try:
                 self.register_public_key(pub, system)
                 self.log(f"Public key registered for system: {system}")
             except HTTPError as e:
-                self.logger.error(e)
+                logger.error(e)
                 self.fail(f"Failed to push public key to key service: {system}")
+
+            try:
+                push_system_credentials(self.user, pub, priv, system)
+                set_user_permissions(self.user, system)
+                self.log(f"Created credentials for system: {system}")
+            except BaseTapyException as e:
+                logger.error(e)
+                self.fail(f"Failed to push credentials to system: {system}")
 
         if self.state != SetupState.FAILED:
             self.complete("User is processed.")
