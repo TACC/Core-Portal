@@ -18,7 +18,7 @@ def push_system_credentials(user, public_key, private_key, system_id, skipCreden
     """
     logger.info(f"Adding user credential for {user.username} to Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
-    client = service_account()
+    client = user.tapis_oauth.client
     client.systems.createUserCredential(
         systemId=system_id,
         userName=user.username,
