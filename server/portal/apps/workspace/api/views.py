@@ -106,21 +106,10 @@ class HistoricJobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
-        period = request.GET.get('period', 'all')
 
         jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
 
-        if period != "all":
-            enddate = timezone.now()
-            if period == "day":
-                days = 1
-            elif period == "week":
-                days = 7
-            elif period == "month":
-                days = 30
-            startdate = enddate - timedelta(days=days)
-            jobs = jobs.filter(time__range=[startdate, enddate])
-
+        data = [job['data'] for job in jobs if job.get('data', None)]
         data = jobs[offset:offset + limit]
 
         return JsonResponse({"response": data})
