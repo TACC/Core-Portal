@@ -7,9 +7,9 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from enum import Enum
 
 from requests import HTTPError
-from agavepy.agave import AgaveException
 
 from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import agave_indexer
@@ -27,6 +27,21 @@ logger = logging.getLogger(__name__)
 
 terminal_job_states = ["FINISHED", "CANCELLED", "FAILED"]
 
+class JobState(Enum): 
+    PENDING = "processing"
+    PROCESSING_INPUTS = "processing"
+    STAGING_INPUTS = "queueing"
+    STAGING_JOB = "queueing"
+    SUBMITTING_JOB = "queueing"
+    QUEUED = "queueing"
+    RUNNING = "running"
+    ARCHIVING = "finishing"
+    FINISHED = 'finished'
+    STOPPED = 'stopped'
+    FAILED ='failure'
+    BLOCKED = 'blocked'
+    PAUSED = 'paused'
+    CANCELLED = 'cancelled'
 
 def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     """
@@ -60,7 +75,7 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
 @method_decorator(csrf_exempt, name='dispatch')
 class JobsWebhookView(BaseApiView):
     """
-    Dispatches notifications when receiving a POST request from the Agave
+    Dispatches notifications when receiving a POST request from the Tapis
     webhook service.
 
     """
@@ -131,7 +146,7 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
+                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -155,7 +170,7 @@ class JobsWebhookView(BaseApiView):
 
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
+                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value :
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -184,7 +199,7 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
+                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value:
                             logger.debug('duplicate notification received.')
                             should_notify = False
                     if should_notify:
@@ -195,7 +210,7 @@ class JobsWebhookView(BaseApiView):
 
             return HttpResponse('OK')
 
-        except (ObjectDoesNotExist, AgaveException, PortalLibException) as e:
+        except (ObjectDoesNotExist, PortalLibException) as e:
             logger.exception(e)
             return HttpResponse("ERROR", status=400)
 
@@ -264,7 +279,7 @@ class InteractiveWebhookView(BaseApiView):
                     )
                 )
             event_data[Notification.EXTRA] = valid_state
-        except (HTTPError, AgaveException, PortalLibException) as e:
+        except (HTTPError, PortalLibException) as e:
             logger.exception(e)
             return HttpResponse("ERROR", status=400)
 
