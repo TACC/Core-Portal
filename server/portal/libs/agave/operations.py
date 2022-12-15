@@ -6,7 +6,7 @@ from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.apps.search.tasks import agave_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
@@ -206,7 +206,7 @@ def mkdir(client, system, path, dir_name):
 
     path = Path(path) / Path(dir_name)
     path_input = urllib.parse.quote(str(path))
-    result = client.files.mkdir(systemId=system, path=urllib.parse.quote(str(path)))
+    client.files.mkdir(systemId=system, path=path_input)
 
     # TODOV3: test/verify indexing operations
     # agave_indexer.apply_async(kwargs={'systemId': system,

@@ -26,6 +26,7 @@ def push_system_credentials(user, public_key, private_key, system_id, skipCreden
         **data
     )
 
+
 def set_user_permissions(user, system_id):
     """Apply read/write/execute permissions to a user on a system."""
     logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
@@ -40,6 +41,7 @@ def set_user_permissions(user, system_id):
         username=user.username,
         permission='MODIFY'
     )
+
 
 class SystemAccessStepV3(AbstractStep):
 
