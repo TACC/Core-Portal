@@ -27,21 +27,6 @@ logger = logging.getLogger(__name__)
 
 terminal_job_states = ["FINISHED", "CANCELLED", "FAILED"]
 
-class JobState(Enum): 
-    PENDING = "processing"
-    PROCESSING_INPUTS = "processing"
-    STAGING_INPUTS = "queueing"
-    STAGING_JOB = "queueing"
-    SUBMITTING_JOB = "queueing"
-    QUEUED = "queueing"
-    RUNNING = "running"
-    ARCHIVING = "finishing"
-    FINISHED = 'finished'
-    STOPPED = 'stopped'
-    FAILED ='failure'
-    BLOCKED = 'blocked'
-    PAUSED = 'paused'
-    CANCELLED = 'cancelled'
 
 def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     """
@@ -146,7 +131,7 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value:
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -170,7 +155,7 @@ class JobsWebhookView(BaseApiView):
 
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value :
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
 
@@ -199,7 +184,7 @@ class JobsWebhookView(BaseApiView):
                     should_notify = True
                     if job_old_status:
                         logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status or JobState[job_status].value == JobState[job_old_status].value:
+                        if job_status == job_old_status:
                             logger.debug('duplicate notification received.')
                             should_notify = False
                     if should_notify:
