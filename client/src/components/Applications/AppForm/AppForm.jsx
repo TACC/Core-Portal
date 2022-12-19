@@ -499,50 +499,56 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                <div className="appSchema-section">
-                  <div className="appSchema-header">
-                    <span>Inputs</span>
+                {Object.keys(appFields.fileInputs).length > 0 && (
+                  <div className="appSchema-section">
+                    <div className="appSchema-header">
+                      <span>Inputs</span>
+                    </div>
+                    {Object.entries(appFields.fileInputs).map(
+                      ([name, field]) => {
+                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
+                        return (
+                          <FormField
+                            {...field}
+                            name={`fileInputs.${name}`}
+                            agaveFile
+                            SelectModal={DataFilesSelectModal}
+                            placeholder="Browse Data Files"
+                            key={`fileInputs.${name}`}
+                          />
+                        );
+                      }
+                    )}
+                    {Object.entries(appFields.appArgs).map(([name, field]) => {
+                      return (
+                        <FormField
+                          {...field}
+                          name={`appArgs.${name}`}
+                          key={`appArgs.${name}`}
+                        >
+                          {field.options
+                            ? field.options.map((item) => {
+                                let val = item;
+                                if (val instanceof String) {
+                                  const tmp = {};
+                                  tmp[val] = val;
+                                  val = tmp;
+                                }
+                                return Object.entries(val).map(
+                                  ([key, value]) => (
+                                    <option key={key} value={key}>
+                                      {value}
+                                    </option>
+                                  )
+                                );
+                              })
+                            : null}
+                        </FormField>
+                      );
+                    })}
+                    {/* TODOv3 handle parameterSet.envVariables */}
                   </div>
-                  {Object.entries(appFields.fileInputs).map(([name, field]) => {
-                    // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
-                    return (
-                      <FormField
-                        {...field}
-                        name={`fileInputs.${name}`}
-                        agaveFile
-                        SelectModal={DataFilesSelectModal}
-                        placeholder="Browse Data Files"
-                        key={`fileInputs.${name}`}
-                      />
-                    );
-                  })}
-                  {Object.entries(appFields.appArgs).map(([name, field]) => {
-                    return (
-                      <FormField
-                        {...field}
-                        name={`appArgs.${name}`}
-                        key={`appArgs.${name}`}
-                      >
-                        {field.options
-                          ? field.options.map((item) => {
-                              let val = item;
-                              if (val instanceof String) {
-                                const tmp = {};
-                                tmp[val] = val;
-                                val = tmp;
-                              }
-                              return Object.entries(val).map(([key, value]) => (
-                                <option key={key} value={key}>
-                                  {value}
-                                </option>
-                              ));
-                            })
-                          : null}
-                      </FormField>
-                    );
-                  })}
-                  {/* TODOv3 handle parameterSet.envVariables */}
-                </div>
+                )}
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Configuration</span>
