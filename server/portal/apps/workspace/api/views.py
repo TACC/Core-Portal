@@ -340,9 +340,8 @@ class JobHistoryView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
-        # TODOv3: Ensure `listType` includes both private and shared apps
         tapis = user.tapis_oauth.client
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="OWNED")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -353,7 +352,6 @@ class AppsTrayView(BaseApiView):
         return my_apps
 
     def getPublicApps(self, user):
-        # TODOv3: Ensure `listType` only includes PUBLIC apps
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
@@ -373,7 +371,7 @@ class AppsTrayView(BaseApiView):
 
             categoryResult = {
                 "title": category.category,
-                "apps": tapis_apps
+                "apps": [{k: v for k, v in tapis_app.items() if v != ''} for tapis_app in tapis_apps]  # Remove empty strings from response
             }
 
             # Add html apps to html_definitions
