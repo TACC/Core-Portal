@@ -261,6 +261,7 @@ export const AppSchemaForm = ({ app }) => {
     archiveSystemDir: '',
     archiveOnAppError: true,
     appId: app.definition.id,
+    execSystemId: app.definition.jobAttributes.execSystemId,
   };
   let missingAllocation = false;
   if (app.exec_sys.batchScheduler === 'SLURM') {

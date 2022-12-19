@@ -361,11 +361,13 @@ class AppsTrayView(BaseApiView):
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
-            # Retrieve all apps known to the portal in that directory
+            # Retrieve all apps known to the portal in that category
             tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
-            tapis_apps = [x for x in tapis_apps if any(x['appId'] == y.id for y in apps_listing)]
+            # Only return Tapis apps that are known to exist and are enabled
+            tapis_apps = [x for x in tapis_apps if any(x['appId'] in [y.id, f'{y.id}-{y.version}'] for y in apps_listing)]
+
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
