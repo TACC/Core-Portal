@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from enum import Enum
 
 from requests import HTTPError
+from tapipy.errors import BaseTapyException
 
 from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import agave_indexer
@@ -195,7 +196,7 @@ class JobsWebhookView(BaseApiView):
 
             return HttpResponse('OK')
 
-        except (ObjectDoesNotExist, PortalLibException) as e:
+        except (ObjectDoesNotExist, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
             return HttpResponse("ERROR", status=400)
 
@@ -264,7 +265,7 @@ class InteractiveWebhookView(BaseApiView):
                     )
                 )
             event_data[Notification.EXTRA] = valid_state
-        except (HTTPError, PortalLibException) as e:
+        except (HTTPError, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
             return HttpResponse("ERROR", status=400)
 
