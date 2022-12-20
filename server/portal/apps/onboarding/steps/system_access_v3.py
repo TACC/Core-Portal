@@ -84,6 +84,7 @@ class SystemAccessStepV3(AbstractStep):
             try:
                 self.check_system(system)
                 self.log(f"Access already granted for system: {system}")
+                continue
             except BaseTapyException:
                 self.log(f"Granting access for system: {system}")
 
