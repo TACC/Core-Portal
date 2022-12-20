@@ -641,11 +641,11 @@ export const AppSchemaForm = ({ app }) => {
                     <FormField
                       label="Output Location"
                       description={parse(
-                        'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.' // eslint-disable-line no-template-curly-in-string
+                        'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JobName}-${JobUUID}</code>.' // eslint-disable-line no-template-curly-in-string
                       )}
                       name="archivePath"
                       type="text"
-                      placeholder="archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}" // eslint-disable-line no-template-curly-in-string
+                      placeholder="archive/jobs/${YYYY-MM-DD}/${JobName}-${JobUUID}" // eslint-disable-line no-template-curly-in-string
                     />
                   ) : null}
                 </div>

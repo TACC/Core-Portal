@@ -227,7 +227,7 @@ class JobsView(BaseApiView):
                     job_post['archiveSystemId'] = default_sys.get_system_id()
             else:
                 job_post['archiveSystemDir'] = \
-                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
+                    'archive/jobs/{}/${{JobName}}-${{JobUUID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
                 job_post['archiveSystemId'] = default_sys.get_system_id()
 
