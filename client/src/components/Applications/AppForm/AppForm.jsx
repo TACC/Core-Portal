@@ -298,7 +298,7 @@ export const AppSchemaForm = ({ app }) => {
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
-            this is your first time logging in, you may need to &nbsp;
+            this is your first time logging in, you may need to&nbsp;
             <a
               className="data-files-nav-link"
               type="button"
