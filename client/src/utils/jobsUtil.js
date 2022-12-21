@@ -121,7 +121,5 @@ export function getJobDisplayInformation(job, app) {
       // ignore if there is problem using the app definition to improve display
     }
   }
-  console.log(display);
-  console.log(job);
   return display;
 }
