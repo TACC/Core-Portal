@@ -7,13 +7,13 @@ import portal.utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspace', '0003_apptraycategory_apptrayentry'),
+        ('webhooks', '0001_initial'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='jobsubmission',
-            name='data',
+        migrations.AlterField(
+            model_name='externalcall',
+            name='callback_data',
             field=portal.utils.fields.JSONField(null=True),
         ),
     ]
