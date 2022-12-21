@@ -72,10 +72,11 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'description': 'My Data on Stockyard for {username}',
         'site': 'cep',
         'systemId': 'cloud.data.community',
-        'host': 'cloud.corral.tacc.utexas.edu',
+        'host': 'cloud.data.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,
         'icon': None,
+        'default': True  # TODOv3: replace PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT with 'default' field
     },
     'frontera': {
         'name': 'My Data (Frontera)',

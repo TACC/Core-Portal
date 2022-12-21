@@ -186,17 +186,22 @@ export const AppSchemaForm = ({ app }) => {
     hasStorageSystems,
     downSystems,
     execSystem,
+    defaultSystem,
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
         app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
-    const { defaultHost, configuration } = state.systems.storage;
+    const { defaultHost, configuration, defaultSystem } = state.systems.storage;
+
+    console.log(configuration);
     const hasCorral =
       configuration.length &&
-      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
-        defaultHost.endsWith(s)
-      );
+      [
+        'cloud.corral.tacc.utexas.edu',
+        'data.tacc.utexas.edu',
+        'cloud.data.tacc.utexas.edu',
+      ].some((s) => defaultHost.endsWith(s));
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -216,9 +221,9 @@ export const AppSchemaForm = ({ app }) => {
             .map((downSys) => downSys.hostname)
         : [],
       execSystem: state.app ? state.app.exec_sys.host : '',
+      defaultSystem,
     };
   }, shallowEqual);
-
   const hideManageAccount = useSelector(
     (state) => state.workbench.config.hideManageAccount
   );
@@ -258,7 +263,9 @@ export const AppSchemaForm = ({ app }) => {
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
-    archiveSystemDir: '',
+    archiveSystemId:
+      defaultSystem || app.definition.jobAttributes.archiveSystemId,
+    archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
     execSystemId: app.definition.jobAttributes.execSystemId,
@@ -405,6 +412,7 @@ export const AppSchemaForm = ({ app }) => {
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue),
               maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
               allocation: Yup.string()
                 .required('Required')
@@ -638,15 +646,22 @@ export const AppSchemaForm = ({ app }) => {
                     required
                   />
                   {!app.definition.notes.isInteractive ? (
-                    <FormField
-                      label="Output Location"
-                      description={parse(
-                        'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JobName}-${JobUUID}</code>.' // eslint-disable-line no-template-curly-in-string
-                      )}
-                      name="archivePath"
-                      type="text"
-                      placeholder="archive/jobs/${YYYY-MM-DD}/${JobName}-${JobUUID}" // eslint-disable-line no-template-curly-in-string
-                    />
+                    <>
+                      <FormField
+                        label="Archive System"
+                        description="System into which output files are archived after application execution."
+                        name="archiveSystemId"
+                        type="text"
+                        placeholder={defaultSystem}
+                      />
+                      <FormField
+                        label="Archive Directory"
+                        description="Directory into which output files are archived after application execution."
+                        name="archiveSystemDir"
+                        type="text"
+                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}" // TODOv3: How do we know if portal supports HOME vs WORK?
+                      />
+                    </>
                   ) : null}
                 </div>
                 <Button

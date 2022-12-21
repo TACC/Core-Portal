@@ -146,7 +146,8 @@ class JobsView(BaseApiView):
                 limit=limit,
                 startAfter=offset,
                 orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': portal_name}
+                _tapis_query_parameters={'tags.contains': portal_name},
+                select='allAttributes'
             )
 
         return JsonResponse(
@@ -200,36 +201,19 @@ class JobsView(BaseApiView):
             )
         # submit job
         elif job_post:
-            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            default_sys = UserSystemsManager(
-                request.user,
-                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            )
+            METRICS.info("processing job submission for user:{}: {}".format(request.user.username, job_post))
 
-            # TODOv3: maybe better to do on frontend?
+            # TODOv3: How do we know if portal has HOME vs WORK?
             # cleaning archive path value
-            if job_post.get('archiveSystemDir'):
-                parsed = urlparse(job_post['archiveSystemDir'])
-                if parsed.path.startswith('/') and len(parsed.path) > 1:
-                    # strip leading '/'
-                    archive_path = parsed.path[1:]
-                elif parsed.path == '':
-                    # if path is blank, set to root of system
-                    archive_path = '/'
-                else:
-                    archive_path = parsed.path
-
-                job_post['archiveSystemDir'] = archive_path
-
-                if parsed.netloc:
-                    job_post['archiveSystemId'] = parsed.netloc
-                else:
-                    job_post['archiveSystemId'] = default_sys.get_system_id()
-            else:
-                job_post['archiveSystemDir'] = \
-                    'archive/jobs/{}/${{JobName}}-${{JobUUID}}'.format(
-                        timezone.now().strftime('%Y-%m-%d'))
+            if not job_post.get('archiveSystemId'):
+                # TODOv3: Do away with UserSystemsManager
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
                 job_post['archiveSystemId'] = default_sys.get_system_id()
+            if not job_post.get('archiveSystemDir'):
+                job_post['archiveSystemDir'] = 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -282,6 +266,7 @@ class JobsView(BaseApiView):
             #      'event': e}
             #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
+            logger.info("user:{} is submitting job:{}".format(request.user.username, job_post))
             response = tapis.jobs.submitJob(**job_post)
             return JsonResponse(
                 {
