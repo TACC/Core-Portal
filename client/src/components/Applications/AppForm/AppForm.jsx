@@ -194,7 +194,6 @@ export const AppSchemaForm = ({ app }) => {
     );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
 
-    console.log(configuration);
     const hasCorral =
       configuration.length &&
       [
