@@ -80,6 +80,7 @@ def _get_app(app_id, user):
 
     return data
 
+
 # TODOV3: For retaining job data during v3 transition
 def _get_job_detail(client, job_id, username):
     data = client.jobs.get(jobId=job_id)
