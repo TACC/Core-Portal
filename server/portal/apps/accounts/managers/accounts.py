@@ -19,7 +19,7 @@ from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ def reset_system_keys(user, system_id, hostname=None):
     """
     logger.info(f"Resetting credentials for user {user.username} on system {system_id}")
     (priv_key_str, publ_key_str) = createKeyPair()
-    push_system_credentials(user, publ_key_str, priv_key_str, system_id, skipCredentialCheck=True)
+    create_system_credentials(user, publ_key_str, priv_key_str, system_id, skipCredentialCheck=True)
 
     if hostname is None:
         sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
