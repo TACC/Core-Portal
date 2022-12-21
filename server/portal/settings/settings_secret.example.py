@@ -31,15 +31,8 @@ _RT_UN = 'username'
 _RT_PW = 'password'
 
 ########################
-# TAPIS SETTINGS
+# TAPIS v2 SETTINGS
 ########################
-
-# Tapis Tenant.
-TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
-
-# Tapis Client Configuration
-TAPIS_CLIENT_ID = ''
-TAPIS_CLIENT_KEY = ''
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -52,6 +45,25 @@ _AGAVE_TENANT_BASEURL = 'https://agave.mytenant.org'
 _AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
 _AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
 _AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
+
+########################
+# TAPIS v3 SETTINGS
+# NOTE: ONLY USED FOR TAPIS V3 DEVELOPMENT.
+# YOU CAN IGNORE THIS FOR TAPIS V2 DEVELOPMENT.
+########################
+
+# Tapis Tenant.
+_TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
+
+# Tapis Client Configuration
+_TAPIS_CLIENT_ID = ''
+_TAPIS_CLIENT_KEY = ''
+
+# Long-live portal admin access token
+_TAPIS_ADMIN_JWT = ''
+
+# Key service token for registering public keys with cloud.corral
+_KEY_SERVICE_TOKEN = ''
 
 ########################
 # RABBITMQ SETTINGS

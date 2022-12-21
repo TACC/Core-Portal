@@ -42,7 +42,6 @@ const AppBrowser = () => {
   } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
     toggle(defaultTab);
   }
-
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
@@ -70,10 +69,16 @@ const AppBrowser = () => {
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
               {categoryDict[category].map((app) => (
-                <div key={app.appId} className="apps-grid-item">
+                <div
+                  key={`${app.appId}v${app.version}`}
+                  className="apps-grid-item"
+                >
                   <NavLink
                     tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}`}
+                    to={
+                      `${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}` +
+                      (app.version ? `?appVersion=${app.version}` : '')
+                    }
                     activeClassName="active"
                   >
                     <span className="nav-content">
