@@ -43,8 +43,9 @@ services:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - core_portal_es_data:/usr/share/elasticsearch/data
     container_name: core_portal_elasticsearch
-    ports:
-      - 9200:9200
+    # To enable debugging of Elasticsearch outside containers, set ports
+    # ports:
+    #   - 9200:9200
 
   postgres:
     image: postgres:11.5
