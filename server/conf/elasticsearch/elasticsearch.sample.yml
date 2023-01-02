@@ -3,7 +3,7 @@
 #More info: https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
 #
 cluster.name: es-dev
-network.host: _local_
+network.host: 0.0.0.0
 #network.publish_host: hostname
 node.name: es01
 discovery.zen.ping.unicast.hosts: ["es02"]
