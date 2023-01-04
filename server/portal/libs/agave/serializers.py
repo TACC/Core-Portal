@@ -104,9 +104,15 @@ class BaseTapisResultSerializer(json.JSONEncoder):
                     for nk, nv in v.items():
                         v[nk] = self._serialize(nv)
             return _wrapped
+        elif isinstance(obj, list):
+            for index, item in enumerate(obj):
+                obj[index] = self._serialize(item)
+        elif isinstance(obj, dict):
+            for nk, nv in obj.items():
+                obj[nk] = self._serialize(nv)
         return obj
 
     def default(self, obj):
-        if isinstance(obj, TapisResult):
+        if isinstance(obj, (TapisResult, list, dict)):
             return self._serialize(obj)
         return json.JSONEncoder.encode(self, obj)
