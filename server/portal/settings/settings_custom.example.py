@@ -183,9 +183,11 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationStep',
-        'settings': {}
-    }
+        'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
+        'settings': {
+            'tapis_systems': ['cloud.data.community'],
+        }
+    },
 ]
 
 #######################

@@ -4,8 +4,6 @@
 """
 import logging
 import json
-from urllib.parse import urlparse
-from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -19,10 +17,9 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-# from portal.utils.translations import url_parse_inputs  # TODOv3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.onboarding.steps.system_access_v3 import push_system_credentials
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
@@ -80,7 +77,7 @@ def _test_listing_with_existing_keypair(system, user):
 
     # Attempt listing a second time after credentials are added to system
     try:
-        push_system_credentials(user, publ_key_str, priv_key_str, system.id)
+        create_system_credentials(user, publ_key_str, priv_key_str, system.id)
         tapis.files.listFiles(systemId=system.id, path="/")
     except BaseTapyException:
         return False
@@ -146,7 +143,8 @@ class JobsView(BaseApiView):
                 limit=limit,
                 startAfter=offset,
                 orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': portal_name}
+                _tapis_query_parameters={'tags.contains': portal_name},
+                select='allAttributes'
             )
 
         return JsonResponse(
@@ -200,36 +198,19 @@ class JobsView(BaseApiView):
             )
         # submit job
         elif job_post:
-            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            default_sys = UserSystemsManager(
-                request.user,
-                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            )
+            METRICS.info("processing job submission for user:{}: {}".format(request.user.username, job_post))
 
-            # TODOv3: maybe better to do on frontend?
+            # TODOv3: How do we know if portal has HOME vs WORK?
             # cleaning archive path value
-            if job_post.get('archiveSystemDir'):
-                parsed = urlparse(job_post['archiveSystemDir'])
-                if parsed.path.startswith('/') and len(parsed.path) > 1:
-                    # strip leading '/'
-                    archive_path = parsed.path[1:]
-                elif parsed.path == '':
-                    # if path is blank, set to root of system
-                    archive_path = '/'
-                else:
-                    archive_path = parsed.path
-
-                job_post['archiveSystemDir'] = archive_path
-
-                if parsed.netloc:
-                    job_post['archiveSystemId'] = parsed.netloc
-                else:
-                    job_post['archiveSystemId'] = default_sys.get_system_id()
-            else:
-                job_post['archiveSystemDir'] = \
-                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        timezone.now().strftime('%Y-%m-%d'))
+            if not job_post.get('archiveSystemId'):
+                # TODOv3: Do away with UserSystemsManager
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
                 job_post['archiveSystemId'] = default_sys.get_system_id()
+            if not job_post.get('archiveSystemDir'):
+                job_post['archiveSystemDir'] = 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -249,7 +230,7 @@ class JobsView(BaseApiView):
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
-                system_def = tapis.systems.getSystem(system_id)
+                system_def = tapis.systems.getSystem(systemId=system_id)
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except InternalServerError:
@@ -282,6 +263,7 @@ class JobsView(BaseApiView):
             #      'event': e}
             #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
+            logger.info("user:{} is submitting job:{}".format(request.user.username, job_post))
             response = tapis.jobs.submitJob(**job_post)
             return JsonResponse(
                 {
@@ -340,9 +322,8 @@ class JobHistoryView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
-        # TODOv3: Ensure `listType` includes both private and shared apps
         tapis = user.tapis_oauth.client
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="OWNED")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -353,7 +334,6 @@ class AppsTrayView(BaseApiView):
         return my_apps
 
     def getPublicApps(self, user):
-        # TODOv3: Ensure `listType` only includes PUBLIC apps
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
@@ -361,17 +341,19 @@ class AppsTrayView(BaseApiView):
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
-            # Retrieve all apps known to the portal in that directory
+            # Retrieve all apps known to the portal in that category
             tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
-            tapis_apps = [x for x in tapis_apps if any(x['appId'] == y.id for y in apps_listing)]
+            # Only return Tapis apps that are known to exist and are enabled
+            tapis_apps = [x for x in tapis_apps if any(x['appId'] in [y.id, f'{y.id}-{y.version}'] for y in apps_listing)]
+
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             categoryResult = {
                 "title": category.category,
-                "apps": tapis_apps
+                "apps": [{k: v for k, v in tapis_app.items() if v != ''} for tapis_app in tapis_apps]  # Remove empty strings from response
             }
 
             # Add html apps to html_definitions

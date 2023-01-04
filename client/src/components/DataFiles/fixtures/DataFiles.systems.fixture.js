@@ -61,6 +61,7 @@ const systemsFixture = {
     errorMessage: null,
     loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
+    defaultSystem: 'frontera',
   },
   definitions: {
     list: [
