@@ -91,16 +91,27 @@ def test_job_post_invalid(client, authenticated_user, get_user_data, mock_tapis_
 
 def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_data, mock_tapis_client,
                                         job_submmission_definition, logging_metric_mock):
-    mock_tapis_client.jobs.submit.return_value = {"id": "1234"}
+    mock_tapis_client.jobs.submitJob.return_value = {"id": "1234"}
+    mock_tapis_client.files.listFiles.return_value = {"path": ""}
 
     client.post(
         "/api/workspace/jobs",
         data=json.dumps(job_submmission_definition),
         content_type="application/json"
     )
+
+    tapis_job_submission = {
+        **job_submmission_definition,
+        'archiveSystemId': 'frontera.home.username',
+        'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}',
+        'tags': ['test']
+    }
+
+    tapis_job_submission['parameterSet']['envVariables'] = [{'key': '_webhook_base_url', 'value': 'http://testserver/webhooks/'}]
+
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with("user:{} is submitting job:{}".format(authenticated_user.username,
-                                                                                 job_submmission_definition))
+                                                                                 tapis_job_submission))
 
 
 def request_jobs_util(rf, authenticated_user, query_params={}):
