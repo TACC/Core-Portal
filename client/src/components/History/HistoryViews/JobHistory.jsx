@@ -1,9 +1,11 @@
-import React from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { React, useEffect } from 'react';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { LoadingSpinner, SectionTableWrapper } from '_common';
 import JobsView from '../../Jobs';
+import queryStringParser from 'query-string';
+import { useLocation } from 'react-router-dom';
 
 import './JobHistory.module.scss';
 import './HistoryViews.scss';
@@ -25,18 +27,26 @@ const JobHistory = ({ className }) => {
     };
   };
 
+  const dispatch = useDispatch();
+
+  const query = queryStringParser.parse(useLocation().search);
+
+  useEffect(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: 0, queryString: query.query_string },
+    });
+  }, [dispatch, query.query_string]);
+
   return (
     /* CLEVER: Using `job-history` class to scope the `unread` className */
     /* FP-936: Use 'unread' class from CSS Modules stylesheet, not global one */
     <SectionTableWrapper
       className={`job-history ${className}`}
       contentShouldScroll
+      manualContent
     >
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <JobsView showDetails showFancyStatus rowProps={rowProps} />
-      )}
+      <JobsView showDetails showFancyStatus rowProps={rowProps} />
     </SectionTableWrapper>
   );
 };

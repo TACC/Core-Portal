@@ -137,7 +137,7 @@ const Searchbar = ({
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
-          {resultCount} results in {sectionName}
+          {resultCount} results in {sectionName == '' ? dataType : sectionName}
         </div>
       )}
       {((hasQuery && !siteSearch) ||
@@ -170,6 +170,8 @@ Searchbar.propTypes = {
 
 Searchbar.defaultProps = {
   className: '',
+  scheme: '',
+  system: '',
   resultCount: 0,
   siteSearch: false,
   disabled: false,

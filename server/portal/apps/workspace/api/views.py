@@ -26,6 +26,8 @@ from .handlers.tapis_handlers import tapis_get_handler
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
+# all the job parameters we want to support for the search
+job_search_parameters = ['name', 'archiveSystemDir', 'appId', 'archiveSystemId']
 
 def _app_license_type(app_def):
     app_lic_type = getattr(app_def.notes, 'licenseType', None)
@@ -101,26 +103,16 @@ class AppsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, operation=None):
         tapis = request.user.tapis_oauth.client
-        job_uuid = request.GET.get('job_uuid')
 
-        # get specific job info
-        if job_uuid:
+        if operation == 'select': 
+            job_uuid = request.GET.get('job_uuid')
             data = tapis.jobs.getJob(jobUuid=job_uuid)
-
-        # list jobs
-        else:
-            limit = int(request.GET.get('limit', 10))
-            offset = int(request.GET.get('offset', 0))
-            portal_name = settings.PORTAL_NAMESPACE
-
-            data = tapis.jobs.getJobSearchList(
-                limit=limit,
-                startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': portal_name}
-            )
+        elif operation == 'listing':
+            data = self.listing(tapis, request)
+        elif operation == 'search':
+            data = self.search(tapis, request)
 
         return JsonResponse(
             {
@@ -129,6 +121,44 @@ class JobsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
+    
+    def listing(self, client, request):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        portal_name = settings.PORTAL_NAMESPACE
+
+        data = client.jobs.getJobSearchList(
+            limit=limit,
+            startAfter=offset,
+            orderBy='lastUpdated(desc),name(asc)',
+            _tapis_query_parameters={'tags.contains': portal_name}
+        )
+
+        return data
+
+    def search(self, client, request):
+        query_string = request.GET.get('query_string')
+
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        portal_name = settings.PORTAL_NAMESPACE
+
+        data = []
+        for parameter in job_search_parameters:
+            data = client.jobs.getJobSearchList(
+                limit=limit,
+                startAfter=offset,
+                orderBy='lastUpdated(desc),name(asc)',
+                _tapis_query_parameters={
+                    'tags.contains': portal_name,
+                    f'{parameter}.like' : f'*{query_string}*'
+                }
+            )
+
+            if data:
+                break
+            
+        return data
 
     def delete(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client

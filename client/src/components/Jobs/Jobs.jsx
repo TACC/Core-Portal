@@ -7,6 +7,7 @@ import { formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
+import Searchbar from '_common/Searchbar';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
@@ -136,15 +137,24 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const filterColumns = columns.filter((f) => f.show !== false);
 
   return (
-    <InfiniteScrollTable
-      tableColumns={filterColumns}
-      tableData={jobs}
-      onInfiniteScroll={infiniteScrollCallback}
-      isLoading={isLoading}
-      className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-      noDataText={noDataText}
-      getRowProps={rowProps}
-    />
+    <>
+      <Searchbar
+        api="tapis"
+        resultCount={jobs.length}
+        dataType="Jobs"
+        infiniteScroll
+        disabled={isLoading}
+      />
+      <InfiniteScrollTable
+        tableColumns={filterColumns}
+        tableData={jobs}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={isLoading}
+        className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
+        noDataText={noDataText}
+        getRowProps={rowProps}
+      />
+    </>
   );
 }
 
