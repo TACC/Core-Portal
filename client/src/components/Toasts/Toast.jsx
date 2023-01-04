@@ -28,7 +28,7 @@ const NotificationToast = () => {
         <Slide {...props} direction="right" />
       ));
       setOpen(true);
-    } else if (notification && open) {
+    } else if (toasts.length && notification && open) {
       // Close an active toast when a new one is added
       setOpen(false);
     }
