@@ -4,8 +4,6 @@
 """
 import logging
 import json
-from urllib.parse import urlparse
-from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
