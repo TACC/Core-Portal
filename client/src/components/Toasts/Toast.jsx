@@ -24,9 +24,7 @@ const NotificationToast = () => {
     if (toasts.length && !notification) {
       // Set a new toast when we don't have an active one
       setNotification({ ...toasts[0] });
-      setTransition(() => (props) => (
-        <Slide {...props} direction="right" />
-      ));
+      setTransition(() => (props) => <Slide {...props} direction="right" />);
       setOpen(true);
     } else if (toasts.length && notification && open) {
       // Close an active toast when a new one is added

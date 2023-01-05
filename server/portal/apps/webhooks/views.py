@@ -7,7 +7,6 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from enum import Enum
 
 from requests import HTTPError
 from tapipy.errors import BaseTapyException
