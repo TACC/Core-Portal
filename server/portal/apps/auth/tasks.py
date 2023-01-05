@@ -1,22 +1,8 @@
-from celery import shared_task
 from portal.apps.users.utils import get_allocations, get_tas_allocations
 from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-@shared_task(bind=True, max_retries=None)
-def setup_user(self, username, system):
-    """Setup workflow for each user
-
-        Called asynchronously from portal.apps.auth.views.tapis_oauth_callback
-        :param str username: string username to setup systems for
-        :param dict systems: dict of systems from settings
-    """
-    from portal.apps.accounts.managers.accounts import setup
-    logger.info(f"Setup task for {username} launched on {system}")
-    setup(username, system)
 
 
 def get_user_storage_systems(username, systems):

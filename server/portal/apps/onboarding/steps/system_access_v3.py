@@ -4,21 +4,46 @@ from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
-from portal.utils.encryption import create_private_key, create_public_key, export_key
+from portal.utils.encryption import createKeyPair
+from portal.libs.agave.utils import service_account
 from tapipy.errors import BaseTapyException
 
 
-def createKeyPair():
-    private_key = create_private_key()
-    priv_key_str = export_key(private_key, 'PEM')
-    public_key = create_public_key(private_key)
-    publ_key_str = export_key(public_key, 'OpenSSH')
+logger = logging.getLogger(__name__)
 
-    return priv_key_str, publ_key_str
+
+def create_system_credentials(user, public_key, private_key, system_id, skipCredentialCheck=False) -> int:
+    """
+    Set an RSA key pair as the user's auth credential on a Tapis system.
+    """
+    logger.info(f"Creating user credential for {user.username} on Tapis system {system_id}")
+    data = {'privateKey': private_key, 'publicKey': public_key}
+    client = user.tapis_oauth.client
+    client.systems.createUserCredential(
+        systemId=system_id,
+        userName=user.username,
+        skipCredentialCheck=skipCredentialCheck,
+        **data
+    )
+
+
+def set_user_permissions(user, system_id):
+    """Apply read/write/execute permissions to a user on a system."""
+    logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
+    client = service_account()
+    client.systems.grantUserPerms(
+        systemId=system_id,
+        userName=user.username,
+        permissions=['READ', 'MODIFY', 'EXECUTE'])
+    client.files.grantPermissions(
+        systemId=system_id,
+        path="/",
+        username=user.username,
+        permission='MODIFY'
+    )
 
 
 class SystemAccessStepV3(AbstractStep):
-    logger = logging.getLogger(__name__)
 
     def __init__(self, user):
         """
@@ -47,41 +72,45 @@ class SystemAccessStepV3(AbstractStep):
         response.raise_for_status
         return response.status_code
 
-    def push_system_credentials(self, public_key, private_key, system_id) -> int:
-        """
-        Set an RSA key pair as the user's auth credential on a Tapis system.
-        """
-        data = {'privateKey': private_key, 'publicKey': public_key}
-        self.user.tapis_oauth.client.systems.createUserCredential(
-            systemId=system_id,
-            userName=self.user.username,
-            **data
-            )
-
     def check_system(self, system_id) -> None:
         """
         Check whether a user already has access to a storage system by attempting a listing.
         """
         self.user.tapis_oauth.client.files.listFiles(systemId=system_id, path="/")
 
-    def generate_and_push_credentials(self, system_id):
-        (priv, pub) = createKeyPair()
-        try:
-            self.register_public_key(pub, system_id)
-            self.push_system_credentials(pub, priv, system_id)
-            self.log(f"Access granted for system: {system_id}")
-        except (HTTPError, BaseTapyException) as e:
-            self.logger.error(e)
-            self.fail(f"Failed to push credentials to system: {system_id}")
-
     def process(self):
-        self.log("Processing system access for user")
-        for system in self.settings.get('tapis_systems') or []:
+        self.log(f"Processing system access for user {self.user.username}")
+        for system in self.settings.get('access_systems') or []:
+            try:
+                set_user_permissions(self.user, system)
+                self.log(f"Successfully granted permissions for system: {system}")
+            except BaseTapyException as e:
+                logger.error(e)
+                self.fail(f"Failed to grant permissions for system: {system}")
+
+        for system in self.settings.get('credentials_systems') or []:
             try:
                 self.check_system(system)
-                self.log(f"Access already granted for system: {system}")
+                self.log(f"Credentials already created for system: {system}")
+                continue
             except BaseTapyException:
-                self.generate_and_push_credentials(system)
+                self.log(f"Creating credentials for system: {system}")
+
+            (priv, pub) = createKeyPair()
+
+            try:
+                self.register_public_key(pub, system)
+                self.log(f"Successfully registered public key for system: {system}")
+            except HTTPError as e:
+                logger.error(e)
+                self.fail(f"Failed to register public key with key service for system: {system}")
+
+            try:
+                create_system_credentials(self.user, pub, priv, system)
+                self.log(f"Successfully created credentials for system: {system}")
+            except BaseTapyException as e:
+                logger.error(e)
+                self.fail(f"Failed to create credentials for system: {system}")
 
         if self.state != SetupState.FAILED:
             self.complete("User is processed.")

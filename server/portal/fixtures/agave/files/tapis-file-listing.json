@@ -1,0 +1,50 @@
+[
+    {
+      "mimeType": null,
+      "type": "file",
+      "owner": "0",
+      "group": "0",
+      "nativePermissions": "rwxrwxrwx",
+      "url": "tapis://cloud.data.community/bin",
+      "lastModified": "2020-04-23T06:25:56Z",
+      "name": "bin",
+      "path": "bin",
+      "size": 7
+    },
+    {
+      "mimeType": null,
+      "type": "dir",
+      "owner": "0",
+      "group": "0",
+      "nativePermissions": "r-xr-xr-x",
+      "url": "tapis://cloud.data.community/boot",
+      "lastModified": "2022-05-24T20:32:05Z",
+      "name": "boot",
+      "path": "boot",
+      "size": 4096
+    },
+    {
+      "mimeType": null,
+      "type": "dir",
+      "owner": "0",
+      "group": "0",
+      "nativePermissions": "rwxr-xr-x",
+      "url": "tapis://cloud.data.community/corral",
+      "lastModified": "2022-09-16T16:48:43Z",
+      "name": "corral",
+      "path": "corral",
+      "size": 4096
+    },
+    {
+      "mimeType": null,
+      "type": "dir",
+      "owner": "0",
+      "group": "0",
+      "nativePermissions": "rwxr-xr-x",
+      "url": "tapis://cloud.data.community/dev",
+      "lastModified": "2022-05-24T20:31:51Z",
+      "name": "dev",
+      "path": "dev",
+      "size": 3140
+    }
+  ]
