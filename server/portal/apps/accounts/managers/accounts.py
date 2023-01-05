@@ -13,12 +13,8 @@ from paramiko.ssh_exception import (
     SSHException
 )
 from portal.utils.encryption import createKeyPair
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.models.systems.execution import ExecutionSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 logger = logging.getLogger(__name__)
@@ -61,56 +57,13 @@ def _lookup_keys_manager(user, password, token):
     return cls(user.username, password, token)
 
 
-def setup(username, system):
-    """Fires necessary steps for setup
-
-    Called asynchronously from portal.apps.auth.tasks.setup_user
-
-    As of 03/2018 a new account setup means creating a home directory
-    (optional), creating an Agave system for that home directory
-    and saving the newly created keys in the database.
-    The private key will be encrypted using AES.
-
-    :param str username: Account's username to setup
-
-    :return: home_dir
-
-    .. note::
-        The django setting `PORTAL_USER_ACCOUNT_SETUP_STEPS` can be used to
-        add any additional steps after the default setup.
-    """
-
-    user = check_user(username)
-    mgr = UserSystemsManager(user, system)
-    home_dir = mgr.get_private_directory(user)
-    systemId = mgr.get_system_id()
-    system = StorageSystem(user.tapis_oauth.client, id=systemId)
-    success, result = system.test()
-    if success:
-        logger.info(
-            "{username} has valid configuration for {systemId}, skipping creation".format(
-                username=username, systemId=systemId
-            )
-        )
-        return home_dir
-    mgr.setup_private_system(user)
-
-    return home_dir
-
-
 def reset_system_keys(user, system_id, hostname=None):
     """Reset system's Keys
 
     Creates a new set of keys, saves the set of keys to the DB
     and updates the Tapis System.
 
-    :param obj user: User
-
-    .. note::
-        If :param:`system_id` is a home system then the Home Manager
-        class will be used to reset the keys.
-        This because there might be some specific actions to do
-        when managing home directories
+    :param user: Django User object
     """
     logger.info(f"Resetting credentials for user {user.username} on system {system_id}")
     (priv_key_str, publ_key_str) = createKeyPair()
@@ -138,18 +91,20 @@ def queue_pub_key_setup(
         system_id,
         hostname,
         port=22
-):  # pylint: disable=too-many-arguments
+):
     """Queue Public Key Setup
 
     Convenient function to queue a specific celery task
     """
+    user = check_user(username)
+
     from portal.apps.accounts.tasks import (
         setup_pub_key,
         monitor_setup_pub_key
     )
     res = setup_pub_key.apply_async(
         kwargs={
-            'username': username,
+            'user': user,
             'password': password,
             'token': token,
             'system_id': system_id,
@@ -175,7 +130,7 @@ def add_pub_key_to_resource(
 ):
     """Add Public Key to Remote Resource
 
-    :param str user: User object
+    :param user: Django User object
     :param str password: Username's pasword to remote resource
     :param str token: TACC's token
     :param str system_id: Tapis system's id
@@ -237,68 +192,13 @@ def add_pub_key_to_resource(
     return success, message, status
 
 
-def storage_systems(user, offset=0, limit=100):
-    """Return all storage systems for a user.
-
-    :param user: Django user's instance
-    :param int offset: Offset.
-    :param int limit: Limit.
-    """
-    systems = []
-    res = StorageSystem.list(
-        user.tapis_oauth.client,
-        type=StorageSystem.TYPES.STORAGE,
-        offset=offset,
-        limit=limit
-    )
-    systems = list(res)
-    return systems
-
-
-def execution_systems(user, offset=0, limit=100):
-    """Return all execution systems for a user.
-
-    :param user: Django user's instance
-    :param int offset: Offset.
-    :param int limit: Limit.
-    """
-    systems = []
-    res = ExecutionSystem.list(
-        user.tapis_oauth.client,
-        type=ExecutionSystem.TYPES.EXECUTION,
-        offset=offset,
-        limit=limit
-    )
-    systems = list(res)
-    return systems
-
-
 def get_system(user, system_id):
     """Returns system
 
-    :param user: Django's user object
+    :param user: Django User object
     :param str system_id: System id
     :returns: System object
     :rtype: :class:`StorageSystem` or :class:`ExecutionSystem`
     """
     system = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
     return system
-
-
-def test_system(user, system_id):
-    """Test system
-
-    :param user: Django's user object
-    :param str system_id: System id
-    :returns: message
-    :rtype: str
-    """
-    system = get_system(user, system_id)
-    success, result = system.test()
-    return success, {
-        'message': result,
-        'systemId': system_id
-    }
-
-
-agave_system_serializer_cls = BaseAgaveSystemSerializer  # pylint:disable=C0103

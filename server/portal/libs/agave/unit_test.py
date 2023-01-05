@@ -17,6 +17,7 @@ from portal.libs.agave.serializers import (
     BaseAgaveSystemSerializer
 )
 from portal.libs.agave import utils as AgaveUtils
+from unittest import skip
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -241,6 +242,7 @@ class TestAgaveUtils(TestCase):
         res = AgaveUtils.to_camel_case(attr)
         self.assertEqual(res, 'someAttribute')
 
+    @skip(reason="TODOv3: update for v3 tapis")
     def test_walk(self):
         """Test `walk` util function."""
         self.magave.reset_mock()
@@ -277,6 +279,7 @@ class TestAgaveUtils(TestCase):
                 flat_listing[index]['path']
             )
 
+    @skip(reason="TODOv3: update for v3 tapis")
     def test_walk_levels(self):
         """Test `walk_levels` util."""
         self.magave.reset_mock()

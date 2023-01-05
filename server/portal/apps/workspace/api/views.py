@@ -230,10 +230,10 @@ class JobsView(BaseApiView):
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
-                system_def = tapis.systems.getSystem(systemId=system_id)
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except InternalServerError:
+                    system_def = tapis.systems.getSystem(systemId=system_id)
                     success = _test_listing_with_existing_keypair(system_def, request.user)
                     if not success:
                         logger.info(f"Keys for user {request.user.username} must be manually pushed to system: {system_id}")

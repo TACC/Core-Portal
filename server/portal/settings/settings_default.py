@@ -69,20 +69,20 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'stockyard': {
         'name': 'My Data (Work)',
-        'description': 'My Data on Stockyard for {username}',
+        'description': 'My Data on Stockyard',
         'site': 'cep',
         'systemId': 'cloud.data.community',
         'host': 'cloud.data.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
-        'port': 2222,
+        'port': 22,
         'icon': None,
         'default': True  # TODOv3: replace PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT with 'default' field
     },
     'frontera': {
         'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
+        'description': 'My Data on Frontera',
         'site': 'cep',
-        'systemId': 'frontera.home.{username}',
+        'systemId': 'frontera',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
         'port': 22,
@@ -90,16 +90,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     }
 }
 
-_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
-    {
-        'name': 'My Data (secure.corral)',
-        'system': 'a2cps.secure.corral.dev',
-        'scheme': 'private',
-        'api': 'tapis',
-        'icon': None,
-        'siteSearchPriority': 1
-    },
-]
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = []
 
 ########################
 # DJANGO APP: ONBOARDING
@@ -143,10 +134,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             'project_sql_id': 12345,
             'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
         }
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
     },
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',

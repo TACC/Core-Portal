@@ -3,6 +3,7 @@
   "appId": "compress-0.1",
   "appVersion": "0.0.1",
   "description": "test compression job 1",
+  "execSystemId": "frontera",
   "fileInputs": [
     {
       "name": "Target",
