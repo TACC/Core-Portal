@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,8 @@ import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
+import queryStringParser from 'query-string';
+import { useLocation } from 'react-router-dom';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
@@ -31,12 +33,21 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     </>
   );
 
+  const query = queryStringParser.parse(useLocation().search);
+
+  useEffect(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: 0, queryString: query.query_string },
+    });
+  }, [dispatch, query.query_string]);
+
   const infiniteScrollCallback = useCallback(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: jobs.length },
+      params: { offset: jobs.length, queryString: query.query_string },
     });
-  }, [jobs]);
+  }, [jobs, query.query_string]);
 
   const jobDetailLink = useCallback(
     ({
