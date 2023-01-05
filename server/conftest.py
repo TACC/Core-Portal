@@ -137,6 +137,11 @@ def agave_file_listing_mock():
 
 
 @pytest.fixture
+def tapis_file_listing_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/tapis-file-listing.json')))
+
+
+@pytest.fixture
 def agave_listing_mock():
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
 

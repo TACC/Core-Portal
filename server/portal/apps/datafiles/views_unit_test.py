@@ -185,8 +185,8 @@ def logging_metric_mock(mocker):
 
 
 def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
-                                                   agave_file_listing_mock, logging_metric_mock):
-    tapis_listing_result = [TapisResult(**f) for f in agave_file_listing_mock]
+                                                   tapis_file_listing_mock, logging_metric_mock):
+    tapis_listing_result = [TapisResult(**f) for f in tapis_file_listing_mock]
     mock_tapis_client.files.listFiles.return_value = tapis_listing_result
     response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234")
     assert response.status_code == 200
