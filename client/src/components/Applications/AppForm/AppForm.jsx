@@ -42,7 +42,7 @@ const appShape = PropTypes.shape({
     maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
   }),
-  systemHasKeys: PropTypes.bool,
+  systemNeedsKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
     host: PropTypes.string,
@@ -186,17 +186,21 @@ export const AppSchemaForm = ({ app }) => {
     hasStorageSystems,
     downSystems,
     execSystem,
+    defaultSystem,
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
         app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
-    const { defaultHost, configuration } = state.systems.storage;
+    const { defaultHost, configuration, defaultSystem } = state.systems.storage;
+
     const hasCorral =
       configuration.length &&
-      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
-        defaultHost.endsWith(s)
-      );
+      [
+        'cloud.corral.tacc.utexas.edu',
+        'data.tacc.utexas.edu',
+        'cloud.data.tacc.utexas.edu',
+      ].some((s) => defaultHost.endsWith(s));
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -216,14 +220,14 @@ export const AppSchemaForm = ({ app }) => {
             .map((downSys) => downSys.hostname)
         : [],
       execSystem: state.app ? state.app.exec_sys.host : '',
+      defaultSystem,
     };
   }, shallowEqual);
-
   const hideManageAccount = useSelector(
     (state) => state.workbench.config.hideManageAccount
   );
 
-  const { systemHasKeys, pushKeysSystem } = app;
+  const { systemNeedsKeys, pushKeysSystem } = app;
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
@@ -258,9 +262,12 @@ export const AppSchemaForm = ({ app }) => {
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
-    archiveSystemDir: '',
+    archiveSystemId:
+      defaultSystem || app.definition.jobAttributes.archiveSystemId,
+    archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
+    execSystemId: app.definition.jobAttributes.execSystemId,
   };
   let missingAllocation = false;
   if (app.exec_sys.batchScheduler === 'SLURM') {
@@ -293,11 +300,11 @@ export const AppSchemaForm = ({ app }) => {
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand
           is interpreted as a literal 0 if not. */}
-      {!!(!systemHasKeys && hasStorageSystems) && (
+      {!!(systemNeedsKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
-            this is your first time logging in, you may need to &nbsp;
+            this is your first time logging in, you may need to&nbsp;
             <a
               className="data-files-nav-link"
               type="button"
@@ -404,6 +411,7 @@ export const AppSchemaForm = ({ app }) => {
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue),
               maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
               allocation: Yup.string()
                 .required('Required')
@@ -497,51 +505,57 @@ export const AppSchemaForm = ({ app }) => {
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
-              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
-                <div className="appSchema-section">
-                  <div className="appSchema-header">
-                    <span>Inputs</span>
+              <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
+                {Object.keys(appFields.fileInputs).length > 0 && (
+                  <div className="appSchema-section">
+                    <div className="appSchema-header">
+                      <span>Inputs</span>
+                    </div>
+                    {Object.entries(appFields.fileInputs).map(
+                      ([name, field]) => {
+                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
+                        return (
+                          <FormField
+                            {...field}
+                            name={`fileInputs.${name}`}
+                            agaveFile
+                            SelectModal={DataFilesSelectModal}
+                            placeholder="Browse Data Files"
+                            key={`fileInputs.${name}`}
+                          />
+                        );
+                      }
+                    )}
+                    {Object.entries(appFields.appArgs).map(([name, field]) => {
+                      return (
+                        <FormField
+                          {...field}
+                          name={`appArgs.${name}`}
+                          key={`appArgs.${name}`}
+                        >
+                          {field.options
+                            ? field.options.map((item) => {
+                                let val = item;
+                                if (val instanceof String) {
+                                  const tmp = {};
+                                  tmp[val] = val;
+                                  val = tmp;
+                                }
+                                return Object.entries(val).map(
+                                  ([key, value]) => (
+                                    <option key={key} value={key}>
+                                      {value}
+                                    </option>
+                                  )
+                                );
+                              })
+                            : null}
+                        </FormField>
+                      );
+                    })}
+                    {/* TODOv3 handle parameterSet.envVariables */}
                   </div>
-                  {Object.entries(appFields.fileInputs).map(([name, field]) => {
-                    // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
-                    return (
-                      <FormField
-                        {...field}
-                        name={`fileInputs.${name}`}
-                        agaveFile
-                        SelectModal={DataFilesSelectModal}
-                        placeholder="Browse Data Files"
-                        key={`fileInputs.${name}`}
-                      />
-                    );
-                  })}
-                  {Object.entries(appFields.appArgs).map(([name, field]) => {
-                    return (
-                      <FormField
-                        {...field}
-                        name={`appArgs.${name}`}
-                        key={`appArgs.${name}`}
-                      >
-                        {field.options
-                          ? field.options.map((item) => {
-                              let val = item;
-                              if (val instanceof String) {
-                                const tmp = {};
-                                tmp[val] = val;
-                                val = tmp;
-                              }
-                              return Object.entries(val).map(([key, value]) => (
-                                <option key={key} value={key}>
-                                  {value}
-                                </option>
-                              ));
-                            })
-                          : null}
-                      </FormField>
-                    );
-                  })}
-                  {/* TODOv3 handle parameterSet.envVariables */}
-                </div>
+                )}
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Configuration</span>
@@ -631,15 +645,22 @@ export const AppSchemaForm = ({ app }) => {
                     required
                   />
                   {!app.definition.notes.isInteractive ? (
-                    <FormField
-                      label="Output Location"
-                      description={parse(
-                        'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.' // eslint-disable-line no-template-curly-in-string
-                      )}
-                      name="archivePath"
-                      type="text"
-                      placeholder="archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}" // eslint-disable-line no-template-curly-in-string
-                    />
+                    <>
+                      <FormField
+                        label="Archive System"
+                        description="System into which output files are archived after application execution."
+                        name="archiveSystemId"
+                        type="text"
+                        placeholder={defaultSystem}
+                      />
+                      <FormField
+                        label="Archive Directory"
+                        description="Directory into which output files are archived after application execution."
+                        name="archiveSystemDir"
+                        type="text"
+                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}" // TODOv3: How do we know if portal supports HOME vs WORK?
+                      />
+                    </>
                   ) : null}
                 </div>
                 <Button

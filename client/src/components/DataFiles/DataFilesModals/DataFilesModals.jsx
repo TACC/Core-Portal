@@ -5,7 +5,6 @@ import DataFilesMoveModal from './DataFilesMoveModal';
 import DataFilesUploadModal from './DataFilesUploadModal';
 import DataFilesMkdirModal from './DataFilesMkdirModal';
 import DataFilesRenameModal from './DataFilesRenameModal';
-import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
 import DataFilesEmptyModal from './DataFilesEmptyModal';
 import DataFilesCompressModal from './DataFilesCompressModal';
@@ -28,7 +27,6 @@ export default function DataFilesModals() {
       <DataFilesUploadModal layout="default" />
       <DataFilesMkdirModal />
       <DataFilesRenameModal />
-      <DataFilesPushKeysModal />
       <DataFilesEmptyModal />
       <DataFilesLinkModal />
       <DataFilesShowPathModal />
