@@ -33,14 +33,14 @@ describe('jobsUtil', () => {
 
   it('get output path from job', () => {
     expect(getOutputPath(jobDetailFixture)).toEqual(
-      'test.community//archive/1/user/system/archive/1'
+      'test.community/archive/1/user/system/archive/1'
     );
   });
 
   it('determine if terminal state', () => {
     expect(isTerminalState('FAILED')).toEqual(true);
     expect(isTerminalState('FINISHED')).toEqual(true);
-    expect(isTerminalState('STOPPED')).toEqual(true);
+    expect(isTerminalState('CANCELLED')).toEqual(true);
     expect(isTerminalState('RUNNING')).toEqual(false);
   });
 
