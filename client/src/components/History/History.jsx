@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  Route,
-  Switch,
-  Redirect,
-  useRouteMatch,
-  NavLink as RRNavLink,
-} from 'react-router-dom';
+import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import queryString from 'query-string';
 
 import { Button, Section } from '_common';

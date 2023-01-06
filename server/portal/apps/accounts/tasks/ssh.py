@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
     track_started=True
 )  # pylint: disable=too-many-arguments
 def setup_pub_key(
-        username,
+        user,
         password,
         token,
         system_id,
@@ -28,7 +28,7 @@ def setup_pub_key(
     """Setup public keys for user"""
     from portal.apps.accounts.managers import accounts as AccountsManager
     output = AccountsManager.add_pub_key_to_resource(
-        username,
+        user,
         password,
         token,
         system_id,
