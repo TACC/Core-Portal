@@ -12,162 +12,176 @@ export const notificationsListFixture = {
       datetime: '1600605194',
       status: 'ERROR',
       operation: 'job_failed',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' Failed. Please try again...",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' Failed. Please try again...",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'RUNNING',
         status: 'FAILED',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: '2020-09-20T12:33:13.345Z',
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 3,
-      action_link: '/workbench/data/agave/frontera.home.username/archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+      action_link:
+        '/workbench/data/agave/frontera.home.username/archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
       datetime: '1600605187',
       status: 'INFO',
       operation: 'job_status_update',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to ARCHIVING.",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to ARCHIVING.",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'RUNNING',
         status: 'ARCHIVING',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 35,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'interactive_session_ready',
       datetime: '1600605187',
       status: 'INFO',
       operation: 'web_link',
-      message: "Ready to view.",
+      message: 'Ready to view.',
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'STAGING_INPUTS',
         status: 'RUNNING',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 34,
       action_link: 'https://stampede2.tacc.utexas.edu:10401',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
       datetime: '1600604751',
       status: 'INFO',
       operation: 'job_status_update',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to RUNNING.",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to RUNNING.",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'STAGING_INPUTS',
         status: 'RUNNING',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 33,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
       datetime: '1600604746',
       status: 'INFO',
       operation: 'job_status_update',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to STAGING_INPUTS.",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to STAGING_INPUTS.",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'PENDING',
         status: 'STAGING_INPUTS',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 32,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
       datetime: '1600604746',
       status: 'INFO',
       operation: 'job_status_update',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to STAGING_INPUTS.",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to STAGING_INPUTS.",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: 'PENDING',
         status: 'STAGING_INPUTS',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: '2020-09-20T12:25:46.170Z'
+        remoteSubmitted: '2020-09-20T12:25:46.170Z',
       },
       pk: 31,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
       datetime: '1600604729',
       status: 'INFO',
       operation: 'job_status_update',
-      message: "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to PENDING.",
+      message:
+        "Job 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver' updated to PENDING.",
       extra: {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         name: 'RStudio-Stampede2-1.1.423u3_2020-09-20T12:25:10-dcvserver',
         old_status: null,
         status: 'PENDING',
         owner: 'username',
-        archiveSystemDir: 'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+        archiveSystemDir:
+          'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         archiveSystemId: 'frontera.home.username',
         ended: null,
-        remoteSubmitted: null
+        remoteSubmitted: null,
       },
       pk: 30,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
-    }
+      deleted: false,
+    },
   ],
   page: 0,
   total: 8,
