@@ -79,8 +79,20 @@ def walk(client, system, path, bottom_up=False, yield_base=True):
 
     """
     from portal.libs.agave.models.files import BaseFile
-    files = client.files.list(systemId=system,
-                              filePath=urllib.parse.quote(path))
+    _files = client.files.listFiles(systemId=system,
+                                    path=urllib.parse.quote(path))
+    files = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, _files))
     for json_file in files:
         json_file.pop('_links', None)
         if json_file['name'] == '.':
@@ -116,10 +128,22 @@ def iterate_level(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = client.files.list(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 offset=int(offset),
-                                 limit=int(limit))
+        _page = client.files.listFiles(systemId=system,
+                                       path=urllib.parse.quote(path),
+                                       offset=int(offset),
+                                       limit=int(limit))
+        page = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, _page))
         yield from page
         offset += limit
         if len(page) != limit:

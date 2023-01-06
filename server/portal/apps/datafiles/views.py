@@ -35,6 +35,7 @@ class SystemListingView(BaseApiView):
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
         if request.user.is_authenticated:
+            # TODOv3: simplify this
             if local_systems:
                 user_systems = get_user_storage_systems(request.user.username, local_systems)
                 for system_name, details in user_systems.items():
@@ -51,6 +52,7 @@ class SystemListingView(BaseApiView):
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
                 response['default_host'] = default_system['host']
+                response['default_system'] = default_system['systemId']
         if portal_systems:
             response['system_list'] += portal_systems
         return JsonResponse(response)

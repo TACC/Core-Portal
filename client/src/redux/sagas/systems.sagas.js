@@ -6,7 +6,6 @@ function* pushSystemKeys(action) {
   const form = {
     password: action.payload.password,
     token: action.payload.token,
-    type: action.payload.type,
     hostname: action.payload.hostname,
   };
   yield put({

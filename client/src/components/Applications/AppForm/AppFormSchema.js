@@ -75,7 +75,7 @@ const FormSchema = (app) => {
     const field = {
       label: input.name,
       description: input.description,
-      required: input.inputMode === 'REQUIRED ',
+      required: input.inputMode === 'REQUIRED',
     };
 
     field.type = 'text';
@@ -91,8 +91,8 @@ const FormSchema = (app) => {
     */
 
     if (field.required) {
-      appFields.schema.inputs[input.name] =
-        appFields.schema.inputs[input.name].required('Required');
+      appFields.schema.fileInputs[input.name] =
+        appFields.schema.fileInputs[input.name].required('Required');
     }
 
     appFields.fileInputs[input.name] = field;

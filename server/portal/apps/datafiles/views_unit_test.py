@@ -6,6 +6,7 @@ from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
 from django.conf import settings
+from tapipy.tapis import TapisResult
 
 pytestmark = pytest.mark.django_db
 
@@ -184,11 +185,31 @@ def logging_metric_mock(mocker):
 
 
 def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
-                                                   agave_file_listing_mock, agave_listing_indexer, logging_metric_mock):
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
+                                                   tapis_file_listing_mock, logging_metric_mock):
+    tapis_listing_result = [TapisResult(**f) for f in tapis_file_listing_mock]
+    mock_tapis_client.files.listFiles.return_value = tapis_listing_result
     response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234")
     assert response.status_code == 200
-    assert response.json() == {"data": {"listing": agave_file_listing_mock, "reachedEnd": True}}
+    assert response.json() == {
+        "data": {
+            "listing": [
+                {
+                    'system': 'frontera.home.username',
+                    'type': 'dir' if f.type == 'dir' else 'file',
+                    'format': 'folder' if f.type == 'dir' else 'raw',
+                    'mimeType': f.mimeType,
+                    'path': f.path,
+                    'name': f.name,
+                    'length': f.size,
+                    'lastModified': f.lastModified,
+                    '_links': {
+                        'self': {'href': f.url}
+                    }
+                } for f in tapis_listing_result
+            ],
+            "reachedEnd": True
+        }
+    }
 
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with(
@@ -213,7 +234,7 @@ def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, m
 
 
 def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
-                                                    agave_indexer, agave_listing_indexer, logging_metric_mock,
+                                                    agave_indexer, logging_metric_mock,
                                                     agave_file_mock, text_file_fixture):
     mock_tapis_client.files.importData.return_value = agave_file_mock
     response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
@@ -304,6 +325,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
     response = client.get('/api/datafiles/systems/list/')
     assert response.json() == {
         "default_host": "frontera.tacc.utexas.edu",
+        "default_system": "frontera.home.{username}",
         "system_list": [
             {
                 "name": "My Data (Frontera)",
