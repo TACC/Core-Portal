@@ -257,8 +257,8 @@ class JobsView(BaseApiView):
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
-            #TODOv3: change ttlMinutes to be dynamic based on max job runtime
-            job_post["subscriptions"]= [
+            # TODOv3: change ttlMinutes to be dynamic based on max job runtime
+            job_post["subscriptions"] = [
                {
                     "description": "Email notification",
                     "enabled": False,
