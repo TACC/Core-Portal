@@ -110,7 +110,7 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
                     "description": "Email notification",
                     "enabled": False,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
-                    "ttlMinutes": 10,
+                    "ttlMinutes": 0,
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",
