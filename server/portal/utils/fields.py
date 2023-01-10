@@ -7,6 +7,9 @@ from django.contrib.postgres.fields import (
 from django.db.models import Field
 
 
+# NOTE: TODO_django: Django v3 introduces a native JSONField, so this file will be obsolete.
+# https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.JSONField
+
 # Hack for loading Field class appropriate to either Postgres or SQLite (testing db)
 # from https://medium.com/@philamersune/using-postgresql-jsonfield-in-sqlite-95ad4ad2e5f1
 
