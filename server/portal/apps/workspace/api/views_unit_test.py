@@ -107,8 +107,8 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
         'tags': ['test'],
         'subscriptions': [
             {
-                    "description": "Email notification",
-                    "enabled": False,
+                    "description": "Portal job status notification",
+                    "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
                     "ttlMinutes": 0,
                     "deliveryTargets": [
