@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { jobs, jobsv2, jobDetail } from './jobs.reducers';
+import { jobs, jobDetail } from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 import {
@@ -28,7 +28,6 @@ import siteSearch from './siteSearch.reducers';
 export default combineReducers({
   jobs,
   jobDetail,
-  jobsv2,
   systems,
   systemMonitor,
   files,
