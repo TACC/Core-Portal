@@ -217,6 +217,7 @@ class JobsView(BaseApiView):
                 )
                 if jupyter_url:
                     data['jupyterUrl'] = jupyter_url
+
         # list jobs
         else:
             limit = int(request.GET.get('limit', 10))
