@@ -81,31 +81,6 @@ def _get_app(app_id, user):
     return data
 
 
-# TODOV3: For retaining job data during v3 transition
-def _get_job_detail(client, job_id, username):
-    data = client.jobs.get(jobId=job_id)
-    q = {"associationIds": job_id}
-    job_meta = client.meta.listMetadata(q=json.dumps(q))
-    data['_embedded'] = {"metadata": job_meta}
-
-    # TODO: Decouple this from front end somehow
-    archiveSystem = data.get('archiveSystem', None)
-    if archiveSystem:
-        archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
-        data['archiveUrl'] = '/workbench/data-depot/'
-        data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
-
-        jupyter_url = get_jupyter_url(
-            archiveSystem,
-            "/" + data['archivePath'],
-            username,
-            is_dir=True
-        )
-        if jupyter_url:
-            data['jupyterUrl'] = jupyter_url
-    return data
-
-
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -222,8 +197,26 @@ class JobsView(BaseApiView):
 
         # get specific job info
         if job_id:
-            data = _get_job_detail(agave, job_id, request.user.username)
+            data = agave.jobs.get(jobId=job_id)
+            q = {"associationIds": job_id}
+            job_meta = agave.meta.listMetadata(q=json.dumps(q))
+            data['_embedded'] = {"metadata": job_meta}
 
+            # TODO: Decouple this from front end somehow
+            archiveSystem = data.get('archiveSystem', None)
+            if archiveSystem:
+                archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
+                data['archiveUrl'] = '/workbench/data-depot/'
+                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
+
+                jupyter_url = get_jupyter_url(
+                    archiveSystem,
+                    "/" + data['archivePath'],
+                    request.user.username,
+                    is_dir=True
+                )
+                if jupyter_url:
+                    data['jupyterUrl'] = jupyter_url
         # list jobs
         else:
             limit = int(request.GET.get('limit', 10))
@@ -282,7 +275,7 @@ class JobsView(BaseApiView):
             # TODOV3: For retaining job data during v3 transition
             if job_action == 'resubmit':
                 if "id" in data:
-                    job_detail = _get_job_detail(agave, data['id'], request.user.username)
+                    job_detail = agave.jobs.get(jobId=data['id'])
                     job_detail = {**job_detail}
 
                     job = JobSubmission.objects.create(
@@ -371,7 +364,7 @@ class JobsView(BaseApiView):
 
             # TODOV3: For retaining job data during v3 transition
             if "id" in response:
-                job_detail = _get_job_detail(agave, response['id'], request.user.username)
+                job_detail = agave.jobs.get(jobId=response['id'])
                 job_detail = {**job_detail}
 
                 job = JobSubmission.objects.create(
