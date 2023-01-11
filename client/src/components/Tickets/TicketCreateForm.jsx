@@ -71,6 +71,12 @@ function TicketCreateForm({
   const recaptchaSiteKey = useSelector(
     (state) => state.workbench.recaptchaSiteKey
   );
+  const maxSizeMessage = useSelector(
+    (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
+  );
+  const maxSize = useSelector(
+    (state) => state.workbench.config.ticketAttachmentMaxSize
+  );
 
   const defaultValues = useMemo(
     () => ({
@@ -156,8 +162,8 @@ function TicketCreateForm({
                   id="attachments"
                   isSubmitted={isSubmitting}
                   description="Error reports and screenshots can be helpful for diagnostics"
-                  maxSizeMessage="Max File Size: 3MB"
-                  maxSize={3145728}
+                  maxSizeMessage={maxSizeMessage}
+                  maxSize={maxSize}
                 />
                 <Container>
                   <Row>
