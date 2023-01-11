@@ -162,7 +162,7 @@ function TicketCreateForm({
                   id="attachments"
                   isSubmitted={isSubmitting}
                   description="Error reports and screenshots can be helpful for diagnostics"
-                  maxSizeMessage={maxSizeMessage || "Max File Size: 3MB"}
+                  maxSizeMessage={maxSizeMessage || 'Max File Size: 3MB'}
                   maxSize={maxSize || 3145728}
                 />
                 <Container>
