@@ -448,39 +448,66 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-        'hidden': False,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-        'hidden': False,
-    },
-    'stockyard': {
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
         'name': 'My Data (Work)',
-        'systemId': 'cloud.corral.work.{username}',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 2222,
+        'system': 'cloud.data.community',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
         'icon': None,
-        'hidden': True,
+        'default': True
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
+        'name': 'My Data (Longhorn)',
+        'system': 'longhorn',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{tasdir}',
+        'icon': None,
+    },
+    {
+        'name': 'Community Data',
+        'system': 'cloud.data.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None,
+        'siteSearchPriority': 1
+    },
+    {
+        'name': 'Public Data',
+        'system': 'cloud.data.community',
+        'scheme': 'public',
+        'api': 'tapis',
+        'icon': 'publications',
+        'siteSearchPriority': 0
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications'
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
+        'icon': None,
+        'integration': 'portal.apps.googledrive_integration'
     }
-}
+]
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
+
 
 PORTAL_EXEC_SYSTEMS = {
     'data.tacc.utexas.edu': {
@@ -489,9 +516,9 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'stampede2.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
+        'home_dir': '/home1/{}'
     },
-    'lonestar5.tacc.utexas.edu': {
+    'ls5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
@@ -502,7 +529,15 @@ PORTAL_EXEC_SYSTEMS = {
     'frontera.tacc.utexas.edu': {
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
-    }
+    },
+    'maverick2.tacc.utexas.edu': {
+        'scratch_dir': '/work/{}',
+        'home_dir': '/home1/{}'
+    },
+    'ls6.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
 }
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = [

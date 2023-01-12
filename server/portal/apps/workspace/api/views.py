@@ -17,9 +17,9 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
@@ -95,13 +95,9 @@ class AppsView(BaseApiView):
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS and settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT:
-                # check if default system needs keys pushed
-                default_sys = UserSystemsManager(
-                    request.user,
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                )
-                system_id = default_sys.get_system_id()
+            # Check if default storage system needs keys pushed
+            if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
+                system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
                 system_def = tapis.systems.getSystem(systemId=system_id)
 
                 try:
@@ -170,21 +166,22 @@ class JobsView(BaseApiView):
 
     def post(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
+        username = request.user.username
         job_post = json.loads(request.body)
         job_uuid = job_post.get('job_uuid')
         job_action = job_post.get('action')
 
         if job_uuid and job_action:
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job uuid:{}".format(request.user.username, job_uuid))
+                METRICS.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
 
             elif job_action == 'cancel':
-                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(request.user.username, job_uuid))
+                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid)
             else:
                 raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
-                    request.user.username,
+                    username,
                     job_action,
                     job_uuid
                 ), status=400)
@@ -198,19 +195,15 @@ class JobsView(BaseApiView):
             )
         # submit job
         elif job_post:
-            METRICS.info("processing job submission for user:{}: {}".format(request.user.username, job_post))
+            METRICS.info("processing job submission for user:{}: {}".format(username, job_post))
 
-            # TODOv3: How do we know if portal has HOME vs WORK?
-            # cleaning archive path value
+            # Provide default job archive configuration if none is provided
             if not job_post.get('archiveSystemId'):
-                # TODOv3: Do away with UserSystemsManager
-                default_sys = UserSystemsManager(
-                    request.user,
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                )
-                job_post['archiveSystemId'] = default_sys.get_system_id()
+                job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
             if not job_post.get('archiveSystemDir'):
-                job_post['archiveSystemDir'] = 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
+                tasdir = get_user_data(username)['homeDirectory']
+                homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
+                job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -236,7 +229,7 @@ class JobsView(BaseApiView):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     success = _test_listing_with_existing_keypair(system_def, request.user)
                     if not success:
-                        logger.info(f"Keys for user {request.user.username} must be manually pushed to system: {system_id}")
+                        logger.info(f"Keys for user {username} must be manually pushed to system: {system_id}")
                         return JsonResponse(
                             {
                                 'status': 200,
@@ -263,7 +256,6 @@ class JobsView(BaseApiView):
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
-                    "ttlMinutes": 0,
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",
@@ -273,7 +265,7 @@ class JobsView(BaseApiView):
                 }
             ]
 
-            logger.info("user:{} is submitting job:{}".format(request.user.username, job_post))
+            logger.info("user:{} is submitting job:{}".format(username, job_post))
             response = tapis.jobs.submitJob(**job_post)
             return JsonResponse(
                 {

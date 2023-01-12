@@ -15,14 +15,6 @@ def service_account(mocker):
 
 
 @pytest.fixture
-def mock_manager(mocker):
-    mock = mocker.patch('portal.apps.jupyter_mounts.api.views.UserSystemsManager')
-    mock.return_value.get_sys_tas_user_dir.return_value = "/12345/username"
-    mock.return_value.get_name.return_value = "mock_name"
-    yield mock
-
-
-@pytest.fixture
 def mock_projects(mocker):
     mock = mocker.patch('portal.apps.jupyter_mounts.api.views.ProjectsManager')
     project1 = MagicMock()

@@ -62,7 +62,7 @@ export function* fetchSystemDefinition(action) {
     const systemJson = yield call(fetchSystemDefinitionUtil, action.payload);
     yield put({
       type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
-      payload: systemJson,
+      payload: systemJson.response,
     });
   } catch (e) {
     yield put({

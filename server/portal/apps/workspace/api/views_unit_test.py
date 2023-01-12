@@ -14,7 +14,7 @@ pytest.mark.django_db(transaction=True)
 
 @pytest.fixture
 def get_user_data(mocker):
-    mock = mocker.patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    mock = mocker.patch('portal.apps.users.utils.get_user_data')
     with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
         tas_user = json.load(f)
     mock.return_value = tas_user

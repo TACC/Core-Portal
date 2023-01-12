@@ -16,7 +16,7 @@ class TestAppsApiViews(TestCase):
         super(TestAppsApiViews, cls).setUpClass()
         cls.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
         cls.mock_client = cls.mock_client_patcher.start()
-        cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
+        cls.mock_get_user_data_patcher = patch('portal.apps.users.utils.get_user_data')
         with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
             tas_user = json.load(f)
         cls.mock_get_user_data = cls.mock_get_user_data_patcher.start()
@@ -74,7 +74,7 @@ class TestAppsApiViews(TestCase):
         self.assertTrue(data["response"]['appListing'] == apps)
 
     @pytest.mark.skip(reason="job post/notifications not implemented yet")
-    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    @patch('portal.apps.users.utils.get_user_data')
     def test_job_submit_notifications(self, tas_mock):
         tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")
@@ -102,7 +102,7 @@ class TestAppsApiViews(TestCase):
         self.assertTrue(finished in notifications)
 
     @pytest.mark.skip(reason="job post not implemented yet")
-    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    @patch('portal.apps.users.utils.get_user_data')
     def test_job_submit_parse_urls(self, tas_mock):
         tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")
