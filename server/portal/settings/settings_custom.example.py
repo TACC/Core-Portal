@@ -243,6 +243,8 @@ _WORKBENCH_SETTINGS = {
     "hideFeedback": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
+    "ticketAttachmentMaxSizeMessage": 'Max File Size: 3MB',
+    "ticketAttachmentMaxSize": 3145728,
     "customDashboardSection": {
         "header": "My Account",
         "links": [
