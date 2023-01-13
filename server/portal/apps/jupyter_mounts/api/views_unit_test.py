@@ -68,11 +68,6 @@ def test_get(authenticated_user, client, mock_projects, get_user_data):
             "pems": "rw"
         },
         {
-            "path": "/home/01234/username",
-            "mountPath": "/test/My Data (Longhorn)",
-            "pems": "rw"
-        },
-        {
             "path": "/projects/cep.project-1",
             "mountPath": "/test/My Projects/test",
             "pems": "rw"
