@@ -344,14 +344,6 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'icon': None,
             },
             {
-                'name': 'My Data (Longhorn)',
-                'system': 'longhorn',
-                'scheme': 'private',
-                'api': 'tapis',
-                'homeDir': '/home/01234/username',
-                'icon': None,
-            },
-            {
                 'name': 'Community Data',
                 'system': 'cloud.data.community',
                 'scheme': 'community',

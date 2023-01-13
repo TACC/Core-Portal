@@ -85,14 +85,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None,
     },
     {
-        'name': 'My Data (Longhorn)',
-        'system': 'longhorn',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/home/{tasdir}',
-        'icon': None,
-    },
-    {
         'name': 'Community Data',
         'system': 'cloud.data.community',
         'scheme': 'community',
