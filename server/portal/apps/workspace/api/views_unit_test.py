@@ -14,7 +14,7 @@ pytest.mark.django_db(transaction=True)
 
 @pytest.fixture
 def get_user_data(mocker):
-    mock = mocker.patch('portal.apps.users.utils.get_user_data')
+    mock = mocker.patch('portal.apps.workspace.api.views.get_user_data')
     with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
         tas_user = json.load(f)
     mock.return_value = tas_user
@@ -102,15 +102,14 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
 
     tapis_job_submission = {
         **job_submmission_definition,
-        'archiveSystemId': 'frontera.home.username',
-        'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}',
+        'archiveSystemId': 'cloud.data.community',
+        'archiveSystemDir': '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
         'tags': ['test'],
         'subscriptions': [
             {
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
-                    "ttlMinutes": 0,
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",

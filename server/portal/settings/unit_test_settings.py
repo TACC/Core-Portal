@@ -480,6 +480,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cloud.data.community',
         'scheme': 'community',
         'api': 'tapis',
+        'homeDir': '/path/to/community',
         'icon': None,
         'siteSearchPriority': 1
     },
@@ -488,6 +489,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cloud.data.community',
         'scheme': 'public',
         'api': 'tapis',
+        'homeDir': '/path/to/public',
         'icon': 'publications',
         'siteSearchPriority': 0
     },
@@ -539,42 +541,6 @@ PORTAL_EXEC_SYSTEMS = {
         'home_dir': '/home1/{}'
     },
 }
-
-PORTAL_DATAFILES_STORAGE_SYSTEMS = [
-    {
-        'name': 'Community Data',
-        'system': 'portal.storage.community',
-        'scheme': 'community',
-        'api': 'tapis',
-        'icon': None,
-        'siteSearchPriority': 1
-    },
-    {
-        'name': 'Public Data',
-        'system': 'portal.storage.public',
-        'scheme': 'public',
-        'api': 'tapis',
-        'icon': None,
-        'siteSearchPriority': 0
-    },
-    {
-        'name': 'Shared Workspaces',
-        'scheme': 'projects',
-        'api': 'tapis',
-        'icon': 'publications',
-        'privilegeRequired': False,
-        'readOnly': False,
-        'hideSearchBar': False
-    },
-    {
-        'name': 'Google Drive',
-        'system': 'googledrive',
-        'scheme': 'private',
-        'api': 'googledrive',
-        'icon': None,
-        'integration': 'portal.apps.googledrive_integration'
-    }
-]
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"

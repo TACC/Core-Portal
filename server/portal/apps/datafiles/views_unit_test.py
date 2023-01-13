@@ -25,7 +25,7 @@ def postits_create(mock_tapis_client):
 
 @pytest.fixture
 def get_user_data(mocker):
-    mock = mocker.patch('portal.apps.users.utils.get_user_data')
+    mock = mocker.patch('portal.apps.datafiles.views.get_user_data')
     with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
         tas_user = json.load(f)
     mock.return_value = tas_user
@@ -164,11 +164,11 @@ def test_link_put(postits_create, authenticated_user, mock_tapis_client, client)
 
 
 def test_get_system(client, authenticated_user, mock_tapis_client, agave_storage_system_mock):
-    mock_tapis_client.systems.get.return_value = agave_storage_system_mock
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(**agave_storage_system_mock)
 
     response = client.get("/api/datafiles/systems/definition/MySystem/")
     assert response.status_code == 200
-    assert response.json() == agave_storage_system_mock
+    assert response.json() == {"status": 200, "response": agave_storage_system_mock}
 
 
 def test_get_system_forbidden(client, regular_user, mock_tapis_client, agave_storage_system_mock):
@@ -318,7 +318,9 @@ def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_tap
     assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": 'other', "content": None, "error": "File too large to preview in this window."}}
 
 
-def test_systems_list(client, authenticated_user, mocker, get_user_data):
+def test_systems_list(client, authenticated_user, mock_tapis_client, agave_storage_system_mock, get_user_data):
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(**agave_storage_system_mock)
+
     response = client.get('/api/datafiles/systems/list/')
     assert response.json() == {
         "default_host": "cloud.data.tacc.utexas.edu",
@@ -338,7 +340,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
                 'system': 'frontera',
                 'scheme': 'private',
                 'api': 'tapis',
-                'homeDir': '/home1/{tasdir}',
+                'homeDir': '/home1/01234/username',
                 'icon': None,
             },
             {
@@ -346,7 +348,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
                 'system': 'longhorn',
                 'scheme': 'private',
                 'api': 'tapis',
-                'homeDir': '/home/{tasdir}',
+                'homeDir': '/home/01234/username',
                 'icon': None,
             },
             {
@@ -354,6 +356,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
                 'system': 'cloud.data.community',
                 'scheme': 'community',
                 'api': 'tapis',
+                'homeDir': '/path/to/community',
                 'icon': None,
                 'siteSearchPriority': 1
             },
@@ -362,6 +365,7 @@ def test_systems_list(client, authenticated_user, mocker, get_user_data):
                 'system': 'cloud.data.community',
                 'scheme': 'public',
                 'api': 'tapis',
+                'homeDir': '/path/to/public',
                 'icon': 'publications',
                 'siteSearchPriority': 0
             },

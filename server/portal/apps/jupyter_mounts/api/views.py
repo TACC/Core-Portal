@@ -23,11 +23,12 @@ class JupyterMountsApiView(BaseApiView):
     """
     def getDatafilesStorageSystems(self):
         result = []
-        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and sys['scheme'] != 'private']:
+        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and
+                       (sys['scheme'] == 'community' or sys['scheme'] == 'public')]:
             try:
                 result.append(
                     {
-                        "path": system["homeDir"],
+                        "path": system.get("homeDir", "/"),
                         "mountPath": "/{namespace}/{name}".format(
                             namespace=settings.PORTAL_NAMESPACE,
                             name=system['name']
