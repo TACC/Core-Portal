@@ -11,7 +11,7 @@ import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
 import { useLocation } from 'react-router-dom';
 
-function JobsView({ showDetails, showFancyStatus, rowProps }) {
+function JobsView({ showDetails, showFancyStatus, rowProps, fromDashboard }) {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.jobs.loading);
   const jobs = useSelector((state) => state.jobs.list);
@@ -149,13 +149,13 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
 
   return (
     <>
-      <Searchbar
+      {!fromDashboard && <Searchbar
         api="tapis"
         resultCount={jobs.length}
         dataType="Jobs"
         infiniteScroll
         disabled={isLoading}
-      />
+      />}
       <InfiniteScrollTable
         tableColumns={filterColumns}
         tableData={jobs}
@@ -173,11 +173,13 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
+  fromDashboard: PropTypes.bool
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
   rowProps: (row) => {},
+  fromDashboard: false
 };
 
 export default JobsView;
