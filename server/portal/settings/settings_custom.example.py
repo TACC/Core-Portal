@@ -89,7 +89,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cloud.data.community',
         'scheme': 'community',
         'api': 'tapis',
-        'homeDir': '/corral-repl/projects/tacc/aci/CEP/community',
+        'homeDir': '/corral/tacc/aci/CEP/community',
         'icon': None,
         'siteSearchPriority': 1
     },
@@ -98,7 +98,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cloud.data.community',
         'scheme': 'public',
         'api': 'tapis',
-        'homeDir': '/corral-repl/projects/tacc/aci/CEP/public',
+        'homeDir': '/corral/tacc/aci/CEP/public',
         'icon': 'publications',
         'siteSearchPriority': 0
     },
