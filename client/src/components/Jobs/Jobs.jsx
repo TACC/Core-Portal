@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
 import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
@@ -9,7 +9,9 @@ import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView({ showDetails, showFancyStatus, rowProps, version }) {
+function JobsView({ showDetails, showFancyStatus, rowProps }) {
+  const location = useLocation();
+  const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const { isLoading, error, jobs } = useSelector((state) => {
     return version === 'v3'
@@ -53,8 +55,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps, version }) {
       row: {
         original: { id, uuid, name },
       },
-    }) =>
-      version === 'v3' ? (
+    }) => {
+      return uuid ? (
         <Link
           to={{
             pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
@@ -74,7 +76,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps, version }) {
         >
           View Details
         </Link>
-      ),
+      );
+    },
     []
   );
 
@@ -177,7 +180,6 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
-  version: PropTypes.string,
 };
 JobsView.defaultProps = {
   showDetails: false,

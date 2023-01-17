@@ -66,8 +66,10 @@ function JobHistoryContent({
   const outputLocation =
     version === 'v3'
       ? useSelector((state) => {
-          return state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
-            .outputLocation;
+          const job = state.jobs.list.find(
+            (job) => job.uuid === jobDetails.uuid
+          );
+          return job.outputLocation ? job.outputLocation : '';
         })
       : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
@@ -222,20 +224,20 @@ JobHistoryContent.defaultProps = {
 function JobHistoryModal({ uuid, version }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
-      const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
-      return {
-        loading: false,
-        loadingError: null,
-        job: jobv2,
-        display: jobv2.display,
-      };
-    } else {
       const jobv3 = state.jobDetail;
       return {
         loading: jobv3.loading,
         loadingError: jobv3.loadingError,
         job: jobv3.job,
         display: jobv3.display,
+      };
+    } else {
+      const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
+      return {
+        loading: false,
+        loadingError: null,
+        job: jobv2,
+        display: jobv2.display,
       };
     }
   });

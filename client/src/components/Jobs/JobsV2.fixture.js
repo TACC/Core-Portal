@@ -132,6 +132,34 @@ const jobsV2List = [
     processorsPerNode: 0,
     failedStatusChecks: 0,
     remoteStatusChecks: 0,
+    display: {
+      inputs: [
+        {
+          label: 'inputFiles',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+      ],
+      parameters: [
+        {
+          label: 'filenames',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+        {
+          label: 'zipFileName',
+          id: 'zipFileName',
+          value: '.agave(2)(1).log.zip',
+        },
+        {
+          label: 'compression_type',
+          id: 'compression_type',
+          value: 'zip',
+        },
+      ],
+      systemName: 'test.exec.system',
+      applicationName: 'prtl.clone.username.FORK.zippy-0.2u2-2.0',
+    },
   },
   {
     id: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
@@ -266,6 +294,34 @@ const jobsV2List = [
     processorsPerNode: 0,
     failedStatusChecks: 0,
     remoteStatusChecks: 0,
+    display: {
+      inputs: [
+        {
+          label: 'inputFiles',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+      ],
+      parameters: [
+        {
+          label: 'filenames',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+        {
+          label: 'zipFileName',
+          id: 'zipFileName',
+          value: '.agave(2)(1).log.zip',
+        },
+        {
+          label: 'compression_type',
+          id: 'compression_type',
+          value: 'zip',
+        },
+      ],
+      systemName: 'test.exec.system',
+      applicationName: 'prtl.clone.username.FORK.zippy-0.2u2-2.0',
+    },
   },
   {
     id: '13ec13f2-4bec-4ec8-af9b-caa8913099ca-007',
@@ -400,6 +456,34 @@ const jobsV2List = [
     processorsPerNode: 0,
     failedStatusChecks: 0,
     remoteStatusChecks: 0,
+    display: {
+      inputs: [
+        {
+          label: 'inputFiles',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+      ],
+      parameters: [
+        {
+          label: 'filenames',
+          id: 'inputFiles',
+          value: 'agave://cloud.corral.work.username/.agave%282%29%281%29.log',
+        },
+        {
+          label: 'zipFileName',
+          id: 'zipFileName',
+          value: '.agave(2)(1).log.zip',
+        },
+        {
+          label: 'compression_type',
+          id: 'compression_type',
+          value: 'zip',
+        },
+      ],
+      systemName: 'test.exec.system',
+      applicationName: 'prtl.clone.username.FORK.zippy-0.2u2-2.0',
+    },
   },
 ];
 

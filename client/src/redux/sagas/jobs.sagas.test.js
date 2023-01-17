@@ -14,6 +14,7 @@ import {
   watchJobDetails,
   submitJob,
   getJobs,
+  getV2Jobs,
   fetchJobs,
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
@@ -91,6 +92,8 @@ test('Effect Creators should dispatch sagas', () => {
   testSaga(watchJobs)
     .next()
     .takeLatest('GET_JOBS', getJobs)
+    .next()
+    .takeLatest('GET_V2_JOBS', getV2Jobs)
     .next()
     .takeLeading('SUBMIT_JOB', submitJob)
     .next()

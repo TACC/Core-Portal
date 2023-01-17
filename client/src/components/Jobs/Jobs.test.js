@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Jobs from './Jobs';
 import { default as jobsList } from './Jobs.fixture';
+import { default as jobsV2List } from './JobsV2.fixture';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
@@ -24,7 +25,7 @@ function renderJobsComponent(store) {
   return render(
     <Provider store={store}>
       <BrowserRouter>
-        <Jobs />
+        <Jobs version="v3" />
       </BrowserRouter>
     </Provider>
   );
@@ -35,6 +36,10 @@ describe('Jobs View', () => {
     const store = mockStore({
       jobs: {
         ...initialMockState,
+      },
+      jobsv2: {
+        list: jobsV2List,
+        loading: false,
       },
       apps: {
         ...appIconMockState,
@@ -56,6 +61,10 @@ describe('Jobs View', () => {
       jobs: {
         ...initialMockState,
         error: 'error',
+      },
+      jobsv2: {
+        list: jobsV2List,
+        loading: false,
       },
       apps: {
         ...appIconMockState,
