@@ -149,22 +149,26 @@ function JobsView({ showDetails, showFancyStatus, rowProps, fromDashboard }) {
 
   return (
     <>
-      {!fromDashboard && <Searchbar
-        api="tapis"
-        resultCount={jobs.length}
-        dataType="Jobs"
-        infiniteScroll
-        disabled={isLoading}
-      />}
-      <InfiniteScrollTable
-        tableColumns={filterColumns}
-        tableData={jobs}
-        onInfiniteScroll={infiniteScrollCallback}
-        isLoading={isLoading}
-        className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-        noDataText={noDataText}
-        getRowProps={rowProps}
-      />
+      {!fromDashboard && (
+        <Searchbar
+          api="tapis"
+          resultCount={jobs.length}
+          dataType="Jobs"
+          infiniteScroll
+          disabled={isLoading}
+        />
+      )}
+      <div className="o-flex-item-table-wrap">
+        <InfiniteScrollTable
+          tableColumns={filterColumns}
+          tableData={jobs}
+          onInfiniteScroll={infiniteScrollCallback}
+          isLoading={isLoading}
+          className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
+          noDataText={noDataText}
+          getRowProps={rowProps}
+        />
+      </div>
     </>
   );
 }
@@ -173,13 +177,13 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
-  fromDashboard: PropTypes.bool
+  fromDashboard: PropTypes.bool,
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
   rowProps: (row) => {},
-  fromDashboard: false
+  fromDashboard: false,
 };
 
 export default JobsView;
