@@ -42,8 +42,8 @@ function FileInputDropZoneFormField({
         onSetFiles={onSetFiles}
         onRemoveFile={onRemoveFile}
         isSubmitted={isSubmitted}
-        maxSizeMessage={maxSizeMessage}
-        maxSize={maxSize}
+        maxSizeMessage={maxSizeMessage || 'Max File Size: 3MB'}
+        maxSize={maxSize || 3145728}
       />
       <FormText className="form-field__help" color="muted">
         {description}
