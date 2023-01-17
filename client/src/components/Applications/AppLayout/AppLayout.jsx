@@ -44,7 +44,7 @@ const AppsHeader = (categoryDict) => {
   const appMeta = Object.values(categoryDict.categoryDict)
     .flatMap((e) => e)
     .find((app) => app.appId === params.appId);
-  const path = appMeta ? ` / ${appMeta.label}` : '';
+  const path = appMeta ? ` / ${appMeta.label || appMeta.appId}` : '';
   return `Applications ${path}`;
 };
 

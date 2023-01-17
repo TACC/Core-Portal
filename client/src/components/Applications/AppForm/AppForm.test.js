@@ -211,6 +211,7 @@ describe.skip('AppSchemaForm', () => {
           errorMessage: null,
           loading: false,
           defaultHost: '',
+          defaultSystem: '',
         },
         definitions: {
           list: [],

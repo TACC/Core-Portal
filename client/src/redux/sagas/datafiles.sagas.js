@@ -79,41 +79,6 @@ export function* watchFetchSystems() {
   yield takeLeading('FETCH_SYSTEM_DEFINITION', fetchSystemDefinition);
 }
 
-export async function pushKeysUtil(system, form) {
-  const url = `/api/accounts/systems/${system}/keys/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ form, action: 'push' }),
-  });
-  return request;
-}
-
-export function* watchPushKeys() {
-  yield takeLeading('DATA_FILES_PUSH_KEYS', pushKeys);
-}
-
-export function* pushKeys(action) {
-  const form = {
-    password: action.payload.password,
-    token: action.payload.token,
-    type: action.payload.type,
-    hostname: null,
-  };
-
-  yield call(pushKeysUtil, action.payload.system, form);
-
-  yield call(action.payload.reloadCallback);
-  yield put({
-    type: 'DATA_FILES_TOGGLE_MODAL',
-    payload: {
-      operation: 'pushKeys',
-      props: {},
-    },
-  });
-}
-
 export function* watchFetchFiles() {
   yield takeLatest('FETCH_FILES', fetchFiles);
 }

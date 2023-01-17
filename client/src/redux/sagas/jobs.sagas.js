@@ -145,13 +145,6 @@ export async function fetchJobDetailsUtil(jobUuid) {
   return result.response;
 }
 
-export async function fetchSystemUtil(system) {
-  const result = await fetchUtil({
-    url: `/api/accounts/systems/${system}/`,
-  });
-  return result.response;
-}
-
 export function* getJobDetails(action) {
   const { jobUuid } = action.payload;
   yield put({

@@ -24,7 +24,7 @@ export const jobStatusUpdatePending = {
     archive: true,
     archiveOnAppError: true,
     // eslint-disable-next-line no-template-curly-in-string
-    archivePath: 'archive/jobs/2020-09-20/${JOB_NAME}-${JOB_ID}',
+    archivePath: 'archive/jobs/2020-09-20/${JobName}-${JobUUID}',
     archiveSystem: 'frontera.home.username',
     nodeCount: 1,
     processorsPerNode: 20,
