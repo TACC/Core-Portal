@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-1951: Configurable Ticket Attachment Size (#754)
 - FP-1939: Cleanup searchbar and sidebar components (#737)
 - FP-1943: Remove retired Longhorn from system monitor (#738)
+- TV3-93: Tapis v2 verbose historical job data (#748)
 
 ### Fixed
 - FP-1928: Fix Data Files Dropdown CSS (#735)
