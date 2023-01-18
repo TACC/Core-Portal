@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.23.0] - 2023-01-18: Minor changes and bugfixes
+
+### Changed
+- FP-1951: Configurable Ticket Attachment Size (#754)
+- FP-1939: Cleanup searchbar and sidebar components (#737)
+- FP-1943: Remove retired Longhorn from system monitor (#738)
+
+### Fixed
+- FP-1928: Fix Data Files Dropdown CSS (#735)
 
 ## [2.22.1] - 2022-11-15: Increase CustomMessageTemplate length
 
@@ -781,7 +790,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.22.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.23.0...HEAD
+[2.23.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.23.0
 [2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
 [2.22.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.0
 [2.21.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.21.0
