@@ -23,6 +23,15 @@ const initialMockState = {
   replyingErrorMessage: '',
 };
 
+const ticketAttachmentSettings = {
+  workbench: {
+    config: {
+      ticketAttachmentMaxSizeMessage: 'Max File Size: 3MB',
+      ticketAttachmentMaxSize: 3145728,
+    },
+  },
+};
+
 const exampleTicketHistory = [
   {
     id: '1',
@@ -85,6 +94,7 @@ describe('TicketModal', () => {
         ticketSubject: 'Subject',
         content: exampleTicketHistory,
       },
+      ...ticketAttachmentSettings,
     });
 
     const { getByText, getAllByText } = renderTicketsModelComponent(store);
@@ -102,6 +112,7 @@ describe('TicketModal', () => {
         ticketSubject: 'Subject',
         loading: true,
       },
+      ...ticketAttachmentSettings,
     });
 
     const { getByText, getByTestId } = renderTicketsModelComponent(store);
