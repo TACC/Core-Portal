@@ -64,7 +64,7 @@ function Workbench() {
       },
     });
 
-    if (true) {
+    if (setupComplete) {
       dispatch({ type: 'GET_ALLOCATIONS' });
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
@@ -73,11 +73,11 @@ function Workbench() {
     }
   }, [setupComplete]);
 
-  return (
+  {setupComplete ? (
     <div className="workbench-wrapper">
       <NotificationToast />
       <WorkbenchSidebar
-        disabled={false}
+        disabled={!setupComplete}
         showUIPatterns={showUIPatterns}
         loading={loading}
       />
