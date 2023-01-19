@@ -87,6 +87,21 @@ class JobsWebhookView(BaseApiView):
             job_name = job['jobName']
             job_old_status = job['oldJobStatus']
 
+            # Do nothing on job status not in portal notification states
+            if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
+                logger.info(
+                    "Job ID {} for owner {} entered {} state (no notification sent)".format(
+                        job_id, username, job_status
+                    )
+                )
+                return HttpResponse("OK")
+
+            # Do nothing on duplicate job status events
+            if job_status == job_old_status:
+                return HttpResponse("OK")
+
+            logger.info('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
+
             event_data = {
                 Notification.EVENT_TYPE: 'job',
                 Notification.JOB_ID: job_id,
@@ -97,8 +112,7 @@ class JobsWebhookView(BaseApiView):
                     "name": job_name,
                     "owner": username,
                     "status": job_status,
-                    "uuid": job_id,
-                    "old_status": job_old_status
+                    "uuid": job_id
                 }
             }
 
@@ -108,90 +122,22 @@ class JobsWebhookView(BaseApiView):
                 client = user.tapis_oauth.client
                 job_details = client.jobs.getJob(jobUuid=job_id)
 
-                event_data[Notification.EXTRA]['remoteSubmitted'] = str(job['remoteSubmitted'])
-                event_data[Notification.EXTRA]['ended'] = str(job['remoteEnded'])
                 event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
                 event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
+                event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
 
-            if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
-                logger.debug(
-                    "Job ID {} for owner {} entered {} state (no notification sent)".format(
-                        job_id, username, job_status
-                    )
-                )
-                return HttpResponse("OK")
+                try:
+                    logger.info('Indexing job output for job={}'.format(job_id))
 
-            if job_status == 'FAILED':
-                logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
-                event_data[Notification.STATUS] = Notification.ERROR
-                event_data[Notification.MESSAGE] = "Job '{}' Failed. Please try again...".format(job_name)
-                event_data[Notification.OPERATION] = 'job_failed'
+                    agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
+                                              kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
+                except Exception as e:
+                    logger.exception('Error indexing job output: {}'.format(e))
+                    return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
-                with transaction.atomic():
-                    should_notify = True
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
-
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
-
-            elif job_status == 'FINISHED':
-                logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
-
-                logger.debug('archivePath: {}'.format(event_data[Notification.EXTRA]['archiveSystemDir']))
-
-                event_data[Notification.STATUS] = Notification.SUCCESS
-                event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
-                event_data[Notification.MESSAGE] = "Job '{}' finished".format(job_name)
-                event_data[Notification.OPERATION] = 'job_finished'
-
-                with transaction.atomic():
-
-                    should_notify = True
-
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
-
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
-                    try:
-                        logger.debug('Preparing to Index Job Output job={}'.format(job_name))
-
-                        agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
-                                                  kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
-                        logger.debug(
-                            'Finished Indexing Job Output job={}'.format(job_name))
-                    except Exception as e:
-                        logger.exception('Error indexing job output: {}'.format(e))
-                        return HttpResponse(json.dumps(e), content_type='application/json', status=400)
-
-            else:
-                logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
-                event_data[Notification.STATUS] = Notification.INFO
-                event_data[Notification.MESSAGE] = "Job '{}' updated to {}.".format(job_name, job_status)
-                event_data[Notification.OPERATION] = 'job_status_update'
-
-                with transaction.atomic():
-
-                    should_notify = True
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
-
-                        logger.debug(n.pk)
+            with transaction.atomic():
+                n = Notification.objects.create(**event_data)
+                n.save()
 
             return HttpResponse('OK')
 

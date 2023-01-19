@@ -92,7 +92,7 @@ class AppsView(BaseApiView):
         app_id = request.GET.get('appId')
         if app_id:
             app_version = request.GET.get('appVersion')
-            METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
+            METRICS.info("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
             # Check if default storage system needs keys pushed
@@ -107,7 +107,7 @@ class AppsView(BaseApiView):
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
-            METRICS.debug("user:{} is requesting all apps".format(request.user.username))
+            METRICS.info("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
 
         return JsonResponse(

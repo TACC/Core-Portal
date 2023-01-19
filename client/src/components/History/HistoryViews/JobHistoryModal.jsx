@@ -15,7 +15,7 @@ import {
 } from '_common';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
-import { isOutputState } from 'utils/jobsUtil';
+import { isOutputState, getOutputPath } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
@@ -58,8 +58,9 @@ const reduceInputParameters = (data) =>
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
   const outputLocation = useSelector((state) => {
-    return state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
-      .outputLocation;
+    return getOutputPath(
+      state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
+    );
   });
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));

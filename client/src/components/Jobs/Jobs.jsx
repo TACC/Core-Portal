@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
+import { getOutputPath } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -111,7 +112,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: 'outputLocation',
       Cell: (el) => {
-        const outputLocation = el.row.original.outputLocation;
+        const outputLocation = getOutputPath(el.row.original);
         return outputLocation &&
           !hideDataFiles &&
           el.row.original.remoteOutcome === 'FINISHED' ? (
