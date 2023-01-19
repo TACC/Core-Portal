@@ -24,22 +24,20 @@ function renderJobsStatus(store, props) {
 //expect.extend({ toHaveClass });
 describe('JobsStatus', () => {
   it('converts status to proper UI strings', () => {
-    expect(getStatusText('ACCEPTED')).toEqual('Processing');
     expect(getStatusText('PENDING')).toEqual('Processing');
     expect(getStatusText('PROCESSING_INPUTS')).toEqual('Processing');
-    expect(getStatusText('STAGING_INPUTS')).toEqual('Staging');
-    expect(getStatusText('STAGED')).toEqual('Staging');
-    expect(getStatusText('STAGING_JOB')).toEqual('Staging');
-    expect(getStatusText('SUBMITTING')).toEqual('Submitted');
-    expect(getStatusText('QUEUED')).toEqual('Queued');
+    expect(getStatusText('STAGING_INPUTS')).toEqual('Queueing');
+    expect(getStatusText('STAGING_JOB')).toEqual('Queueing');
+    expect(getStatusText('SUBMITTING_JOB')).toEqual('Queueing');
+    expect(getStatusText('QUEUED')).toEqual('Queueing');
     expect(getStatusText('RUNNING')).toEqual('Running');
-    expect(getStatusText('CLEANING_UP')).toEqual('Finishing');
     expect(getStatusText('ARCHIVING')).toEqual('Finishing');
     expect(getStatusText('FINISHED')).toEqual('Finished');
     expect(getStatusText('STOPPED')).toEqual('Stopped');
     expect(getStatusText('FAILED')).toEqual('Failure');
     expect(getStatusText('BLOCKED')).toEqual('Blocked');
     expect(getStatusText('PAUSED')).toEqual('Paused');
+    expect(getStatusText('CANCELLED')).toEqual('Cancelled');
     expect(getStatusText('random_status')).toEqual('Unknown');
   });
 

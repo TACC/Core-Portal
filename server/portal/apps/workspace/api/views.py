@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-# from django.urls import reverse  # TODOv3
+from django.urls import reverse
 from django.db.models.functions import Coalesce
 from django.core.exceptions import ObjectDoesNotExist
 from tapipy.errors import BaseTapyException, InternalServerError
@@ -276,21 +276,31 @@ class JobsView(BaseApiView):
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
-                # jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
             else:
                 wh_base_url = request.build_absolute_uri('/webhooks/')
-                # jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
             job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
-            # TODOv3 Webhooks/notifications continues
-            # job_post['notifications'] = [
-            #     {'url': jobs_wh_url,
-            #      'event': e}
-            #     for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
+            # ttlMinutes of 0 corresponds to max default (1 week)
+            job_post["subscriptions"] = [
+               {
+                    "description": "Portal job status notification",
+                    "enabled": True,
+                    "eventCategoryFilter": "JOB_NEW_STATUS",
+                    "ttlMinutes": 0,
+                    "deliveryTargets": [
+                        {
+                            "deliveryMethod": "WEBHOOK",
+                            "deliveryAddress": jobs_wh_url
+                        }
+                    ]
+                }
+            ]
 
             logger.info("user:{} is submitting job:{}".format(request.user.username, job_post))
             response = tapis.jobs.submitJob(**job_post)
