@@ -119,6 +119,12 @@ function TicketHistoryReply({ ticketId }) {
   const replyingError = useSelector(
     (state) => state.ticketDetailedView.replyingError
   );
+  const maxSizeMessage = useSelector(
+    (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
+  );
+  const maxSize = useSelector(
+    (state) => state.workbench.config.ticketAttachmentMaxSize
+  );
   return (
     <Formik
       enableReinitialize
@@ -157,8 +163,8 @@ function TicketHistoryReply({ ticketId }) {
               id="attachments"
               isSubmitted={isSubmitting}
               description="Error reports and screenshots can be helpful for diagnostics"
-              maxSizeMessage="Max File Size: 3MB"
-              maxSize={3145728}
+              maxSizeMessage={maxSizeMessage || 'Max File Size: 3MB'}
+              maxSize={maxSize || 3145728}
             />
             <FormGroup className="ticket-reply-submission">
               {replyingError && (

@@ -273,11 +273,16 @@ class JobsView(BaseApiView):
 
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
 
+            # TODOV3: For retaining job data during v3 transition
             if job_action == 'resubmit':
                 if "id" in data:
+                    job_detail = agave.jobs.get(jobId=data['id'])
+                    job_detail = {**job_detail}
+
                     job = JobSubmission.objects.create(
                         user=request.user,
-                        jobId=data["id"]
+                        jobId=data["id"],
+                        data=job_detail
                     )
                     job.save()
 
@@ -358,10 +363,15 @@ class JobsView(BaseApiView):
 
             response = agave.jobs.submit(body=job_post)
 
+            # TODOV3: For retaining job data during v3 transition
             if "id" in response:
+                job_detail = agave.jobs.get(jobId=response['id'])
+                job_detail = {**job_detail}
+
                 job = JobSubmission.objects.create(
                     user=request.user,
-                    jobId=response["id"]
+                    jobId=response["id"],
+                    data=job_detail
                 )
                 job.save()
 
