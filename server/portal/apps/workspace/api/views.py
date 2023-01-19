@@ -250,12 +250,13 @@ class JobsView(BaseApiView):
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
-            # ttlMinutes of 0 corresponds to max default (1 month)
+            # ttlMinutes of 0 corresponds to max default (1 week)
             job_post["subscriptions"] = [
                {
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
+                    "ttlMinutes": 0,
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",
