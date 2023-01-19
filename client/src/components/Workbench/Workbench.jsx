@@ -73,7 +73,7 @@ function Workbench() {
     }
   }, [setupComplete]);
 
-  {setupComplete ? (
+  return (
     <div className="workbench-wrapper">
       <NotificationToast />
       <WorkbenchSidebar
@@ -86,7 +86,7 @@ function Workbench() {
           <LoadingSpinner />
         ) : (
           <>
-            {true ? (
+            {setupComplete ? (
               <Switch>
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
                   <Dashboard />
