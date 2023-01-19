@@ -9,7 +9,7 @@ describe('Job Detail Reducer', () => {
   test('Jobs list update job', () => {
     const jobOutputLocationPopulated = {
       ...jobDetailFixture,
-      outputLocation: 'test.community//archive/1/user/system/archive/1',
+      outputLocation: 'test.community/archive/1/user/system/archive/1',
     };
     const jobsListUpdateJobAction = {
       type: 'JOBS_LIST_UPDATE_JOB',

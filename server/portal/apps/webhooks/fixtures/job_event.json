@@ -1,0 +1,21 @@
+{
+    "uuid":"b8a096ae-0d87-4084-8857-47ff2295c14d",
+    "tenant":"a2cps",
+    "subscriptionName":"test-subscription",
+    "eventUuid": "73030cd4-6749-4ba8-99a5-9a62dd6b6eeb",
+    "event":{
+        "source":"https://tapis.io/jobs",
+        "type":"jobs.JOB_NEW_STATUS.STAGING",
+        "subject": "f00aafc0-296a-4e78-81fb-5c7943030e89-007",
+        "data":"{\"newJobStatus\":\"STAGING\",\"oldJobStatus\":\"PROCESSING\",\"jobName\":\"test-job\",\"jobOwner\":\"sal\",\"jobUuid\":\"id\",\"message\":\"sample message\"}"
+    },
+    "seriesId": "f00aafc0-296a-4e78-81fb-5c7943030e89-007", 
+    "timestamp": "2022-12-12T22:08:05.481821316Z", 
+    "deleteSubscriptionsMatchingSubject": false, 
+    "user": "jobs", 
+    "deliveryTarget": {
+        "deliveryMethod": "WEBHOOK", 
+        "deliveryAddress": "https://d9fa-2601-2c0-8e00-c00-2c22-5c0f-cff1-cb8a.ngrok.io/webhooks/jobs/"
+    }, 
+    "created": "2022-12-12T22:08:06.108410379Z"
+}

@@ -9,14 +9,14 @@ from django.urls import reverse
 from portal.apps.notifications.models import Notification
 from portal.apps.signals.receivers import send_notification_ws
 from portal.libs.exceptions import PortalLibException
-from portal.apps.webhooks.views import validate_agave_job
+from portal.apps.webhooks.views import validate_tapis_job
 
 
-class TestValidateAgaveJob(TestCase):
+class TestValidateTapisJob(TestCase):
     def setUp(self):
         self.job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
         mock_client = MagicMock()
-        mock_client.jobs.get.return_value = self.job_event
+        mock_client.jobs.getJob.return_value = self.job_event
         mock_user = MagicMock()
         mock_user.tapis_oauth.client = mock_client
         mock_user_model = MagicMock()
@@ -33,14 +33,14 @@ class TestValidateAgaveJob(TestCase):
 
     def test_valid_job(self):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        self.assertEqual(validate_agave_job("id", "sal"), job_event)
+        self.assertEqual(validate_tapis_job("id", "sal"), job_event)
 
     def test_valid_job_invalid_user(self):
         with self.assertRaises(PortalLibException):
-            validate_agave_job("id", "wronguser")
+            validate_tapis_job("id", "wronguser")
 
     def test_invalid_state(self):
-        self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), None)
+        self.assertEqual(validate_tapis_job("id", "sal", disallowed_states=['STAGING']), None)
 
 
 class TestJobsWebhookView(TransactionTestCase):
@@ -52,23 +52,24 @@ class TestJobsWebhookView(TransactionTestCase):
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING"])
-    @patch('portal.apps.webhooks.views.validate_agave_job')
-    def test_webhook_job_post(self, mock_validate_agave_job):
-        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = job_event
+    @patch('portal.apps.webhooks.views.validate_tapis_job')
+    def test_webhook_job_post(self, mock_validate_tapis_job):
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_event.json')))
+        mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
         n = Notification.objects.last()
         n_status = n.to_dict()['extra']['status']
-        self.assertEqual(n_status, job_event['status'])
+        job_data = json.loads(job_event['event']['data'])
+        self.assertEqual(n_status, job_data['newJobStatus'])
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["RUNNING"])
-    @patch('portal.apps.webhooks.views.validate_agave_job')
-    def test_webhook_job_post_invalid_state(self, mock_validate_agave_job):
-        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = job_event
+    @patch('portal.apps.webhooks.views.validate_tapis_job')
+    def test_webhook_job_post_invalid_state(self, mock_validate_tapis_job):
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_event.json')))
+        mock_validate_tapis_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -79,8 +80,8 @@ class TestInteractiveWebhookView(TestCase):
     fixtures = ['users', 'auth']
 
     def setUp(self):
-        self.mock_agave_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
-        self.mock_tapis_client = self.mock_agave_patcher.start()
+        self.mock_tapis_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
+        self.mock_tapis_client = self.mock_tapis_patcher.start()
 
         self.client.force_login(get_user_model().objects.get(username="username"))
 
@@ -102,12 +103,12 @@ class TestInteractiveWebhookView(TestCase):
             "password": "3373312947011719656-242ac11b-0001-007",
             "owner": "username"
         }
-        self.agave_job_staging = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        self.agave_job_running = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_running.json')))
-        self.agave_job_failed = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_failed.json')))
+        self.tapis_job_staging = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        self.tapis_job_running = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_running.json')))
+        self.tapis_job_failed = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_failed.json')))
 
     def tearDown(self):
-        self.mock_agave_patcher.stop()
+        self.mock_tapis_patcher.stop()
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
 
     def test_unsupported_event_type(self):
@@ -117,7 +118,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertTrue(response.status_code == 400)
 
     def test_webhook_vnc_post(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.getJob.return_value = self.tapis_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
@@ -141,7 +142,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'vnc_session_start')
 
     def test_webhook_web_post(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_running
+        self.mock_tapis_client.jobs.getJob.return_value = self.tapis_job_running
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),
@@ -157,7 +158,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'web_link')
 
     def test_webhook_vnc_post_no_matching_job(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_failed
+        self.mock_tapis_client.jobs.get.return_value = self.tapis_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
@@ -167,7 +168,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(Notification.objects.count(), 0)
 
     def test_webhook_web_post_no_matching_job(self):
-        self.mock_tapis_client.jobs.get.return_value = self.agave_job_failed
+        self.mock_tapis_client.jobs.get.return_value = self.tapis_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),
