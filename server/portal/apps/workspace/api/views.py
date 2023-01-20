@@ -4,9 +4,6 @@
 """
 import logging
 import json
-from urllib.parse import urlparse
-from datetime import timedelta
-from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -21,8 +18,6 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.apps.workspace.models import JobSubmission
-from portal.utils.translations import url_parse_inputs
-from portal.apps.workspace.managers.user_applications import UserApplicationsManager  # TODOv3
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
