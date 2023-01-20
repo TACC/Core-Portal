@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import Jobs from './Jobs';
+import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';
 import { default as jobsV2List } from './JobsV2.fixture';
 import { Provider } from 'react-redux';
@@ -9,6 +10,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -21,14 +23,8 @@ const appIconMockState = {
   appIcons: {},
 };
 
-function renderJobsComponent(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <Jobs version="v3" />
-      </BrowserRouter>
-    </Provider>
-  );
+function renderJobsComponent(store, history) {
+  return renderComponent(<Jobs />, store, history);
 }
 
 describe('Jobs View', () => {
@@ -51,9 +47,37 @@ describe('Jobs View', () => {
       },
     });
 
-    const { getByText } = renderJobsComponent(store);
+    const history = createMemoryHistory();
+    history.push('/jobs');
+    const { getByText } = renderJobsComponent(store, history);
     expect(getByText(/test-job-name-1/)).toBeDefined();
     expect(getByText('05/01/2020 09:44')).toBeDefined();
+  });
+
+  it('renders jobs v2', () => {
+    const store = mockStore({
+      jobs: {
+        ...initialMockState,
+      },
+      jobsv2: {
+        list: jobsV2List,
+        loading: false,
+      },
+      apps: {
+        ...appIconMockState,
+      },
+      notifications,
+      workbench: {
+        ...workbench,
+        config: { hideDataFiles: false },
+      },
+    });
+
+    const history = createMemoryHistory();
+    history.push('/jobsv2');
+    const { getAllByText } = renderJobsComponent(store, history);
+    expect(getAllByText('Compressing Files')).toBeDefined();
+    expect(getAllByText('12/12/2022 14:52')).toBeDefined();
   });
 
   it('renders errors when jobs cannot be retrieved', () => {
@@ -74,8 +98,9 @@ describe('Jobs View', () => {
         config: { hideDataFiles: false },
       },
     });
-
-    const { getByText } = renderJobsComponent(store);
+    const history = createMemoryHistory();
+    history.push('/jobs');
+    const { getByText } = renderJobsComponent(store, history);
     expect(getByText(/unable to retrieve your jobs/)).toBeDefined();
   });
 });

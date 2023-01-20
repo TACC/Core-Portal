@@ -3,8 +3,10 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   jobs as jobsReducer,
+  jobsv2 as jobsV2Reducer,
   jobDetail as jobDetailReducer,
   initialState as jobsInitalState,
+  initialStateV2 as jobsV2InitalState,
 } from '../reducers/jobs.reducers';
 
 import {
@@ -16,8 +18,10 @@ import {
   getJobs,
   getV2Jobs,
   fetchJobs,
+  fetchV2Jobs,
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
+  selectorJobsV2ReachedEnd,
   watchJobs,
   LIMIT,
 } from './jobs.sagas';
@@ -27,7 +31,10 @@ import jobDetailFixture from './fixtures/jobdetail.fixture';
 import appDetailFixture from './fixtures/appdetail.fixture';
 import jobSubmitFixture from './fixtures/jobSubmit.fixture';
 import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
-import jobsListFixture from './fixtures/jobsList.fixture';
+import {
+  jobsListFixture,
+  jobsV2ListFixture,
+} from './fixtures/jobsList.fixture';
 import { notificationsListFixture } from './fixtures/notificationsList.fixture';
 
 jest.mock('cross-fetch');
@@ -223,6 +230,56 @@ describe('getJobs Saga', () => {
       .put({ type: 'JOBS_LIST_FINISH' })
       .hasFinalState({
         ...jobsInitalState,
+        error: 'error',
+      })
+      .run());
+});
+
+describe('getV2Jobs Saga', () => {
+  it('with offset = 0, it should fetch v2 jobs list and set jobs state appropriately', () =>
+    expectSaga(getV2Jobs, { params: { offset: 0 } })
+      .withReducer(jobsV2Reducer)
+      .provide([[matchers.call.fn(fetchV2Jobs), jobsV2ListFixture]])
+      .put({ type: 'JOBS_V2_LIST_INIT' })
+      .put({ type: 'JOBS_V2_LIST_START' })
+      .call(fetchV2Jobs, 0, LIMIT)
+      .put({
+        type: 'JOBS_V2_LIST',
+        payload: {
+          list: jobsV2ListFixture,
+          reachedEnd: jobsV2ListFixture.length < LIMIT,
+        },
+      })
+      .put({ type: 'JOBS_V2_LIST_FINISH' })
+      .hasFinalState({
+        list: jobsV2ListFixture,
+        submit: { submitting: false },
+        loading: false,
+        reachedEnd: true,
+        error: null,
+      })
+      .run());
+  it('with offset = 51 and reachedEnd = true, it should return without updating the jobs state', () =>
+    expectSaga(getV2Jobs, { params: { offset: 51 } })
+      .withReducer(jobsV2Reducer)
+      .provide([[matchers.select.selector(selectorJobsV2ReachedEnd), true]])
+      .hasFinalState({
+        ...jobsV2InitalState,
+      })
+      .run());
+  it('with error from fetchV2Jobs, the saga should catch the error and set the jobs state accordingly', () =>
+    expectSaga(getV2Jobs, { params: { offset: 0 } })
+      .withReducer(jobsV2Reducer)
+      .provide([
+        [matchers.call.fn(fetchV2Jobs), throwError(new Error('test error'))],
+      ])
+      .put({ type: 'JOBS_V2_LIST_INIT' })
+      .put({ type: 'JOBS_V2_LIST_START' })
+      .call(fetchV2Jobs, 0, LIMIT)
+      .put({ type: 'JOBS_V2_LIST_ERROR', payload: 'error' })
+      .put({ type: 'JOBS_V2_LIST_FINISH' })
+      .hasFinalState({
+        ...jobsV2InitalState,
         error: 'error',
       })
       .run());

@@ -26,6 +26,7 @@ export const selectorNotificationsListNotifs = (state) =>
   state.notifications.list.notifs;
 
 export const selectorJobsReachedEnd = (state) => state.jobs.reachedEnd;
+export const selectorJobsV2ReachedEnd = (state) => state.jobs.reachedEnd;
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
@@ -64,7 +65,7 @@ export function* getV2Jobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_V2_LIST_INIT' });
   } else {
-    const reachedEnd = yield select((state) => state.jobsv2.reachedEnd);
+    const reachedEnd = yield select(selectorJobsV2ReachedEnd);
     if (reachedEnd) {
       return;
     }
