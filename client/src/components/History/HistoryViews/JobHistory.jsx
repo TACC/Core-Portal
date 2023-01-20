@@ -35,11 +35,7 @@ const JobHistory = ({ className }) => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <JobsView
-          showDetails
-          showFancyStatus
-          rowProps={rowProps}
-        />
+        <JobsView showDetails showFancyStatus rowProps={rowProps} />
       )}
     </SectionTableWrapper>
   );
