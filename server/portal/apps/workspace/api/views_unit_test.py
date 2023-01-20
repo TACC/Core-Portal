@@ -104,7 +104,21 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
         **job_submmission_definition,
         'archiveSystemId': 'frontera.home.username',
         'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}',
-        'tags': ['test']
+        'tags': ['test'],
+        'subscriptions': [
+            {
+                    "description": "Portal job status notification",
+                    "enabled": True,
+                    "eventCategoryFilter": "JOB_NEW_STATUS",
+                    "ttlMinutes": 0,
+                    "deliveryTargets": [
+                        {
+                            "deliveryMethod": "WEBHOOK",
+                            "deliveryAddress": "http://testserver/webhooks/jobs/"
+                        }
+                    ]
+            }
+        ]
     }
 
     tapis_job_submission['parameterSet']['envVariables'] = [{'key': '_webhook_base_url', 'value': 'http://testserver/webhooks/'}]
