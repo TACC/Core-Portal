@@ -22,6 +22,11 @@ def mock_owner(django_user_model):
                                                  password='password')
 
 
+@pytest.fixture()
+def mock_service_account(mocker):
+    yield mocker.patch('portal.apps.projects.models.utils.service_account', autospec=True)
+
+
 def test_create_metadata(mock_owner, mock_project_save_signal):
     project_id = 'PRJ-123'
     defaults = {
@@ -123,7 +128,7 @@ def test_project_change_project_role(agave_client, mock_owner, mock_project_save
     mock_add.assert_called_with(mock_owner)
 
 
-def test_get_latest_project_storage(mock_owner, portal_project, agave_client, mock_project_save_signal, service_account, mocker):
+def test_get_latest_project_storage(mock_owner, portal_project, agave_client, mock_project_save_signal, service_account, mocker, mock_service_account):
     sys = StorageSystem(agave_client, 'cep.test.SOME-PRJ-5678')
     sys.last_modified = '1234'
     sys.name = 'SOME-PRJ-5678'

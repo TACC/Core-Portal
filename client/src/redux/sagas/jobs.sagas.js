@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 
-const LIMIT = 50;
+export const LIMIT = 50;
 
 export async function fetchJobs(offset, limit) {
   const result = await fetchUtil({
@@ -20,12 +20,16 @@ export async function fetchV2Jobs(offset, limit) {
   });
   return result.response;
 }
+export const selectorNotificationsListNotifs = (state) =>
+  state.notifications.list.notifs;
+
+export const selectorJobsReachedEnd = (state) => state.jobs.reachedEnd;
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_LIST_INIT' });
   } else {
-    const reachedEnd = yield select((state) => state.jobs.reachedEnd);
+    const reachedEnd = yield select(selectorJobsReachedEnd);
     if (reachedEnd) {
       return;
     }
@@ -45,7 +49,7 @@ export function* getJobs(action) {
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
-    const notifs = yield select((state) => state.notifications.list.notifs);
+    const notifs = yield select(selectorNotificationsListNotifs);
     yield put({ type: 'UPDATE_JOBS_FROM_NOTIFICATIONS', payload: notifs });
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
@@ -134,13 +138,6 @@ export async function fetchJobDetailsUtil(jobUuid) {
   const result = await fetchUtil({
     url: '/api/workspace/jobs/',
     params: { job_uuid: jobUuid },
-  });
-  return result.response;
-}
-
-export async function fetchSystemUtil(system) {
-  const result = await fetchUtil({
-    url: `/api/accounts/systems/${system}/`,
   });
   return result.response;
 }

@@ -13,16 +13,22 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
+from django.core.exceptions import ObjectDoesNotExist
+from tapipy.errors import BaseTapyException, InternalServerError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
+<<<<<<< HEAD
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.apps.workspace.models import JobSubmission
 from portal.utils.translations import url_parse_inputs
+=======
+>>>>>>> d167b8f99723139bc999938e037b6e8eabbbf2e5
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
@@ -37,7 +43,7 @@ def _app_license_type(app_def):
 
 def _get_user_app_license(license_type, user):
     _, license_models = get_license_info()
-    license_model = [x for x in license_models if x.license_type == license_type]
+    license_model = next((x for x in license_models if x.license_type == license_type), None)
     if not license_model:
         return None
     lic = license_model.objects.filter(user=user).first()
@@ -66,27 +72,53 @@ def _get_app(app_id, app_version, user):
     return data
 
 
+def _test_listing_with_existing_keypair(system, user):
+    # TODOv3: Add Tapis system test utility method with proper error handling
+    tapis = user.tapis_oauth.client
+
+    # Check for existing keypair stored for this hostname
+    try:
+        keys = user.ssh_keys.for_hostname(hostname=system.host)
+        priv_key_str = keys.private_key()
+        publ_key_str = keys.public
+    except ObjectDoesNotExist:
+        return False
+
+    # Attempt listing a second time after credentials are added to system
+    try:
+        create_system_credentials(user, publ_key_str, priv_key_str, system.id)
+        tapis.files.listFiles(systemId=system.id, path="/")
+    except BaseTapyException:
+        return False
+
+    return True
+
+
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get('appId')
-        app_version = request.GET.get('appVersion')
         if app_id:
+            app_version = request.GET.get('appVersion')
             METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
-            # TODOv3: Test user default storage system (for archiving)
-            # if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
-            #     # check if default system needs keys pushed
-            #     default_sys = UserSystemsManager(
-            #         request.user,
-            #         settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            #     )
-            #     storage_sys = StorageSystem(tapis, default_sys.get_system_id())
-            #     success, _ = storage_sys.test()
-            #     data['systemHasKeys'] = success
-            #     data['pushKeysSystem'] = storage_sys.to_dict()
+            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS and settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT:
+                # check if default system needs keys pushed
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
+                system_id = default_sys.get_system_id()
+                system_def = tapis.systems.getSystem(systemId=system_id)
+
+                try:
+                    tapis.files.listFiles(systemId=system_id, path="/")
+                except InternalServerError:
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    data['systemNeedsKeys'] = not success
+                    data['pushKeysSystem'] = system_def
         else:
             METRICS.debug("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
@@ -146,7 +178,8 @@ class JobsView(BaseApiView):
                 limit=limit,
                 startAfter=offset,
                 orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': portal_name}
+                _tapis_query_parameters={'tags.contains': portal_name},
+                select='allAttributes'
             )
 
         return JsonResponse(
@@ -200,35 +233,19 @@ class JobsView(BaseApiView):
             )
         # submit job
         elif job_post:
-            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
-            default_sys = UserSystemsManager(
-                request.user,
-                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            )
+            METRICS.info("processing job submission for user:{}: {}".format(request.user.username, job_post))
 
+            # TODOv3: How do we know if portal has HOME vs WORK?
             # cleaning archive path value
-            if job_post.get('archivePath'):
-                parsed = urlparse(job_post['archivePath'])
-                if parsed.path.startswith('/') and len(parsed.path) > 1:
-                    # strip leading '/'
-                    archive_path = parsed.path[1:]
-                elif parsed.path == '':
-                    # if path is blank, set to root of system
-                    archive_path = '/'
-                else:
-                    archive_path = parsed.path
-
-                job_post['archivePath'] = archive_path
-
-                if parsed.netloc:
-                    job_post['archiveSystem'] = parsed.netloc
-                else:
-                    job_post['archiveSystem'] = default_sys.get_system_id()
-            else:
-                job_post['archivePath'] = \
-                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = default_sys.get_system_id()
+            if not job_post.get('archiveSystemId'):
+                # TODOv3: Do away with UserSystemsManager
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
+                job_post['archiveSystemId'] = default_sys.get_system_id()
+            if not job_post.get('archiveSystemDir'):
+                job_post['archiveSystemDir'] = 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             # check for running licensed apps
             lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
@@ -246,19 +263,22 @@ class JobsView(BaseApiView):
                     job_post['parameterSet']['envVariables'] = [license_var]
                 del job_post['licenseType']
 
-            # url encode inputs
-            if job_post['inputs']:
-                job_post = url_parse_inputs(job_post)
-
-            # Get or create application based on allocation and execution system
-            apps_mgr = UserApplicationsManager(request.user)
-            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
-
-            if app.exec_sys:
-                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
-
-            job_post['appId'] = app.id
-            del job_post['allocation']
+            # Test file listing on relevant systems to determine whether keys need to be pushed manually
+            for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
+                try:
+                    tapis.files.listFiles(systemId=system_id, path="/")
+                except InternalServerError:
+                    system_def = tapis.systems.getSystem(systemId=system_id)
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    if not success:
+                        logger.info(f"Keys for user {request.user.username} must be manually pushed to system: {system_id}")
+                        return JsonResponse(
+                            {
+                                'status': 200,
+                                'response': {"execSys": system_def},
+                            },
+                            encoder=BaseTapisResultSerializer
+                        )
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
@@ -267,23 +287,36 @@ class JobsView(BaseApiView):
                 wh_base_url = request.build_absolute_uri('/webhooks/')
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameters']['_webhook_base_url'] = wh_base_url
-            job_post['notifications'] = [
-                {'url': jobs_wh_url,
-                 'event': e}
-                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
-
-            # Remove any params from job_post that are not in appDef
-            job_post['parameters'] = {param: job_post['parameters'][param]
-                                      for param in job_post['parameters']
-                                      if param in [p['id'] for p in app.parameters]}
+            job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
             portal_name = settings.PORTAL_NAMESPACE
-            job_post['tags'] = job_post.get('tags', []).append(portal_name)
+            job_post['tags'] = job_post.get('tags', []) + [portal_name]
 
-            response = tapis.jobs.submit(body=job_post)
+            # ttlMinutes of 0 corresponds to max default (1 week)
+            job_post["subscriptions"] = [
+               {
+                    "description": "Portal job status notification",
+                    "enabled": True,
+                    "eventCategoryFilter": "JOB_NEW_STATUS",
+                    "ttlMinutes": 0,
+                    "deliveryTargets": [
+                        {
+                            "deliveryMethod": "WEBHOOK",
+                            "deliveryAddress": jobs_wh_url
+                        }
+                    ]
+                }
+            ]
 
-            return JsonResponse({"response": response})
+            logger.info("user:{} is submitting job:{}".format(request.user.username, job_post))
+            response = tapis.jobs.submitJob(**job_post)
+            return JsonResponse(
+                {
+                    'status': 200,
+                    'response': response,
+                },
+                encoder=BaseTapisResultSerializer
+            )
 
 
 @method_decorator(login_required, name='dispatch')
@@ -294,11 +327,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info("user:{} agave.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info("user:{} agave.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            METRICS.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -307,7 +340,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info("user:{} agave.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        METRICS.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
@@ -335,8 +368,7 @@ class JobHistoryView(BaseApiView):
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
-        # TODOv3: make sure to exclude public apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search=f"(owner.eq.{user.username})~(enabled.eq.true)")
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -347,21 +379,26 @@ class AppsTrayView(BaseApiView):
         return my_apps
 
     def getPublicApps(self, user):
-        # TODOv3: make tapipy request for public apps to compare against apps in AppTrayEntry
+        tapis = user.tapis_oauth.client
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
-            # Retrieve all apps known to the portal in that directory
+            # Retrieve all apps known to the portal in that category
             tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+
+            # Only return Tapis apps that are known to exist and are enabled
+            tapis_apps = [x for x in tapis_apps if any(x['appId'] in [y.id, f'{y.id}-{y.version}'] for y in apps_listing)]
+
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             categoryResult = {
                 "title": category.category,
-                "apps": tapis_apps
+                "apps": [{k: v for k, v in tapis_app.items() if v != ''} for tapis_app in tapis_apps]  # Remove empty strings from response
             }
 
             # Add html apps to html_definitions

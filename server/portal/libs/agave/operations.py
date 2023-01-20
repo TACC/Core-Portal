@@ -6,10 +6,11 @@ from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.apps.search.tasks import agave_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -37,20 +38,32 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         List of dicts containing file metadata from Elasticsearch
 
     """
-    raw_listing = client.files.list(systemId=system,
-                                    filePath=urllib.parse.quote(path),
-                                    offset=int(offset) + 1,
-                                    limit=int(limit))
+    raw_listing = client.files.listFiles(systemId=system,
+                                         path=urllib.parse.quote(path),
+                                         offset=int(offset) + 1,
+                                         limit=int(limit))
 
     try:
         # Convert file objects to dicts for serialization.
-        listing = list(map(dict, raw_listing))
+        listing = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
-    agave_listing_indexer.delay(listing)
+    # TODOV3: test/verify indexing operations
+    # agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
@@ -132,6 +145,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
             'reachedEnd': len(hits) < int(limit)}
 
 
+# TODOV3: rewrite using v3 postit service TBD.
 def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
@@ -189,18 +203,16 @@ def mkdir(client, system, path, dir_name):
     -------
     dict
     """
-    body = {
-        'action': 'mkdir',
-        'path': dir_name
-    }
-    result = client.files.manage(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 body=body)
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
-                                      'filePath': path,
-                                      'recurse': False})
-    return result
+    path = Path(path) / Path(dir_name)
+    path_input = urllib.parse.quote(str(path))
+    client.files.mkdir(systemId=system, path=path_input)
+
+    # TODOV3: test/verify indexing operations
+    # agave_indexer.apply_async(kwargs={'systemId': system,
+    #                                   'filePath': path,
+    #                                  'recurse': False})
+    return {"result": "OK"}
 
 
 def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
@@ -535,7 +547,7 @@ def download_bytes(client, system, path):
         BytesIO object representing the downloaded file.
     """
     file_name = os.path.basename(path)
-    resp = client.files.download(systemId=system, filePath=path)
-    result = io.BytesIO(resp.content)
+    resp = client.files.getContents(systemId=system, path=path)
+    result = io.BytesIO(resp)
     result.name = file_name
     return result

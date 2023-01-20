@@ -247,8 +247,7 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
-                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
@@ -284,6 +283,8 @@ TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 # Tapis Client Configuration
 TAPIS_CLIENT_ID = 'test'
 TAPIS_CLIENT_KEY = 'test'
+
+TAPIS_ADMIN_JWT = 'test'
 
 # Agave Tenant.
 AGAVE_TENANT_ID = 'portal'

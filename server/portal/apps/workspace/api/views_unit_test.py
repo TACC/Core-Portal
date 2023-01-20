@@ -1,4 +1,3 @@
-from mock import MagicMock
 from django.conf import settings
 from portal.apps.workspace.api.views import JobsView, AppsTrayView
 from portal.apps.workspace.models import AppTrayCategory
@@ -23,19 +22,6 @@ def get_user_data(mocker):
 
 
 @pytest.fixture
-def apps_manager(mocker):
-    mock_apps_manager = mocker.patch(
-        'portal.apps.workspace.api.views.UserApplicationsManager'
-    )
-    # Patch the User Applications Manager to return a fake cloned app
-    mock_app = MagicMock()
-    mock_app.id = "mock_app"
-    mock_app.exec_sys = False
-    mock_apps_manager.return_value.get_or_create_app.return_value = mock_app
-    yield mock_apps_manager
-
-
-@pytest.fixture
 def job_submmission_definition():
     with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
         yield json.load(f)
@@ -48,7 +34,7 @@ def logging_metric_mock(mocker):
 
 @pytest.mark.skip(reason="job post not implemented yet")
 def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
-                  apps_manager, job_submmission_definition):
+                  job_submmission_definition):
     mock_tapis_client.jobs.resubmitJob.return_value = TapisResult(**{
         'uuid': '1234',
     })
@@ -63,7 +49,7 @@ def test_job_post(client, authenticated_user, get_user_data, mock_tapis_client,
 
 
 def test_job_post_cancel(client, authenticated_user, get_user_data, mock_tapis_client,
-                         apps_manager, job_submmission_definition):
+                         job_submmission_definition):
     mock_tapis_client.jobs.cancelJob.return_value = TapisResult(**{
         'uuid': '1234',
     })
@@ -78,7 +64,7 @@ def test_job_post_cancel(client, authenticated_user, get_user_data, mock_tapis_c
 
 
 def test_job_post_resubmit(client, authenticated_user, get_user_data, mock_tapis_client,
-                           apps_manager, job_submmission_definition):
+                           job_submmission_definition):
     mock_tapis_client.jobs.resubmitJob.return_value = TapisResult(**{
         'uuid': '1234',
     })
@@ -93,7 +79,7 @@ def test_job_post_resubmit(client, authenticated_user, get_user_data, mock_tapis
 
 
 def test_job_post_invalid(client, authenticated_user, get_user_data, mock_tapis_client,
-                          apps_manager, job_submmission_definition):
+                          job_submmission_definition):
     response = client.post(
         "/api/workspace/jobs",
         data=json.dumps({"action": "invalid action", "job_uuid": "1234"}),
@@ -104,17 +90,42 @@ def test_job_post_invalid(client, authenticated_user, get_user_data, mock_tapis_
 
 
 def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_data, mock_tapis_client,
-                                        apps_manager, job_submmission_definition, logging_metric_mock):
-    mock_tapis_client.jobs.submit.return_value = {"id": "1234"}
+                                        job_submmission_definition, logging_metric_mock):
+    mock_tapis_client.jobs.submitJob.return_value = {"id": "1234"}
+    mock_tapis_client.files.listFiles.return_value = {"path": ""}
 
     client.post(
         "/api/workspace/jobs",
         data=json.dumps(job_submmission_definition),
         content_type="application/json"
     )
+
+    tapis_job_submission = {
+        **job_submmission_definition,
+        'archiveSystemId': 'frontera.home.username',
+        'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}',
+        'tags': ['test'],
+        'subscriptions': [
+            {
+                    "description": "Portal job status notification",
+                    "enabled": True,
+                    "eventCategoryFilter": "JOB_NEW_STATUS",
+                    "ttlMinutes": 0,
+                    "deliveryTargets": [
+                        {
+                            "deliveryMethod": "WEBHOOK",
+                            "deliveryAddress": "http://testserver/webhooks/jobs/"
+                        }
+                    ]
+            }
+        ]
+    }
+
+    tapis_job_submission['parameterSet']['envVariables'] = [{'key': '_webhook_base_url', 'value': 'http://testserver/webhooks/'}]
+
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with("user:{} is submitting job:{}".format(authenticated_user.username,
-                                                                                 job_submmission_definition))
+                                                                                 tapis_job_submission))
 
 
 def request_jobs_util(rf, authenticated_user, query_params={}):

@@ -361,6 +361,9 @@ TAPIS_TENANT_BASEURL = settings_secret._TAPIS_TENANT_BASEURL
 TAPIS_CLIENT_ID = settings_secret._TAPIS_CLIENT_ID
 TAPIS_CLIENT_KEY = settings_secret._TAPIS_CLIENT_KEY
 
+# Long-live portal admin access token
+TAPIS_ADMIN_JWT = getattr(settings_secret, '_TAPIS_ADMIN_JWT', '')
+
 # Agave Tenant.
 AGAVE_TENANT_ID = settings_secret._AGAVE_TENANT_ID
 AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
@@ -512,6 +515,8 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
+KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
+
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
     settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
 )
@@ -610,8 +615,7 @@ PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '
 
 PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_custom, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
-                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 # "View in Jupyter Notebook" base URL
 PORTAL_JUPYTER_URL = getattr(settings_custom, '_PORTAL_JUPYTER_URL', None)
@@ -750,5 +754,3 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
-
-KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
