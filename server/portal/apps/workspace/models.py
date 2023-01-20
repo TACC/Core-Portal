@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.postgres.fields import JSONField
+from portal.utils.fields import JSONField
 
 
 class JobSubmission(models.Model):
