@@ -139,7 +139,7 @@ class JobsView(BaseApiView):
                 limit=limit,
                 startAfter=offset,
                 orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': portal_name},
+                _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
                 select='allAttributes'
             )
 
@@ -248,7 +248,7 @@ class JobsView(BaseApiView):
             job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
             portal_name = settings.PORTAL_NAMESPACE
-            job_post['tags'] = job_post.get('tags', []) + [portal_name]
+            job_post['tags'] = job_post.get('tags', []) + [f'portalName: {portal_name}']
 
             # ttlMinutes of 0 corresponds to max default (1 week)
             job_post["subscriptions"] = [
