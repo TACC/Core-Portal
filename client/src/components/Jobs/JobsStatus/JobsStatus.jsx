@@ -71,13 +71,7 @@ function JobsStatus({ status, fancy, jobUuid }) {
   const notifs = useSelector((state) => state.notifications.list.notifs);
   let interactiveSessionLink;
 
-  const jobConcluded = [
-    'CLEANING_UP',
-    'ARCHIVING',
-    'FINISHED',
-    'STOPPED',
-    'FAILED',
-  ];
+  const jobConcluded = ['ARCHIVING', 'FINISHED', 'CANCELLED', 'FAILED'];
 
   /* Check if job is not ended AND has interactive session. */
   /* NOTE: Sometimes a job RUNNING status and the interactive webhook come out of order,
