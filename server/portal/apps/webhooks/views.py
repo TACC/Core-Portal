@@ -105,7 +105,7 @@ class JobsWebhookView(BaseApiView):
             event_data = {
                 Notification.EVENT_TYPE: 'job',
                 Notification.JOB_ID: job_id,
-                Notification.STATUS: '',
+                Notification.STATUS: Notification.INFO,
                 Notification.USER: username,
                 Notification.MESSAGE: '',
                 Notification.EXTRA: {
@@ -122,15 +122,13 @@ class JobsWebhookView(BaseApiView):
                 client = user.tapis_oauth.client
                 job_details = client.jobs.getJob(jobUuid=job_id)
 
-                event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
-                event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
                 event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
 
                 try:
                     logger.info('Indexing job output for job={}'.format(job_id))
 
-                    agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
-                                              kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
+                    agave_indexer.apply_async(args=[job_details.archiveSystemId],
+                                              kwargs={'filePath': job_details.archiveSystemDir})
                 except Exception as e:
                     logger.exception('Error indexing job output: {}'.format(e))
                     return HttpResponse(json.dumps(e), content_type='application/json', status=400)
