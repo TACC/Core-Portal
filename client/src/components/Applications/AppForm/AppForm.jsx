@@ -464,8 +464,9 @@ export const AppSchemaForm = ({ app }) => {
               job.parameterSet.schedulerOptions = [];
             }
             job.parameterSet.schedulerOptions.push({
-              name: 'Allocation',
-              description: 'The allocation associated with this job execution',
+              name: 'TACC Allocation',
+              description:
+                'The TACC allocation associated with this job execution',
               include: true,
               arg: `-A ${job.allocation}`,
             });

@@ -104,7 +104,7 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
         **job_submmission_definition,
         'archiveSystemId': 'cloud.data.community',
         'archiveSystemDir': '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
-        'tags': ['test'],
+        'tags': ['portalName: test'],
         'subscriptions': [
             {
                     "description": "Portal job status notification",
