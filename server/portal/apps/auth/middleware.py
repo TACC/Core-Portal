@@ -16,7 +16,7 @@ class TapisTokenRefreshMiddleware(object):
 
     def __call__(self, request):
         user = auth.get_user(request)
-        if request.path != '/logout/' and user.is_authenticated:
+        if not (request.path in ['/logout/', '/login/']) and user.is_authenticated:
             try:
                 with transaction.atomic():
                     try:
