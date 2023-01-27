@@ -345,11 +345,17 @@ class AppsTrayView(BaseApiView):
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
             # Retrieve all apps known to the portal in that category
-            tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
-                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+            portal_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             # Only return Tapis apps that are known to exist and are enabled
-            tapis_apps = [x for x in tapis_apps if any(x['appId'] in [y.id, f'{y.id}-{y.version}'] for y in apps_listing)]
+            tapis_apps = []
+            for portal_app in portal_apps:
+                portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
+
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
+                if matching_app:
+                    tapis_apps.append({**portal_app, 'label': matching_app.notes.label or portal_app['label']})
 
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
