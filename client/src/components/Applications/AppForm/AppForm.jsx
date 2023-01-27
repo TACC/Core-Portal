@@ -449,16 +449,17 @@ export const AppSchemaForm = ({ app }) => {
           // TODOv3 add envVariables
           /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
           // TODO: allow falsy parameters for parameters of type bool
-          /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
-          if (app.definition.tags.includes('DCV')) {
+
+          /* To ensure that DCV and VNC server is alive, name of job needs to contain '-dcvserver' or 'tap_" respectively */
+          if (app.definition.notes.isInteractive) {
             job.name += '-dcvserver';
-          }
-          if (app.definition.tags.includes('VNC')) {
             job.name += 'tap_';
           }
+
           if (app.license.type && app.license.enabled) {
             job.licenseType = app.license.type;
           }
+
           if (job.allocation) {
             if (!job.parameterSet.schedulerOptions) {
               job.parameterSet.schedulerOptions = [];
@@ -507,7 +508,8 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys(appFields.fileInputs).length > 0 && (
+                {(Object.keys(appFields.fileInputs).length > 0 ||
+                  Object.keys(appFields.appArgs).length > 0) && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
