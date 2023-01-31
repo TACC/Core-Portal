@@ -48,13 +48,13 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       disabled: disabled,
       hidden: hideApps,
     },
-    {
-      to: path + ROUTES.SUBMISSIONS,
-      label: 'Data Submission',
-      iconName: 'folder',
-      disabled: disabled,
-      hidden: !showSubmissions,
-    },
+    // {
+    //   to: path + ROUTES.SUBMISSIONS,
+    //   label: 'Data Submission',
+    //   iconName: 'folder',
+    //   disabled: disabled,
+    //   hidden: !showSubmissions,
+    // },
     {
       to: path + ROUTES.ALLOCATIONS,
       label: 'Allocations',
