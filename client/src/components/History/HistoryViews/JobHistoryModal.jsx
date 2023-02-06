@@ -224,12 +224,12 @@ JobHistoryContent.defaultProps = {
 function JobHistoryModal({ uuid, version }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
-      const jobv3 = state.jobDetail;
+      const job = state.jobDetail;
       return {
-        loading: jobv3.loading,
-        loadingError: jobv3.loadingError,
-        job: jobv3.job,
-        display: jobv3.display,
+        loading: job.loading,
+        loadingError: job.loadingError,
+        job: job.job,
+        display: job.display,
       };
     } else {
       const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);

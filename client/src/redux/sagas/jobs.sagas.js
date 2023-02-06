@@ -26,7 +26,7 @@ export const selectorNotificationsListNotifs = (state) =>
   state.notifications.list.notifs;
 
 export const selectorJobsReachedEnd = (state) => state.jobs.reachedEnd;
-export const selectorJobsV2ReachedEnd = (state) => state.jobs.reachedEnd;
+export const selectorJobsV2ReachedEnd = (state) => state.jobsv2.reachedEnd;
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
