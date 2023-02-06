@@ -131,10 +131,8 @@ class HistoricJobsView(BaseApiView):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
 
-        jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
-
-        data = [job['data'] for job in jobs if job.get('data', None)]
-        data = jobs[offset:offset + limit]
+        jobs = JobSubmission.objects.all().filter(user=request.user).exclude(data__isnull=True).order_by('-time')
+        data = [job.data for job in jobs[offset:offset + limit]]
 
         return JsonResponse({"response": data})
 
