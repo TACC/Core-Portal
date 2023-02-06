@@ -241,6 +241,7 @@ function JobHistoryModal({ uuid, version }) {
       };
     }
   });
+  const { state } = useLocation();
   let jobName = job ? job.name : placeHolder;
 
   if (jobName === placeHolder) {
