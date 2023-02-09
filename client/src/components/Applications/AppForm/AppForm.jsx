@@ -509,13 +509,8 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-<<<<<<< HEAD
-                {(Object.keys(appFields.fileInputs).length > 0 ||
-                  Object.keys(appFields.appArgs).length > 0) && (
-=======
                 {Object.keys(appFields.fileInputs + appFields.appArgs).length >
                   0 && (
->>>>>>> task/TV3-56--create-tap-dir
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
