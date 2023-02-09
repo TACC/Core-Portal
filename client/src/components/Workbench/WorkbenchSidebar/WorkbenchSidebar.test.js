@@ -78,7 +78,7 @@ describe('workbench sidebar', () => {
           config: {
             hideApps: true,
             hideDataFiles: true,
-            hideAllocations: true
+            hideAllocations: true,
           },
         },
         notifications,
@@ -128,7 +128,7 @@ describe('workbench sidebar', () => {
           config: {
             hideApps: false,
             hideDataFiles: false,
-            hideAllocations: false
+            hideAllocations: false,
           },
         },
         notifications,
