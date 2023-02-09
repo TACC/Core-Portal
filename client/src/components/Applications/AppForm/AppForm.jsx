@@ -267,6 +267,8 @@ export const AppSchemaForm = ({ app }) => {
     archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
+    appVersion: app.definition.version,
+    parameterSet: {},
     execSystemId: app.definition.jobAttributes.execSystemId,
   };
   let missingAllocation = false;
@@ -426,13 +428,12 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
 
-          job.appVersion = app.definition.version;
           job.fileInputs = Object.entries(job.fileInputs)
             .map(([k, v]) => {
               return { name: k, sourceUrl: v };
             })
             .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
-          job.parameterSet = {};
+
           job.parameterSet.appArgs = Object.entries(job.appArgs)
             .map(([k, v]) => {
               return { name: k, arg: v };
@@ -446,19 +447,15 @@ export const AppSchemaForm = ({ app }) => {
                 )
             ); // filter out any empty values
           delete job.appArgs;
-          // TODOv3 add envVariables
-          /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
-          // TODO: allow falsy parameters for parameters of type bool
-          /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
-          if (app.definition.tags.includes('DCV')) {
-            job.name += '-dcvserver';
+
+          // TODOv3: add envVariables
+
+          /* To ensure that DCV and VNC server is alive, name of job needs to contain '-dcvserver' or 'tap_' respectively */
+          if (app.definition.notes.isInteractive) {
+            job.name += '-dcvserver-tap_';
           }
-          if (app.definition.tags.includes('VNC')) {
-            job.name += 'tap_';
-          }
-          if (app.license.type && app.license.enabled) {
-            job.licenseType = app.license.type;
-          }
+
+          // Add allocation scheduler option
           if (job.allocation) {
             if (!job.parameterSet.schedulerOptions) {
               job.parameterSet.schedulerOptions = [];
@@ -472,9 +469,14 @@ export const AppSchemaForm = ({ app }) => {
             });
             delete job.allocation;
           }
+
           dispatch({
             type: 'SUBMIT_JOB',
-            payload: job,
+            payload: {
+              job,
+              licenseType: app.license.type,
+              isInteractive: !!app.notes.isInteractive,
+            },
           });
         }}
       >

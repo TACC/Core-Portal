@@ -167,9 +167,10 @@ class JobsView(BaseApiView):
     def post(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         username = request.user.username
-        job_post = json.loads(request.body)
-        job_uuid = job_post.get('job_uuid')
-        job_action = job_post.get('action')
+        body = json.loads(request.body)
+        job_uuid = body.get('job_uuid')
+        job_action = body.get('action')
+        job_post = body.get('job')
 
         if job_uuid and job_action:
             if job_action == 'resubmit':
@@ -193,21 +194,28 @@ class JobsView(BaseApiView):
                 },
                 encoder=BaseTapisResultSerializer
             )
+
+        elif not job_post:
+            raise ApiException("user:{} is submitting a request with no job body.".format(
+                username,
+            ), status=400)
+
         # submit job
-        elif job_post:
+        else:
             METRICS.info("processing job submission for user:{}: {}".format(username, job_post))
 
-            # Provide default job archive configuration if none is provided
-            if not job_post.get('archiveSystemId'):
-                job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-            if not job_post.get('archiveSystemDir'):
-                tasdir = get_user_data(username)['homeDirectory']
-                homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
-                job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
+            # Provide default job archive configuration if none is provided and portal has default system
+            if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
+                if not job_post.get('archiveSystemId'):
+                    job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
+                if not job_post.get('archiveSystemDir'):
+                    tasdir = get_user_data(username)['homeDirectory']
+                    homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
+                    job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
-            # check for running licensed apps
-            lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
-            if lic_type is not None:
+            # Check for and set license environment variable if app requires one
+            lic_type = body.get('licenseType')
+            if lic_type:
                 lic = _get_user_app_license(lic_type, request.user)
                 if lic is None:
                     raise ApiException("You are missing the required license for this application.")
@@ -215,11 +223,7 @@ class JobsView(BaseApiView):
                     "key": "_license",
                     "value": lic.license_as_str()
                 }
-                if 'envVariables' in job_post['parameterSet']:
-                    job_post['parameterSet']['envVariables'].append(license_var)
-                else:
-                    job_post['parameterSet']['envVariables'] = [license_var]
-                del job_post['licenseType']
+                job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
@@ -245,18 +249,30 @@ class JobsView(BaseApiView):
                 wh_base_url = request.build_absolute_uri('/webhooks/')
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
+            # Add additional data for interactive apps
+            if body.get('isInteractive'):
+                # Add webhook URL environment variable for interactive apps
+                job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + \
+                                                           [{'key': '_webhook_base_url', 'value':  wh_base_url}]
 
+                # Make sure $HOME/.tap directory exists for user when running interactive apps
+                execSystemId = job_post['execSystemId']
+                system = settings.PORTAL_EXEC_SYSTEMS.get(execSystemId)
+                tasdir = get_user_data(username)['homeDirectory']
+                if system:
+                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['homeDir']}/{tasdir}/.tap")
+
+            # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
             job_post['tags'] = job_post.get('tags', []) + [f'portalName: {portal_name}']
 
-            # ttlMinutes of 0 corresponds to max default (1 week)
-            job_post["subscriptions"] = [
+            # Add webhook subscription for job status updates
+            job_post["subscriptions"] = job_post.get('subscriptions', []) + [
                {
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
-                    "ttlMinutes": 0,
+                    "ttlMinutes": 0,  # ttlMinutes of 0 corresponds to max default (1 week)
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",
