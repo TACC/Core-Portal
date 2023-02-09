@@ -10,11 +10,11 @@ import WorkbenchSidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
 
 const PUBLIC_PAGES = [
-  'Dashboard',
+  'Dashboard', 
   'Data Files',
-  'Data Submission',
   'Applications',
   'Allocations',
+
   'History',
 ];
 const APP_DATA_PAGES = ['Applications', 'History', 'Data Files', 'Allocations'];
@@ -55,7 +55,6 @@ describe('workbench sidebar', () => {
             hideApps: false,
             hideDataFiles: false,
             hideAllocations: false,
-            showSubmissions: true,
           },
         },
         notifications,
@@ -80,8 +79,7 @@ describe('workbench sidebar', () => {
           config: {
             hideApps: true,
             hideDataFiles: true,
-            hideAllocations: true,
-            showSubmissions: false,
+            hideAllocations: true
           },
         },
         notifications,
@@ -131,8 +129,7 @@ describe('workbench sidebar', () => {
           config: {
             hideApps: false,
             hideDataFiles: false,
-            hideAllocations: false,
-            showSubmissions: true,
+            hideAllocations: false
           },
         },
         notifications,
