@@ -10,11 +10,10 @@ import WorkbenchSidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
 
 const PUBLIC_PAGES = [
-  'Dashboard', 
+  'Dashboard',
   'Data Files',
   'Applications',
   'Allocations',
-
   'History',
 ];
 const APP_DATA_PAGES = ['Applications', 'History', 'Data Files', 'Allocations'];
