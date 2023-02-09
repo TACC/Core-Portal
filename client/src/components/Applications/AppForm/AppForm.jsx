@@ -475,7 +475,7 @@ export const AppSchemaForm = ({ app }) => {
             payload: {
               job,
               licenseType: app.license.type,
-              isInteractive: !!app.notes.isInteractive,
+              isInteractive: !!app.definition.notes.isInteractive,
             },
           });
         }}
