@@ -5,9 +5,8 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from portal.views.base import BaseApiView
-from portal.libs.agave.utils import service_account
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.users.utils import get_user_data
 
 import logging
 
@@ -23,14 +22,13 @@ class JupyterMountsApiView(BaseApiView):
     This API returns a list of mount definitions for JupyterHub
     """
     def getDatafilesStorageSystems(self):
-        agave = service_account()
         result = []
-        for system in (sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis'):
+        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and
+                       (sys['scheme'] == 'community' or sys['scheme'] == 'public')]:
             try:
-                sys_def = agave.systems.get(systemId=system['system'])
                 result.append(
                     {
-                        "path": sys_def["storage"]["rootDir"],
+                        "path": system.get("homeDir", "/"),
                         "mountPath": "/{namespace}/{name}".format(
                             namespace=settings.PORTAL_NAMESPACE,
                             name=system['name']
@@ -44,15 +42,15 @@ class JupyterMountsApiView(BaseApiView):
 
     def getLocalStorageSystems(self, user):
         result = []
-        for system in settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys():
+        tasdir = get_user_data(user.username)['homeDirectory']
+        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and sys['scheme'] == 'private']:
             try:
-                sys_def = UserSystemsManager(user, system_name=system)
                 result.append(
                     {
-                        "path": sys_def.get_sys_tas_user_dir(),
+                        "path": system['homeDir'].format(tasdir=tasdir, username=user.username),
                         "mountPath": "/{namespace}/{name}".format(
                             namespace=settings.PORTAL_NAMESPACE,
-                            name=sys_def.get_name()
+                            name=system['name']
                         ),
                         "pems": "rw"
                     }

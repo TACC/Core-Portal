@@ -94,7 +94,6 @@ INSTALLED_APPS = [
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration',
     'portal.apps.projects',
-    'portal.apps.system_creation',
     'portal.apps.public_data',
     'portal.apps.request_access',
     'portal.apps.site_search',
@@ -517,14 +516,10 @@ SETTINGS: DATA DEPOT
 """
 KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
 
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
-    settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
-)
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_custom.\
-    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
     settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',

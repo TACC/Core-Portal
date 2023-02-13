@@ -50,7 +50,7 @@ def agave_listing_indexer(self, listing):
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
-        if sys.api == 'tapis':
+        if sys['api'] == 'tapis' and sys['scheme'] != 'private':
             logger.info('INDEXING {} SYSTEM'.format(sys.name))
             agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
 

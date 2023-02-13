@@ -65,32 +65,58 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
 }
 
 _PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'stockyard': {
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
         'name': 'My Data (Work)',
-        'description': 'My Data on Stockyard',
-        'site': 'cep',
-        'systemId': 'cloud.data.community',
-        'host': 'cloud.data.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 22,
+        'system': 'cloud.data.community',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
         'icon': None,
-        'default': True  # TODOv3: replace PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT with 'default' field
+        'keyservice': True,
+        'default': True
     },
-    'frontera': {
+    {
         'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera',
-        'site': 'cep',
-        'systemId': 'frontera',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
         'icon': None,
+    },
+    {
+        'name': 'Community Data',
+        'system': 'cloud.data.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/community',
+        'icon': None,
+        'siteSearchPriority': 1
+    },
+    {
+        'name': 'Public Data',
+        'system': 'cloud.data.community',
+        'scheme': 'public',
+        'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/public',
+        'icon': 'publications',
+        'siteSearchPriority': 0
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications'
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
+        'icon': None,
+        'integration': 'portal.apps.googledrive_integration'
     }
-}
-
-_PORTAL_DATAFILES_STORAGE_SYSTEMS = []
+]
 
 ########################
 # DJANGO APP: ONBOARDING

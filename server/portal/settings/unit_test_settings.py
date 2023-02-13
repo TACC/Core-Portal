@@ -448,88 +448,48 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-        'hidden': False,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-        'hidden': False,
-    },
-    'stockyard': {
-        'name': 'My Data (Work)',
-        'systemId': 'cloud.corral.work.{username}',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 2222,
-        'icon': None,
-        'hidden': True,
-    }
-}
-
-PORTAL_EXEC_SYSTEMS = {
-    'data.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'stampede2.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'lonestar5.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'longhorn.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'frontera.tacc.utexas.edu': {
-        'scratch_dir': '/scratch1/{}',
-        'home_dir': '/home1/{}'
-    }
-}
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
+        'name': 'My Data (Work)',
+        'system': 'cloud.data.community',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
+        'icon': None,
+        'default': True
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'Community Data',
-        'system': 'portal.storage.community',
+        'system': 'cloud.data.community',
         'scheme': 'community',
         'api': 'tapis',
+        'homeDir': '/path/to/community',
         'icon': None,
         'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
-        'system': 'portal.storage.public',
+        'system': 'cloud.data.community',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None,
+        'homeDir': '/path/to/public',
+        'icon': 'publications',
         'siteSearchPriority': 0
     },
     {
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': 'publications',
-        'privilegeRequired': False,
-        'readOnly': False,
-        'hideSearchBar': False
+        'icon': 'publications'
     },
     {
         'name': 'Google Drive',
@@ -540,6 +500,39 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'integration': 'portal.apps.googledrive_integration'
     }
 ]
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
+
+
+PORTAL_EXEC_SYSTEMS = {
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
+    },
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
+    'ls5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
+    },
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
+    },
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
+    },
+    'maverick2.tacc.utexas.edu': {
+        'scratch_dir': '/work/{}',
+        'home_dir': '/home1/{}'
+    },
+    'ls6.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
+}
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
