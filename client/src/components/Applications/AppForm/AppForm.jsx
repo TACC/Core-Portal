@@ -504,8 +504,8 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys(appFields.fileInputs + appFields.appArgs).length >
-                  0 && (
+                {Object.keys({ ...appFields.fileInputs, ...appFields.appArgs })
+                  .length > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
