@@ -450,11 +450,6 @@ export const AppSchemaForm = ({ app }) => {
 
           // TODOv3: add envVariables
 
-          /* To ensure that DCV and VNC server is alive, name of job needs to contain '-dcvserver' or 'tap_' respectively */
-          if (app.definition.notes.isInteractive) {
-            job.name += '-dcvserver-tap_';
-          }
-
           // Add allocation scheduler option
           if (job.allocation) {
             if (!job.parameterSet.schedulerOptions) {
