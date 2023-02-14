@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 from requests import HTTPError
@@ -127,7 +127,6 @@ class JobsWebhookView(BaseApiView):
                                               kwargs={'filePath': job_details.archiveSystemDir})
                 except Exception as e:
                     logger.exception('Error indexing job output: {}'.format(e))
-                    return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             with transaction.atomic():
                 n = Notification.objects.create(**event_data)
@@ -137,13 +136,13 @@ class JobsWebhookView(BaseApiView):
 
         except (ObjectDoesNotExist, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+            return HttpResponseBadRequest("ERROR")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InteractiveWebhookView(BaseApiView):
     """
-    Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or WEB)
+    Dispatches notifications when receiving a POST request from interactive jobs
     """
 
     def post(self, request, *args, **kwargs):
@@ -151,37 +150,22 @@ class InteractiveWebhookView(BaseApiView):
         Creates a notification with a link to the interactive job event.
 
         """
-        event_type = request.POST.get('event_type', None)
-        job_uuid = request.POST.get('job_uuid', '')
-        job_owner = request.POST.get('owner', '')
 
-        if event_type == 'WEB':
-            # Notifications that point to a URL like DCV-based apps
+        # Get required parameters from request, else return bad request
+        for param in ['event_type', 'job_uuid', 'job_owner', 'address']:
+            val = request.POST.get(param, None)
+            if not val:
+                msg = f"Missing required interactive webhook parameter: {param}"
+                logger.error(msg)
+                return HttpResponseBadRequest(f"ERROR: {msg}")
 
-            address = request.POST.get('address', '')
-
-        elif event_type == 'VNC':
-            # VNC addresses require additional processing to generate the URL
-
-            host = request.POST.get('host', '')
-            port = request.POST.get('port', '')
-            password = request.POST.get('password', '')
-            job_uuid = password
-
-            address = \
-                'https://tap.tacc.utexas.edu/noVNC/?'\
-                'host={host}&port={port}&autoconnect=true&encrypt=true&resize=scale&password={pw}' \
-                .format(host=host, port=port, pw=password)
-
-        else:
-            logger.info("Unexpected event type")
-            return HttpResponse("ERROR", status=400)
+            setattr(self, param, val)
 
         event_data = {
-            Notification.EVENT_TYPE: 'interactive_session_ready',
+            Notification.EVENT_TYPE: self.event_type,
             Notification.STATUS: Notification.INFO,
-            Notification.USER: job_owner,
-            Notification.ACTION_LINK: address
+            Notification.USER: self.job_owner,
+            Notification.ACTION_LINK: self.address
         }
 
         # confirm that there is a corresponding running tapis job before sending notification
@@ -197,7 +181,7 @@ class InteractiveWebhookView(BaseApiView):
 
         except (HTTPError, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+            return HttpResponseBadRequest(f"ERROR: {e}")
 
         n = Notification.objects.create(**event_data)
         n.save()

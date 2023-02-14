@@ -243,17 +243,17 @@ class JobsView(BaseApiView):
                         )
 
             if settings.DEBUG:
-                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                wh_base_url = settings.WH_BASE_URL + reverse('webhooks:interactive_wh_handler')
                 jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
             else:
-                wh_base_url = request.build_absolute_uri('/webhooks/')
+                wh_base_url = request.build_absolute_uri(reverse('webhooks:interactive_wh_handler'))
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
             # Add additional data for interactive apps
             if body.get('isInteractive'):
                 # Add webhook URL environment variable for interactive apps
                 job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + \
-                                                           [{'key': '_webhook_base_url', 'value':  wh_base_url}]
+                                                           [{'key': '_INTERACTIVE_WEBHOOK_URL', 'value':  wh_base_url}]
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
                 execSystemId = job_post['execSystemId']
@@ -369,9 +369,10 @@ class AppsTrayView(BaseApiView):
             for portal_app in portal_apps:
                 portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
 
+                # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
                 matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
                 if matching_app:
-                    tapis_apps.append({**portal_app, 'label': matching_app.notes.label or portal_app['label']})
+                    tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
