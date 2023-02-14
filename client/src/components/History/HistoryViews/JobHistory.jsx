@@ -1,11 +1,9 @@
 import { React, useEffect } from 'react';
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { LoadingSpinner, SectionTableWrapper } from '_common';
+import { SectionTableWrapper } from '_common';
 import JobsView from '../../Jobs';
-import queryStringParser from 'query-string';
-import { useLocation } from 'react-router-dom';
 
 import './JobHistory.module.scss';
 import './HistoryViews.scss';
@@ -13,8 +11,7 @@ import './HistoryViews.scss';
 const JobHistory = ({ className }) => {
   const { notifs, loading } = useSelector(
     (state) => ({
-      notifs: state.notifications.list.notifs,
-      loading: state.notifications.loading,
+      notifs: state.notifications.list.notifs
     }),
     shallowEqual
   );

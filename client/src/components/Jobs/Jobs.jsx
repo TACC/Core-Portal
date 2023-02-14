@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
@@ -11,13 +11,20 @@ import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
 import { useLocation } from 'react-router-dom';
 
-function JobsView({ showDetails, showFancyStatus, rowProps, fromDashboard }) {
+function JobsView({ showDetails, showFancyStatus, rowProps, includeSearchbar }) {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.jobs.loading);
   const jobs = useSelector((state) => state.jobs.list);
   const error = useSelector((state) => state.jobs.error);
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
+  );
+
+  const { isJobLoading, isNotificationLoading } = useSelector(
+    (state) => ({
+      isJobLoading: state.jobs.loading,
+      isNotificationLoading: state.notifications.loading,
+    }),
+    shallowEqual
   );
 
   const noDataText = (
@@ -149,13 +156,13 @@ function JobsView({ showDetails, showFancyStatus, rowProps, fromDashboard }) {
 
   return (
     <>
-      {!fromDashboard && (
+      {includeSearchbar && (
         <Searchbar
           api="tapis"
           resultCount={jobs.length}
           dataType="Jobs"
           infiniteScroll
-          disabled={isLoading}
+          disabled={isJobLoading || isNotificationLoading}
         />
       )}
       <div className="o-flex-item-table-wrap">
@@ -163,7 +170,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps, fromDashboard }) {
           tableColumns={filterColumns}
           tableData={jobs}
           onInfiniteScroll={infiniteScrollCallback}
-          isLoading={isLoading}
+          isLoading={isJobLoading || isNotificationLoading}
           className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
           noDataText={noDataText}
           getRowProps={rowProps}
@@ -177,13 +184,13 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
-  fromDashboard: PropTypes.bool,
+  includeSearchbar: PropTypes.bool,
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
   rowProps: (row) => {},
-  fromDashboard: false,
+  includeSearchbar: true,
 };
 
 export default JobsView;

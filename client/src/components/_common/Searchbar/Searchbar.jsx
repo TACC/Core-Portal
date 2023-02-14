@@ -137,7 +137,7 @@ const Searchbar = ({
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
-          {resultCount} results in {sectionName == '' ? dataType : sectionName}
+          {resultCount} results in {sectionName || dataType}
         </div>
       )}
       {((hasQuery && !siteSearch) ||

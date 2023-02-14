@@ -25,8 +25,6 @@ from .handlers.tapis_handlers import tapis_get_handler
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
-# all the job parameters we want to support for the search
-job_search_parameters = ['name', 'archiveSystemDir', 'appId', 'archiveSystemId']
 
 def _app_license_type(app_def):
     app_lic_type = getattr(app_def.notes, 'licenseType', None)
@@ -130,13 +128,8 @@ class JobsView(BaseApiView):
     def get(self, request, operation=None):
         tapis = request.user.tapis_oauth.client
 
-        if operation == 'select': 
-            job_uuid = request.GET.get('job_uuid')
-            data = tapis.jobs.getJob(jobUuid=job_uuid)
-        elif operation == 'listing':
-            data = self.listing(tapis, request)
-        elif operation == 'search':
-            data = self.search(tapis, request)
+        op = getattr(self, operation)
+        data = op(tapis, request)
 
         return JsonResponse(
             {
@@ -145,6 +138,12 @@ class JobsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
+
+    def select(self, client, request):
+        job_uuid = request.GET.get('job_uuid')
+        data = client.jobs.getJob(jobUuid=job_uuid)
+
+        return data
     
     def listing(self, client, request):
         limit = int(request.GET.get('limit', 10))
@@ -161,6 +160,10 @@ class JobsView(BaseApiView):
         return data
 
     def search(self, client, request):
+
+        # all the job parameters we want to support for the search
+        job_search_parameters = ['name', 'archiveSystemDir', 'appId', 'archiveSystemId']
+
         query_string = request.GET.get('query_string')
 
         limit = int(request.GET.get('limit', 10))

@@ -111,7 +111,7 @@ function DashboardJobs() {
       }
       contentShouldScroll
     >
-      <JobsView fromDashboard={true} />
+      <JobsView includeSearchbar={false} />
     </SectionTableWrapper>
   );
 }
