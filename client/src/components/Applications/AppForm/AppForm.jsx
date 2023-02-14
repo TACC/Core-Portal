@@ -248,7 +248,9 @@ export const AppSchemaForm = ({ app }) => {
   // initial form values
   const initialValues = {
     ...appFields.defaults,
-    name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
+    name: `${app.definition.id}-${app.definition.version}_${
+      new Date().toISOString().split('.')[0]
+    }`,
     execSystemLogicalQueue: (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
