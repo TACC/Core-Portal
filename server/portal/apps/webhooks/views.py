@@ -130,7 +130,7 @@ class JobsWebhookView(BaseApiView):
                     agave_indexer.apply_async(args=[job_details.archiveSystemId],
                                               kwargs={'filePath': job_details.archiveSystemDir})
                 except Exception as e:
-                    logger.exception('Error indexing job output: {}'.format(e))
+                    logger.exception('Error starting async task to index job output: {}'.format(e))
                     return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             with transaction.atomic():
