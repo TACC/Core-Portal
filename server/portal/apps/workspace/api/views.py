@@ -161,29 +161,28 @@ class JobsView(BaseApiView):
 
     def search(self, client, request):
 
-        # all the job parameters we want to support for the search
-        job_search_parameters = ['name', 'archiveSystemDir', 'appId', 'archiveSystemId']
-
         query_string = request.GET.get('query_string')
 
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
 
-        data = []
-        for parameter in job_search_parameters:
-            data = client.jobs.getJobSearchList(
-                limit=limit,
-                startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={
-                    'tags.contains': portal_name,
-                    f'{parameter}.like' : f'*{query_string}*'
-                }
-            )
+        sql_queries = [
+            f"(tags IN ('{portal_name}')) AND",
+            f"(name like '%{query_string}%') OR", 
+            f"(archiveSystemDir like '%{query_string}%') OR", 
+            f"(appId like '%{query_string}%') OR", 
+            f"(archiveSystemId like '%{query_string}%')", 
+        ]
 
-            if data:
-                break
+        data = client.jobs.getJobSearchListByPostSqlStr(
+            limit=limit,
+            startAfter=offset,
+            orderBy='lastUpdated(desc),name(asc)',
+            request_body= {
+                "search": sql_queries
+            }
+        )
             
         return data
 

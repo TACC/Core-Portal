@@ -165,7 +165,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps, includeSearchbar }) 
           disabled={isJobLoading || isNotificationLoading}
         />
       )}
-      <div className="o-flex-item-table-wrap">
+      <div className={includeSearchbar ? "o-flex-item-table-wrap" : ""} >
         <InfiniteScrollTable
           tableColumns={filterColumns}
           tableData={jobs}
