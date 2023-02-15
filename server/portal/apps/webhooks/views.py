@@ -150,22 +150,21 @@ class InteractiveWebhookView(BaseApiView):
         Creates a notification with a link to the interactive job event.
 
         """
+        event_type = request.POST.get('event_type', None)
+        job_uuid = request.POST.get('job_uuid', None)
+        job_owner = request.POST.get('owner', None)
+        address = request.POST.get('address', None)
 
-        # Get required parameters from request, else return bad request
-        for param in ['event_type', 'job_uuid', 'job_owner', 'address']:
-            val = request.POST.get(param, None)
-            if not val:
-                msg = f"Missing required interactive webhook parameter: {param}"
-                logger.error(msg)
-                return HttpResponseBadRequest(f"ERROR: {msg}")
-
-            setattr(self, param, val)
+        if not address:
+            msg = "Missing required interactive webhook parameter: address"
+            logger.error(msg)
+            return HttpResponseBadRequest(f"ERROR: {msg}")
 
         event_data = {
-            Notification.EVENT_TYPE: self.event_type,
+            Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
-            Notification.USER: self.job_owner,
-            Notification.ACTION_LINK: self.address
+            Notification.USER: job_owner,
+            Notification.ACTION_LINK: address
         }
 
         # confirm that there is a corresponding running tapis job before sending notification
