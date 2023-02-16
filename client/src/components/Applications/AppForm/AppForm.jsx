@@ -587,18 +587,16 @@ export const AppSchemaForm = ({ app }) => {
                       ))
                       .sort()}
                   </FormField>
-                  {!app.definition.notes.isInteractive ? (
-                    <FormField
-                      label="Maximum Job Runtime"
-                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
-                        app,
-                        values.execSystemLogicalQueue
-                      )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                      name="maxMinutes"
-                      type="integer"
-                      required
-                    />
-                  ) : null}
+                  <FormField
+                    label="Maximum Job Runtime"
+                    description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+                      app,
+                      values.execSystemLogicalQueue
+                    )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                    name="maxMinutes"
+                    type="number"
+                    required
+                  />
                   {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
                     <>
                       <FormField
