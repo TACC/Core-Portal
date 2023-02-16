@@ -219,11 +219,13 @@ class JobsView(BaseApiView):
                 lic = _get_user_app_license(lic_type, request.user)
                 if lic is None:
                     raise ApiException("You are missing the required license for this application.")
-                license_var = {
-                    "key": "_license",
-                    "value": lic.license_as_str()
-                }
-                job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
+
+                # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
+                # license_var = {
+                #     "key": "_license",
+                #     "value": lic.license_as_str()
+                # }
+                # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
