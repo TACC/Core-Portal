@@ -1,4 +1,4 @@
-import { getJobDisplayInformation } from 'utils/jobsUtil';
+import { getJobDisplayInformation, isTerminalState } from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -70,7 +70,11 @@ export function jobs(state = initialState, action) {
       const events = action.payload;
       const list = state.list.map((job) => {
         const event = events.find((e) => e.extra.uuid === job.uuid);
-        return event ? { ...job, ...event.extra } : job;
+        const val =
+          !isTerminalState(job.status) && event
+            ? { ...job, ...event.extra }
+            : job;
+        return val;
       });
       return {
         ...state,
