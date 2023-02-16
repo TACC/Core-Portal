@@ -11,7 +11,7 @@ import './HistoryViews.scss';
 const JobHistory = ({ className }) => {
   const { notifs, loading } = useSelector(
     (state) => ({
-      notifs: state.notifications.list.notifs
+      notifs: state.notifications.list.notifs,
     }),
     shallowEqual
   );

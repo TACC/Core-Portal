@@ -140,7 +140,7 @@ class JobsView(BaseApiView):
         data = client.jobs.getJob(jobUuid=job_uuid)
 
         return data
-    
+
     def listing(self, client, request):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
@@ -165,21 +165,21 @@ class JobsView(BaseApiView):
 
         sql_queries = [
             f"(tags IN ('{portal_name}')) AND",
-            f"(name like '%{query_string}%') OR", 
-            f"(archiveSystemDir like '%{query_string}%') OR", 
-            f"(appId like '%{query_string}%') OR", 
-            f"(archiveSystemId like '%{query_string}%')", 
+            f"(name like '%{query_string}%') OR",
+            f"(archiveSystemDir like '%{query_string}%') OR",
+            f"(appId like '%{query_string}%') OR",
+            f"(archiveSystemId like '%{query_string}%')",
         ]
 
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
             startAfter=offset,
             orderBy='lastUpdated(desc),name(asc)',
-            request_body= {
+            request_body={
                 "search": sql_queries
             }
         )
-            
+
         return data
 
     def delete(self, request, *args, **kwargs):

@@ -11,7 +11,12 @@ import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
 import { useLocation } from 'react-router-dom';
 
-function JobsView({ showDetails, showFancyStatus, rowProps, includeSearchbar }) {
+function JobsView({
+  showDetails,
+  showFancyStatus,
+  rowProps,
+  includeSearchbar,
+}) {
   const dispatch = useDispatch();
   const jobs = useSelector((state) => state.jobs.list);
   const error = useSelector((state) => state.jobs.error);
@@ -167,7 +172,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps, includeSearchbar }) 
           disabled={isJobLoading || isNotificationLoading}
         />
       )}
-      <div className={includeSearchbar ? "o-flex-item-table-wrap" : ""} >
+      <div className={includeSearchbar ? 'o-flex-item-table-wrap' : ''}>
         <InfiniteScrollTable
           tableColumns={filterColumns}
           tableData={jobs}
