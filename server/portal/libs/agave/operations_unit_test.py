@@ -124,4 +124,4 @@ class TestOperations(TestCase):
         mock_copy.assert_called_with(client,
                                      'test.system',
                                      '/path/to/src',
-                                     'portal.storage.public', '/')
+                                     'cloud.data.community', '/')

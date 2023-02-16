@@ -131,7 +131,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps, includeSearchbar }) 
       accessor: 'outputLocation',
       Cell: (el) => {
         const outputLocation = el.row.original.outputLocation;
-        return outputLocation && !hideDataFiles ? (
+        return outputLocation &&
+          !hideDataFiles &&
+          el.row.original.remoteOutcome === 'FINISHED' ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
             className="wb-link job__path"

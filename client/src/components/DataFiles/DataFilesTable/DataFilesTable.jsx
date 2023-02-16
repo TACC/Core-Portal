@@ -28,7 +28,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
-  currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
+  currSystemHost = currSystemHost ? currSystemHost.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
   const systemDefErr = useSelector((state) => state.systems.definitions.error);

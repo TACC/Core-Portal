@@ -112,10 +112,6 @@ class TestUserSetup(TestCase):
         self.mock_check_user_patcher = patch('portal.apps.accounts.managers.accounts.check_user', return_value=self.mock_user)
         self.mock_check_user = self.mock_check_user_patcher.start()
 
-        # Mock UserSystemsManager
-        self.mock_systems_manager_patcher = patch('portal.apps.accounts.managers.accounts.UserSystemsManager')
-        self.mock_systems_manager = self.mock_systems_manager_patcher.start()
-
         # Mock StorageSystem
         self.mock_storage_system_patcher = patch('portal.apps.accounts.managers.accounts.StorageSystem')
         self.mock_storage_system = self.mock_storage_system_patcher.start()

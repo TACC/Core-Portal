@@ -49,13 +49,9 @@ class AuthenticatedView(BaseApiView):
 class UsageView(BaseApiView):
 
     def get(self, request, system_id):
-        username = request.user.username
-
-        if not system_id:
-            # get default system prefix
-            default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['systemId']
-            system_id = default_system_prefix.format(username.replace('_', '-'))
+        default_sys = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM
+        if not system_id and default_sys:
+            system_id = default_sys['system']
 
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
