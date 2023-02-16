@@ -176,7 +176,11 @@ class InteractiveWebhookView(BaseApiView):
                         job_uuid, job_owner
                     )
                 )
-            event_data[Notification.EXTRA] = valid_state
+            event_data[Notification.EXTRA] = {
+                "name": valid_state.name,
+                "status": valid_state.status,
+                "uuid": valid_state.uuid
+            }
 
         except (HTTPError, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
