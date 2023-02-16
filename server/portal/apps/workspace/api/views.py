@@ -260,7 +260,8 @@ class JobsView(BaseApiView):
                 system = settings.PORTAL_EXEC_SYSTEMS.get(execSystemId)
                 tasdir = get_user_data(username)['homeDirectory']
                 if system:
-                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir']}/{tasdir}/.tap")
+                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")
+
 
             # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
