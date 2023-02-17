@@ -121,7 +121,7 @@ class AppsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    def get(self, request, operation=None):
+    def get(self, request, operation='listing'):
         tapis = request.user.tapis_oauth.client
 
         op = getattr(self, operation)
