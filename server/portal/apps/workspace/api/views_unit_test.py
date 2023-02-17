@@ -101,9 +101,9 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
     )
 
     tapis_job_submission = {
-        **job_submmission_definition,
+        **job_submmission_definition['job'],
         'archiveSystemId': 'cloud.data.community',
-        'archiveSystemDir': '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
+        'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
         'tags': ['portalName: test'],
         'subscriptions': [
             {
@@ -120,8 +120,6 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
             }
         ]
     }
-
-    tapis_job_submission['parameterSet']['envVariables'] = [{'key': '_webhook_base_url', 'value': 'http://testserver/webhooks/'}]
 
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with("user:{} is submitting job:{}".format(authenticated_user.username,

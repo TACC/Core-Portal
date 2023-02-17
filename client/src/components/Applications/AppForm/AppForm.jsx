@@ -248,7 +248,9 @@ export const AppSchemaForm = ({ app }) => {
   // initial form values
   const initialValues = {
     ...appFields.defaults,
-    name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
+    name: `${app.definition.id}-${app.definition.version}_${
+      new Date().toISOString().split('.')[0]
+    }`,
     execSystemLogicalQueue: (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
@@ -267,6 +269,8 @@ export const AppSchemaForm = ({ app }) => {
     archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
+    appVersion: app.definition.version,
+    parameterSet: {},
     execSystemId: app.definition.jobAttributes.execSystemId,
   };
   let missingAllocation = false;
@@ -426,13 +430,12 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
 
-          job.appVersion = app.definition.version;
           job.fileInputs = Object.entries(job.fileInputs)
             .map(([k, v]) => {
               return { name: k, sourceUrl: v };
             })
             .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
-          job.parameterSet = {};
+
           job.parameterSet.appArgs = Object.entries(job.appArgs)
             .map(([k, v]) => {
               return { name: k, arg: v };
@@ -446,19 +449,10 @@ export const AppSchemaForm = ({ app }) => {
                 )
             ); // filter out any empty values
           delete job.appArgs;
-          // TODOv3 add envVariables
-          /* remove falsy parameter */ // TODOv3 consider if we need to remove falsy parmeter AND false file inputs
-          // TODO: allow falsy parameters for parameters of type bool
-          /* To ensure that DCV and VNC server is alive, name of job needs to contain 'dcvserver' or 'tap_" respectively */
-          if (app.definition.tags.includes('DCV')) {
-            job.name += '-dcvserver';
-          }
-          if (app.definition.tags.includes('VNC')) {
-            job.name += 'tap_';
-          }
-          if (app.license.type && app.license.enabled) {
-            job.licenseType = app.license.type;
-          }
+
+          // TODOv3: add envVariables
+
+          // Add allocation scheduler option
           if (job.allocation) {
             if (!job.parameterSet.schedulerOptions) {
               job.parameterSet.schedulerOptions = [];
@@ -472,9 +466,14 @@ export const AppSchemaForm = ({ app }) => {
             });
             delete job.allocation;
           }
+
           dispatch({
             type: 'SUBMIT_JOB',
-            payload: job,
+            payload: {
+              job,
+              licenseType: app.license.type,
+              isInteractive: !!app.definition.notes.isInteractive,
+            },
           });
         }}
       >
@@ -507,7 +506,8 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys(appFields.fileInputs).length > 0 && (
+                {Object.keys({ ...appFields.fileInputs, ...appFields.appArgs })
+                  .length > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
@@ -587,18 +587,16 @@ export const AppSchemaForm = ({ app }) => {
                       ))
                       .sort()}
                   </FormField>
-                  {!app.definition.notes.isInteractive ? (
-                    <FormField
-                      label="Maximum Job Runtime"
-                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
-                        app,
-                        values.execSystemLogicalQueue
-                      )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                      name="maxMinutes"
-                      type="integer"
-                      required
-                    />
-                  ) : null}
+                  <FormField
+                    label="Maximum Job Runtime"
+                    description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+                      app,
+                      values.execSystemLogicalQueue
+                    )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                    name="maxMinutes"
+                    type="number"
+                    required
+                  />
                   {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
                     <>
                       <FormField

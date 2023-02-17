@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Icon } from '_common';
 import JobsSessionModal from '../JobsSessionModal';
 import styles from './JobsStatus.module.scss';
+import { isTerminalState } from 'utils/jobsUtil';
 
 export const STATUS_TEXT_MAP = {
   PENDING: 'Processing',
@@ -71,17 +72,15 @@ function JobsStatus({ status, fancy, jobUuid }) {
   const notifs = useSelector((state) => state.notifications.list.notifs);
   let interactiveSessionLink;
 
-  const jobConcluded = ['ARCHIVING', 'FINISHED', 'CANCELLED', 'FAILED'];
+  const jobConcluded = isTerminalState(status) || status === 'ARCHIVING';
 
   /* Check if job is not ended AND has interactive session. */
   /* NOTE: Sometimes a job RUNNING status and the interactive webhook come out of order,
   so instead of checking for a running job with a session, we check that the job is not ended.
   */
-  if (!jobConcluded.includes(status)) {
+  if (!jobConcluded) {
     const interactiveNotifs = notifs.filter(
-      (n) =>
-        n.event_type === 'interactive_session_ready' &&
-        !jobConcluded.includes(n.extra.status) // need to account for the possibility of session ready and job status notifs coming out of order
+      (n) => n.event_type === 'interactive_session_ready' && !jobConcluded // need to account for the possibility of session ready and job status notifs coming out of order
     );
     const notif = interactiveNotifs.find((n) => n.extra.uuid === jobUuid);
     interactiveSessionLink = notif ? notif.action_link : null;
