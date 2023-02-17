@@ -50,16 +50,16 @@ function JobsView({
   useEffect(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: 0, queryString: query.query_string },
+      params: { offset: 0, queryString: query.query_string || '' },
     });
   }, [dispatch, query.query_string]);
 
   const infiniteScrollCallback = useCallback(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: jobs.length, queryString: query.query_string },
+      params: { offset: jobs.length, queryString: query.query_string || '' },
     });
-  }, [jobs, query.query_string]);
+  }, [dispatch, jobs, query.query_string]);
 
   const jobDetailLink = useCallback(
     ({

@@ -178,7 +178,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({
         type: 'JOBS_LIST',
         payload: {
@@ -215,7 +215,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({ type: 'JOBS_LIST_ERROR', payload: 'error' })
       .put({ type: 'JOBS_LIST_FINISH' })
       .hasFinalState({

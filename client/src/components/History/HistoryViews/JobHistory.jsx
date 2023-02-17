@@ -1,4 +1,4 @@
-import { React, useEffect } from 'react';
+import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 

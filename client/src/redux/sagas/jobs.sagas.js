@@ -36,7 +36,7 @@ export function* getJobs(action) {
       fetchJobs,
       action.params.offset,
       action.params.limit || LIMIT,
-      action.params.queryString
+      action.params.queryString || ''
     );
     yield put({
       type: 'JOBS_LIST',
