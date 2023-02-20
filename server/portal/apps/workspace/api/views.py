@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from tapipy.errors import BaseTapyException, InternalServerError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
@@ -121,8 +121,14 @@ class AppsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    def get(self, request, operation='listing'):
+    def get(self, request, operation=None):
+
+        allowed_actions = ['listing', 'search', 'select']
+
         tapis = request.user.tapis_oauth.client
+
+        if operation not in allowed_actions:
+            raise PermissionDenied
 
         op = getattr(self, operation)
         data = op(tapis, request)
