@@ -1,8 +1,4 @@
-import {
-  getJobDisplayInformation,
-  isOutputState,
-  getOutputPath,
-} from 'utils/jobsUtil';
+import { getJobDisplayInformation, isTerminalState } from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -11,16 +7,6 @@ export const initialState = {
   reachedEnd: false,
   error: null,
 };
-
-function updateJobFromNotification(job, notification) {
-  // update status
-  const updatedJob = { ...job, status: notification.status };
-  if (isOutputState(notification.status)) {
-    // add archive data path to job
-    updatedJob.outputLocation = getOutputPath(notification);
-  }
-  return updatedJob;
-}
 
 export function jobs(state = initialState, action) {
   switch (action.type) {
@@ -47,12 +33,7 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.uuid === action.payload.job.uuid
-            ? {
-                ...action.payload.job,
-                outputLocation: getOutputPath(action.payload.job),
-              }
-            : job
+          job.uuid === action.payload.job.uuid ? action.payload.job : job
         ),
       };
     case 'JOBS_LIST_ERROR':
@@ -89,7 +70,11 @@ export function jobs(state = initialState, action) {
       const events = action.payload;
       const list = state.list.map((job) => {
         const event = events.find((e) => e.extra.uuid === job.uuid);
-        return event ? updateJobFromNotification(job, event.extra) : job;
+        const val =
+          !isTerminalState(job.status) && event
+            ? { ...job, ...event.extra }
+            : job;
+        return val;
       });
       return {
         ...state,

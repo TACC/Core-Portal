@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 from requests import HTTPError
@@ -25,14 +25,14 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-terminal_job_states = ["FINISHED", "CANCELLED", "FAILED"]
+TERMINAL_JOB_STATES = ["FINISHED", "CANCELLED", "FAILED"]
 
 
 def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     """
     Verifies that a job UUID is both visible to the owner and belongs to the owner
 
-    Throws PortalLibException if the job owner does not match the specified job ID
+    Throws PortalLibException if the job owner does not match the specified job UUID
     Returns:
         None if the job state is disallowed for notifications
         job_data if the job is validated
@@ -42,16 +42,16 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     client = user.tapis_oauth.client
     job_data = client.jobs.getJob(jobUuid=job_uuid)
 
-    # Validate the job ID against the owner
-    if job_data['owner'] != job_owner:
+    # Validate the job UUID against the owner
+    if job_data.owner != job_owner:
         logger.error(
-            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
-                                                                                                 job_data['status'],
+            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data.owner,
+                                                                                                 job_data.status,
                                                                                                  job_owner))
         raise PortalLibException("Unable to find a related valid job for this notification.")
 
     # Check to see if the job state should generate a notification
-    if job_data["status"] in disallowed_states:
+    if job_data.status in disallowed_states:
         return None
 
     return job_data
@@ -82,128 +82,67 @@ class JobsWebhookView(BaseApiView):
 
         try:
             username = job['jobOwner']
-            job_id = job['jobUuid']
+            job_uuid = job['jobUuid']
             job_status = job['newJobStatus']
             job_name = job['jobName']
             job_old_status = job['oldJobStatus']
 
-            event_data = {
-                Notification.EVENT_TYPE: 'job',
-                Notification.JOB_ID: job_id,
-                Notification.STATUS: '',
-                Notification.USER: username,
-                Notification.MESSAGE: '',
-                Notification.EXTRA: {
-                    "name": job_name,
-                    "owner": username,
-                    "status": job_status,
-                    "uuid": job_id,
-                    "old_status": job_old_status
-                }
-            }
-
-            # get additional job information only after the job has reached a terminal state
-            if job_status in terminal_job_states:
-                user = get_user_model().objects.get(username=username)
-                client = user.tapis_oauth.client
-                job_details = client.jobs.getJob(jobUuid=job_id)
-
-                event_data[Notification.EXTRA]['remoteSubmitted'] = str(job['remoteSubmitted'])
-                event_data[Notification.EXTRA]['ended'] = str(job['remoteEnded'])
-                event_data[Notification.EXTRA]['archiveSystemId'] = job_details.archiveSystemId
-                event_data[Notification.EXTRA]['archiveSystemDir'] = job_details.archiveSystemDir
-
+            # Do nothing on job status not in portal notification states
             if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
-                logger.debug(
-                    "Job ID {} for owner {} entered {} state (no notification sent)".format(
-                        job_id, username, job_status
+                logger.info(
+                    "Job UUID {} for owner {} entered {} state (no notification sent)".format(
+                        job_uuid, username, job_status
                     )
                 )
                 return HttpResponse("OK")
 
-            if job_status == 'FAILED':
-                logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
-                event_data[Notification.STATUS] = Notification.ERROR
-                event_data[Notification.MESSAGE] = "Job '{}' Failed. Please try again...".format(job_name)
-                event_data[Notification.OPERATION] = 'job_failed'
+            # Do nothing on duplicate job status events
+            if job_status == job_old_status:
+                return HttpResponse("OK")
 
-                with transaction.atomic():
-                    should_notify = True
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
+            logger.info('JOB STATUS CHANGE: UUID={} status={}'.format(job_uuid, job_status))
 
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
+            event_data = {
+                Notification.EVENT_TYPE: 'job',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: username,
+                Notification.EXTRA: {
+                    "name": job_name,
+                    "owner": username,
+                    "status": job_status,
+                    "uuid": job_uuid
+                }
+            }
 
-            elif job_status == 'FINISHED':
-                logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
+            # get additional job information only after the job has reached a terminal state
+            non_terminal_states = list(set(settings.PORTAL_JOB_NOTIFICATION_STATES) - set(TERMINAL_JOB_STATES))
+            job_details = validate_tapis_job(job_uuid, username, disallowed_states=non_terminal_states)
+            if job_details:
+                event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
 
-                logger.debug('archivePath: {}'.format(event_data[Notification.EXTRA]['archiveSystemDir']))
+                try:
+                    logger.info('Indexing job output for job={}'.format(job_uuid))
 
-                event_data[Notification.STATUS] = Notification.SUCCESS
-                event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
-                event_data[Notification.MESSAGE] = "Job '{}' finished".format(job_name)
-                event_data[Notification.OPERATION] = 'job_finished'
+                    agave_indexer.apply_async(args=[job_details.archiveSystemId],
+                                              kwargs={'filePath': job_details.archiveSystemDir})
+                except Exception as e:
+                    logger.exception('Error starting async task to index job output: {}'.format(e))
 
-                with transaction.atomic():
-
-                    should_notify = True
-
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
-
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
-                    try:
-                        logger.debug('Preparing to Index Job Output job={}'.format(job_name))
-
-                        agave_indexer.apply_async(args=[event_data[Notification.EXTRA]['archiveSystemId']],
-                                                  kwargs={'filePath': event_data[Notification.EXTRA]['archiveSystemDir']})
-                        logger.debug(
-                            'Finished Indexing Job Output job={}'.format(job_name))
-                    except Exception as e:
-                        logger.exception('Error indexing job output: {}'.format(e))
-                        return HttpResponse(json.dumps(e), content_type='application/json', status=400)
-
-            else:
-                logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
-                event_data[Notification.STATUS] = Notification.INFO
-                event_data[Notification.MESSAGE] = "Job '{}' updated to {}.".format(job_name, job_status)
-                event_data[Notification.OPERATION] = 'job_status_update'
-
-                with transaction.atomic():
-
-                    should_notify = True
-                    if job_old_status:
-                        logger.debug('last status: ' + job_old_status)
-                        if job_status == job_old_status:
-                            logger.debug('duplicate notification received.')
-                            should_notify = False
-                    if should_notify:
-                        n = Notification.objects.create(**event_data)
-                        n.save()
-
-                        logger.debug(n.pk)
+            with transaction.atomic():
+                n = Notification.objects.create(**event_data)
+                n.save()
 
             return HttpResponse('OK')
 
         except (ObjectDoesNotExist, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+            return HttpResponseBadRequest("ERROR")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InteractiveWebhookView(BaseApiView):
     """
-    Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or WEB)
+    Dispatches notifications when receiving a POST request from interactive jobs
     """
 
     def post(self, request, *args, **kwargs):
@@ -212,82 +151,43 @@ class InteractiveWebhookView(BaseApiView):
 
         """
         event_type = request.POST.get('event_type', None)
-        if event_type == 'WEB':
-            # This is for jobs that just point to a URL that gets created
-            # like the Potree Viewer Application or DCV-based apps
-            job_owner = request.POST.get('owner', '')
-            address = request.POST.get('address', '')
-            job_uuid = request.POST.get('job_uuid', '')
-            event_data = {
-                Notification.EVENT_TYPE: 'interactive_session_ready',
-                Notification.STATUS: Notification.INFO,
-                Notification.OPERATION: 'web_link',
-                Notification.USER: job_owner,
-                Notification.MESSAGE: 'Ready to view.',
-                Notification.ACTION_LINK: address
-            }
-        elif event_type == 'VNC':
+        job_uuid = request.POST.get('job_uuid', None)
+        job_owner = request.POST.get('owner', None)
+        address = request.POST.get('address', None)
 
-            job_owner = request.POST.get('owner', '')
-            host = request.POST.get('host', '')
-            port = request.POST.get('port', '')
-            password = request.POST.get('password', '')
-            job_uuid = password
+        if not address:
+            msg = "Missing required interactive webhook parameter: address"
+            logger.error(msg)
+            return HttpResponseBadRequest(f"ERROR: {msg}")
 
-            target_uri = \
-                'https://tap.tacc.utexas.edu/noVNC/?'\
-                'host={host}&port={port}&autoconnect=true&encrypt=true&resize=scale&password={pw}' \
-                .format(host=host, port=port, pw=password)
-
-            event_data = {
-                Notification.EVENT_TYPE: 'interactive_session_ready',
-                Notification.STATUS: Notification.INFO,
-                Notification.OPERATION: 'vnc_session_start',
-                Notification.USER: job_owner,
-                Notification.MESSAGE: 'Your VNC session is ready.',
-                Notification.ACTION_LINK: target_uri
-            }
-
-        else:
-            logger.info("Unexpected event type")
-            return HttpResponse("ERROR", status=400)
+        event_data = {
+            Notification.EVENT_TYPE: event_type,
+            Notification.STATUS: Notification.INFO,
+            Notification.USER: job_owner,
+            Notification.ACTION_LINK: address
+        }
 
         # confirm that there is a corresponding running tapis job before sending notification
         try:
-            valid_state = validate_tapis_job(
-                job_uuid, job_owner, terminal_job_states
-            )
+            valid_state = validate_tapis_job(job_uuid, job_owner, TERMINAL_JOB_STATES)
             if not valid_state:
                 raise PortalLibException(
-                    "Interactive Job ID {} for user {} was in invalid state".format(
+                    "Interactive Job UUID {} for user {} was in invalid state".format(
                         job_uuid, job_owner
                     )
                 )
-            event_data[Notification.EXTRA] = valid_state
+            event_data[Notification.EXTRA] = {
+                "name": valid_state.name,
+                "status": valid_state.status,
+                "uuid": valid_state.uuid
+            }
+
         except (HTTPError, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+            return HttpResponseBadRequest(f"ERROR: {e}")
 
         n = Notification.objects.create(**event_data)
         n.save()
-
-        # NOTE: The below metadata creation is disabled for now, as it is unused by our current frontend
-        # create metadata for interactive connection and save to agave metadata
-        # try:
-        #     agave_job_meta = {
-        #         'name': 'interactiveJobDetails',
-        #         'value': {
-        #             Notification.ACTION_LINK: event_data[Notification.ACTION_LINK]
-        #         },
-        #         'associationIds': [job_uuid],
-        #     }
-        #     user = get_user_model().objects.get(username=job_owner)
-        #     agave = user.tapis_oauth.client
-        #     agave.meta.addMetadata(body=json.dumps(agave_job_meta))
-
-        # except (HTTPError, AgaveException) as e:
-        #     logger.exception(e)
-        #     return HttpResponse("ERROR", status=400)
 
         return HttpResponse('OK')
 

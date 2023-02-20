@@ -7,6 +7,7 @@ import {
 import queryString from 'query-string';
 import { useSelector, shallowEqual } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
@@ -75,10 +76,7 @@ const AppBrowser = () => {
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
               {categoryDict[category].map((app) => (
-                <div
-                  key={`${app.appId}v${app.version}`}
-                  className="apps-grid-item"
-                >
+                <div key={uuidv4()} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
                     to={

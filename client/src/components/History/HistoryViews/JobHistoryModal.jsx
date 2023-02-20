@@ -15,9 +15,13 @@ import {
 } from '_common';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
-import { isOutputState } from 'utils/jobsUtil';
+import {
+  isOutputState,
+  getOutputPath,
+  isTerminalState,
+  getExecutionPath,
+} from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
-
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
@@ -57,37 +61,48 @@ const reduceInputParameters = (data) =>
 
 function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
-  const outputLocation = useSelector((state) => {
-    return state.jobs.list.find((job) => job.uuid === jobDetails.uuid)
-      .outputLocation;
-  });
-  const created = formatDateTime(new Date(jobDetails.created));
-  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
-  const hasFailedStatus = jobDetails.status === 'FAILED';
+
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
 
+  const outputLocation = getOutputPath(jobDetails);
+  const hasOutput = isOutputState(jobDetails.status);
+  const created = formatDateTime(new Date(jobDetails.created));
+  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
+  const hasFailedStatus = jobDetails.status === 'FAILED';
+  const hasEnded = isTerminalState(jobDetails.status);
+
+  const appDataObj = {
+    'App ID': jobDetails.appId,
+    'App Version': jobDetails.appVersion,
+  };
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
+    [hasFailedStatus ? 'Failure Report' : 'Last Status Message']: (
+      <Expand
+        detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
+        message={<pre>${jobDetails.lastMessage}</pre>}
+      />
+    ),
   };
+
+  if (jobDetails.remoteOutcome) {
+    statusDataObj['Remote Outcome'] = jobDetails.remoteOutcome;
+  }
+
   const inputAndParamsDataObj = {
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters),
   };
-  const configDataObj = {};
+  const configDataObj = {
+    'Execution System': jobDetails.execSystemId,
+  };
   const outputDataObj = {
     'Job Name': jobName,
     'Output Location': outputLocation,
   };
-
-  statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
-    <Expand
-      detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-      message={<pre>${jobDetails.lastMessage}</pre>}
-    />
-  );
 
   const resubmitJob = () => {
     dispatch({
@@ -128,12 +143,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
   }
 
-  const isTerminalState =
-    jobDetails.status === 'FINISHED' ||
-    jobDetails.status === 'FAILED' ||
-    jobDetails.status === 'STOPPED';
-
   const data = {
+    Application: <DescriptionList data={appDataObj} />,
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
     Configuration: <DescriptionList data={configDataObj} />,
@@ -145,18 +156,25 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
       <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
           density="compact"
-          data={{
-            Output: !hideDataFiles && (
-              <DataFilesLink
-                path={outputLocation}
-                disabled={!isOutputState(jobDetails.status)}
-              >
-                View in Data Files
-              </DataFilesLink>
-            ),
-          }}
+          data={
+            !hideDataFiles && {
+              Execution: (
+                <DataFilesLink
+                  path={getExecutionPath(jobDetails)}
+                  disabled={hasOutput}
+                >
+                  View in Data Files
+                </DataFilesLink>
+              ),
+              Output: (
+                <DataFilesLink path={outputLocation} disabled={!hasOutput}>
+                  View in Data Files
+                </DataFilesLink>
+              ),
+            }
+          }
         />
-        {isTerminalState && (
+        {hasEnded && (
           <Button
             type="primary"
             attr="submit"
