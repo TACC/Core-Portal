@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
+import { useSelector, shallowEqual } from 'react-redux';
 import {
   useSystemDisplayName,
   useFileListing,
@@ -119,16 +120,30 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const root = useSystemDisplayName({ scheme, system });
+
+  const homeDir = systems.find(s => s.name == root)?.homeDir
+  const systemHomeDirPaths = homeDir?.split('/').filter(x => !!x)
+
   path
     .split('/')
     .filter((x) => !!x)
-    .reduce((prev, curr) => {
-      const comp = `${prev}/${curr}`;
-      paths.push(comp);
-      pathComps.push(curr);
-      return comp;
+    .reduce((prev, curr, index) => {
+      // don't push path if already part of the system's homeDir at the same index
+      if (systemHomeDirPaths[index] !== curr) {
+        const comp = `${prev}/${curr}`;
+        paths.push(homeDir + comp);
+        pathComps.push(curr);
+        return comp;
+      } else {
+        return ''
+      }
     }, '');
-  const root = useSystemDisplayName({ scheme, system });
 
   return (
     <div className={`breadcrumbs ${className}`}>
@@ -147,7 +162,7 @@ const DataFilesBreadcrumbs = ({
         api={api}
         scheme={scheme}
         system={system}
-        path=""
+        path={homeDir ?? ''}
         section={section}
         isPublic={isPublic}
       >
