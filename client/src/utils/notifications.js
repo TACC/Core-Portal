@@ -18,7 +18,7 @@ export function getNumberOfUnreadJobNotifications(notifications) {
           (n.event_type === 'job' ||
             n.event_type === `interactive_session_ready`)
       )
-      .map((n) => n.extra.id)
+      .map((n) => n.extra.uuid)
   );
   return unreadJobs.size;
 }

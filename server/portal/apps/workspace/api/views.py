@@ -92,7 +92,7 @@ class AppsView(BaseApiView):
         app_id = request.GET.get('appId')
         if app_id:
             app_version = request.GET.get('appVersion')
-            METRICS.debug("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
+            METRICS.info("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
             # Check if default storage system needs keys pushed
@@ -107,7 +107,7 @@ class AppsView(BaseApiView):
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
-            METRICS.debug("user:{} is requesting all apps".format(request.user.username))
+            METRICS.info("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
 
         return JsonResponse(
@@ -151,12 +151,13 @@ class JobsView(BaseApiView):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
-
-        data = client.jobs.getJobSearchList(
+        
+        data = tapis.jobs.getJobSearchList(
             limit=limit,
             startAfter=offset,
             orderBy='lastUpdated(desc),name(asc)',
-            _tapis_query_parameters={'tags.contains': portal_name}
+            _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
+            select='allAttributes'
         )
 
         return data
@@ -204,9 +205,10 @@ class JobsView(BaseApiView):
     def post(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         username = request.user.username
-        job_post = json.loads(request.body)
-        job_uuid = job_post.get('job_uuid')
-        job_action = job_post.get('action')
+        body = json.loads(request.body)
+        job_uuid = body.get('job_uuid')
+        job_action = body.get('action')
+        job_post = body.get('job')
 
         if job_uuid and job_action:
             if job_action == 'resubmit':
@@ -230,33 +232,38 @@ class JobsView(BaseApiView):
                 },
                 encoder=BaseTapisResultSerializer
             )
+
+        elif not job_post:
+            raise ApiException("user:{} is submitting a request with no job body.".format(
+                username,
+            ), status=400)
+
         # submit job
-        elif job_post:
+        else:
             METRICS.info("processing job submission for user:{}: {}".format(username, job_post))
 
-            # Provide default job archive configuration if none is provided
-            if not job_post.get('archiveSystemId'):
-                job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-            if not job_post.get('archiveSystemDir'):
-                tasdir = get_user_data(username)['homeDirectory']
-                homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
-                job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
+            # Provide default job archive configuration if none is provided and portal has default system
+            if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
+                if not job_post.get('archiveSystemId'):
+                    job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
+                if not job_post.get('archiveSystemDir'):
+                    tasdir = get_user_data(username)['homeDirectory']
+                    homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
+                    job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
-            # check for running licensed apps
-            lic_type = job_post['licenseType'] if 'licenseType' in job_post else None
-            if lic_type is not None:
+            # Check for and set license environment variable if app requires one
+            lic_type = body.get('licenseType')
+            if lic_type:
                 lic = _get_user_app_license(lic_type, request.user)
                 if lic is None:
                     raise ApiException("You are missing the required license for this application.")
-                license_var = {
-                    "key": "_license",
-                    "value": lic.license_as_str()
-                }
-                if 'envVariables' in job_post['parameterSet']:
-                    job_post['parameterSet']['envVariables'].append(license_var)
-                else:
-                    job_post['parameterSet']['envVariables'] = [license_var]
-                del job_post['licenseType']
+
+                # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
+                # license_var = {
+                #     "key": "_license",
+                #     "value": lic.license_as_str()
+                # }
+                # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
@@ -276,24 +283,36 @@ class JobsView(BaseApiView):
                         )
 
             if settings.DEBUG:
-                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                wh_base_url = settings.WH_BASE_URL + reverse('webhooks:interactive_wh_handler')
                 jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
             else:
-                wh_base_url = request.build_absolute_uri('/webhooks/')
+                wh_base_url = request.build_absolute_uri(reverse('webhooks:interactive_wh_handler'))
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [{'key': '_webhook_base_url', 'value':  wh_base_url}]
+            # Add additional data for interactive apps
+            if body.get('isInteractive'):
+                # Add webhook URL environment variable for interactive apps
+                job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + \
+                                                           [{'key': '_INTERACTIVE_WEBHOOK_URL', 'value':  wh_base_url}]
 
+                # Make sure $HOME/.tap directory exists for user when running interactive apps
+                execSystemId = job_post['execSystemId']
+                system = settings.PORTAL_EXEC_SYSTEMS.get(execSystemId)
+                tasdir = get_user_data(username)['homeDirectory']
+                if system:
+                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")
+
+            # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
-            job_post['tags'] = job_post.get('tags', []) + [portal_name]
+            job_post['tags'] = job_post.get('tags', []) + [f'portalName: {portal_name}']
 
-            # ttlMinutes of 0 corresponds to max default (1 week)
-            job_post["subscriptions"] = [
+            # Add webhook subscription for job status updates
+            job_post["subscriptions"] = job_post.get('subscriptions', []) + [
                {
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
-                    "ttlMinutes": 0,
+                    "ttlMinutes": 0,  # ttlMinutes of 0 corresponds to max default (1 week)
                     "deliveryTargets": [
                         {
                             "deliveryMethod": "WEBHOOK",
@@ -382,11 +401,18 @@ class AppsTrayView(BaseApiView):
         for category in AppTrayCategory.objects.all().order_by('-priority'):
 
             # Retrieve all apps known to the portal in that category
-            tapis_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
-                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
+            portal_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             # Only return Tapis apps that are known to exist and are enabled
-            tapis_apps = [x for x in tapis_apps if any(x['appId'] in [y.id, f'{y.id}-{y.version}'] for y in apps_listing)]
+            tapis_apps = []
+            for portal_app in portal_apps:
+                portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
+
+                # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
+                if matching_app:
+                    tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))

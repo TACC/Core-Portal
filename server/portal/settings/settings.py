@@ -481,31 +481,33 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
-    'data.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
+    'cloud.corral': {
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/work2/{}',
         'home_dir': '/home/{}'
     },
-    'stampede2.tacc.utexas.edu': {
+    'stampede2': {
+        'host': 'stampede2.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
-    'ls5.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'longhorn.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'frontera.tacc.utexas.edu': {
+    'frontera': {
+        'host': 'frontera.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
-    'maverick2.tacc.utexas.edu': {
+    'maverick2': {
+        'host': 'maverick2.tacc.utexas.edu',
+        'work_dir': '/work/{}',
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     },
-    'ls6.tacc.utexas.edu': {
+    'ls6': {
+        'host': 'ls6.tacc.utexas.edu',
+        'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },

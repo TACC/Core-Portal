@@ -17,10 +17,10 @@ const JobHistory = ({ className }) => {
   );
   const unreadIds = notifs
     .filter((n) => !n.read && n.event_type === 'job')
-    .map((n) => n.extra.id);
+    .map((n) => n.extra.uuid);
   const rowProps = (row) => {
     return {
-      className: unreadIds.includes(row.original.id) ? 'unread' : '',
+      className: unreadIds.includes(row.original.uuid) ? 'unread' : '',
     };
   };
 
