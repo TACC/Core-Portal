@@ -151,8 +151,8 @@ class JobsView(BaseApiView):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
-        
-        data = tapis.jobs.getJobSearchList(
+
+        data = client.jobs.getJobSearchList(
             limit=limit,
             startAfter=offset,
             orderBy='lastUpdated(desc),name(asc)',
