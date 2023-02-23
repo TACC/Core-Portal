@@ -171,7 +171,7 @@ class JobsView(BaseApiView):
         portal_name = settings.PORTAL_NAMESPACE
 
         sql_queries = [
-            f"(tags IN ('{portal_name}')) AND",
+            f"(tags IN ('portalName: {portal_name}')) AND",
             f"(name like '%{query_string}%') OR",
             f"(archiveSystemDir like '%{query_string}%') OR",
             f"(appId like '%{query_string}%') OR",
