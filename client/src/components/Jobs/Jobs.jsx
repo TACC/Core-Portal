@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { AppIcon, InfiniteScrollTable, Message } from '_common';
+import { AppIcon, InfiniteScrollTable, Message, SectionMessage, Section } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
 import { getOutputPath } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
@@ -33,20 +33,28 @@ function JobsView({
     shallowEqual
   );
 
-  const noDataText = (
-    <>
-      No recent jobs. You can submit jobs from the{' '}
-      <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
-        className="wb-link"
-      >
-        Applications Page
-      </Link>
-      .
-    </>
-  );
-
   const query = queryStringParser.parse(useLocation().search);
+
+  const noDataText = query.query_string ? 
+    (
+      <div className="h-100 no-results-message">
+        <SectionMessage type="warning">
+          No results found
+        </SectionMessage>
+      </div>
+    ) : 
+    (
+      <>
+        No recent jobs. You can submit jobs from the{' '}
+        <Link
+          to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+          className="wb-link"
+        >
+          Applications Page
+        </Link>
+        .
+      </>
+    );
 
   useEffect(() => {
     dispatch({
