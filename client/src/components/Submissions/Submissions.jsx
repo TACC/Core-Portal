@@ -135,10 +135,9 @@ const Submissions = () => {
     return query;
   };
 
-  const {
-    data: { is_submitter },
-    isLoading,
-  } = useSubmitterRole();
+  const { data, isLoading } = useSubmitterRole();
+
+  const is_submitter = data?.is_submitter;
 
   const Unauthorized = () => (
     <>
