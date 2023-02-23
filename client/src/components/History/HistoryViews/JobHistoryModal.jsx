@@ -225,9 +225,14 @@ function JobHistoryModal({ uuid }) {
 
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${query.query_string ? `?query_string=${query.query_string}`: ''}`, {
-      fromJobHistoryModal: true,
-    });
+    history.push(
+      `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
+        query.query_string ? `?query_string=${query.query_string}` : ''
+      }`,
+      {
+        fromJobHistoryModal: true,
+      }
+    );
   };
 
   const headerData = {

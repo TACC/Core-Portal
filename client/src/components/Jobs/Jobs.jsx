@@ -74,14 +74,17 @@ function JobsView({
         <Link
           to={{
             pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
-            search: query.query_string ? `?query_string=${query.query_string}` : '',
-            state: { jobName: name},
+            search: query.query_string
+              ? `?query_string=${query.query_string}`
+              : '',
+            state: { jobName: name },
           }}
           className="wb-link"
         >
           View Details
         </Link>
-      )},
+      );
+    },
     []
   );
 
