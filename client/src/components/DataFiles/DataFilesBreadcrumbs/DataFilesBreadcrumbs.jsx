@@ -127,21 +127,21 @@ const DataFilesBreadcrumbs = ({
 
   const root = useSystemDisplayName({ scheme, system });
 
-  const homeDir = systems.find(s => s.name == root)?.homeDir
-  const systemHomeDirPaths = homeDir?.split('/').filter(x => !!x)
+  const homeDir = systems.find((s) => s.name == root)?.homeDir;
+  const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
 
   path
     .split('/')
     .filter((x) => !!x)
     .reduce((prev, curr, index) => {
       // don't push path if already part of the system's homeDir at the same index
-      if (systemHomeDirPaths[index] !== curr) {
+      if (!systemHomeDirPaths || systemHomeDirPaths[index] !== curr) {
         const comp = `${prev}/${curr}`;
         paths.push(homeDir + comp);
         pathComps.push(curr);
         return comp;
       } else {
-        return ''
+        return '';
       }
     }, '');
 
