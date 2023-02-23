@@ -67,17 +67,21 @@ function JobsView({
       row: {
         original: { uuid, name },
       },
-    }) => (
-      <Link
-        to={{
-          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
-          state: { jobName: name },
-        }}
-        className="wb-link"
-      >
-        View Details
-      </Link>
-    ),
+    }) => {
+      const query = queryStringParser.parse(useLocation().search);
+
+      return (
+        <Link
+          to={{
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
+            search: query.query_string ? `?query_string=${query.query_string}` : '',
+            state: { jobName: name},
+          }}
+          className="wb-link"
+        >
+          View Details
+        </Link>
+      )},
     []
   );
 

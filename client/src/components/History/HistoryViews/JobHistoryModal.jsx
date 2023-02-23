@@ -13,6 +13,7 @@ import {
   Expand,
   Message,
 } from '_common';
+import queryStringParser from 'query-string';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
 import {
@@ -220,9 +221,11 @@ function JobHistoryModal({ uuid }) {
     }
   }
 
+  const query = queryStringParser.parse(useLocation().search);
+
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
+    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${query.query_string ? `?query_string=${query.query_string}`: ''}`, {
       fromJobHistoryModal: true,
     });
   };
