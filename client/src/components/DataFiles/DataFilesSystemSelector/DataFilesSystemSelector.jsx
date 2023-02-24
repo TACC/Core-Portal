@@ -69,7 +69,7 @@ const DataFilesSystemSelector = ({
   }, []);
 
   const dropdownSystems = systemList.filter(
-    (s) => !excludedSystems.includes(s.system)
+    (s) => !excludedSystems.includes(`${s.system}${s.homeDir || ''}`)
   );
 
   return (
