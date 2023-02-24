@@ -137,7 +137,7 @@ const DataFilesBreadcrumbs = ({
       // don't push path if already part of the system's homeDir at the same index
       if (!systemHomeDirPaths || systemHomeDirPaths[index] !== curr) {
         const comp = `${prev}/${curr}`;
-        paths.push(homeDir + comp);
+        paths.push(`${homeDir}${comp}`);
         pathComps.push(curr);
         return comp;
       } else {
