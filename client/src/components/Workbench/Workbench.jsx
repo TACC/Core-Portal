@@ -115,9 +115,10 @@ function Workbench() {
                   />
                 )}
                 {showSubmissions && (
-                  <Route path={`${path}${ROUTES.SUBMISSIONS}`}>
-                    <Submissions />
-                  </Route>
+                  <Route
+                    path={`${path}${ROUTES.SUBMISSIONS}`}
+                    component={Submissions}
+                  />
                 )}
                 {!hideApps && (
                   <Route
