@@ -11,7 +11,7 @@ import styles from './Submissions.module.scss';
 import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../constants/routes';
 
-const SubmissionsUpload = () => {
+export const SubmissionsUpload = () => {
   const history = useHistory();
   const location = useLocation();
   const reloadCallback = () => {
