@@ -184,7 +184,8 @@ class JobsView(BaseApiView):
             orderBy='lastUpdated(desc),name(asc)',
             request_body={
                 "search": sql_queries
-            }
+            },
+            select="allAttributes"
         )
 
         return data
