@@ -79,7 +79,7 @@ describe('Notification Toast', () => {
     );
   });
 
-  // TODO v3: update test after file operations are implemented and we have updated test fixtures
+  // TODOv3: update test after file operations are implemented and we have updated test fixtures
   it.skip('shows toast including system information', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
