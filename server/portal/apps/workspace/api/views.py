@@ -124,7 +124,7 @@ class AppsView(BaseApiView):
         )
 
 
-# TODOV3: For retaining job data during v3 transition
+# TODOdropV2Jobs
 @method_decorator(login_required, name='dispatch')
 class HistoricJobsView(BaseApiView):
     def get(self, request, *args, **kwargs):

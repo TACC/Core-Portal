@@ -66,11 +66,11 @@ function JobHistoryContent({
   const outputLocation =
     version === 'v3'
       ? useSelector((state) => {
-          const job = state.jobs.list.find(
-            (job) => job.uuid === jobDetails.uuid
-          );
-          return job.outputLocation ? job.outputLocation : '';
-        })
+        const job = state.jobs.list.find(
+          (job) => job.uuid === jobDetails.uuid
+        );
+        return job.outputLocation ? job.outputLocation : '';
+      })
       : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -232,6 +232,7 @@ function JobHistoryModal({ uuid, version }) {
         display: job.display,
       };
     } else {
+      // TODOdropV2Jobs
       const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
       return {
         loading: false,

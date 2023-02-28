@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+// TODOdropV2Jobs
 import { jobs, jobDetail, jobsv2 } from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
@@ -27,6 +28,7 @@ import siteSearch from './siteSearch.reducers';
 
 export default combineReducers({
   jobs,
+  // TODOdropV2Jobs
   jobsv2,
   jobDetail,
   systems,

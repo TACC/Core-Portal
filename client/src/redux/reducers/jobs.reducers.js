@@ -102,7 +102,7 @@ export function jobs(state = initialState, action) {
   }
 }
 
-// TODOV3: For retaining job data during v3 transition
+// TODOdropV2Jobs
 export const initialStateV2 = {
   list: [],
   submit: { submitting: false },
@@ -111,7 +111,7 @@ export const initialStateV2 = {
   error: null,
 };
 
-// TODOV3: For retaining job data during v3 transition
+// TODOdropV2Jobs
 export function jobsv2(state = initialStateV2, action) {
   switch (action.type) {
     case 'JOBS_V2_LIST_INIT':

@@ -134,7 +134,7 @@ export function getJobDisplayInformation(job, app) {
   return display;
 }
 
-// TODOV3: For retaining job data during v3 transition
+// TODOdropV2Jobs
 export function getJobDisplayInformationV2(job) {
   const display = {
     applicationName: job.appId,

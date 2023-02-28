@@ -21,7 +21,7 @@ class JobSubmission(models.Model):
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)
 
-    # TODOV3: For retaining job data during v3 transition
+    # TODOdropV2Jobs
     data = JSONField(null=True)
 
 

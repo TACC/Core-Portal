@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import Jobs from './Jobs';
 import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';
+// TODOdropV2Jobs
 import { default as jobsV2List } from './JobsV2.fixture';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -33,6 +34,7 @@ describe('Jobs View', () => {
       jobs: {
         ...initialMockState,
       },
+      // TODOdropV2Jobs
       jobsv2: {
         list: jobsV2List,
         loading: false,
@@ -59,6 +61,7 @@ describe('Jobs View', () => {
       jobs: {
         ...initialMockState,
       },
+      // TODOdropV2Jobs
       jobsv2: {
         list: jobsV2List,
         loading: false,
@@ -74,6 +77,8 @@ describe('Jobs View', () => {
     });
 
     const history = createMemoryHistory();
+
+    // TODOdropV2Jobs
     history.push('/jobsv2');
     const { getAllByText } = renderJobsComponent(store, history);
     expect(getAllByText('Compressing Files')).toBeDefined();
@@ -86,6 +91,7 @@ describe('Jobs View', () => {
         ...initialMockState,
         error: 'error',
       },
+      // TODOdropV2Jobs
       jobsv2: {
         list: jobsV2List,
         loading: false,

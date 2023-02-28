@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { default as jobsList } from '../../../Jobs/Jobs.fixture';
+// TODOdropV2Jobs
 import { default as jobsV2List } from '../../../Jobs/JobsV2.fixture';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
@@ -34,6 +35,7 @@ describe('Job History Modal', () => {
             jobs: {
               list: jobsList,
             },
+            // TODOdropV2Jobs
             jobsv2: {
               list: jobsV2List,
             },
@@ -69,6 +71,7 @@ describe('Job History Modal', () => {
             jobs: {
               list: jobsList,
             },
+            // TODOdropV2Jobs
             jobsv2: {
               list: jobsV2List,
             },

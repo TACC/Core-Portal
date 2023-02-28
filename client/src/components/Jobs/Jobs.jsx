@@ -11,6 +11,7 @@ import * as ROUTES from '../../constants/routes';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const location = useLocation();
+  // TODOdropV2Jobs
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const { isLoading, error, jobs } = useSelector((state) => {
@@ -56,6 +57,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         original: { id, uuid, name },
       },
     }) => {
+      // TODOdropV2Jobs
       return uuid ? (
         <Link
           to={{
@@ -184,7 +186,7 @@ JobsView.propTypes = {
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
-  rowProps: (row) => {},
+  rowProps: (row) => { },
 };
 
 export default JobsView;

@@ -13,7 +13,7 @@ export async function fetchJobs(offset, limit) {
   return result.response;
 }
 
-// TODOV3: For retaining job data during v3 transition
+// TODOdropV2Jobs
 export async function fetchV2Jobs(offset, limit) {
   const result = await fetchUtil({
     url: '/api/workspace/historic/',
@@ -26,6 +26,7 @@ export const selectorNotificationsListNotifs = (state) =>
   state.notifications.list.notifs;
 
 export const selectorJobsReachedEnd = (state) => state.jobs.reachedEnd;
+// TODOdropV2Jobs
 export const selectorJobsV2ReachedEnd = (state) => state.jobsv2.reachedEnd;
 
 export function* getJobs(action) {
@@ -60,7 +61,7 @@ export function* getJobs(action) {
   }
 }
 
-// TODOV3: For retaining job data during v3 transition
+// TODOdropV2Jobs
 export function* getV2Jobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_V2_LIST_INIT' });
