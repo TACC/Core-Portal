@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from portal.utils.fields import JSONField
 
-
+# TODOdropV2Jobs
 class JobSubmission(models.Model):
     """Job Submission
 

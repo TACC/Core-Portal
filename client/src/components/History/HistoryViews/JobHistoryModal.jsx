@@ -60,9 +60,11 @@ function JobHistoryContent({
   jobDisplay,
   jobName,
   toggle,
+  // TODOdropV2Jobs
   version,
 }) {
   const dispatch = useDispatch();
+  // TODOdropV2Jobs
   const outputLocation =
     version === 'v3'
       ? useSelector((state) => {
@@ -102,7 +104,8 @@ function JobHistoryContent({
           $
           {version === 'v3'
             ? jobDetails.lastMessage
-            : jobDetails.lastStatusMessage}
+            : // TODOdropV2Jobs
+            jobDetails.lastStatusMessage}
         </pre>
       }
     />
@@ -129,6 +132,7 @@ function JobHistoryContent({
     configDataObj.Queue = jobDisplay.queue;
   }
 
+  // TODOdropV2Jobs
   if (version === 'v3') {
     configDataObj['Max Minutes'] = jobDetails.maxMinutes;
   } else {
@@ -139,6 +143,7 @@ function JobHistoryContent({
     configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
   }
 
+  // TODOdropV2Jobs
   if ('processorsPerNode' in jobDisplay && version === 'v2') {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
@@ -150,6 +155,7 @@ function JobHistoryContent({
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
+  // TODOdropV2Jobs
   if (jobDetails.status !== 'FINISHED') {
     if (version === 'v3') {
       configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
@@ -188,16 +194,19 @@ function JobHistoryContent({
             ),
           }}
         />
-        {isTerminalState && version === 'v3' && (
-          <Button
-            type="primary"
-            attr="submit"
-            className={styles['submit-button']}
-            onClick={resubmitJob}
-          >
-            Resubmit Job
-          </Button>
-        )}
+        {
+          // TODOdropV2Jobs
+          isTerminalState && version === 'v3' && (
+            <Button
+              type="primary"
+              attr="submit"
+              className={styles['submit-button']}
+              onClick={resubmitJob}
+            >
+              Resubmit Job
+            </Button>
+          )
+        }
       </div>
       <DescriptionList
         className={`${styles['right-panel']} ${styles['panel-content']}`}
@@ -214,6 +223,7 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
+  // TODOdropV2Jobs
   version: PropTypes.string.isRequired,
 };
 JobHistoryContent.defaultProps = {
@@ -259,6 +269,7 @@ function JobHistoryModal({ uuid, version }) {
   };
 
   const headerData = {
+    // TODOdropV2Jobs
     ...(version === 'v3' ? { 'Job UUID': uuid } : { 'Job ID': uuid }),
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
@@ -305,6 +316,7 @@ function JobHistoryModal({ uuid, version }) {
 
 JobHistoryModal.propTypes = {
   uuid: PropTypes.string.isRequired,
+  // TODOdropV2Jobs
   version: PropTypes.string.isRequired,
 };
 

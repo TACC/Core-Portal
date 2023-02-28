@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
+// TODOdropV2Jobs
 import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
@@ -17,7 +18,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const { isLoading, error, jobs } = useSelector((state) => {
     return version === 'v3'
       ? { ...state.jobs, jobs: state.jobs.list }
-      : { ...state.jobsv2, jobs: state.jobsv2.list };
+      : // TODOdropV2Jobs
+      { ...state.jobsv2, jobs: state.jobsv2.list };
   });
 
   const hideDataFiles = useSelector(
@@ -44,6 +46,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         params: { offset: jobs.length },
       });
     } else {
+      // TODOdropV2Jobs
       dispatch({
         type: 'GET_V2_JOBS',
         params: { offset: jobs.length },
@@ -122,6 +125,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
+          // TODOdropV2Jobs
           jobUuid={version === 'v3' ? el.row.original.uuid : el.row.original.id}
         />
       ),
@@ -136,12 +140,14 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
+      // TODOdropV2Jobs
       accessor: version === 'v3' ? 'outputLocation' : '_links.archiveData.href',
       Cell: (el) => {
         const outputLocation =
           version === 'v3'
             ? el.row.original.outputLocation
-            : el.row.original.outputLocation || getOutputPathFromHref(el.value);
+            : // TODOdropV2Jobs
+            el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputLocation && !hideDataFiles ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}

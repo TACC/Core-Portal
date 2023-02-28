@@ -18,8 +18,10 @@ import {
   watchJobDetails,
   submitJob,
   getJobs,
+  // TODOdropV2Jobs
   getV2Jobs,
   fetchJobs,
+  // TODOdropV2Jobs
   fetchV2Jobs,
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
@@ -104,6 +106,7 @@ test('Effect Creators should dispatch sagas', () => {
     .next()
     .takeLatest('GET_JOBS', getJobs)
     .next()
+    // TODOdropV2Jobs
     .takeLatest('GET_V2_JOBS', getV2Jobs)
     .next()
     .takeLeading('SUBMIT_JOB', submitJob)

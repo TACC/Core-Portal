@@ -12,11 +12,11 @@ export function isOutputState(status) {
 }
 
 export function getOutputPath(job) {
-  return `${job.archiveSystemId}${
-    job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
+  return `${job.archiveSystemId}${job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
+    }${job.archiveSystemDir}`;
 }
 
+// TODOdropV2Jobs
 export function getOutputPathFromHref(href) {
   const path = href.split('/').slice(7).filter(Boolean).join('/');
   if (path === 'listings') {

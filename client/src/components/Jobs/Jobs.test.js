@@ -56,6 +56,7 @@ describe('Jobs View', () => {
     expect(getByText('05/01/2020 09:44')).toBeDefined();
   });
 
+  // TODOdropV2Jobs
   it('renders jobs v2', () => {
     const store = mockStore({
       jobs: {
