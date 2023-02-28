@@ -49,6 +49,7 @@ const DataFilesMoveModal = React.memo(() => {
       api: 'tapis',
       scheme: 'private',
       system: systems[0].system,
+      path: `${systems[0].homeDir || ''}`,
     });
   };
 
