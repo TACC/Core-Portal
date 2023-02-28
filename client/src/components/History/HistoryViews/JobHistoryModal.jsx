@@ -263,9 +263,16 @@ function JobHistoryModal({ uuid, version }) {
 
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
-      fromJobHistoryModal: true,
-    });
+    // TODOdropV2Jobs
+    if (version === 'v3') {
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
+        fromJobHistoryModal: true,
+      });
+    } else {
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}`, {
+        fromJobHistoryModal: true,
+      });
+    }
   };
 
   const headerData = {
