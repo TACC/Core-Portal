@@ -51,14 +51,12 @@ describe('AppFormUtils', () => {
     expect(
       getNodeCountValidation(normalQueue, parallelFronteraApp).isValidSync(3)
     ).toEqual(true);
-    /* TODOv3 Add small queue to fixture https://jira.tacc.utexas.edu/browse/TV3-98
     expect(
       getNodeCountValidation(smallQueue, parallelFronteraApp).isValidSync(1)
     ).toEqual(true);
     expect(
       getNodeCountValidation(smallQueue, parallelFronteraApp).isValidSync(3)
     ).toEqual(false);
-     */
   });
 
   it('handles node count validation on non-Frontera HPCs', () => {
@@ -73,13 +71,9 @@ describe('AppFormUtils', () => {
   });
 
   it('handles queue validation on Frontera HPCs for SERIAL apps', () => {
-    /* TODOv3 Add small queue to fixture https://jira.tacc.utexas.edu/browse/TV3-98
     expect(
-
-
-      (smallQueue, helloWorldAppFixture).isValidSync('small')
+      getQueueValidation(smallQueue, helloWorldAppFixture).isValidSync('small')
     ).toEqual(true);
-     */
     expect(
       getQueueValidation(normalQueue, helloWorldAppFixture).isValidSync(
         'normal'
@@ -93,18 +87,15 @@ describe('AppFormUtils', () => {
   it('handles queue validation on non-Frontera HPCs for SERIAL apps', () => {
     const stampede2SerialApp = cloneDeep(helloWorldAppFixture);
     stampede2SerialApp.exec_sys.host = 'stampede2.tacc.utexas.edu';
-    /* TODOv3 Add small queue to fixture https://jira.tacc.utexas.edu/browse/TV3-98
     expect(
       getQueueValidation(smallQueue, stampede2SerialApp).isValidSync('small')
     ).toEqual(true);
-     */
     expect(
       getQueueValidation(normalQueue, stampede2SerialApp).isValidSync('normal')
     ).toEqual(true);
   });
 
-  // TODOv3 Reactivate this test when small queue is added to fixture https://jira.tacc.utexas.edu/browse/TV3-98
-  xit('updateValuesForQueue updates node count when using small queue', () => {
+  it('updateValuesForQueue updates node count when using small queue', () => {
     const appFrontera = cloneDeep(parallelFronteraApp);
     const values = cloneDeep(exampleFormValue);
     values.execSystemLogicalQueue = 'small';
