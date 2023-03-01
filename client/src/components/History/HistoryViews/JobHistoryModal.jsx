@@ -184,7 +184,7 @@ function JobHistoryContent({
         <DescriptionList
           density="compact"
           data={{
-            Output: !hideDataFiles && (
+            Output: !hideDataFiles && version == 'v3' && (
               <DataFilesLink
                 path={outputLocation}
                 disabled={!isOutputState(jobDetails.status)}

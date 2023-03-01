@@ -121,14 +121,26 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: (el) => (
-        <JobsStatus
-          status={el.value}
-          fancy={showFancyStatus}
-          // TODOdropV2Jobs
-          jobUuid={version === 'v3' ? el.row.original.uuid : el.row.original.id}
-        />
-      ),
+      Cell: (el) => {
+        // TODOdropV2Jobs
+        if (version === 'v3') {
+          return (
+            <JobsStatus
+              status={el.value}
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.uuid}
+            />
+          );
+        } else {
+          return (
+            <JobsStatus
+              status={'Archived'}
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.id}
+            />
+          );
+        }
+      },
       id: 'jobStatusCol',
     },
     {
@@ -143,19 +155,20 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       // TODOdropV2Jobs
       accessor: version === 'v3' ? 'outputLocation' : '_links.archiveData.href',
       Cell: (el) => {
-        const outputLocation =
-          version === 'v3'
-            ? el.row.original.outputLocation
-            : // TODOdropV2Jobs
-            el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputLocation && !hideDataFiles ? (
-          <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
-            className="wb-link job__path"
-          >
-            {outputLocation}
-          </Link>
-        ) : null;
+        // TODOdropV2Jobs
+        if (version === 'v3') {
+          const outputLocation = el.row.original.outputLocation;
+          return outputLocation && !hideDataFiles ? (
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
+              className="wb-link job__path"
+            >
+              {outputLocation}
+            </Link>
+          ) : null;
+        } else {
+          return null;
+        }
       },
     },
     {
