@@ -15,10 +15,7 @@ import {
   appTrayExpectedFixture,
 } from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
-import {
-  namdAppFixture,
-  namdAppMissingKeysFixture,
-} from './fixtures/AppForm.app.fixture';
+import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
@@ -58,13 +55,16 @@ function renderAppSchemaFormComponent(store, app) {
   );
 }
 
-describe.skip('AppSchemaForm', () => {
+describe('AppSchemaForm', () => {
   it('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState,
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
@@ -75,13 +75,10 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'login1.frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'login1.frontera.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -94,13 +91,10 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'invalid_system_frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'invalid_system.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -117,7 +111,7 @@ describe.skip('AppSchemaForm', () => {
       },
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
     });
     await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
@@ -128,9 +122,8 @@ describe.skip('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppMissingKeysFixture,
-    });
+    const missingKeysApp = { ...helloWorldAppFixture, systemNeedsKeys: true };
+    const { getByText } = renderAppSchemaFormComponent(store, missingKeysApp);
     await waitFor(() => {
       expect(
         getByText(
@@ -145,13 +138,16 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
       jobs: jobsSubmissionSuccessFixture,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
   });
 
-  it('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
+  xit('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -163,6 +159,9 @@ describe.skip('AppSchemaForm', () => {
         defaultNodeCount: 1,
         defaultQueue: 'normal',
       },
+      exec_sys: {...helloWorldAppFixture.exec_sys,
+        batchDefaultLogicalQueue: 'normal'
+      }
     };
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
@@ -175,18 +174,20 @@ describe.skip('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
+  xit('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
     const store = mockStore({
       ...initialMockState,
     });
 
+
     const appFixture = {
-      ...namdAppFixture,
-      definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 3,
-        defaultQueue: 'small',
+      ...helloWorldAppFixture,
+      definition: {...helloWorldAppFixture.definition,
+        jobAttributes: {...helloWorldAppFixture.definition.jobAttributes, nodeCount: 3}
       },
+      exec_sys: {...helloWorldAppFixture.exec_sys,
+        batchDefaultLogicalQueue: 'small'
+      }
     };
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
@@ -200,7 +201,7 @@ describe.skip('AppSchemaForm', () => {
     });
   });
 
-  it('displays an error if no storage systems are enabled', async () => {
+  xit('displays an error if no storage systems are enabled', async () => {
     const store = mockStore({
       ...initialMockState,
       systems: {
@@ -222,7 +223,7 @@ describe.skip('AppSchemaForm', () => {
     });
 
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
     });
 
     await waitFor(() => {

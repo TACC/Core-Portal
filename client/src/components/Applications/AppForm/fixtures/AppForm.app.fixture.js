@@ -1,7 +1,8 @@
 export const helloWorldAppFixture = {
   definition: {
     sharedAppCtx: true,
-    tenant: 'a2cps',
+    isPublic: true,
+    tenant: 'portals',
     id: 'hello-world',
     version: '0.0.1',
     description:
@@ -21,12 +22,13 @@ export const helloWorldAppFixture = {
       dynamicExecSystem: false,
       execSystemConstraints: null,
       execSystemId: 'frontera',
-      execSystemExecDir: '${JobWorkingDir}/jobs/${JobUUID}',
-      execSystemInputDir: '${JobWorkingDir}/jobs/${JobUUID}',
-      execSystemOutputDir: '${JobWorkingDir}/jobs/${JobUUID}/output',
+      execSystemExecDir: '${JobWorkingDir}',
+      execSystemInputDir: '${JobWorkingDir}',
+      execSystemOutputDir: '${JobWorkingDir}/output',
       execSystemLogicalQueue: 'development',
-      archiveSystemId: 'cloud.corral.community',
-      archiveSystemDir: 'HOST_EVAL($WORK)/archive/${JobUUID}',
+      archiveSystemId: 'cloud.data.community',
+      archiveSystemDir:
+        'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
       archiveOnAppError: true,
       isMpi: false,
       mpiCmd: null,
@@ -39,7 +41,6 @@ export const helloWorldAppFixture = {
             description: 'Choose a greeting to give to your target',
             inputMode: 'REQUIRED',
             notes: {
-              visible: true,
               enum_values: [
                 {
                   hello: 'Hello',
@@ -60,13 +61,30 @@ export const helloWorldAppFixture = {
             inputMode: 'REQUIRED',
             notes: {},
           },
+          {
+            arg: '30',
+            name: 'Sleep Time',
+            description: 'How long to sleep before app execution',
+            inputMode: 'REQUIRED',
+            notes: {
+              fieldType: 'number',
+            },
+          },
         ],
         containerArgs: [],
         schedulerOptions: [
           {
             arg: '--tapis-profile tacc',
-            name: 'tacc Scheduler Profile',
+            name: 'TACC Scheduler Profile',
             description: 'Scheduler profile for HPC clusters at TACC',
+            inputMode: 'FIXED',
+            notes: {},
+          },
+          {
+            arg: '--job-name ${JobName}',
+            name: 'Slurm job name',
+            description:
+              'Set the slurm job name to be identical to the Tapis job name.',
             inputMode: 'FIXED',
             notes: {},
           },
@@ -100,14 +118,18 @@ export const helloWorldAppFixture = {
     tags: [],
     notes: {
       label: 'Hello World (Sleep 3m)',
+      helpUrl: 'https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/',
+      hideNodeCountAndCoresPerNode: true,
     },
-    uuid: '408dcb15-8343-4b11-acf5-a3bd1cb07957',
+    uuid: 'de2bce33-8dbc-479e-b8a2-6a9d27d583d1',
     deleted: false,
-    created: '2022-09-22T22:18:45.638022Z',
-    updated: '2022-11-10T20:54:23.173360Z',
+    created: '2022-12-12T23:40:16.158241Z',
+    updated: '2023-02-14T21:45:08.818354Z',
   },
   exec_sys: {
-    tenant: 'a2cps',
+    isPublic: true,
+    isDynamicEffectiveUser: true,
+    tenant: 'portals',
     id: 'frontera',
     description: 'System for running jobs on the Frontera HPC system.',
     systemType: 'LINUX',
@@ -129,6 +151,7 @@ export const helloWorldAppFixture = {
     isDtn: false,
     canExec: true,
     canRunBatch: true,
+    enableCmdPrefix: false,
     mpiCmd: null,
     jobRuntimes: [
       {
@@ -203,12 +226,12 @@ export const helloWorldAppFixture = {
     batchSchedulerProfile: 'tacc',
     jobCapabilities: [],
     tags: [],
-    notes: { hideNodeCountAndCoresPerNode: true },
+    notes: {},
     importRefId: null,
-    uuid: '9452b7a6-c341-4da6-b559-74acc67a2a6c',
+    uuid: 'ca524f9e-6574-4a40-a075-0429c807d6c8',
     deleted: false,
-    created: '2022-08-23T22:32:16.161269Z',
-    updated: '2022-09-26T19:12:21.863620Z',
+    created: '2022-12-06T22:52:06.300829Z',
+    updated: '2022-12-06T22:52:06.300829Z',
   },
   license: {
     type: null,
