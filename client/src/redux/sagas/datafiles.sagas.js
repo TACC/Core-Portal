@@ -286,7 +286,7 @@ export async function moveFileUtil(
   destSystem,
   destPath
 ) {
-  const url = `/api/datafiles/${api}/move/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -465,7 +465,7 @@ export function* copyFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`,
+        } copied to ${truncateMiddle(`${dest.path}`, 20) || '/'}`,
       },
     });
   }

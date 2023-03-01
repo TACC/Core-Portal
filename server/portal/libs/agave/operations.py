@@ -253,7 +253,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
 
     try:
         # list the directory and check if file_name exists
-        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
     except HTTPError as err:
         if err.response.status_code != 404:
@@ -262,25 +262,24 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     full_dest_path = os.path.join(dest_path.strip('/'), file_name)
 
     if src_system == dest_system:
-        body = {'action': 'move',
-                'path': full_dest_path}
-        move_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
+        move_result = client.files.moveCopy(systemId=src_system,
+                                          path=urllib.parse.quote(
                                               src_path),
-                                          body=body)
+                                          operation="MOVE",
+                                          newPath=full_dest_path)
 
-    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={'systemId': src_system,
-                                          'filePath': os.path.dirname(src_path),
-                                          'recurse': False},
-                                  routing_key='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
-                                      'recurse': False}, routing_key='indexing')
-    if move_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                          'filePath': full_dest_path, 'recurse': True},
-                                  routing_key='indexing')
+    # if os.path.dirname(src_path) != dest_path or src_path != dest_path:
+    #     agave_indexer.apply_async(kwargs={'systemId': src_system,
+    #                                       'filePath': os.path.dirname(src_path),
+    #                                       'recurse': False},
+    #                               routing_key='indexing')
+    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
+    #                                   'filePath': os.path.dirname(full_dest_path),
+    #                                   'recurse': False}, routing_key='indexing')
+    # if move_result['nativeFormat'] == 'dir':
+    #     agave_indexer.apply_async(kwargs={'systemId': dest_system,
+    #                                       'filePath': full_dest_path, 'recurse': True},
+    #                               routing_key='indexing')
     return move_result
 
 
@@ -312,7 +311,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
 
     try:
         # list the directory and check if file_name exists
-        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
     except HTTPError as err:
         if err.response.status_code != 404:
@@ -320,32 +319,40 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
 
     full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
-        body = {'action': 'copy',
-                'path': full_dest_path}
-        copy_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
+        copy_result = client.files.moveCopy(systemId=src_system,
+                                          path=urllib.parse.quote(
                                               src_path),
-                                          body=body)
+                                          operation="COPY",
+                                          newPath=full_dest_path)
     else:
-        src_url = 'agave://{}/{}'.format(
+        src_url = 'tapis://{}/{}'.format(
             src_system,
             urllib.parse.quote(src_path)
         )
-        copy_result = client.files.importData(
-            systemId=dest_system,
-            filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
-            urlToIngest=src_url
+
+        dest_url = 'tapis://{}/{}'.format(
+            dest_system,
+            full_dest_path
         )
 
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
-                                      'recurse': False},
-                              routing_key='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': full_dest_path,
-                                      'recurse': True},
-                              routing_key='indexing')
+        copy_response = client.files.createTransferTask(elements=[{
+            'sourceURI': src_url,
+            'destinationURI': dest_url
+        }])
+
+        copy_result = {
+            'uuid': copy_response.uuid,
+            'status': copy_response.status,
+        }
+
+    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
+    #                                   'filePath': os.path.dirname(full_dest_path),
+    #                                   'recurse': False},
+    #                           routing_key='indexing')
+    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
+    #                                   'filePath': full_dest_path,
+    #                                   'recurse': True},
+    #                           routing_key='indexing')
 
     return copy_result
 
