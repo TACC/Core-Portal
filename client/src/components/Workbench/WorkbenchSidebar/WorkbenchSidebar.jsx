@@ -18,9 +18,6 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
-  const showSubmissions = useSelector(
-    (state) => state.workbench.config.showSubmissions
-  );
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
   );
