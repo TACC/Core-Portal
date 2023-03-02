@@ -74,7 +74,9 @@ describe('AppFormUtils', () => {
       getQueueValidation(smallQueue, serialFronteraApp).isValidSync('small')
     ).toEqual(true);
     expect(
-      getQueueValidation(smallQueue, serialFronteraApp).isValidSync('development')
+      getQueueValidation(smallQueue, serialFronteraApp).isValidSync(
+        'development'
+      )
     ).toEqual(true);
     expect(
       getQueueValidation(normalQueue, serialFronteraApp).isValidSync('normal')

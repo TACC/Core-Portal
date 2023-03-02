@@ -266,7 +266,6 @@ describe('AppSchemaForm', () => {
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
 
-
     await waitFor(() => {
       expect(
         getByText(/The normal queue does not support serial apps/)
