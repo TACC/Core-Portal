@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 function useSystemDisplayName({ scheme, system }) {
   const systemList = useSelector(
-    (state) => state.systems.storage.configuration
+    (state) => state.systems?.storage?.configuration ?? []
   );
   const projectsList = useSelector(
     (state) => state?.projects?.listing?.projects ?? []
