@@ -131,7 +131,8 @@ def request_jobs_util(rf, authenticated_user, query_params={}):
     view = JobsView()
     request = rf.get("/api/workspace/jobs/", query_params)
     request.user = authenticated_user
-    response = view.get(request)
+    operation = 'listing'
+    response = view.get(request, operation)
     return json.loads(response.content)["response"]
 
 
