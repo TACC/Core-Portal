@@ -61,10 +61,9 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
 
-    const { getByText } = renderAppSchemaFormComponent(
-      store,
-      helloWorldAppFixture
-    );
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+    });
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
@@ -110,9 +109,10 @@ describe('AppSchemaForm', () => {
         loading: false,
       },
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...helloWorldAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
     });
@@ -147,21 +147,25 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  xit('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
+  it('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
     const store = mockStore({
       ...initialMockState,
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 1,
+          execSystemLogicalQueue: 'normal',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
-      exec_sys: {...helloWorldAppFixture.exec_sys,
-        batchDefaultLogicalQueue: 'normal'
-      }
     };
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
@@ -174,20 +178,25 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  xit('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
+  it('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
     const store = mockStore({
       ...initialMockState,
     });
 
-
     const appFixture = {
       ...helloWorldAppFixture,
-      definition: {...helloWorldAppFixture.definition,
-        jobAttributes: {...helloWorldAppFixture.definition.jobAttributes, nodeCount: 3}
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 3,
+          execSystemLogicalQueue: 'small',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
-      exec_sys: {...helloWorldAppFixture.exec_sys,
-        batchDefaultLogicalQueue: 'small'
-      }
     };
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
@@ -201,7 +210,7 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  xit('displays an error if no storage systems are enabled', async () => {
+  it('displays an error if no storage systems are enabled', async () => {
     const store = mockStore({
       ...initialMockState,
       systems: {
@@ -222,9 +231,10 @@ describe('AppSchemaForm', () => {
       },
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...helloWorldAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
 
     await waitFor(() => {
       expect(
@@ -239,19 +249,23 @@ describe('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 1,
+          execSystemLogicalQueue: 'normal',
+        },
         notes: {
-          ...namdAppFixture.definition.notes,
+          ...helloWorldAppFixture.definition.notes,
           hideNodeCountAndCoresPerNode: true,
         },
       },
     };
 
     const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+
 
     await waitFor(() => {
       expect(
@@ -265,7 +279,7 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       license: {
         type: 'Application Name',
       },
