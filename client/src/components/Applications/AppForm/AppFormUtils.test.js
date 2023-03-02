@@ -71,12 +71,10 @@ describe('AppFormUtils', () => {
 
   it('handles queue validation on Frontera HPCs for SERIAL apps', () => {
     expect(
-      getQueueValidation(smallQueue, helloWorldAppFixture).isValidSync('small')
+      getQueueValidation(smallQueue, serialFronteraApp).isValidSync('small')
     ).toEqual(true);
     expect(
-      getQueueValidation(normalQueue, helloWorldAppFixture).isValidSync(
-        'normal'
-      )
+      getQueueValidation(smallQueue, serialFronteraApp).isValidSync('development')
     ).toEqual(true);
     expect(
       getQueueValidation(normalQueue, serialFronteraApp).isValidSync('normal')
