@@ -1,6 +1,7 @@
 const allocationsFixture = {
   hosts: {
     'ls5.tacc.utexas.edu': ['TACC-ACI'],
+    'ls6.tacc.utexas.edu': ['TACC-ACI'],
     'wrangler.tacc.utexas.edu': ['TACC-ACI'],
     'data.tacc.utexas.edu': ['TACC-ACI'],
     'ranch.tacc.utexas.edu': ['TACC-ACI'],
