@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from tapipy.errors import BaseTapyException, InternalServerError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
@@ -121,27 +121,17 @@ class AppsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, operation=None):
+
+        allowed_actions = ['listing', 'search', 'select']
+
         tapis = request.user.tapis_oauth.client
-        job_uuid = request.GET.get('job_uuid')
 
-        # get specific job info
-        if job_uuid:
-            data = tapis.jobs.getJob(jobUuid=job_uuid)
+        if operation not in allowed_actions:
+            raise PermissionDenied
 
-        # list jobs
-        else:
-            limit = int(request.GET.get('limit', 10))
-            offset = int(request.GET.get('offset', 0))
-            portal_name = settings.PORTAL_NAMESPACE
-
-            data = tapis.jobs.getJobSearchList(
-                limit=limit,
-                startAfter=offset,
-                orderBy='lastUpdated(desc),name(asc)',
-                _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
-                select='allAttributes'
-            )
+        op = getattr(self, operation)
+        data = op(tapis, request)
 
         return JsonResponse(
             {
@@ -150,6 +140,55 @@ class JobsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
+
+    def select(self, client, request):
+        job_uuid = request.GET.get('job_uuid')
+        data = client.jobs.getJob(jobUuid=job_uuid)
+
+        return data
+
+    def listing(self, client, request):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        portal_name = settings.PORTAL_NAMESPACE
+
+        data = client.jobs.getJobSearchList(
+            limit=limit,
+            startAfter=offset,
+            orderBy='lastUpdated(desc),name(asc)',
+            _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
+            select='allAttributes'
+        )
+
+        return data
+
+    def search(self, client, request):
+
+        query_string = request.GET.get('query_string')
+
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        portal_name = settings.PORTAL_NAMESPACE
+
+        sql_queries = [
+            f"(tags IN ('portalName: {portal_name}')) AND",
+            f"(name like '%{query_string}%') OR",
+            f"(archiveSystemDir like '%{query_string}%') OR",
+            f"(appId like '%{query_string}%') OR",
+            f"(archiveSystemId like '%{query_string}%')",
+        ]
+
+        data = client.jobs.getJobSearchListByPostSqlStr(
+            limit=limit,
+            startAfter=offset,
+            orderBy='lastUpdated(desc),name(asc)',
+            request_body={
+                "search": sql_queries
+            },
+            select="allAttributes"
+        )
+
+        return data
 
     def delete(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
