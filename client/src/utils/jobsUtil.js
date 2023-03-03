@@ -44,18 +44,6 @@ export function getExecSysOutputPath(job) {
   }${job.execSystemOutputDir}`;
 }
 
-export function getOutputPath(job) {
-  if (!job.remoteOutcome || !isOutputState(job.status)) {
-    return '';
-  }
-
-  if (job.remoteOutcome === 'FAILED_SKIP_ARCHIVE') {
-    return getExecSysOutputPath(job);
-  }
-
-  return getArchivePath(job);
-}
-
 export function getAllocatonFromDirective(directive) {
   /* Return allocation
 
