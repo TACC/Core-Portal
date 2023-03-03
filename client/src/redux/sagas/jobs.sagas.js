@@ -5,10 +5,11 @@ import { fetchAppDefinitionUtil } from './apps.sagas';
 
 export const LIMIT = 50;
 
-export async function fetchJobs(offset, limit) {
+export async function fetchJobs(offset, limit, queryString) {
+  const operation = queryString ? 'search' : 'listing';
   const result = await fetchUtil({
-    url: '/api/workspace/jobs/',
-    params: { offset, limit },
+    url: `/api/workspace/jobs/${operation}`,
+    params: { offset, limit, query_string: queryString },
   });
   return result.response;
 }
@@ -34,7 +35,8 @@ export function* getJobs(action) {
     const jobs = yield call(
       fetchJobs,
       action.params.offset,
-      action.params.limit || LIMIT
+      action.params.limit || LIMIT,
+      action.params.queryString || ''
     );
     yield put({
       type: 'JOBS_LIST',
@@ -100,7 +102,7 @@ export function* submitJob(action) {
 
 export async function fetchJobDetailsUtil(jobUuid) {
   const result = await fetchUtil({
-    url: '/api/workspace/jobs/',
+    url: '/api/workspace/jobs/select',
     params: { job_uuid: jobUuid },
   });
   return result.response;
