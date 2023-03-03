@@ -90,6 +90,7 @@ class TestAgaveSerializers(TestCase):
             _afl.system
         )
 
+    @skip(reason="TODOv3: do away with StorageSystem class")
     def test_storage_sys_serializer(self):
         """Test :class:`BaseAgaveSystemSerializer`"""
         sys = StorageSystem.from_dict(
@@ -129,6 +130,7 @@ class TestAgaveSerializers(TestCase):
             _sys.storage.home_dir
         )
 
+    @skip(reason="TODOv3: do away with ExecutionSystem class")
     def test_execution_sys_serializer(self):
         """Test :class:`BaseAgaveSystemSerializer`"""
         sys = ExecutionSystem.from_dict(

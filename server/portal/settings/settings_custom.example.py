@@ -65,46 +65,40 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
 }
 
 _PORTAL_KEY_SERVICE_ACTOR_ID = ""
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'stockyard': {
-        'name': 'My Data (Work)',
-        'description': 'My Data on Stockyard for {username}',
-        'site': 'cep',
-        'systemId': 'cloud.corral.work.{username}',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 2222,
-        'icon': None,
-        'hidden': False,
-    },
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'cep',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-        'hidden': False,
-    },
-}
-
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
+        'name': 'My Data (Work)',
+        'system': 'cloud.data.community',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
+        'icon': None,
+        'keyservice': True,
+        'default': True
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'Community Data',
-        'system': 'cep.storage.community',
+        'system': 'cloud.data.community',
         'scheme': 'community',
         'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/community',
         'icon': None,
         'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
-        'system': 'cep.storage.public',
+        'system': 'cloud.data.community',
         'scheme': 'public',
         'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/public',
         'icon': 'publications',
         'siteSearchPriority': 0
     },

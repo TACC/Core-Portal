@@ -2,6 +2,7 @@ import {
   getAllocatonFromDirective,
   getJobDisplayInformation,
   getOutputPath,
+  getExecutionPath,
   isTerminalState,
   isOutputState,
 } from './jobsUtil';
@@ -22,7 +23,7 @@ describe('jobsUtil', () => {
     expect(getAllocatonFromDirective('')).toEqual(null);
   });
 
-  it('get app display information', () => {
+  it('get job display information', () => {
     expect(
       getJobDisplayInformation(jobDetailSlurmFixture, appDetailSlurmFixture)
     ).toEqual(jobDisplaySlurmFixture);
@@ -33,7 +34,13 @@ describe('jobsUtil', () => {
 
   it('get output path from job', () => {
     expect(getOutputPath(jobDetailFixture)).toEqual(
-      'test.community/archive/1/user/system/archive/1'
+      'cloud.data.community/home/user/tapis-jobs-archive/2023-01-24Z/hello-world_2023-01-24T23:52:57-e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007'
+    );
+  });
+
+  it('get execution path from job', () => {
+    expect(getExecutionPath(jobDetailFixture)).toEqual(
+      'frontera/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007'
     );
   });
 

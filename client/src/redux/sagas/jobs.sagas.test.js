@@ -43,7 +43,7 @@ const initialJobDetail = {
 describe('getJobDetails Saga', () => {
   it("should fetch a job's detail and transform it to a displayable state", () =>
     expectSaga(getJobDetails, {
-      payload: { jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007' },
+      payload: { jobUuid: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007' },
     })
       .withReducer(jobDetailReducer)
       .provide([
@@ -52,9 +52,9 @@ describe('getJobDetails Saga', () => {
       ])
       .put({
         type: 'JOB_DETAILS_FETCH_STARTED',
-        payload: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
+        payload: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
       })
-      .call(fetchJobDetailsUtil, '793e9e90-53c3-4168-a26b-17230e2e4156-007')
+      .call(fetchJobDetailsUtil, 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007')
       .call(fetchAppDefinitionUtil, 'hello-world', '0.0.1')
       .put({
         type: 'JOB_DETAILS_FETCH_SUCCESS',
@@ -72,7 +72,7 @@ describe('getJobDetails Saga', () => {
 
       .hasFinalState({
         ...initialJobDetail,
-        jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
+        jobUuid: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
         loading: false,
         loadingError: false,
         loadingErrorMessage: '',
@@ -178,7 +178,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({
         type: 'JOBS_LIST',
         payload: {
@@ -215,7 +215,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({ type: 'JOBS_LIST_ERROR', payload: 'error' })
       .put({ type: 'JOBS_LIST_FINISH' })
       .hasFinalState({

@@ -1,46 +1,44 @@
 {
-  "owner" : "username",
-  "_links" : {
-    "owner" : {
-      "href" : "https://api.tacc.utexas.edu/profiles/v2/username"
-    },
-    "metadata" : {
-      "href" : "https://api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%224660920426037440024-242ac11a-0001-006%22%7D"
-    },
-    "credentials" : {
-      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.home.username/credentials"
-    },
-    "roles" : {
-      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.home.username/roles"
-    },
-    "self" : {
-      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
-    }
-  },
-  "available" : true,
-  "description" : "Home system for user: username",
-  "storage" : {
-    "proxy" : null,
-    "protocol" : "SFTP",
-    "mirror" : false,
-    "port" : 22,
-    "auth" : {
-      "type" : "SSHKEYS"
-    },
-    "publicAppsDir" : null,
-    "host" : "data.tacc.utexas.edu",
-    "rootDir" : "/path/to/home_dir/username",
-    "homeDir" : "/"
-  },
-  "type" : "STORAGE",
-  "uuid" : "4660920426037440024-242ac11a-0001-006",
-  "revision" : 1,
-  "site" : "portal.dev",
-  "default" : false,
-  "public" : false,
-  "globalDefault" : false,
-  "name" : "portal.home.username",
-  "id" : "portal.home.username",
-  "lastModified" : "2018-04-13T12:54:53.000-05:00",
-  "status" : "UP"
+  "isPublic": true,
+  "isDynamicEffectiveUser": true,
+  "tenant": "portals",
+  "id": "cloud.data.community",
+  "description": "Corral Community Storage System",
+  "systemType": "LINUX",
+  "owner": "wma_prtl",
+  "host": "cloud.data.tacc.utexas.edu",
+  "enabled": true,
+  "effectiveUserId": "username",
+  "defaultAuthnMethod": "PKI_KEYS",
+  "authnCredential": null,
+  "bucketName": null,
+  "rootDir": "/",
+  "port": 22,
+  "useProxy": false,
+  "proxyHost": null,
+  "proxyPort": -1,
+  "dtnSystemId": null,
+  "dtnMountPoint": null,
+  "dtnMountSourcePath": null,
+  "isDtn": false,
+  "canExec": false,
+  "canRunBatch": false,
+  "mpiCmd": null,
+  "jobRuntimes": null,
+  "jobWorkingDir": null,
+  "jobEnvVariables": [],
+  "jobMaxJobs": 2147483647,
+  "jobMaxJobsPerUser": 2147483647,
+  "batchScheduler": null,
+  "batchLogicalQueues": [],
+  "batchDefaultLogicalQueue": null,
+  "batchSchedulerProfile": null,
+  "jobCapabilities": [],
+  "tags": [],
+  "notes": {},
+  "importRefId": null,
+  "uuid": "fab227d7-49db-4a64-b893-47d5c3dd72c7",
+  "deleted": false,
+  "created": "2022-12-12T23:38:32.058440Z",
+  "updated": "2022-12-12T23:38:32.058440Z"
 }

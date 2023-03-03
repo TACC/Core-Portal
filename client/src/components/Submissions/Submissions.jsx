@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '_common';
-import { FileInputDropZone, Section } from '_common';
+import { FileInputDropZone, Section, LoadingSpinner } from '_common';
 import { useSystems } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from '../DataFiles/DataFilesModals/DataFilesUploadModalListing/DataFilesUploadModalListingTable.jsx';
 import styles from './Submissions.module.scss';
+import { fetchUtil } from 'utils/fetchUtil';
+import * as ROUTES from '../../constants/routes';
 
-const SubmissionsUpload = () => {
+export const SubmissionsUpload = () => {
   const history = useHistory();
   const location = useLocation();
   const reloadCallback = () => {
@@ -120,6 +123,42 @@ const SubmissionsUpload = () => {
 };
 
 const Submissions = () => {
+  const getSubmitterRole = async () => {
+    const response = await fetchUtil({
+      url: '/submissions/check-submitter-role/',
+    });
+    return response;
+  };
+
+  const useSubmitterRole = () => {
+    const query = useQuery('submitter-role', getSubmitterRole);
+    return query;
+  };
+
+  const { data, isLoading } = useSubmitterRole();
+
+  const is_submitter = data?.is_submitter;
+
+  const Unauthorized = () => (
+    <>
+      <h2>
+        You are not currently authorized for uploads. Please contact the UT
+        Health office or{' '}
+        <Link
+          className="wb-link"
+          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+        >
+          submit a ticket.
+        </Link>
+      </h2>
+    </>
+  );
+
+  let contentClassName = '';
+  if (!is_submitter) {
+    contentClassName = styles['center'];
+  }
+
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -127,7 +166,16 @@ const Submissions = () => {
       header="Data Submission"
       contentLayoutName="oneColumn"
       contentShouldScroll
-      content={<SubmissionsUpload />}
+      contentClassName={contentClassName}
+      content={
+        isLoading ? (
+          <LoadingSpinner />
+        ) : is_submitter ? (
+          <SubmissionsUpload />
+        ) : (
+          <Unauthorized />
+        )
+      }
     />
   );
 };

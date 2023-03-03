@@ -119,7 +119,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   systems.forEach((sys) => {
     sidebarItems.push({
       to: `${match.path}/${sys.api}/${sys.scheme}/${
-        sys.system ? `${sys.system}/` : ''
+        sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
       }`,
       label: sys.name,
       iconName: sys.icon || 'my-data',

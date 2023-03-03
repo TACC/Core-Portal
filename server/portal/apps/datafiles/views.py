@@ -1,8 +1,6 @@
 import json
 import logging
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.users.utils import get_allocations
-from portal.apps.auth.tasks import get_user_storage_systems
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
@@ -15,10 +13,12 @@ from portal.apps.datafiles.handlers.googledrive_handlers import \
     (googledrive_get_handler,
      googledrive_put_handler)
 from portal.libs.transfer.operations import transfer, transfer_folder
+from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.exceptions.api import ApiException
 from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from portal.apps.users.utils import get_user_data
 from .utils import notify, NOTIFY_ACTIONS
 
 logger = logging.getLogger(__name__)
@@ -30,31 +30,30 @@ class SystemListingView(BaseApiView):
 
     def get(self, request):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-        local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        # compare available storage systems to the systems a user can access
-        response = {'system_list': []}
+        response = {}
         if request.user.is_authenticated:
-            # TODOv3: simplify this
-            if local_systems:
-                user_systems = get_user_storage_systems(request.user.username, local_systems)
-                for system_name, details in user_systems.items():
-                    response['system_list'].append(
-                        {
-                            'name': details['name'],
-                            'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
-                            'type': details.get('type', None),
-                            'scheme': 'private',
-                            'api': 'tapis',
-                            'icon': details['icon'],
-                            'hidden': details['hidden'] if 'hidden' in details else False
-                        }
-                    )
-                default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-                response['default_host'] = default_system['host']
-                response['default_system'] = default_system['systemId']
-        if portal_systems:
-            response['system_list'] += portal_systems
+
+            # Evaluate user home dir via TAS
+            username = request.user.username
+            tasdir = get_user_data(username)['homeDirectory']
+            response['system_list'] = [
+                {
+                    **system,
+                    'homeDir': system['homeDir'].format(tasdir=tasdir, username=username)
+                }
+                if 'homeDir' in system else system for system in portal_systems
+            ]
+
+            default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM
+            if default_system:
+                system_id = default_system.get('system')
+                system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=system_id, select='host')
+                response['default_host'] = system_def.host
+                response['default_system'] = system_id
+        else:
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public']
+
         return JsonResponse(response)
 
 
@@ -63,7 +62,14 @@ class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
 
     def get(self, request, systemId):
-        return JsonResponse(request.user.tapis_oauth.client.systems.get(systemId=systemId))
+        system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=systemId)
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": system_def
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 class TapisFilesView(BaseApiView):
@@ -72,8 +78,8 @@ class TapisFilesView(BaseApiView):
             client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
-            if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                    if sys['system'] == system and sys['scheme'] == 'public'):
+            if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+                    if sys['system'] == system and sys['scheme'] == 'public'), None):
                 client = service_account()
             else:
                 return JsonResponse(
