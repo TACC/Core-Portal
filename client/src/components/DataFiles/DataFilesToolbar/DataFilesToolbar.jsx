@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
@@ -54,6 +54,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const status = useSelector((state) => state.files.operationStatus.trash);
+
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
 
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
@@ -137,10 +142,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
     const filteredSelected = selectedFiles.filter(
       (f) => status[f.system + f.path] !== 'SUCCESS'
     );
+
+    const system = selectedFiles[0].system;
+
+    const selectedSystem = systems.find((s) => s.system === system && s.scheme === scheme)
+
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
         src: filteredSelected,
+        homeDir: selectedSystem?.homeDir || '',
         reloadCallback: reloadPage,
       },
     });

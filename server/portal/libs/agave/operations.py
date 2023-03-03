@@ -11,6 +11,9 @@ from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
+from tapipy.errors import BaseTapyException
+import requests as r
+
 
 logger = logging.getLogger(__name__)
 
@@ -372,7 +375,7 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
 
 def delete(client, system, path):
     return client.files.delete(systemId=system,
-                               filePath=urllib.parse.quote(path))
+                               path=urllib.parse.quote(path))
 
 
 def rename(client, system, path, new_name):
@@ -399,7 +402,7 @@ def rename(client, system, path, new_name):
                 dest_system=system, dest_path=new_path, file_name=new_name)
 
 
-def trash(client, system, path):
+def trash(client, system, path, homeDir):
     """Move a file to the .Trash folder.
 
     Params
@@ -420,16 +423,16 @@ def trash(client, system, path):
 
     # Create a .Trash path if none exists
     try:
-        client.files.list(systemId=system,
-                          filePath=settings.AGAVE_DEFAULT_TRASH_NAME)
-    except HTTPError as err:
+        client.files.listFiles(systemId=system,
+                          path="{}/{}".format(homeDir, settings.TAPIS_DEFAULT_TRASH_NAME))
+    except BaseTapyException as err:
         if err.response.status_code != 404:
             logger.error("Unexpected exception listing .trash path in {}".format(system))
             raise
-        mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     resp = move(client, system, path, system,
-                settings.AGAVE_DEFAULT_TRASH_NAME, file_name)
+                "{}/{}".format(homeDir, settings.TAPIS_DEFAULT_TRASH_NAME), file_name)
 
     return resp
 
@@ -452,22 +455,28 @@ def upload(client, system, path, uploaded_file):
     dict
     """
     try:
-        file_listing = client.files.list(systemId=system, filePath=path)
+        file_listing = client.files.listFiles(systemId=system, path=path)
         uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
-    except HTTPError as err:
+    except Exception as err:
         if err.response.status_code != 404:
             raise
 
-    # the fileName param does not seem to accept a different file name
-    resp = client.files.importData(systemId=system,
-                                   filePath=urllib.parse.quote(path),
-                                   fileToUpload=uploaded_file)
+    base_url = client.base_url
+    token = client.access_token.access_token
+    systemId = system
+    path = f'{urllib.parse.quote(path)}/{uploaded_file.name}'
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
-                                      'filePath': path,
-                                      'recurse': False},
-                              )
-    return dict(resp)
+    res = r.post(
+        url = f'{base_url}/v3/files/ops/{systemId}/{path}',
+        files = {"file": uploaded_file.file},
+        headers = {"X-Tapis-Token": token})
+    
+    # agave_indexer.apply_async(kwargs={'systemId': system,
+    #                                   'filePath': path,
+    #                                   'recurse': False},
+    #                           )
+
+    return res.content.decode()
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
