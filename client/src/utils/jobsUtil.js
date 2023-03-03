@@ -25,6 +25,36 @@ export function getOutputPathFromHref(href) {
   return path;
 }
 
+export function getArchivePath(job) {
+  return `${job.archiveSystemId}${
+    job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
+  }${job.archiveSystemDir}`;
+}
+
+export function getExecutionPath(job) {
+  return `${job.execSystemId}${
+    job.execSystemExecDir.charAt(0) === '/' ? '' : '/'
+  }${job.execSystemExecDir}`;
+}
+
+export function getExecSysOutputPath(job) {
+  return `${job.execSystemId}${
+    job.execSystemOutputDir.charAt(0) === '/' ? '' : '/'
+  }${job.execSystemOutputDir}`;
+}
+
+export function getOutputPath(job) {
+  if (!job.remoteOutcome || !isOutputState(job.status)) {
+    return '';
+  }
+
+  if (job.remoteOutcome === 'FAILED_SKIP_ARCHIVE') {
+    return getExecSysOutputPath(job);
+  }
+
+  return getArchivePath(job);
+}
+
 export function getAllocatonFromDirective(directive) {
   /* Return allocation
 

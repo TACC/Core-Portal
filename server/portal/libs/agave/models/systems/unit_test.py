@@ -12,12 +12,14 @@ from django.test import TestCase
 from django.conf import settings
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
+from unittest import skip
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
+@skip(reason="TODOv3: do away with StorageSystem class")
 class TestAgaveSystems(TestCase):
     """Test Agave File"""
 

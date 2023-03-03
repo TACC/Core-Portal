@@ -80,11 +80,6 @@ export const Routes = () => {
             pathname === `${root}${ROUTES.JOBS}` &&
             !locationState.fromJobHistoryModal
           ) {
-            dispatch({
-              type: 'GET_JOBS',
-              params: { offset: 0 },
-            });
-
             // Chain events to properly update UI based on read action
             dispatch({
               type: 'FETCH_NOTIFICATIONS',

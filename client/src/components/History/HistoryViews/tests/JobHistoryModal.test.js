@@ -56,9 +56,6 @@ describe('Job History Modal', () => {
     expect(getByText(/Target/)).toBeDefined();
     expect(getByText(/Last Status Message/)).toBeDefined();
     expect(getByText(/Max Minutes/)).toBeDefined();
-    expect(getByText(/Execution Directory/)).toBeDefined();
-    expect(getByText(/Input Directory/)).toBeDefined();
-    expect(getByText(/Output Directory/)).toBeDefined();
   });
 
   // TODOdropV2Jobs

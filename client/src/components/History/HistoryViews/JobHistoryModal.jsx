@@ -13,11 +13,16 @@ import {
   Expand,
   Message,
 } from '_common';
+import queryStringParser from 'query-string';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
-import { isOutputState } from 'utils/jobsUtil';
+import {
+  isOutputState,
+  getOutputPath,
+  isTerminalState,
+  getExecutionPath,
+} from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
-
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
@@ -67,49 +72,54 @@ function JobHistoryContent({
   // TODOdropV2Jobs
   const outputLocation =
     version === 'v3'
-      ? useSelector((state) => {
-        const job = state.jobs.list.find(
-          (job) => job.uuid === jobDetails.uuid
-        );
-        return job.outputLocation ? job.outputLocation : '';
-      })
+      ? getOutputPath(jobDetails)
       : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
-  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
-  const hasFailedStatus = jobDetails.status === 'FAILED';
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
 
+  const hasOutput = isOutputState(jobDetails.status);
+  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
+  const hasFailedStatus = jobDetails.status === 'FAILED';
+  const hasEnded = isTerminalState(jobDetails.status);
+
+  const appDataObj = {
+    'App ID': jobDetails.appId,
+    'App Version': jobDetails.appVersion,
+  };
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
-  };
-
-  const inputAndParamsDataObj = {
-    ...reduceInputParameters(jobDisplay.inputs),
-    ...reduceInputParameters(jobDisplay.parameters),
-  };
-  const configDataObj = {};
-  const outputDataObj = {
-    'Job Name': jobName,
-    'Output Location': outputLocation,
-  };
-
-  statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
-    <Expand
-      detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-      message={
-        <pre>
+    [hasFailedStatus ? 'Failure Report' : 'Last Status Message']: (
+      <Expand
+        detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
+        message={<pre>
           $
           {version === 'v3'
             ? jobDetails.lastMessage
             : // TODOdropV2Jobs
             jobDetails.lastStatusMessage}
-        </pre>
-      }
-    />
-  );
+        </pre>}
+      />
+    ),
+  };
+
+  if (jobDetails.remoteOutcome) {
+    statusDataObj['Remote Outcome'] = jobDetails.remoteOutcome;
+  }
+
+  const inputAndParamsDataObj = {
+    ...reduceInputParameters(jobDisplay.inputs),
+    ...reduceInputParameters(jobDisplay.parameters),
+  };
+  const configDataObj = {
+    'Execution System': jobDetails.execSystemId,
+  };
+  const outputDataObj = {
+    'Job Name': jobName,
+    'Output Location': outputLocation,
+  };
 
   const resubmitJob = () => {
     dispatch({
@@ -166,12 +176,8 @@ function JobHistoryContent({
     }
   }
 
-  const isTerminalState =
-    jobDetails.status === 'FINISHED' ||
-    jobDetails.status === 'FAILED' ||
-    jobDetails.status === 'STOPPED';
-
   const data = {
+    Application: <DescriptionList data={appDataObj} />,
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
     Configuration: <DescriptionList data={configDataObj} />,
@@ -183,20 +189,29 @@ function JobHistoryContent({
       <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
           density="compact"
-          data={{
-            Output: !hideDataFiles && version == 'v3' && (
-              <DataFilesLink
-                path={outputLocation}
-                disabled={!isOutputState(jobDetails.status)}
-              >
-                View in Data Files
-              </DataFilesLink>
-            ),
-          }}
+          data={
+            !hideDataFiles && {
+              Execution: (
+                <DataFilesLink
+                  path={getExecutionPath(jobDetails)}
+                  disabled={hasOutput}
+                >
+                  View in Data Files
+                </DataFilesLink>
+              ),
+              Output: version == 'v3' && (
+                <DataFilesLink
+                  path={outputLocation}
+                  disabled={!hasOutput}
+                >
+                  View in Data Files
+                </DataFilesLink>
+              ),
+            }
+          }
         />
-        {
+        {hasEnded && version === 'v3' && (
           // TODOdropV2Jobs
-          isTerminalState && version === 'v3' && (
             <Button
               type="primary"
               attr="submit"
@@ -261,15 +276,25 @@ function JobHistoryModal({ uuid, version }) {
     }
   }
 
+  const query = queryStringParser.parse(useLocation().search);
+
   const history = useHistory();
   const close = () => {
     // TODOdropV2Jobs
     if (version === 'v3') {
-      history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
-        fromJobHistoryModal: true,
-      });
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
+          query.query_string ? `?query_string=${query.query_string}` : ''
+        }`, 
+        {
+          fromJobHistoryModal: true,
+        }
+      );
     } else {
-      history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}`, {
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
+          query.query_string ? `?query_string=${query.query_string}` : ''
+        }`, {
         fromJobHistoryModal: true,
       });
     }

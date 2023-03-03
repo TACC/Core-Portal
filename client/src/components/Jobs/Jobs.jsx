@@ -1,16 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { AppIcon, InfiniteScrollTable, Message } from '_common';
-// TODOdropV2Jobs
-import { getOutputPathFromHref } from 'utils/jobsUtil';
+import {
+  AppIcon,
+  InfiniteScrollTable,
+  Message,
+  SectionMessage,
+  Section,
+} from '_common';
 import { formatDateTime } from 'utils/timeFormat';
+// TODOdropV2Jobs
+import { getOutputPath, getOutputPathFromHref } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
+import Searchbar from '_common/Searchbar';
+import queryStringParser from 'query-string';
+import { useLocation } from 'react-router-dom';
 
-function JobsView({ showDetails, showFancyStatus, rowProps }) {
+function JobsView({
+  showDetails,
+  showFancyStatus,
+  rowProps,
+  includeSearchbar,
+}) {
   const location = useLocation();
   // TODOdropV2Jobs
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
@@ -26,7 +40,21 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     (state) => state.workbench.config.hideDataFiles
   );
 
-  const noDataText = (
+  const { isJobLoading, isNotificationLoading } = useSelector(
+    (state) => ({
+      isJobLoading: state.jobs.loading,
+      isNotificationLoading: state.notifications.loading,
+    }),
+    shallowEqual
+  );
+
+  const query = queryStringParser.parse(useLocation().search);
+
+  const noDataText = query.query_string ? (
+    <Section className={'no-results-message'}>
+      <SectionMessage type="warning">No results found</SectionMessage>
+    </Section>
+  ) : (
     <>
       No recent jobs. You can submit jobs from the{' '}
       <Link
@@ -39,18 +67,25 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     </>
   );
 
+  useEffect(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: 0, queryString: query.query_string || '' },
+    });
+  }, [dispatch, query.query_string]);
+
   const infiniteScrollCallback = useCallback(() => {
     if (version === 'v3') {
       dispatch({
         type: 'GET_JOBS',
-        params: { offset: jobs.length },
-      });
+        params: { offset: jobs.length, queryString: query.query_string || '' },
+      }, [dispatch, jobs, query.query_string]);
     } else {
       // TODOdropV2Jobs
       dispatch({
         type: 'GET_V2_JOBS',
-        params: { offset: jobs.length },
-      });
+        params: { offset: jobs.length, queryString: query.query_string || '' },
+      }, [dispatch, jobs, query.query_string]);
     }
   }, [jobs]);
 
@@ -60,12 +95,17 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         original: { id, uuid, name },
       },
     }) => {
+      const query = queryStringParser.parse(useLocation().search);
+
       // TODOdropV2Jobs
       return uuid ? (
         <Link
           to={{
             pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
             state: { jobName: name },
+            search: query.query_string
+              ? `?query_string=${query.query_string}`
+              : '',
           }}
           className="wb-link"
         >
@@ -75,6 +115,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         <Link
           to={{
             pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobsv2/${id}`,
+            search: query.query_string
+              ? `?query_string=${query.query_string}`
+              : '',
             state: { jobName: name },
           }}
           className="wb-link"
@@ -157,7 +200,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Cell: (el) => {
         // TODOdropV2Jobs
         if (version === 'v3') {
-          const outputLocation = el.row.original.outputLocation;
+          // const outputLocation = el.row.original.outputLocation;
+          const outputLocation = getOutputPath(el.row.original);
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
@@ -185,15 +229,28 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const filterColumns = columns.filter((f) => f.show !== false);
 
   return (
-    <InfiniteScrollTable
-      tableColumns={filterColumns}
-      tableData={jobs}
-      onInfiniteScroll={infiniteScrollCallback}
-      isLoading={isLoading}
-      className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-      noDataText={noDataText}
-      getRowProps={rowProps}
-    />
+    <>
+      {includeSearchbar && (
+        <Searchbar
+          api="tapis"
+          resultCount={jobs.length}
+          dataType="Jobs"
+          infiniteScroll
+          disabled={isJobLoading || isNotificationLoading}
+        />
+      )}
+      <div className={includeSearchbar ? 'o-flex-item-table-wrap' : ''}>
+        <InfiniteScrollTable
+          tableColumns={filterColumns}
+          tableData={jobs}
+          onInfiniteScroll={infiniteScrollCallback}
+          isLoading={isJobLoading || isNotificationLoading}
+          className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
+          noDataText={noDataText}
+          getRowProps={rowProps}
+        />
+      </div>
+    </>
   );
 }
 
@@ -201,11 +258,13 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
+  includeSearchbar: PropTypes.bool,
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
-  rowProps: (row) => { },
+  rowProps: (row) => {},
+  includeSearchbar: true,
 };
 
 export default JobsView;

@@ -11,6 +11,7 @@ urlpatterns = [
         r'^jobs/(?P<job_uuid>[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\-[0-9a-fA-F]{3})/history/?$',
         views.JobHistoryView.as_view()
     ),
+    url(r'^jobs/(?P<operation>\w+)/?$', views.JobsView.as_view()),
     url(r'^jobs/?', views.JobsView.as_view()),
     # TODOdropV2Jobs
     url(r'^historic/?', views.HistoricJobsView.as_view()),

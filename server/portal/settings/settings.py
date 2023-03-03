@@ -94,7 +94,6 @@ INSTALLED_APPS = [
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration',
     'portal.apps.projects',
-    'portal.apps.system_creation',
     'portal.apps.public_data',
     'portal.apps.request_access',
     'portal.apps.site_search',
@@ -482,31 +481,33 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
-    'data.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
+    'cloud.corral': {
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/work2/{}',
         'home_dir': '/home/{}'
     },
-    'stampede2.tacc.utexas.edu': {
+    'stampede2': {
+        'host': 'stampede2.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
-    'ls5.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'longhorn.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'frontera.tacc.utexas.edu': {
+    'frontera': {
+        'host': 'frontera.tacc.utexas.edu',
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
-    'maverick2.tacc.utexas.edu': {
+    'maverick2': {
+        'host': 'maverick2.tacc.utexas.edu',
+        'work_dir': '/work/{}',
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     },
-    'ls6.tacc.utexas.edu': {
+    'ls6': {
+        'host': 'ls6.tacc.utexas.edu',
+        'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
@@ -517,14 +518,10 @@ SETTINGS: DATA DEPOT
 """
 KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
 
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
-    settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
-)
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_custom.\
-    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
     settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',

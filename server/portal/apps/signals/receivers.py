@@ -46,7 +46,7 @@ def portal_event_callback(sender, **kwargs):
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, created, **kwargs):
     # Only send WS message if it's a new notification not if we're updating.
-    logger.debug("Received a Notification event")
+    logger.info("Received a Notification event")
     if not created:
         return
     try:

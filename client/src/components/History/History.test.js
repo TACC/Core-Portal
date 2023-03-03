@@ -114,6 +114,7 @@ describe('History Routes', () => {
           jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         },
       },
+      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
     ]);
   });
 });

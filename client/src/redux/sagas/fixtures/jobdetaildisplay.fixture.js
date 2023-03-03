@@ -1,6 +1,6 @@
 const jobDetailDisplayFixture = {
   allocation: 'TACC-ACI',
-  applicationName: 'Hello World',
+  applicationName: 'Hello World (Sleep 3m)',
   inputs: [
     {
       id: 'File to modify',
@@ -19,10 +19,16 @@ const jobDetailDisplayFixture = {
       id: 'Target',
       value: 'world',
     },
+    {
+      id: 'Sleep Time',
+      label: 'Sleep Time',
+      value: '1',
+    },
   ],
   queue: 'development',
   systemName: 'Frontera',
-  workPath: '/system/1/user/tapis/1/jobs/1/output',
+  workPath:
+    '/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
 };
 
 export default jobDetailDisplayFixture;

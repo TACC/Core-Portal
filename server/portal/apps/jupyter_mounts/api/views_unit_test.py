@@ -1,24 +1,16 @@
 from mock import MagicMock
 import pytest
 import json
+import os
+from django.conf import settings
 
 
 @pytest.fixture
-def service_account(mocker):
-    mock = mocker.patch('portal.apps.jupyter_mounts.api.views.service_account')
-    mock.return_value.systems.get.return_value = {
-        "storage": {
-            "rootDir": "/path/to/community"
-        }
-    }
-    yield mock
-
-
-@pytest.fixture
-def mock_manager(mocker):
-    mock = mocker.patch('portal.apps.jupyter_mounts.api.views.UserSystemsManager')
-    mock.return_value.get_sys_tas_user_dir.return_value = "/12345/username"
-    mock.return_value.get_name.return_value = "mock_name"
+def get_user_data(mocker):
+    mock = mocker.patch('portal.apps.jupyter_mounts.api.views.get_user_data')
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
+        tas_user = json.load(f)
+    mock.return_value = tas_user
     yield mock
 
 
@@ -53,7 +45,7 @@ def mock_projects(mocker):
     yield mock
 
 
-def test_get(authenticated_user, client, service_account, mock_manager, mock_projects):
+def test_get(authenticated_user, client, mock_projects, get_user_data):
     result = client.get('/api/jupyter_mounts/')
     expected = [
         {
@@ -62,22 +54,17 @@ def test_get(authenticated_user, client, service_account, mock_manager, mock_pro
             "pems": "ro"
         },
         {
-            "path": "/path/to/community",
+            "path": "/path/to/public",
             "mountPath": "/test/Public Data",
             "pems": "ro"},
         {
-            "path": "/12345/username",
-            "mountPath": "/test/mock_name",
+            "path": "/home/username",
+            "mountPath": "/test/My Data (Work)",
             "pems": "rw"
         },
         {
-            "path": "/12345/username",
-            "mountPath": "/test/mock_name",
-            "pems": "rw"
-        },
-        {
-            "path": "/12345/username",
-            "mountPath": "/test/mock_name",
+            "path": "/home1/01234/username",
+            "mountPath": "/test/My Data (Frontera)",
             "pems": "rw"
         },
         {

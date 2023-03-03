@@ -12,6 +12,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import renderComponent from 'utils/testing';
+import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -29,6 +30,29 @@ function renderJobsComponent(store, history) {
 }
 
 describe('Jobs View', () => {
+  it('should dispatch the get jobs event', () => {
+    const store = mockStore({
+      notifications,
+      jobs: { ...jobs, list: jobsList },
+      workbench: { ...workbench, config: { hideDataFiles: false } },
+      apps: {
+        appIcons: {},
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Jobs />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    expect(store.getActions()).toEqual([
+      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
+    ]);
+  });
+
   it('renders jobs', () => {
     const store = mockStore({
       jobs: {
@@ -100,6 +124,7 @@ describe('Jobs View', () => {
       apps: {
         ...appIconMockState,
       },
+      notifications,
       workbench: {
         ...workbench,
         config: { hideDataFiles: false },
