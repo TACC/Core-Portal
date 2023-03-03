@@ -170,7 +170,7 @@ const Layout = () => {
   const match = useRouteMatch(`${root}/:historyType`);
   const historyType = match
     ? match.params.historyType.substring(0, 1).toUpperCase() +
-    match.params.historyType.substring(1).toLowerCase()
+      match.params.historyType.substring(1).toLowerCase()
     : '';
 
   return (

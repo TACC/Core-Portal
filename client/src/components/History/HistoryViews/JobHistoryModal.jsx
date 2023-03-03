@@ -94,13 +94,15 @@ function JobHistoryContent({
     [hasFailedStatus ? 'Failure Report' : 'Last Status Message']: (
       <Expand
         detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-        message={<pre>
-          $
-          {version === 'v3'
-            ? jobDetails.lastMessage
-            : // TODOdropV2Jobs
-            jobDetails.lastStatusMessage}
-        </pre>}
+        message={
+          <pre>
+            $
+            {version === 'v3'
+              ? jobDetails.lastMessage
+              : // TODOdropV2Jobs
+                jobDetails.lastStatusMessage}
+          </pre>
+        }
       />
     ),
   };
@@ -200,10 +202,7 @@ function JobHistoryContent({
                 </DataFilesLink>
               ),
               Output: version == 'v3' && (
-                <DataFilesLink
-                  path={outputLocation}
-                  disabled={!hasOutput}
-                >
+                <DataFilesLink path={outputLocation} disabled={!hasOutput}>
                   View in Data Files
                 </DataFilesLink>
               ),
@@ -212,16 +211,15 @@ function JobHistoryContent({
         />
         {hasEnded && version === 'v3' && (
           // TODOdropV2Jobs
-            <Button
-              type="primary"
-              attr="submit"
-              className={styles['submit-button']}
-              onClick={resubmitJob}
-            >
-              Resubmit Job
-            </Button>
-          )
-        }
+          <Button
+            type="primary"
+            attr="submit"
+            className={styles['submit-button']}
+            onClick={resubmitJob}
+          >
+            Resubmit Job
+          </Button>
+        )}
       </div>
       <DescriptionList
         className={`${styles['right-panel']} ${styles['panel-content']}`}
@@ -285,7 +283,7 @@ function JobHistoryModal({ uuid, version }) {
       history.push(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
           query.query_string ? `?query_string=${query.query_string}` : ''
-        }`, 
+        }`,
         {
           fromJobHistoryModal: true,
         }
@@ -294,9 +292,11 @@ function JobHistoryModal({ uuid, version }) {
       history.push(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
           query.query_string ? `?query_string=${query.query_string}` : ''
-        }`, {
-        fromJobHistoryModal: true,
-      });
+        }`,
+        {
+          fromJobHistoryModal: true,
+        }
+      );
     }
   };
 

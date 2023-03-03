@@ -33,7 +33,7 @@ function JobsView({
     return version === 'v3'
       ? { ...state.jobs, jobs: state.jobs.list }
       : // TODOdropV2Jobs
-      { ...state.jobsv2, jobs: state.jobsv2.list };
+        { ...state.jobsv2, jobs: state.jobsv2.list };
   });
 
   const hideDataFiles = useSelector(
@@ -76,16 +76,28 @@ function JobsView({
 
   const infiniteScrollCallback = useCallback(() => {
     if (version === 'v3') {
-      dispatch({
-        type: 'GET_JOBS',
-        params: { offset: jobs.length, queryString: query.query_string || '' },
-      }, [dispatch, jobs, query.query_string]);
+      dispatch(
+        {
+          type: 'GET_JOBS',
+          params: {
+            offset: jobs.length,
+            queryString: query.query_string || '',
+          },
+        },
+        [dispatch, jobs, query.query_string]
+      );
     } else {
       // TODOdropV2Jobs
-      dispatch({
-        type: 'GET_V2_JOBS',
-        params: { offset: jobs.length, queryString: query.query_string || '' },
-      }, [dispatch, jobs, query.query_string]);
+      dispatch(
+        {
+          type: 'GET_V2_JOBS',
+          params: {
+            offset: jobs.length,
+            queryString: query.query_string || '',
+          },
+        },
+        [dispatch, jobs, query.query_string]
+      );
     }
   }, [jobs]);
 

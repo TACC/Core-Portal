@@ -12,8 +12,9 @@ export function isOutputState(status) {
 }
 
 export function getOutputPath(job) {
-  return `${job.archiveSystemId}${job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-    }${job.archiveSystemDir}`;
+  return `${job.archiveSystemId}${
+    job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
+  }${job.archiveSystemDir}`;
 }
 
 // TODOdropV2Jobs
