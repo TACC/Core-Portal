@@ -262,14 +262,12 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         if err.response.status_code != 404:
             raise
 
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
-                                          path=urllib.parse.quote(
-                                              src_path),
+                                          path=src_path_full,
                                           operation="MOVE",
-                                          newPath=full_dest_path)
+                                          newPath=dest_path_full)
 
     # if os.path.dirname(src_path) != dest_path or src_path != dest_path:
     #     agave_indexer.apply_async(kwargs={'systemId': src_system,
@@ -323,20 +321,13 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
-                                          path=urllib.parse.quote(
-                                              src_path),
+                                          path=src_path,
                                           operation="COPY",
                                           newPath=full_dest_path)
     else:
-        src_url = 'tapis://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
-        )
 
-        dest_url = 'tapis://{}/{}'.format(
-            dest_system,
-            full_dest_path
-        )
+        src_url = f'tapis://{src_system}/{urllib.parse.quote(src_path)}'
+        dest_url = f'tapis://{dest_system}/{full_dest_path}'
 
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
@@ -424,15 +415,15 @@ def trash(client, system, path, homeDir):
     # Create a .Trash path if none exists
     try:
         client.files.listFiles(systemId=system,
-                          path="{}/{}".format(homeDir, settings.TAPIS_DEFAULT_TRASH_NAME))
+                          path=f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}')
     except BaseTapyException as err:
         if err.response.status_code != 404:
-            logger.error("Unexpected exception listing .trash path in {}".format(system))
+            logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
         mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     resp = move(client, system, path, system,
-                "{}/{}".format(homeDir, settings.TAPIS_DEFAULT_TRASH_NAME), file_name)
+                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name)
 
     return resp
 
