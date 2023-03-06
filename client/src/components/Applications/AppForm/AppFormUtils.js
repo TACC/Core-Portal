@@ -73,29 +73,17 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
 };
 
 /**
- * Get min node count for queue
- */
-const getMinNodeCount = (queue, app) => {
-  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node count of 3
-  return getSystemName(app.exec_sys.host) === 'Frontera' &&
-    queue.name === 'normal'
-    ? 3
-    : 1;
-};
-
-/**
  * Get validator for a node count of a queue
  *
  * @function
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (queue, app) => {
-  const min = getMinNodeCount(queue, app);
+export const getNodeCountValidation = (queue) => {
   return Yup.number()
     .min(
-      min,
-      `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
+      queue.minNodeCount,
+      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue`
     )
     .max(
       queue.maxNodeCount,
@@ -158,38 +146,29 @@ export const updateValuesForQueue = (app, values) => {
   const queue = app.exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
   );
-  const minNodeCount = getMinNodeCount(queue, app);
-  const maxCoresPerNode = queue.maxCoresPerNode;
 
-  if (values.nodeCount < minNodeCount) {
-    updatedValues.nodeCount = minNodeCount;
+  if (values.nodeCount < queue.minNodeCount) {
+    updatedValues.nodeCount = queue.minNodeCount;
   }
-
   if (values.nodeCount > queue.maxNodeCount) {
     updatedValues.nodeCount = queue.maxNodeCount;
   }
 
+  if (values.coresPerNode < queue.minCoresPerNode) {
+    updatedValues.coresPerNode = queue.minCoresPerNode;
+  }
   if (
     queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.coresPerNode > maxCoresPerNode
+    values.coresPerNode > queue.maxCoresPerNode
   ) {
     updatedValues.coresPerNode = queue.maxCoresPerNode;
   }
 
-  /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
-  for all the queues, then we should check if the time works for the new queue and update
-  it if it doesn't.
-   */
   if (values.maxMinutes) {
-    const longestMaxRequestedTime = app.exec_sys.batchLogicalQueues
-      .map((queue) => queue.maxMinutes)
-      .sort()
-      .at(-1);
-    if (
-      Number.isInteger(values.maxMinutes) &&
-      values.maxMinutes <= longestMaxRequestedTime &&
-      values.maxMinutes > queue.maxMinutes
-    ) {
+    if (values.minMinutes < queue.minMinutes) {
+      updatedValues.maxMinutes = queue.minMinutes;
+    }
+    if (values.maxMinutes > queue.maxMinutes) {
       updatedValues.maxMinutes = queue.maxMinutes;
     }
 

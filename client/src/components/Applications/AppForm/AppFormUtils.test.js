@@ -6,7 +6,7 @@ import {
   updateValuesForQueue,
 } from './AppFormUtils';
 
-// TODOv3 update fixture and fix tests https://jira.tacc.utexas.edu/browse/TV3-98
+// TODOv3: update fixture and fix tests https://jira.tacc.utexas.edu/browse/TV3-98
 describe('AppFormUtils', () => {
   const normalQueue = helloWorldAppFixture.exec_sys.batchLogicalQueues.find(
     (q) => q.name === 'normal'
@@ -44,7 +44,7 @@ describe('AppFormUtils', () => {
     maxMinutes: '',
   };
 
-  it('handles node count validation on Frontera', () => {
+  it('handles node count validation', () => {
     expect(
       getNodeCountValidation(normalQueue, parallelFronteraApp).isValidSync(1)
     ).toEqual(false);
@@ -61,23 +61,12 @@ describe('AppFormUtils', () => {
      */
   });
 
-  it('handles node count validation on non-Frontera HPCs', () => {
-    const stampede2App = cloneDeep(parallelFronteraApp);
-    stampede2App.exec_sys.host = 'stampede2.tacc.utexas.edu';
-    expect(
-      getNodeCountValidation(normalQueue, stampede2App).isValidSync(1)
-    ).toEqual(true);
-    expect(
-      getNodeCountValidation(normalQueue, stampede2App).isValidSync(3)
-    ).toEqual(true);
-  });
-
-  it('handles queue validation on Frontera HPCs for SERIAL apps', () => {
+  it('handles queue validation', () => {
     /* TODOv3 Add small queue to fixture https://jira.tacc.utexas.edu/browse/TV3-98
     expect(
-
-
-      (smallQueue, helloWorldAppFixture).isValidSync('small')
+      getQueueValidation(smallQueue, helloWorldAppFixture).isValidSync(
+        'small'
+      )
     ).toEqual(true);
      */
     expect(
@@ -90,20 +79,7 @@ describe('AppFormUtils', () => {
     ).toEqual(false);
   });
 
-  it('handles queue validation on non-Frontera HPCs for SERIAL apps', () => {
-    const stampede2SerialApp = cloneDeep(helloWorldAppFixture);
-    stampede2SerialApp.exec_sys.host = 'stampede2.tacc.utexas.edu';
-    /* TODOv3 Add small queue to fixture https://jira.tacc.utexas.edu/browse/TV3-98
-    expect(
-      getQueueValidation(smallQueue, stampede2SerialApp).isValidSync('small')
-    ).toEqual(true);
-     */
-    expect(
-      getQueueValidation(normalQueue, stampede2SerialApp).isValidSync('normal')
-    ).toEqual(true);
-  });
-
-  // TODOv3 Reactivate this test when small queue is added to fixture https://jira.tacc.utexas.edu/browse/TV3-98
+  // TODOv3: Reactivate this test when small queue is added to fixture https://jira.tacc.utexas.edu/browse/TV3-98
   xit('updateValuesForQueue updates node count when using small queue', () => {
     const appFrontera = cloneDeep(parallelFronteraApp);
     const values = cloneDeep(exampleFormValue);
@@ -150,17 +126,5 @@ describe('AppFormUtils', () => {
     values.maxMinutes = 999;
     const updatedValues = updateValuesForQueue(appFrontera, values);
     expect(updatedValues.maxMinutes).toEqual(120);
-  });
-
-  it('updateValuesForQueue avoids updating runtime if not valid or empty', () => {
-    const appFrontera = cloneDeep(parallelFronteraApp);
-    const values = cloneDeep(exampleFormValue);
-    values.maxMinutes = 9999;
-    const updatedValues = updateValuesForQueue(appFrontera, values);
-    expect(updatedValues.maxMinutes).toEqual(9999);
-
-    values.maxMinutes = '';
-    const moreUpdatedValues = updateValuesForQueue(appFrontera, values);
-    expect(moreUpdatedValues.maxMinutes).toEqual('');
   });
 });
