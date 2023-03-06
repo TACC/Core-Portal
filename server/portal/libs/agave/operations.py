@@ -262,12 +262,11 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         if err.response.status_code != 404:
             raise
 
-
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
-                                          path=src_path_full,
-                                          operation="MOVE",
-                                          newPath=dest_path_full)
+                                            path=src_path_full,
+                                            operation="MOVE",
+                                            newPath=dest_path_full)
 
     # if os.path.dirname(src_path) != dest_path or src_path != dest_path:
     #     agave_indexer.apply_async(kwargs={'systemId': src_system,
@@ -321,9 +320,9 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
-                                          path=src_path,
-                                          operation="COPY",
-                                          newPath=full_dest_path)
+                                            path=src_path,
+                                            operation="COPY",
+                                            newPath=full_dest_path)
     else:
 
         src_url = f'tapis://{src_system}/{urllib.parse.quote(src_path)}'
@@ -415,7 +414,7 @@ def trash(client, system, path, homeDir):
     # Create a .Trash path if none exists
     try:
         client.files.listFiles(systemId=system,
-                          path=f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}')
+                               path=f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}')
     except BaseTapyException as err:
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
@@ -458,10 +457,10 @@ def upload(client, system, path, uploaded_file):
     path = f'{urllib.parse.quote(path)}/{uploaded_file.name}'
 
     res = r.post(
-        url = f'{base_url}/v3/files/ops/{systemId}/{path}',
-        files = {"file": uploaded_file.file},
-        headers = {"X-Tapis-Token": token})
-    
+        url=f'{base_url}/v3/files/ops/{systemId}/{path}',
+        files={"file": uploaded_file.file},
+        headers={"X-Tapis-Token": token})
+
     # agave_indexer.apply_async(kwargs={'systemId': system,
     #                                   'filePath': path,
     #                                   'recurse': False},
