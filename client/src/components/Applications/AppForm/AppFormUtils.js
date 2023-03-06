@@ -164,15 +164,14 @@ export const updateValuesForQueue = (app, values) => {
     updatedValues.coresPerNode = queue.maxCoresPerNode;
   }
 
-  if (values.maxMinutes) {
-    if (values.minMinutes < queue.minMinutes) {
-      updatedValues.maxMinutes = queue.minMinutes;
-    }
-    if (values.maxMinutes > queue.maxMinutes) {
-      updatedValues.maxMinutes = queue.maxMinutes;
-    }
+  if (values.maxMinutes < queue.minMinutes) {
+    updatedValues.maxMinutes = queue.minMinutes;
+  }
+  if (values.maxMinutes > queue.maxMinutes) {
+    updatedValues.maxMinutes = queue.maxMinutes;
+  }
 
-    /* // TODOv3  HH:MM:SS form
+  /* // TODOv3  HH:MM:SS form
 
     const runtimeRegExp = new RegExp(
       createMaxRunTimeRegex(longestMaxRequestedTime)
@@ -184,7 +183,6 @@ export const updateValuesForQueue = (app, values) => {
       updatedValues.maxMinutes = queue.maxMinutes;
     }
      */
-  }
 
   return updatedValues;
 };
