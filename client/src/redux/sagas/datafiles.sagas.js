@@ -761,7 +761,7 @@ export async function trashUtil(api, scheme, system, path, homeDir) {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
     body: JSON.stringify({
-      homeDir: homeDir
+      homeDir: homeDir,
     }),
   });
 

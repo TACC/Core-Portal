@@ -145,7 +145,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
     const system = selectedFiles[0].system;
 
-    const selectedSystem = systems.find((s) => s.system === system && s.scheme === scheme)
+    const selectedSystem = systems.find(
+      (s) => s.system === system && s.scheme === scheme
+    );
 
     dispatch({
       type: 'DATA_FILES_TRASH',
