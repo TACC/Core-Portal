@@ -27,6 +27,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       api: 'tapis',
       scheme: 'private',
       system: systems.filter((s) => !s.hidden)[0].system,
+      path: systems.filter((s) => !s.hidden)[0]?.homeDir || '',
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
@@ -44,6 +45,13 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     onSelect(system, path);
     toggle();
   };
+
+  const excludedSystems = systems
+    .filter((s) => s.api !== 'tapis' || s.hidden)
+    .map((s) => `${s.system}${s.homeDir || ''}`);
+
+  const selectedSystem =
+    systems.filter((s) => s.api === 'tapis' && !s.hidden)[0] || modalParams;
 
   return (
     <Modal
@@ -64,13 +72,11 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={
-                  (systems.filter((s) => !s.hidden)[0] || modalParams).system
-                }
+                systemId={`${selectedSystem?.system}${
+                  selectedSystem?.homeDir || ''
+                }`}
                 section="modal"
-                excludedSystems={systems
-                  .filter((s) => s.api !== 'tapis' || s.hidden)
-                  .map((s) => s.system)}
+                excludedSystems={excludedSystems}
                 showProjects={showProjects}
               />
             </div>
