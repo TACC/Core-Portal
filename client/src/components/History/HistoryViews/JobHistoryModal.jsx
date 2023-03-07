@@ -192,7 +192,7 @@ function JobHistoryContent({
         <DescriptionList
           density="compact"
           data={
-            !hideDataFiles && {
+            !hideDataFiles && version === 'v3' && {
               Execution: (
                 <DataFilesLink
                   path={getExecutionPath(jobDetails)}

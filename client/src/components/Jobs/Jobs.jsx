@@ -17,7 +17,6 @@ import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
-import { useLocation } from 'react-router-dom';
 
 function JobsView({
   showDetails,
@@ -212,8 +211,9 @@ function JobsView({
       Cell: (el) => {
         // TODOdropV2Jobs
         if (version === 'v3') {
-          // const outputLocation = el.row.original.outputLocation;
-          const outputLocation = getOutputPath(el.row.original);
+          console.log(el.row.original);
+          const outputLocation = el.row.original.outputLocation;
+          // const outputLocation = getOutputPath(el.row.original);
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
