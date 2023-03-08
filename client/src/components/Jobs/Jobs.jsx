@@ -10,7 +10,7 @@ import {
   Section,
 } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 import { getOutputPath, getOutputPathFromHref } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
@@ -25,13 +25,13 @@ function JobsView({
   includeSearchbar,
 }) {
   const location = useLocation();
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const { isLoading, error, jobs } = useSelector((state) => {
     return version === 'v3'
       ? { ...state.jobs, jobs: state.jobs.list }
-      : // TODOdropV2Jobs
+      : // TODOv3: dropV2Jobs
         { ...state.jobsv2, jobs: state.jobsv2.list };
   });
 
@@ -86,7 +86,7 @@ function JobsView({
         [dispatch, jobs, query.query_string]
       );
     } else {
-      // TODOdropV2Jobs
+      // TODOv3: dropV2Jobs
       dispatch(
         {
           type: 'GET_V2_JOBS',
@@ -108,7 +108,7 @@ function JobsView({
     }) => {
       const query = queryStringParser.parse(useLocation().search);
 
-      // TODOdropV2Jobs
+      // TODOv3: dropV2Jobs
       return uuid ? (
         <Link
           to={{
@@ -176,7 +176,7 @@ function JobsView({
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
       Cell: (el) => {
-        // TODOdropV2Jobs
+        // TODOv3: dropV2Jobs
         if (version === 'v3') {
           return (
             <JobsStatus
@@ -206,10 +206,10 @@ function JobsView({
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
-      // TODOdropV2Jobs
+      // TODOv3: dropV2Jobs
       accessor: version === 'v3' ? 'outputLocation' : '_links.archiveData.href',
       Cell: (el) => {
-        // TODOdropV2Jobs
+        // TODOv3: dropV2Jobs
         if (version === 'v3') {
           console.log(el.row.original);
           const outputLocation = el.row.original.outputLocation;

@@ -3,11 +3,11 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   jobs as jobsReducer,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   jobsv2 as jobsV2Reducer,
   jobDetail as jobDetailReducer,
   initialState as jobsInitalState,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   initialStateV2 as jobsV2InitalState,
 } from '../reducers/jobs.reducers';
 
@@ -18,14 +18,14 @@ import {
   watchJobDetails,
   submitJob,
   getJobs,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   getV2Jobs,
   fetchJobs,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   fetchV2Jobs,
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   selectorJobsV2ReachedEnd,
   watchJobs,
   LIMIT,
@@ -38,7 +38,7 @@ import jobSubmitFixture from './fixtures/jobSubmit.fixture';
 import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
 import {
   jobsListFixture,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   jobsV2ListFixture,
 } from './fixtures/jobsList.fixture';
 import { notificationsListFixture } from './fixtures/notificationsList.fixture';
@@ -106,7 +106,7 @@ test('Effect Creators should dispatch sagas', () => {
     .next()
     .takeLatest('GET_JOBS', getJobs)
     .next()
-    // TODOdropV2Jobs
+    // TODOv3: dropV2Jobs
     .takeLatest('GET_V2_JOBS', getV2Jobs)
     .next()
     .takeLeading('SUBMIT_JOB', submitJob)
@@ -242,7 +242,7 @@ describe('getJobs Saga', () => {
       .run());
 });
 
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 describe('getV2Jobs Saga', () => {
   it('with offset = 0, it should fetch v2 jobs list and set jobs state appropriately', () =>
     expectSaga(getV2Jobs, { params: { offset: 0 } })
@@ -267,7 +267,7 @@ describe('getV2Jobs Saga', () => {
         error: null,
       })
       .run());
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   it('with offset = 51 and reachedEnd = true, it should return without updating the jobs state', () =>
     expectSaga(getV2Jobs, { params: { offset: 51 } })
       .withReducer(jobsV2Reducer)
@@ -276,7 +276,7 @@ describe('getV2Jobs Saga', () => {
         ...jobsV2InitalState,
       })
       .run());
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   it('with error from fetchV2Jobs, the saga should catch the error and set the jobs state accordingly', () =>
     expectSaga(getV2Jobs, { params: { offset: 0 } })
       .withReducer(jobsV2Reducer)

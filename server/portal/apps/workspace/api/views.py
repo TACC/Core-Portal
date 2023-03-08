@@ -17,7 +17,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
-# TODOdropV2Jobs
+# TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
@@ -122,7 +122,7 @@ class AppsView(BaseApiView):
         )
 
 
-# TODOdropV2Jobs
+# TODOv3: dropV2Jobs
 @method_decorator(login_required, name='dispatch')
 class HistoricJobsView(BaseApiView):
     def get(self, request, *args, **kwargs):

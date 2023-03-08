@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { default as jobsList } from '../../../Jobs/Jobs.fixture';
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 import { default as jobsV2List } from '../../../Jobs/JobsV2.fixture';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
@@ -35,7 +35,7 @@ describe('Job History Modal', () => {
             jobs: {
               list: jobsList,
             },
-            // TODOdropV2Jobs
+            // TODOv3: dropV2Jobs
             jobsv2: {
               list: jobsV2List,
             },
@@ -58,7 +58,7 @@ describe('Job History Modal', () => {
     expect(getByText(/Max Minutes/)).toBeDefined();
   });
 
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   it('renders v2 job history information given the job UUID', () => {
     const { getByText } = render(
       <BrowserRouter>
@@ -70,7 +70,7 @@ describe('Job History Modal', () => {
             jobs: {
               list: jobsList,
             },
-            // TODOdropV2Jobs
+            // TODOv3: dropV2Jobs
             jobsv2: {
               list: jobsV2List,
             },

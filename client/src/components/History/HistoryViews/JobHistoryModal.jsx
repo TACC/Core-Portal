@@ -65,11 +65,11 @@ function JobHistoryContent({
   jobDisplay,
   jobName,
   toggle,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   version,
 }) {
   const dispatch = useDispatch();
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   const outputLocation =
     version === 'v3'
       ? getOutputPath(jobDetails)
@@ -99,7 +99,7 @@ function JobHistoryContent({
             $
             {version === 'v3'
               ? jobDetails.lastMessage
-              : // TODOdropV2Jobs
+              : // TODOv3: dropV2Jobs
                 jobDetails.lastStatusMessage}
           </pre>
         }
@@ -144,7 +144,7 @@ function JobHistoryContent({
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   if (version === 'v3') {
     configDataObj['Max Minutes'] = jobDetails.maxMinutes;
   } else {
@@ -155,7 +155,7 @@ function JobHistoryContent({
     configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
   }
 
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   if ('processorsPerNode' in jobDisplay && version === 'v2') {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
@@ -167,7 +167,7 @@ function JobHistoryContent({
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   if (jobDetails.status !== 'FINISHED') {
     if (version === 'v3') {
       configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
@@ -211,7 +211,7 @@ function JobHistoryContent({
           }
         />
         {hasEnded && version === 'v3' && (
-          // TODOdropV2Jobs
+          // TODOv3: dropV2Jobs
           <Button
             type="primary"
             attr="submit"
@@ -237,7 +237,7 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
 JobHistoryContent.defaultProps = {
@@ -256,7 +256,7 @@ function JobHistoryModal({ uuid, version }) {
         display: job.display,
       };
     } else {
-      // TODOdropV2Jobs
+      // TODOv3: dropV2Jobs
       const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
       return {
         loading: false,
@@ -279,7 +279,7 @@ function JobHistoryModal({ uuid, version }) {
 
   const history = useHistory();
   const close = () => {
-    // TODOdropV2Jobs
+    // TODOv3: dropV2Jobs
     if (version === 'v3') {
       history.push(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
@@ -302,7 +302,7 @@ function JobHistoryModal({ uuid, version }) {
   };
 
   const headerData = {
-    // TODOdropV2Jobs
+    // TODOv3: dropV2Jobs
     ...(version === 'v3' ? { 'Job UUID': uuid } : { 'Job ID': uuid }),
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
@@ -349,7 +349,7 @@ function JobHistoryModal({ uuid, version }) {
 
 JobHistoryModal.propTypes = {
   uuid: PropTypes.string.isRequired,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
 

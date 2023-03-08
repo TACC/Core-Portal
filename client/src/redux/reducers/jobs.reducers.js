@@ -1,6 +1,6 @@
 import {
   getJobDisplayInformation,
-  // TODOdropV2Jobs
+  // TODOv3: dropV2Jobs
   getJobDisplayInformationV2,
   isTerminalState,
   isOutputState,
@@ -98,7 +98,7 @@ export function jobs(state = initialState, action) {
   }
 }
 
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 export const initialStateV2 = {
   list: [],
   submit: { submitting: false },
@@ -107,7 +107,7 @@ export const initialStateV2 = {
   error: null,
 };
 
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 export function jobsv2(state = initialStateV2, action) {
   switch (action.type) {
     case 'JOBS_V2_LIST_INIT':

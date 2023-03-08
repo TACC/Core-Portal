@@ -52,7 +52,7 @@ const HistorySidebar = () => {
       hidden: false,
       children: <HistoryBadge unread={unreadJobs} />,
     },
-    // TODOdropV2Jobs
+    // TODOv3: dropV2Jobs
     {
       to: `${root}/jobsv2`,
       label: 'Historic Jobs',
@@ -127,10 +127,10 @@ export const Routes = () => {
       <Route
         path={`${root}${ROUTES.JOBSV2}`}
         render={({ location: { pathname, state } }) => {
-          // TODOdropV2Jobs
+          // TODOv3: dropV2Jobs
           const locationState = state || {};
           // Only mark as read if in pure job history view
-          // TODOdropV2Jobs
+          // TODOv3: dropV2Jobs
           if (
             pathname === `${root}${ROUTES.JOBSV2}` &&
             !locationState.fromJobHistoryModal

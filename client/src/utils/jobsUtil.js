@@ -17,7 +17,7 @@ export function getOutputPath(job) {
   }${job.archiveSystemDir}`;
 }
 
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 export function getOutputPathFromHref(href) {
   const path = href.split('/').slice(7).filter(Boolean).join('/');
   if (path === 'listings') {
@@ -153,7 +153,7 @@ export function getJobDisplayInformation(job, app) {
   return display;
 }
 
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 export function getJobDisplayInformationV2(job) {
   const display = {
     applicationName: job.appId,

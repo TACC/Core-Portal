@@ -9,10 +9,10 @@ import Routes from './History';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
 import { default as jobsList } from '../Jobs/Jobs.fixture';
-// TODOdropV2Jobs
+// TODOv3: dropV2Jobs
 import { default as jobsV2List } from '../Jobs/JobsV2.fixture';
 import jobDetailFixture from '../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../redux/sagas/fixtures/jobdetaildisplay.fixture';
@@ -27,7 +27,7 @@ describe('History Routes', () => {
         store={mockStore({
           notifications,
           jobs: { ...jobs, list: jobsList },
-          // TODOdropV2Jobs
+          // TODOv3: dropV2Jobs
           jobsv2: { ...jobsv2, list: jobsV2List },
           jobDetail: {
             jobUuid: 'job_uuid',
@@ -57,7 +57,7 @@ describe('History Routes', () => {
   //   const store = mockStore({
   //     notifications,
   //     jobs: { ...jobs, list: jobsList },
-  //     // TODOdropV2Jobs
+  //     // TODOv3: dropV2Jobs
   //     jobsv2: { ...jobsv2, list: jobsV2List },
   //     jobDetail: {
   //       jobUuid: 'job_uuid',
@@ -97,7 +97,7 @@ describe('History Routes', () => {
     const store = mockStore({
       notifications,
       jobs: { ...jobs, list: jobsList },
-      // TODOdropV2Jobs
+      // TODOv3: dropV2Jobs
       jobsv2: { ...jobsv2, list: jobsV2List },
       jobDetail: {
         jobUuid: 'job_uuid',

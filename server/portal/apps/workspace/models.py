@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from portal.utils.fields import JSONField
 
-# TODOdropV2Jobs
+# TODOv3: dropV2Jobs
 class JobSubmission(models.Model):
     """Job Submission
 
@@ -21,7 +21,7 @@ class JobSubmission(models.Model):
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)
 
-    # TODOdropV2Jobs
+    # TODOv3: dropV2Jobs
     data = JSONField(null=True)
 
 
