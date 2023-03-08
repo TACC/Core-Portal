@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@niivue/niivue": "^0.32.0"
+  }
+}

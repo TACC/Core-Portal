@@ -1,8 +1,25 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
+import { Niivue } from '@niivue/niivue';
+
+const NiiVue = ({ imageUrl }) => {
+  const canvas = useRef();
+  useEffect(() => {
+    const volumeList = [
+      {
+        url: imageUrl,
+      },
+    ];
+    const nv = new Niivue();
+    nv.attachToCanvas(canvas.current);
+    nv.loadVolumes(volumeList);
+  }, [imageUrl]);
+
+  return <canvas ref={canvas} height={480} width={640} />;
+};
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
@@ -14,6 +31,11 @@ const DataFilesPreviewModal = () => {
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
+  const previewUsingBrainmap =
+    !isLoading &&
+    !hasError &&
+    params.path &&
+    (params.path.endsWith('.nii') || params.path.endsWith('.nii.gz'));
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
   const toggle = () =>
@@ -73,7 +95,8 @@ const DataFilesPreviewModal = () => {
             </code>
           </div>
         )}
-        {previewUsingHref && (
+        {previewUsingBrainmap && <NiiVue imageUrl={href}></NiiVue>}
+        {previewUsingHref && !previewUsingBrainmap && (
           <div className="embed-responsive embed-responsive-4by3">
             <iframe
               title="preview"
