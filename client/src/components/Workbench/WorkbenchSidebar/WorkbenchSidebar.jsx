@@ -1,11 +1,9 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FeedbackButton } from '../../FeedbackForm';
 import * as ROUTES from '../../../constants/routes';
 import HistoryBadge from '../../History/HistoryBadge';
 import './WorkbenchSidebar.global.scss'; // XXX: Global stylesheet imported in component
-import styles from './WorkbenchSidebar.module.css';
 import { Sidebar } from '_common';
 
 /** A navigation list for the application */
@@ -20,9 +18,6 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   );
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
-  );
-  const hideFeedback = useSelector(
-    (state) => state.workbench.config.hideFeedback
   );
   const sidebarItems = [
     {
@@ -69,11 +64,6 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
     },
   ];
   const addItems = [
-    {
-      className: styles['feedback-nav-item'],
-      children: <FeedbackButton />,
-      hidden: hideFeedback,
-    },
   ];
   return (
     <Sidebar
