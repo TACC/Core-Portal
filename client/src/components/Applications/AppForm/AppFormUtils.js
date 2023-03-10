@@ -158,6 +158,7 @@ export const updateValuesForQueue = (app, values) => {
   const queue = app.exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
   );
+
   const minNodeCount = getMinNodeCount(queue, app);
   const maxCoresPerNode = queue.maxCoresPerNode;
 

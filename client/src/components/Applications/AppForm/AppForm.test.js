@@ -15,10 +15,7 @@ import {
   appTrayExpectedFixture,
 } from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
-import {
-  namdAppFixture,
-  namdAppMissingKeysFixture,
-} from './fixtures/AppForm.app.fixture';
+import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
@@ -58,14 +55,15 @@ function renderAppSchemaFormComponent(store, app) {
   );
 }
 
-/* TODOv3 stop skipping tests; update fixtures https://jira.tacc.utexas.edu/browse/TV3-98 */
-describe.skip('AppSchemaForm', () => {
+describe('AppSchemaForm', () => {
   it('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState,
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+    });
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
@@ -76,13 +74,10 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'login1.frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'login1.frontera.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -95,13 +90,10 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'invalid_system_frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'invalid_system.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -117,9 +109,10 @@ describe.skip('AppSchemaForm', () => {
         loading: false,
       },
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
     });
@@ -129,9 +122,8 @@ describe.skip('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppMissingKeysFixture,
-    });
+    const missingKeysApp = { ...helloWorldAppFixture, systemNeedsKeys: true };
+    const { getByText } = renderAppSchemaFormComponent(store, missingKeysApp);
     await waitFor(() => {
       expect(
         getByText(
@@ -146,7 +138,10 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
       jobs: jobsSubmissionSuccessFixture,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
@@ -158,11 +153,18 @@ describe.skip('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 1,
+          execSystemLogicalQueue: 'normal',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
     };
 
@@ -182,11 +184,18 @@ describe.skip('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 3,
-        defaultQueue: 'small',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 3,
+          execSystemLogicalQueue: 'small',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
     };
 
@@ -222,9 +231,10 @@ describe.skip('AppSchemaForm', () => {
       },
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
 
     await waitFor(() => {
       expect(
@@ -239,13 +249,16 @@ describe.skip('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 1,
+          execSystemLogicalQueue: 'normal',
+        },
         notes: {
-          ...namdAppFixture.definition.notes,
+          ...helloWorldAppFixture.definition.notes,
           hideNodeCountAndCoresPerNode: true,
         },
       },
@@ -265,7 +278,7 @@ describe.skip('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       license: {
         type: 'Application Name',
       },
