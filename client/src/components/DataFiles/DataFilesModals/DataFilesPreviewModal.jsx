@@ -5,12 +5,13 @@ import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 import { Niivue } from '@niivue/niivue';
 
-const NiiVue = ({ imageUrl }) => {
+const NiiVue = ({ imageUrl, fileName }) => {
   const canvas = useRef();
   useEffect(() => {
     const volumeList = [
       {
         url: imageUrl,
+        name: fileName,
       },
     ];
     const nv = new Niivue();
@@ -37,6 +38,10 @@ const DataFilesPreviewModal = () => {
     params.path &&
     (params.path.endsWith('.nii') || params.path.endsWith('.nii.gz'));
   const [isFrameLoading, setIsFrameLoading] = useState(true);
+
+  useEffect(() => {
+    if (previewUsingBrainmap) setIsFrameLoading(false);
+  }, [previewUsingBrainmap]);
 
   const toggle = () =>
     dispatch({
@@ -95,7 +100,9 @@ const DataFilesPreviewModal = () => {
             </code>
           </div>
         )}
-        {previewUsingBrainmap && <NiiVue imageUrl={href}></NiiVue>}
+        {previewUsingBrainmap && (
+          <NiiVue imageUrl={href} fileName={params.path}></NiiVue>
+        )}
         {previewUsingHref && !previewUsingBrainmap && (
           <div className="embed-responsive embed-responsive-4by3">
             <iframe
