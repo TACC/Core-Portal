@@ -1,10 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
-import {
-  getNodeCountValidation,
-  getQueueValidation,
-  updateValuesForQueue,
-} from './AppFormUtils';
+import { getNodeCountValidation, updateValuesForQueue } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue = helloWorldAppFixture.exec_sys.batchLogicalQueues.find(
@@ -55,20 +51,6 @@ describe('AppFormUtils', () => {
     ).toEqual(true);
     expect(
       getNodeCountValidation(smallQueue, parallelFronteraApp).isValidSync(3)
-    ).toEqual(false);
-  });
-
-  it('handles queue validation', () => {
-    expect(
-      getQueueValidation(smallQueue, serialFronteraApp).isValidSync('small')
-    ).toEqual(true);
-    expect(
-      getQueueValidation(smallQueue, serialFronteraApp).isValidSync(
-        'development'
-      )
-    ).toEqual(true);
-    expect(
-      getQueueValidation(normalQueue, serialFronteraApp).isValidSync('normal')
     ).toEqual(false);
   });
 

@@ -83,11 +83,11 @@ export const getNodeCountValidation = (queue) => {
   return Yup.number()
     .min(
       queue.minNodeCount,
-      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue`
+      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
     )
     .max(
       queue.maxNodeCount,
-      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue`
+      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
     );
 };
 
@@ -103,32 +103,6 @@ export const getCoresPerNodeValidation = (queue) => {
     return Yup.number();
   }
   return Yup.number().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
-};
-
-/**
- * Get validator for queues
- *
- * 'normal' queue isn't supported on Frontera for SERIAL (i.e. one node) jobs
- *
- * @function
- * @param {Object} queue
- * @returns {Yup.string()} validation of queue
- */
-export const getQueueValidation = (queue, app) => {
-  return Yup.string()
-    .required('Required')
-    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
-    .test(
-      'is-not-serial-job-using-normal-queue',
-      'The normal queue does not support serial apps (i.e. Node Count set to 1).',
-      (value, context) => {
-        return !(
-          getSystemName(app.exec_sys.host) === 'Frontera' &&
-          queue.name === 'normal' &&
-          app.definition.notes.hideNodeCountAndCoresPerNode
-        );
-      }
-    );
 };
 
 /**
