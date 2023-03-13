@@ -63,8 +63,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       hidden: !showUIPatterns,
     },
   ];
-  const addItems = [
-  ];
+  const addItems = [];
   return (
     <Sidebar
       sidebarItems={sidebarItems}
