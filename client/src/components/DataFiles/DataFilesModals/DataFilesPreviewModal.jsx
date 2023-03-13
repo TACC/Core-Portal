@@ -26,17 +26,14 @@ const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.files.modals.preview);
   const params = useSelector((state) => state.files.modalProps.preview);
-  const { href, content, error, isLoading } = useSelector(
+  const { href, content, error, fileType, isLoading } = useSelector(
     (state) => state.files.preview
   );
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
   const previewUsingBrainmap =
-    !isLoading &&
-    !hasError &&
-    params.path &&
-    (params.path.endsWith('.nii') || params.path.endsWith('.nii.gz'));
+    !isLoading && !hasError && params.path && fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
   useEffect(() => {
