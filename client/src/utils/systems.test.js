@@ -13,9 +13,14 @@ describe('systems utility functions', () => {
   });
   it('get system display name from host', () => {
     const { configuration: systemList } = systemsFixture.storage;
-    expect(findSystemDisplayName(systemList, 'frontera.home.username')).toEqual(
-      'My Data (Frontera)'
-    );
+    expect(
+      findSystemDisplayName(
+        systemList,
+        'frontera.home.username',
+        false,
+        'private'
+      )
+    ).toEqual('My Data (Frontera)');
     expect(findSystemDisplayName(systemList, 'frontera.foo.bar')).toEqual(
       'Frontera'
     );

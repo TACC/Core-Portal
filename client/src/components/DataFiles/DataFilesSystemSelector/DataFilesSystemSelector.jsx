@@ -17,7 +17,10 @@ const DataFilesSystemSelector = ({
     (state) => state.systems.storage.configuration
   );
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
-  const findSystem = (id) => systemList.find((system) => system.system === id);
+  const findSystem = (id) =>
+    systemList.find(
+      (system) => `${system.system}${system.homeDir || ''}` === id
+    );
   const [selectedSystem, setSelectedSystem] = useState(systemId);
 
   const openSystem = useCallback(
@@ -35,11 +38,12 @@ const DataFilesSystemSelector = ({
       }
 
       const system = findSystem(event.target.value);
-      setSelectedSystem(system.system);
+      setSelectedSystem(`${system.system}${system.homeDir || ''}`);
       dispatch({
         type: 'FETCH_FILES',
         payload: {
           ...system,
+          path: system.homeDir || '',
           section,
         },
       });
@@ -69,7 +73,7 @@ const DataFilesSystemSelector = ({
   }, []);
 
   const dropdownSystems = systemList.filter(
-    (s) => !excludedSystems.includes(s.system)
+    (s) => !excludedSystems.includes(`${s.system}${s.homeDir || ''}`)
   );
 
   return (
@@ -83,7 +87,11 @@ const DataFilesSystemSelector = ({
         {dropdownSystems.map((s) => (
           <option
             key={s.name}
-            value={s.scheme === 'projects' ? 'shared' : s.system}
+            value={
+              s.scheme === 'projects'
+                ? 'shared'
+                : `${s.system}${s.homeDir || ''}`
+            }
           >
             {s.name}
           </option>
