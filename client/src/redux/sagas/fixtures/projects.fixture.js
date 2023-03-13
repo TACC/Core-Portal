@@ -3,6 +3,7 @@ export const projectsListingFixture = [
     owner: null,
     available: true,
     description: 'Test Project Title',
+    title: 'Test Project Title',
     type: 'STORAGE',
     uuid: null,
     revision: null,

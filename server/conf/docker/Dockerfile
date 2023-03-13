@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=1.2.0 \
+ENV POETRY_VERSION=1.3.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
