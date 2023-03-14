@@ -115,7 +115,7 @@ class ProjectsApiView(BaseApiView):
         """POST handler."""
         data = json.loads(request.body)
         title = data['title']
-        members = data['members']
+
         client = request.user.tapis_oauth.client
         system_id = create_shared_workspace(client, title, request.user.username)
 
@@ -268,7 +268,7 @@ class ProjectMembersApiView(BaseApiView):
         """
         username = data.get('username')
         client = request.user.tapis_oauth.client
-        resp = remove_user(client,project_id, username)
+        resp = remove_user(client, project_id, username)
 
         return JsonResponse(
             {
