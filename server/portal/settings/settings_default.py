@@ -236,7 +236,7 @@ _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
-    "compressApp": 'zippy',
+    "compressApp": 'compress',
     "extractApp": 'extract',
     "makePublic": True,
     "hideApps": False,

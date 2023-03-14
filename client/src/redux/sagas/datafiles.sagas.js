@@ -979,19 +979,14 @@ export function* watchExtract() {
  * Create JSON string of job params
  * @async
  * @param {Array<Object>} files
- * @param {String} zipfileName
+ * @param {String} archiveFileName
  * @returns {String}
  */
-const getCompressParams = (files, zipfileName, latestZippy) => {
-  // TODOv3: zippy
-  const inputs = {
-    inputFiles: files.map((file) => `tapis://${file.system}/${file.path}`),
-  };
-  const parameters = {
-    filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
-    zipfileName,
-    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip',
-  };
+const getCompressParams = (files, archiveFileName, latestZippy) => {
+  const fileInputs = files.map((file) => ({
+    sourceUrl: `tapis://${file.system}/${file.path}`,
+  }));
+
   const archivePath = `${files[0].path.substring(
     0,
     files[0].path.lastIndexOf('/') + 1
@@ -999,12 +994,7 @@ const getCompressParams = (files, zipfileName, latestZippy) => {
 
   return JSON.stringify({
     job: {
-      fileInputs: [
-        {
-          name: 'Target path to be compressed',
-          sourceUrl: inputFile,
-        },
-      ],
+      fileInputs: fileInputs,
       name: `${latestZippy.definition.id}-${latestZippy.definition.version}_${
         new Date().toISOString().split('.')[0]
       }`,
@@ -1016,6 +1006,10 @@ const getCompressParams = (files, zipfileName, latestZippy) => {
       appVersion: latestZippy.definition.version,
       parameterSet: {
         appArgs: [
+          {
+            name: 'Archive File Name',
+            arg: archiveFileName,
+          },
           {
             name: 'Compression Type',
             arg: 'zip',

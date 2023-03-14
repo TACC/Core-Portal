@@ -69,11 +69,11 @@ export function getJobDisplayInformation(job, app) {
     systemName: job.execSystemId,
     inputs: fileInputs
       .map((input) => ({
-        label: input.name,
-        id: input.name,
+        label: input.name || 'Unnamed Input',
+        id: input.sourceUrl,
         value: input.sourceUrl,
       }))
-      .filter((obj) => !obj.id.startsWith('_')),
+      .filter((obj) => !obj.id?.startsWith('_')),
 
     parameters: parameters
       .map((parameter) => ({

@@ -13,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useCompress } from 'hooks/datafiles/mutations';
-import { useSelectedFiles, useModal, useFileListing } from 'hooks/datafiles';
+import { useSelectedFiles, useModal } from 'hooks/datafiles';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
@@ -23,19 +23,11 @@ const DataFilesCompressModal = () => {
 
   const { compress, status, setStatus } = useCompress();
   const { getStatus: getModalStatus, toggle: toggleModal } = useModal();
-  const { params } = useFileListing('FilesListing');
 
   const isOpen = getModalStatus('compress');
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
-
-  const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' },
-    });
-  };
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -71,7 +63,6 @@ const DataFilesCompressModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       className="dataFilesModal"
