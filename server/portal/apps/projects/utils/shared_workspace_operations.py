@@ -62,10 +62,10 @@ def set_workspace_permissions(client: Tapis, username: str, system_id: str, role
         client.systems.revokeUserPerms(systemId=system_id,
                                        userName=username,
                                        permissions=["MODIFY"])
-        client.files.deletePermissions(systemId=system_id, 
-                                         path="/",
-                                         username=username)
-    
+        client.files.deletePermissions(systemId=system_id,
+                                       path="/",
+                                       username=username)
+
     client.files.grantPermissions(
         systemId=system_id,
         path="/",

@@ -119,40 +119,11 @@ class ProjectsApiView(BaseApiView):
         client = request.user.tapis_oauth.client
         system_id = create_shared_workspace(client, title, request.user.username)
 
-
         return JsonResponse(
             {
                 'status': 200,
                 'response': {"id": system_id}
             }
-        )
-
-        mgr = ProjectsManager(request.user)
-        prj = mgr.create(title)
-        project_id = prj.project_id
-        for member in members:
-            try:
-                if member['access'] == 'owner':
-                    access = 'pi'
-                elif member['access'] == 'edit':
-                    access = 'team_member'
-                else:
-                    raise ApiException("Unsupported access level")
-                mgr.add_member(
-                    project_id,
-                    access,
-                    member['username']
-                )
-            except Exception:
-                LOGGER.exception(
-                    "Project was created, but could not add {username}", username=member['username']
-                )
-        return JsonResponse(
-            {
-                'status': 200,
-                'response': prj.storage,
-            },
-            encoder=mgr.systems_serializer_cls
         )
 
 
@@ -302,7 +273,7 @@ class ProjectMembersApiView(BaseApiView):
         return JsonResponse(
             {
                 'status': 200,
-                'response': resp,
+                'response': resp
             }
         )
 
