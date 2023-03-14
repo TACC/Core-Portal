@@ -15,7 +15,7 @@ from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
-from portal.apps.projects.utils.shared_workspace_operations import \
+from portal.apps.projects.workspace_operations.shared_workspace_operations import \
         list_projects, get_project, create_shared_workspace,\
         update_project, get_workspace_role, change_user_role, add_user_to_workspace,\
         remove_user, transfer_ownership
