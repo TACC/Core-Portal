@@ -13,6 +13,7 @@ import {
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 import truncateMiddle from '../../utils/truncateMiddle';
+import { fetchAppDefinitionUtil } from './apps.sagas';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -879,53 +880,43 @@ export function* emptyFile(system, path) {
   return 'SUCCESS';
 }
 
-export const getLatestApp = async (name) => {
-  const res = await fetchUtil({
-    url: '/api/workspace/apps',
-    params: {
-      publicOnly: true,
-      name,
-    },
-  });
-  const apps = res.response.appListing;
-  const latestApp = apps
-    .filter((app) => app.id.includes(name))
-    .reduce(
-      (latest, app) => {
-        if (app.version > latest.version) {
-          return app;
-        }
-        if (app.version < latest.version) {
-          return latest;
-        }
-        // Same version of app
-        if (app.revision >= latest.revision) {
-          return app;
-        }
-        return latest;
-      },
-      { revision: null, version: null }
-    );
-  return latestApp.id;
-};
-
 const getExtractParams = (file, latestExtract) => {
-  const inputFile = `agave://${file.system}${file.path}`;
-  const archivePath = `agave://${file.system}${file.path.substring(
+  const inputFile = `tapis://${file.system}/${file.path}`;
+  const archivePath = `${file.path.substring(
     0,
     file.path.lastIndexOf('/') + 1
   )}`;
   return JSON.stringify({
-    allocation: 'FORK',
-    appId: latestExtract,
-    archive: true,
-    archivePath,
-    inputs: {
-      inputFile,
+    job: {
+      fileInputs: [
+        {
+          name: 'Input File',
+          sourceUrl: inputFile,
+        },
+      ],
+      name: `${latestExtract.definition.id}-${
+        latestExtract.definition.version
+      }_${new Date().toISOString().split('.')[0]}`,
+      execSystemLogicalQueue: 'development',
+      archiveSystemId: file.system,
+      archiveSystemDir: archivePath,
+      archiveOnAppError: false,
+      appId: latestExtract.definition.id,
+      appVersion: latestExtract.definition.version,
+      parameterSet: {
+        appArgs: [],
+        schedulerOptions: [
+          {
+            name: 'TACC Allocation',
+            description:
+              'The TACC allocation associated with this job execution',
+            include: true,
+            arg: '-A TACC-ACI',
+          },
+        ],
+      },
+      execSystemId: latestExtract.definition.jobAttributes.execSystemId,
     },
-    maxRunTime: '02:00:00',
-    name: 'Extracting Compressed File',
-    parameters: {},
   });
 };
 
@@ -933,24 +924,24 @@ export const extractAppSelector = (state) => state.workbench.config.extractApp;
 
 export function* extractFiles(action) {
   try {
-    const extractApp = yield select(extractAppSelector);
-    const latestExtract = yield call(getLatestApp, extractApp);
-    const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
     });
-    const submission = yield call(jobHelper, params);
-    if (submission.execSys) {
-      // If the execution system requires pushing keys, then
-      // bring up the modal and retry the extract action
+    const extractApp = yield select(extractAppSelector);
+    const latestExtract = yield call(fetchAppDefinitionUtil, extractApp);
+    const params = getExtractParams(action.payload.file, latestExtract);
+    const res = yield call(jobHelper, params);
+    // If the execution system requires pushing keys, then
+    // bring up the modal and retry the extract action
+    if (res.response.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys,
+            system: res.response.execSys,
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { status: 'ERROR', operation: 'extract' },
@@ -958,7 +949,7 @@ export function* extractFiles(action) {
           },
         },
       });
-    } else if (submission.status === 'ACCEPTED') {
+    } else if (res.response.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' },
@@ -969,6 +960,9 @@ export function* extractFiles(action) {
       });
     } else {
       throw new Error('Unable to extract files');
+    }
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
     }
   } catch (error) {
     yield put({
@@ -989,28 +983,56 @@ export function* watchExtract() {
  * @returns {String}
  */
 const getCompressParams = (files, zipfileName, latestZippy) => {
+  // TODOv3: zippy
   const inputs = {
-    inputFiles: files.map((file) => `agave://${file.system}${file.path}`),
+    inputFiles: files.map((file) => `tapis://${file.system}/${file.path}`),
   };
   const parameters = {
     filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
     zipfileName,
     compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip',
   };
-  const archivePath = `agave://${files[0].system}${files[0].path.substring(
+  const archivePath = `${files[0].path.substring(
     0,
     files[0].path.lastIndexOf('/') + 1
   )}`;
 
   return JSON.stringify({
-    allocation: 'FORK',
-    appId: latestZippy,
-    archive: true,
-    archivePath,
-    maxRunTime: '02:00:00',
-    name: 'Compressing Files',
-    inputs,
-    parameters,
+    job: {
+      fileInputs: [
+        {
+          name: 'Target path to be compressed',
+          sourceUrl: inputFile,
+        },
+      ],
+      name: `${latestZippy.definition.id}-${latestZippy.definition.version}_${
+        new Date().toISOString().split('.')[0]
+      }`,
+      execSystemLogicalQueue: 'development',
+      archiveSystemId: files[0].system,
+      archiveSystemDir: archivePath,
+      archiveOnAppError: false,
+      appId: latestZippy.definition.id,
+      appVersion: latestZippy.definition.version,
+      parameterSet: {
+        appArgs: [
+          {
+            name: 'Compression Type',
+            arg: 'zip',
+          },
+        ],
+        schedulerOptions: [
+          {
+            name: 'TACC Allocation',
+            description:
+              'The TACC allocation associated with this job execution',
+            include: true,
+            arg: '-A TACC-ACI',
+          },
+        ],
+      },
+      execSystemId: latestZippy.definition.jobAttributes.execSystemId,
+    },
   });
 };
 
@@ -1023,33 +1045,33 @@ export function* compressFiles(action) {
     payload: { status: 'ERROR', operation: 'compress' },
   };
   try {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'compress' },
+    });
     const compressApp = yield select(compressAppSelector);
-    const latestZippy = yield call(getLatestApp, compressApp);
+    const latestZippy = yield call(fetchAppDefinitionUtil, compressApp);
     const params = getCompressParams(
       action.payload.files,
       action.payload.filename,
       latestZippy
     );
-    yield put({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'compress' },
-    });
-    const submission = yield call(jobHelper, params);
-    if (submission.execSys) {
-      // If the execution system requires pushing keys, then
-      // bring up the modal and retry the compress action
+    const res = yield call(jobHelper, params);
+    // If the execution system requires pushing keys, then
+    // bring up the modal and retry the compress action
+    if (res.response.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys,
+            system: res.response.execSys,
             onCancel: compressErrorAction,
           },
         },
       });
-    } else if (submission.status === 'ACCEPTED') {
+    } else if (res.response.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
@@ -1060,6 +1082,9 @@ export function* compressFiles(action) {
       });
     } else {
       throw new Error('Unable to compress files');
+    }
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
     }
   } catch (error) {
     yield put(compressErrorAction);
