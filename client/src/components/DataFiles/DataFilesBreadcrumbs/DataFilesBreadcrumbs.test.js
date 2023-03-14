@@ -34,9 +34,11 @@ describe('DataFilesBreadcrumbs', () => {
       getByText(/My Data \(Frontera\)/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
+    ).toEqual(
+      '/workbench/data/tapis/private/frontera.home.username/home/username/'
+    );
     expect(getByText(/the/).closest('a').getAttribute('href')).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/path/to/the/'
+      '/workbench/data/tapis/private/frontera.home.username/home/username/path/to/the/'
     );
     expect(getByText(/files/).closest('a')).toBeNull();
   });

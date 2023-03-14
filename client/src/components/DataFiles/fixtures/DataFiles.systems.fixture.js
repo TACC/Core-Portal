@@ -10,6 +10,7 @@ const systemsFixture = {
         api: 'tapis',
         icon: null,
         hidden: true,
+        homeDir: '/home/username',
       },
       {
         name: 'My Data (Frontera)',
@@ -17,6 +18,7 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
+        homeDir: '/home/username',
       },
       {
         name: 'My Data (Longhorn)',
@@ -24,6 +26,7 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
+        homeDir: '/home/username',
       },
       {
         name: 'Community Data',
@@ -32,6 +35,7 @@ const systemsFixture = {
         api: 'tapis',
         icon: null,
         siteSearchPriority: 1,
+        homeDir: '/corral/tacc/aci/CEP/community',
       },
       {
         name: 'Public Data',
@@ -40,6 +44,7 @@ const systemsFixture = {
         api: 'tapis',
         icon: 'publications',
         siteSearchPriority: 0,
+        homeDir: '/corral/tacc/aci/CEP/public',
       },
       {
         name: 'Shared Workspaces',
