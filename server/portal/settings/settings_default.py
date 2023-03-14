@@ -67,7 +67,7 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
 _PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Work)',
+        'name': 'My Data (Corral)',
         'system': 'cloud.data.community',
         'scheme': 'private',
         'api': 'tapis',
