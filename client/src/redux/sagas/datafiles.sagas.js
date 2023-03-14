@@ -821,7 +821,7 @@ export function* trashFile(system, path, homeDir) {
 }
 
 export async function emptyUtil(api, scheme, system, path) {
-  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}/${path}/`;
   const method = 'PUT';
   return fetchUtil({
     url,

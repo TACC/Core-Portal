@@ -557,7 +557,7 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
-TAPIS_DEFAULT_TRASH_NAME = '.Trash'
+TAPIS_DEFAULT_TRASH_NAME = getattr(settings_custom, '_TAPIS_DEFAULT_TRASH_NAME', '.Trash')
 
 PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
     _PORTAL_PROJECTS_SYSTEM_PREFIX

@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
-import { useModal, useSelectedFiles } from 'hooks/datafiles';
+import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -37,6 +37,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
   const { toggle } = useModal();
   const { selectedFiles } = useSelectedFiles();
+  const { params } = useFileListing('FilesListing');
 
   const history = useHistory();
   const location = useLocation();
@@ -44,21 +45,29 @@ const DataFilesToolbar = ({ scheme, api }) => {
     history.push(location.pathname);
   };
 
-  const inTrash = useSelector((state) =>
-    state.files.params.FilesListing.path.startsWith(
-      state.workbench.config.trashPath
-    )
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
   );
+
+  const selectedSystem = systemList.find(
+    (sys) => sys.system === params.system && sys.scheme === params.scheme
+  );
+
+  const inTrash = useSelector((state) => {     
+    // remove leading slash from homeDir value
+    const homeDir = selectedSystem?.homeDir.slice(1)
+
+    return state.files.params.FilesListing.path.startsWith(
+      `${homeDir}/${state.workbench.config.trashPath}`
+    )
+  });
+
   const trashedFiles = useSelector((state) =>
     inTrash ? state.files.listing.FilesListing : []
   );
 
   const status = useSelector((state) => state.files.operationStatus.trash);
-
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
 
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';

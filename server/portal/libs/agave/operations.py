@@ -42,7 +42,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     """
     raw_listing = client.files.listFiles(systemId=system,
-                                         path=urllib.parse.quote(path),
+                                         path=path,
                                          offset=int(offset),
                                          limit=int(limit))
 
@@ -208,7 +208,7 @@ def mkdir(client, system, path, dir_name):
     """
 
     path = Path(path) / Path(dir_name)
-    path_input = urllib.parse.quote(str(path))
+    path_input = str(path)
     client.files.mkdir(systemId=system, path=path_input)
 
     # TODOV3: test/verify indexing operations
@@ -248,11 +248,10 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         file_name = src_path.strip('/').split('/')[-1]
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
-    src_path_full = urllib.parse.quote(src_path)
 
     # Handle attempt to move a file into its current path.
-    if src_system == dest_system and src_path_full == dest_path_full:
-        return {'system': src_system, 'path': src_path_full, 'name': file_name}
+    if src_system == dest_system and src_path == dest_path_full:
+        return {'system': src_system, 'path': src_path, 'name': file_name}
 
     try:
         # list the directory and check if file_name exists
@@ -264,10 +263,11 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
-                                            path=src_path_full,
+                                            path=src_path,
                                             operation="MOVE",
                                             newPath=dest_path_full)
 
+    # TODOV3: test/verify indexing operations
     # if os.path.dirname(src_path) != dest_path or src_path != dest_path:
     #     agave_indexer.apply_async(kwargs={'systemId': src_system,
     #                                       'filePath': os.path.dirname(src_path),
@@ -317,16 +317,17 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         if err.response.status_code != 404:
             raise
 
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
                                             path=src_path,
                                             operation="COPY",
-                                            newPath=full_dest_path)
+                                            newPath=dest_path_full)
     else:
 
-        src_url = f'tapis://{src_system}/{urllib.parse.quote(src_path)}'
-        dest_url = f'tapis://{dest_system}/{full_dest_path}'
+        src_url = f'tapis://{src_system}/{src_path}'
+        dest_url = f'tapis://{dest_system}/{dest_path_full}'
 
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
@@ -338,6 +339,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
             'status': copy_response.status,
         }
 
+    # TODOV3: test/verify indexing operations
     # agave_indexer.apply_async(kwargs={'systemId': dest_system,
     #                                   'filePath': os.path.dirname(full_dest_path),
     #                                   'recurse': False},
@@ -365,7 +367,7 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
 
 def delete(client, system, path):
     return client.files.delete(systemId=system,
-                               path=urllib.parse.quote(path))
+                               path=path)
 
 
 def rename(client, system, path, new_name):
@@ -461,6 +463,7 @@ def upload(client, system, path, uploaded_file):
         files={"file": uploaded_file.file},
         headers={"X-Tapis-Token": token})
 
+    # TODOV3: test/verify indexing operations
     # agave_indexer.apply_async(kwargs={'systemId': system,
     #                                   'filePath': path,
     #                                   'recurse': False},
