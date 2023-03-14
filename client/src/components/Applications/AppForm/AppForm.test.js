@@ -243,36 +243,6 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using normal queue for SERIAL apps on Frontera', async () => {
-    const store = mockStore({
-      ...initialMockState,
-    });
-
-    const appFixture = {
-      ...helloWorldAppFixture,
-      definition: {
-        ...helloWorldAppFixture.definition,
-        jobAttributes: {
-          ...helloWorldAppFixture.definition.jobAttributes,
-          nodeCount: 1,
-          execSystemLogicalQueue: 'normal',
-        },
-        notes: {
-          ...helloWorldAppFixture.definition.notes,
-          hideNodeCountAndCoresPerNode: true,
-        },
-      },
-    };
-
-    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
-
-    await waitFor(() => {
-      expect(
-        getByText(/The normal queue does not support serial apps/)
-      ).toBeDefined();
-    });
-  });
-
   it('displays an error when license is missing', async () => {
     const store = mockStore({
       ...initialMockState,

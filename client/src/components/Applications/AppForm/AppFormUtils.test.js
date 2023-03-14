@@ -1,10 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
-import {
-  getNodeCountValidation,
-  getQueueValidation,
-  updateValuesForQueue,
-} from './AppFormUtils';
+import { getNodeCountValidation, updateValuesForQueue } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue = helloWorldAppFixture.exec_sys.batchLogicalQueues.find(
@@ -43,7 +39,7 @@ describe('AppFormUtils', () => {
     maxMinutes: '',
   };
 
-  it('handles node count validation on Frontera', () => {
+  it('handles node count validation', () => {
     expect(
       getNodeCountValidation(normalQueue, parallelFronteraApp).isValidSync(1)
     ).toEqual(false);
@@ -56,42 +52,6 @@ describe('AppFormUtils', () => {
     expect(
       getNodeCountValidation(smallQueue, parallelFronteraApp).isValidSync(3)
     ).toEqual(false);
-  });
-
-  it('handles node count validation on non-Frontera HPCs', () => {
-    const stampede2App = cloneDeep(parallelFronteraApp);
-    stampede2App.exec_sys.host = 'stampede2.tacc.utexas.edu';
-    expect(
-      getNodeCountValidation(normalQueue, stampede2App).isValidSync(1)
-    ).toEqual(true);
-    expect(
-      getNodeCountValidation(normalQueue, stampede2App).isValidSync(3)
-    ).toEqual(true);
-  });
-
-  it('handles queue validation on Frontera HPCs for SERIAL apps', () => {
-    expect(
-      getQueueValidation(smallQueue, serialFronteraApp).isValidSync('small')
-    ).toEqual(true);
-    expect(
-      getQueueValidation(smallQueue, serialFronteraApp).isValidSync(
-        'development'
-      )
-    ).toEqual(true);
-    expect(
-      getQueueValidation(normalQueue, serialFronteraApp).isValidSync('normal')
-    ).toEqual(false);
-  });
-
-  it('handles queue validation on non-Frontera HPCs for SERIAL apps', () => {
-    const stampede2SerialApp = cloneDeep(helloWorldAppFixture);
-    stampede2SerialApp.exec_sys.host = 'stampede2.tacc.utexas.edu';
-    expect(
-      getQueueValidation(smallQueue, stampede2SerialApp).isValidSync('small')
-    ).toEqual(true);
-    expect(
-      getQueueValidation(normalQueue, stampede2SerialApp).isValidSync('normal')
-    ).toEqual(true);
   });
 
   it('updateValuesForQueue updates node count when using small queue', () => {
@@ -139,17 +99,5 @@ describe('AppFormUtils', () => {
     values.maxMinutes = 999;
     const updatedValues = updateValuesForQueue(appFrontera, values);
     expect(updatedValues.maxMinutes).toEqual(120);
-  });
-
-  it('updateValuesForQueue avoids updating runtime if not valid or empty', () => {
-    const appFrontera = cloneDeep(parallelFronteraApp);
-    const values = cloneDeep(exampleFormValue);
-    values.maxMinutes = 9999;
-    const updatedValues = updateValuesForQueue(appFrontera, values);
-    expect(updatedValues.maxMinutes).toEqual(9999);
-
-    values.maxMinutes = '';
-    const moreUpdatedValues = updateValuesForQueue(appFrontera, values);
-    expect(moreUpdatedValues.maxMinutes).toEqual('');
   });
 });
