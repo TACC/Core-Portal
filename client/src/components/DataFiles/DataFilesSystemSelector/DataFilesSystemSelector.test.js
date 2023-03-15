@@ -26,7 +26,7 @@ describe('DataFilesSystemSelector', () => {
               s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
           )
           .filter((s) => !(s.scheme === 'public' && canMakePublic))
-          .map((s) => s.system)}
+          .map((s) => `${s.system}${s.homeDir || ''}`)}
       />,
       store,
       history
