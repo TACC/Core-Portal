@@ -34,7 +34,7 @@ const DataFilesMoveModal = React.memo(() => {
     return systems.find(
       (sys) => sys.system === params.system && sys.scheme === params.scheme
     );
-  })
+  });
 
   const reloadPage = () => {
     history.push(location.pathname);

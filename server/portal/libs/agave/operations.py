@@ -6,7 +6,8 @@ from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer
+# TODOv3: uncomment with indexing fix
+# from portal.apps.search.tasks import agave_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
@@ -453,15 +454,17 @@ def upload(client, system, path, uploaded_file):
         if err.response.status_code != 404:
             raise
 
-    base_url = client.base_url
+    base_url = settings.TAPIS_TENANT_BASEURL
     token = client.access_token.access_token
     systemId = system
-    path = f'{urllib.parse.quote(path)}/{uploaded_file.name}'
+    dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
     res = r.post(
-        url=f'{base_url}/v3/files/ops/{systemId}/{path}',
+        url=f'{base_url}/v3/files/ops/{systemId}/{dest_path}',
         files={"file": uploaded_file.file},
         headers={"X-Tapis-Token": token})
+
+    response_json = res.json()
 
     # TODOV3: test/verify indexing operations
     # agave_indexer.apply_async(kwargs={'systemId': system,
@@ -469,7 +472,7 @@ def upload(client, system, path, uploaded_file):
     #                                   'recurse': False},
     #                           )
 
-    return res.content.decode()
+    return response_json
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
