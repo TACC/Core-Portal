@@ -23,7 +23,6 @@ import {
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
-  getQueueValidation,
   updateValuesForQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
@@ -411,7 +410,9 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              execSystemLogicalQueue: getQueueValidation(queue, app),
+              execSystemLogicalQueue: Yup.string()
+                .required('Required')
+                .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name)),
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue),
               maxMinutes: getMaxMinutesValidation(queue).required('Required'),
@@ -569,16 +570,19 @@ export const AppSchemaForm = ({ app }) => {
                     required
                   >
                     {app.exec_sys.batchLogicalQueues
-                      .map((q) => q.name)
+                      /*
+                        Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
+                        while hideNodeCountAndCoresPerNode is true
+                      */
                       .filter(
                         (q) =>
-                          // normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed if app is fixed to single node
-                          !(
-                            getSystemName(app.exec_sys.host) === 'Frontera' &&
-                            q === 'normal' &&
-                            app.definition.notes.hideNodeCountAndCoresPerNode
-                          )
+                          app.definition.notes.hideNodeCountAndCoresPerNode &&
+                          app.definition.jobAttributes.nodeCount >=
+                            q.minNodeCount &&
+                          app.definition.jobAttributes.nodeCount <=
+                            q.maxNodeCount
                       )
+                      .map((q) => q.name)
                       .sort()
                       .map((queueName) => (
                         <option key={queueName} value={queueName}>
