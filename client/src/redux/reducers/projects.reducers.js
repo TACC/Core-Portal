@@ -30,24 +30,6 @@ const removeProjectMember = (members, removedMember) => {
   );
 };
 
-const transformMetadata = (project) => {
-  return project;
-  const members = [];
-  if (project.pi) members.push({ user: project.pi, access: 'owner' });
-  project.coPis.forEach((coPi) => {
-    members.push({ user: coPi, access: 'edit' });
-  });
-  project.teamMembers.forEach((teamMember) => {
-    members.push({ user: teamMember, access: 'edit' });
-  });
-  return {
-    title: project.title,
-    description: project.description,
-    projectId: project.projectId,
-    members,
-  };
-};
-
 export default function projects(state = initialState, action) {
   switch (action.type) {
     case 'PROJECTS_GET_LISTING_STARTED':
@@ -137,7 +119,7 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...transformMetadata(action.payload),
+          ...action.payload,
           loading: false,
           error: null,
         },
@@ -166,7 +148,7 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...transformMetadata(action.payload),
+          ...action.payload,
           loading: false,
           error: null,
         },
@@ -211,7 +193,7 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...transformMetadata(action.payload),
+          ...action.payload,
           loading: false,
           error: null,
         },

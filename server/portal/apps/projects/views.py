@@ -85,31 +85,12 @@ class ProjectsApiView(BaseApiView):
         }
         ```
         """
-        query_string = request.GET.get('query_string')
-        offset = int(request.GET.get('offset', 0))
-        limit = int(request.GET.get('limit', 100))
+        # query_string = request.GET.get('query_string')
+        # offset = int(request.GET.get('offset', 0))
+        # limit = int(request.GET.get('limit', 100))
         client = request.user.tapis_oauth.client
         listing = list_projects(client)
         return JsonResponse({"status": 200, "response": listing})
-
-        mgr = ProjectsManager(request.user)
-
-        if query_string is not None:
-            res = mgr.search(query_string=query_string,
-                             offset=offset,
-                             limit=limit)
-        else:
-            res = mgr.list(
-                offset=offset,
-                limit=limit
-            )
-        return JsonResponse(
-            {
-                'status': 200,
-                'response': res
-            },
-            encoder=ProjectsManager.systems_serializer_cls
-        )
 
     def post(self, request):  # pylint: disable=no-self-use
         """POST handler."""
@@ -190,8 +171,7 @@ class ProjectInstanceApiView(BaseApiView):
         :param str project_id: Project Id.
         """
         data = json.loads(request.body)
-        LOGGER.debug('data: %s', data)
-        # prj = mgr.update_prj(project_id, system_id, **data)
+
         client = request.user.tapis_oauth.client
         workspace_def = update_project(client, project_id, data['title'], data['description'])
         return JsonResponse(
@@ -300,7 +280,7 @@ class ProjectMembersApiView(BaseApiView):
         username = data.get('username')
         new_role = data.get('newRole')
         client = request.user.tapis_oauth.client
-        LOGGER.debug(data)
+
         role_map = {
             "GUEST": "reader",
             "USER": "writer"
@@ -326,7 +306,6 @@ def get_project_role(request, project_id, username):
 
 @login_required
 def get_system_role(request, project_id, username):
-    role = None
     client = request.user.tapis_oauth.client
     role = get_workspace_role(client, project_id, username)
 
