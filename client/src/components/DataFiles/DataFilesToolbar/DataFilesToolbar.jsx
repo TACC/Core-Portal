@@ -152,12 +152,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       (f) => status[f.system + f.path] !== 'SUCCESS'
     );
 
-    const system = selectedFiles[0].system;
-
-    const selectedSystem = systems.find(
-      (s) => s.system === system && s.scheme === scheme
-    );
-
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
@@ -166,7 +160,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
         reloadCallback: reloadPage,
       },
     });
-  }, [selectedFiles, reloadPage]);
+  }, [selectedFiles, selectedSystem, reloadPage]);
 
   const empty = () => {
     dispatch({

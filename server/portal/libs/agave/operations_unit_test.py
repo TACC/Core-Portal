@@ -63,8 +63,9 @@ class TestOperations(TestCase):
                                         'path': '/path/to/file'}],
                                       'reachedEnd': True, 'count': 1})
 
-    @patch('portal.libs.agave.operations.agave_indexer')
-    def test_mkdir(self, mock_indexer):
+    # TODOv3: test/verify indexing operations
+    # @patch('portal.libs.agave.operations.agave_indexer')
+    def test_mkdir(self):
         client = MagicMock()
         mkdir(client, 'test.system', '/root', 'testfolder')
         client.files.mkdir.assert_called_with(systemId='test.system', path='/root/testfolder')
@@ -82,8 +83,9 @@ class TestOperations(TestCase):
                                      dest_system='test.system', dest_path='/path/to',
                                      file_name='newname')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
-    def test_move(self, mock_indexer):
+    # TODOv3: test/verify indexing operations
+    # @patch('portal.libs.agave.operations.agave_indexer')
+    def test_move(self):
         client = MagicMock()
         client.files.listFiles.side_effect = HTTPError(response=MagicMock(status_code=404))
         client.files.moveCopy.return_value = {'nativeFormat': 'dir'}
@@ -102,8 +104,9 @@ class TestOperations(TestCase):
         with self.assertRaises(ApiException):
             move(client, 'test.system', '/path/to/src', 'other.system', '/path/to/dest')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
-    def test_copy(self, mock_indexer):
+    # TODOv3: test/verify indexing operations
+    # @patch('portal.libs.agave.operations.agave_indexer')
+    def test_copy(self):
         client = MagicMock()
         client.files.listFiles.side_effect = HTTPError(response=MagicMock(status_code=404))
         client.files.moveCopy.return_value = {'nativeFormat': 'dir'}
