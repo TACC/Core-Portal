@@ -881,11 +881,8 @@ export function* emptyFile(system, path) {
 }
 
 const getExtractParams = (file, latestExtract) => {
-  const inputFile = `tapis://${file.system}/${file.path}`;
-  const archivePath = `${file.path.substring(
-    0,
-    file.path.lastIndexOf('/') + 1
-  )}`;
+  const inputFile = encodeURI(`tapis://${file.system}/${file.path}`);
+  const archivePath = `${file.path.slice(0, -file.name.length)}`;
   return JSON.stringify({
     job: {
       fileInputs: [
@@ -897,7 +894,6 @@ const getExtractParams = (file, latestExtract) => {
       name: `${latestExtract.definition.id}-${
         latestExtract.definition.version
       }_${new Date().toISOString().split('.')[0]}`,
-      execSystemLogicalQueue: 'development',
       archiveSystemId: file.system,
       archiveSystemDir: archivePath,
       archiveOnAppError: false,
@@ -934,14 +930,14 @@ export function* extractFiles(action) {
     const res = yield call(jobHelper, params);
     // If the execution system requires pushing keys, then
     // bring up the modal and retry the extract action
-    if (res.response.execSys) {
+    if (res.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: res.response.execSys,
+            system: res.execSys,
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { status: 'ERROR', operation: 'extract' },
@@ -949,7 +945,7 @@ export function* extractFiles(action) {
           },
         },
       });
-    } else if (res.response.status === 'PENDING') {
+    } else if (res.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' },
@@ -982,28 +978,24 @@ export function* watchExtract() {
  * @param {String} archiveFileName
  * @returns {String}
  */
-const getCompressParams = (files, archiveFileName, latestZippy) => {
+const getCompressParams = (files, archiveFileName, latestCompress) => {
   const fileInputs = files.map((file) => ({
-    sourceUrl: `tapis://${file.system}/${file.path}`,
+    sourceUrl: encodeURI(`tapis://${file.system}/${file.path}`),
   }));
 
-  const archivePath = `${files[0].path.substring(
-    0,
-    files[0].path.lastIndexOf('/') + 1
-  )}`;
+  const archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
 
   return JSON.stringify({
     job: {
       fileInputs: fileInputs,
-      name: `${latestZippy.definition.id}-${latestZippy.definition.version}_${
-        new Date().toISOString().split('.')[0]
-      }`,
-      execSystemLogicalQueue: 'development',
+      name: `${latestCompress.definition.id}-${
+        latestCompress.definition.version
+      }_${new Date().toISOString().split('.')[0]}`,
       archiveSystemId: files[0].system,
       archiveSystemDir: archivePath,
       archiveOnAppError: false,
-      appId: latestZippy.definition.id,
-      appVersion: latestZippy.definition.version,
+      appId: latestCompress.definition.id,
+      appVersion: latestCompress.definition.version,
       parameterSet: {
         appArgs: [
           {
@@ -1025,7 +1017,7 @@ const getCompressParams = (files, archiveFileName, latestZippy) => {
           },
         ],
       },
-      execSystemId: latestZippy.definition.jobAttributes.execSystemId,
+      execSystemId: latestCompress.definition.jobAttributes.execSystemId,
     },
   });
 };
@@ -1044,35 +1036,35 @@ export function* compressFiles(action) {
       payload: { status: 'RUNNING', operation: 'compress' },
     });
     const compressApp = yield select(compressAppSelector);
-    const latestZippy = yield call(fetchAppDefinitionUtil, compressApp);
+    const latestCompress = yield call(fetchAppDefinitionUtil, compressApp);
     const params = getCompressParams(
       action.payload.files,
       action.payload.filename,
-      latestZippy
+      latestCompress
     );
     const res = yield call(jobHelper, params);
     // If the execution system requires pushing keys, then
     // bring up the modal and retry the compress action
-    if (res.response.execSys) {
+    if (res.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: res.response.execSys,
+            system: res.execSys,
             onCancel: compressErrorAction,
           },
         },
       });
-    } else if (res.response.status === 'PENDING') {
+    } else if (res.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
       });
       yield put({
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'downloadMessage', props: {} },
+        payload: { operation: 'compress', props: {} },
       });
     } else {
       throw new Error('Unable to compress files');

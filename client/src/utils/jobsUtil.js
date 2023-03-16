@@ -128,7 +128,7 @@ export function getJobDisplayInformation(job, app) {
       );
       display.workPath = workPath ? workPath.value : '';
 
-      if (app.exec_sys.batchScheduler === 'SLURM') {
+      if (app.definition.jobType === 'BATCH') {
         const allocationParam = schedulerOptions.find(
           (opt) => opt.name === 'TACC Allocation'
         );
