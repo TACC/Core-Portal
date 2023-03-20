@@ -196,3 +196,5 @@ export const compressApp = {
     type: null,
   },
 };
+
+export default compressApp;

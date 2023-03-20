@@ -170,3 +170,5 @@ export const extractApp = {
     type: null,
   },
 };
+
+export default extractApp;

@@ -344,7 +344,8 @@ describe('extractFiles', () => {
     payload: {
       file: {
         system: 'test.system',
-        path: '/dir/test.zip',
+        path: 'dir/test.zip',
+        name: 'test.zip',
       },
     },
   };
@@ -410,12 +411,12 @@ describe('compressFiles', () => {
       files: [
         {
           system: 'test.system',
-          path: '/test1.txt',
+          path: 'test1.txt',
           name: 'test1.txt',
         },
         {
           system: 'test.system',
-          path: '/test2.txt',
+          path: 'test2.txt',
           name: 'test2.txt',
         },
       ],
@@ -434,7 +435,7 @@ describe('compressFiles', () => {
       ],
       name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
       archiveSystemId: 'test.system',
-      archiveSystemDir: '/',
+      archiveSystemDir: '',
       archiveOnAppError: false,
       appId: 'compress',
       appVersion: '0.0.1',
