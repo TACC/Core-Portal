@@ -42,7 +42,14 @@ const DataFilesCompressModal = () => {
   const compressCallback = () => {
     const { filenameDisplay, filetype } = formRef.current.values;
     const filename = `${filenameDisplay}${filetype}`;
-    compress({ filename, files: selected });
+    compress({
+      filename,
+      files: selected,
+      onSuccess: {
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'compress', props: {} },
+      },
+    });
   };
 
   const initialValues = {

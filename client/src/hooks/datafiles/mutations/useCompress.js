@@ -14,10 +14,10 @@ function useCompress() {
     });
   };
 
-  const compress = ({ filename, files }) => {
+  const compress = ({ filename, files, onSuccess }) => {
     dispatch({
       type: 'DATA_FILES_COMPRESS',
-      payload: { filename, files },
+      payload: { filename, files, onSuccess },
     });
   };
 

@@ -1062,10 +1062,6 @@ export function* compressFiles(action) {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
       });
-      yield put({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'compress', props: {} },
-      });
     } else {
       throw new Error('Unable to compress files');
     }

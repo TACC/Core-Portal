@@ -40,13 +40,6 @@ const DataFilesDownloadMessageModal = () => {
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
 
-  const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' },
-    });
-  };
-
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
@@ -63,7 +56,14 @@ const DataFilesDownloadMessageModal = () => {
     const filename = `${filenameDisplay}${filetype}`;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
-      payload: { filename, files: selected },
+      payload: {
+        filename,
+        files: selected,
+        onSuccess: {
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: { operation: 'downloadMessage', props: {} },
+        },
+      },
     });
   };
 
@@ -92,7 +92,6 @@ const DataFilesDownloadMessageModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       size="md"
