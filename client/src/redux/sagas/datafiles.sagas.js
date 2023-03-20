@@ -989,6 +989,7 @@ export function* watchExtract() {
 const getCompressParams = (
   files,
   archiveFileName,
+  compressionType,
   latestCompress,
   defaultAllocation
 ) => {
@@ -1017,7 +1018,7 @@ const getCompressParams = (
           },
           {
             name: 'Compression Type',
-            arg: 'zip',
+            arg: compressionType,
           },
         ],
         schedulerOptions: [
@@ -1054,6 +1055,7 @@ export function* compressFiles(action) {
     const params = getCompressParams(
       action.payload.files,
       action.payload.filename,
+      action.payload.compressionType,
       latestCompress,
       defaultAllocation
     );

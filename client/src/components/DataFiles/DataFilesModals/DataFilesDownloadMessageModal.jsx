@@ -52,13 +52,13 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   const compressCallback = () => {
-    const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay}${filetype}`;
+    const { filenameDisplay, compressionType } = formRef.current.values;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
       payload: {
-        filename,
+        filename: filenameDisplay,
         files: selected,
+        compressionType,
         onSuccess: {
           type: 'DATA_FILES_TOGGLE_MODAL',
           payload: { operation: 'downloadMessage', props: {} },
@@ -71,8 +71,8 @@ const DataFilesDownloadMessageModal = () => {
     filenameDisplay:
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
-        : '',
-    filetype: '.zip',
+        : `Archive_${new Date().toISOString().split('.')[0]}`,
+    compressionType: '.zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
@@ -108,7 +108,7 @@ const DataFilesDownloadMessageModal = () => {
       >
         {({ setFieldValue, values, isValid }) => {
           const handleSelectChange = (e) => {
-            setFieldValue('filetype', e.target.value);
+            setFieldValue('compressionType', e.target.value);
           };
           const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
           const buttonDisabled =
@@ -132,7 +132,7 @@ const DataFilesDownloadMessageModal = () => {
                     >
                       <Input
                         type="select"
-                        name="filetype"
+                        name="compressionType"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}

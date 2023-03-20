@@ -40,11 +40,11 @@ const DataFilesCompressModal = () => {
   const toggle = () => toggleModal({ operation: 'compress', props: {} });
 
   const compressCallback = () => {
-    const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay}${filetype}`;
+    const { filenameDisplay, compressionType } = formRef.current.values;
     compress({
-      filename,
+      filename: filenameDisplay,
       files: selected,
+      compressionType,
       onSuccess: {
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: { operation: 'compress', props: {} },
@@ -56,8 +56,8 @@ const DataFilesCompressModal = () => {
     filenameDisplay:
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
-        : '',
-    filetype: '.zip',
+        : `Archive_${new Date().toISOString().split('.')[0]}`,
+    compressionType: '.zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
@@ -85,7 +85,7 @@ const DataFilesCompressModal = () => {
       >
         {({ setFieldValue, values, isValid }) => {
           const handleSelectChange = (e) => {
-            setFieldValue('filetype', e.target.value);
+            setFieldValue('compressionType', e.target.value);
           };
           const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
           const buttonDisabled =
@@ -105,7 +105,7 @@ const DataFilesCompressModal = () => {
                     >
                       <Input
                         type="select"
-                        name="filetype"
+                        name="compressionType"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
@@ -119,7 +119,7 @@ const DataFilesCompressModal = () => {
                 />
                 <p>
                   A job to compress these files will be submitted. The
-                  compressed file will appear in this directory.
+                  compressed file archive will appear in this directory.
                 </p>
               </ModalBody>
               <ModalFooter>
