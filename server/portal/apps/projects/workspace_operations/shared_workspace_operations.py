@@ -4,39 +4,11 @@ import requests
 from tapipy.tapis import Tapis
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
 
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-def add_workspace_credentials(client: Tapis,
-                              username: str,
-                              public_key: str,
-                              private_key: str,
-                              system_id) -> None:
-    """
-    Set an RSA key pair as the user"s auth credential on a Tapis system.
-    """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
-    data = {"privateKey": private_key, "publicKey": public_key}
-    client.systems.createUserCredential(
-        systemId=system_id,
-        userName=username,
-        **data
-    )
-
-
-def register_public_key(username, publicKey, system_id) -> int:
-    """
-    Push a public key to the Key Service API.
-    """
-    url = "https://api.tacc.utexas.edu/keys/v2/" + username
-    headers = {"Authorization": "Bearer {}".format(settings.KEY_SERVICE_TOKEN)}
-    data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
-    response = requests.post(url, json=data, headers=headers)
-    response.raise_for_status
-    return response.status_code
 
 
 def set_workspace_permissions(client: Tapis, username: str, system_id: str, role: str):
@@ -166,8 +138,8 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
     register_public_key(owner,
                         pub_key,
                         system_id)
-    add_workspace_credentials(client, owner, pub_key, priv_key, system_id)
-    add_workspace_credentials(service_client,
+    create_system_credentials(client, owner, pub_key, priv_key, system_id)
+    create_system_credentials(service_client,
                               settings.PORTAL_ADMIN_USERNAME,
                               settings.PORTAL_PROJECTS_PUBLIC_KEY,
                               settings.PORTAL_PROJECTS_PRIVATE_KEY,

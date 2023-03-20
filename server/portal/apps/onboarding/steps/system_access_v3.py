@@ -12,19 +12,36 @@ from tapipy.errors import BaseTapyException
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials(user, public_key, private_key, system_id, skipCredentialCheck=False) -> int:
+def create_system_credentials(client,
+                              username,
+                              public_key,
+                              private_key,
+                              system_id,
+                              skipCredentialCheck=False) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {user.username} on Tapis system {system_id}")
+    logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
-    client = user.tapis_oauth.client
+    client = client
     client.systems.createUserCredential(
         systemId=system_id,
-        userName=user.username,
+        userName=username,
         skipCredentialCheck=skipCredentialCheck,
         **data
     )
+
+
+def register_public_key(username, publicKey, system_id) -> int:
+    """
+    Push a public key to the Key Service API.
+    """
+    url = "https://api.tacc.utexas.edu/keys/v2/" + username
+    headers = {"Authorization": "Bearer {}".format(settings.KEY_SERVICE_TOKEN)}
+    data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status
+    return response.status_code
 
 
 def set_user_permissions(user, system_id):
@@ -34,7 +51,7 @@ def set_user_permissions(user, system_id):
     client.systems.grantUserPerms(
         systemId=system_id,
         userName=user.username,
-        permissions=['READ', 'MODIFY', 'EXECUTE'])
+        permissions=['READ'])
     client.files.grantPermissions(
         systemId=system_id,
         path="/",
@@ -60,17 +77,6 @@ class SystemAccessStepV3(AbstractStep):
     def prepare(self):
         self.state = SetupState.PENDING
         self.log("Awaiting TACC systems access.")
-
-    def register_public_key(self, publicKey, system_id) -> int:
-        """
-        Push a public key to the Key Service API.
-        """
-        url = "https://api.tacc.utexas.edu/keys/v2/" + self.user.username
-        headers = {'Authorization': 'Bearer {}'.format(settings.KEY_SERVICE_TOKEN)}
-        data = {'key_value': publicKey, 'tags': [{'name': 'system', 'value': system_id}]}
-        response = requests.post(url, json=data, headers=headers)
-        response.raise_for_status
-        return response.status_code
 
     def check_system(self, system_id) -> None:
         """
@@ -99,14 +105,18 @@ class SystemAccessStepV3(AbstractStep):
             (priv, pub) = createKeyPair()
 
             try:
-                self.register_public_key(pub, system)
+                register_public_key(self.user.username, pub, system)
                 self.log(f"Successfully registered public key for system: {system}")
             except HTTPError as e:
                 logger.error(e)
                 self.fail(f"Failed to register public key with key service for system: {system}")
 
             try:
-                create_system_credentials(self.user, pub, priv, system)
+                create_system_credentials(self.user.tapis_oauth.client,
+                                          self.user.username,
+                                          pub,
+                                          priv,
+                                          system)
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as e:
                 logger.error(e)

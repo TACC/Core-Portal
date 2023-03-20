@@ -77,7 +77,9 @@ def _test_listing_with_existing_keypair(system, user):
 
     # Attempt listing a second time after credentials are added to system
     try:
-        create_system_credentials(user, publ_key_str, priv_key_str, system.id)
+        create_system_credentials(user.tapis_oauth.client,
+                                  user.username, publ_key_str,
+                                  priv_key_str, system.id)
         tapis.files.listFiles(systemId=system.id, path="/")
     except BaseTapyException:
         return False
