@@ -23,7 +23,6 @@ def create_system_credentials(client,
     """
     logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
-    client = client
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
@@ -45,7 +44,7 @@ def register_public_key(username, publicKey, system_id) -> int:
 
 
 def set_user_permissions(user, system_id):
-    """Apply read/write/execute permissions to a user on a system."""
+    """Apply read/write/execute permissions to files and read permissions on the system."""
     logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
     client = service_account()
     client.systems.grantUserPerms(
