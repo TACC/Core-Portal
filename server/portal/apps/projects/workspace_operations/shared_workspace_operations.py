@@ -168,7 +168,7 @@ def add_user_to_workspace(client: Tapis,
     register_public_key(username,
                         pub_key,
                         system_id)
-    add_workspace_credentials(client, username, pub_key, priv_key, system_id)
+    create_system_credentials(client, username, pub_key, priv_key, system_id)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
