@@ -880,7 +880,10 @@ export function* emptyFile(system, path) {
   return 'SUCCESS';
 }
 
-const getExtractParams = (file, latestExtract) => {
+export const defaultAllocationSelector = (state) =>
+  state.allocations.portal_alloc || state.allocations.active[0].projectName;
+
+const getExtractParams = (file, latestExtract, defaultAllocation) => {
   const inputFile = encodeURI(`tapis://${file.system}/${file.path}`);
   const archivePath = `${file.path.slice(0, -file.name.length)}`;
   return JSON.stringify({
@@ -907,7 +910,7 @@ const getExtractParams = (file, latestExtract) => {
             description:
               'The TACC allocation associated with this job execution',
             include: true,
-            arg: '-A TACC-ACI',
+            arg: `-A ${defaultAllocation}`,
           },
         ],
       },
@@ -925,8 +928,13 @@ export function* extractFiles(action) {
       payload: { status: 'RUNNING', operation: 'extract' },
     });
     const extractApp = yield select(extractAppSelector);
+    const defaultAllocation = yield select(defaultAllocationSelector);
     const latestExtract = yield call(fetchAppDefinitionUtil, extractApp);
-    const params = getExtractParams(action.payload.file, latestExtract);
+    const params = getExtractParams(
+      action.payload.file,
+      latestExtract,
+      defaultAllocation
+    );
     const res = yield call(jobHelper, params);
     // If the execution system requires pushing keys, then
     // bring up the modal and retry the extract action
@@ -978,7 +986,12 @@ export function* watchExtract() {
  * @param {String} archiveFileName
  * @returns {String}
  */
-const getCompressParams = (files, archiveFileName, latestCompress) => {
+const getCompressParams = (
+  files,
+  archiveFileName,
+  latestCompress,
+  defaultAllocation
+) => {
   const fileInputs = files.map((file) => ({
     sourceUrl: encodeURI(`tapis://${file.system}/${file.path}`),
   }));
@@ -1013,7 +1026,7 @@ const getCompressParams = (files, archiveFileName, latestCompress) => {
             description:
               'The TACC allocation associated with this job execution',
             include: true,
-            arg: '-A TACC-ACI',
+            arg: `-A ${defaultAllocation}`,
           },
         ],
       },
@@ -1036,11 +1049,13 @@ export function* compressFiles(action) {
       payload: { status: 'RUNNING', operation: 'compress' },
     });
     const compressApp = yield select(compressAppSelector);
+    const defaultAllocation = yield select(defaultAllocationSelector);
     const latestCompress = yield call(fetchAppDefinitionUtil, compressApp);
     const params = getCompressParams(
       action.payload.files,
       action.payload.filename,
-      latestCompress
+      latestCompress,
+      defaultAllocation
     );
     const res = yield call(jobHelper, params);
     // If the execution system requires pushing keys, then

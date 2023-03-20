@@ -17,6 +17,7 @@ import {
   compressAppSelector,
   makePublicUtil,
   doMakePublic,
+  defaultAllocationSelector,
 } from './datafiles.sagas';
 import { select } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
@@ -354,6 +355,7 @@ describe('extractFiles', () => {
     return expectSaga(extractFiles, action)
       .provide([
         [select(extractAppSelector), 'extract'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
         [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
@@ -375,6 +377,7 @@ describe('extractFiles', () => {
     return expectSaga(extractFiles, action)
       .provide([
         [select(extractAppSelector), 'extract'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
         [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
@@ -468,6 +471,7 @@ describe('compressFiles', () => {
     return expectSaga(compressFiles, action)
       .provide([
         [select(compressAppSelector), 'compress'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
@@ -488,6 +492,7 @@ describe('compressFiles', () => {
     return expectSaga(compressFiles, action)
       .provide([
         [select(compressAppSelector), 'compress'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
