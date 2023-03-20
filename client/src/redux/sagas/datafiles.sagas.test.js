@@ -410,7 +410,7 @@ describe('compressFiles', () => {
   const action = {
     type: 'DATA_FILES_COMPRESS',
     payload: {
-      filename: 'test.zip',
+      filename: 'test',
       files: [
         {
           system: 'test.system',
@@ -423,6 +423,7 @@ describe('compressFiles', () => {
           name: 'test2.txt',
         },
       ],
+      compressionType: 'zip',
     },
   };
 
@@ -446,7 +447,7 @@ describe('compressFiles', () => {
         appArgs: [
           {
             name: 'Archive File Name',
-            arg: 'test.zip',
+            arg: 'test',
           },
           {
             name: 'Compression Type',
