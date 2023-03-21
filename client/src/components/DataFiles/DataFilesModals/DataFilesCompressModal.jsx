@@ -57,7 +57,7 @@ const DataFilesCompressModal = () => {
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
         : `Archive_${new Date().toISOString().split('.')[0]}`,
-    compressionType: '.zip',
+    compressionType: 'zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
@@ -111,8 +111,8 @@ const DataFilesCompressModal = () => {
                         disabled={formDisabled}
                         className={styles['bg-color']}
                       >
-                        <option value=".zip">.zip</option>
-                        <option value=".tar.gz">.tar.gz</option>
+                        <option value="zip">.zip</option>
+                        <option value="tgz">.tar.gz</option>
                       </Input>
                     </InputGroupAddon>
                   }
