@@ -2,7 +2,6 @@ import urllib
 import os
 import io
 from django.conf import settings
-from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
@@ -258,9 +257,9 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         # list the directory and check if file_name exists
         file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+        dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+    except BaseTapyException:
+        raise
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -314,9 +313,8 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         # list the directory and check if file_name exists
         file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+    except BaseTapyException:
+        raise
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
@@ -450,9 +448,8 @@ def upload(client, system, path, uploaded_file):
     try:
         file_listing = client.files.listFiles(systemId=system, path=path)
         uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
-    except Exception as err:
-        if err.response.status_code != 404:
-            raise
+    except BaseTapyException:
+        raise
 
     base_url = settings.TAPIS_TENANT_BASEURL
     token = client.access_token.access_token
@@ -463,6 +460,8 @@ def upload(client, system, path, uploaded_file):
         url=f'{base_url}/v3/files/ops/{systemId}/{dest_path}',
         files={"file": uploaded_file.file},
         headers={"X-Tapis-Token": token})
+
+    res.raise_for_status()
 
     response_json = res.json()
 

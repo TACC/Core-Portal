@@ -239,13 +239,13 @@ def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, 
 
     mock_tapis_client.access_token.access_token = "my_access_token"
     requests_mock.post(f'{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/frontera.home.username/text_file.txt',
-                       json={"data": agave_file_mock})
+                       json=agave_file_mock)
 
     response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
                            data={"uploaded_file": text_file_fixture})
 
     assert response.status_code == 200
-    assert response.json()['data'] == {"data": agave_file_mock}
+    assert response.json() == {"data": agave_file_mock}
 
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with(
