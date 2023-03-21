@@ -169,20 +169,10 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     str
     Post it link.
     """
-    # pylint: disable=protected-access
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
-    # pylint: enable=protected-access
-    if force:
-        args['url'] += '?force=True'
 
-    result = client.postits.create(body=args)
-    return result['_links']['self']['href']
+    create_postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+
+    return create_postit_result.redeemUrl
 
 
 def mkdir(client, system, path, dir_name):
@@ -488,16 +478,9 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
+    postit = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
 
-    result = client.postits.create(body=args)
-    url = result['_links']['self']['href']
+    url = postit.redeemUrl
     txt = None
     error = None
     file_type = None

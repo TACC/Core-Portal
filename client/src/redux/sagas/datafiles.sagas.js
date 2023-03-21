@@ -589,7 +589,7 @@ export function* preview(action) {
 
 export async function previewUtil(api, scheme, system, path, href, length) {
   const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
+  const url = `/api/datafiles/${api}/preview/${scheme}/${system}/${path}/?${q}`;
   const request = await fetch(url);
   const requestJson = await request.json();
   return requestJson.data;
@@ -636,7 +636,7 @@ export function* mkdir(action) {
 }
 
 export async function fileLinkUtil(method, scheme, system, path) {
-  const url = `/api/datafiles/link/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/link/${scheme}/${system}/${path}/`;
   return fetchUtil({
     url,
     method,
@@ -688,6 +688,7 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: result.data || '',
+          expiration: result.expiration || '',
           error: null,
           loading: false,
         },
@@ -712,7 +713,7 @@ export function* fileLink(action) {
 
 export async function downloadUtil(api, scheme, system, path, href, length) {
   const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
+  const url = `/api/datafiles/${api}/download/${scheme}/${system}/${path}/?${q}`;
   const request = await fetch(url);
 
   const requestJson = await request.json();
