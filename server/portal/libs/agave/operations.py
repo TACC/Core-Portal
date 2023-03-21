@@ -253,13 +253,10 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     if src_system == dest_system and src_path == dest_path_full:
         return {'system': src_system, 'path': src_path, 'name': file_name}
 
-    try:
-        # list the directory and check if file_name exists
-        file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
-        file_name = increment_file_name(listing=file_listing, file_name=file_name)
-        dest_path_full = os.path.join(dest_path.strip('/'), file_name)
-    except BaseTapyException:
-        raise
+    # list the directory and check if file_name exists
+    file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
+    file_name = increment_file_name(listing=file_listing, file_name=file_name)
+    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -309,12 +306,9 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
 
-    try:
-        # list the directory and check if file_name exists
-        file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
-        file_name = increment_file_name(listing=file_listing, file_name=file_name)
-    except BaseTapyException:
-        raise
+    # list the directory and check if file_name exists
+    file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
+    file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
@@ -445,11 +439,8 @@ def upload(client, system, path, uploaded_file):
     -------
     dict
     """
-    try:
-        file_listing = client.files.listFiles(systemId=system, path=path)
-        uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
-    except BaseTapyException:
-        raise
+    file_listing = client.files.listFiles(systemId=system, path=path)
+    uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
 
     base_url = settings.TAPIS_TENANT_BASEURL
     token = client.access_token.access_token
