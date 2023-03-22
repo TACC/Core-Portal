@@ -39,7 +39,7 @@ def register_public_key(username, publicKey, system_id) -> int:
     headers = {"Authorization": "Bearer {}".format(settings.KEY_SERVICE_TOKEN)}
     data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
     response = requests.post(url, json=data, headers=headers)
-    response.raise_for_status
+    response.raise_for_status()
     return response.status_code
 
 
