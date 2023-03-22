@@ -149,7 +149,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
 
 
 # TODOV3: rewrite using v3 postit service TBD.
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
+def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -158,10 +158,6 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
         Tapis client to use.
     system: NoneType
     path: NoneType
-    href: str
-        Tapis href to use for generating the postit.
-    force: bool
-        Wether to force preview by adding ``inline``
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int
@@ -174,8 +170,10 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     """
 
     create_postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+    
+    redeemUrl = f'{create_postit_result.redeemUrl}?download=true'
 
-    return create_postit_result.redeemUrl
+    return redeemUrl
 
 
 def mkdir(client, system, path, dir_name):
@@ -455,7 +453,7 @@ def upload(client, system, path, uploaded_file):
     return response_json
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
+def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
     Params
     ------
@@ -465,8 +463,6 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         Tapis system ID.
     path: str
         Path to the file.
-    href: str
-        Tapis href for the file to be previewed.
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int

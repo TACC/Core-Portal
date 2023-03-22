@@ -570,9 +570,7 @@ export function* preview(action) {
       action.payload.api,
       action.payload.scheme,
       action.payload.system,
-      action.payload.path,
-      action.payload.href,
-      action.payload.length
+      action.payload.path
     );
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
@@ -591,9 +589,8 @@ export function* preview(action) {
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/preview/${scheme}/${system}/${path}/?${q}`;
+export async function previewUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/preview/${scheme}/${system}/${path}`;
   const request = await fetch(url);
   const requestJson = await request.json();
   return requestJson.data;
@@ -719,9 +716,8 @@ export function* fileLink(action) {
   }
 }
 
-export async function downloadUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/download/${scheme}/${system}/${path}/?${q}`;
+export async function downloadUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/download/${scheme}/${system}/${path}`;
   const request = await fetch(url);
 
   const requestJson = await request.json();
@@ -743,16 +739,12 @@ export function* watchDownload() {
 }
 
 export function* download(action) {
-  const { href } = action.payload.file._links.self;
-  const { length } = action.payload.file;
   yield call(
     downloadUtil,
     'tapis',
     'private',
     action.payload.file.system,
-    action.payload.file.path,
-    href,
-    length
+    action.payload.file.path
   );
 }
 

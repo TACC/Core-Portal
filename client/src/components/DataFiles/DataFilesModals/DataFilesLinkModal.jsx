@@ -27,7 +27,7 @@ const statusPropType = PropTypes.shape({
   url: PropTypes.string,
   method: PropTypes.string,
   loading: PropTypes.bool,
-  expiration: PropTypes.string
+  expiration: PropTypes.string,
 });
 
 const DataFilesLinkActions = ({ status, onClick }) => {
@@ -79,7 +79,7 @@ DataFilesLinkActions.defaultProps = {
     url: '',
     method: null,
     loading: false,
-    expiration: ''
+    expiration: '',
   },
 };
 
