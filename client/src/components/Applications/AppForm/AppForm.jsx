@@ -250,16 +250,6 @@ export const AppSchemaForm = ({ app }) => {
     name: `${app.definition.id}-${app.definition.version}_${
       new Date().toISOString().split('.')[0]
     }`,
-    execSystemLogicalQueue: (
-      (app.definition.jobAttributes.execSystemLogicalQueue
-        ? app.exec_sys.batchLogicalQueues.find(
-            (q) =>
-              q.name === app.definition.jobAttributes.execSystemLogicalQueue
-          )
-        : app.exec_sys.batchLogicalQueues.find(
-            (q) => q.name === app.exec_sys.batchDefaultLogicalQueue
-          )) || app.exec_sys.batchLogicalQueues[0]
-    ).name,
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
@@ -273,7 +263,17 @@ export const AppSchemaForm = ({ app }) => {
     execSystemId: app.definition.jobAttributes.execSystemId,
   };
   let missingAllocation = false;
-  if (app.exec_sys.batchScheduler === 'SLURM') {
+  if (app.definition.jobType === 'BATCH') {
+    initialValues.execSystemLogicalQueue = (
+      (app.definition.jobAttributes.execSystemLogicalQueue
+        ? app.exec_sys.batchLogicalQueues.find(
+            (q) =>
+              q.name === app.definition.jobAttributes.execSystemLogicalQueue
+          )
+        : app.exec_sys.batchLogicalQueues.find(
+            (q) => q.name === app.exec_sys.batchDefaultLogicalQueue
+          )) || app.exec_sys.batchLogicalQueues[0]
+    ).name;
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
@@ -296,8 +296,6 @@ export const AppSchemaForm = ({ app }) => {
       };
       missingAllocation = true;
     }
-  } else {
-    initialValues.allocation = app.exec_sys.batchScheduler;
   }
   return (
     <div id="appForm-wrapper">
@@ -421,7 +419,7 @@ export const AppSchemaForm = ({ app }) => {
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.exec_sys.batchScheduler]),
+                  allocations,
                   'Please select an allocation from the dropdown.'
                 ),
             });
@@ -502,7 +500,7 @@ export const AppSchemaForm = ({ app }) => {
             missingLicense ||
             !hasStorageSystems ||
             jobSubmission.submitting ||
-            (app.exec_sys.batchScheduler === 'SLURM' && missingAllocation);
+            (app.definition.jobType === 'BATCH' && missingAllocation);
           return (
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
@@ -562,35 +560,37 @@ export const AppSchemaForm = ({ app }) => {
                   <div className="appSchema-header">
                     <span>Configuration</span>
                   </div>
-                  <FormField
-                    label="Queue"
-                    name="execSystemLogicalQueue"
-                    description="Select the queue this job will execute on."
-                    type="select"
-                    required
-                  >
-                    {app.exec_sys.batchLogicalQueues
-                      /*
+                  {app.definition.jobType === 'BATCH' && (
+                    <FormField
+                      label="Queue"
+                      name="execSystemLogicalQueue"
+                      description="Select the queue this job will execute on."
+                      type="select"
+                      required
+                    >
+                      {app.exec_sys.batchLogicalQueues
+                        /*
                         Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
                         while hideNodeCountAndCoresPerNode is true
                       */
-                      .filter(
-                        (q) =>
-                          app.definition.notes.hideNodeCountAndCoresPerNode &&
-                          app.definition.jobAttributes.nodeCount >=
-                            q.minNodeCount &&
-                          app.definition.jobAttributes.nodeCount <=
-                            q.maxNodeCount
-                      )
-                      .map((q) => q.name)
-                      .sort()
-                      .map((queueName) => (
-                        <option key={queueName} value={queueName}>
-                          {queueName}
-                        </option>
-                      ))
-                      .sort()}
-                  </FormField>
+                        .filter(
+                          (q) =>
+                            app.definition.notes.hideNodeCountAndCoresPerNode &&
+                            app.definition.jobAttributes.nodeCount >=
+                              q.minNodeCount &&
+                            app.definition.jobAttributes.nodeCount <=
+                              q.maxNodeCount
+                        )
+                        .map((q) => q.name)
+                        .sort()
+                        .map((queueName) => (
+                          <option key={queueName} value={queueName}>
+                            {queueName}
+                          </option>
+                        ))
+                        .sort()}
+                    </FormField>
+                  )}
                   <FormField
                     label="Maximum Job Runtime"
                     description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
@@ -617,7 +617,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.exec_sys.batchScheduler === 'SLURM' ? (
+                  {app.definition.jobType === 'BATCH' && (
                     <FormField
                       label="Allocation"
                       name="allocation"
@@ -634,7 +634,7 @@ export const AppSchemaForm = ({ app }) => {
                         </option>
                       ))}
                     </FormField>
-                  ) : null}
+                  )}
                 </div>
                 <div className="appSchema-section">
                   <div className="appSchema-header">
