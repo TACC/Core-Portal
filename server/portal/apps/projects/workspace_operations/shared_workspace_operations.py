@@ -66,6 +66,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
             "aclString": acl_string_map[role],
             "recursionMethod": "PHYSICAL"}
 
+    # TODOv3: Replace with tapipy call
     response = requests.post(url, json=data, headers=headers)
     response.raise_for_status()
     return response
