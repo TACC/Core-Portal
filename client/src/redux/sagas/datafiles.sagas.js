@@ -223,7 +223,7 @@ export function* scrollFiles(action) {
 }
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
-  const url = `/api/datafiles/${api}/rename/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -287,7 +287,7 @@ export async function moveFileUtil(
   destSystem,
   destPath
 ) {
-  const url = `/api/datafiles/${api}/move/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -466,7 +466,7 @@ export function* copyFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`,
+        } copied to ${truncateMiddle(`${dest.path}`, 20) || '/'}`,
       },
     });
   }
@@ -480,7 +480,10 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
-  const url = `/api/datafiles/${api}/upload/${scheme}/${system}${apiPath}/`;
+
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
+  );
 
   const request = await fetch(url, {
     method: 'POST',
@@ -601,7 +604,11 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
   if (apiPath === '/') {
     apiPath = '';
   }
-  const url = `/api/datafiles/${api}/mkdir/${scheme}/${system}${apiPath}/`;
+
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/mkdir/${scheme}/${system}/${apiPath}/`
+  );
+
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -748,13 +755,15 @@ export function* download(action) {
   );
 }
 
-export async function trashUtil(api, scheme, system, path) {
-  const url = `/api/datafiles/${api}/trash/${scheme}/${system}${path}/`;
+export async function trashUtil(api, scheme, system, path, homeDir) {
+  const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({}),
+    body: JSON.stringify({
+      homeDir: homeDir,
+    }),
   });
 
   if (!request.ok) {
@@ -769,7 +778,7 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path);
+    return call(trashFile, file.system, file.path, action.payload.homeDir);
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -792,13 +801,13 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path) {
+export function* trashFile(system, path, homeDir) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
-    yield call(trashUtil, 'tapis', 'private', system, path);
+    yield call(trashUtil, 'tapis', 'private', system, path, homeDir);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -813,7 +822,7 @@ export function* trashFile(system, path) {
 }
 
 export async function emptyUtil(api, scheme, system, path) {
-  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}/${path}/`;
   const method = 'PUT';
   return fetchUtil({
     url,
