@@ -18,6 +18,7 @@ from portal.libs.agave.serializers import (
 )
 from portal.libs.agave import utils as AgaveUtils
 from unittest import skip
+from tapipy.tapis import TapisResult
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -236,7 +237,7 @@ class TestAgaveUtils(TestCase):
                 'file-listing.json'
                 )
         ) as _file:
-            self.agave_file_listing = json.load(_file)
+            self.agave_file_listing = [TapisResult(**f) for f in json.load(_file)]
 
     def test_to_camel_case(self):
         """Test `to_camel_case` util."""
