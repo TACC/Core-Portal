@@ -10,7 +10,6 @@ _DEBUG = True
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_DOMAIN = 'Core Portal'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
@@ -34,7 +33,6 @@ _RT_TAG = 'core_portal'
 # AGAVE SETTINGS
 ########################
 
-_AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
 _TAPIS_DEFAULT_TRASH_NAME = '.Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
@@ -49,9 +47,9 @@ _COMMUNITY_INDEX_SCHEDULE = {}
 # DJANGO APP: WORKSPACE
 ########################
 
-_PORTAL_APPS_METADATA_NAMES = ["frontera_apps", "frontera_apps_dev"]
+_PORTAL_APPS_METADATA_NAMES = []
 _PORTAL_ALLOCATION = 'TACC-ACI'
-_PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
+_PORTAL_APPS_DEFAULT_TAB = ''
 
 ########################
 # DJANGO APP: DATA DEPOT
@@ -59,12 +57,6 @@ _PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
 
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
-_PORTAL_JUPYTER_URL = "https://staging.jupyter.tacc.cloud"
-_PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cloud.corral.work.{username}": "/tacc-work",
-}
-
-_PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'My Data (Corral)',
@@ -199,7 +191,6 @@ _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "2222"
-_PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = "cep.project.admin.data.cli"
 _PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
 
 ########################

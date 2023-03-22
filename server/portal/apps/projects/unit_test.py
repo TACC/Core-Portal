@@ -63,7 +63,7 @@ def test_project_create(mock_owner, mock_tapis_client, service_account, mock_sto
                                            id='test.project.PRJ-123',
                                            name='PRJ-123',
                                            description='Test Title',
-                                           site='test.portal')
+                                           site='test')
     assert ProjectMetadata.objects.all().count() == 1
     assert ProjectMetadata.objects.get(project_id='PRJ-123', title='Test Title')
 

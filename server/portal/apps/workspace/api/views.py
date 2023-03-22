@@ -298,7 +298,7 @@ class JobsView(BaseApiView):
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
                 execSystemId = job_post['execSystemId']
-                system = settings.PORTAL_EXEC_SYSTEMS.get(execSystemId)
+                system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
                 tasdir = get_user_data(username)['homeDirectory']
                 if system:
                     tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")
