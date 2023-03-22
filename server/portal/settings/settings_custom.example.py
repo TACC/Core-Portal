@@ -35,7 +35,7 @@ _RT_TAG = 'core_portal'
 ########################
 
 _AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
-_AGAVE_DEFAULT_TRASH_NAME = 'Trash'
+_TAPIS_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
@@ -240,7 +240,6 @@ _WORKBENCH_SETTINGS = {
     "showSubmissions": False,
     "hideManageAccount": False,
     "hasUserGuide": True,
-    "hideFeedback": False,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "ticketAttachmentMaxSizeMessage": 'Max File Size: 3MB',
