@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
-import { useModal, useSelectedFiles } from 'hooks/datafiles';
+import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -37,6 +37,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
   const { toggle } = useModal();
   const { selectedFiles } = useSelectedFiles();
+  const { params } = useFileListing('FilesListing');
 
   const history = useHistory();
   const location = useLocation();
@@ -44,11 +45,24 @@ const DataFilesToolbar = ({ scheme, api }) => {
     history.push(location.pathname);
   };
 
-  const inTrash = useSelector((state) =>
-    state.files.params.FilesListing.path.startsWith(
-      state.workbench.config.trashPath
-    )
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
   );
+
+  const selectedSystem = systemList.find(
+    (sys) => sys.system === params.system && sys.scheme === params.scheme
+  );
+
+  const inTrash = useSelector((state) => {
+    // remove leading slash from homeDir value
+    const homeDir = selectedSystem?.homeDir.slice(1);
+
+    return state.files.params.FilesListing.path.startsWith(
+      `${homeDir}/${state.workbench.config.trashPath}`
+    );
+  });
+
   const trashedFiles = useSelector((state) =>
     inTrash ? state.files.listing.FilesListing : []
   );
@@ -137,14 +151,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
     const filteredSelected = selectedFiles.filter(
       (f) => status[f.system + f.path] !== 'SUCCESS'
     );
+
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
         src: filteredSelected,
+        homeDir: selectedSystem?.homeDir || '',
         reloadCallback: reloadPage,
       },
     });
-  }, [selectedFiles, reloadPage]);
+  }, [selectedFiles, selectedSystem, reloadPage]);
 
   const empty = () => {
     dispatch({

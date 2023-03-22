@@ -35,7 +35,7 @@ _RT_TAG = 'core_portal'
 ########################
 
 _AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
-_AGAVE_DEFAULT_TRASH_NAME = 'Trash'
+_TAPIS_DEFAULT_TRASH_NAME = '.Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
@@ -67,7 +67,7 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
 _PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Work)',
+        'name': 'My Data (Corral)',
         'system': 'cloud.data.community',
         'scheme': 'private',
         'api': 'tapis',
@@ -236,7 +236,7 @@ _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
-    "compressApp": 'zippy',
+    "compressApp": 'compress',
     "extractApp": 'extract',
     "makePublic": True,
     "hideApps": False,

@@ -138,11 +138,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
-  if (jobDetails.status !== 'FINISHED') {
-    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
-    configDataObj['Input Directory'] = jobDetails.execSystemInputDir;
-    configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
-  }
+  configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
+  configDataObj['Input Directory'] = jobDetails.execSystemInputDir;
+  configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
 
   const data = {
     Application: <DescriptionList data={appDataObj} />,

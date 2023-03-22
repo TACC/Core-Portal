@@ -3,7 +3,7 @@ const jobDisplaySlurmFixture = {
   applicationName: 'Hello World',
   inputs: [
     {
-      id: 'File to modify',
+      id: 'tapis://test.community/system/1/user/test/in.txt',
       label: 'File to modify',
       value: 'tapis://test.community/system/1/user/test/in.txt',
     },
