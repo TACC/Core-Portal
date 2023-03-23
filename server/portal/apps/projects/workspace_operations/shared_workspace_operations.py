@@ -47,9 +47,6 @@ def set_workspace_permissions(client: Tapis, username: str, system_id: str, role
 
 
 def set_workspace_acls(client, system_id, path, username, operation, role):
-    jwt = client.access_token.access_token
-    url = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/utils/linux/facl/{system_id}/{path}"
-    headers = {"x-tapis-token": jwt}
 
     operation_map = {
          "add": "ADD",
@@ -62,15 +59,12 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
          "none": f"d:u:{username},u:{username}"
     }
 
-    data = {"operation": operation_map[operation],
-            "aclString": acl_string_map[role],
-            "recursionMethod": "PHYSICAL"}
-
-    # TODOv3: Replace with tapipy call
-    response = requests.post(url, json=data, headers=headers)
-    response.raise_for_status()
-    return response
-
+    client.setFacl(systemId=system_id,
+                   path=path,
+                   operation=operation_map[operation],
+                   recursionMethod="PHYSICAL",
+                   aclString=acl_string_map[role])
+    
 
 def create_workspace_dir(workspace_id: str) -> str:
     client = service_account()
