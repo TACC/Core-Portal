@@ -76,8 +76,7 @@ class TapisOAuthToken(models.Model):
                      client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
                      access_token=self.access_token,
                      refresh_token=self.refresh_token,
-                     resource_set='dev',
-                     download_latest_specs=True)
+                     resource_set='dev')
 
     def update(self, **kwargs):
         for k, v in kwargs.items():

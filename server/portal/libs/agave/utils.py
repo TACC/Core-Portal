@@ -10,7 +10,6 @@ import urllib.error
 from django.conf import settings
 from tapipy.tapis import Tapis
 import requests
-from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
 
@@ -271,5 +270,5 @@ def get_file_size(client, system, path):
     :return: file size in bytes
     """
     file_response = client.files.listFiles(systemId=system,
-                                      path=path)
+                                           path=path)
     return int(file_response[0].size)

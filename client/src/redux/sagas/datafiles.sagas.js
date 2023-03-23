@@ -664,6 +664,7 @@ export function* fileLink(action) {
       status: {
         method,
         url: '',
+        expiration: null,
         error: null,
         loading: true,
       },
@@ -679,6 +680,7 @@ export function* fileLink(action) {
           status: {
             method: null,
             url: '',
+            expiration: null,
             error: null,
             loading: false,
           },
@@ -707,6 +709,7 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: '',
+          expiration: null,
           error: error.toString(),
           loading: false,
         },

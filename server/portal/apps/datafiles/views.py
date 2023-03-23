@@ -247,7 +247,7 @@ class LinkView(BaseApiView):
         link = Link.objects.create(
             tapis_uri=f"{system}/{path}",
             postit_url=postit_redeem_url,
-            expiration=dateutil.parser.parse(postit.expiration)
+            expiration=dateutil.parser.parse(postit.expiration) if postit.expiration else None
         )
         link.save()
         return {"data": postit_redeem_url, "expiration": postit.expiration}
@@ -257,10 +257,10 @@ class LinkView(BaseApiView):
 
         postitId = link.get_uuid()
 
-        client.files.deletePostIt(postitId=postitId)
+        response = client.files.deletePostIt(postitId=postitId)
         link.delete()
 
-        return {"result": "OK"}
+        return response
 
     def get(self, request, scheme, system, path):
         """Given a file, returns a link for a file

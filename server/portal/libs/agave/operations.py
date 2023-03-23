@@ -1,4 +1,3 @@
-import urllib
 import os
 import io
 from django.conf import settings
@@ -170,7 +169,7 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """
 
     create_postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
-    
+
     redeemUrl = f'{create_postit_result.redeemUrl}?download=true'
 
     return redeemUrl
