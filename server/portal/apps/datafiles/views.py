@@ -257,10 +257,10 @@ class LinkView(BaseApiView):
 
         postitId = link.get_uuid()
 
-        response = client.files.deletePostIt(postitId=postitId)
+        client.files.deletePostIt(postitId=postitId)
         link.delete()
 
-        return response
+        return "OK"
 
     def get(self, request, scheme, system, path):
         """Given a file, returns a link for a file
