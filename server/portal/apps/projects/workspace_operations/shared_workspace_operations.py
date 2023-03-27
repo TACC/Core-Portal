@@ -1,6 +1,5 @@
 from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
-import requests
 from tapipy.tapis import Tapis
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -64,7 +63,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
                    operation=operation_map[operation],
                    recursionMethod="PHYSICAL",
                    aclString=acl_string_map[role])
-    
+
 
 def create_workspace_dir(workspace_id: str) -> str:
     client = service_account()
