@@ -58,7 +58,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
          "none": f"d:u:{username},u:{username}"
     }
 
-    client.setFacl(systemId=system_id,
+    client.files.setFacl(systemId=system_id,
                    path=path,
                    operation=operation_map[operation],
                    recursionMethod="PHYSICAL",
