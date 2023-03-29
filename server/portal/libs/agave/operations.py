@@ -5,15 +5,13 @@ from django.conf import settings
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-# TODOv3: uncomment with indexing fix
-# from portal.apps.search.tasks import agave_indexer
+from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
 import requests as r
-
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +63,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         listing = []
 
     # Update Elasticsearch after each listing.
-    # TODOV3: test/verify indexing operations
-    # agave_listing_indexer.delay(listing)
+    agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
@@ -211,10 +208,13 @@ def mkdir(client, system, path, dir_name):
     path_input = str(path)
     client.files.mkdir(systemId=system, path=path_input)
 
-    # TODOV3: test/verify indexing operations
-    # agave_indexer.apply_async(kwargs={'systemId': system,
-    #                                   'filePath': path,
-    #                                  'recurse': False})
+    agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'refresh_token': client.refresh_token.refresh_token, 
+                                      'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              )
+    
     return {"result": "OK"}
 
 
@@ -264,19 +264,36 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
                                             operation="MOVE",
                                             newPath=dest_path_full)
 
-    # TODOV3: test/verify indexing operations
-    # if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-    #     agave_indexer.apply_async(kwargs={'systemId': src_system,
-    #                                       'filePath': os.path.dirname(src_path),
-    #                                       'recurse': False},
-    #                               routing_key='indexing')
-    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
-    #                                   'filePath': os.path.dirname(full_dest_path),
-    #                                   'recurse': False}, routing_key='indexing')
-    # if move_result['nativeFormat'] == 'dir':
-    #     agave_indexer.apply_async(kwargs={'systemId': dest_system,
-    #                                       'filePath': full_dest_path, 'recurse': True},
-    #                               routing_key='indexing')
+    token_data = {
+        'access_token': client.access_token.access_token,
+        'refresh_token': client.refresh_token.refresh_token
+    }
+    
+    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
+        agave_indexer.apply_async(kwargs={**token_data, 
+                                          'systemId': src_system,
+                                          'filePath': os.path.dirname(src_path),
+                                          'recurse': False},
+                                          routing_key='indexing'
+                              )
+
+    agave_indexer.apply_async(kwargs={**token_data,
+                                      'systemId': dest_system,
+                                      'filePath': os.path.dirname(dest_path_full),
+                                      'recurse': False},
+                                      routing_key='indexing'
+                              )
+
+    file_info = client.files.getStatInfo(systemId=dest_system, path=dest_path_full)
+
+    if (file_info.dir):
+        agave_indexer.apply_async(kwargs={**token_data, 
+                                        'systemId': dest_system,
+                                        'filePath': dest_path_full,
+                                        'recurse': True},
+                                        routing_key='indexing'
+                              )
+    
     return move_result
 
 
@@ -332,15 +349,24 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
             'status': copy_response.status,
         }
 
-    # TODOV3: test/verify indexing operations
-    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
-    #                                   'filePath': os.path.dirname(full_dest_path),
-    #                                   'recurse': False},
-    #                           routing_key='indexing')
-    # agave_indexer.apply_async(kwargs={'systemId': dest_system,
-    #                                   'filePath': full_dest_path,
-    #                                   'recurse': True},
-    #                           routing_key='indexing')
+    token_data = {
+        'access_token': client.access_token.access_token,
+        'refresh_token': client.refresh_token.refresh_token
+    }
+
+    agave_indexer.apply_async(kwargs={**token_data, 
+                                      'systemId': dest_system,
+                                      'filePath': os.path.dirname(dest_path_full),
+                                      'recurse': False},
+                                      routing_key='indexing'
+                              )
+
+    agave_indexer.apply_async(kwargs={**token_data, 
+                                      'systemId': dest_system,
+                                      'filePath': dest_path_full,
+                                      'recurse': True},
+                                      routing_key= 'indexing'
+                              )
 
     return copy_result
 
@@ -456,14 +482,15 @@ def upload(client, system, path, uploaded_file):
 
     response_json = res.json()
 
-    # TODOV3: test/verify indexing operations
-    # agave_indexer.apply_async(kwargs={'systemId': system,
-    #                                   'filePath': path,
-    #                                   'recurse': False},
-    #                           )
+
+    agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'refresh_token': client.refresh_token.refresh_token, 
+                                      'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              )
 
     return response_json
-
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.

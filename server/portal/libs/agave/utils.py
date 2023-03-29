@@ -129,7 +129,7 @@ def iterate_level(client, system, path, limit=100):
 
     while True:
         _page = client.files.listFiles(systemId=system,
-                                       path=urllib.parse.quote(path),
+                                       path=path,
                                        offset=int(offset),
                                        limit=int(limit))
         page = list(map(lambda f: {
@@ -221,6 +221,13 @@ def service_account():
         base_url=settings.TAPIS_TENANT_BASEURL,
         access_token=settings.TAPIS_ADMIN_JWT)
 
+def user_account(access_token, refresh_token):
+    """Return a Tapis instance with the user credentials"""
+    return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
+                     client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
+                     client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
+                     access_token=access_token,
+                     refresh_token=refresh_token)
 
 def text_preview(url):
     """Generate a text preview content
