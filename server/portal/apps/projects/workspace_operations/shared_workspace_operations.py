@@ -1,9 +1,9 @@
-from portal.utils.encryption import createKeyPair
+# from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from tapipy.tapis import Tapis
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
+# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
 
 
 import logging
@@ -83,6 +83,11 @@ def create_workspace_system(client, workspace_id: str, title: str) -> str:
         "defaultAuthnMethod": "PKI_KEYS",
         "canExec": False,
         "rootDir": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+        "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
+        "authnCredential": {
+            "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
+            "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY
+        },
         "notes": {"title": title}
     }
     client.systems.createSystem(**system_args)
@@ -128,16 +133,16 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
 
     # User creates the system and adds their credential
     system_id = create_workspace_system(client, workspace_id, title)
-    priv_key, pub_key = createKeyPair()
-    register_public_key(owner,
-                        pub_key,
-                        system_id)
-    create_system_credentials(client, owner, pub_key, priv_key, system_id)
-    create_system_credentials(service_client,
-                              settings.PORTAL_ADMIN_USERNAME,
-                              settings.PORTAL_PROJECTS_PUBLIC_KEY,
-                              settings.PORTAL_PROJECTS_PRIVATE_KEY,
-                              system_id)
+    # priv_key, pub_key = createKeyPair()
+    # register_public_key(owner,
+    #                     pub_key,
+    #                     system_id)
+    # create_system_credentials(client, owner, pub_key, priv_key, system_id)
+    # create_system_credentials(service_client,
+    #                           settings.PORTAL_ADMIN_USERNAME,
+    #                          settings.PORTAL_PROJECTS_PUBLIC_KEY,
+    #                           settings.PORTAL_PROJECTS_PRIVATE_KEY,
+    #                           system_id)
 
     return system_id
 
@@ -158,11 +163,11 @@ def add_user_to_workspace(client: Tapis,
                        "add",
                        role)
 
-    priv_key, pub_key = createKeyPair()
-    register_public_key(username,
-                        pub_key,
-                        system_id)
-    create_system_credentials(client, username, pub_key, priv_key, system_id)
+    # priv_key, pub_key = createKeyPair()
+    # register_public_key(username,
+    #                     pub_key,
+    #                     system_id)
+    # create_system_credentials(client, username, pub_key, priv_key, system_id)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
