@@ -59,10 +59,10 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
     }
 
     client.files.setFacl(systemId=system_id,
-                   path=path,
-                   operation=operation_map[operation],
-                   recursionMethod="PHYSICAL",
-                   aclString=acl_string_map[role])
+                         path=path,
+                         operation=operation_map[operation],
+                         recursionMethod="PHYSICAL",
+                         aclString=acl_string_map[role])
 
 
 def create_workspace_dir(workspace_id: str) -> str:
