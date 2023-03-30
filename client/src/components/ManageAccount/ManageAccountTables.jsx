@@ -47,7 +47,7 @@ TableTemplate.propTypes = {
   }).isRequired,
 };
 
-export const RequiredInformation = () => {
+export const ProfileInformation = () => {
   const dispatch = useDispatch();
   const {
     data: { demographics },
@@ -88,12 +88,12 @@ export const RequiredInformation = () => {
               onClick={openModal}
               disabled={errors.fields !== undefined}
             >
-              Edit Required Information
+              Edit Profile Information
             </Button>
           }
           isForList
         >
-          Required Information
+          Profile Information
         </SectionHeader>
       }
       manualContent
@@ -253,7 +253,7 @@ export const Integrations = () => {
     </SectionTableWrapper>
   );
 };
-export const ChangePassword = () => {
+export const PasswordInformation = () => {
   const lastChanged = useSelector((state) => {
     const { data } = state.profile;
     return data.passwordLastChanged;
@@ -263,17 +263,15 @@ export const ChangePassword = () => {
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
     <article>
-      <SectionHeader isForList>Change Password</SectionHeader>
+      <SectionHeader isForList>Password Information</SectionHeader>
       <div
         style={{
+          paddingTop: "10px",
           display: 'flex',
-          alignItems: 'center',
-          margin: '1rem',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}
       >
-        <Button type="primary" onClick={openModal}>
-          Change Password
-        </Button>
         {lastChanged && (
           <span
             style={{
@@ -287,6 +285,9 @@ export const ChangePassword = () => {
             Last Changed {lastChanged}
           </span>
         )}
+        <Button type="link" onClick={openModal}>
+          Change Password
+        </Button>
       </div>
     </article>
   );
@@ -321,57 +322,4 @@ const OrcidCell = ({ cell: { value } }) => (
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
 OrcidCell.defaultProps = WebsiteCell.defaultProps;
-export const OptionalInformation = () => {
-  const {
-    data: { demographics },
-    errors,
-  } = useSelector((state) => state.profile);
-  const dispatch = useDispatch();
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'My Website',
-        accessor: 'website',
-        Cell: WebsiteCell,
-      },
-      {
-        Header: 'Orcid ID',
-        accessor: 'orcid_id',
-        Cell: OrcidCell,
-      },
-      { Header: 'Professional Level', accessor: 'professional_level' },
-      {
-        Header: 'Research Bio',
-        accessor: 'bio',
-      },
-    ],
-    []
-  );
-  const data = useMemo(() => [demographics], []);
-  const openModal = () =>
-    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
-  return (
-    <SectionTableWrapper
-      manualHeader={
-        <SectionHeader
-          actions={
-            <Button
-              type="link"
-              className="form-button"
-              onClick={openModal}
-              disabled={errors.fields !== undefined}
-            >
-              Edit Optional Information
-            </Button>
-          }
-          isForList
-        >
-          Optional Information
-        </SectionHeader>
-      }
-      manualContent
-    >
-      <TableTemplate attributes={{ columns, data }} />
-    </SectionTableWrapper>
-  );
-};
+

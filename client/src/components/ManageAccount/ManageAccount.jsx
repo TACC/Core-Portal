@@ -4,17 +4,11 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
-  RequiredInformation,
-  ChangePassword,
+  ProfileInformation,
+  PasswordInformation,
   Licenses,
-  OptionalInformation,
   Integrations,
 } from './ManageAccountTables';
-import {
-  ChangePasswordModal,
-  EditOptionalInformationModal,
-  EditRequiredInformationModal,
-} from './ManageAccountModals';
 
 import './ManageAccount.scss';
 import './ManageAccount.global.css';
@@ -79,18 +73,14 @@ const ManageAccountView = () => {
           <LoadingSpinner />
         ) : (
           <>
-            <RequiredInformation />
-            <OptionalInformation />
-            <ChangePasswordModal />
-            <EditOptionalInformationModal />
-            <EditRequiredInformationModal />
+            <ProfileInformation />
             {!hideApps && !isEmpty(licenses) && <Licenses />}
             {!hideDataFiles && !isEmpty(integrations) && <Integrations />}
-            <ChangePassword />
+            <PasswordInformation />
           </>
         )
       }
-      contentClassName={`manage-account-content ${styles.panels}`}
+      contentClassName={styles.panels}
       contentLayoutName={isLoading ? `oneColumn` : `multiColumn`}
       contentShouldScroll
     />
