@@ -52,42 +52,6 @@ describe('History Routes', () => {
     expect(container.children.length).toBeGreaterThan(0);
   });
 
-  // it('should dispatch the get jobs event', () => {
-  //
-  //   const store = mockStore({
-  //     notifications,
-  //     jobs: { ...jobs, list: jobsList },
-  //     // TODOv3: dropV2Jobs
-  //     jobsv2: { ...jobsv2, list: jobsV2List },
-  //     jobDetail: {
-  //       jobUuid: 'job_uuid',
-  //       app: appDetailFixture,
-  //       job: jobDetailFixture,
-  //       display: jobDetailDisplayFixture,
-  //       loading: false,
-  //       loadingError: false,
-  //       loadingErrorMessage: '',
-  //     },
-  //     workbench: { ...workbench, config: { hideDataFiles: false } },
-  //     apps: {
-  //       appIcons: {},
-  //     },
-  //   });
-  //
-  //   render(
-  //     <Provider store={store}>
-  //       <BrowserRouter>
-  //         <Routes />
-  //       </BrowserRouter>
-  //     </Provider>
-  //   );
-  //
-  //   expect(store.getActions()).toEqual([
-  //     { type: 'GET_JOBS', params: { offset: 0 } },
-  //     expect.anything(),
-  //   ]);
-  // });
-  //
   it('should dispatch the get job detail event type when opening the job detail modal', () => {
     const history = createMemoryHistory();
     history.push(

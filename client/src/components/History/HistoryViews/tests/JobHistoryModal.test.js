@@ -45,10 +45,7 @@ describe('Job History Modal', () => {
             },
           })}
         >
-          <JobHistoryModal
-            uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007"
-            version="v3"
-          />
+          <JobHistoryModal uuid="793e9e90-53c3-4168-a26b-17230e2e4156-007" />
         </Provider>
       </BrowserRouter>
     );
