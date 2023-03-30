@@ -84,7 +84,7 @@ export const ProfileInformation = () => {
             <a
               className={`wb-link ${styles['edit-profile-link']}`}
             href='https://accounts.tacc.utexas.edu/profile'
-            target="_blank"
+            target="_blank" rel="noreferrer"
             >
             Edit Profile Information
             </a>
