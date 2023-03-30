@@ -117,7 +117,7 @@ function JobHistoryContent({
     ...reduceInputParameters(jobDisplay.parameters),
   };
   const configDataObj = {
-    'Execution System': jobDetails.execSystemId,
+    'Execution System': jobDisplay.systemName,
   };
   const outputDataObj = {
     'Job Name': jobName,

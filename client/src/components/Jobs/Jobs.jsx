@@ -90,7 +90,7 @@ function JobsView({
       const query = queryStringParser.parse(useLocation().search);
 
       // TODOv3: dropV2Jobs
-      const jobsPathname = version === 'v3' ? `/jobs/${uuid}` : `/jobsv2/${id}`;
+      const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
       return (
         <Link
           to={{
@@ -146,7 +146,7 @@ function JobsView({
       accessor: 'status',
       Cell: (el) => {
         // TODOv3: dropV2Jobs
-        if (version === 'v3') {
+        if (el.row.original.uuid) {
           return (
             <JobsStatus
               status={el.value}
@@ -157,7 +157,7 @@ function JobsView({
         } else {
           return (
             <JobsStatus
-              status={'Archived'}
+              status="ARCHIVED"
               fancy={showFancyStatus}
               jobUuid={el.row.original.id}
             />
@@ -175,11 +175,9 @@ function JobsView({
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
-      // TODOv3: dropV2Jobs
-      accessor: version === 'v3' ? 'outputLocation' : '_links.archiveData.href',
       Cell: (el) => {
         // TODOv3: dropV2Jobs
-        if (version === 'v3') {
+        if (el.row.original.uuid) {
           const outputLocation = getOutputPath(el.row.original);
           return outputLocation && !hideDataFiles ? (
             <Link
