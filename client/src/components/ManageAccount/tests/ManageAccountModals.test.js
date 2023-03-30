@@ -1,13 +1,7 @@
 import React from 'react';
-import {
-  render,
-  waitFor,
-  fireEvent,
-} from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import {
-  IntegrationModal,
-} from '../ManageAccountModals';
+import { IntegrationModal } from '../ManageAccountModals';
 
 const dummyState = {
   isLoading: false,
@@ -165,7 +159,6 @@ describe('Change Password', () => {
     });
   });
 });
-
 
 describe('connect google drive', () => {
   it('should render privacy policy and link', () => {

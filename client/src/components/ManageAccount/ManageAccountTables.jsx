@@ -6,7 +6,7 @@ import { shape, string, arrayOf, bool } from 'prop-types';
 import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
-import styles from './ManageAccountTables.module.css'
+import styles from './ManageAccountTables.module.css';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -83,10 +83,11 @@ export const ProfileInformation = () => {
           actions={
             <a
               className={`wb-link ${styles['edit-profile-link']}`}
-            href='https://accounts.tacc.utexas.edu/profile'
-            target="_blank" rel="noreferrer"
+              href="https://accounts.tacc.utexas.edu/profile"
+              target="_blank"
+              rel="noreferrer"
             >
-            Edit Profile Information
+              Edit Profile Information
             </a>
           }
           isForList
@@ -261,10 +262,10 @@ export const PasswordInformation = () => {
       <SectionHeader isForList>Password Information</SectionHeader>
       <div
         style={{
-          paddingTop: "10px",
+          paddingTop: '10px',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         {lastChanged && (
@@ -282,7 +283,7 @@ export const PasswordInformation = () => {
         )}
         <a
           className={`wb-link ${styles['change-password-link']}`}
-          href='https://accounts.tacc.utexas.edu/change_password'
+          href="https://accounts.tacc.utexas.edu/change_password"
           target="_blank"
           rel="noreferrer"
         >
@@ -322,4 +323,3 @@ const OrcidCell = ({ cell: { value } }) => (
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
 OrcidCell.defaultProps = WebsiteCell.defaultProps;
-
