@@ -3,8 +3,6 @@ import {
   // TODOv3: dropV2Jobs
   getJobDisplayInformationV2,
   isTerminalState,
-  isOutputState,
-  getOutputPath,
 } from 'utils/jobsUtil';
 
 export const initialState = {
@@ -40,12 +38,7 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.uuid === action.payload.job.uuid
-            ? {
-                ...action.payload.job,
-                outputLocation: getOutputPath(action.payload.job),
-              }
-            : job
+          job.uuid === action.payload.job.uuid ? action.payload.job : job
         ),
       };
     case 'JOBS_LIST_ERROR':

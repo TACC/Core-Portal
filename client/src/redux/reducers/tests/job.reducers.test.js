@@ -9,7 +9,6 @@ describe('Job Detail Reducer', () => {
   test('Jobs list update job', () => {
     const jobOutputLocationPopulated = {
       ...jobDetailFixture,
-      // outputLocation: 'test.community/archive/1/user/system/archive/1',
       outputLocation:
         'cloud.data.community/home/user/tapis-jobs-archive/2023-01-24Z/hello-world_2023-01-24T23:52:57-e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
     };

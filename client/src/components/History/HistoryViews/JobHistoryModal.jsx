@@ -69,17 +69,18 @@ function JobHistoryContent({
   version,
 }) {
   const dispatch = useDispatch();
+
+  const hideDataFiles = useSelector(
+    (state) => state.workbench.config.hideDataFiles
+  );
+
   // TODOv3: dropV2Jobs
   const outputLocation =
     version === 'v3'
       ? getOutputPath(jobDetails)
       : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
-  const created = formatDateTime(new Date(jobDetails.created));
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
-
   const hasOutput = isOutputState(jobDetails.status);
+  const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const hasEnded = isTerminalState(jobDetails.status);
@@ -198,7 +199,7 @@ function JobHistoryContent({
                   View in Data Files
                 </DataFilesLink>
               ),
-              Output: version == 'v3' && (
+              Output: (
                 <DataFilesLink path={outputLocation} disabled={!hasOutput}>
                   View in Data Files
                 </DataFilesLink>
@@ -244,13 +245,7 @@ JobHistoryContent.defaultProps = {
 function JobHistoryModal({ uuid, version }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
-      const job = state.jobDetail;
-      return {
-        loading: job.loading,
-        loadingError: job.loadingError,
-        job: job.job,
-        display: job.display,
-      };
+      return state.jobDetail;
     } else {
       // TODOv3: dropV2Jobs
       const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
@@ -347,6 +342,10 @@ JobHistoryModal.propTypes = {
   uuid: PropTypes.string.isRequired,
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
+};
+// TODOv3: dropV2Jobs
+JobHistoryModal.defaultProps = {
+  version: 'v3',
 };
 
 export default JobHistoryModal;

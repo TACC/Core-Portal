@@ -116,7 +116,7 @@ export const Routes = () => {
                     type: 'GET_JOB_DETAILS',
                     payload: { jobUuid },
                   });
-                  return <JobHistoryModal uuid={jobUuid} version="v3" />;
+                  return <JobHistoryModal uuid={jobUuid} />;
                 }}
               />
             </>
@@ -125,12 +125,11 @@ export const Routes = () => {
       />
 
       <Route
+        // TODOv3: dropV2Jobs
         path={`${root}${ROUTES.JOBSV2}`}
         render={({ location: { pathname, state } }) => {
-          // TODOv3: dropV2Jobs
           const locationState = state || {};
           // Only mark as read if in pure job history view
-          // TODOv3: dropV2Jobs
           if (
             pathname === `${root}${ROUTES.JOBSV2}` &&
             !locationState.fromJobHistoryModal

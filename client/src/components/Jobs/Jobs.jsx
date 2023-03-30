@@ -10,8 +10,7 @@ import {
   Section,
 } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
-// TODOv3: dropV2Jobs
-import { getOutputPath, getOutputPathFromHref } from 'utils/jobsUtil';
+import { getOutputPath } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -24,11 +23,11 @@ function JobsView({
   rowProps,
   includeSearchbar,
 }) {
-  const location = useLocation();
   // TODOv3: dropV2Jobs
+  const location = useLocation();
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
-  const { isLoading, error, jobs } = useSelector((state) => {
+  const { error, jobs } = useSelector((state) => {
     return version === 'v3'
       ? { ...state.jobs, jobs: state.jobs.list }
       : // TODOv3: dropV2Jobs
@@ -74,31 +73,13 @@ function JobsView({
   }, [dispatch, query.query_string]);
 
   const infiniteScrollCallback = useCallback(() => {
-    if (version === 'v3') {
-      dispatch(
-        {
-          type: 'GET_JOBS',
-          params: {
-            offset: jobs.length,
-            queryString: query.query_string || '',
-          },
-        },
-        [dispatch, jobs, query.query_string]
-      );
-    } else {
-      // TODOv3: dropV2Jobs
-      dispatch(
-        {
-          type: 'GET_V2_JOBS',
-          params: {
-            offset: jobs.length,
-            queryString: query.query_string || '',
-          },
-        },
-        [dispatch, jobs, query.query_string]
-      );
-    }
-  }, [jobs]);
+    // TODOv3: dropV2Jobs
+    const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
+    dispatch({
+      type: dispatchType,
+      params: { offset: jobs.length, queryString: query.query_string || '' },
+    });
+  }, [dispatch, jobs, query.query_string]);
 
   const jobDetailLink = useCallback(
     ({
@@ -109,27 +90,15 @@ function JobsView({
       const query = queryStringParser.parse(useLocation().search);
 
       // TODOv3: dropV2Jobs
-      return uuid ? (
+      const jobsPathname = version === 'v3' ? `/jobs/${uuid}` : `/jobsv2/${id}`;
+      return (
         <Link
           to={{
-            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${jobsPathname}`,
             state: { jobName: name },
             search: query.query_string
               ? `?query_string=${query.query_string}`
               : '',
-          }}
-          className="wb-link"
-        >
-          View Details
-        </Link>
-      ) : (
-        <Link
-          to={{
-            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobsv2/${id}`,
-            search: query.query_string
-              ? `?query_string=${query.query_string}`
-              : '',
-            state: { jobName: name },
           }}
           className="wb-link"
         >
@@ -211,9 +180,7 @@ function JobsView({
       Cell: (el) => {
         // TODOv3: dropV2Jobs
         if (version === 'v3') {
-          console.log(el.row.original);
-          const outputLocation = el.row.original.outputLocation;
-          // const outputLocation = getOutputPath(el.row.original);
+          const outputLocation = getOutputPath(el.row.original);
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}

@@ -11,21 +11,6 @@ export function isOutputState(status) {
   return isTerminalState(status) && status !== 'CANCELLED';
 }
 
-export function getOutputPath(job) {
-  return `${job.archiveSystemId}${
-    job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
-}
-
-// TODOv3: dropV2Jobs
-export function getOutputPathFromHref(href) {
-  const path = href.split('/').slice(7).filter(Boolean).join('/');
-  if (path === 'listings') {
-    return null;
-  }
-  return path;
-}
-
 export function getArchivePath(job) {
   return `${job.archiveSystemId}${
     job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
@@ -42,6 +27,18 @@ export function getExecSysOutputPath(job) {
   return `${job.execSystemId}${
     job.execSystemOutputDir.charAt(0) === '/' ? '' : '/'
   }${job.execSystemOutputDir}`;
+}
+
+export function getOutputPath(job) {
+  if (!job.remoteOutcome || !isOutputState(job.status)) {
+    return '';
+  }
+
+  if (job.remoteOutcome === 'FAILED_SKIP_ARCHIVE') {
+    return getExecSysOutputPath(job);
+  }
+
+  return getArchivePath(job);
 }
 
 export function getAllocatonFromDirective(directive) {
