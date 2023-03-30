@@ -19,7 +19,6 @@ from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
