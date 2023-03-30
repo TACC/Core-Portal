@@ -81,14 +81,13 @@ export const ProfileInformation = () => {
       manualHeader={
         <SectionHeader
           actions={
-            <Button
-              type="link"
-              className="form-button"
-              onClick={openModal}
-              disabled={errors.fields !== undefined}
+            <a
+              className={`wb-link ${styles['edit-profile-link']}`}
+            href='https://accounts.tacc.utexas.edu/profile'
+            target="_blank"
             >
-              Edit Profile Information
-            </Button>
+            Edit Profile Information
+            </a>
           }
           isForList
         >
