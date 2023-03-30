@@ -61,10 +61,8 @@ export const ProfileInformation = () => {
         accessor: ({ firstName, lastName }) =>
           `${firstName || ''} ${lastName || ''}`,
       },
-      { Header: 'Phone No.', accessor: 'phone' },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Institution', accessor: 'institution' },
-      { Header: 'Title', accessor: 'title' },
       { Header: 'Country of Residence', accessor: 'country' },
       { Header: 'Country of Citizenship', accessor: 'citizenship' },
       { Header: 'Ethnicity', accessor: 'ethnicity' },
