@@ -6,6 +6,7 @@ import { shape, string, arrayOf, bool } from 'prop-types';
 import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
+import styles from './ManageAccountTables.module.css'
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -258,9 +259,6 @@ export const PasswordInformation = () => {
     const { data } = state.profile;
     return data.passwordLastChanged;
   });
-  const dispatch = useDispatch();
-  const openModal = () =>
-    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
     <article>
       <SectionHeader isForList>Password Information</SectionHeader>
@@ -285,9 +283,14 @@ export const PasswordInformation = () => {
             Last Changed {lastChanged}
           </span>
         )}
-        <Button type="link" onClick={openModal}>
+        <a
+          className={`wb-link ${styles['change-password-link']}`}
+          href='https://accounts.tacc.utexas.edu/change_password'
+          target="_blank"
+          rel="noreferrer"
+        >
           Change Password
-        </Button>
+        </a>
       </div>
     </article>
   );
