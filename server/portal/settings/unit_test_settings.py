@@ -427,11 +427,16 @@ SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
     '.htm', '.html'
 ]
 
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
+
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
