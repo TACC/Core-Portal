@@ -3,7 +3,7 @@ const jobDetailDisplayFixture = {
   applicationName: 'Hello World (Sleep 3m)',
   inputs: [
     {
-      id: 'File to modify',
+      id: 'tapis://test.community/system/1/user/test/in.txt',
       label: 'File to modify',
       value: 'tapis://test.community/system/1/user/test/in.txt',
     },

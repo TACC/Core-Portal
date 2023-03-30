@@ -116,7 +116,7 @@ const FormField = ({
                 setOpenAgaveFileModal((prevState) => !prevState);
               }}
               onSelect={(system, path) => {
-                helpers.setValue(`agave://${system}${path}`);
+                helpers.setValue(`tapis://${system}/${path}`);
               }}
             />
 

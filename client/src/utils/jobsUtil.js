@@ -72,11 +72,11 @@ export function getJobDisplayInformation(job, app) {
     systemName: job.execSystemId,
     inputs: fileInputs
       .map((input) => ({
-        label: input.name,
-        id: input.name,
+        label: input.name || 'Unnamed Input',
+        id: input.sourceUrl,
         value: input.sourceUrl,
       }))
-      .filter((obj) => !obj.id.startsWith('_')),
+      .filter((obj) => !obj.id?.startsWith('_')),
 
     parameters: parameters
       .map((parameter) => ({
@@ -131,7 +131,7 @@ export function getJobDisplayInformation(job, app) {
       );
       display.workPath = workPath ? workPath.value : '';
 
-      if (app.exec_sys.batchScheduler === 'SLURM') {
+      if (app.definition.jobType === 'BATCH') {
         const allocationParam = schedulerOptions.find(
           (opt) => opt.name === 'TACC Allocation'
         );

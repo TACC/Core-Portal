@@ -40,13 +40,6 @@ const DataFilesDownloadMessageModal = () => {
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
 
-  const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' },
-    });
-  };
-
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
@@ -59,11 +52,18 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   const compressCallback = () => {
-    const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay}${filetype}`;
+    const { filenameDisplay, compressionType } = formRef.current.values;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
-      payload: { filename, files: selected },
+      payload: {
+        filename: filenameDisplay,
+        files: selected,
+        compressionType,
+        onSuccess: {
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: { operation: 'downloadMessage', props: {} },
+        },
+      },
     });
   };
 
@@ -71,8 +71,8 @@ const DataFilesDownloadMessageModal = () => {
     filenameDisplay:
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
-        : '',
-    filetype: '.zip',
+        : `Archive_${new Date().toISOString().split('.')[0]}`,
+    compressionType: 'zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
@@ -92,7 +92,6 @@ const DataFilesDownloadMessageModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       size="md"
@@ -109,7 +108,7 @@ const DataFilesDownloadMessageModal = () => {
       >
         {({ setFieldValue, values, isValid }) => {
           const handleSelectChange = (e) => {
-            setFieldValue('filetype', e.target.value);
+            setFieldValue('compressionType', e.target.value);
           };
           const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
           const buttonDisabled =
@@ -133,14 +132,14 @@ const DataFilesDownloadMessageModal = () => {
                     >
                       <Input
                         type="select"
-                        name="filetype"
+                        name="compressionType"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
                         className={styles['bg-color']}
                       >
-                        <option value=".zip">.zip</option>
-                        <option value=".tar.gz">.tar.gz</option>
+                        <option value="zip">.zip</option>
+                        <option value="tgz">.tar.gz</option>
                       </Input>
                     </InputGroupAddon>
                   }

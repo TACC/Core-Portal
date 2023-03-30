@@ -168,14 +168,10 @@ function JobHistoryContent({
   }
 
   // TODOv3: dropV2Jobs
-  if (jobDetails.status !== 'FINISHED') {
-    if (version === 'v3') {
-      configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
-      configDataObj['Input Directory'] = jobDetails.execSystemInputDir;
-      configDataObj['Output Directory'] = jobDetails.execSystemOutputDir;
-    } else {
-      configDataObj['Temporary Working Directory'] = jobDetails.workPath;
-    }
+  if (version === 'v3') {
+    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
+  } else {
+    configDataObj['Execution Directory'] = jobDetails.workPath;
   }
 
   const data = {
