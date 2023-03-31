@@ -221,13 +221,15 @@ def service_account():
         base_url=settings.TAPIS_TENANT_BASEURL,
         access_token=settings.TAPIS_ADMIN_JWT)
 
+
 def user_account(access_token, refresh_token):
     """Return a Tapis instance with the user credentials"""
     return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
-                     client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
-                     client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
-                     access_token=access_token,
-                     refresh_token=refresh_token)
+                 client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
+                 client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
+                 access_token=access_token,
+                 refresh_token=refresh_token)
+
 
 def text_preview(url):
     """Generate a text preview content

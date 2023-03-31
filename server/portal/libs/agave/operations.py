@@ -204,17 +204,16 @@ def mkdir(client, system, path, dir_name):
     dict
     """
 
-    path = Path(path) / Path(dir_name)
-    path_input = str(path)
+    path_input = str(Path(path) / Path(dir_name))
     client.files.mkdir(systemId=system, path=path_input)
 
     agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'refresh_token': client.refresh_token.refresh_token, 
+                                      'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
                               )
-    
+
     return {"result": "OK"}
 
 
@@ -268,32 +267,33 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         'access_token': client.access_token.access_token,
         'refresh_token': client.refresh_token.refresh_token
     }
-    
+
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={**token_data, 
+        agave_indexer.apply_async(kwargs={**token_data,
                                           'systemId': src_system,
                                           'filePath': os.path.dirname(src_path),
                                           'recurse': False},
-                                          routing_key='indexing'
-                              )
+                                  routing_key='indexing'
+                                  )
 
     agave_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
-                                      routing_key='indexing'
+                              routing_key='indexing'
                               )
 
+    # get information about file to check if it is a dir or not
     file_info = client.files.getStatInfo(systemId=dest_system, path=dest_path_full)
 
     if (file_info.dir):
-        agave_indexer.apply_async(kwargs={**token_data, 
-                                        'systemId': dest_system,
-                                        'filePath': dest_path_full,
-                                        'recurse': True},
-                                        routing_key='indexing'
-                              )
-    
+        agave_indexer.apply_async(kwargs={**token_data,
+                                          'systemId': dest_system,
+                                          'filePath': dest_path_full,
+                                          'recurse': True},
+                                  routing_key='indexing'
+                                  )
+
     return move_result
 
 
@@ -354,18 +354,18 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         'refresh_token': client.refresh_token.refresh_token
     }
 
-    agave_indexer.apply_async(kwargs={**token_data, 
+    agave_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
-                                      routing_key='indexing'
+                              routing_key='indexing'
                               )
 
-    agave_indexer.apply_async(kwargs={**token_data, 
+    agave_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': dest_path_full,
                                       'recurse': True},
-                                      routing_key= 'indexing'
+                              routing_key='indexing'
                               )
 
     return copy_result
@@ -482,15 +482,15 @@ def upload(client, system, path, uploaded_file):
 
     response_json = res.json()
 
-
     agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'refresh_token': client.refresh_token.refresh_token, 
+                                      'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
                               )
 
     return response_json
+
 
 def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
