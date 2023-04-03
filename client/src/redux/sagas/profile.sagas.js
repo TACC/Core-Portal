@@ -34,6 +34,4 @@ export function* watchProfileData() {
   yield takeLatest('GET_PROFILE_DATA', getProfileData);
 }
 
-export default [
-  watchProfileData(),
-];
+export default [watchProfileData()];

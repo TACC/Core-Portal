@@ -43,7 +43,6 @@ describe('Profile/Manage Account Reducer', () => {
         passwordLastChanged: '',
       },
     });
-
   });
 
   test('Error actions', () => {
