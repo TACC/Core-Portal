@@ -16,9 +16,7 @@ from pytas.http import TASClient
 from portal.apps.accounts import integrations
 from portal.utils.decorators import handle_uncaught_exceptions
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 def accounts(request):
@@ -88,4 +86,3 @@ def _manage_licenses(request):
 
 def _manage_integrations(request):
     return integrations.get_integrations(request)
-
