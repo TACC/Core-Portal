@@ -4,8 +4,6 @@ import magic
 import logging
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 
-# from portal.libs.elasticsearch.indexes import IndexedFile
-# from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +20,6 @@ def listing(client, system, path, offset=None, limit=100, nextPageToken=None,
               .format(fields), pageSize=limit, pageToken=nextPageToken)\
         .execute()
     listing = listing_call.get('files')
-    print(listing)
     scroll_token = listing_call.get('nextPageToken')
     reached_end = not bool(scroll_token)
     folder_mimetype = 'application/vnd.google-apps.folder'
