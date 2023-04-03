@@ -41,7 +41,7 @@ const ManageAccountView = () => {
       messageComponentName="ACCOUNT"
       header="Manage Account"
       messages={[
-        !isLoading && (errors.data || errors.fields) && (
+        !isLoading && errors.data && (
           <div>
             <SectionMessage type="error">
               An error occurred loading your account information.
