@@ -9,7 +9,7 @@ from portal.exceptions.api import ApiException
 
 class TestOperations(TestCase):
 
-    @patch('portal.libs.agave.operations.agave_listing_indexer')
+    @patch('portal.libs.agave.operations.tapis_listing_indexer')
     def test_listing(self, mock_indexer):
         client = MagicMock()
         mock_tapis_listing = [TapisResult(**{
@@ -79,7 +79,7 @@ class TestOperations(TestCase):
                                         'path': '/path/to/file'}],
                                       'reachedEnd': True, 'count': 1})
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_mkdir(self, mock_indexer):
         client = MagicMock()
         client.access_token.access_token = 'my_access_token'
@@ -102,7 +102,7 @@ class TestOperations(TestCase):
                                      dest_system='test.system', dest_path='/path/to',
                                      file_name='newname')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_move(self, mock_indexer):
         client = MagicMock()
         client.files.moveCopy.return_value = {'status': 'success'}
@@ -119,7 +119,7 @@ class TestOperations(TestCase):
         with self.assertRaises(ApiException):
             move(client, 'test.system', '/path/to/src', 'other.system', '/path/to/dest')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_copy(self, mock_indexer):
         client = MagicMock()
         client.files.moveCopy.return_value = {'status': 'success'}

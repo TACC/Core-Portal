@@ -5,7 +5,7 @@ from django.conf import settings
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
@@ -63,7 +63,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         listing = []
 
     # Update Elasticsearch after each listing.
-    agave_listing_indexer.delay(listing)
+    tapis_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
@@ -207,7 +207,7 @@ def mkdir(client, system, path, dir_name):
     path_input = str(Path(path) / Path(dir_name))
     client.files.mkdir(systemId=system, path=path_input)
 
-    agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,
@@ -269,14 +269,14 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     }
 
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={**token_data,
+        tapis_indexer.apply_async(kwargs={**token_data,
                                           'systemId': src_system,
                                           'filePath': os.path.dirname(src_path),
                                           'recurse': False},
                                   routing_key='indexing'
                                   )
 
-    agave_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
@@ -287,7 +287,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     file_info = client.files.getStatInfo(systemId=dest_system, path=dest_path_full)
 
     if (file_info.dir):
-        agave_indexer.apply_async(kwargs={**token_data,
+        tapis_indexer.apply_async(kwargs={**token_data,
                                           'systemId': dest_system,
                                           'filePath': dest_path_full,
                                           'recurse': True},
@@ -354,14 +354,14 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         'refresh_token': client.refresh_token.refresh_token
     }
 
-    agave_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
                               routing_key='indexing'
                               )
 
-    agave_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={**token_data,
                                       'systemId': dest_system,
                                       'filePath': dest_path_full,
                                       'recurse': True},
@@ -482,7 +482,7 @@ def upload(client, system, path, uploaded_file):
 
     response_json = res.json()
 
-    agave_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,

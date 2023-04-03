@@ -112,13 +112,13 @@ def authenticated_staff(client, staff_user):
 
 
 @pytest.fixture
-def agave_indexer(mocker):
-    yield mocker.patch('portal.libs.agave.operations.agave_indexer')
+def tapis_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.tapis_indexer')
 
 
 @pytest.fixture
-def agave_listing_indexer(mocker):
-    yield mocker.patch('portal.libs.agave.operations.agave_listing_indexer')
+def tapis_listing_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.tapis_listing_indexer')
 
 
 @pytest.fixture

@@ -184,7 +184,7 @@ def logging_metric_mock(mocker):
     yield mocker.patch.object(logger, 'info')
 
 
-@patch('portal.libs.agave.operations.agave_listing_indexer')
+@patch('portal.libs.agave.operations.tapis_listing_indexer')
 def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                    tapis_file_listing_mock, logging_metric_mock):
     tapis_listing_result = [TapisResult(**f) for f in tapis_file_listing_mock]
@@ -218,7 +218,7 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
             authenticated_user.username))
 
 
-@patch('portal.libs.agave.operations.agave_indexer')
+@patch('portal.libs.agave.operations.tapis_indexer')
 def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                    tapis_file_listing_mock, logging_metric_mock):
     mock_response = {'status': 'success'}
@@ -235,7 +235,7 @@ def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authent
         "system:frontera.home.username path:test.txt body:{}".format(authenticated_user.username, body))
 
 
-@patch('portal.libs.agave.operations.agave_indexer')
+@patch('portal.libs.agave.operations.tapis_indexer')
 def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                     logging_metric_mock,
                                                     agave_file_mock, requests_mock, text_file_fixture):

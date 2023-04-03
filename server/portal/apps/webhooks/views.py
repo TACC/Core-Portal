@@ -12,7 +12,7 @@ from requests import HTTPError
 from tapipy.errors import BaseTapyException
 
 from portal.apps.notifications.models import Notification
-from portal.apps.search.tasks import agave_indexer
+from portal.apps.search.tasks import tapis_indexer
 from portal.views.base import BaseApiView
 from portal.libs.exceptions import PortalLibException
 from portal.exceptions.api import ApiException
@@ -123,7 +123,7 @@ class JobsWebhookView(BaseApiView):
                 try:
                     logger.info('Indexing job output for job={}'.format(job_uuid))
 
-                    agave_indexer.apply_async(args=[job_details.archiveSystemId],
+                    tapis_indexer.apply_async(args=[job_details.archiveSystemId],
                                               kwargs={'filePath': job_details.archiveSystemDir})
                 except Exception as e:
                     logger.exception('Error starting async task to index job output: {}'.format(e))
