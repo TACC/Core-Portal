@@ -160,7 +160,7 @@ const AppInfo = ({ app }) => {
           rel="noreferrer noopener"
         >
           <AppIcon appId={app.definition.id} />{' '}
-          <span>{app.definition.label} Documentation</span>
+          <span>{app.definition.notes.label} Documentation</span>
         </a>
       ) : null}
       <SystemsPushKeysModal />
