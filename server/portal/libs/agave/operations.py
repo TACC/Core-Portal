@@ -511,6 +511,8 @@ def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
         file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
+    elif any([ext for ext in settings.SUPPORTED_BRAINMAP_PREVIEW_EXTS if file_name.endswith(ext)]):
+        file_type = 'brainmap'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
         file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:

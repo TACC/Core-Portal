@@ -88,9 +88,6 @@ const SystemRoleSelector = ({ projectId, username }) => {
         onChange={(e) => setSelectedRole(e.target.value)}
         className={styles['project-role-selector']}
       >
-        {username !== authenticatedUser && (
-          <option value="ADMIN">Administrator</option>
-        )}
         <option value="USER">User (read/write)</option>
         <option value="GUEST">Guest (read only)</option>
       </DropdownSelector>
