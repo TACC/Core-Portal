@@ -1,4 +1,3 @@
-import urllib
 import os
 import io
 from django.conf import settings
@@ -148,8 +147,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
             'reachedEnd': len(hits) < int(limit)}
 
 
-# TODOV3: rewrite using v3 postit service TBD.
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
+def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -158,10 +156,6 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
         Tapis client to use.
     system: NoneType
     path: NoneType
-    href: str
-        Tapis href to use for generating the postit.
-    force: bool
-        Wether to force preview by adding ``inline``
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int
@@ -172,20 +166,12 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     str
     Post it link.
     """
-    # pylint: disable=protected-access
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
-    # pylint: enable=protected-access
-    if force:
-        args['url'] += '?force=True'
 
-    result = client.postits.create(body=args)
-    return result['_links']['self']['href']
+    create_postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+
+    redeemUrl = f'{create_postit_result.redeemUrl}?download=true'
+
+    return redeemUrl
 
 
 def mkdir(client, system, path, dir_name):
@@ -465,7 +451,7 @@ def upload(client, system, path, uploaded_file):
     return response_json
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
+def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
     Params
     ------
@@ -475,8 +461,6 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         Tapis system ID.
     path: str
         Path to the file.
-    href: str
-        Tapis href for the file to be previewed.
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int
@@ -490,16 +474,9 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
+    postit = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
 
-    result = client.postits.create(body=args)
-    url = result['_links']['self']['href']
+    url = postit.redeemUrl
     txt = None
     error = None
     file_type = None
@@ -507,6 +484,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
+    elif any([ext for ext in settings.SUPPORTED_BRAINMAP_PREVIEW_EXTS if file_name.endswith(ext)]):
+        file_type = 'brainmap'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
         file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:

@@ -67,7 +67,12 @@ def reset_system_keys(user, system_id, hostname=None):
     """
     logger.info(f"Resetting credentials for user {user.username} on system {system_id}")
     (priv_key_str, publ_key_str) = createKeyPair()
-    create_system_credentials(user, publ_key_str, priv_key_str, system_id, skipCredentialCheck=True)
+    create_system_credentials(user.tapis_oauth.client,
+                              user.username,
+                              publ_key_str,
+                              priv_key_str,
+                              system_id,
+                              skipCredentialCheck=True)
 
     if hostname is None:
         sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
