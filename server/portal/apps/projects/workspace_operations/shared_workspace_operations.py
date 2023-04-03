@@ -163,6 +163,8 @@ def add_user_to_workspace(client: Tapis,
                        "add",
                        role)
 
+    # Code to generate/push user keys to a workspace
+    # (uncomment to add per-user credentials)
     # priv_key, pub_key = createKeyPair()
     # register_public_key(username,
     #                     pub_key,
