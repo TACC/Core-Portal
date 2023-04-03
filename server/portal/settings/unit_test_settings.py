@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 
 
-def gettext(s): return s
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -41,7 +38,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
 # Application definition
@@ -294,7 +290,6 @@ AGAVE_TENANT_BASEURL = 'https://api.example.com'
 AGAVE_CLIENT_KEY = 'test'
 AGAVE_CLIENT_SECRET = 'test'
 AGAVE_SUPER_TOKEN = 'test'
-AGAVE_STORAGE_SYSTEM = 'test'
 TAPIS_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
@@ -435,11 +430,16 @@ SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
     '.htm', '.html'
 ]
 
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
+
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
@@ -504,35 +504,30 @@ PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_
 
 
 """
-SETTINGS: EXECUTION SYSTEMS
+SETTINGS: TACC EXECUTION SYSTEMS
 """
-PORTAL_EXEC_SYSTEMS = {
-    'cloud.corral': {
-        'host': 'cloud.corral.tacc.utexas.edu',
+TACC_EXEC_SYSTEMS = {
+    'corral': {
         'work_dir': '/work2/{}',
         'scratch_dir': '/work2/{}',
         'home_dir': '/home/{}'
     },
     'stampede2': {
-        'host': 'stampede2.tacc.utexas.edu',
         'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
     'frontera': {
-        'host': 'frontera.tacc.utexas.edu',
         'work_dir': '/work2/{}',
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
     'maverick2': {
-        'host': 'maverick2.tacc.utexas.edu',
         'work_dir': '/work/{}',
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     },
     'ls6': {
-        'host': 'ls6.tacc.utexas.edu',
         'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
@@ -540,7 +535,6 @@ PORTAL_EXEC_SYSTEMS = {
 }
 
 WH_BASE_URL = "https://testserver"
-PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
 
 WORKBENCH_SETTINGS = {
     "debug": False

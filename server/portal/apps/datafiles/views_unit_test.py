@@ -13,14 +13,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def postits_create(mock_tapis_client):
-    mock_tapis_client.postits.create.return_value = {
-        '_links': {
-            'self': {
-                'href': "https://tenant/uuid"
-            }
-        }
-    }
-    yield mock_tapis_client.postits.create
+
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl="https://tenant/uuid",
+        expiration=None
+    )
+    yield mock_tapis_client.files.createPostIt
 
 
 @pytest.fixture
@@ -115,7 +113,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
 
 def test_get_link(client, authenticated_user):
     link = Link(
-        agave_uri="system/path",
+        tapis_uri="system/path",
         postit_url="https://postit"
     )
     link.save()
@@ -135,15 +133,15 @@ def test_link_post(postits_create, authenticated_user, client):
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"
     postits_create.assert_called_with(
-       body={
-            "url": "https://api.example.com/files/v2/media/system/system/path",
-            "unlimited": True
-        }
+       systemId="system",
+       path="path",
+       allowedUses=-1,
+       validSeconds=31536000
     )
 
 
 def test_link_delete(postits_create, authenticated_user, mock_tapis_client, client):
-    mock_tapis_client.postits.delete.return_value = "OK"
+    mock_tapis_client.files.deletePostIt.return_value = "OK"
     client.post("/api/datafiles/link/tapis/system/path")
     result = client.delete("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "OK"
@@ -152,9 +150,9 @@ def test_link_delete(postits_create, authenticated_user, mock_tapis_client, clie
 
 
 def test_link_put(postits_create, authenticated_user, mock_tapis_client, client):
-    mock_tapis_client.postits.delete.return_value = "OK"
+    mock_tapis_client.files.deletePostIt.return_value = "OK"
     link = Link.objects.create(
-        agave_uri="system/path",
+        tapis_uri="system/path",
         postit_url="https://tenant/olduuid"
     )
     link.save()
@@ -261,8 +259,11 @@ POSTIT_HREF = "https://tapis.example/postit/something"
                                             ("pdf", "object")])
 def test_tapis_file_view_preview_supported_non_text_files(client, authenticated_user, mock_tapis_client,
                                                           agave_file_listing_mock, EXTENSION, TYPE):
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
-    mock_tapis_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl=POSTIT_HREF,
+        expiration=None
+    )
     response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test_text.{}/".format(EXTENSION),
                           content_type="application/json",
                           data={"href": "https//tapis.example/href"})
@@ -276,8 +277,11 @@ def test_tapis_file_view_preview_supported_non_text_files(client, authenticated_
 
 def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_tapis_client, agave_file_listing_mock,
                                            requests_mock):
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
-    mock_tapis_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl=POSTIT_HREF,
+        expiration=None
+    )
     requests_mock.get(POSTIT_HREF, text="file content")
     response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test_text.txt/",
                           content_type="application/json",
@@ -288,8 +292,11 @@ def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_tapi
 
 def test_tapis_file_view_preview_other_text_file(client, authenticated_user, mock_tapis_client, agave_file_listing_mock,
                                                  requests_mock):
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
-    mock_tapis_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl=POSTIT_HREF,
+        expiration=None
+    )
     requests_mock.get(POSTIT_HREF, text="file content")
     response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/some_other_txt_file_like_log.applog/",
                           content_type="application/json",
@@ -300,8 +307,11 @@ def test_tapis_file_view_preview_other_text_file(client, authenticated_user, moc
 
 def test_tapis_file_view_preview_unsupported_file(client, authenticated_user, mock_tapis_client, agave_file_listing_mock,
                                                   requests_mock):
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
-    mock_tapis_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl=POSTIT_HREF,
+        expiration=None
+    )
     requests_mock.get(POSTIT_HREF, text="file content")
     response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test.html/",
                           content_type="application/json",
@@ -312,9 +322,12 @@ def test_tapis_file_view_preview_unsupported_file(client, authenticated_user, mo
 
 def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_tapis_client, agave_file_listing_mock,
                                             requests_mock):
-    agave_file_listing_mock[0]["length"] = 5000000
-    mock_tapis_client.files.list.return_value = agave_file_listing_mock
-    mock_tapis_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    agave_file_listing_mock[0]["size"] = 5000000
+    mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
+    mock_tapis_client.files.createPostIt.return_value = TapisResult(
+        redeemUrl=POSTIT_HREF,
+        expiration=None
+    )
     requests_mock.get(POSTIT_HREF, text="file content")
     response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test.log/",
                           content_type="application/json",

@@ -77,7 +77,9 @@ def _test_listing_with_existing_keypair(system, user):
 
     # Attempt listing a second time after credentials are added to system
     try:
-        create_system_credentials(user, publ_key_str, priv_key_str, system.id)
+        create_system_credentials(user.tapis_oauth.client,
+                                  user.username, publ_key_str,
+                                  priv_key_str, system.id)
         tapis.files.listFiles(systemId=system.id, path="/")
     except BaseTapyException:
         return False
@@ -298,7 +300,7 @@ class JobsView(BaseApiView):
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
                 execSystemId = job_post['execSystemId']
-                system = settings.PORTAL_EXEC_SYSTEMS.get(execSystemId)
+                system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
                 tasdir = get_user_data(username)['homeDirectory']
                 if system:
                     tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")

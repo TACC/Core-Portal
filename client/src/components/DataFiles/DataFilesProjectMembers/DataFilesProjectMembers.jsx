@@ -93,14 +93,17 @@ const DataFilesProjectMembers = ({
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
-    Cell: (el) => (
-      <span>
-        <span
-          className={styles['printed-name']}
-        >{`${el.value.first_name} ${el.value.last_name}`}</span>
-        {` ${el.value.username} (${el.value.email})`}
-      </span>
-    ),
+    Cell: (el) => {
+      if (!el.value.first_name) return <span>{el.value.username}</span>;
+      return (
+        <span>
+          <span
+            className={styles['printed-name']}
+          >{`${el.value.first_name} ${el.value.last_name}`}</span>
+          {` ${el.value.username} (${el.value.email})`}
+        </span>
+      );
+    },
   };
   const roleColumn =
     mode !== 'transfer' &&

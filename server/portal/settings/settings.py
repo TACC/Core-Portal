@@ -18,9 +18,6 @@ from portal.settings import settings_secret
 logger = logging.getLogger(__file__)
 
 
-def gettext(s): return s  # noqa:E731
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -371,7 +368,6 @@ AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
 AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
 AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
-AGAVE_STORAGE_SYSTEM = settings_custom._AGAVE_STORAGE_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -478,35 +474,30 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
-SETTINGS: EXECUTION SYSTEMS
+SETTINGS: TACC EXECUTION SYSTEMS
 """
-PORTAL_EXEC_SYSTEMS = {
-    'cloud.corral': {
-        'host': 'cloud.corral.tacc.utexas.edu',
+TACC_EXEC_SYSTEMS = {
+    'corral': {
         'work_dir': '/work2/{}',
         'scratch_dir': '/work2/{}',
         'home_dir': '/home/{}'
     },
     'stampede2': {
-        'host': 'stampede2.tacc.utexas.edu',
         'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
     'frontera': {
-        'host': 'frontera.tacc.utexas.edu',
         'work_dir': '/work2/{}',
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
     'maverick2': {
-        'host': 'maverick2.tacc.utexas.edu',
         'work_dir': '/work/{}',
         'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     },
     'ls6': {
-        'host': 'ls6.tacc.utexas.edu',
         'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
@@ -546,17 +537,6 @@ PORTAL_WORKSPACE_MANAGERS = {
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 
-TOOLBAR_OPTIONS = {
-    'trash_enabled': True,
-    'share_enabled': True,
-    'preview_enabled': True,
-    'preview_images_enabled': True,
-    'copy_enabled': True,
-    'move_enabled': True,
-    'rename_enabled': True,
-    'tag_enabled': True,
-}
-
 TAPIS_DEFAULT_TRASH_NAME = getattr(settings_custom, '_TAPIS_DEFAULT_TRASH_NAME', '.Trash')
 
 PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
@@ -583,16 +563,6 @@ PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
 COMMUNITY_INDEX_SCHEDULE = settings_custom.\
     _COMMUNITY_INDEX_SCHEDULE
 
-# This setting is not used directly most of the time.
-# We mainly use it when creating the execution system for the pems app
-# but that might not happen in every portal.
-# We are only keeping this in the setting to have written down somewhere
-# so we can refer to this line when looking for this system's ID.
-# Also, it might be useful in the future when we need to do any changes
-# to this system or setup any management commands.
-PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_custom.\
-    _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID
-
 PORTAL_PROJECTS_PEMS_APP_ID = settings_custom.\
     _PORTAL_PROJECTS_PEMS_APP_ID
 
@@ -610,18 +580,9 @@ PORTAL_APPS_METADATA_NAMES = settings_custom._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
-PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_custom, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
-
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
-# "View in Jupyter Notebook" base URL
-PORTAL_JUPYTER_URL = getattr(settings_custom, '_PORTAL_JUPYTER_URL', None)
-# "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
-PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_custom, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
-
 WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
-
-PORTAL_DOMAIN = settings_custom._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
@@ -710,11 +671,16 @@ SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
     '.htm', '.html'
 ]
 
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
+
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 
 # Channels
