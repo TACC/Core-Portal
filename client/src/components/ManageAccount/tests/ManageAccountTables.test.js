@@ -76,10 +76,8 @@ describe('Required Information Component', () => {
     expect(getByText(/^Required Information/)).toBeInTheDocument();
     const headings = [
       'Full Name',
-      'Phone No.',
       'Email',
       'Institution',
-      'Title',
       'Country of Residence',
       'Country of Citizenship',
       'Ethnicity',
