@@ -80,6 +80,9 @@ class JobsWebhookView(BaseApiView):
 
         job = json.loads(subscription['event']['data'])
 
+        user = get_user_model().objects.get(username=job['jobOwner'])
+        client = user.tapis_oauth.client
+
         try:
             username = job['jobOwner']
             job_uuid = job['jobUuid']
@@ -123,8 +126,10 @@ class JobsWebhookView(BaseApiView):
                 try:
                     logger.info('Indexing job output for job={}'.format(job_uuid))
 
-                    tapis_indexer.apply_async(args=[job_details.archiveSystemId],
-                                              kwargs={'filePath': job_details.archiveSystemDir})
+                    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                                      'refresh_token': client.refresh_token.refresh_token,
+                                                      'systemId': job_details.archiveSystemId,
+                                                      'filePath': job_details.archiveSystemDir})
                 except Exception as e:
                     logger.exception('Error starting async task to index job output: {}'.format(e))
 
