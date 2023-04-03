@@ -625,6 +625,7 @@ describe('fileLink', () => {
           matchers.call.fn(fileLinkUtil),
           {
             data: 'https://postit',
+            expiration: '2023-12-12T22:52:06.300829Z',
           },
         ],
       ])
@@ -634,6 +635,7 @@ describe('fileLink', () => {
           status: {
             method: 'get',
             url: '',
+            expiration: null,
             error: null,
             loading: true,
           },
@@ -647,6 +649,7 @@ describe('fileLink', () => {
           status: {
             method: null,
             url: 'https://postit',
+            expiration: '2023-12-12T22:52:06.300829Z',
             error: null,
             loading: false,
           },

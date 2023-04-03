@@ -18,6 +18,7 @@ import {
   TextCopyField,
   InlineMessage,
 } from '_common';
+import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './DataFilesLinkModal.module.scss';
 import './DataFilesLinkModal.scss';
 
@@ -26,6 +27,7 @@ const statusPropType = PropTypes.shape({
   url: PropTypes.string,
   method: PropTypes.string,
   loading: PropTypes.bool,
+  expiration: PropTypes.string,
 });
 
 const DataFilesLinkActions = ({ status, onClick }) => {
@@ -77,6 +79,7 @@ DataFilesLinkActions.defaultProps = {
     url: '',
     method: null,
     loading: false,
+    expiration: '',
   },
 };
 
@@ -99,6 +102,11 @@ const DataFilesLinkStatus = ({ status }) => {
     <FormGroup>
       <Label>Link</Label>
       <TextCopyField value={status.url} />
+      {status.expiration && (
+        <FormText className="form-field__label" color="dark">
+          Expiration: {formatDateTimeFromValue(status.expiration)}
+        </FormText>
+      )}
       <FormText className="form-field__help" color="muted">
         This link downloads the file without requiring login or an account.
       </FormText>
