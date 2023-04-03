@@ -235,7 +235,7 @@ def text_preview(url):
     """Generate a text preview content
     Args:
     ------
-        url (str): postit url from Agave
+        url (str): postit url from Tapis
     Returns:
     ------
         str: text content to preview.
@@ -244,7 +244,7 @@ def text_preview(url):
     """
     try:
         resp = requests.get(url)
-        if (resp.encoding.lower() == 'utf-8'):
+        if (resp.encoding is not None and resp.encoding.lower() == 'utf-8'):
             content = resp.text
             # Raises UnicodeDecodeError for files with non-ascii characters
             content.encode('ascii', 'strict')
@@ -278,6 +278,6 @@ def get_file_size(client, system, path):
     :param path: path of file
     :return: file size in bytes
     """
-    file_response = client.files.list(systemId=system,
-                                      filePath=urllib.parse.quote(path))
-    return int(file_response[0]["length"])
+    file_response = client.files.listFiles(systemId=system,
+                                           path=path)
+    return int(file_response[0].size)
