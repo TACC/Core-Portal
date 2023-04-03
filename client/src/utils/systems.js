@@ -47,7 +47,7 @@ export function findSystemDisplayName(systemList, system, isRoot, scheme) {
 export function findProjectTitle(projectsList, projectSystem, projectTitle) {
   const matching = projectsList.find((project) => project.id === projectSystem);
   if (matching) {
-    return matching.description;
+    return matching.title;
   }
   return projectSystem && projectTitle ? projectTitle : '';
 }

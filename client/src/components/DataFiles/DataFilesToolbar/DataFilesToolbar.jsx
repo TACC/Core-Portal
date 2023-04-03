@@ -56,7 +56,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const inTrash = useSelector((state) => {
     // remove leading slash from homeDir value
-    const homeDir = selectedSystem?.homeDir.slice(1);
+    const homeDir = selectedSystem?.homeDir?.slice(1);
+    if (!homeDir) return false;
 
     return state.files.params.FilesListing.path.startsWith(
       `${homeDir}/${state.workbench.config.trashPath}`
