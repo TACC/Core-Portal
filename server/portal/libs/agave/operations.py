@@ -147,7 +147,6 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
             'reachedEnd': len(hits) < int(limit)}
 
 
-# TODOV3: rewrite using v3 postit service TBD.
 def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
