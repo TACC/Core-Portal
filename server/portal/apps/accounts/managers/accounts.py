@@ -195,15 +195,3 @@ def add_pub_key_to_resource(
             status = 502  # Bad gateway
 
     return success, message, status
-
-
-def get_system(user, system_id):
-    """Returns system
-
-    :param user: Django User object
-    :param str system_id: System id
-    :returns: System object
-    :rtype: :class:`StorageSystem` or :class:`ExecutionSystem`
-    """
-    system = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
-    return system
