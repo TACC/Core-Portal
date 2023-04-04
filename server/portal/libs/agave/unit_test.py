@@ -9,13 +9,8 @@ import copy
 from mock import patch, call
 from django.test import TestCase
 from django.conf import settings
-from portal.libs.agave.models.files import BaseFile
-from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import (
-    BaseAgaveFileSerializer,
-    BaseAgaveSystemSerializer
-)
+from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.libs.agave import utils as AgaveUtils
 from unittest import skip
 from tapipy.tapis import TapisResult
@@ -70,27 +65,6 @@ class TestAgaveSerializers(TestCase):
         ) as _file:
             self.agave_file = json.load(_file)
 
-    def test_base_agave_file_serializer(self):
-        """Test BaseAgaveFileSerializer."""
-        afl = BaseFile(client=self.magave, **self.agave_file)
-        serial_afl = json.dumps(
-            afl,
-            cls=BaseAgaveFileSerializer
-        )
-        _afl = BaseFile(client=self.magave, **json.loads(serial_afl))
-        self.assertEqual(
-            self.agave_file['name'],
-            _afl.name
-        )
-        self.assertEqual(
-            self.agave_file['path'],
-            _afl.path
-        )
-        self.assertEqual(
-            self.agave_file['system'],
-            _afl.system
-        )
-
     @skip(reason="TODOv3: do away with StorageSystem class")
     def test_storage_sys_serializer(self):
         """Test :class:`BaseAgaveSystemSerializer`"""
@@ -129,58 +103,6 @@ class TestAgaveSerializers(TestCase):
         self.assertEqual(
             self.storage_sys['storage']['homeDir'],
             _sys.storage.home_dir
-        )
-
-    @skip(reason="TODOv3: do away with ExecutionSystem class")
-    def test_execution_sys_serializer(self):
-        """Test :class:`BaseAgaveSystemSerializer`"""
-        sys = ExecutionSystem.from_dict(
-            self.magave,
-            self.execution_sys
-        )
-        serial_sys = json.dumps(
-            sys,
-            cls=BaseAgaveSystemSerializer
-        )
-        _sys = ExecutionSystem.from_dict(
-            self.magave,
-            json.loads(serial_sys)
-        )
-        self.assertEqual(
-            self.execution_sys['id'],
-            _sys.id
-        )
-        self.assertEqual(
-            self.execution_sys['type'],
-            _sys.type
-        )
-        self.assertEqual(
-            self.execution_sys['uuid'],
-            _sys.uuid
-        )
-        self.assertEqual(
-            self.execution_sys['storage']['host'],
-            _sys.storage.host
-        )
-        self.assertEqual(
-            self.execution_sys['storage']['rootDir'],
-            _sys.storage.root_dir
-        )
-        self.assertEqual(
-            self.execution_sys['storage']['homeDir'],
-            _sys.storage.home_dir
-        )
-        self.assertEqual(
-            self.execution_sys['workDir'],
-            _sys.work_dir
-        )
-        self.assertEqual(
-            self.execution_sys['scratchDir'],
-            _sys.scratch_dir
-        )
-        self.assertEqual(
-            len(self.execution_sys['queues']),
-            len(_sys.queues.queues)
         )
 
 

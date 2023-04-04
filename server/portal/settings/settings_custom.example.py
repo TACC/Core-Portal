@@ -10,7 +10,6 @@ _DEBUG = True
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_DOMAIN = 'Core Portal'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
@@ -34,7 +33,6 @@ _RT_TAG = 'core_portal'
 # AGAVE SETTINGS
 ########################
 
-_AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
 _TAPIS_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
@@ -59,15 +57,9 @@ _PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
 
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
-_PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
-_PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cloud.corral.work.{username}": "/tacc-work",
-}
-
-_PORTAL_KEY_SERVICE_ACTOR_ID = ""
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Work)',
+        'name': 'My Data (Corral)',
         'system': 'cloud.data.community',
         'scheme': 'private',
         'api': 'tapis',
@@ -179,7 +171,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'tapis_systems': ['cloud.data.community'],
+            'access_systems': ['cloud.data.community', 'frontera', 'stampede2.community'],
+            'credentials_systems': ['cloud.data.community']
         }
     },
 ]
@@ -189,12 +182,11 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 #######################
 
 _PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.project'
-_PORTAL_PROJECTS_ID_PREFIX = 'CEP'
+_PORTAL_PROJECTS_ID_PREFIX = 'CEPV3-DEV'
 _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
-_PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
-_PORTAL_PROJECTS_SYSTEM_PORT = "2222"
-_PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = "cep.project.admin.data.cli"
+_PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
+_PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
 
 ########################

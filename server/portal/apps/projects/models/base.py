@@ -212,7 +212,7 @@ class Project(object):
             id=storage_id,
             name=project_id,
             description=title,
-            site=settings.PORTAL_DOMAIN
+            site=settings.PORTAL_NAMESPACE
         )
         storage.storage.port = settings.PORTAL_PROJECTS_SYSTEM_PORT
         storage.storage.home_dir = '/'

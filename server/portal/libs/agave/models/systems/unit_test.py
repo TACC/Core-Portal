@@ -11,7 +11,6 @@ from requests.exceptions import HTTPError
 from django.test import TestCase
 from django.conf import settings
 from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.models.systems.execution import ExecutionSystem
 from unittest import skip
 
 # pylint: disable=invalid-name
@@ -74,25 +73,6 @@ class TestAgaveSystems(TestCase):
         self.assertEqual(
             storage.name,
             self.agave_storage['name']
-        )
-
-    def test_execution_system(self):
-        """Test Storage System initialization"""
-        self.magave.reset_mock()
-        self.magave.systems.get.reset_mock()
-        self.magave.systems.get = Mock(return_value=self.agave_execution)
-        execution = ExecutionSystem(self.magave, id=self.agave_execution['id'])
-        self.assertEqual(
-            execution.uuid,
-            self.agave_execution['uuid']
-        )
-        self.assertEqual(
-            execution.id,
-            self.agave_execution['id']
-        )
-        self.assertEqual(
-            execution.name,
-            self.agave_execution['name']
         )
 
     def test_storage_create(self):

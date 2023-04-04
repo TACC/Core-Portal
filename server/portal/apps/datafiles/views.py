@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.apps.users.utils import get_user_data
 from .utils import notify, NOTIFY_ACTIONS
+import dateutil.parser
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -236,44 +237,46 @@ class TransferFilesView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
+
         client = request.user.tapis_oauth.client
-        body = {
-            "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
-                tenant=settings.AGAVE_TENANT_BASEURL,
-                system=system,
-                path=path
-            ),
-            "unlimited": True
-        }
-        response = client.postits.create(body=body)
-        postit = response['_links']['self']['href']
+
+        # Create postit for unlimited use with a valid period of 1 year
+        postit = client.files.createPostIt(systemId=system, path=path, allowedUses=-1, validSeconds=31536000)
+
+        postit_redeem_url = postit.redeemUrl
         link = Link.objects.create(
-            agave_uri=f"{system}/{path}",
-            postit_url=postit
+            tapis_uri=f"{system}/{path}",
+            postit_url=postit_redeem_url,
+            expiration=dateutil.parser.parse(postit.expiration) if postit.expiration else None
         )
         link.save()
-        return postit
+        return {"data": postit_redeem_url, "expiration": postit.expiration}
 
     def delete_link(self, request, link):
         client = request.user.tapis_oauth.client
-        response = client.postits.delete(uuid=link.get_uuid())
+
+        postitId = link.get_uuid()
+
+        client.files.deletePostIt(postitId=postitId)
         link.delete()
-        return response
+
+        return "OK"
 
     def get(self, request, scheme, system, path):
         """Given a file, returns a link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
-            return JsonResponse({"data": None})
-        return JsonResponse({"data": link.postit_url})
+            return JsonResponse({"data": None, "expiration": None})
+
+        return JsonResponse({"data": link.postit_url, "expiration": link.expiration})
 
     def delete(self, request, scheme, system, path):
         """Delete an existing link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
         response = self.delete_link(request, link)
@@ -283,11 +286,11 @@ class LinkView(BaseApiView):
         """Generates a new link for a file
         """
         try:
-            Link.objects.get(agave_uri=f"{system}/{path}")
+            Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             # Link doesn't exist - proceed with creating one
-            response = self.create_postit(request, scheme, system, path)
-            return JsonResponse({"data": response})
+            postit = self.create_postit(request, scheme, system, path)
+            return JsonResponse({"data": postit['data'], "expiration": postit['expiration']})
         # Link for this file already exists, raise an exception
         raise ApiException("Link for this file already exists")
 
@@ -295,9 +298,9 @@ class LinkView(BaseApiView):
         """Replace an existing link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
             self.delete_link(request, link)
         except Link.DoesNotExist:
             raise ApiException("Could not find pre-existing link")
-        response = self.create_postit(request, scheme, system, path)
-        return JsonResponse({"data": response})
+        postit = self.create_postit(request, scheme, system, path)
+        return JsonResponse({"data": postit['data'], "expiration": postit['expiration']})

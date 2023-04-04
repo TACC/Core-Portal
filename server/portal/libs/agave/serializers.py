@@ -15,45 +15,6 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-class BaseAgaveFileSerializer(json.JSONEncoder):
-    """Class to serialize an Agave Resource object
-    """
-    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
-        if isinstance(obj, BaseAgaveResource):
-            _wrapped = obj.to_dict()  # pylint: disable=protected-access
-            for key, val in six.iteritems(_wrapped):
-                if isinstance(val, datetime.datetime):
-                    _wrapped[key] = val.isoformat()
-
-            try:
-                # pylint: disable=protected-access
-                if obj._children is not None:
-                    kids = []
-                    for child in obj.children():
-                        tmp = child.to_dict()
-                        tmp["trail"] = [
-                            {
-                                'system': t.system,
-                                'path': t.path,
-                                'name': t.name
-                            } for t in child.trail]
-                        kids.append(tmp)
-                    _wrapped["children"] = kids
-
-                _wrapped['trail'] = [
-                    {
-                        'system': trl.system,
-                        'path': trl.path,
-                        'name': trl.name
-                    } for trl in obj.trail]
-                # _wrapped["trail"] = obj.trail
-            except AttributeError:
-                pass
-            return _wrapped
-
-        return json.JSONEncoder(self, obj)
-
-
 class BaseAgaveSystemSerializer(json.JSONEncoder):
     """Class to serialize an Agave System object"""
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
