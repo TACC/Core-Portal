@@ -78,7 +78,7 @@
   padding: 0.5rem 1rem;
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
   background-color: var(
-                  --global-color-accent--normal
+    --global-color-accent--normal
   ) !important; /* override `.workbench-content .btn-secondary` */
   color: white !important; /* override `.workbench-content .btn-secondary` */
 }
@@ -88,7 +88,6 @@
   /* SEE: client/src/styles/components/bootstrap.modal.css */
   font-size: 14px;
 }
-
 .manage-account-modal .modal-body {
   .btn-link {
     padding: 0;
