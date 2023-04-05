@@ -57,7 +57,7 @@ describe('Job History Modal', () => {
 
   // TODOv3: dropV2Jobs
   it('renders v2 job history information given the job UUID', () => {
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <BrowserRouter>
         <Provider
           store={mockStore({
@@ -87,7 +87,7 @@ describe('Job History Modal', () => {
     );
     expect(getByText(/filenames/)).toBeDefined();
     expect(getByText(/zipFileName/)).toBeDefined();
-    expect(getByText(/Last Status Message/)).toBeDefined();
+    expect(queryByText(/Last Status Message/)).toBeNull();
     expect(getByText(/Max Hours/)).toBeDefined();
     expect(getByText(/inputFiles/)).toBeDefined();
     expect(getByText(/Output Location/)).toBeDefined();
