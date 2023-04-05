@@ -35,9 +35,14 @@ Header.propTypes = { page: string.isRequired };
 export const Actions = ({ page }) => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
-    <Link to={`${root}/manage`} className="btn btn-primary">
+    <a
+      className="btn btn-primary"
+      href="https://submit-tacc.xras.org/"
+      target="_blank"
+      rel="noreferrer"
+    >
       Request New Allocation
-    </Link>
+    </a>
   );
 };
 Actions.propTypes = { page: string.isRequired };
