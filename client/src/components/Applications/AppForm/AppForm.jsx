@@ -575,11 +575,12 @@ export const AppSchemaForm = ({ app }) => {
                       */
                         .filter(
                           (q) =>
-                            app.definition.notes.hideNodeCountAndCoresPerNode &&
-                            app.definition.jobAttributes.nodeCount >=
+                            !app.definition.notes
+                              .hideNodeCountAndCoresPerNode ||
+                            (app.definition.jobAttributes.nodeCount >=
                               q.minNodeCount &&
-                            app.definition.jobAttributes.nodeCount <=
-                              q.maxNodeCount
+                              app.definition.jobAttributes.nodeCount <=
+                                q.maxNodeCount)
                         )
                         .map((q) => q.name)
                         .sort()
