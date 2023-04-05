@@ -226,7 +226,7 @@ function JobsView({
           className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
           noDataText={noDataText}
           getRowProps={rowProps}
-          columnMemoProps={version} /* TODOv3: dropV2Jobs. */
+          columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
         />
       </div>
     </>
