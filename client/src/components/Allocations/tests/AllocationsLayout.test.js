@@ -24,8 +24,10 @@ const mockInitialState = {
 expect.extend({ toHaveAttribute, toHaveTextContent });
 describe('Allocations Page Layout', () => {
   const mockStore = configureStore();
-  it('renders the Allocations Page Layout with identifying components', () => {
-    const { getByText, getAllByText } = render(
+  let getByText, getAllByText;
+
+  beforeEach(() => {
+    ({ getByText, getAllByText } = render(
       <Provider
         store={mockStore({
           allocations: mockInitialState,
@@ -35,7 +37,10 @@ describe('Allocations Page Layout', () => {
           <AllocationsLayout page="approved" />
         </MemoryRouter>
       </Provider>
-    );
+    ));
+  });
+
+  it('renders the Allocations Page Layout with identifying components', () => {
     // Header
     expect(getAllByText(/Allocations/)).toBeDefined();
     expect(getByText(/Request/)).toBeDefined();
@@ -48,5 +53,13 @@ describe('Allocations Page Layout', () => {
       'href',
       '/workbench/allocations/expired'
     );
+  });
+
+  it('should have a button to request new allocation that goes to external site', () => {
+    expect(
+      getByText(/Request New Allocation/)
+        .closest('a')
+        .getAttribute('href')
+    ).toBe('https://submit-tacc.xras.org/');
   });
 });
