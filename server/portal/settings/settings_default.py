@@ -30,10 +30,8 @@ _RT_QUEUE = 'Web & Mobile Apps'
 _RT_TAG = 'core_portal'
 
 ########################
-# AGAVE SETTINGS
+# TAPIS SETTINGS
 ########################
-
-_TAPIS_DEFAULT_TRASH_NAME = '.Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
@@ -47,13 +45,15 @@ _COMMUNITY_INDEX_SCHEDULE = {}
 # DJANGO APP: WORKSPACE
 ########################
 
-_PORTAL_APPS_METADATA_NAMES = []
+_PORTAL_APPS_NAMES_SEARCH = ["ALL", _PORTAL_NAMESPACE]
 _PORTAL_ALLOCATION = 'TACC-ACI'
 _PORTAL_APPS_DEFAULT_TAB = ''
 
 ########################
 # DJANGO APP: DATA DEPOT
 ########################
+
+_TAPIS_DEFAULT_TRASH_NAME = '.Trash'
 
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
