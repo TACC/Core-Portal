@@ -149,3 +149,26 @@ export function getJobDisplayInformation(job, app) {
   }
   return display;
 }
+
+// TODOv3: dropV2Jobs
+export function getJobDisplayInformationV2(job) {
+  const display = {
+    applicationName: job.appId,
+    systemName: job.systemId,
+    inputs: Object.entries(job.inputs)
+      .map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val,
+      }))
+      .filter((obj) => !obj.id.startsWith('_')),
+    parameters: Object.entries(job.parameters)
+      .map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val,
+      }))
+      .filter((obj) => !obj.id.startsWith('_')),
+  };
+  return display;
+}

@@ -14,10 +14,21 @@ export async function fetchJobs(offset, limit, queryString) {
   return result.response;
 }
 
+// TODOv3: dropV2Jobs
+export async function fetchV2Jobs(offset, limit) {
+  const result = await fetchUtil({
+    url: '/api/workspace/historic/',
+    params: { offset, limit },
+  });
+  return result.response;
+}
+
 export const selectorNotificationsListNotifs = (state) =>
   state.notifications.list.notifs;
 
 export const selectorJobsReachedEnd = (state) => state.jobs.reachedEnd;
+// TODOv3: dropV2Jobs
+export const selectorJobsV2ReachedEnd = (state) => state.jobsv2.reachedEnd;
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
@@ -49,6 +60,36 @@ export function* getJobs(action) {
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
     yield put({ type: 'JOBS_LIST_FINISH' });
+  }
+}
+
+// TODOv3: dropV2Jobs
+export function* getV2Jobs(action) {
+  if ('offset' in action.params && action.params.offset === 0) {
+    yield put({ type: 'JOBS_V2_LIST_INIT' });
+  } else {
+    const reachedEnd = yield select(selectorJobsV2ReachedEnd);
+    if (reachedEnd) {
+      return;
+    }
+  }
+
+  yield put({ type: 'JOBS_V2_LIST_START' });
+
+  try {
+    const jobs = yield call(
+      fetchV2Jobs,
+      action.params.offset,
+      action.params.limit || LIMIT
+    );
+    yield put({
+      type: 'JOBS_V2_LIST',
+      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
+    });
+    yield put({ type: 'JOBS_V2_LIST_FINISH' });
+  } catch {
+    yield put({ type: 'JOBS_V2_LIST_ERROR', payload: 'error' });
+    yield put({ type: 'JOBS_V2_LIST_FINISH' });
   }
 }
 
@@ -143,6 +184,7 @@ export function* getJobDetails(action) {
 
 export function* watchJobs() {
   yield takeLatest('GET_JOBS', getJobs);
+  yield takeLatest('GET_V2_JOBS', getV2Jobs);
   yield takeLeading('SUBMIT_JOB', submitJob);
 }
 

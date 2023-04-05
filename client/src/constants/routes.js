@@ -7,6 +7,8 @@ export const APPLICATIONS = '/applications';
 export const PUBLICATIONS = '/publications';
 export const HISTORY = '/history';
 export const JOBS = '/jobs';
+// TODOv3: dropV2Jobs
+export const JOBSV2 = '/jobsv2';
 export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
 export const USER_GUIDE = '/user-guide/';

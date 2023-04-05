@@ -1,4 +1,9 @@
-import { getJobDisplayInformation, isTerminalState } from 'utils/jobsUtil';
+import {
+  getJobDisplayInformation,
+  // TODOv3: dropV2Jobs
+  getJobDisplayInformationV2,
+  isTerminalState,
+} from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -81,6 +86,62 @@ export function jobs(state = initialState, action) {
         list,
       };
     }
+    default:
+      return state;
+  }
+}
+
+// TODOv3: dropV2Jobs
+export const initialStateV2 = {
+  list: [],
+  submit: { submitting: false },
+  loading: false,
+  reachedEnd: false,
+  error: null,
+};
+
+// TODOv3: dropV2Jobs
+export function jobsv2(state = initialStateV2, action) {
+  switch (action.type) {
+    case 'JOBS_V2_LIST_INIT':
+      return {
+        ...state,
+        list: [],
+        error: null,
+        reachedEnd: false,
+      };
+    case 'JOBS_V2_LIST_START':
+      return {
+        ...state,
+        error: null,
+        loading: true,
+      };
+    case 'JOBS_V2_LIST':
+      return {
+        ...state,
+        list: state.list.concat(
+          action.payload.list.map((job) => {
+            job.display = getJobDisplayInformationV2(job);
+            return job;
+          })
+        ),
+        reachedEnd: action.payload.reachedEnd,
+      };
+    case 'JOBS_V2_LIST_UPDATE_JOB':
+      return {
+        ...state,
+        list: state.list,
+      };
+    case 'JOBS_V2_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case 'JOBS_V2_LIST_FINISH':
+      return {
+        ...state,
+        loading: false,
+      };
     default:
       return state;
   }
