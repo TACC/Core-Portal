@@ -89,24 +89,24 @@ function JobHistoryContent({
     'App ID': jobDetails.appId,
     'App Version': jobDetails.appVersion,
   };
+  const lastMessageTitle = hasFailedStatus
+    ? 'Failure Report'
+    : 'Last Status Message';
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
-    [hasFailedStatus ? 'Failure Report' : 'Last Status Message']: (
+    [lastMessageTitle]: (
       <Expand
         detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-        message={
-          <pre>
-            $
-            {version === 'v3'
-              ? jobDetails.lastMessage
-              : // TODOv3: dropV2Jobs
-                jobDetails.lastStatusMessage}
-          </pre>
-        }
+        message={<pre>jobDetails.lastMessage</pre>}
       />
     ),
   };
+
+  if (version === 'v2') {
+    // TODOv3: dropV2Jobs
+    delete statusDataObj[lastMessageTitle];
+  }
 
   if (jobDetails.remoteOutcome) {
     statusDataObj['Remote Outcome'] = jobDetails.remoteOutcome;

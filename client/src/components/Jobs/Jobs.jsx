@@ -174,6 +174,7 @@ function JobsView({
     },
     {
       Header: 'Output Location',
+      show: version === 'v3' /* TODOv3: dropV2Jobs. remove show here  */,
       headerStyle: { textAlign: 'left' },
       Cell: (el) => {
         // TODOv3: dropV2Jobs
@@ -225,6 +226,7 @@ function JobsView({
           className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
           noDataText={noDataText}
           getRowProps={rowProps}
+          columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
         />
       </div>
     </>
