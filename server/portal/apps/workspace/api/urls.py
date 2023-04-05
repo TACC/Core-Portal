@@ -13,6 +13,8 @@ urlpatterns = [
     ),
     url(r'^jobs/(?P<operation>\w+)/?$', views.JobsView.as_view()),
     url(r'^jobs/?', views.JobsView.as_view()),
+    # TODOv3: dropV2Jobs
+    url(r'^historic/?', views.HistoricJobsView.as_view()),
     url(r'^systems/?', views.SystemsView.as_view()),
     url(r'^tray/?', views.AppsTrayView.as_view())
 

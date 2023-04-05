@@ -17,6 +17,8 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
+# TODOv3: dropV2Jobs
+from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
@@ -119,6 +121,19 @@ class AppsView(BaseApiView):
             },
             encoder=BaseTapisResultSerializer
         )
+
+
+# TODOv3: dropV2Jobs
+@method_decorator(login_required, name='dispatch')
+class HistoricJobsView(BaseApiView):
+    def get(self, request, *args, **kwargs):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+
+        jobs = JobSubmission.objects.all().filter(user=request.user).exclude(data__isnull=True).order_by('-time')
+        data = [job.data for job in jobs[offset:offset + limit]]
+
+        return JsonResponse({"response": data})
 
 
 @method_decorator(login_required, name='dispatch')
