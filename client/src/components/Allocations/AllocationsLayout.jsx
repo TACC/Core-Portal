@@ -12,10 +12,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import {
-  AllocationsRequestModal,
-  AllocationsTeamViewModal,
-} from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 import { Sidebar } from '_common';
 
@@ -90,14 +87,6 @@ export const Layout = ({ page }) => {
             </SectionTableWrapper>
           )}
           <Switch>
-            <Route exact path={`${root}/${page}/manage`}>
-              <AllocationsRequestModal
-                isOpen
-                toggle={() => {
-                  history.push(`${root}/${page}`);
-                }}
-              />
-            </Route>
             <Route exact path={`${root}/${page}/:projectId(\\d+)`}>
               <AllocationsTeamViewModal
                 isOpen
