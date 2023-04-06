@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from mock import MagicMock
-from requests.exceptions import HTTPError
+from tapipy.errors import InternalServerError
 from portal.apps.datafiles.models import Link
 from django.conf import settings
 from tapipy.tapis import TapisResult
@@ -32,11 +32,11 @@ def get_user_data(mocker):
 
 def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
     mock_tapis_get = mocker.patch('portal.apps.datafiles.views.tapis_get_handler')
-    mock_error = HTTPError()
+    mock_error = InternalServerError()
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -46,11 +46,7 @@ def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock
         'hosts': {}
     }
 
-    mock_tapis_client.systems.get.return_value = {
-        'storage': {
-            'host': 'frontera.tacc.utexas.edu'
-        }
-    }
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(host='frontera.tacc.utexas.edu')
 
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
     assert response.status_code == 403
@@ -58,11 +54,11 @@ def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock
 
 def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
     mock_tapis_get = mocker.patch('portal.apps.datafiles.views.tapis_get_handler')
-    mock_error = HTTPError()
+    mock_error = InternalServerError()
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -72,23 +68,19 @@ def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, 
         'hosts': {}
     }
 
-    mock_tapis_client.systems.get.return_value = {
-        'storage': {
-            'host': 'data.tacc.utexas.edu'
-        }
-    }
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(host='data.tacc.utexas.edu')
 
     response = client.get('/api/datafiles/tapis/listing/private/corral.home.username/')
-    assert response.status_code == 502
+    assert response.status_code == 500
 
 
 def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
     mock_tapis_get = mocker.patch('portal.apps.datafiles.views.tapis_get_handler')
-    mock_error = HTTPError()
+    mock_error = InternalServerError()
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -99,15 +91,13 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     }
 
     system = {
-        'storage': {
-            'host': 'frontera.tacc.utexas.edu'
-        }
+        'host': 'frontera.tacc.utexas.edu'
     }
 
-    mock_tapis_client.systems.get.return_value = system
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(**system)
 
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
-    assert response.status_code == 502
+    assert response.status_code == 500
     assert response.json() == {'system': system}
 
 

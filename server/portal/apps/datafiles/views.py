@@ -4,6 +4,7 @@ from portal.apps.users.utils import get_allocations
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
+from tapipy.errors import InternalServerError
 from portal.views.base import BaseApiView
 from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
@@ -17,6 +18,7 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.exceptions.api import ApiException
 from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from portal.apps.users.utils import get_user_data
 from .utils import notify, NOTIFY_ACTIONS
@@ -99,24 +101,24 @@ class TapisFilesView(BaseApiView):
 
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
-        except HTTPError as e:
+        except InternalServerError as e:
             error_status = e.response.status_code
             error_json = e.response.json()
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
-            if error_status == 502:
-                # In case of 502 determine cause
-                system = dict(client.systems.get(systemId=system))
+            if error_status == 500:
+                logger.info(e)
+                # In case of 500 determine cause
+                system = client.systems.getSystem(systemId=system)
                 allocations = get_allocations(request.user.username)
 
                 # If user is missing a non-corral allocation mangle error to a 403
-                if not any(system['storage']['host'].endswith(ele) for ele in
+                if not any(system.host.endswith(ele) for ele in
                            list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
-                    e.response.status_code = 403
-                    raise e
+                    raise PermissionDenied
 
                 # If a user needs to push keys, return a response specifying the system
                 error_json['system'] = system
-                return JsonResponse(error_json, status=error_status)
+                return JsonResponse(error_json, status=error_status, encoder=BaseTapisResultSerializer)
             raise e
 
         return JsonResponse({'data': response})

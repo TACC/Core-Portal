@@ -89,13 +89,13 @@ describe('DataFilesTable', () => {
     expect(getByText(/^Path/)).toBeDefined();
   });
 
-  it('should display an error for 502', async () => {
+  it('should display an error for 500', async () => {
     const storeWithError = mockStore({
       ...initialMockState,
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502',
+          FilesListing: '500',
         },
         params: {
           FilesListing: {
@@ -278,7 +278,7 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502',
+          FilesListing: '500',
         },
         params: {
           FilesListing: {
