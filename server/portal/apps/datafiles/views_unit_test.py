@@ -36,7 +36,7 @@ def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -62,7 +62,7 @@ def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, 
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -79,7 +79,7 @@ def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, 
     }
 
     response = client.get('/api/datafiles/tapis/listing/private/corral.home.username/')
-    assert response.status_code == 502
+    assert response.status_code == 500
 
 
 def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
@@ -88,7 +88,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
             json=MagicMock(return_value={}),
-            status_code=502
+            status_code=500
         )
     )
     mock_tapis_get.side_effect = mock_error
@@ -107,7 +107,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     mock_tapis_client.systems.get.return_value = system
 
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
-    assert response.status_code == 502
+    assert response.status_code == 500
     assert response.json() == {'system': system}
 
 

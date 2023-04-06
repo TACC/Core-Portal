@@ -103,9 +103,9 @@ class TapisFilesView(BaseApiView):
             error_status = e.response.status_code
             error_json = e.response.json()
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
-            if error_status == 502:
-                # In case of 502 determine cause
-                system = dict(client.systems.get(systemId=system))
+            if error_status == 500:
+                # In case of 500 determine cause
+                system = client.systems.getSystem(systemId=system)
                 allocations = get_allocations(request.user.username)
 
                 # If user is missing a non-corral allocation mangle error to a 403
