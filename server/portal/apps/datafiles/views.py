@@ -18,6 +18,7 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.exceptions.api import ApiException
 from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from portal.apps.users.utils import get_user_data
 from .utils import notify, NOTIFY_ACTIONS
@@ -113,8 +114,7 @@ class TapisFilesView(BaseApiView):
                 # If user is missing a non-corral allocation mangle error to a 403
                 if not any(system.host.endswith(ele) for ele in
                            list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
-                    e.response.status_code = 403
-                    raise e
+                    raise PermissionDenied
 
                 # If a user needs to push keys, return a response specifying the system
                 error_json['system'] = system
