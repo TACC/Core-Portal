@@ -158,7 +158,7 @@ def text_preview(url):
     """
     try:
         resp = requests.get(url)
-        if (resp.encoding is not None and resp.encoding.lower() == 'utf-8'):
+        if (resp.content or (resp.encoding is not None and resp.encoding.lower() == 'utf-8')):
             content = resp.text
             # Raises UnicodeDecodeError for files with non-ascii characters
             content.encode('ascii', 'strict')

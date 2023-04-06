@@ -11,7 +11,7 @@ import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
-import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
@@ -94,7 +94,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         .
       </>
     );
-    if (err === '502') {
+    if (err === '500') {
       if (downSystems.includes(currSystemHost)) {
         return (
           <div className="h-100 listing-placeholder">
