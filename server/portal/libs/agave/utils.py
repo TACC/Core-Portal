@@ -4,9 +4,6 @@
 """
 import logging
 import os
-import urllib.request
-import urllib.parse
-import urllib.error
 from django.conf import settings
 from tapipy.tapis import Tapis
 import requests
@@ -145,13 +142,12 @@ def service_account():
         access_token=settings.TAPIS_ADMIN_JWT)
 
 
-def user_account(access_token, refresh_token):
+def user_account(access_token):
     """Return a Tapis instance with the user credentials"""
     return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
                  client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
                  client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
-                 access_token=access_token,
-                 refresh_token=refresh_token)
+                 access_token=access_token)
 
 
 def text_preview(url):

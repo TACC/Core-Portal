@@ -194,7 +194,6 @@ def mkdir(client, system, path, dir_name):
     client.files.mkdir(systemId=system, path=path_input)
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
@@ -249,20 +248,15 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
                                             operation="MOVE",
                                             newPath=dest_path_full)
 
-    token_data = {
-        'access_token': client.access_token.access_token,
-        'refresh_token': client.refresh_token.refresh_token
-    }
-
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        tapis_indexer.apply_async(kwargs={**token_data,
+        tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                           'systemId': src_system,
                                           'filePath': os.path.dirname(src_path),
                                           'recurse': False},
                                   routing_key='indexing'
                                   )
 
-    tapis_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
@@ -273,7 +267,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     file_info = client.files.getStatInfo(systemId=dest_system, path=dest_path_full)
 
     if (file_info.dir):
-        tapis_indexer.apply_async(kwargs={**token_data,
+        tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                           'systemId': dest_system,
                                           'filePath': dest_path_full,
                                           'recurse': True},
@@ -335,19 +329,14 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
             'status': copy_response.status,
         }
 
-    token_data = {
-        'access_token': client.access_token.access_token,
-        'refresh_token': client.refresh_token.refresh_token
-    }
-
-    tapis_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': dest_system,
                                       'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
                               routing_key='indexing'
                               )
 
-    tapis_indexer.apply_async(kwargs={**token_data,
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': dest_system,
                                       'filePath': dest_path_full,
                                       'recurse': True},
@@ -469,7 +458,6 @@ def upload(client, system, path, uploaded_file):
     response_json = res.json()
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'refresh_token': client.refresh_token.refresh_token,
                                       'systemId': system,
                                       'filePath': path,
                                       'recurse': False},

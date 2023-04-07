@@ -83,14 +83,13 @@ class TestOperations(TestCase):
     def test_mkdir(self, mock_indexer):
         client = MagicMock()
         client.access_token.access_token = 'my_access_token'
-        client.refresh_token.refresh_token = 'my_refresh_token'
 
         mkdir(client, 'test.system', '/root', 'testfolder')
 
         client.files.mkdir.assert_called_with(systemId='test.system', path='/root/testfolder')
 
-        mock_indexer.apply_async.assert_called_with(kwargs={'access_token': 'my_access_token', 'refresh_token': 'my_refresh_token',
-                                                            'systemId': 'test.system', 'filePath': '/root', 'recurse': False})
+        mock_indexer.apply_async.assert_called_with(kwargs={'access_token': 'my_access_token', 'systemId': 'test.system',
+                                                            'filePath': '/root', 'recurse': False})
 
     @patch('portal.libs.agave.operations.move')
     def test_rename(self, mock_move):

@@ -127,7 +127,6 @@ class JobsWebhookView(BaseApiView):
                     logger.info('Indexing job output for job={}'.format(job_uuid))
 
                     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                                      'refresh_token': client.refresh_token.refresh_token,
                                                       'systemId': job_details.archiveSystemId,
                                                       'filePath': job_details.archiveSystemDir})
                 except Exception as e:
