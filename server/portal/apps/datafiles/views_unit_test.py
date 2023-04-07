@@ -2,7 +2,6 @@ import pytest
 import json
 import logging
 import os
-from requests.exceptions import HTTPError
 from mock import patch, MagicMock
 from tapipy.errors import InternalServerError
 from portal.apps.datafiles.models import Link
