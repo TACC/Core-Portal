@@ -7,6 +7,8 @@ import { initialState as onboarding } from '../../redux/reducers/onboarding.redu
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
+// TODOv3: dropV2Jobs
+import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
 import {
   initialTicketList as ticketList,
   initialTicketCreateState as ticketCreate,
@@ -25,6 +27,8 @@ const state = {
   notifications,
   introMessageComponents,
   jobs,
+  // TODOv3: dropV2Jobs
+  jobsv2,
   systemMonitor,
   ticketList,
   systems,

@@ -56,7 +56,7 @@ def test_channel_exception(user_with_keys, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=ChannelException(999, "Mock Channel Exception"))
     result, message, status = _run_add_pub_key_to_resource(user_with_keys)
     assert result is False
-    assert status == 502
+    assert status == 500
 
 
 # SSHException occurs when paramiko is unable to open SSH connection to server
@@ -64,7 +64,7 @@ def test_ssh_exception(user_with_keys, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=SSHException())
     result, message, status = _run_add_pub_key_to_resource(user_with_keys)
     assert result is False
-    assert status == 502
+    assert status == 500
 
 
 # KeyCannotBeAdded exception occurs when authorized_keys file cannot be modified

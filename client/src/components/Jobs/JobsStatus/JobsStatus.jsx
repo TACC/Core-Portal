@@ -22,6 +22,7 @@ export const STATUS_TEXT_MAP = {
   BLOCKED: 'Blocked',
   PAUSED: 'Paused',
   CANCELLED: 'Cancelled',
+  ARCHIVED: 'Archived', // TODOv3: dropV2Jobs
   toastMap(status) {
     /* Post-process mapped status message to get a toast message translation. */
     const mappedStatus = getStatusText(status);

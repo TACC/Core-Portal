@@ -2,26 +2,10 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
-import { AllocationsRequestModal, AllocationsTeamViewModal } from './index';
+import { AllocationsTeamViewModal } from './index';
 import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
-
-describe('New Allocations Request Modal', () => {
-  test('Allocations Request UI', () => {
-    const { getByText, getAllByText } = render(
-      <BrowserRouter>
-        <AllocationsRequestModal isOpen toggle={() => null} />
-      </BrowserRouter>
-    );
-    const xrasLink = 'https://submit-tacc.xras.org/';
-    expect(getByText(/Manage Allocations/)).toBeDefined();
-    expect(getAllByText(/You can manage your allocation/)).toBeDefined();
-    expect(getAllByText(/You can manage your allocation/)).toHaveLength(2);
-    expect(getByText(xrasLink)).toBeDefined();
-    expect(getByText(xrasLink).href).toBe(xrasLink);
-  });
-});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

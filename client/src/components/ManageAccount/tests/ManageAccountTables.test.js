@@ -1,13 +1,11 @@
 import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import {
-  RequiredInformation,
-  OptionalInformation,
-  ChangePassword,
+  ProfileInformation,
+  PasswordInformation,
   Integrations,
   Licenses,
 } from '../ManageAccountTables';
@@ -53,13 +51,11 @@ const dummyState = {
     passwordLastChanged: '6/1/2020',
   },
   errors: {},
-  fields: {},
-  modals: {},
 };
 
 const mockStore = configureStore({});
 
-describe('Required Information Component', () => {
+describe('Profile Information Component', () => {
   let getByText;
   const testStore = mockStore({
     profile: dummyState,
@@ -67,20 +63,18 @@ describe('Required Information Component', () => {
   beforeEach(() => {
     const utils = render(
       <Provider store={testStore}>
-        <RequiredInformation />
+        <ProfileInformation />
       </Provider>
     );
     getByText = utils.getByText;
   });
 
   test('Show column headings and content', () => {
-    expect(getByText(/^Required Information/)).toBeInTheDocument();
+    expect(getByText(/^Profile Information/)).toBeInTheDocument();
     const headings = [
       'Full Name',
-      'Phone No.',
       'Email',
       'Institution',
-      'Title',
       'Country of Residence',
       'Country of Citizenship',
       'Ethnicity',
@@ -90,14 +84,12 @@ describe('Required Information Component', () => {
       expect(getByText(heading)).toBeInTheDocument();
     });
   });
-  test('Button to open form modal', async () => {
-    const button = getByText(/Edit Required Information/);
-    fireEvent.click(button);
-    await waitFor(() => {
-      const { type, payload } = testStore.getActions()[0];
-      expect(type).toEqual('OPEN_PROFILE_MODAL');
-      expect(payload).toEqual({ required: true });
-    });
+  test('should have a button to go to an external site for profile editing', async () => {
+    expect(
+      getByText(/Edit Profile Information/)
+        .closest('a')
+        .getAttribute('href')
+    ).toBe('https://accounts.tacc.utexas.edu/profile');
   });
 });
 
@@ -109,7 +101,7 @@ describe('Change Password Component', () => {
   beforeEach(() => {
     const utils = render(
       <Provider store={testStore}>
-        <ChangePassword />
+        <PasswordInformation />
       </Provider>
     );
     getByText = utils.getByText;
@@ -121,15 +113,12 @@ describe('Change Password Component', () => {
     expect(getByText(/6\/1\/2020/)).toBeInTheDocument();
   });
 
-  it('should have a button for users to open the change password modal', async () => {
-    expect(getAllByText(/Change Password/)).toHaveLength(2);
-    const button = getAllByText(/Change Password/)[1];
-    fireEvent.click(button);
-    await waitFor(() => {
-      const { type, payload } = testStore.getActions()[0];
-      expect(type).toEqual('OPEN_PROFILE_MODAL');
-      expect(payload).toEqual({ password: true });
-    });
+  it('should have a button for users to go to external site for password change', async () => {
+    expect(
+      getByText(/Change Password/)
+        .closest('a')
+        .getAttribute('href')
+    ).toBe('https://accounts.tacc.utexas.edu/change_password');
   });
 });
 
@@ -173,42 +162,6 @@ describe('Third Party Apps', () => {
     expect(getByText(/3rd Party Apps/)).toBeDefined();
     expect(getByText('Google Drive')).toBeDefined();
     expect(getByText('Disconnect')).toBeDefined();
-  });
-});
-
-describe('Optional Information Component', () => {
-  let getByText;
-  const testStore = mockStore({
-    profile: dummyState,
-  });
-  beforeEach(() => {
-    const utils = render(
-      <Provider store={testStore}>
-        <OptionalInformation />
-      </Provider>
-    );
-    getByText = utils.getByText;
-  });
-
-  it('should show optional information fields', () => {
-    const headings = [
-      'Orcid ID',
-      'Professional Level',
-      'Research Bio',
-      'My Website',
-    ];
-    headings.forEach((heading) => {
-      expect(getByText(heading)).toBeInTheDocument();
-    });
-  });
-  it('should have a button that opens a redux controlled modal', async () => {
-    const button = getByText(/Edit Optional Information/);
-    fireEvent.click(button);
-    await waitFor(() => {
-      const [action] = testStore.getActions();
-      expect(action.type).toEqual('OPEN_PROFILE_MODAL');
-      expect(action.payload).toEqual({ optional: true });
-    });
   });
 });
 

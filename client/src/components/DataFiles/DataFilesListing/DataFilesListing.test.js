@@ -191,14 +191,14 @@ describe('DataFilesListing', () => {
   });
 
   it.each([
-    ['500', /There was a problem accessing this file system./, 'private'],
+    ['503', /There was a problem accessing this file system./, 'private'],
     [
-      '502',
+      '500',
       /An error occurred loading this directory. For help, please submit/,
       'public',
     ],
     [
-      '502',
+      '500',
       /There was a problem accessing this file system. If this is your/,
       'private',
     ],
