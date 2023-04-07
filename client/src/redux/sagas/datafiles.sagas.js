@@ -167,8 +167,8 @@ export function* fetchFiles(action) {
         code: e.status ? e.status.toString() : '503',
       },
     });
-    // If listing returns 502, body should contain a system def for key pushing.
-    yield e.status === 502 &&
+    // If listing returns 500, body should contain a system def for key pushing.
+    yield e.status === 500 &&
       put({
         type: 'SET_SYSTEM',
         payload: {

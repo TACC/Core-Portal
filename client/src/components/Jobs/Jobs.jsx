@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   AppIcon,
   InfiniteScrollTable,
@@ -16,7 +16,6 @@ import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
-import { useLocation } from 'react-router-dom';
 
 function JobsView({
   showDetails,
@@ -24,9 +23,17 @@ function JobsView({
   rowProps,
   includeSearchbar,
 }) {
+  // TODOv3: dropV2Jobs
+  const location = useLocation();
+  const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
-  const jobs = useSelector((state) => state.jobs.list);
-  const error = useSelector((state) => state.jobs.error);
+  const { error, jobs } = useSelector((state) => {
+    return version === 'v3'
+      ? { ...state.jobs, jobs: state.jobs.list }
+      : // TODOv3: dropV2Jobs
+        { ...state.jobsv2, jobs: state.jobsv2.list };
+  });
+
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
@@ -66,8 +73,10 @@ function JobsView({
   }, [dispatch, query.query_string]);
 
   const infiniteScrollCallback = useCallback(() => {
+    // TODOv3: dropV2Jobs
+    const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
     dispatch({
-      type: 'GET_JOBS',
+      type: dispatchType,
       params: { offset: jobs.length, queryString: query.query_string || '' },
     });
   }, [dispatch, jobs, query.query_string]);
@@ -75,19 +84,21 @@ function JobsView({
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { uuid, name },
+        original: { id, uuid, name },
       },
     }) => {
       const query = queryStringParser.parse(useLocation().search);
 
+      // TODOv3: dropV2Jobs
+      const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
       return (
         <Link
           to={{
-            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${uuid}`,
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${jobsPathname}`,
+            state: { jobName: name },
             search: query.query_string
               ? `?query_string=${query.query_string}`
               : '',
-            state: { jobName: name },
           }}
           className="wb-link"
         >
@@ -133,13 +144,26 @@ function JobsView({
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: (el) => (
-        <JobsStatus
-          status={el.value}
-          fancy={showFancyStatus}
-          jobUuid={el.row.original.uuid}
-        />
-      ),
+      Cell: (el) => {
+        // TODOv3: dropV2Jobs
+        if (el.row.original.uuid) {
+          return (
+            <JobsStatus
+              status={el.value}
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.uuid}
+            />
+          );
+        } else {
+          return (
+            <JobsStatus
+              status="ARCHIVED"
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.id}
+            />
+          );
+        }
+      },
       id: 'jobStatusCol',
     },
     {
@@ -150,18 +174,23 @@ function JobsView({
     },
     {
       Header: 'Output Location',
+      show: version === 'v3' /* TODOv3: dropV2Jobs. remove show here  */,
       headerStyle: { textAlign: 'left' },
-      accessor: 'outputLocation',
       Cell: (el) => {
-        const outputLocation = getOutputPath(el.row.original);
-        return outputLocation && !hideDataFiles ? (
-          <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
-            className="wb-link job__path"
-          >
-            {outputLocation}
-          </Link>
-        ) : null;
+        // TODOv3: dropV2Jobs
+        if (el.row.original.uuid) {
+          const outputLocation = getOutputPath(el.row.original);
+          return outputLocation && !hideDataFiles ? (
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
+              className="wb-link job__path"
+            >
+              {outputLocation}
+            </Link>
+          ) : null;
+        } else {
+          return null;
+        }
       },
     },
     {
@@ -197,6 +226,7 @@ function JobsView({
           className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
           noDataText={noDataText}
           getRowProps={rowProps}
+          columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
         />
       </div>
     </>

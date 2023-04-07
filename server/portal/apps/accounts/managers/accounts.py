@@ -192,6 +192,6 @@ def add_pub_key_to_resource(
         ) as exc:
             # cannot ssh to system
             message = str(type(exc))  # paramiko exceptions do not contain a string message?
-            status = 502  # Bad gateway
+            status = 500  # Bad gateway
 
     return success, message, status

@@ -12,10 +12,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import {
-  AllocationsRequestModal,
-  AllocationsTeamViewModal,
-} from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 import { Sidebar } from '_common';
 
@@ -35,9 +32,14 @@ Header.propTypes = { page: string.isRequired };
 export const Actions = ({ page }) => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
-    <Link to={`${root}/manage`} className="btn btn-primary">
+    <a
+      className="btn btn-primary"
+      href="https://submit-tacc.xras.org/"
+      target="_blank"
+      rel="noreferrer"
+    >
       Request New Allocation
-    </Link>
+    </a>
   );
 };
 Actions.propTypes = { page: string.isRequired };
@@ -85,14 +87,6 @@ export const Layout = ({ page }) => {
             </SectionTableWrapper>
           )}
           <Switch>
-            <Route exact path={`${root}/${page}/manage`}>
-              <AllocationsRequestModal
-                isOpen
-                toggle={() => {
-                  history.push(`${root}/${page}`);
-                }}
-              />
-            </Route>
             <Route exact path={`${root}/${page}/:projectId(\\d+)`}>
               <AllocationsTeamViewModal
                 isOpen
