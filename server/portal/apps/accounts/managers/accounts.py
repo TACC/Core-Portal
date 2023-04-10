@@ -12,10 +12,7 @@ from paramiko.ssh_exception import (
     ChannelException,
     SSHException
 )
-from portal.utils.encryption import createKeyPair
-from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -55,38 +52,6 @@ def _lookup_keys_manager(user, password, token):
     module = import_module(module_str)
     cls = getattr(module, cls_str)
     return cls(user.username, password, token)
-
-
-def reset_system_keys(user, system_id, hostname=None):
-    """Reset system's Keys
-
-    Creates a new set of keys, saves the set of keys to the DB
-    and updates the Tapis System.
-
-    :param user: Django User object
-    """
-    logger.info(f"Resetting credentials for user {user.username} on system {system_id}")
-    (priv_key_str, publ_key_str) = createKeyPair()
-    create_system_credentials(user.tapis_oauth.client,
-                              user.username,
-                              publ_key_str,
-                              priv_key_str,
-                              system_id,
-                              skipCredentialCheck=True)
-
-    if hostname is None:
-        sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
-        hostname = sys.host
-
-    # Update keys for hostname
-    SSHKeys.objects.update_hostname_keys(
-        user,
-        hostname=hostname,
-        priv_key=priv_key_str,
-        pub_key=publ_key_str
-    )
-
-    return publ_key_str
 
 
 def queue_pub_key_setup(
@@ -131,7 +96,8 @@ def add_pub_key_to_resource(
         token,
         system_id,
         hostname=None,
-        port=22
+        port=22,
+        pub_key=None
 ):
     """Add Public Key to Remote Resource
 
@@ -156,10 +122,11 @@ def add_pub_key_to_resource(
             hostname = sys.host
 
         transport = mgr.get_transport(hostname, port)
-        try:
-            pub_key = user.ssh_keys.for_hostname(hostname).public
-        except ObjectDoesNotExist:
-            raise
+        if pub_key is None:
+            try:
+                pub_key = user.ssh_keys.for_hostname(hostname).public
+            except ObjectDoesNotExist:
+                raise
         message = mgr.add_public_key(
             system_id,
             hostname,
