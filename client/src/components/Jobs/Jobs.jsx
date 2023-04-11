@@ -48,22 +48,22 @@ function JobsView({
 
   const query = queryStringParser.parse(useLocation().search);
 
-  const noDataText = query.query_string ? (
-    <Section className={'no-results-message'}>
-      <SectionMessage type="warning">No results found</SectionMessage>
-    </Section>
-  ) : (
-    <>
-      No recent jobs. You can submit jobs from the{' '}
-      <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
-        className="wb-link"
-      >
-        Applications Page
-      </Link>
-      .
-    </>
-  );
+  const noDataText =
+    // TODOv3: dropV2Jobs
+    version === 'v2' || query.query_string ? (
+      'No results found.'
+    ) : (
+      <>
+        No recent jobs. You can submit jobs from the{' '}
+        <Link
+          to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+          className="wb-link"
+        >
+          Applications Page
+        </Link>
+        .
+      </>
+    );
 
   useEffect(() => {
     dispatch({
@@ -224,7 +224,11 @@ function JobsView({
           onInfiniteScroll={infiniteScrollCallback}
           isLoading={isJobLoading || isNotificationLoading}
           className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-          noDataText={noDataText}
+          noDataText={
+            <Section className={'no-results-message'}>
+              <SectionMessage type="info">{noDataText}</SectionMessage>
+            </Section>
+          }
           getRowProps={rowProps}
           columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
         />
