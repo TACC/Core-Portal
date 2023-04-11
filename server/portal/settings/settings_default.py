@@ -241,4 +241,5 @@ _WORKBENCH_SETTINGS = {
     "customDashboardSection": None,
     "ticketAttachmentMaxSizeMessage": 'Max File Size: 3MB',
     "ticketAttachmentMaxSize": 3145728,
+    "jobsv2Title": "Historic Jobs"
 }

@@ -248,5 +248,6 @@ _WORKBENCH_SETTINGS = {
                 "text": 'Change Password',
             }
         ]
-    }
+    },
+    "jobsv2Title": "Historic Jobs"
 }

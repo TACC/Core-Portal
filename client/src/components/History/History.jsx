@@ -42,6 +42,7 @@ const Actions = () => {
 
 const HistorySidebar = () => {
   const { unreadJobs } = useSelector((state) => state.notifications.list);
+  const { jobsv2Title } = useSelector((state) => state.workbench.config);
 
   const sidebarItems = [
     {
@@ -52,15 +53,18 @@ const HistorySidebar = () => {
       hidden: false,
       children: <HistoryBadge unread={unreadJobs} />,
     },
-    // TODOv3: dropV2Jobs
-    {
+  ];
+
+  // TODOv3: dropV2Jobs
+  if (jobsv2Title) {
+    sidebarItems.push({
       to: `${root}/jobsv2`,
-      label: 'Historic Jobs',
+      label: jobsv2Title,
       iconName: 'jobs',
       disabled: false,
       hidden: false,
-    },
-  ];
+    });
+  }
 
   return <Sidebar sidebarItems={sidebarItems} />;
 };
@@ -166,6 +170,7 @@ export const Routes = () => {
 };
 
 const Layout = () => {
+  const { jobsv2Title } = useSelector((state) => state.workbench.config); // TODOv3: dropV2Jobs
   const match = useRouteMatch(`${root}/:historyType`);
   const historyType = match
     ? match.params.historyType.substring(0, 1).toUpperCase() +
@@ -176,7 +181,9 @@ const Layout = () => {
     <Section
       bodyClassName="has-loaded-history"
       messageComponentName="HISTORY"
-      header={`History / ${historyType}`}
+      header={`History / ${
+        historyType === 'Jobsv2' ? jobsv2Title : historyType // TODOv3: dropV2Jobs
+      }`}
       headerClassName={styles['header']}
       headerActions={<Actions />}
       content={
