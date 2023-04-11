@@ -133,7 +133,7 @@ class HistoricJobsView(BaseApiView):
         jobs = JobSubmission.objects.all().filter(user=request.user).exclude(data__isnull=True).order_by('-time')
         data = [job.data for job in jobs[offset:offset + limit]]
 
-        return JsonResponse({"response": []})
+        return JsonResponse({"response": data})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -153,7 +153,7 @@ class JobsView(BaseApiView):
         return JsonResponse(
             {
                 'status': 200,
-                'response': [],
+                'response': data,
             },
             encoder=BaseTapisResultSerializer
         )
