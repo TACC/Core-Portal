@@ -195,11 +195,9 @@ export const AppSchemaForm = ({ app }) => {
 
     const hasCorral =
       configuration.length &&
-      [
-        'cloud.corral.tacc.utexas.edu',
-        'data.tacc.utexas.edu',
-        'cloud.data.tacc.utexas.edu',
-      ].some((s) => defaultHost.endsWith(s));
+      ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
+        defaultHost.endsWith(s)
+      );
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -575,11 +573,12 @@ export const AppSchemaForm = ({ app }) => {
                       */
                         .filter(
                           (q) =>
-                            app.definition.notes.hideNodeCountAndCoresPerNode &&
-                            app.definition.jobAttributes.nodeCount >=
+                            !app.definition.notes
+                              .hideNodeCountAndCoresPerNode ||
+                            (app.definition.jobAttributes.nodeCount >=
                               q.minNodeCount &&
-                            app.definition.jobAttributes.nodeCount <=
-                              q.maxNodeCount
+                              app.definition.jobAttributes.nodeCount <=
+                                q.maxNodeCount)
                         )
                         .map((q) => q.name)
                         .sort()
