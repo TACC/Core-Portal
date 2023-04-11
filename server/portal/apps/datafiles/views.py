@@ -113,7 +113,7 @@ class TapisFilesView(BaseApiView):
 
                 # If user is missing a non-corral allocation mangle error to a 403
                 if not any(system.host.endswith(ele) for ele in
-                           list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
+                           list(allocations['hosts'].keys()) + ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
                     raise PermissionDenied
 
                 # If a user needs to push keys, return a response specifying the system
