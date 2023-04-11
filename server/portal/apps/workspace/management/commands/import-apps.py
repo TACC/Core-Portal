@@ -1,12 +1,12 @@
 import logging
 from django.core.management import BaseCommand
 from django.conf import settings
+from tapipy.errors import NotFoundError
 from portal.libs.agave.utils import service_account
 from portal.apps.workspace.models import (
     AppTrayCategory,
     AppTrayEntry
 )
-import json
 
 
 logger = logging.getLogger(__name__)
@@ -16,65 +16,69 @@ class Command(BaseCommand):
     """
     This command imports the current set of apps specified with metadata
     as categories and associated app entries. App entries will be populated with
-    UUID, specific version and revision.
+    id, specific version, category, and icon.
     """
 
     help = "Import all app metadata from the tenant into AppTrayCategory and AppTrayEntry models"
 
     def add_arguments(self, parser):
-        parser.add_argument('-m', '--metadata', type=str, help="Portal App Metdata Names to import")
+        parser.add_argument('-n', '--names', type=str, help="Portal app names to import")
+        parser.add_argument('-c', '--clean', action='store_true', help="Remove nonexistant apps")
+        parser.add_argument('-s', '--skip', action='store_true', help="Skip import")
 
-    def get_tag_value(self, definition, tag):
-        """
-        Searches an app definition for a tag and returns its value.
-        """
-        tag = tag + ":"
-        return next((tag_value[len(tag):] for tag_value in definition['tags'] if tag_value.startswith(tag)), None)
+    def clean(self):
+        client = service_account()
 
-    def handle(self, *args, **options):
-        if options['metadata']:
-            metadata = options['metadata'].split(',')
-        else:
-            metadata = settings.PORTAL_APPS_METADATA_NAMES
+        portal_apps = AppTrayEntry.objects.filter(appType='tapis')
+        if portal_apps:
+            logger.info("Deleting app entries with no corresponding app in tenant")
 
-        agave = service_account()
-        query = json.dumps({
-            '$and': [
-                {'name': {'$in': metadata}},
-                {'value.definition.available': True}
-            ]
-        })
-        data = agave.meta.listMetadata(q=query)
+        for app in portal_apps:
+            try:
+                if app.version:
+                    client.apps.getApp(appId=app.appId, appVersion=app.version)
+                else:
+                    client.apps.getAppLatestVersion(appId=app.appId)
+            except NotFoundError:
+                logger.info("App not found. id: {} and version: {}:. Deleting...".format(app.appId, app.version or 'None'))
+                app.delete()
 
+    def import_apps(self, portal_names):
+        client = service_account()
+
+        query = ["(enabled = TRUE) AND", f"((tags IN ('portalName: {portal_names[0]}'))"]
+        for portal_name in portal_names[1:]:
+            query.append(f"OR (tags IN ('portalName: {portal_name}'))")
+        query.append(")")
+
+        data = client.apps.searchAppsRequestBody(search=query, select="id,notes,version")
         for app in data:
             try:
-                definition = app['value']['definition']
-                appType = app['value']['type']
-                category = self.get_tag_value(definition, "appCategory")
-                icon = self.get_tag_value(definition, "appIcon") or ""
+                category = app.notes.get('category') or "Uncategorized"
                 category_entry, _ = AppTrayCategory.objects.get_or_create(
                     category=category
                 )
-                app_entry = AppTrayEntry.objects.create(
-                    category=category_entry,
-                    label=definition['label'],
-                    icon=icon,
-                    appType=appType,
-                    version=definition['version'],
-                    available=definition['available'],
-                    shortDescription=definition['shortDescription'],
-                )
-                if appType == "html":
-                    app_entry.htmlId = definition['id']
-                    app_entry.html = definition['html']
-                elif appType == "agave":
-                    app_entry.appId = definition['id']
-                    app_entry.name = definition['name']
-                    app_entry.revision = definition['revision']
-                    app_entry.lastRetrieved = definition['id']
 
-                app_entry.save()
+                app_entry = AppTrayEntry.objects.get_or_create(
+                    category=category_entry,
+                    icon=app.notes.get('icon') or "",
+                    version=app.get('version') or "",
+                    appId=app.get('id')
+                )
+
                 logger.info("Imported {}".format(app_entry))
             except Exception:
                 logger.exception("Error importing application")
                 logger.info("Following app could not be imported: {}".format(app))
+
+    def handle(self, *args, **options):
+        if options['clean']:
+            self.clean()
+
+        if not options['skip']:
+            if options['names']:
+                portal_names = options['names'].split(',')
+            else:
+                portal_names = settings.PORTAL_APPS_NAMES_SEARCH
+
+            self.import_apps(portal_names)
