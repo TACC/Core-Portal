@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
-def tapis_indexer(self, access_token, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
+def tapis_indexer(self, systemId, access_token=None, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
             if sys.get('scheme', None) == 'projects'
@@ -50,9 +50,9 @@ def tapis_listing_indexer(self, listing):
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
-        if sys['api'] == 'tapis' and sys['scheme'] != 'private':
-            logger.info('INDEXING {} SYSTEM'.format(sys.name))
-            tapis_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
+        if sys['api'] == 'tapis' and sys['scheme'] in ['community', 'public']:
+            logger.info('INDEXING {} SYSTEM'.format(sys['name']))
+            tapis_indexer.apply_async(args=[sys['system']], kwargs={'reindex': reindex})
 
 
 @shared_task(bind=True, max_retries=3, queue='api')
