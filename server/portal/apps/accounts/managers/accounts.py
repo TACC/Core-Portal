@@ -4,9 +4,7 @@
 """
 import logging
 from importlib import import_module
-from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
@@ -15,26 +13,6 @@ from paramiko.ssh_exception import (
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 
 logger = logging.getLogger(__name__)
-
-
-def check_user(username):
-    """Verifies username
-
-    Checks if a username exists or if there's more than one user
-    with the same username
-    """
-    users = get_user_model().objects.filter(username=username)
-    if not users:
-        raise ValueError(
-            'No user with the username: {username} exists'.format(
-                username=username)
-        )
-    elif len(users) > 1:
-        logger.warning(
-            'Multiple users with the username: %s exists',
-            username
-        )
-    return users[0]
 
 
 def _lookup_keys_manager(user, password, token):
@@ -54,50 +32,14 @@ def _lookup_keys_manager(user, password, token):
     return cls(user.username, password, token)
 
 
-def queue_pub_key_setup(
-        username,
-        password,
-        token,
-        system_id,
-        hostname,
-        port=22
-):
-    """Queue Public Key Setup
-
-    Convenient function to queue a specific celery task
-    """
-    user = check_user(username)
-
-    from portal.apps.accounts.tasks import (
-        setup_pub_key,
-        monitor_setup_pub_key
-    )
-    res = setup_pub_key.apply_async(
-        kwargs={
-            'user': user,
-            'password': password,
-            'token': token,
-            'system_id': system_id,
-            'hostname': hostname,
-            'port': port
-        },
-        expires=60,
-        routing_key='onboard'
-    )
-    monitor_setup_pub_key.apply_async(
-        args=(res.id, ),
-        routing_key='onboard'
-    )
-
-
 def add_pub_key_to_resource(
         user,
         password,
         token,
         system_id,
+        pub_key,
         hostname=None,
         port=22,
-        pub_key=None
 ):
     """Add Public Key to Remote Resource
 
@@ -122,11 +64,6 @@ def add_pub_key_to_resource(
             hostname = sys.host
 
         transport = mgr.get_transport(hostname, port)
-        if pub_key is None:
-            try:
-                pub_key = user.ssh_keys.for_hostname(hostname).public
-            except ObjectDoesNotExist:
-                raise
         message = mgr.add_public_key(
             system_id,
             hostname,
@@ -146,9 +83,6 @@ def add_pub_key_to_resource(
         except AuthenticationException:
             # Bad password/token
             status = 403  # Forbidden
-        except ObjectDoesNotExist:
-            # user.ssh_keys does not exist, suggest resetting keys
-            status = 409  # Conflict
         except KeyCannotBeAdded:
             # May occur when system is down
             message = "KeyCannotBeAdded"  # KeyCannnotBeAdded exception does not contain a message?

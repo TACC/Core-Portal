@@ -48,8 +48,8 @@ class SystemKeysView(BaseApiView):
             password=body['form']['password'],
             token=body['form']['token'],
             system_id=system_id,
-            hostname=body['form']['hostname'],
-            pub_key=publ_key_str
+            pub_key=publ_key_str,
+            hostname=body['form']['hostname']
         )
 
         create_system_credentials(request.user.tapis_oauth.client,
