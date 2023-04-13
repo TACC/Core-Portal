@@ -47,7 +47,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     );
   });
 
-  const isUserOrGuest = useSelector(
+  const canEdit = useSelector(
     (state) =>
       metadata.members
         .filter((member) =>
@@ -57,7 +57,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         )
         .map(
           (currentUser) =>
-            currentUser.access === 'edit' || currentUser.access === 'read'
+            currentUser.access === 'edit' || currentUser.access === 'owner'
         )[0]
   );
   const onEdit = () => {
@@ -102,7 +102,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       headerActions={
         editable && (
           <div className={styles.controls}>
-            {!isUserOrGuest ? (
+            {canEdit ? (
               <>
                 <Button type="link" onClick={onEdit}>
                   Edit Descriptions
@@ -111,7 +111,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
               </>
             ) : null}
             <Button type="link" onClick={onManage}>
-              {isUserOrGuest ? 'View' : 'Manage'} Team
+              {!canEdit ? 'View' : 'Manage'} Team
             </Button>
           </div>
         )
