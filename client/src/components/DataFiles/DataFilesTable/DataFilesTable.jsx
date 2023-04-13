@@ -108,7 +108,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           </div>
         );
       }
-      if (scheme === 'private') {
+      if (['private', 'projects'].includes(scheme)) {
         const link = (strings) => (
           <a
             className="data-files-nav-link"
@@ -123,7 +123,8 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
               There was a problem accessing this file system. If this is your
-              first time logging in, you may need to {link`push your keys`}.
+              first time accessing this system, you may need to{' '}
+              {link`push your keys`}.
             </SectionMessage>
           </div>
         );
