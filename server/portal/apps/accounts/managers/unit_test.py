@@ -1,9 +1,6 @@
-from django.test import TestCase
-from mock import MagicMock, patch
+from mock import MagicMock
 from portal.apps.accounts.managers.accounts import add_pub_key_to_resource
 from portal.apps.accounts.managers.ssh_keys import KeysManager
-from portal.apps.accounts.models import SSHKeys
-from django.contrib.auth import get_user_model
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from paramiko.ssh_exception import (
     AuthenticationException,
@@ -11,17 +8,6 @@ from paramiko.ssh_exception import (
     SSHException
 )
 import pytest
-
-
-@pytest.fixture
-def user_with_keys(regular_user):
-    SSHKeys.objects.update_hostname_keys(
-        regular_user,
-        hostname='data.tacc.utexas.edu',
-        priv_key='privkey',
-        pub_key='pubkey'
-    )
-    yield regular_user
 
 
 @pytest.fixture
@@ -38,85 +24,51 @@ def _run_add_pub_key_to_resource(user):
     password = "testpassword"
     token = "123456"
     system_id = "portal-home.testuser"
+    pub_key = 'pubkey'
     hostname = "data.tacc.utexas.edu"
-    return add_pub_key_to_resource(user, password, token, system_id, hostname)
+    return add_pub_key_to_resource(user, password, token, system_id, pub_key, hostname)
 
 
 # AuthenticationException occurs with bad password/token when trying to push keys
-def test_authentication_exception(user_with_keys, mock_lookup_keys_manager):
+def test_authentication_exception(regular_user, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=AuthenticationException("Authentication failed."))
-    result, message, status = _run_add_pub_key_to_resource(user_with_keys)
+    result, message, status = _run_add_pub_key_to_resource(regular_user)
     assert result is False
     assert status == 403
     assert message == "Authentication failed."
 
 
 # Channel exception occurs when server is reachable but returns an error while paramiko is attempting to open a channel
-def test_channel_exception(user_with_keys, mock_lookup_keys_manager):
+def test_channel_exception(regular_user, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=ChannelException(999, "Mock Channel Exception"))
-    result, message, status = _run_add_pub_key_to_resource(user_with_keys)
+    result, message, status = _run_add_pub_key_to_resource(regular_user)
     assert result is False
     assert status == 500
 
 
 # SSHException occurs when paramiko is unable to open SSH connection to server
-def test_ssh_exception(user_with_keys, mock_lookup_keys_manager):
+def test_ssh_exception(regular_user, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=SSHException())
-    result, message, status = _run_add_pub_key_to_resource(user_with_keys)
+    result, message, status = _run_add_pub_key_to_resource(regular_user)
     assert result is False
     assert status == 500
 
 
 # KeyCannotBeAdded exception occurs when authorized_keys file cannot be modified
-def test_KeyCannotBeAdded_exception(user_with_keys, mock_lookup_keys_manager):
+def test_KeyCannotBeAdded_exception(regular_user, mock_lookup_keys_manager):
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(
         side_effect=KeyCannotBeAdded("MockKeyCannotBeAdded", "MockOutput", "MockErrorOutput"))
-    result, message, status = _run_add_pub_key_to_resource(user_with_keys)
+    result, message, status = _run_add_pub_key_to_resource(regular_user)
     assert result is False
     assert status == 503
     assert message == "KeyCannotBeAdded"
 
 
 # Catch all for unknown exception types
-def test_unknown_exception(user_with_keys, mock_lookup_keys_manager):
+def test_unknown_exception(regular_user, mock_lookup_keys_manager):
     exception_message = "Mock unknown exception"
     mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=Exception(exception_message))
     try:
-        result, message, status = _run_add_pub_key_to_resource(user_with_keys)
+        result, message, status = _run_add_pub_key_to_resource(regular_user)
     except Exception as exc:
         assert str(exc) == exception_message
-
-
-# Exception occurs when ssh_keys are not tracked by user model and the user must reset keys
-def test_user_model_exception(regular_user, mock_lookup_keys_manager):
-    result, message, status = _run_add_pub_key_to_resource(regular_user)
-    assert result is False
-    assert status == 409
-    assert message == "User has no ssh_keys."
-
-
-@pytest.mark.django_db(transaction=True)
-class TestUserSetup(TestCase):
-    fixtures = ['users', 'auth']
-
-    def setUp(self):
-        super(TestUserSetup, self).setUp()
-
-        self.mock_user = get_user_model().objects.get(username="username")
-
-        self.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
-        self.mock_client = self.mock_client_patcher.start()
-
-        # check_user function should be faked
-        self.mock_user.profile.setup_complete = False
-        self.mock_check_user_patcher = patch('portal.apps.accounts.managers.accounts.check_user', return_value=self.mock_user)
-        self.mock_check_user = self.mock_check_user_patcher.start()
-
-        # Mock StorageSystem
-        self.mock_storage_system_patcher = patch('portal.apps.accounts.managers.accounts.StorageSystem')
-        self.mock_storage_system = self.mock_storage_system_patcher.start()
-
-        self.addCleanup(self.mock_check_user_patcher.stop)
-        self.addCleanup(self.mock_systems_manager_patcher.stop)
-        self.addCleanup(self.mock_storage_system_patcher.stop)
-        self.addCleanup(self.mock_client_patcher.stop)
