@@ -23,12 +23,15 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
   const dispatch = useDispatch();
   const system = useSelector((state) => state.pushKeys.target);
-  let currSystemHost = useSelector((state) =>
+  const currentUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+  const currSystem = useSelector((state) =>
     state.systems.definitions.list.find(
       (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
-  currSystemHost = currSystemHost ? currSystemHost.host : '';
+  const currSystemHost = currSystem ? currSystem.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
   const systemDefErr = useSelector((state) => state.systems.definitions.error);
@@ -108,7 +111,10 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           </div>
         );
       }
-      if (['private', 'projects'].includes(scheme)) {
+      if (
+        ['private', 'projects'].includes(scheme) &&
+        currSystem.effectiveUserId === currentUser
+      ) {
         const link = (strings) => (
           <a
             className="data-files-nav-link"

@@ -56,6 +56,15 @@ const SystemRoleSelector = ({ projectId, username }) => {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
+
+  const readOnlyTeam = useSelector((state) => {
+    const projectSystem = state.systems.storage.configuration.find(
+      (s) => s.scheme === 'projects'
+    );
+
+    return projectSystem?.readOnly;
+  });
+
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
     authenticatedUser
@@ -78,7 +87,8 @@ const SystemRoleSelector = ({ projectId, username }) => {
   if (
     data.role === 'OWNER' ||
     username === authenticatedUser ||
-    !['OWNER', 'ADMIN'].includes(currentUserRole)
+    !['OWNER', 'ADMIN'].includes(currentUserRole) ||
+    readOnlyTeam
   )
     return <span>{roleMap[data.role]}</span>;
   return (

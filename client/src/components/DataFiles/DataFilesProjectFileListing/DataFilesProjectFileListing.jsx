@@ -28,25 +28,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   const metadata = useSelector((state) => state.projects.metadata);
 
-  const editable = useSelector((state) => {
-    const projectSystem = state.systems.storage.configuration.find(
-      (s) => s.scheme === 'projects'
-    );
-
-    const privilegeRequired = projectSystem && projectSystem.privilegeRequired;
-
-    return (
-      !privilegeRequired ||
-      metadata.members.some((member) => {
-        return (
-          member.access === 'owner' &&
-          member.user &&
-          member.user.username === state.authenticatedUser.user.username
-        );
-      })
-    );
-  });
-
   const canEdit = useSelector(
     (state) =>
       metadata.members
@@ -60,6 +41,15 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             currentUser.access === 'edit' || currentUser.access === 'owner'
         )[0]
   );
+
+  const readOnlyTeam = useSelector((state) => {
+    const projectSystem = state.systems.storage.configuration.find(
+      (s) => s.scheme === 'projects'
+    );
+
+    return projectSystem?.readOnly || !canEdit;
+  });
+
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -100,21 +90,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       className={styles.root}
       header={<div className={styles.title}>{metadata.title}</div>}
       headerActions={
-        editable && (
-          <div className={styles.controls}>
-            {canEdit ? (
-              <>
-                <Button type="link" onClick={onEdit}>
-                  Edit Descriptions
-                </Button>
-                <span className={styles.separator}>|</span>
-              </>
-            ) : null}
-            <Button type="link" onClick={onManage}>
-              {!canEdit ? 'View' : 'Manage'} Team
-            </Button>
-          </div>
-        )
+        <div className={styles.controls}>
+          {canEdit ? (
+            <>
+              <Button type="link" onClick={onEdit}>
+                Edit Descriptions
+              </Button>
+              <span className={styles.separator}>|</span>
+            </>
+          ) : null}
+          <Button type="link" onClick={onManage}>
+            {readOnlyTeam ? 'View' : 'Manage'} Team
+          </Button>
+        </div>
       }
       manualContent
     >
