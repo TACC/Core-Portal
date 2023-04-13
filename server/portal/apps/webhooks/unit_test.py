@@ -49,9 +49,20 @@ class TestJobsWebhookView(TransactionTestCase):
 
     def setUp(self):
         signals.post_save.disconnect(sender=Notification, dispatch_uid="notification_msg")
+        mock_client = MagicMock()
+        mock_user = MagicMock()
+        mock_user.tapis_oauth.client = mock_client
+        mock_user_model = MagicMock()
+        mock_user_model.objects.get.return_value = mock_user
+        self.user_model_patcher = patch(
+            'portal.apps.webhooks.views.get_user_model',
+            return_value=mock_user_model
+        )
+        self.user_model = self.user_model_patcher.start()
 
     def tearDown(self):
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
+        self.user_model_patcher.stop()
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING_INPUTS"])
     @patch('portal.apps.webhooks.views.validate_tapis_job')
