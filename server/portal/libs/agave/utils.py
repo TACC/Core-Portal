@@ -4,9 +4,6 @@
 """
 import logging
 import os
-import urllib.request
-import urllib.parse
-import urllib.error
 from django.conf import settings
 from tapipy.tapis import Tapis
 import requests
@@ -52,7 +49,7 @@ def iterate_level(client, system, path, limit=100):
 
     while True:
         _page = client.files.listFiles(systemId=system,
-                                       path=urllib.parse.quote(path),
+                                       path=path,
                                        offset=int(offset),
                                        limit=int(limit))
         page = list(map(lambda f: {
@@ -143,6 +140,14 @@ def service_account():
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
         access_token=settings.TAPIS_ADMIN_JWT)
+
+
+def user_account(access_token):
+    """Return a Tapis instance with the user credentials"""
+    return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
+                 client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
+                 client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
+                 access_token=access_token)
 
 
 def text_preview(url):

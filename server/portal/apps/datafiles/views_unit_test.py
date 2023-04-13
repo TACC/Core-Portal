@@ -2,7 +2,7 @@ import pytest
 import json
 import logging
 import os
-from mock import MagicMock
+from mock import patch, MagicMock
 from tapipy.errors import InternalServerError
 from portal.apps.datafiles.models import Link
 from django.conf import settings
@@ -172,7 +172,8 @@ def logging_metric_mock(mocker):
     yield mocker.patch.object(logger, 'info')
 
 
-def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
+@patch('portal.libs.agave.operations.tapis_listing_indexer')
+def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                    tapis_file_listing_mock, logging_metric_mock):
     tapis_listing_result = [TapisResult(**f) for f in tapis_file_listing_mock]
     mock_tapis_client.files.listFiles.return_value = tapis_listing_result
@@ -205,9 +206,10 @@ def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, m
             authenticated_user.username))
 
 
-def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
-                                                   logging_metric_mock):
-    mock_response = {'nativeFormat': 'dir'}
+@patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
+                                                   tapis_file_listing_mock, logging_metric_mock):
+    mock_response = {'status': 'success'}
     mock_tapis_client.files.moveCopy.return_value = mock_response
     body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
     response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
@@ -221,7 +223,8 @@ def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, m
         "system:frontera.home.username path:test.txt body:{}".format(authenticated_user.username, body))
 
 
-def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, mock_tapis_client,
+@patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                     logging_metric_mock,
                                                     agave_file_mock, requests_mock, text_file_fixture):
 
