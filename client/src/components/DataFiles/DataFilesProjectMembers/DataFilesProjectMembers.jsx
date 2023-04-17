@@ -28,7 +28,7 @@ const DataFilesProjectMembers = ({
     authenticatedUser ?? null
   );
 
-  const canEdit = ['OWNER', 'ADMIN'].includes(
+  const canEditSystem = ['OWNER', 'ADMIN'].includes(
     authenticatedUserQuery?.data?.role
   );
 
@@ -37,7 +37,7 @@ const DataFilesProjectMembers = ({
       (s) => s.scheme === 'projects'
     );
 
-    return projectSystem?.readOnly || !canEdit;
+    return projectSystem?.readOnly || !canEditSystem;
   });
 
   const [selectedUser, setSelectedUser] = useState('');

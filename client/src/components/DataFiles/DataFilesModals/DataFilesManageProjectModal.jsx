@@ -28,19 +28,16 @@ const DataFilesManageProjectModal = () => {
     };
   });
 
-  const canEdit = members
+  const canEditSystem = members
     .filter((member) => member.user.username === user.username)
-    .map(
-      (currentUser) =>
-        currentUser.access === 'edit' || currentUser.access === 'owner'
-    )[0];
+    .map((currentUser) => currentUser.access === 'owner')[0];
 
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
       (s) => s.scheme === 'projects'
     );
 
-    return projectSystem?.readOnly || !canEdit;
+    return projectSystem?.readOnly || !canEditSystem;
   });
 
   const toggle = useCallback(() => {

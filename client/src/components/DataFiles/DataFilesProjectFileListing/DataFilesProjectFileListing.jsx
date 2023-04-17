@@ -28,7 +28,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   const metadata = useSelector((state) => state.projects.metadata);
 
-  const canEdit = useSelector(
+  const canEditSystem = useSelector(
     (state) =>
       metadata.members
         .filter((member) =>
@@ -36,10 +36,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             ? member.user.username === state.authenticatedUser.user.username
             : { access: null }
         )
-        .map(
-          (currentUser) =>
-            currentUser.access === 'edit' || currentUser.access === 'owner'
-        )[0]
+        .map((currentUser) => currentUser.access === 'owner')[0]
   );
 
   const readOnlyTeam = useSelector((state) => {
@@ -47,7 +44,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       (s) => s.scheme === 'projects'
     );
 
-    return projectSystem?.readOnly || !canEdit;
+    return projectSystem?.readOnly || !canEditSystem;
   });
 
   const onEdit = () => {
@@ -91,7 +88,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       header={<div className={styles.title}>{metadata.title}</div>}
       headerActions={
         <div className={styles.controls}>
-          {canEdit ? (
+          {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
                 Edit Descriptions
