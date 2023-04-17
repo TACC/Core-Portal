@@ -98,7 +98,7 @@ function JobHistoryContent({
     [lastMessageTitle]: (
       <Expand
         detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-        message={<pre>jobDetails.lastMessage</pre>}
+        message={<pre>{jobDetails.lastMessage}</pre>}
       />
     ),
   };
