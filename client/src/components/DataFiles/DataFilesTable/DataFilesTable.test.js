@@ -23,6 +23,7 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  authenticatedUser: { user: null },
 };
 
 const columns = [
@@ -282,7 +283,7 @@ describe('DataFilesTable', () => {
         },
         params: {
           FilesListing: {
-            system: 'test.system',
+            system: 'frontera.home.username',
             path: 'test/path',
             scheme: 'private',
           },

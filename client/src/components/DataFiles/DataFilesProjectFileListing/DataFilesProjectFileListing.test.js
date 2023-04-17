@@ -81,9 +81,9 @@ describe('DataFilesProjectFileListing', () => {
     expect(getByText(/Show More/)).toBeDefined();
   });
 
-  it('hides Edit Descriptions and Manage Team when privilege is needed and user is not owner', () => {
+  it('hides Edit Descriptions and Manage Team when readOnly is true or user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
-    initialMockState.systems.storage.configuration[5].privilegeRequired = true;
+    initialMockState.systems.storage.configuration[5].readOnly = true;
     const initialMockStateUnknownUser = {
       ...initialMockState,
       projects: {

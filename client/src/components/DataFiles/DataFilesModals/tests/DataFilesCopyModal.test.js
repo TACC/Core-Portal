@@ -23,6 +23,7 @@ const initialMockState = {
       trashPath: '.Trash',
     },
   },
+  authenticatedUser: { user: null },
 };
 
 describe('DataFilesCopyModal', () => {

@@ -6,6 +6,7 @@ import {
   projectsListingFixture,
   projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
+import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 jest.mock('cross-fetch');
 const mockStore = configureStore();
 
@@ -42,6 +43,7 @@ const initialMockState = {
       email: 'user@name.com',
     },
   },
+  systems: systemsFixture,
 };
 
 describe('DataFilesManageProjectModal', () => {
