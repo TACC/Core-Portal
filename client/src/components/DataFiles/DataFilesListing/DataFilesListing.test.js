@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { fireEvent, wait, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
@@ -55,6 +55,7 @@ const initialMockState = {
       trashPath: '.Trash',
     },
   },
+  authenticatedUser: { user: { username: 'username' } },
 };
 
 describe('CheckBoxCell', () => {
@@ -147,7 +148,7 @@ describe('DataFilesListing', () => {
       },
     });
 
-    const { getByText, getAllByRole } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesListing
         api="tapis"
         scheme="private"
@@ -160,14 +161,6 @@ describe('DataFilesListing', () => {
     );
     expect(getByText('testfile')).toBeDefined();
     expect(getByText('4.0 kB')).toBeDefined();
-    /*
-    expect(getByText("06/17/2019 15:49")).toBeDefined();
-    const row = getAllByRole("row")[0];
-    fireEvent.click(row);
-    expect(store.getActions()).toEqual([
-      { type: "DATA_FILES_TOGGLE_SELECT", payload: { index: 0, section: "FilesListing" } }
-    ]);
-    */
   });
 
   it('renders message when no files to show', () => {
@@ -175,7 +168,7 @@ describe('DataFilesListing', () => {
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);
 
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesListing
         api="tapis"
         scheme="private"
@@ -207,28 +200,31 @@ describe('DataFilesListing', () => {
       'The file or folder that you are attempting to access does not exist.',
       'private',
     ],
-  ])('Renders "%s" error message correctly', (errorCode, message, scheme) => {
-    const history = createMemoryHistory();
-    history.push('/workbench/data/tapis/private/test.system/');
-    const errorMockState = { ...initialMockState };
-    errorMockState.files.error.FilesListing = errorCode;
-    errorMockState.files.params.FilesListing.scheme = scheme;
-    const store = mockStore(errorMockState);
+  ])(
+    'Renders "%s %s %s" error message correctly',
+    (errorCode, message, scheme) => {
+      const history = createMemoryHistory();
+      history.push('/workbench/data/tapis/private/frontera.home.username/');
+      const errorMockState = { ...initialMockState, files: filesFixture };
+      errorMockState.files.error.FilesListing = errorCode;
+      errorMockState.files.params.FilesListing.scheme = scheme;
+      const store = mockStore(errorMockState);
 
-    const { getByText } = renderComponent(
-      <DataFilesListing
-        api="tapis"
-        scheme="private"
-        system="test.system"
-        resultCount={4}
-        path="/"
-      />,
-      store,
-      history
-    );
+      const { getByText } = renderComponent(
+        <DataFilesListing
+          api="tapis"
+          scheme="private"
+          system="frontera.home.username"
+          resultCount={4}
+          path="/"
+        />,
+        store,
+        history
+      );
 
-    expect(getByText(message)).toBeDefined();
-  });
+      expect(getByText(message)).toBeDefined();
+    }
+  );
 
   it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
     const history = createMemoryHistory();

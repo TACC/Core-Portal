@@ -51,7 +51,6 @@ const systemsFixture = {
         scheme: 'projects',
         api: 'tapis',
         icon: null,
-        privilegeRequired: false,
         readOnly: false,
         hideSearchBar: false,
       },
@@ -78,6 +77,7 @@ const systemsFixture = {
           host: 'frontera.tacc.utexas.edu',
           rootDir: '/home1/012345/username',
         },
+        effectiveUserId: 'username',
       },
       {
         id: 'longhorn.home.username',
@@ -85,6 +85,7 @@ const systemsFixture = {
           host: 'longhorn.tacc.utexas.edu',
           rootDir: '/home/012345/username',
         },
+        effectiveUserId: 'username',
       },
     ],
     error: false,

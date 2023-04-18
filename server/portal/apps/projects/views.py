@@ -49,37 +49,18 @@ class ProjectsApiView(BaseApiView):
         Sample response:
         ```json
         {"response": [{
-            "absolutePath": "/corral-repl/tacc/aci/CEP/projects/CEP-7",
-            "available": true,
-            "default": false,
-            "description": "Project Title",
-            "globalDefault": false,
-            "id": "cep.project.CEP-7",
-            "name": "CEP-7",
-            "owner": null,
-            "public": false,
-            "revision": null,
-            "site": null,
-            "status": "UP",
-            "storage": {
-                "auth": {
-                    "password": null,
-                    "privateKey": null,
-                    "publicKey": null,
-                    "type": null,
-                    "username": null
-                },
-                "homeDir": null,
-                "host": null,
-                "mirror": false,
-                "port": null,
-                "protocol": null,
-                "proxy": null,
-                "publicAppsDir": null,
-                "rootDir": null
+            "id": "test.site.project.PROJECT-3",
+            "name": 'PROJECT-3',
+            "host": "cloud.data.tacc.utexas.edu",
+            "updated": "2023-03-07T19:31:17.292220Z",
+            "owner": {
+            "username": 'username',
+            "first_name": 'User',
+            "last_name": 'Name',
+            "email": 'user@username.com',
             },
-            "type": "STORAGE",
-            "uuid": null
+            "title": "Test Project Title",
+            "description": "Test Project Description"
         }, ... ],
         "status": 200
         }
