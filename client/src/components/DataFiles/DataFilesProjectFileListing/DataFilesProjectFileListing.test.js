@@ -129,11 +129,11 @@ describe('DataFilesProjectFileListing', () => {
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('hides Edit Descriptions and Manage Team when readOnly is true and user is owner', () => {
+  it('shows Edit Descriptions and hides Manage Team when readOnly is true and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
-    const { queryByText } = renderComponent(
+    const { queryByText, getByText } = renderComponent(
       <DataFilesProjectFileListing
         system="test.site.project.PROJECT-3"
         path="/"
@@ -141,7 +141,7 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(queryByText(/Edit Descriptions/)).toBeNull();
+    expect(getByText(/Edit Descriptions/)).toBeDefined();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 });

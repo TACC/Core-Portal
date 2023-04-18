@@ -23,7 +23,7 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
-  authenticatedUser: { user: null },
+  authenticatedUser: { user: { username: 'username' } },
 };
 
 const columns = [
