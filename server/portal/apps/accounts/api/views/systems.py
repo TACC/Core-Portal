@@ -59,8 +59,8 @@ class SystemKeysView(BaseApiView):
                                   priv_key_str,
                                   system_id)
 
-        # TODOv3: A 10s delay is added to work-around Tapis issue. This should be removed once the Tapis issue (https://github.com/tapis-project/tapis-files/issues/58)
-        # has been addressed. See https://jira.tacc.utexas.edu/browse/TV3-164
+        # TODOv3: A 10s delay is added to work-around Tapis issue. This should be removed once the Tapis issue
+        # (https://github.com/tapis-project/tapis-files/issues/58) has been addressed. See https://jira.tacc.utexas.edu/browse/TV3-164
         time.sleep(10)
 
         return JsonResponse(
