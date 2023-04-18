@@ -5,6 +5,7 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import SystemRoleSelector from '../SystemRoleSelector';
 import { waitFor, screen, fireEvent } from '@testing-library/react';
+import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 
 import fetch from 'cross-fetch';
 jest.mock('cross-fetch');
@@ -22,7 +23,10 @@ describe('SystemRoleSelector', () => {
 
     renderComponent(
       <SystemRoleSelector projectId="CEP-000" username="testuser" />,
-      mockStore({ authenticatedUser: { user: { username: 'testuser' } } })
+      mockStore({
+        authenticatedUser: { user: { username: 'testuser' } },
+        systems: systemsFixture,
+      })
     );
     expect(await screen.findByTestId('loading-spinner')).toBeDefined();
     await waitFor(async () => {

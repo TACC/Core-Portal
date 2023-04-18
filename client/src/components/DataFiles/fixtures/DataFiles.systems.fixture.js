@@ -51,7 +51,6 @@ const systemsFixture = {
         scheme: 'projects',
         api: 'tapis',
         icon: null,
-        privilegeRequired: false,
         readOnly: false,
         hideSearchBar: false,
       },

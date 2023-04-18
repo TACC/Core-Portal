@@ -34,8 +34,6 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const currSystemHost = currSystem ? currSystem.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
-  const systems = useSelector((state) => state.systems);
-  console.log(systems);
   const systemDefErr = useSelector((state) => state.systems.definitions.error);
 
   const filesLength = data.length;
