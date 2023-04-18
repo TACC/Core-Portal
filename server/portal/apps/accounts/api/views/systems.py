@@ -4,6 +4,7 @@
 """
 import logging
 import json
+import time
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -57,6 +58,10 @@ class SystemKeysView(BaseApiView):
                                   publ_key_str,
                                   priv_key_str,
                                   system_id)
+
+        # A 10s delay is added to work-around Tapis issue. This should be removed once the Tapis issue (https://github.com/tapis-project/tapis-files/issues/58)
+        # has been addressed. See https://jira.tacc.utexas.edu/browse/TV3-164
+        time.sleep(10)
 
         return JsonResponse(
             {
