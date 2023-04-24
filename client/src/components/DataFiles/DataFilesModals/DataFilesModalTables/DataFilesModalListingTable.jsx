@@ -6,6 +6,7 @@ import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import styles from './DataFilesModalListingTable.module.scss';
+import { useSelector, shallowEqual } from 'react-redux';
 
 export function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -145,7 +146,18 @@ const DataFilesModalListingTable = ({
   disabled,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
-  const isNotRoot = params.path !== '' && params.path !== '/';
+
+  const matchingSystem = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  )?.find((s) => s.system === params.system && s.scheme === params.scheme);
+
+  const homeDir = matchingSystem?.homeDir;
+
+  const isNotRoot =
+    params.path !== '' &&
+    params.path !== '/' &&
+    params.path.replace(/^\/+/, '') !== homeDir?.replace(/^\/+/, '');
 
   const displayName = useSystemDisplayName(params);
 
