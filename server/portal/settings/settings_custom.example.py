@@ -99,7 +99,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
-        'privilegeRequired': False,
         'readOnly': False,
         'hideSearchBar': False
     },
