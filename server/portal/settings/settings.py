@@ -360,15 +360,6 @@ TAPIS_CLIENT_KEY = settings_secret._TAPIS_CLIENT_KEY
 # Long-live portal admin access token
 TAPIS_ADMIN_JWT = getattr(settings_secret, '_TAPIS_ADMIN_JWT', '')
 
-# Agave Tenant.
-AGAVE_TENANT_ID = settings_secret._AGAVE_TENANT_ID
-AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
-
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
-AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
-AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
-
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
 AGAVE_JWT_PUBKEY = (

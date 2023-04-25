@@ -214,7 +214,7 @@ _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 # Using test account under personal email.
 # To use during dev, Tracking Protection in browser needs to be turned OFF.
 # Need to setup an admin account to aggregate tracking properties for portals.
-# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
+# NOTE: Use the _TAPIS_TENANT_BASEURL URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-114289987-X'
 
 ########################

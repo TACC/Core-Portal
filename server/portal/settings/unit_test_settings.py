@@ -279,17 +279,7 @@ TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 # Tapis Client Configuration
 TAPIS_CLIENT_ID = 'test'
 TAPIS_CLIENT_KEY = 'test'
-
 TAPIS_ADMIN_JWT = 'test'
-
-# Agave Tenant.
-AGAVE_TENANT_ID = 'portal'
-AGAVE_TENANT_BASEURL = 'https://api.example.com'
-
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = 'test'
-AGAVE_CLIENT_SECRET = 'test'
-AGAVE_SUPER_TOKEN = 'test'
 TAPIS_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
