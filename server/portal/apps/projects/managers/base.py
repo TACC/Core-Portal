@@ -5,7 +5,6 @@
 """
 from __future__ import unicode_literals, absolute_import
 import logging
-from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
@@ -23,7 +22,6 @@ METRICS = logging.getLogger('{}.{}'.format('metrics', __name__))
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
 class ProjectsManager(object):
     """Projects Manager."""
 
@@ -158,7 +156,7 @@ class ProjectsManager(object):
             latest_storage_system_id = get_latest_project_storage()
             latest_project_id = get_latest_project_directory()
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
-            ProjectId.objects.create(value=max_value_found).save()
+            ProjectId.objects.create(value=max_value_found)
             prjId = ProjectId.next_id()
 
         project_id = '{prefix}-{prjId}'.format(

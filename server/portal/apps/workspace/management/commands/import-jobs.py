@@ -28,12 +28,11 @@ class Command(BaseCommand):
                 jobs = agave.jobs.list(query={"owner": user.username}, offset=offset, limit=100)
                 for job in jobs:
                     if not any(existing.jobId == job["id"] for existing in userjobs):
-                        job = JobSubmission(
+                        job = JobSubmission.objects.create(
                             user=user,
                             jobId=job["id"],
                             time=dateutil.parser.parse(job["created"])
                         )
-                        job.save()
                 offset += 100
                 done = len(jobs) < 100
                 total += len(jobs)

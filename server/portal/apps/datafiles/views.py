@@ -246,12 +246,11 @@ class LinkView(BaseApiView):
         postit = client.files.createPostIt(systemId=system, path=path, allowedUses=-1, validSeconds=31536000)
 
         postit_redeem_url = postit.redeemUrl
-        link = Link.objects.create(
+        Link.objects.create(
             tapis_uri=f"{system}/{path}",
             postit_url=postit_redeem_url,
             expiration=dateutil.parser.parse(postit.expiration) if postit.expiration else None
         )
-        link.save()
         return {"data": postit_redeem_url, "expiration": postit.expiration}
 
     def delete_link(self, request, link):

@@ -122,13 +122,7 @@ def tapis_oauth_callback(request):
         user = authenticate(backend='tapis', token=token_data['access_token'])
 
         if user:
-            try:
-                token = user.tapis_oauth
-                token.update(**token_data)
-            except ObjectDoesNotExist:
-                token = TapisOAuthToken(**token_data)
-                token.user = user
-            token.save()
+            TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
 
             login(request, user)
             METRICS.debug(f"user:{user.username} successful oauth login")

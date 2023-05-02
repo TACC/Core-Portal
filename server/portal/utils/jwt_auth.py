@@ -5,7 +5,7 @@
 
 import logging
 from base64 import b64decode
-from django.utils.six import text_type
+from six import text_type
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
