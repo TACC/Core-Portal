@@ -268,7 +268,7 @@ class BaseSystem(BaseAgaveResource):
         query['limit'] = limit
         resp = requests.get(
             '{baseurl}/systems/v2'.format(
-                baseurl=settings.AGAVE_TENANT_BASEURL
+                baseurl=settings.TAPIS_TENANT_BASEURL
             ),
             headers=headers,
             params=query

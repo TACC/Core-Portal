@@ -37,15 +37,6 @@ _RT_PW = 'password'
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
 
-# Agave Tenant.
-_AGAVE_TENANT_ID = 'tenant_name'
-_AGAVE_TENANT_BASEURL = 'https://agave.mytenant.org'
-
-# Agave Client Configuration
-_AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
-_AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
-_AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
-
 ########################
 # TAPIS v3 SETTINGS
 # NOTE: ONLY USED FOR TAPIS V3 DEVELOPMENT.
