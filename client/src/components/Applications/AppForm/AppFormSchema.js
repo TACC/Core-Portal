@@ -8,7 +8,7 @@ const FormSchema = (app) => {
     defaults: { fileInputs: {}, appArgs: {} },
     schema: { fileInputs: {}, appArgs: {} },
   };
-  /* TODOv3 envVariables  https://jira.tacc.utexas.edu/browse/TV3-97 */
+  /* TODOv3: handle envVariables  https://jira.tacc.utexas.edu/browse/WP-83 */
   (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
     if (param.notes.isHidden) {

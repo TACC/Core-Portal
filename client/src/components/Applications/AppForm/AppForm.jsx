@@ -402,7 +402,7 @@ export const AppSchemaForm = ({ app }) => {
             const schema = Yup.object({
               appArgs: Yup.object({ ...appFields.schema.appArgs }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
-              // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
+              // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
@@ -447,7 +447,7 @@ export const AppSchemaForm = ({ app }) => {
             ); // filter out any empty values
           delete job.appArgs;
 
-          // TODOv3: add envVariables
+          // TODOv3: handle envVariables https://jira.tacc.utexas.edu/browse/WP-83
 
           // Add allocation scheduler option
           if (job.allocation) {
@@ -511,7 +511,7 @@ export const AppSchemaForm = ({ app }) => {
                     </div>
                     {Object.entries(appFields.fileInputs).map(
                       ([name, field]) => {
-                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-8
+                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-81
                         return (
                           <FormField
                             {...field}
@@ -551,7 +551,7 @@ export const AppSchemaForm = ({ app }) => {
                         </FormField>
                       );
                     })}
-                    {/* TODOv3 handle parameterSet.envVariables */}
+                    {/* TODOv3: handle envVariables (parameterSet.envVariables) https://jira.tacc.utexas.edu/browse/WP-83 */}
                   </div>
                 )}
                 <div className="appSchema-section">

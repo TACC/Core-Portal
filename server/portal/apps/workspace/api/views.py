@@ -66,7 +66,7 @@ def _get_app(app_id, app_version, user):
 
 
 def _test_listing_with_existing_keypair(system, user):
-    # TODOv3: Add Tapis system test utility method with proper error handling
+    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
     tapis = user.tapis_oauth.client
 
     # Check for existing keypair stored for this hostname
