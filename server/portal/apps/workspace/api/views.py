@@ -277,6 +277,7 @@ class JobsView(BaseApiView):
                     raise ApiException("You are missing the required license for this application.")
 
                 # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
+                # https://jira.tacc.utexas.edu/browse/WP-70
                 # license_var = {
                 #     "key": "_license",
                 #     "value": lic.license_as_str()
