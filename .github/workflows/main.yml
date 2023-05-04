@@ -23,7 +23,7 @@ jobs:
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.4.3
+        poetry-version: 1.4.2
 
     - uses: actions/cache@v3
       with:
@@ -65,7 +65,7 @@ jobs:
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.4.3
+        poetry-version: 1.4.2
 
     - uses: actions/cache@v3
       with:
