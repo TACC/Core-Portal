@@ -21,11 +21,6 @@ def mock_service_account(mocker):
 
 
 @pytest.fixture()
-def agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
-
-
-@pytest.fixture()
 def mock_signal(mocker):
     yield mocker.patch('portal.apps.signals.receivers.index_project')
 
@@ -75,14 +70,14 @@ def test_project_create(mock_owner, mock_tapis_client, service_account, mock_sto
                                                     '-----END RSA PRIVATE KEY-----')
 
 
-def test_listing(mock_storage_system, mock_signal, mock_projects_storage_systems, mock_service_account):
+def test_listing(mock_storage_system, mock_tapis_client, mock_signal, mock_projects_storage_systems):
     'Test projects listing.'
     mock_storage_system.search.return_value = mock_projects_storage_systems
 
-    lst = list(Project.listing(agave_client))
+    lst = list(Project.listing(mock_tapis_client))
 
     mock_storage_system.search.assert_called_with(
-        agave_client,
+        mock_tapis_client,
         query={'id.like': '{}*'.format(Project.metadata_name),
                'type.eq': mock_storage_system.TYPES.STORAGE},
         offset=0,
