@@ -11,7 +11,6 @@
     context, if these classes were a direct representation of Agave resources
     then they should live in `portal.libs.agave.models`
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 from django.db import models, transaction

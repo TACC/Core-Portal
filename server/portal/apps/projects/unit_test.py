@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.unit_test
    :synopsis: Projects app unit tests.
 """
-from __future__ import unicode_literals, absolute_import
 from mock import MagicMock
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata

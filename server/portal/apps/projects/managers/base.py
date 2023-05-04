@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.managers.base
    :synopsis: Manager for projects
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model

@@ -11,7 +11,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
 import jwt as pyjwt
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 from cryptography.exceptions import UnsupportedAlgorithm
 
@@ -30,7 +29,7 @@ def _decode_jwt(jwt):
     pubkey = settings.AGAVE_JWT_PUBKEY
     try:
         key_der = b64decode(pubkey)
-        key = load_der_public_key(key_der, backend=default_backend())
+        key = load_der_public_key(key_der)
     except (TypeError, ValueError, UnsupportedAlgorithm):
         LOGGER.exception('Could not load public key.')
         return {}

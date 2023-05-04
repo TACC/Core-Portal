@@ -3,7 +3,6 @@
 .. :module:: apps.projects.views
    :synopsis: Views to handle Projects
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import logging
 from django.contrib.auth.decorators import login_required

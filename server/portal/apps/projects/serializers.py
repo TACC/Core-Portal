@@ -3,7 +3,6 @@
 .. module:: portal.apps.projects.serializers
    :synopsis: Serializer classes for project objects.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import datetime
 import json
