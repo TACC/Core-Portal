@@ -442,7 +442,7 @@ CHANNEL_LAYERS = {
 PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'My Data (Work)',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'private',
         'api': 'tapis',
         'homeDir': '/home/{username}',
@@ -459,7 +459,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Community Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'community',
         'api': 'tapis',
         'homeDir': '/path/to/community',
@@ -468,7 +468,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Public Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'public',
         'api': 'tapis',
         'homeDir': '/path/to/public',

@@ -15,7 +15,7 @@ class TestOperations(TestCase):
         mock_tapis_listing = [TapisResult(**{
             "mimeType": None,
             "type": "file",
-            "url": "tapis://cloud.data.community/path/to/file",
+            "url": "tapis://cloud.data/path/to/file",
             "lastModified": "2020-04-23T06:25:56Z",
             "name": "file",
             "path": '/path/to/file',
@@ -40,7 +40,7 @@ class TestOperations(TestCase):
                                   'lastModified': '2020-04-23T06:25:56Z',
                                   '_links': {
                                       'self': {
-                                          'href': 'tapis://cloud.data.community/path/to/file'
+                                          'href': 'tapis://cloud.data/path/to/file'
                                       }
                                     }
                                   }]
@@ -138,4 +138,4 @@ class TestOperations(TestCase):
         mock_copy.assert_called_with(client,
                                      'test.system',
                                      '/path/to/src',
-                                     'cloud.data.community', '/')
+                                     'cloud.data', '/')
