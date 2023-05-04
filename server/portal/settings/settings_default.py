@@ -69,6 +69,14 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'default': True
     },
     {
+        'name': 'My Data (Work)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/work/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'My Data (Frontera)',
         'system': 'frontera',
         'scheme': 'private',
