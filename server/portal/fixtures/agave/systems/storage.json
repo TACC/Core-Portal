@@ -2,7 +2,7 @@
   "isPublic": true,
   "isDynamicEffectiveUser": true,
   "tenant": "portals",
-  "id": "cloud.data.community",
+  "id": "cloud.data",
   "description": "Corral Community Storage System",
   "systemType": "LINUX",
   "owner": "wma_prtl",
