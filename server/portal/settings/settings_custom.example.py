@@ -69,6 +69,14 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'default': True
     },
     {
+        'name': 'My Data (Work)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/work/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'My Data (Frontera)',
         'system': 'frontera',
         'scheme': 'private',
@@ -170,7 +178,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data', 'frontera', 'stampede2.community'],
+            'access_systems': ['cloud.data', 'frontera', 'ls6', 'maverick2'],
             'credentials_systems': ['cloud.data']
         }
     },
@@ -186,7 +194,7 @@ _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
-_PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
+_PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 
 ########################
 # Custom Portal Template Assets

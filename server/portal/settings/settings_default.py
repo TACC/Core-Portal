@@ -201,7 +201,7 @@ _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
-_PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
+_PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 
 ########################
 # Custom Portal Template Assets
