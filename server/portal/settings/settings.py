@@ -73,7 +73,6 @@ INSTALLED_APPS = [
     # Django Channels
     'channels',
 
-    'bootstrap4',
     'termsandconditions',
     'impersonate',
 
