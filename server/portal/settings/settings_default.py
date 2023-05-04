@@ -60,7 +60,7 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'My Data (Corral)',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'private',
         'api': 'tapis',
         'homeDir': '/home/{username}',
@@ -78,7 +78,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Community Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'community',
         'api': 'tapis',
         'homeDir': '/corral/tacc/aci/CEP/community',
@@ -87,7 +87,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Public Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'public',
         'api': 'tapis',
         'homeDir': '/corral/tacc/aci/CEP/public',
@@ -158,8 +158,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data.community', 'frontera', 'stampede2.community'],  # Tapis systems to grant file access
-            'credentials_systems': ['cloud.data.community']  # Tapis systems to grant user credentials with the keys service
+            'access_systems': ['cloud.data', 'frontera', 'stampede2.community'],  # Tapis systems to grant file access
+            'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with the keys service
         }
     },
 ]
@@ -177,8 +177,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data.community', 'frontera', 'stampede2.community'],
-            'credentials_systems': ['cloud.data.community']
+            'access_systems': ['cloud.data', 'frontera', 'stampede2.community'],
+            'credentials_systems': ['cloud.data']
         }
     },
 ]
