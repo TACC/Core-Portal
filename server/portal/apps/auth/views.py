@@ -9,7 +9,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import TapisOAuthToken
