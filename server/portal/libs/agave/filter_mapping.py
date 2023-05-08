@@ -140,7 +140,7 @@ filter_mapping = {
         "out",
         "txt"
     ],
-    "Zip": [
+    "ZIP": [
         "zip",
         "tar",
         "gz",
