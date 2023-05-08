@@ -660,7 +660,7 @@ export const AppSchemaForm = ({ app }) => {
                         description="Directory into which output files are archived after application execution."
                         name="archiveSystemDir"
                         type="text"
-                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}" // TODOv3: How do we know if portal supports HOME vs WORK?
+                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}"
                       />
                     </>
                   ) : null}
