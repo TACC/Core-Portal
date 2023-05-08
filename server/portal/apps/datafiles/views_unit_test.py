@@ -335,11 +335,11 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
     response = client.get('/api/datafiles/systems/list/')
     assert response.json() == {
         "default_host": "cloud.data.tacc.utexas.edu",
-        "default_system": "cloud.data.community",
+        "default_system": "cloud.data",
         "system_list": [
             {
                 'name': 'My Data (Work)',
-                'system': 'cloud.data.community',
+                'system': 'cloud.data',
                 'scheme': 'private',
                 'api': 'tapis',
                 'homeDir': '/home/username',
@@ -356,7 +356,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
             },
             {
                 'name': 'Community Data',
-                'system': 'cloud.data.community',
+                'system': 'cloud.data',
                 'scheme': 'community',
                 'api': 'tapis',
                 'homeDir': '/path/to/community',
@@ -365,7 +365,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
             },
             {
                 'name': 'Public Data',
-                'system': 'cloud.data.community',
+                'system': 'cloud.data',
                 'scheme': 'public',
                 'api': 'tapis',
                 'homeDir': '/path/to/public',
