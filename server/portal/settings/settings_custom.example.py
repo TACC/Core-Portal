@@ -60,13 +60,21 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'My Data (Corral)',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'private',
         'api': 'tapis',
         'homeDir': '/home/{username}',
         'icon': None,
         'keyservice': True,
         'default': True
+    },
+    {
+        'name': 'My Data (Work)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/work/{tasdir}',
+        'icon': None,
     },
     {
         'name': 'My Data (Frontera)',
@@ -78,7 +86,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Community Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'community',
         'api': 'tapis',
         'homeDir': '/corral/tacc/aci/CEP/community',
@@ -87,7 +95,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     },
     {
         'name': 'Public Data',
-        'system': 'cloud.data.community',
+        'system': 'cloud.data',
         'scheme': 'public',
         'api': 'tapis',
         'homeDir': '/corral/tacc/aci/CEP/public',
@@ -170,8 +178,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data.community', 'frontera', 'stampede2.community'],
-            'credentials_systems': ['cloud.data.community']
+            'access_systems': ['cloud.data', 'frontera', 'ls6', 'maverick2'],
+            'credentials_systems': ['cloud.data']
         }
     },
 ]
@@ -186,7 +194,7 @@ _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
-_PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
+_PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 
 ########################
 # Custom Portal Template Assets
@@ -207,7 +215,7 @@ _PORTAL_ICON_FILENAME = '/static/site_cms/img/favicons/favicon.ico'
 # Using test account under personal email.
 # To use during dev, Tracking Protection in browser needs to be turned OFF.
 # Need to setup an admin account to aggregate tracking properties for portals.
-# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
+# NOTE: Use the _TAPIS_TENANT_BASEURL URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
 
 ########################

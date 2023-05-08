@@ -102,7 +102,7 @@ def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_dat
 
     tapis_job_submission = {
         **job_submmission_definition['job'],
-        'archiveSystemId': 'cloud.data.community',
+        'archiveSystemId': 'cloud.data',
         'archiveSystemDir': 'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
         'tags': ['portalName: test'],
         'subscriptions': [

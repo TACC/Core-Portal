@@ -11,7 +11,7 @@ def test_system_success(mock_tapis_client):
     assert result == 'SUCCESS'
 
 
-SYSTEM_LISTING_URL = "{}/files/v2/listings/system/{}/".format(settings.AGAVE_TENANT_BASEURL, "systemId")
+SYSTEM_LISTING_URL = "{}/files/v2/listings/system/{}/".format(settings.TAPIS_TENANT_BASEURL, "systemId")
 
 
 @pytest.mark.skip(reason="not using storage system class in v3")
