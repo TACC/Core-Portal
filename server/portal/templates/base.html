@@ -19,7 +19,7 @@
     <!-- Core CSS -->
     <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css" />
-    {% if settings.PORTAL_CSS_FILENAMES %}
+    {% if settings.PORTAL_CSS_FILENAMES.count %}
     <!-- Project CSS -->
       {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
       <link rel="stylesheet" href="{{ stylesheet }}">

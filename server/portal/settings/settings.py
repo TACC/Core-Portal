@@ -53,7 +53,7 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
-PORTAL_CSS_FILENAMES = settings_custom._PORTAL_CSS_FILENAMES
+PORTAL_CSS_FILENAMES = getattr(settings_custom, '_PORTAL_CSS_FILENAMES', [])
 
 ROOT_URLCONF = 'portal.urls'
 
