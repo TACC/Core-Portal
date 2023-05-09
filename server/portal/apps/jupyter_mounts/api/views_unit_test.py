@@ -1,4 +1,3 @@
-from mock import MagicMock
 import pytest
 import json
 import os
@@ -38,6 +37,7 @@ def mock_projects(mocker):
                           'title': 'test (cep.project-2)',
                           'description': None}]
     yield mock
+
 
 @pytest.fixture
 def mock_project_pems(mocker):
