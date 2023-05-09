@@ -19,13 +19,6 @@
     <!-- Core CSS -->
     <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css" />
-    <!-- settings.PORTAL_CSS_FILENAMES|length: {{ settings.PORTAL_CSS_FILENAMES|length }} -->
-    <!-- settings.PORTAL_CSS_FILENAMES.count: {{ settings.PORTAL_CSS_FILENAMES.count }} -->
-    <!-- for stylesheet in settings.PORTAL_CSS_FILENAMES:
-      {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
-      <link rel="stylesheet" href="{{ stylesheet }}">
-      {% endfor %}
-    endfor -->
     {% if settings.PORTAL_CSS_FILENAMES|length %}
     <!-- Project CSS -->
       {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
