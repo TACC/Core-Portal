@@ -660,7 +660,7 @@ export const AppSchemaForm = ({ app }) => {
                         description="Directory into which output files are archived after application execution."
                         name="archiveSystemDir"
                         type="text"
-                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}"
+                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}" // TODOv3: Determine safe root path for archiving https://jira.tacc.utexas.edu/browse/WP-103
                       />
                     </>
                   ) : null}
