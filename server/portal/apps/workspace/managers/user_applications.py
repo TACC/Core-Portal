@@ -330,8 +330,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():
-                if queue.custom_directives:
-                    queue.custom_directives = '-A {}'.format(allocation)
+                queue.custom_directives = (queue.custom_directives or '') + ' -A {}'.format(allocation)
         return system
 
     def validate_exec_system(self, system_id, alloc, *args, **kwargs):
