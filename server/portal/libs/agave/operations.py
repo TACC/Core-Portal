@@ -131,7 +131,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
     else:
         # search without a query should just filter current path
         search = search.sort('name._exact')
-        search = search.filter('term', **{'basePath._exact': '/' + path.strip('/')})
+        search = search.filter('term', **{'basePath._exact': path.strip('/')})
     if filter:
         search = search.filter(filter_query)
 
