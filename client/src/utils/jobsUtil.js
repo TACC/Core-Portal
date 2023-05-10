@@ -96,6 +96,7 @@ export function getJobDisplayInformation(job, app) {
       display.applicationName =
         app.definition.notes.label || display.applicationName;
 
+      // https://jira.tacc.utexas.edu/browse/WP-100
       // TODOv3: Maybe should filter with includes? some have null/array values
       // Note from Sal: We'll probably have to filter with a flag we create
       //                 ourselves with whatever meta object they allow us to

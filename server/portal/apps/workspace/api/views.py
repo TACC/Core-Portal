@@ -66,7 +66,7 @@ def _get_app(app_id, app_version, user):
 
 
 def _test_listing_with_existing_keypair(system, user):
-    # TODOv3: Add Tapis system test utility method with proper error handling
+    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
     tapis = user.tapis_oauth.client
 
     # Check for existing keypair stored for this hostname
@@ -277,6 +277,7 @@ class JobsView(BaseApiView):
                     raise ApiException("You are missing the required license for this application.")
 
                 # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
+                # https://jira.tacc.utexas.edu/browse/WP-70
                 # license_var = {
                 #     "key": "_license",
                 #     "value": lic.license_as_str()
