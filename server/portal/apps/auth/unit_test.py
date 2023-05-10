@@ -45,7 +45,7 @@ class TestTapisOAuthBackend(TransactionTestCase):
     def tearDown(self):
         super(TestTapisOAuthBackend, self).tearDown()
         self.mock_requests_patcher.stop()
-        self.mock_requests_patcher.stop()
+        self.mock_user_data_patcher.stop()
 
     def test_bad_backend_params(self):
         # Test backend authenticate with no params
