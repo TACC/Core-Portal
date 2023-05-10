@@ -8,7 +8,7 @@ const FormSchema = (app) => {
     defaults: { fileInputs: {}, appArgs: {} },
     schema: { fileInputs: {}, appArgs: {} },
   };
-  /* TODOv3 envVariables  https://jira.tacc.utexas.edu/browse/TV3-97 */
+  /* TODOv3: handle envVariables  https://jira.tacc.utexas.edu/browse/WP-83 */
   (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
     const param = p;
     if (param.notes.isHidden) {
@@ -67,7 +67,7 @@ const FormSchema = (app) => {
 
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
-    /* TODOv3 consider hidden file inputs
+    /* TODOv3 consider hidden file inputs https://jira.tacc.utexas.edu/browse/WP-102
       if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
         return;
       }

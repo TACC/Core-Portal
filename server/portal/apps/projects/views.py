@@ -66,7 +66,7 @@ class ProjectsApiView(BaseApiView):
         }
         ```
         """
-        # TODOv3: Support Elasticsearch queries for V3 projects
+        # TODOv3: Support Elasticsearch queries for V3 projects https://jira.tacc.utexas.edu/browse/TV3-160
         # query_string = request.GET.get('query_string')
         # offset = int(request.GET.get('offset', 0))
         # limit = int(request.GET.get('limit', 100))
