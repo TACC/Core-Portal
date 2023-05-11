@@ -61,7 +61,6 @@ class JupyterMountsApiView(BaseApiView):
 
     def getProjectSystems(self, user):
         projects = list_projects(user.tapis_oauth.client)
-        print(projects)
         result = []
         names = []
         for project in projects:
