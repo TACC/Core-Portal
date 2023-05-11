@@ -103,7 +103,10 @@ export const getCoresPerNodeValidation = (queue) => {
   if (queue.maxCoresPerNode === -1) {
     return Yup.number().integer();
   }
-  return Yup.number().integer().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
+  return Yup.number()
+    .integer()
+    .min(queue.minCoresPerNode)
+    .max(queue.maxCoresPerNode);
 };
 
 /**

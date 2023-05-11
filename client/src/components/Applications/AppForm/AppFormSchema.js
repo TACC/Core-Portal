@@ -33,8 +33,10 @@ const FormSchema = (app) => {
         })
       );
     } else {
-      if(p.notes.fieldType === 'email') {
-        appFields.schema.appArgs[param.name] = Yup.string().email('Must be a valid email.');
+      if (p.notes.fieldType === 'email') {
+        appFields.schema.appArgs[param.name] = Yup.string().email(
+          'Must be a valid email.'
+        );
       } else if (p.notes.fieldType === 'number') {
         field.type = 'number';
         appFields.schema.appArgs[param.name] = Yup.number();
