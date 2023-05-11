@@ -81,6 +81,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  */
 export const getNodeCountValidation = (queue) => {
   return Yup.number()
+    .integer('Node Count must be an integer.')
     .min(
       queue.minNodeCount,
       `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
@@ -100,9 +101,9 @@ export const getNodeCountValidation = (queue) => {
  */
 export const getCoresPerNodeValidation = (queue) => {
   if (queue.maxCoresPerNode === -1) {
-    return Yup.number();
+    return Yup.number().integer();
   }
-  return Yup.number().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
+  return Yup.number().integer().min(queue.minCoresPerNode).max(queue.maxCoresPerNode);
 };
 
 /**
