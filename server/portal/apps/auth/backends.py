@@ -36,9 +36,9 @@ class TapisOAuthBackend(ModelBackend):
                         'last_name': user_data['lastName'],
                         'email': user_data['email']
                     }
-                except Exception as e:
-                    logger.exception(e)
-                    return user
+                except Exception:
+                    logger.exception("Error retrieving TAS user profile data for user: {}".format(username))
+                    defaults = {}
 
                 user, created = UserModel.objects.update_or_create(username=username, defaults=defaults)
 
