@@ -66,16 +66,14 @@ const FormSchema = (app) => {
     };
 
     field.type = 'text';
-    appFields.schema.fileInputs[input.name] = Yup.string();
 
-    /* TODOv3 handle fileInput validation https://jira.tacc.utexas.edu/browse/TV3-91
+    appFields.schema.fileInputs[input.name] = Yup.string();
     appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
       input.name
     ].matches(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
-    */
 
     if (field.required) {
       appFields.schema.fileInputs[input.name] =
