@@ -62,7 +62,7 @@ const DataFilesCopyModal = React.memo(() => {
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
     .map((s) => `${s.system}${s.homeDir || ''}`);
 
-  const selectedSystem = fetchSelectedSystem(params)
+  const selectedSystem = fetchSelectedSystem(params);
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });

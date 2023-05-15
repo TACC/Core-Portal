@@ -1,7 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
-import { useFileListing, useSystemDisplayName, useSystems } from 'hooks/datafiles';
+import {
+  useFileListing,
+  useSystemDisplayName,
+  useSystems,
+} from 'hooks/datafiles';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
@@ -151,10 +155,10 @@ const DataFilesModalListingTable = ({
 
   const selectedSystem = fetchSelectedSystem(params);
 
-  let systemName = selectedSystem?.name
-  const systemDisplayName = useSystemDisplayName(params)
+  let systemName = selectedSystem?.name;
+  const systemDisplayName = useSystemDisplayName(params);
 
-  systemName = systemName ?? systemDisplayName
+  systemName = systemName ?? systemDisplayName;
 
   const homeDir = selectedSystem?.homeDir;
 

@@ -123,14 +123,14 @@ const DataFilesBreadcrumbs = ({
 
   const { fetchSelectedSystem } = useSystems();
 
-  const selectedSystem = fetchSelectedSystem({ scheme, system, path })
+  const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
-  let systemName = selectedSystem?.name
-  const systemDisplayName = useSystemDisplayName({ scheme, system })
+  let systemName = selectedSystem?.name;
+  const systemDisplayName = useSystemDisplayName({ scheme, system });
 
-  systemName = systemName ?? systemDisplayName
+  systemName = systemName ?? systemDisplayName;
 
-  const homeDir = selectedSystem?.homeDir
+  const homeDir = selectedSystem?.homeDir;
 
   const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
 
