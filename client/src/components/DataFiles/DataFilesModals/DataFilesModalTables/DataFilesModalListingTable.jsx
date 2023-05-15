@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
-import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
+import { useFileListing, useSystemDisplayName, useSystems } from 'hooks/datafiles';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
@@ -147,19 +147,21 @@ const DataFilesModalListingTable = ({
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
 
-  const matchingSystem = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  )?.find((s) => s.system === params.system && s.scheme === params.scheme);
+  const { fetchSelectedSystem } = useSystems();
 
-  const homeDir = matchingSystem?.homeDir;
+  const selectedSystem = fetchSelectedSystem(params);
+
+  let systemName = selectedSystem?.name
+  const systemDisplayName = useSystemDisplayName(params)
+
+  systemName = systemName ?? systemDisplayName
+
+  const homeDir = selectedSystem?.homeDir;
 
   const isNotRoot =
     params.path !== '' &&
     params.path !== '/' &&
     params.path.replace(/^\/+/, '') !== homeDir?.replace(/^\/+/, '');
-
-  const displayName = useSystemDisplayName(params);
 
   const alteredData = useMemo(() => {
     const result = data.map((d) => {
@@ -171,7 +173,7 @@ const DataFilesModalListingTable = ({
     /* Add an entry to represent the current sub-directory */
     if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
       const currentFolderEntry = {
-        name: isNotRoot ? getCurrentDirectory(params.path) : displayName,
+        name: isNotRoot ? getCurrentDirectory(params.path) : systemName,
         format: 'folder',
         system: params.system,
         path: params.path,

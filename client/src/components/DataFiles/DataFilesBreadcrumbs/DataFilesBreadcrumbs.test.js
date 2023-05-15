@@ -22,7 +22,7 @@ describe('DataFilesBreadcrumbs', () => {
         api="tapis"
         scheme="private"
         system="frontera.home.username"
-        path="/path/to/the/files"
+        path="/home/username/path/to/the/files"
         section="FilesListing"
       />,
       store,

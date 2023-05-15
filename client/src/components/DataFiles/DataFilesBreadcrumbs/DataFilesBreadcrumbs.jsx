@@ -8,6 +8,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useSystems,
 } from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
@@ -120,14 +121,17 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
+  const { fetchSelectedSystem } = useSystems();
 
-  const root = useSystemDisplayName({ scheme, system });
+  const selectedSystem = fetchSelectedSystem({ scheme, system, path })
 
-  const homeDir = systems.find((s) => s.name == root)?.homeDir;
+  let systemName = selectedSystem?.name
+  const systemDisplayName = useSystemDisplayName({ scheme, system })
+
+  systemName = systemName ?? systemDisplayName
+
+  const homeDir = selectedSystem?.homeDir
+
   const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
 
   path
@@ -166,7 +170,7 @@ const DataFilesBreadcrumbs = ({
         section={section}
         isPublic={isPublic}
       >
-        <>{root}</>
+        <>{systemName}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {
