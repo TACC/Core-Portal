@@ -162,7 +162,7 @@ const DataFilesModalListingTable = ({
 
   const homeDir = selectedSystem?.homeDir;
 
-  const isNotRoot =
+  const isNotRootOrHome =
     params.path !== '' &&
     params.path !== '/' &&
     params.path.replace(/^\/+/, '') !== homeDir?.replace(/^\/+/, '');
@@ -175,9 +175,9 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
+    if (!loading && !error && (isNotRootOrHome || operationAllowedOnRootFolder)) {
       const currentFolderEntry = {
-        name: isNotRoot ? getCurrentDirectory(params.path) : systemName,
+        name: isNotRootOrHome ? getCurrentDirectory(params.path) : systemName,
         format: 'folder',
         system: params.system,
         path: params.path,
@@ -186,7 +186,7 @@ const DataFilesModalListingTable = ({
       result.unshift(currentFolderEntry);
     }
     return result;
-  }, [data, params, isNotRoot, loading]);
+  }, [data, params, isNotRootOrHome, loading]);
 
   const NameCell = useCallback(
     ({
@@ -202,7 +202,7 @@ const DataFilesModalListingTable = ({
         name={name}
         format={format}
         isCurrentDirectory={isCurrentDirectory}
-        indentSubFilesFolders={isNotRoot || operationAllowedOnRootFolder}
+        indentSubFilesFolders={isNotRootOrHome || operationAllowedOnRootFolder}
       />
     ),
     [params]
@@ -230,7 +230,7 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
-  const hasBackButton = isNotRoot;
+  const hasBackButton = isNotRootOrHome;
 
   const BackHeader = useCallback(
     () => (
