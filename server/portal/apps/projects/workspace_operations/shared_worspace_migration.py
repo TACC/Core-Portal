@@ -30,7 +30,7 @@ def get_role(project_id, username):
 def migrate_project(project_id):
     client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
-    
+
     v2_project = ProjectMetadata.objects.get(project_id=project_id)
     try:
         owner = v2_project.owner.username
