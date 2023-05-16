@@ -73,7 +73,7 @@ def create_workspace_dir(workspace_id: str) -> str:
     return path
 
 
-def create_workspace_system(client, workspace_id: str, title: str) -> str:
+def create_workspace_system(client, workspace_id: str, title: str, description="", owner= None) -> str:
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     system_args = {
         "id": system_id,
@@ -88,8 +88,10 @@ def create_workspace_system(client, workspace_id: str, title: str) -> str:
             "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
             "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY
         },
-        "notes": {"title": title}
+        "notes": {"title": title, "description": description}
     }
+    if owner:
+        system_args["owner"] = owner
     client.systems.createSystem(**system_args)
     return system_id
 
