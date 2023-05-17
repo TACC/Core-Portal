@@ -23,9 +23,22 @@ export function getSystemName(host) {
  * @param {string} system
  * @return {string} display name of system
  */
-export function findSystemDisplayName(systemList, system, isRoot, scheme) {
+export function findSystemDisplayName(systemList, system, isRoot, scheme, path) {
   const matchingSystem = systemList.find(
-    (s) => s.system === system && s.scheme === scheme
+    (s) => {
+
+      let isHomeDirInPath = true;
+
+      if (path && s.homeDir) {
+        isHomeDirInPath = path
+          .replace(/^\/+/, '')
+          .startsWith(s.homeDir.replace(/^\/+/, ''));
+      }
+
+      return s.system === system && s.scheme === scheme && isHomeDirInPath;
+
+    }
+    
   );
   if (matchingSystem) {
     return matchingSystem.name;
@@ -68,6 +81,7 @@ export function findSystemOrProjectDisplayName(
   systemList,
   projectsList,
   system,
+  path,
   projectTitle,
   isRoot
 ) {
@@ -75,6 +89,6 @@ export function findSystemOrProjectDisplayName(
     case 'projects':
       return findProjectTitle(projectsList, system, projectTitle);
     default:
-      return findSystemDisplayName(systemList, system, isRoot, scheme);
+      return findSystemDisplayName(systemList, system, isRoot, scheme, path);
   }
 }

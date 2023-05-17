@@ -126,7 +126,7 @@ const DataFilesBreadcrumbs = ({
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
   let systemName = selectedSystem?.name;
-  const systemDisplayName = useSystemDisplayName({ scheme, system });
+  const systemDisplayName = useSystemDisplayName({ scheme, system, path });
 
   systemName = systemName ?? systemDisplayName;
 
