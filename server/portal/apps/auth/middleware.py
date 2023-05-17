@@ -18,17 +18,9 @@ class TapisTokenRefreshMiddleware(object):
         user = auth.get_user(request)
         if not (request.path in ['/logout/', '/login/']) and user.is_authenticated:
             try:
-                with transaction.atomic():
-                    try:
-                        tapis_oauth = TapisOAuthToken.objects.filter(user=user).select_for_update().get()
-                    except ObjectDoesNotExist:
-                        logger.error(f'Authenticated user {user.username} missing Tapis API Token')
-                        raise
-                    if tapis_oauth.expired:
-                        logger.debug(f'Refreshing apis Token for {user.username} as it has expired')
-                        tapis_oauth.refresh_tokens()
-            except Exception:
-                logger.exception(f'Tapis Token refresh failed. Forcing logout for {user.username}')
+                TapisOAuthToken.objects.filter(user=user).get()
+            except ObjectDoesNotExist:
+                logger.error(f'Authenticated user {user.username} missing Tapis API Token')
                 logout(request)
                 return HttpResponse("Unauthorized", status=401)
         response = self.get_response(request)

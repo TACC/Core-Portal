@@ -71,11 +71,19 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
+        client = Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
                      client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
                      client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
                      access_token=self.access_token,
                      refresh_token=self.refresh_token)
+        
+        if self.expired:
+            client.refresh_tokens()
+            self.update(created=int(time.time()),
+                    access_token=client.access_token.access_token,
+                    expires_in=client.access_token.expires_in().total_seconds())
+
+        return client
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
