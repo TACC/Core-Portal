@@ -23,23 +23,24 @@ export function getSystemName(host) {
  * @param {string} system
  * @return {string} display name of system
  */
-export function findSystemDisplayName(systemList, system, isRoot, scheme, path) {
-  const matchingSystem = systemList.find(
-    (s) => {
+export function findSystemDisplayName(
+  systemList,
+  system,
+  isRoot,
+  scheme,
+  path
+) {
+  const matchingSystem = systemList.find((s) => {
+    let isHomeDirInPath = true;
 
-      let isHomeDirInPath = true;
-
-      if (path && s.homeDir) {
-        isHomeDirInPath = path
-          .replace(/^\/+/, '')
-          .startsWith(s.homeDir.replace(/^\/+/, ''));
-      }
-
-      return s.system === system && s.scheme === scheme && isHomeDirInPath;
-
+    if (path && s.homeDir) {
+      isHomeDirInPath = path
+        .replace(/^\/+/, '')
+        .startsWith(s.homeDir.replace(/^\/+/, ''));
     }
-    
-  );
+
+    return s.system === system && s.scheme === scheme && isHomeDirInPath;
+  });
   if (matchingSystem) {
     return matchingSystem.name;
   }

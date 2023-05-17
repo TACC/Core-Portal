@@ -175,7 +175,11 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (!loading && !error && (isNotRootOrHome || operationAllowedOnRootFolder)) {
+    if (
+      !loading &&
+      !error &&
+      (isNotRootOrHome || operationAllowedOnRootFolder)
+    ) {
       const currentFolderEntry = {
         name: isNotRootOrHome ? getCurrentDirectory(params.path) : systemName,
         format: 'folder',
