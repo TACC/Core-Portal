@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from portal.apps.accounts.models import PortalProfile
+from portal.apps.users.utils import get_user_data
 
 
 logger = logging.getLogger(__name__)
@@ -27,21 +28,22 @@ class TapisOAuthBackend(ModelBackend):
                 tapis_user = json_result['result']
                 username = tapis_user['username']
                 UserModel = get_user_model()
+
                 try:
-                    user = UserModel.objects.get(username=username)
-                    user.first_name = tapis_user['given_name']
-                    user.last_name = tapis_user['last_name']
-                    user.email = tapis_user['email']
-                    user.save()
-                except UserModel.DoesNotExist:
-                    logger.info('Creating local user record for "%s" '
-                                'from Tapis Profile' % username)
-                    user = UserModel.objects.create_user(
-                        username=username,
-                        first_name=tapis_user['given_name'],
-                        last_name=tapis_user['last_name'],
-                        email=tapis_user['email']
-                    )
+                    user_data = get_user_data(username=username)
+                    defaults = {
+                        'first_name': user_data['firstName'],
+                        'last_name': user_data['lastName'],
+                        'email': user_data['email']
+                    }
+                except Exception:
+                    logger.exception("Error retrieving TAS user profile data for user: {}".format(username))
+                    defaults = {}
+
+                user, created = UserModel.objects.update_or_create(username=username, defaults=defaults)
+
+                if created:
+                    logger.info('Created local user record for "%s" from TAS Profile' % username)
 
                 try:
                     profile = PortalProfile.objects.get(user=user)

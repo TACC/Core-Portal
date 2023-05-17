@@ -80,6 +80,7 @@ describe('Notification Toast', () => {
   });
 
   // TODOv3: update test after file operations are implemented and we have updated test fixtures
+  // https://jira.tacc.utexas.edu/browse/WP-98
   it.skip('shows toast including system information', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
