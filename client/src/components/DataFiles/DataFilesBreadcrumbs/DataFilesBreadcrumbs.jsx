@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
-import { useSelector, shallowEqual } from 'react-redux';
 import {
   useSystemDisplayName,
   useFileListing,
@@ -125,12 +124,15 @@ const DataFilesBreadcrumbs = ({
 
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
-  let systemName = selectedSystem?.name;
-  const systemDisplayName = useSystemDisplayName({ scheme, system, path });
-
-  systemName = systemName ?? systemDisplayName;
+  const systemName = useSystemDisplayName({ scheme, system, path });
 
   const homeDir = selectedSystem?.homeDir;
+
+  const isSystemRootPath = !path
+    .replace(/^\/+/, '')
+    .startsWith(homeDir?.replace(/^\/+/, ''));
+
+  const startingPath = isSystemRootPath ? '' : homeDir;
 
   const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
 
@@ -139,9 +141,13 @@ const DataFilesBreadcrumbs = ({
     .filter((x) => !!x)
     .reduce((prev, curr, index) => {
       // don't push path if already part of the system's homeDir at the same index
-      if (!systemHomeDirPaths || systemHomeDirPaths[index] !== curr) {
+      if (
+        isSystemRootPath ||
+        !systemHomeDirPaths ||
+        systemHomeDirPaths[index] !== curr
+      ) {
         const comp = `${prev}/${curr}`;
-        paths.push(`${homeDir}${comp}`);
+        paths.push(`${startingPath}${comp}`);
         pathComps.push(curr);
         return comp;
       } else {
@@ -166,7 +172,7 @@ const DataFilesBreadcrumbs = ({
         api={api}
         scheme={scheme}
         system={system}
-        path={homeDir ?? ''}
+        path={startingPath}
         section={section}
         isPublic={isPublic}
       >
