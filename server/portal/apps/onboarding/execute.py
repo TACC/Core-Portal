@@ -36,14 +36,13 @@ def new_user_setup_check(user):
 def log_setup_state(user, message):
     # Create an event log for a user completing setup.
     # This will also signal the front end
-    event = SetupEvent.objects.create(
+    SetupEvent.objects.create(
         user=user,
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED,
         message=message,
         data={"setupComplete": user.profile.setup_complete}
     )
-    event.save()
 
 
 def load_setup_step(user, step):

@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class PortalMessagesConfig(AppConfig):
-    name = 'portal_message'
-    app_label = 'portal_message'
+    name = 'portal.apps.portal_messages'
+    app_label = 'portal_messages'

@@ -45,11 +45,7 @@ class TapisOAuthBackend(ModelBackend):
                 if created:
                     logger.info('Created local user record for "%s" from TAS Profile' % username)
 
-                try:
-                    profile = PortalProfile.objects.get(user=user)
-                except PortalProfile.DoesNotExist:
-                    profile = PortalProfile(user=user)
-                    profile.save()
+                PortalProfile.objects.get_or_create(user=user)
                 logger.info('Login successful for user "%s"' % username)
             else:
                 logger.info('Tapis Authentication failed: %s' % json_result)
