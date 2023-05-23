@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'channels',
 
     # Pipeline.
-    'bootstrap4',
     'termsandconditions',
     'impersonate',
 

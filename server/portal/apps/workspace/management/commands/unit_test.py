@@ -21,11 +21,10 @@ class TestImportJobs(TransactionTestCase):
     @patch('portal.apps.workspace.management.commands.import-jobs.get_user_model')
     def test_import(self, mock_user_model):
         mock_user_model.return_value.objects.all.return_value = [self.user]
-        existing = JobSubmission(
+        JobSubmission.objects.create(
             jobId="1234",
             user=self.user
         )
-        existing.save()
         self.mock_client.return_value.jobs.list.return_value = [
             {
                 "id": "1234",

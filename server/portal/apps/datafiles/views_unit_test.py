@@ -102,11 +102,10 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
 
 
 def test_get_link(client, authenticated_user):
-    link = Link(
+    Link.objects.create(
         tapis_uri="system/path",
         postit_url="https://postit"
     )
-    link.save()
     response = client.get("/api/datafiles/link/tapis/system/path")
     result = json.loads(response.content)
     assert result['data'] == "https://postit"
@@ -141,11 +140,10 @@ def test_link_delete(postits_create, authenticated_user, mock_tapis_client, clie
 
 def test_link_put(postits_create, authenticated_user, mock_tapis_client, client):
     mock_tapis_client.files.deletePostIt.return_value = "OK"
-    link = Link.objects.create(
+    Link.objects.create(
         tapis_uri="system/path",
         postit_url="https://tenant/olduuid"
     )
-    link.save()
     result = client.put("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"

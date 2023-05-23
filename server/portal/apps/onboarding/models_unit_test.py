@@ -15,7 +15,6 @@ def onboarding_event(authenticated_user):
         step="TestStep",
         message="test message"
     )
-    event.save()
     yield event
 
 

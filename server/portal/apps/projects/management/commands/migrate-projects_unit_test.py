@@ -24,7 +24,6 @@ def ownerless_project(django_db_reset_sequences):
         owner=None,
         pi=None,
     )
-    meta.save()
     yield meta
 
 

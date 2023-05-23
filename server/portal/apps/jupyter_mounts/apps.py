@@ -1,7 +1,5 @@
-from __future__ import unicode_literals
-
 from django.apps import AppConfig
 
 
 class JupyterMountsConfig(AppConfig):
-    name = 'jupyter_mounts'
+    name = 'portal.apps.jupyter_mounts'
