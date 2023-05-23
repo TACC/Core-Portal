@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from portal.utils.fields import JSONField
 
 
 # TODOv3: dropV2Jobs
@@ -23,7 +22,7 @@ class JobSubmission(models.Model):
     jobId = models.CharField(max_length=300)
 
     # TODOv3: dropV2Jobs
-    data = JSONField(null=True)
+    data = models.JSONField(null=True)
 
 
 class AppTrayCategory(models.Model):

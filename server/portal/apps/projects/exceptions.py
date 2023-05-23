@@ -3,7 +3,6 @@
 .. module:: portal.apps.projects.execeptions
    :synopsis: Exception classes for projects.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from portal.exceptions.api import ApiException
 

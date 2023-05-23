@@ -48,6 +48,12 @@ CSRF_COOKIE_SAMESITE = 'Strict'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
+# https://docs.djangoproject.com/en/3.2/releases/3.0/#security
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
 
@@ -71,7 +77,6 @@ INSTALLED_APPS = [
     # Django Channels
     'channels',
 
-    'bootstrap4',
     'termsandconditions',
     'impersonate',
 

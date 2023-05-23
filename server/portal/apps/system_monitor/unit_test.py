@@ -7,12 +7,14 @@ from django.http import Http404
 
 @pytest.fixture
 def system_status(scope="module"):
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def system_status_missing_frontera(scope="module"):
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index_missing_frontera.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index_missing_frontera.json')) as f:
+        yield json.load(f)
 
 
 @pytest.mark.django_db()

@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.unit_test
    :synopsis: Projects app unit tests.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 from django.conf import settings
