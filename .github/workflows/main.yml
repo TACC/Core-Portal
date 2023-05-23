@@ -18,12 +18,12 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.7
+        python-version: 3.11
 
     - name: Setup Poetry
-      uses: abatilo/actions-poetry@v2.0.0
+      uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.2.0
+        poetry-version: 1.4.2
 
     - uses: actions/cache@v3
       with:
@@ -60,12 +60,12 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.7
+        python-version: 3.11
 
     - name: Setup Poetry
-      uses: abatilo/actions-poetry@v2.0.0
+      uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.2.0
+        poetry-version: 1.4.2
 
     - uses: actions/cache@v3
       with:

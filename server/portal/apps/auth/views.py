@@ -9,7 +9,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import TapisOAuthToken
@@ -122,13 +121,7 @@ def tapis_oauth_callback(request):
         user = authenticate(backend='tapis', token=token_data['access_token'])
 
         if user:
-            try:
-                token = user.tapis_oauth
-                token.update(**token_data)
-            except ObjectDoesNotExist:
-                token = TapisOAuthToken(**token_data)
-                token.user = user
-            token.save()
+            TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
 
             login(request, user)
             METRICS.debug(f"user:{user.username} successful oauth login")

@@ -133,8 +133,7 @@ class JobsWebhookView(BaseApiView):
                     logger.exception('Error starting async task to index job output: {}'.format(e))
 
             with transaction.atomic():
-                n = Notification.objects.create(**event_data)
-                n.save()
+                Notification.objects.create(**event_data)
 
             return HttpResponse('OK')
 
@@ -190,8 +189,7 @@ class InteractiveWebhookView(BaseApiView):
             logger.exception(e)
             return HttpResponseBadRequest(f"ERROR: {e}")
 
-        n = Notification.objects.create(**event_data)
-        n.save()
+        Notification.objects.create(**event_data)
 
         return HttpResponse('OK')
 

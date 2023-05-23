@@ -90,7 +90,6 @@ class TestTapisOAuthBackend(TransactionTestCase):
             last_name="user",
             email="old@email.com"
         )
-        user.save()
         self.mock_response.json.return_value = {
             "status": "success",
             "result": {

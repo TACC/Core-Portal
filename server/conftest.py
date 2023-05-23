@@ -26,16 +26,13 @@ def regular_user(django_user_model, django_db_reset_sequences, mock_tapis_client
                                           last_name="Lastname",
                                           email="user@user.com")
     user = django_user_model.objects.get(username="username")
-    token = TapisOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -47,16 +44,13 @@ def regular_user2(django_user_model, django_db_reset_sequences, mock_tapis_clien
                                           last_name="Lastname2",
                                           email="user2@user.com")
     user = django_user_model.objects.get(username="username2")
-    token = TapisOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -68,16 +62,13 @@ def regular_user_with_underscore(django_user_model, django_db_reset_sequences, m
                                           last_name="Lastname3",
                                           email="user_name@user.com")
     user = django_user_model.objects.get(username="user_name")
-    token = TapisOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -92,16 +83,14 @@ def staff_user(client, django_user_model, django_db_reset_sequences, mock_tapis_
     django_user_model.objects.create_user(username='staff', password='password')
     user = django_user_model.objects.get(username='staff')
     user.is_staff = True
-    token = TapisOAuthToken.objects.create(
+    user.save()
+    TapisOAuthToken.objects.create(
         user=user,
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -123,27 +112,32 @@ def tapis_listing_indexer(mocker):
 
 @pytest.fixture
 def agave_storage_system_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_file_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_file_listing_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def tapis_file_listing_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/tapis-file-listing.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/tapis-file-listing.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_listing_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
