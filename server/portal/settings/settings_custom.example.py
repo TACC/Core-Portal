@@ -217,6 +217,15 @@ _PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
 # Default Art.
 _PORTAL_ICON_FILENAME = '/static/site_cms/img/favicons/favicon.ico'
 
+
+# No Extra Styles.
+# _PORTAL_CSS_FILENAMES = []                      # Empty array yields NO extra styles.
+
+# Theme "has dark logo" Styles.
+# _PORTAL_CSS_FILENAMES = [
+#     '/static/site_cms/css/build/theme.has-dark-logo.css'
+# ]
+
 ########################
 # GOOGLE ANALYTICS
 ########################
