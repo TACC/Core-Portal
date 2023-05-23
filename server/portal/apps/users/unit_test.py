@@ -229,22 +229,26 @@ class TestGetIndexedAllocations(TestCase):
 
 @pytest.fixture
 def tas_add_user_response():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def tas_delete_user_response():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def tas_add_user_error_response():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project_error.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project_error.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def tas_delete_user_error_response():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project_error.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project_error.json')) as f:
+        yield json.load(f)
 
 
 def test_add_user(client, requests_mock, authenticated_user, tas_add_user_response):

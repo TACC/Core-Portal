@@ -103,11 +103,9 @@ def oauth2_callback(request):
                           headers={'content-type': 'application/x-www-form-urlencoded'})
             HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
 
-        token = GoogleDriveUserToken(
+        GoogleDriveUserToken.objects.update_or_create(
             user=request.user,
-            credentials=credentials)
-
-        token.save()
+            defaults={'credentials': credentials})
 
     except Exception as e:
         logger.exception('Unable to complete Google Drive integration setup: %s' % e)

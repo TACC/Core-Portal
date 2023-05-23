@@ -2,7 +2,6 @@
 .. :module:: portal.apps.projects.models.utils
    :synopsis: Utils for projects
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from django.conf import settings
 from portal.libs.agave.utils import service_account
