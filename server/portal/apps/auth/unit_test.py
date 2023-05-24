@@ -31,9 +31,21 @@ class TestTapisOAuthBackend(TransactionTestCase):
         )
         self.mock_requests = self.mock_requests_patcher.start()
 
+        self.mock_user_data_patcher = patch(
+            'portal.apps.auth.backends.get_user_data',
+            return_value={
+                'username': 'testuser',
+                'firstName': 'test',
+                'lastName': 'user',
+                'email': 'new@email.com'
+            }
+        )
+        self.mock_user_data = self.mock_user_data_patcher.start()
+
     def tearDown(self):
         super(TestTapisOAuthBackend, self).tearDown()
         self.mock_requests_patcher.stop()
+        self.mock_user_data_patcher.stop()
 
     def test_bad_backend_params(self):
         # Test backend authenticate with no params
@@ -60,10 +72,7 @@ class TestTapisOAuthBackend(TransactionTestCase):
         self.mock_response.json.return_value = {
             "status": "success",
             "result": {
-                "username": "testuser",
-                "given_name": "test",
-                "last_name": "user",
-                "email": "test@user.com"
+                "username": "testuser"
             }
         }
         result = self.backend.authenticate(backend='tapis', token='1234')
@@ -81,14 +90,10 @@ class TestTapisOAuthBackend(TransactionTestCase):
             last_name="user",
             email="old@email.com"
         )
-        user.save()
         self.mock_response.json.return_value = {
             "status": "success",
             "result": {
                 "username": "testuser",
-                "given_name": "test",
-                "last_name": "user",
-                "email": "test@user.com"
             }
         }
         result = self.backend.authenticate(backend='tapis', token='1234')
@@ -96,4 +101,4 @@ class TestTapisOAuthBackend(TransactionTestCase):
         self.assertEqual(result, user)
         # Existing user object should be updated
         user = get_user_model().objects.get(username="testuser")
-        self.assertEqual(user.email, "test@user.com")
+        self.assertEqual(user.email, "new@email.com")

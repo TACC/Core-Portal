@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class PublicDataConfig(AppConfig):
-    name = 'request_access'
+    name = 'portal.apps.request_access'

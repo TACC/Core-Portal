@@ -3,10 +3,8 @@
 .. :module:: apps.projects.views
    :synopsis: Views to handle Projects
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import logging
-from future.utils import python_2_unicode_compatible
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
@@ -24,7 +22,6 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
 LOGGER = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProjectsApiView(BaseApiView):
@@ -90,7 +87,6 @@ class ProjectsApiView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProjectInstanceApiView(BaseApiView):
@@ -164,7 +160,6 @@ class ProjectInstanceApiView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProjectMembersApiView(BaseApiView):

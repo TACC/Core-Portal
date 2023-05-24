@@ -67,10 +67,9 @@ def test_disconnect(django_user_model, client, mock_flow, mock_request):
     # Create a user and associated Google Drive credentials
     user = django_user_model.objects.create_user(username='testuser', password='testpassword')
     credentials = Credentials(token='asdf', refresh_token='1234')
-    token = GoogleDriveUserToken(
+    GoogleDriveUserToken.objects.create(
         user=user,
         credentials=credentials)
-    token.save()
     assert user.googledrive_user_token.credentials.token == 'asdf'
 
     # Disconnect and assert that the client is deleted.

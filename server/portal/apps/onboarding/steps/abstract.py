@@ -55,7 +55,6 @@ class AbstractStep:
             message=message,
             data=data
         )
-        self.last_event.save()
         self.events.append(self.last_event)
 
     def fail(self, message, data=None):
