@@ -8,7 +8,8 @@ export function getSystemName(host) {
   if (
     host.startsWith('data.tacc') ||
     host.startsWith('cloud.corral') ||
-    host.startsWith('secure.corral')
+    host.startsWith('secure.corral') ||
+    host.startsWith('cloud.data')
   ) {
     return 'Corral';
   }
