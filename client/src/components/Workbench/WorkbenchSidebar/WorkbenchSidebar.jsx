@@ -56,6 +56,12 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       children: <HistoryBadge unread={unread} disabled={disabled} />,
     },
     {
+      to: path + ROUTES.SYSTEM_STATUS,
+      label: 'System Status',
+      iconName: 'data-files',
+      disabled: disabled,
+    },
+    {
       to: path + ROUTES.UI,
       label: 'UI Patterns',
       iconName: 'copy',

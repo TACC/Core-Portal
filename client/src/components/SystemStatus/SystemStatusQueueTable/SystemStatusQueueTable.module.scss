@@ -1,0 +1,37 @@
+.root {
+  --table-border: 1px solid black;
+
+  margin: 0;
+  width: 100%;
+
+  /* system */
+  tr > *:nth-child(1) {
+    width: 25%;
+  }
+  /* status */
+  tr > *:nth-child(2) {
+    width: 30%;
+
+    span {
+      width: 40%;
+    }
+  }
+  /* free */
+  tr > *:nth-child(3) {
+    width: 15%;
+  }
+  /* running */
+  tr > *:nth-child(4) {
+    width: 15%;
+  }
+  /* waiting */
+  tr > *:nth-child(5) {
+    width: 15%;
+  }
+}
+
+.no-results-message {
+  width: 100%;
+  align-items: center;
+}
+  
