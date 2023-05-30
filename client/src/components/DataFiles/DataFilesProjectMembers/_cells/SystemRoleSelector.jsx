@@ -36,8 +36,14 @@ const setSystemRole = async (projectId, username, role) => {
 };
 
 export const useSystemRole = (projectId, username) => {
-  const query = useQuery(['system-role', projectId, username], () =>
-    getSystemRole(projectId, username)
+  const query = useQuery(
+    ['system-role', projectId, username],
+    () => getSystemRole(projectId, username),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
   );
   const mutation = useMutation(async (role) => {
     await setSystemRole(projectId, username, role);

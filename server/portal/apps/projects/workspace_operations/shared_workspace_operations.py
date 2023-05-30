@@ -275,7 +275,7 @@ def list_projects(client):
     List all workspace systems accessible to the user's client.
     """
 
-    fields = "id,host,description,notes,updated,owner"
+    fields = "id,host,description,notes,updated,owner,rootDir"
     query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
     listing = client.systems.getSystems(listType='ALL',
                                         search=query,
@@ -283,6 +283,7 @@ def list_projects(client):
 
     serialized_listing = map(lambda prj: {
         "id": prj.id,
+        "path": prj.rootDir,
         "name": prj.id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1],
         "host": prj.host,
         "updated": prj.updated,

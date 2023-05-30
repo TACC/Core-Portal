@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from portal.views.base import BaseApiView
-from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.workspace_operations.shared_workspace_operations import list_projects, get_workspace_role
 from portal.apps.users.utils import get_user_data
 
 import logging
@@ -60,23 +60,18 @@ class JupyterMountsApiView(BaseApiView):
         return result
 
     def getProjectSystems(self, user):
-        mgr = ProjectsManager(user)
-        projects = mgr.list()
+        projects = list_projects(user.tapis_oauth.client)
         result = []
         names = []
         for project in projects:
-            name = project.description
+            name = project["title"]
             # Resolve project name collisions
             if any([existing == name for existing in names]):
-                name = "{name} ({id})".format(name=project.description, id=project.storage.id)
+                name = "{name} ({id})".format(name=project["title"], id=project["id"])
             names.append(name)
+            role = get_workspace_role(user.tapis_oauth.client, project["name"], user.username)
 
-            # Find a matching role, or return None
-            role = next(
-                (role.role for role in project.roles.roles if role.username == user.username),
-                None
-            )
-            if role == "OWNER" or role == "ADMIN":
+            if role == "OWNER" or role == "USER":
                 permissions = "rw"
             elif role == "GUEST":
                 permissions = "ro"
@@ -85,7 +80,7 @@ class JupyterMountsApiView(BaseApiView):
 
             result.append(
                 {
-                    "path": project.absolute_path,
+                    "path": project["path"],
                     "mountPath": "/{namespace}/My Projects/{name}".format(
                         namespace=settings.PORTAL_NAMESPACE,
                         name=name),
