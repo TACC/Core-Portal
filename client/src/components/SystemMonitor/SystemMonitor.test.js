@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import SystemsList from './SystemMonitor';
+import { BrowserRouter } from 'react-router-dom';
 
 const mockStore = configureStore();
 const list = [
@@ -29,7 +30,9 @@ const list = [
 function renderSystemMonitor(store) {
   return render(
     <Provider store={store}>
-      <SystemsList />
+      <BrowserRouter>
+        <SystemsList />
+      </BrowserRouter>
     </Provider>
   );
 }
