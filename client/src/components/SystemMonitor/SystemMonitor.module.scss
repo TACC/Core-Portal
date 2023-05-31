@@ -33,6 +33,10 @@
     /* status */
     tr > *:nth-child(2) {
       width: 30%;
+
+      span {
+        max-width: 175px;
+      }
     }
     /* load */
     tr > *:nth-child(3) {
