@@ -137,9 +137,10 @@ function Workbench() {
                     component={OnboardingAdmin}
                   />
                 )}
-                <Route 
-                  path={`${path}${ROUTES.SYSTEM_STATUS}`} 
-                  component={SystemStatus} />
+                <Route
+                  path={`${path}${ROUTES.SYSTEM_STATUS}`}
+                  component={SystemStatus}
+                />
                 {showUIPatterns && (
                   <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
                 )}

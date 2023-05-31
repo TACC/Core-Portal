@@ -10,7 +10,7 @@ const CELL_PROPTYPES = {
 
 export const Display = ({ cell: { row } }) => (
   <a href={`/workbench/system-status/${row.original.hostname}`}>
-    <strong className="wb-text-primary">{row.original.display_name}</strong>  
+    <strong className="wb-text-primary">{row.original.display_name}</strong>
   </a>
 );
 Display.propTypes = CELL_PROPTYPES;

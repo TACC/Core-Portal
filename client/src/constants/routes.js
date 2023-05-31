@@ -16,4 +16,4 @@ export const ONBOARDING = '/onboarding';
 export const ONBOARDINGADMIN = '/onboarding/admin';
 export const ACCOUNT = '/account';
 export const SEARCH = '/workbench/search';
-export const SYSTEM_STATUS = '/system-status'
+export const SYSTEM_STATUS = '/system-status';

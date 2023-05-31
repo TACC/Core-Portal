@@ -2,6 +2,6 @@
 /* FAQ: Edit global style based on section-specific caveat */
 /* SEE: index.css */
 body.has-loaded-system-status {
-    /* HACK: Should instead (ask Design) have a responsive sidebar */
-    --min-width: 1000px; /* ~before important table cell text is cut off */
-  }
+  /* HACK: Should instead (ask Design) have a responsive sidebar */
+  --min-width: 1000px; /* ~before important table cell text is cut off */
+}
