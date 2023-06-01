@@ -112,8 +112,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
     # Throws an Error.

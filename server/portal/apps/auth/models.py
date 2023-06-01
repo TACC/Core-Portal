@@ -5,6 +5,7 @@ import time
 from django.db import models
 from django.conf import settings
 from tapipy.tapis import Tapis
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -76,16 +77,18 @@ class TapisOAuthToken(models.Model):
                        client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
                        access_token=self.access_token,
                        refresh_token=self.refresh_token)
-        if self.expired:
-            try:
-                client.refresh_tokens()
-            except Exception:
-                logger.exception('Tapis Token refresh failed')
-                raise
 
-            self.update(created=int(time.time()),
-                        access_token=client.access_token.access_token,
-                        expires_in=client.access_token.expires_in().total_seconds())
+        with transaction.atomic():
+            if self.expired:
+                try:
+                    client.refresh_tokens()
+                except Exception:
+                    logger.exception('Tapis Token refresh failed')
+                    raise
+
+                self.update(created=int(time.time()),
+                            access_token=client.access_token.access_token,
+                            expires_in=client.access_token.expires_in().total_seconds())
 
         return client
 
