@@ -73,7 +73,7 @@ def create_workspace_dir(workspace_id: str) -> str:
     return path
 
 
-def create_workspace_system(client, workspace_id: str, title: str, description="", owner= None) -> str:
+def create_workspace_system(client, workspace_id: str, title: str, description="", owner=None) -> str:
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     system_args = {
         "id": system_id,
