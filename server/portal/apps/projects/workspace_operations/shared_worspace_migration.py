@@ -56,3 +56,4 @@ def migrate_project(project_id):
 def migrate_all_projects():
     for prj in ProjectMetadata.objects.all():
         migrate_project(prj.project_id)
+        print(f'Successfully migrated project id: {prj.project_id}')
