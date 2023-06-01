@@ -591,7 +591,7 @@ export const AppSchemaForm = ({ app }) => {
                     </FormField>
                   )}
                   <FormField
-                    label="Maximum Job Runtime"
+                    label="Maximum Job Runtime (minutes)"
                     description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
                       app,
                       values.execSystemLogicalQueue

@@ -47,6 +47,9 @@ describe('AppFormUtils', () => {
       getNodeCountValidation(normalQueue, parallelFronteraApp).isValidSync(3)
     ).toEqual(true);
     expect(
+      getNodeCountValidation(normalQueue, parallelFronteraApp).isValidSync(2.9)
+    ).toEqual(false);
+    expect(
       getNodeCountValidation(smallQueue, parallelFronteraApp).isValidSync(1)
     ).toEqual(true);
     expect(
