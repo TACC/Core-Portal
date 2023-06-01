@@ -1,7 +1,6 @@
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import auth
-from django.db import transaction
 from django.http import HttpResponse
 from portal.apps.auth.models import TapisOAuthToken
 import logging
