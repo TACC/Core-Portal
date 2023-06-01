@@ -60,7 +60,7 @@ const Layout = ({ hostname }) => {
     return (
       <SectionTableWrapper
         className={styles['content']}
-        header={`${selectedSystem?.display_name} Queues`}
+        header={`${selectedSystem ? selectedSystem.display_name : ''} Queues`}
         headerClassName={styles['header']}
         contentShouldScroll
       >
