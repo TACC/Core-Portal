@@ -33,33 +33,22 @@ const FormSchema = (app) => {
         })
       );
     } else {
-      field.type = 'text';
-      appFields.schema.appArgs[param.name] = Yup.string();
-      /* TODOv3 https://jira.tacc.utexas.edu/browse/TV3-92
-       *   if (param.semantics.ontology.includes('email')) {
-       *     field.type = 'email';
-       *     appFields.schema.appArgs[param.name] = Yup.string().email(
-       *        'Must be a valid email.'
-       *      );
-       *
-       *  TODOv3 number. was this ever used? previously was:
-       *       appFields.schema.appArgs[param.name] = Yup.number();
-       *       field.type = 'number';
-       *
-       *  TODOV3 agaveFile was:
-       *           field.agaveFile = param.semantics.ontology.includes('agaveFile');
-       */
+      if (p.notes.fieldType === 'email') {
+        appFields.schema.appArgs[param.name] = Yup.string().email(
+          'Must be a valid email.'
+        );
+      } else if (p.notes.fieldType === 'number') {
+        field.type = 'number';
+        appFields.schema.appArgs[param.name] = Yup.number();
+      } else {
+        field.type = 'text';
+        appFields.schema.appArgs[param.name] = Yup.string();
+      }
     }
     if (field.required) {
       appFields.schema.appArgs[param.name] =
         appFields.schema.appArgs[param.name].required('Required');
     }
-    /* TODOv3 https://jira.tacc.utexas.edu/browse/TV3-92
-      if (param.value.validator) {
-        appFields.schema.appArgs[param.name] = appFields.schema.appArgs[
-          param.name
-        ].matches(param.value.validator);
-      }*/
     appFields.appArgs[param.name] = field;
     appFields.defaults.appArgs[param.name] =
       param.arg === null || typeof param.arg === 'undefined' ? '' : param.arg;
@@ -79,16 +68,14 @@ const FormSchema = (app) => {
     };
 
     field.type = 'text';
-    appFields.schema.fileInputs[input.name] = Yup.string();
 
-    /* TODOv3 handle fileInput validation https://jira.tacc.utexas.edu/browse/TV3-91
+    appFields.schema.fileInputs[input.name] = Yup.string();
     appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
       input.name
     ].matches(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
-    */
 
     if (field.required) {
       appFields.schema.fileInputs[input.name] =
