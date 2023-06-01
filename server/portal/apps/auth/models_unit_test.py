@@ -12,7 +12,8 @@ ROUTE = '/workbench/account/'
 
 @pytest.fixture
 def authenticated_user_with_expired_token(authenticated_user):
-    print(authenticated_user)
+    authenticated_user.tapis_oauth.expires_in = 0
+    authenticated_user.tapis_oauth.save()
     yield authenticated_user
 
 
