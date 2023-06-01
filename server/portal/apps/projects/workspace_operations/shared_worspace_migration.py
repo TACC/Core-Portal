@@ -17,13 +17,14 @@ ROLE_MAP = {
     "OWNER": None,
 }
 
+
 def get_role(project_id, username):
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
     headers = {"Authorization": "Bearer {}".format(v2_token)}
     req = requests.get(f"{v2_url}/systems/v2/{system_id}/roles/{username}", headers=headers)
     if req.status_code != 200:
         return None
-    
+
     return req.json()["result"]["role"]
 
 
