@@ -234,9 +234,6 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
                        "add",
                        "writer")
 
-    client.systems.shareSystem(systemId=system_id, users=[old_owner])
-    set_workspace_permissions(client, old_owner, system_id, 'writer')
-
     client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
     return get_project(client, workspace_id)
 
