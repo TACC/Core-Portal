@@ -28,7 +28,7 @@ describe('systems utility functions', () => {
   it('gets system name when path is part of system homeDir', () => {
     const { configuration: systemList } = systemsFixture.storage;
 
-    expect (
+    expect(
       findSystemDisplayName(
         systemList,
         'corral.home.username',
@@ -36,12 +36,12 @@ describe('systems utility functions', () => {
         'private',
         '/home/username'
       )
-    ).toEqual('My Data (Work)')
+    ).toEqual('My Data (Work)');
   });
   it('gets root system name when path is not part of homeDir', () => {
     const { configuration: systemList } = systemsFixture.storage;
 
-    expect (
+    expect(
       findSystemDisplayName(
         systemList,
         'corral.home.username',
@@ -49,8 +49,8 @@ describe('systems utility functions', () => {
         'private',
         '/'
       )
-    ).toEqual('Corral')
-  })
+    ).toEqual('Corral');
+  });
   it('get project title from host', () => {
     expect(
       findProjectTitle(projectsListingFixture, 'test.site.project.PROJECT-3')

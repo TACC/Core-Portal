@@ -61,11 +61,7 @@ describe('DataFilesBreadcrumbs', () => {
     );
 
     expect(getByText('Frontera')).toBeDefined();
-    expect(
-      getByText('Frontera')
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual(
+    expect(getByText('Frontera').closest('a').getAttribute('href')).toEqual(
       '/workbench/data/tapis/private/frontera.home.username/'
     );
   });
