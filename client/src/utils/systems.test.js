@@ -25,6 +25,32 @@ describe('systems utility functions', () => {
       'Frontera'
     );
   });
+  it('gets system name when path is part of system homeDir', () => {
+    const { configuration: systemList } = systemsFixture.storage;
+
+    expect (
+      findSystemDisplayName(
+        systemList,
+        'corral.home.username',
+        false,
+        'private',
+        '/home/username'
+      )
+    ).toEqual('My Data (Work)')
+  });
+  it('gets root system name when path is not part of homeDir', () => {
+    const { configuration: systemList } = systemsFixture.storage;
+
+    expect (
+      findSystemDisplayName(
+        systemList,
+        'corral.home.username',
+        false,
+        'private',
+        '/'
+      )
+    ).toEqual('Corral')
+  })
   it('get project title from host', () => {
     expect(
       findProjectTitle(projectsListingFixture, 'test.site.project.PROJECT-3')
