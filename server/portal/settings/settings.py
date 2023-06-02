@@ -56,6 +56,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
+PORTAL_CSS_FILENAMES = getattr(settings_custom, '_PORTAL_CSS_FILENAMES', [])
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -614,6 +615,7 @@ SETTINGS: EXPORTS
 
 SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
+    'PORTAL_CSS_FILENAMES',
     'DEBUG',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE',

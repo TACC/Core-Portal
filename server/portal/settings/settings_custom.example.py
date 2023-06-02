@@ -20,7 +20,7 @@ _WH_BASE_URL = ''
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera', 'Maverick2']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -207,6 +207,15 @@ _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 
 # Default Art.
 _PORTAL_ICON_FILENAME = '/static/site_cms/img/favicons/favicon.ico'
+
+
+# No Extra Styles.
+# _PORTAL_CSS_FILENAMES = []                      # Empty array yields NO extra styles.
+
+# Theme "has dark logo" Styles.
+# _PORTAL_CSS_FILENAMES = [
+#     '/static/site_cms/css/build/theme.has-dark-logo.css'
+# ]
 
 ########################
 # GOOGLE ANALYTICS
