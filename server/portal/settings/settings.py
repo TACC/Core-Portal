@@ -489,11 +489,6 @@ TACC_EXEC_SYSTEMS = {
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
-    'maverick2': {
-        'work_dir': '/work/{}',
-        'scratch_dir': '/work/{}',
-        'home_dir': '/home1/{}'
-    },
     'ls6': {
         'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',

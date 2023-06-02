@@ -185,7 +185,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data', 'frontera', 'ls6', 'maverick2'],
+            'access_systems': ['cloud.data', 'frontera', 'ls6'],
             'credentials_systems': ['cloud.data']
         }
     },
