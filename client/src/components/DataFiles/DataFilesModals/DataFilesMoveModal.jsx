@@ -30,11 +30,9 @@ const DataFilesMoveModal = React.memo(() => {
   const dispatch = useDispatch();
   const { data: systems } = useSystems();
 
-  const selectedSystem = useSelector((state) => {
-    return systems.find(
-      (sys) => sys.system === params.system && sys.scheme === params.scheme
-    );
-  });
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem(params);
 
   const reloadPage = () => {
     history.push(location.pathname);

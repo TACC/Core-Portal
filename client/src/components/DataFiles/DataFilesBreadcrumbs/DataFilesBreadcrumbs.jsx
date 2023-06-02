@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
-import { useSelector, shallowEqual } from 'react-redux';
 import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useSystems,
 } from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
@@ -120,14 +120,20 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
+  const { fetchSelectedSystem } = useSystems();
 
-  const root = useSystemDisplayName({ scheme, system });
+  const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
-  const homeDir = systems.find((s) => s.name == root)?.homeDir;
+  const systemName = useSystemDisplayName({ scheme, system, path });
+
+  const homeDir = selectedSystem?.homeDir;
+
+  const isSystemRootPath = !path
+    .replace(/^\/+/, '')
+    .startsWith(homeDir?.replace(/^\/+/, ''));
+
+  const startingPath = isSystemRootPath ? '' : homeDir;
+
   const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
 
   path
@@ -135,9 +141,13 @@ const DataFilesBreadcrumbs = ({
     .filter((x) => !!x)
     .reduce((prev, curr, index) => {
       // don't push path if already part of the system's homeDir at the same index
-      if (!systemHomeDirPaths || systemHomeDirPaths[index] !== curr) {
+      if (
+        isSystemRootPath ||
+        !systemHomeDirPaths ||
+        systemHomeDirPaths[index] !== curr
+      ) {
         const comp = `${prev}/${curr}`;
-        paths.push(`${homeDir}${comp}`);
+        paths.push(`${startingPath}${comp}`);
         pathComps.push(curr);
         return comp;
       } else {
@@ -162,11 +172,11 @@ const DataFilesBreadcrumbs = ({
         api={api}
         scheme={scheme}
         system={system}
-        path={homeDir ?? ''}
+        path={startingPath}
         section={section}
         isPublic={isPublic}
       >
-        <>{root}</>
+        <>{systemName}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {
