@@ -1,11 +1,16 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
-import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
+import {
+  useFileListing,
+  useSystemDisplayName,
+  useSystems,
+} from 'hooks/datafiles';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import styles from './DataFilesModalListingTable.module.scss';
+import { useSelector, shallowEqual } from 'react-redux';
 
 export function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -145,9 +150,22 @@ const DataFilesModalListingTable = ({
   disabled,
 }) => {
   const { loading, error, params, fetchMore } = useFileListing('modal');
-  const isNotRoot = params.path !== '' && params.path !== '/';
 
-  const displayName = useSystemDisplayName(params);
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem(params);
+
+  let systemName = selectedSystem?.name;
+  const systemDisplayName = useSystemDisplayName(params);
+
+  systemName = systemName ?? systemDisplayName;
+
+  const homeDir = selectedSystem?.homeDir;
+
+  const isNotRootOrHome =
+    params.path !== '' &&
+    params.path !== '/' &&
+    params.path.replace(/^\/+/, '') !== homeDir?.replace(/^\/+/, '');
 
   const alteredData = useMemo(() => {
     const result = data.map((d) => {
@@ -157,9 +175,13 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
+    if (
+      !loading &&
+      !error &&
+      (isNotRootOrHome || operationAllowedOnRootFolder)
+    ) {
       const currentFolderEntry = {
-        name: isNotRoot ? getCurrentDirectory(params.path) : displayName,
+        name: isNotRootOrHome ? getCurrentDirectory(params.path) : systemName,
         format: 'folder',
         system: params.system,
         path: params.path,
@@ -168,7 +190,7 @@ const DataFilesModalListingTable = ({
       result.unshift(currentFolderEntry);
     }
     return result;
-  }, [data, params, isNotRoot, loading]);
+  }, [data, params, isNotRootOrHome, loading]);
 
   const NameCell = useCallback(
     ({
@@ -184,7 +206,7 @@ const DataFilesModalListingTable = ({
         name={name}
         format={format}
         isCurrentDirectory={isCurrentDirectory}
-        indentSubFilesFolders={isNotRoot || operationAllowedOnRootFolder}
+        indentSubFilesFolders={isNotRootOrHome || operationAllowedOnRootFolder}
       />
     ),
     [params]
@@ -212,7 +234,7 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
-  const hasBackButton = isNotRoot;
+  const hasBackButton = isNotRootOrHome;
 
   const BackHeader = useCallback(
     () => (

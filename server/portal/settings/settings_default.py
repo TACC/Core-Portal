@@ -20,7 +20,7 @@ _WH_BASE_URL = ''
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera', 'Maverick2']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -185,7 +185,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
-            'access_systems': ['cloud.data', 'frontera', 'ls6', 'maverick2'],
+            'access_systems': ['cloud.data', 'frontera', 'ls6'],
             'credentials_systems': ['cloud.data']
         }
     },
