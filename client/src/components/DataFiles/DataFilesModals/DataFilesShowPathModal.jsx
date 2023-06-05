@@ -62,7 +62,7 @@ const DataFilesShowPathModal = React.memo(() => {
             api={params.api}
             scheme={params.scheme}
             system={params.system}
-            path={params.path + file.path || '/'}
+            path={file.path || '/'}
             section=""
           />
           <dl>
