@@ -3,7 +3,6 @@ import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
 import { cloneDeep } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Button,
   AppIcon,
@@ -513,9 +512,7 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys({
-                  ...appFields.fileInputs,
-                }).length > 0 && (
+                {Object.keys(appFields.fileInputs).length > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
@@ -530,7 +527,7 @@ export const AppSchemaForm = ({ app }) => {
                             agaveFile
                             SelectModal={DataFilesSelectModal}
                             placeholder="Browse Data Files"
-                            key={uuidv4()}
+                            key={`fileInputs.${name}`}
                           />
                         );
                       }
@@ -541,7 +538,7 @@ export const AppSchemaForm = ({ app }) => {
                   ([parameterSet, parameterValue]) => {
                     return (
                       Object.keys(parameterValue).length > 0 && (
-                        <div className="appSchema-section" key={uuidv4()}>
+                        <div className="appSchema-section" key={parameterSet}>
                           <div className="appSchema-header">
                             <span>{parameterSet}</span>
                           </div>
@@ -550,7 +547,7 @@ export const AppSchemaForm = ({ app }) => {
                               <FormField
                                 {...field}
                                 name={`parameterSet.${parameterSet}.${name}`}
-                                key={uuidv4()}
+                                key={`parameterSet.${parameterSet}.${name}`}
                               >
                                 {field.options
                                   ? field.options.map((item) => {
