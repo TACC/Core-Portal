@@ -77,6 +77,18 @@ const FormSchema = (app) => {
               'Required'
             );
         }
+        if (param.notes.validator?.regex && param.notes.validator?.message) {
+          try {
+            const regex = RegExp(param.notes.validator.regex);
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              appFields.schema.parameterSet[parameterSet][field.label].matches(
+                regex,
+                param.notes.validator.message
+              );
+          } catch (SyntaxError) {
+            console.warn('Invalid regex pattern for app');
+          }
+        }
         appFields.parameterSet[parameterSet][field.label] = field;
         appFields.defaults.parameterSet[parameterSet][field.label] =
           param.arg ?? param.value ?? '';
