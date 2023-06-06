@@ -3,6 +3,7 @@ import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
 import { cloneDeep } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Button,
   AppIcon,
@@ -400,6 +401,16 @@ export const AppSchemaForm = ({ app }) => {
               (q) => q.name === values.execSystemLogicalQueue
             );
             const schema = Yup.object({
+              parameterSet: Yup.object({
+                ...Object.assign(
+                  {},
+                  ...Object.entries(appFields.schema.parameterSet).map(
+                    ([k, v]) => ({
+                      [k]: Yup.object({ ...v }),
+                    })
+                  )
+                ),
+              }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
@@ -420,11 +431,6 @@ export const AppSchemaForm = ({ app }) => {
                   'Please select an allocation from the dropdown.'
                 ),
             });
-            Object.entries(appFields.schema.parameterSet).forEach(
-              ([parameterSet, parameterValue]) => {
-                schema[parameterSet] = Yup.object({ ...parameterValue });
-              }
-            );
             return schema;
           });
         }}
@@ -524,7 +530,7 @@ export const AppSchemaForm = ({ app }) => {
                             agaveFile
                             SelectModal={DataFilesSelectModal}
                             placeholder="Browse Data Files"
-                            key={`fileInputs.${name}`}
+                            key={uuidv4()}
                           />
                         );
                       }
@@ -535,7 +541,7 @@ export const AppSchemaForm = ({ app }) => {
                   ([parameterSet, parameterValue]) => {
                     return (
                       Object.keys(parameterValue).length > 0 && (
-                        <div className="appSchema-section">
+                        <div className="appSchema-section" key={uuidv4()}>
                           <div className="appSchema-header">
                             <span>{parameterSet}</span>
                           </div>
@@ -543,8 +549,8 @@ export const AppSchemaForm = ({ app }) => {
                             ([name, field]) => (
                               <FormField
                                 {...field}
-                                name={`${parameterSet}.${name}`}
-                                key={`${parameterSet}.${name}`}
+                                name={`parameterSet.${parameterSet}.${name}`}
+                                key={uuidv4()}
                               >
                                 {field.options
                                   ? field.options.map((item) => {
@@ -571,43 +577,6 @@ export const AppSchemaForm = ({ app }) => {
                     );
                   }
                 )}
-                {/* Object.keys({ parameterValue }).length > 0 && (
-                      <div className="appSchema-section">
-                        <div className="appSchema-header">
-                          <span>{parameterSet}</span>
-                        </div>
-                        {Object.entries(parameterValue).map(([name, field]) => {
-                          return (
-                            <FormField
-                              {...field}
-                              name={`${parameterSet}.${name}`}
-                              key={`${parameterSet}.${name}`}
-                            >
-                              {field.options
-                                ? field.options.map((item) => {
-                                    let val = item;
-                                    if (val instanceof String) {
-                                      const tmp = {};
-                                      tmp[val] = val;
-                                      val = tmp;
-                                    }
-                                    return Object.entries(val).map(
-                                      ([key, value]) => (
-                                        <option key={key} value={key}>
-                                          {value}
-                                        </option>
-                                      )
-                                    );
-                                  })
-                                : null}
-                            </FormField>
-                          );
-                        })}
-                      </div>
-                    );
-                  }
-                )} */}
-                {/* TODOv3: handle envVariables (parameterSet.envVariables) https://jira.tacc.utexas.edu/browse/WP-83 */}
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Configuration</span>

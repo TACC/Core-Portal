@@ -33,18 +33,16 @@ const FormSchema = (app) => {
     ([parameterSet, parameterSetValue]) => {
       if (!Array.isArray(parameterSetValue)) return;
 
-      parameterSetValue.forEach((p) => {
-        const param = p;
+      parameterSetValue.forEach((param) => {
         if (param.notes.isHidden) {
           return;
         }
 
         const field = {
-          label: param.name || param.key,
+          label: param.name ?? param.key,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
-          readonly: param.inputMode === 'FIXED' ? 'readonly' : null,
-          id: param.arg || param.value,
+          readOnly: param.inputMode === 'FIXED',
         };
 
         if (param.notes.enum_values) {
@@ -60,10 +58,10 @@ const FormSchema = (app) => {
               })
             );
         } else {
-          if (p.notes.fieldType === 'email') {
+          if (param.notes.fieldType === 'email') {
             appFields.schema.parameterSet[parameterSet][field.label] =
               Yup.string().email('Must be a valid email.');
-          } else if (p.notes.fieldType === 'number') {
+          } else if (param.notes.fieldType === 'number') {
             field.type = 'number';
             appFields.schema.parameterSet[parameterSet][field.label] =
               Yup.number();
@@ -81,9 +79,7 @@ const FormSchema = (app) => {
         }
         appFields.parameterSet[parameterSet][field.label] = field;
         appFields.defaults.parameterSet[parameterSet][field.label] =
-          field.value === null || typeof field.value === 'undefined'
-            ? ''
-            : field.value;
+          param.arg ?? param.value ?? '';
       });
     }
   );
@@ -99,7 +95,7 @@ const FormSchema = (app) => {
       label: input.name,
       description: input.description,
       required: input.inputMode === 'REQUIRED',
-      readonly: input.inputMode === 'FIXED',
+      readOnly: input.inputMode === 'FIXED',
     };
 
     field.type = 'text';
