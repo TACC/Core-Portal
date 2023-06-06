@@ -34,7 +34,7 @@ const FormSchema = (app) => {
       if (!Array.isArray(parameterSetValue)) return;
 
       parameterSetValue.forEach((param) => {
-        if (param.notes.isHidden) {
+        if (param.notes?.isHidden) {
           return;
         }
 
@@ -45,9 +45,9 @@ const FormSchema = (app) => {
           readOnly: param.inputMode === 'FIXED',
         };
 
-        if (param.notes.enum_values) {
+        if (param.notes?.enum_values) {
           field.type = 'select';
-          field.options = param.notes.enum_values;
+          field.options = param.notes?.enum_values;
           appFields.schema.parameterSet[parameterSet][field.label] =
             Yup.string().oneOf(
               field.options.map((enumVal) => {
@@ -58,10 +58,10 @@ const FormSchema = (app) => {
               })
             );
         } else {
-          if (param.notes.fieldType === 'email') {
+          if (param.notes?.fieldType === 'email') {
             appFields.schema.parameterSet[parameterSet][field.label] =
               Yup.string().email('Must be a valid email.');
-          } else if (param.notes.fieldType === 'number') {
+          } else if (param.notes?.fieldType === 'number') {
             field.type = 'number';
             appFields.schema.parameterSet[parameterSet][field.label] =
               Yup.number();
@@ -77,7 +77,7 @@ const FormSchema = (app) => {
               'Required'
             );
         }
-        if (param.notes.validator?.regex && param.notes.validator?.message) {
+        if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
             appFields.schema.parameterSet[parameterSet][field.label] =
