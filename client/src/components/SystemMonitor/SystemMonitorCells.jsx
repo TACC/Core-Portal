@@ -10,9 +10,14 @@ const CELL_PROPTYPES = {
 };
 
 export const Display = ({ cell: { row } }) => (
-  <Link to={`/workbench/system-status/${row.original.hostname}`}>
-    <strong className="wb-text-primary">{row.original.display_name}</strong>
-  </Link>
+  <strong>
+    <Link
+      className="wb-text-primary"
+      to={`/workbench/system-status/${row.original.hostname}`}
+    >
+      {row.original.display_name}
+    </Link>
+  </strong>
 );
 Display.propTypes = CELL_PROPTYPES;
 

@@ -62,6 +62,7 @@ const Layout = ({ hostname }) => {
         className={styles['content']}
         header={`${selectedSystem ? selectedSystem.display_name : ''} Queues`}
         headerClassName={styles['header']}
+        headerActions={<HeaderActions />}
         contentShouldScroll
       >
         <SystemStatusQueueTable system={selectedSystem} />
@@ -72,7 +73,11 @@ const Layout = ({ hostname }) => {
 
 const DefaultSystemRedirect = () => {
   return (
-    <SectionTableWrapper className={styles['content']} header="System Monitor" headerClassName={styles['header']}>
+    <SectionTableWrapper
+      className={styles['content']}
+      header="System Monitor"
+      headerClassName={styles['header']}
+    >
       <Sysmon className={styles['sys-mon']}></Sysmon>
     </SectionTableWrapper>
   );
@@ -110,7 +115,6 @@ const SystemStatus = () => {
       bodyClassName="has-loaded-system-status"
       messageComponentName="SYSTEM STATUS"
       header="System Status"
-      headerActions={<HeaderActions />}
       content={
         <>
           <SystemStatusSidebar systemList={systemList}></SystemStatusSidebar>
