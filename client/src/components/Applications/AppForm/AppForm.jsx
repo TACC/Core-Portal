@@ -442,19 +442,23 @@ export const AppSchemaForm = ({ app }) => {
             })
             .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
 
-          job.parameterSet.appArgs = Object.entries(job.appArgs)
-            .map(([k, v]) => {
-              return { name: k, arg: v };
-            })
-            .filter(
-              (appArg) =>
-                !(
-                  appArg.arg === '' ||
-                  appArg.arg === null ||
-                  appArg.arg === undefined
-                )
-            ); // filter out any empty values
-          delete job.appArgs;
+          job.parameterSet = Object.assign(
+            {},
+            ...Object.entries(job.parameterSet).map(
+              ([parameterSet, parameterValue]) => {
+                return {
+                  [parameterSet]: Object.entries(parameterValue)
+                    .map(([k, v]) => {
+                      if (!v) return;
+                      return parameterSet === 'envVariables'
+                        ? { key: k, value: v }
+                        : { name: k, arg: v };
+                    })
+                    .filter((v) => v), // filter out any empty values
+                };
+              }
+            )
+          );
 
           // TODOv3: handle envVariables https://jira.tacc.utexas.edu/browse/WP-83
 
