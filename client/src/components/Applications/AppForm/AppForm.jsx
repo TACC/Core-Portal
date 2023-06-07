@@ -460,8 +460,6 @@ export const AppSchemaForm = ({ app }) => {
             )
           );
 
-          // TODOv3: handle envVariables https://jira.tacc.utexas.edu/browse/WP-83
-
           // Add allocation scheduler option
           if (job.allocation) {
             if (!job.parameterSet.schedulerOptions) {
