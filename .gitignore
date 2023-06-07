@@ -55,6 +55,7 @@ db.sqlite3*
 
 # ignore various Python things
 __pycache__/
+.python-version
 *.py[cod]
 *$py.class
 *.so

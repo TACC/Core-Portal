@@ -1,7 +1,7 @@
 import { findSystemOrProjectDisplayName } from 'utils/systems';
 import { useSelector } from 'react-redux';
 
-function useSystemDisplayName({ scheme, system }) {
+function useSystemDisplayName({ scheme, system, path }) {
   const systemList = useSelector(
     (state) => state.systems?.storage?.configuration ?? []
   );
@@ -16,6 +16,7 @@ function useSystemDisplayName({ scheme, system }) {
     systemList,
     projectsList,
     system,
+    path,
     projectTitle
   );
 
