@@ -14,7 +14,7 @@ ROLE_MAP = {
     "USER": "writer",
     "ADMIN": "writer",
     "GUEST": "reader",
-    "OWNER": None,
+    "OWNER": "writer",
 }
 
 
