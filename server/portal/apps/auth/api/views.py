@@ -12,10 +12,11 @@ logger = logging.getLogger(__name__)
 class TapisToken(BaseApiView):
     def get(self, request):
         if not request.user.profile.setup_complete:
-            logger.warning(f"User '{request.user.username}' is attempting get Tapis token but setupComplete is False")
+            logger.warning(f"User '{request.user.username}' is attempting to get a Tapis token but setupComplete is False")
             raise PermissionDenied
 
         # By accessing client(), we ensure that that there is a non-expired access_token which can be immediately used
         _ = request.user.tapis_oauth.client
 
+        logger.info(f"User '{request.user.username}' has retrieved their Tapis token")
         return JsonResponse({'token': request.user.tapis_oauth.access_token})
