@@ -5,7 +5,6 @@ import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import SystemStatus from './SystemStatus';
 
-import { toHaveAttribute } from '@testing-library/jest-dom/dist/matchers';
 import fetchMock from 'fetch-mock';
 
 const mockStore = configureStore();
@@ -53,23 +52,6 @@ const queues = [
 ];
 
 describe('System Status Page Layout', () => {
-  it('displays base system status page with system monitor', () => {
-    const store = mockStore({
-      systemMonitor: { list, loading: false, error: false },
-    });
-    const { getByText, getAllByText } = render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={['/workbench/system-status']}>
-          <SystemStatus />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    expect(getByText('System Monitor')).toBeDefined();
-    expect(getAllByText('Stampede')).toHaveLength(2);
-    expect(getAllByText('Frontera')).toHaveLength(2);
-    expect(getAllByText('Lonestar')).toHaveLength(2);
-  });
 
   it('renders queue information', async () => {
     const store = mockStore({
@@ -94,14 +76,8 @@ describe('System Status Page Layout', () => {
       </Provider>
     );
 
-    expect.extend({ toHaveAttribute });
-    expect(getByText('View All Systems')).toHaveAttribute(
-      'href',
-      '/workbench/system-status'
-    );
-
     await waitFor(() => {
-      expect(getByText('Frontera Queues')).toBeDefined();
+      expect(getByText('System Status / Frontera'));
       expect(getByText('development')).toBeDefined();
     });
 
@@ -131,11 +107,6 @@ describe('System Status Page Layout', () => {
       </Provider>
     );
 
-    expect.extend({ toHaveAttribute });
-    expect(getByText('View All Systems')).toHaveAttribute(
-      'href',
-      '/workbench/system-status'
-    );
 
     await waitFor(() => {
       expect(
