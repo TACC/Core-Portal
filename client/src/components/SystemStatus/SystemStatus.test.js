@@ -52,7 +52,6 @@ const queues = [
 ];
 
 describe('System Status Page Layout', () => {
-
   it('renders queue information', async () => {
     const store = mockStore({
       systemMonitor: { list, loading: false, error: false },
@@ -106,7 +105,6 @@ describe('System Status Page Layout', () => {
         </MemoryRouter>
       </Provider>
     );
-
 
     await waitFor(() => {
       expect(
