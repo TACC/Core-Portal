@@ -43,7 +43,7 @@ export const SystemStatusQueueTable = ({ system }) => {
       },
       {
         accessor: 'free',
-        Header: 'Free Nodes',
+        Header: 'Idle Nodes',
       },
       {
         accessor: ({ running }) => (running ? running : ' 0 '),
@@ -72,7 +72,9 @@ export const SystemStatusQueueTable = ({ system }) => {
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th key={column.id}>{column.render('Header')}</th>
+              <th className={styles['header']} key={column.id}>
+                {column.render('Header')}
+              </th>
             ))}
           </tr>
         ))}

@@ -5,6 +5,23 @@
 
   /* As a flex child */
   flex-grow: 1;
+  height: 85%;
+  width: 100% !important;
+}
+
+.sysmon-content {
+  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+
+  /* As a flex child */
+  flex-grow: 1;
+  height: 15%;
+  width: 100% !important;
+}
+
+.section {
+  width: 50% !important;
 }
 
 /* Error message */

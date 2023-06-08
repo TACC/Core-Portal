@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch, Link, useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
@@ -13,13 +13,6 @@ import styles from './SystemStatus.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.SYSTEM_STATUS}`;
 
-const HeaderActions = () => {
-  return (
-    <Link className="btn btn-primary" to={root}>
-      View All Systems
-    </Link>
-  );
-};
 const SystemStatusSidebar = ({ systemList }) => {
   var sidebarItems = [];
 
@@ -54,33 +47,48 @@ const Layout = ({ hostname }) => {
       </Section>
     );
   }
-  if (loading) {
-    return <LoadingSpinner />;
-  } else {
-    return (
-      <SectionTableWrapper
-        className={styles['content']}
-        header={`${selectedSystem ? selectedSystem.display_name : ''} Queues`}
-        headerClassName={styles['header']}
-        headerActions={<HeaderActions />}
-        contentShouldScroll
-      >
-        <SystemStatusQueueTable system={selectedSystem} />
-      </SectionTableWrapper>
-    );
-  }
+
+  return (
+    <>
+      <Section
+        className={styles['section']}
+        contentLayoutName="oneColumn"
+        content={
+          <>
+            <SectionTableWrapper
+              className={styles['sysmon-content']}
+              contentShouldScroll
+            >
+              <Sysmon system={selectedSystem?.hostname}></Sysmon>
+            </SectionTableWrapper>
+
+            {loading ? (
+              <LoadingSpinner />
+            ) : (
+              <SectionTableWrapper
+                className={styles['content']}
+                contentShouldScroll
+              >
+                <SystemStatusQueueTable system={selectedSystem} />
+              </SectionTableWrapper>
+            )}
+          </>
+        }
+      />
+    </>
+  );
 };
 
 const DefaultSystemRedirect = () => {
-  return (
-    <SectionTableWrapper
-      className={styles['content']}
-      header="System Monitor"
-      headerClassName={styles['header']}
-    >
-      <Sysmon className={styles['sys-mon']}></Sysmon>
-    </SectionTableWrapper>
-  );
+  const systemList = useSelector((state) => state.systemMonitor.list);
+
+  const history = useHistory();
+  useEffect(() => {
+    if (systemList.length === 0) return;
+    const defaultSystem = systemList[0];
+    history.push(`/workbench/system-status/${defaultSystem.hostname}`);
+  }, [systemList]);
+  return <></>;
 };
 
 const Routes = () => {
@@ -110,11 +118,18 @@ const SystemStatus = () => {
     }
   }, [dispatch]);
 
+  const location = useLocation();
+
+  const hostname = location.pathname.split('/')[3];
+
+  const selectedSystem = systemList.find((sys) => sys.hostname === hostname);
+
   return (
     <Section
       bodyClassName="has-loaded-system-status"
       messageComponentName="SYSTEM STATUS"
-      header="System Status"
+      header={`System Status / ${selectedSystem?.display_name}`}
+      contentLayoutName="hasSidebar"
       content={
         <>
           <SystemStatusSidebar systemList={systemList}></SystemStatusSidebar>
