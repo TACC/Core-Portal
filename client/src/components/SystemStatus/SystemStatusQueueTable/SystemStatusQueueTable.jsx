@@ -94,7 +94,7 @@ export const SystemStatusQueueTable = ({ system }) => {
         ) : (
           <tr>
             <td colSpan="99">
-              <Section className={styles['no-results-message']}>
+              <Section className={styles['error']}>
                 <SectionMessage type="info">
                   Unable to gather system queue information
                 </SectionMessage>
