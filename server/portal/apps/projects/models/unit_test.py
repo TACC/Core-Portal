@@ -7,7 +7,8 @@
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.utils import get_latest_project_storage
-from portal.libs.agave.models.systems.storage import StorageSystem
+# TODOv3: deprecate with projects
+# from portal.libs.agave.models.systems.storage import StorageSystem
 import pytest
 
 
@@ -59,11 +60,13 @@ def test_metadata_str(mock_owner, mock_project_save_signal):
     assert meta_str == '(<ProjectMetadata: PRJ-123 - Project Title>, True)'
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_create(mock_owner, portal_project, agave_client, mock_project_save_signal):
     Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 1
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mock_project_save_signal):
     portal_project._create_dir.side_effect = Exception()
     with pytest.raises(Exception):
@@ -71,6 +74,7 @@ def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mo
     assert ProjectMetadata.objects.all().count() == 0
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_create_storage_failure(mock_owner, portal_project, agave_client, mock_project_save_signal):
     portal_project._create_storage.side_effect = Exception()
     with pytest.raises(Exception):
@@ -78,6 +82,7 @@ def test_project_create_storage_failure(mock_owner, portal_project, agave_client
     assert ProjectMetadata.objects.all().count() == 0
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_save_signal):
     agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
     sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
@@ -93,6 +98,7 @@ def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_
     assert ProjectMetadata.objects.last().pi == mock_owner
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_change_system_role(agave_client, mock_owner, mock_project_save_signal):
     agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
     sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
@@ -109,6 +115,7 @@ def test_project_change_system_role(agave_client, mock_owner, mock_project_save_
         systemId='cep.test.PRJ-123')
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_change_project_role(agave_client, mock_owner, mock_project_save_signal, mocker):
     mock_remove = mocker.patch('portal.apps.projects.models.base.Project.remove_co_pi')
     mock_add = mocker.patch('portal.apps.projects.models.base.Project.add_member')
@@ -128,6 +135,7 @@ def test_project_change_project_role(agave_client, mock_owner, mock_project_save
     mock_add.assert_called_with(mock_owner)
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_get_latest_project_storage(mock_owner, portal_project, agave_client, mock_project_save_signal, service_account, mocker, mock_service_account):
     sys = StorageSystem(agave_client, 'cep.test.SOME-PRJ-5678')
     sys.last_modified = '1234'

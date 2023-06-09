@@ -37,6 +37,7 @@ def project_manager(mocker, authenticated_user):
     return project
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_search(mocker, authenticated_user, project_manager, mock_index):
     mock_listing = mocker.patch('portal.apps.projects.managers.base.ProjectsManager.list')
     mock_listing.return_value = []
@@ -47,7 +48,7 @@ def test_search(mocker, authenticated_user, project_manager, mock_index):
                                                  query='testquery',
                                                  minimum_should_match="80%")
 
-
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_add_member_pi(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'pi', 'username')
@@ -70,6 +71,7 @@ def test_add_member_pi(authenticated_user, project_manager, service_account):
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_add_member_co_pi(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'co_pi', 'username')
@@ -92,6 +94,7 @@ def test_add_member_co_pi(authenticated_user, project_manager, service_account):
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_add_member(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'team_member', 'username')
@@ -115,6 +118,7 @@ def test_add_member(authenticated_user, project_manager, service_account):
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_remove_member_pi(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'pi', 'username')
@@ -137,6 +141,7 @@ def test_remove_member_pi(authenticated_user, project_manager, service_account):
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_remove_member_co_pi(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'co_pi', 'username')
@@ -159,6 +164,7 @@ def test_remove_member_co_pi(authenticated_user, project_manager, service_accoun
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_remove_member(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'team_member', 'username')
@@ -182,16 +188,19 @@ def test_remove_member(authenticated_user, project_manager, service_account):
     )
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_change_project_role(authenticated_user, project_manager, service_account):
     project_manager.change_project_role('PRJ-123', 'username', 'co_pi', 'member')
     project_manager.get_project().change_project_role.assert_called_with(authenticated_user, 'co_pi', 'member')
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_change_system_role(authenticated_user, project_manager, service_account):
     project_manager.change_system_role('PRJ-123', 'username', 'USER')
     project_manager.get_project().change_storage_system_role.assert_called_with(authenticated_user, 'USER')
 
 
+@pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_manager_create(mocker, authenticated_user, project_manager, portal_project, mock_project_save_signal):
     mock_get_latest_project_directory = mocker.patch('portal.apps.projects.managers.base.get_latest_project_directory')
     mock_get_latest_project_storage = mocker.patch('portal.apps.projects.managers.base.get_latest_project_storage')

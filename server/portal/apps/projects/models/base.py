@@ -19,8 +19,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
+# TODOv3: deprecate with projects
+# from portal.libs.agave.models.systems.storage import StorageSystem
+# from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.projects import utils as ProjectsUtils
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.exceptions import NotAuthorizedError
@@ -578,7 +579,7 @@ class ProjectId(models.Model):
         return str(self.value)
 
 
-class ProjectSystemSerializer(BaseAgaveSystemSerializer):
+class ProjectSystemSerializer():
     def default(self, obj):
         agave_result = super(ProjectSystemSerializer, self).default(obj)
         try:

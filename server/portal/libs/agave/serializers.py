@@ -8,46 +8,10 @@ import json
 import datetime
 import six
 from tapipy.tapis import TapisResult
-from .models.base import BaseAgaveResource
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
-
-
-class BaseAgaveSystemSerializer(json.JSONEncoder):
-    """Class to serialize an Agave System object"""
-    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
-        if (isinstance(obj, BaseAgaveResource) or
-                hasattr(obj, 'to_dict')):
-            _wrapped = obj.to_dict()
-            if isinstance(_wrapped, list):
-                return _wrapped
-
-            for key, val in six.iteritems(_wrapped):
-                if isinstance(val, datetime.datetime):
-                    _wrapped[key] = val.isoformat()
-            return _wrapped
-
-        return json.JSONEncoder(self, obj)
-
-
-class BaseAgaveMetaSerializer(json.JSONEncoder):
-    """Class to serialize an Agave System object"""
-    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
-        if (isinstance(obj, BaseAgaveResource) or
-                hasattr(obj, 'to_dict')):
-            _wrapped = obj.to_dict()
-            if isinstance(_wrapped, list):
-                return _wrapped
-
-            for key, val in six.iteritems(_wrapped):
-                if isinstance(val, datetime.datetime):
-                    _wrapped[key] = val.isoformat()
-            return _wrapped
-
-        return json.JSONEncoder(self, obj)
-
 
 class BaseTapisResultSerializer(json.JSONEncoder):
     """Class to serialize a Tapis response object"""

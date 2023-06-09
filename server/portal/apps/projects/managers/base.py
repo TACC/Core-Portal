@@ -7,7 +7,8 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.systems.storage import StorageSystem
+# TODOv3: deprecate with projects
+# from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.elasticsearch.docs.base import IndexedProject
 from portal.apps.projects.models import Project, ProjectId, ProjectSystemSerializer
 from portal.apps.projects.serializers import MetadataJSONSerializer

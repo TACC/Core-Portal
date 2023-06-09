@@ -8,10 +8,6 @@ def service_account(mocker):
     yield mocker.patch('portal.apps.projects.models.base.service_account')
 
 
-@pytest.fixture()
-def mock_storage_system(mocker):
-    yield mocker.patch('portal.apps.projects.models.base.StorageSystem')
-
 
 @pytest.fixture()
 @pytest.mark.django_db
