@@ -141,10 +141,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
-    {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
     },
@@ -167,10 +163,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 """
 
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
