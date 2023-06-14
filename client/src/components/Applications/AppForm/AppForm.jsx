@@ -257,9 +257,9 @@ export const AppSchemaForm = ({ app }) => {
     archiveOnAppError: true,
     appId: app.definition.id,
     appVersion: app.definition.version,
-    parameterSet: {},
     execSystemId: app.definition.jobAttributes.execSystemId,
   };
+
   let missingAllocation = false;
   if (app.definition.jobType === 'BATCH') {
     initialValues.execSystemLogicalQueue = (
@@ -400,7 +400,16 @@ export const AppSchemaForm = ({ app }) => {
               (q) => q.name === values.execSystemLogicalQueue
             );
             const schema = Yup.object({
-              appArgs: Yup.object({ ...appFields.schema.appArgs }),
+              parameterSet: Yup.object({
+                ...Object.assign(
+                  {},
+                  ...Object.entries(appFields.schema.parameterSet).map(
+                    ([k, v]) => ({
+                      [k]: Yup.object({ ...v }),
+                    })
+                  )
+                ),
+              }),
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
@@ -433,21 +442,23 @@ export const AppSchemaForm = ({ app }) => {
             })
             .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
 
-          job.parameterSet.appArgs = Object.entries(job.appArgs)
-            .map(([k, v]) => {
-              return { name: k, arg: v };
-            })
-            .filter(
-              (appArg) =>
-                !(
-                  appArg.arg === '' ||
-                  appArg.arg === null ||
-                  appArg.arg === undefined
-                )
-            ); // filter out any empty values
-          delete job.appArgs;
-
-          // TODOv3: handle envVariables https://jira.tacc.utexas.edu/browse/WP-83
+          job.parameterSet = Object.assign(
+            {},
+            ...Object.entries(job.parameterSet).map(
+              ([parameterSet, parameterValue]) => {
+                return {
+                  [parameterSet]: Object.entries(parameterValue)
+                    .map(([k, v]) => {
+                      if (!v) return;
+                      return parameterSet === 'envVariables'
+                        ? { key: k, value: v }
+                        : { name: k, arg: v };
+                    })
+                    .filter((v) => v), // filter out any empty values
+                };
+              }
+            )
+          );
 
           // Add allocation scheduler option
           if (job.allocation) {
@@ -503,8 +514,7 @@ export const AppSchemaForm = ({ app }) => {
             <Form>
               <AdjustValuesWhenQueueChanges app={app} />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys({ ...appFields.fileInputs, ...appFields.appArgs })
-                  .length > 0 && (
+                {Object.keys(appFields.fileInputs).length > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Inputs</span>
@@ -524,35 +534,47 @@ export const AppSchemaForm = ({ app }) => {
                         );
                       }
                     )}
-                    {Object.entries(appFields.appArgs).map(([name, field]) => {
-                      return (
-                        <FormField
-                          {...field}
-                          name={`appArgs.${name}`}
-                          key={`appArgs.${name}`}
-                        >
-                          {field.options
-                            ? field.options.map((item) => {
-                                let val = item;
-                                if (val instanceof String) {
-                                  const tmp = {};
-                                  tmp[val] = val;
-                                  val = tmp;
-                                }
-                                return Object.entries(val).map(
-                                  ([key, value]) => (
-                                    <option key={key} value={key}>
-                                      {value}
-                                    </option>
-                                  )
-                                );
-                              })
-                            : null}
-                        </FormField>
-                      );
-                    })}
-                    {/* TODOv3: handle envVariables (parameterSet.envVariables) https://jira.tacc.utexas.edu/browse/WP-83 */}
                   </div>
+                )}
+                {Object.entries(appFields.parameterSet).map(
+                  ([parameterSet, parameterValue]) => {
+                    return (
+                      Object.keys(parameterValue).length > 0 && (
+                        <div className="appSchema-section" key={parameterSet}>
+                          <div className="appSchema-header">
+                            <span>{parameterSet}</span>
+                          </div>
+                          {Object.entries(parameterValue).map(
+                            ([name, field]) => (
+                              <FormField
+                                {...field}
+                                name={`parameterSet.${parameterSet}.${name}`}
+                                key={`parameterSet.${parameterSet}.${name}`}
+                              >
+                                {field.options
+                                  ? field.options.map((item) => {
+                                      let val = item;
+                                      if (val instanceof String) {
+                                        const tmp = {};
+                                        tmp[val] = val;
+                                        val = tmp;
+                                      }
+                                      return Object.entries(val).map(
+                                        ([key, value]) => (
+                                          <option key={key} value={key}>
+                                            {value}
+                                          </option>
+                                        )
+                                      );
+                                    })
+                                  : null}
+                              </FormField>
+                            )
+                          )}
+                        </div>
+                      )
+                    );
+                  }
                 )}
                 <div className="appSchema-section">
                   <div className="appSchema-header">
