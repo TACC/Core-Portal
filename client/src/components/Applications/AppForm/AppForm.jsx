@@ -536,45 +536,43 @@ export const AppSchemaForm = ({ app }) => {
                     )}
                   </div>
                 )}
-                {Object.entries(appFields.parameterSet).map(
-                  ([parameterSet, parameterValue]) => {
-                    return (
-                      Object.keys(parameterValue).length > 0 && (
-                        <div className="appSchema-section" key={parameterSet}>
-                          <div className="appSchema-header">
-                            <span>{parameterSet}</span>
-                          </div>
-                          {Object.entries(parameterValue).map(
-                            ([name, field]) => (
-                              <FormField
-                                {...field}
-                                name={`parameterSet.${parameterSet}.${name}`}
-                                key={`parameterSet.${parameterSet}.${name}`}
-                              >
-                                {field.options
-                                  ? field.options.map((item) => {
-                                      let val = item;
-                                      if (val instanceof String) {
-                                        const tmp = {};
-                                        tmp[val] = val;
-                                        val = tmp;
-                                      }
-                                      return Object.entries(val).map(
-                                        ([key, value]) => (
-                                          <option key={key} value={key}>
-                                            {value}
-                                          </option>
-                                        )
-                                      );
-                                    })
-                                  : null}
-                              </FormField>
-                            )
-                          )}
-                        </div>
-                      )
-                    );
-                  }
+                {Object.keys(appFields.parameterSet).length > 0 && (
+                  <div className="appSchema-section">
+                    <div className="appSchema-header">
+                      <span>Parameters</span>
+                    </div>
+                    {Object.entries(appFields.parameterSet).map(
+                      ([parameterSet, parameterValue]) => {
+                        return Object.entries(parameterValue).map(
+                          ([name, field]) => (
+                            <FormField
+                              {...field}
+                              name={`parameterSet.${parameterSet}.${name}`}
+                              key={`parameterSet.${parameterSet}.${name}`}
+                            >
+                              {field.options
+                                ? field.options.map((item) => {
+                                    let val = item;
+                                    if (val instanceof String) {
+                                      const tmp = {};
+                                      tmp[val] = val;
+                                      val = tmp;
+                                    }
+                                    return Object.entries(val).map(
+                                      ([key, value]) => (
+                                        <option key={key} value={key}>
+                                          {value}
+                                        </option>
+                                      )
+                                    );
+                                  })
+                                : null}
+                            </FormField>
+                          )
+                        );
+                      }
+                    )}
+                  </div>
                 )}
                 <div className="appSchema-section">
                   <div className="appSchema-header">

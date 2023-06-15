@@ -63,7 +63,7 @@ const FormField = ({
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
   const [openTapisFileModal, setOpenTapisFileModal] = useState(false);
-  const { id, name } = props;
+  const { id, name, parameterSet } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
 
@@ -74,7 +74,20 @@ const FormField = ({
       size="sm"
       style={{ display: 'flex', alignItems: 'center' }}
     >
-      {label}{' '}
+      {label}&nbsp;
+      {parameterSet && (
+        <code>
+          (
+          <a
+            href={`https://tapis.readthedocs.io/en/latest/technical/jobs.html#${parameterSet.toLowerCase()}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {parameterSet}
+          </a>
+          )
+        </code>
+      )}
       {required ? (
         <Badge color="danger" style={{ marginLeft: '10px' }}>
           Required
