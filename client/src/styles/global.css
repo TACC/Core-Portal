@@ -34,6 +34,7 @@
 @import url('./trumps/icon.css');
 @import url('./trumps/table.css');
 
-code > a, a:hover {
-    color: var(--global-color-accent--normal);
+code > a,
+a:hover {
+  color: var(--global-color-accent--normal);
 }
