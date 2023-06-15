@@ -8,7 +8,7 @@
 @import url('./settings/space.css');
 
 /* TOOLS */
-@import './tools/mixins.scss';
+/* … */
 
 /* GENERIC */
 @import url('./generics/roots.css');
