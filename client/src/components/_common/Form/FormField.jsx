@@ -44,10 +44,10 @@ FormFieldWrapper.defaultProps = {
  * A standard form field that supports some customization and presets.
  *
  * Customizations:
- * - providing an `<InputGroupAddon>` (can not use with "Agave File Selector")
+ * - providing an `<InputGroupAddon>` (can not use with "Tapis File Selector")
  *
  * Presets:
- * - Agave File Selector (requires `agaveFile` and `SelectModal`)
+ * - Tapis File Selector (requires `tapisFile` and `SelectModal`)
  */
 const FormField = ({
   addon,
@@ -55,14 +55,14 @@ const FormField = ({
   label,
   description,
   required,
-  agaveFile,
+  tapisFile,
   SelectModal,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
-  const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
+  const [openTapisFileModal, setOpenTapisFileModal] = useState(false);
   const { id, name } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
@@ -94,13 +94,13 @@ const FormField = ({
   );
 
   // Allowing ineffectual prop combinations would lead to confusion
-  if (addon && agaveFile) {
+  if (addon && tapisFile) {
     throw new Error(
-      'You must not pass `addon` and `agaveFile`, because `agaveFile` triggers its own field add-on'
+      'You must not pass `addon` and `tapisFile`, because `tapisFile` triggers its own field add-on'
     );
   }
-  if ((!agaveFile && SelectModal) || (agaveFile && !SelectModal)) {
-    throw new Error('An `agaveFile` and a `SelectModal` must both be passed');
+  if ((!tapisFile && SelectModal) || (tapisFile && !SelectModal)) {
+    throw new Error('A `tapisFile` and a `SelectModal` must both be passed');
   }
 
   return (
@@ -108,12 +108,12 @@ const FormField = ({
       {label && hasAddon ? <FieldLabel /> : null}
       <FormFieldWrapper type={wrapperType}>
         {label && !hasAddon ? <FieldLabel /> : null}
-        {agaveFile ? (
+        {tapisFile ? (
           <>
             <SelectModal
-              isOpen={openAgaveFileModal}
+              isOpen={openTapisFileModal}
               toggle={() => {
-                setOpenAgaveFileModal((prevState) => !prevState);
+                setOpenTapisFileModal((prevState) => !prevState);
               }}
               onSelect={(system, path) => {
                 helpers.setValue(`tapis://${system}/${path}`);
@@ -124,7 +124,7 @@ const FormField = ({
               <InputGroupAddon addonType="prepend">
                 <Button
                   type="secondary"
-                  onClick={() => setOpenAgaveFileModal(true)}
+                  onClick={() => setOpenTapisFileModal(true)}
                 >
                   Select
                 </Button>
@@ -151,7 +151,7 @@ FormField.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   required: PropTypes.bool,
-  agaveFile: PropTypes.bool,
+  tapisFile: PropTypes.bool,
   SelectModal: PropTypes.func,
   /** An [`<InputGroupAddon>`](https://reactstrap.github.io/components/input-group/) to add */
   addon: PropTypes.node,
@@ -164,7 +164,7 @@ FormField.defaultProps = {
   label: undefined,
   description: undefined,
   required: false,
-  agaveFile: undefined,
+  tapisFile: undefined,
   SelectModal: undefined,
   addon: undefined,
   addonType: undefined,

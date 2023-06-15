@@ -526,7 +526,7 @@ export const AppSchemaForm = ({ app }) => {
                           <FormField
                             {...field}
                             name={`fileInputs.${name}`}
-                            agaveFile
+                            tapisFile
                             SelectModal={DataFilesSelectModal}
                             placeholder="Browse Data Files"
                             key={`fileInputs.${name}`}
