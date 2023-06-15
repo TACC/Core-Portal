@@ -43,6 +43,7 @@ const FormSchema = (app) => {
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',
+          parameterSet: parameterSet,
         };
 
         if (param.notes?.enum_values) {
