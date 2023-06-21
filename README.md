@@ -38,7 +38,8 @@ NOTE: This may require a computer restart to take effect.
 2. With Default Keychains > login selected, choose File > Import Items... from the menu.
 3. Navigate to `./server/conf/nginx/certificates`
 4. Select `ca.pem`
-5. Search for CEP and double click on the certificate
+5. Under the "All" or "Certificates" tab,\
+    Search for CEP and double click on the certificate
 6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
 7. Close the window to save.
 
