@@ -73,8 +73,6 @@ NOTE: This may require a computer restart to take effect.
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
       - `sudo vim /etc/hosts`
 
-     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
   2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
   
      _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
