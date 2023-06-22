@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.24.0] - 2023-06-22: Bugfixes; BM preview; Custom stylesheets
+
+### Added
+- BM-45: Add preview for Brainmap files (.nii, .nii.gz) (#772)
+- Allow per-project portal stylesheets (#799)
+
+### Changed
+- FP-1986: Restrict APCD submissions access (#766)
+- Update local CA certs (#783)
+- Remove Maverick from sysmon and from sysmon fixtures (#808)
+
+### Fixed
+- FP-1952: tighter ES network settings (#752)
+- Pin cms version; update cms settings; fix es_domain (#759)
+- Remove Data Submissions from Sidebar (#761)
+- FP-1986: Restrict APCD submissions access (#766)
+- WI-39: remove MFAStep from onboarding (#811)
+
 ## [2.23.0] - 2023-01-18: Minor changes and bugfixes
 
 ### Changed
@@ -791,7 +809,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.23.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.24.0...HEAD
+[2.24.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.0
 [2.23.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.23.0
 [2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
 [2.22.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.0
