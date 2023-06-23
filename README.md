@@ -249,10 +249,16 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 
 #### Development Workflow
 We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `main`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
-- Feature branches contain major updates, bug fixes, and hot fixes with respective branch prefixes:
-    - `task/` for features and updates
-    - `bug/` for bugfixes
-    - `fix/` for hotfixes
+- "Feature branches" contain major and minor updates, bug fixes and hot fixes, and other changes with respective branch prefixes:
+    - `feat/` for features and updates
+    - `fix/` for bugfixes and hotfixes
+    - `refactor/` for large internal changes
+    - `style/` for strictly visual changes
+    - `chore/` for no-op changes
+    - `docs/` for documentation
+    - `perf/` for performance improvements
+    - `test/` for test case updates
+    - or other "types" from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 #### Testing Core Styles Changes Locally
 
