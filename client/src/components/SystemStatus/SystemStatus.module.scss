@@ -1,24 +1,25 @@
-/* To allow a container query */
+/* To override `contentLayoutName` media queries */
 /* CAVEAT: Not supported on Safari until v16 */
-.root {
-  container-type: inline-size;
-  container-name: system-section-root;
+@supports(container-type: inline-size) {
+  /* To allow a container query */
+  .root {
+    container-type: inline-size;
+    container-name: system-section-root;
 
-  /* FAQ: Only necessary because container-type: (…-)size */
-  /* https://stackoverflow.com/a/73980194/11817077 */
-  width: 100%;
-}
-/* So we control when column count changes */
-/* CAVEAT: Not supported on Safari until v16 */
-/* FAQ: The `contentLayoutName` triggers CSS that changes column count based on media query */
-@container system-section-root (width > 0px) {
+    /* FAQ: Only necessary because container-type: (…-)size */
+    /* https://stackoverflow.com/a/73980194/11817077 */
+    width: 100%;
+  }
+
+  /* So we control when column count changes */
+  /* FAQ: The `contentLayoutName` triggers CSS that changes column count based on media query */
   .layout {
     column-count: 1;
   }
-}
-@container system-section-root (width > 1000px) {
-  .layout {
-    column-count: 2;
+  @container system-section-root (width > 1000px) {
+    .layout {
+      column-count: 2;
+    }
   }
 }
 
