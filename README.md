@@ -73,8 +73,10 @@ NOTE: This may require a computer restart to take effect.
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
       - `sudo vim /etc/hosts`
 
-  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
-  
+  2. Do this step after going through the server and client code configuration steps in next section.
+
+     Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+
      _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
       1. Open the Network app utility
       2. Select network connection you’re on (wifi, ethernet, etc)
@@ -131,9 +133,9 @@ OR
     npm ci
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
-
-
+-  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
+  
+-  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][3]._
 #### Initialize the application in the `core_portal_django` container:
 
     docker exec -it core_portal_django /bin/bash
@@ -285,3 +287,4 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/
+[3]: https://vitejs.dev/
