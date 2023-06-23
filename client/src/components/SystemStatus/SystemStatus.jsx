@@ -51,17 +51,12 @@ const Layout = ({ hostname }) => {
   return (
     <>
       <Section
-        className={styles['section']}
-        contentLayoutName="oneColumn"
+        className={styles['root']}
+        contentLayoutName="twoColumn"
+        contentClassName={styles['layout']}
         content={
-          <>
-            <SectionTableWrapper
-              className={styles['sysmon-content']}
-              contentShouldScroll
-            >
-              <Sysmon system={selectedSystem?.hostname}></Sysmon>
-            </SectionTableWrapper>
-
+          <div className={styles['panel-1']}>
+            <Sysmon system={selectedSystem?.hostname} />
             {loading ? (
               <LoadingSpinner />
             ) : (
@@ -72,8 +67,9 @@ const Layout = ({ hostname }) => {
                 <SystemStatusQueueTable system={selectedSystem} />
               </SectionTableWrapper>
             )}
-          </>
+          </div>
         }
+        /* For Average Wait Times table, add a second <div> */
       />
     </>
   );
