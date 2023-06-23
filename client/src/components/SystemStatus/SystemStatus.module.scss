@@ -11,8 +11,10 @@
 /* So we control when column count changes */
 /* CAVEAT: Not supported on Safari until v16 */
 /* FAQ: The `contentLayoutName` triggers CSS that changes column count based on media query */
-.layout {
-  column-count: 1;
+@container system-section-root (width > 0px) {
+  .layout {
+    column-count: 1;
+  }
 }
 @container system-section-root (width > 1000px) {
   .layout {
