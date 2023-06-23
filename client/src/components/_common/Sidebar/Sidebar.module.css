@@ -10,8 +10,8 @@
   padding-top: 20px;
 }
 
-/* when there is a sidebar inside a section */
-:global(.c-section--has-content-layout-has-sidebar) main {
+/* when there is a sidebar directly inside a section */
+:global(.c-section--has-content-layout-has-sidebar) > main {
   padding-left: 0;
 }
 
