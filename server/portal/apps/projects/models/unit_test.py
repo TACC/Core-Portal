@@ -85,15 +85,16 @@ def test_project_create_storage_failure(mock_owner, portal_project, agave_client
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_save_signal):
     agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
-    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
-    sys.last_modified = '1234'
-    sys.description = 'PRJ-123'
-    assert ProjectMetadata.objects.all().count() == 0
-    Project(
-        agave_client,
-        'PRJ-123',
-        storage=sys
-    )
+    # TODOv3: deprecate with projects
+    # sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    # sys.last_modified = '1234'
+    # sys.description = 'PRJ-123'
+    # assert ProjectMetadata.objects.all().count() == 0
+    # Project(
+    #     agave_client,
+    #     'PRJ-123',
+    #     storage=sys
+    # )
     assert ProjectMetadata.objects.all().count() == 1
     assert ProjectMetadata.objects.last().pi == mock_owner
 
@@ -101,15 +102,16 @@ def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_change_system_role(agave_client, mock_owner, mock_project_save_signal):
     agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
-    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
-    sys.last_modified = '1234'
-    sys.description = 'PRJ-123'
-    prj = Project(
-        agave_client,
-        'PRJ-123',
-        storage=sys
-    )
-    prj.change_storage_system_role(mock_owner, 'USER')
+    # TODOv3: deprecate with projects
+    # sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    # sys.last_modified = '1234'
+    # sys.description = 'PRJ-123'
+    # prj = Project(
+    #     agave_client,
+    #     'PRJ-123',
+    #     storage=sys
+    # )
+    # prj.change_storage_system_role(mock_owner, 'USER')
     agave_client.systems.updateRole.assert_called_with(
         body={'role': 'USER', 'username': 'username'},
         systemId='cep.test.PRJ-123')
@@ -120,34 +122,36 @@ def test_project_change_project_role(agave_client, mock_owner, mock_project_save
     mock_remove = mocker.patch('portal.apps.projects.models.base.Project.remove_co_pi')
     mock_add = mocker.patch('portal.apps.projects.models.base.Project.add_member')
 
-    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
-    sys.last_modified = '1234'
-    sys.description = 'PRJ-123'
+    # TODOv3: deprecate with projects
+    # sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    # sys.last_modified = '1234'
+    # sys.description = 'PRJ-123'
 
-    prj = Project(
-        agave_client,
-        'PRJ-123',
-        storage=sys
-    )
+    # prj = Project(
+    #     agave_client,
+    #     'PRJ-123',
+    #     storage=sys
+    # )
 
-    prj.change_project_role(mock_owner, 'co_pi', 'member')
+    # prj.change_project_role(mock_owner, 'co_pi', 'member')
     mock_remove.assert_called_with(mock_owner)
     mock_add.assert_called_with(mock_owner)
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_get_latest_project_storage(mock_owner, portal_project, agave_client, mock_project_save_signal, service_account, mocker, mock_service_account):
-    sys = StorageSystem(agave_client, 'cep.test.SOME-PRJ-5678')
-    sys.last_modified = '1234'
-    sys.name = 'SOME-PRJ-5678'
+    # TODOv3: deprecate with projects
+    # sys = StorageSystem(agave_client, 'cep.test.SOME-PRJ-5678')
+    # sys.last_modified = '1234'
+    # sys.name = 'SOME-PRJ-5678'
 
-    mock_search = mocker.patch('portal.apps.projects.models.base.StorageSystem.search')
-    mock_search.return_value = [sys]
+    # mock_search = mocker.patch('portal.apps.projects.models.base.StorageSystem.search')
+    # mock_search.return_value = [sys]
 
-    Project(
-        agave_client,
-        'SOME-PRJ-5678',
-        storage=sys
-    )
+    # Project(
+    #     agave_client,
+    #     'SOME-PRJ-5678',
+    #     storage=sys
+    # )
     latest = get_latest_project_storage()
     assert latest == 5678

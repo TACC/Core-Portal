@@ -48,6 +48,7 @@ def test_search(mocker, authenticated_user, project_manager, mock_index):
                                                  query='testquery',
                                                  minimum_should_match="80%")
 
+
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_add_member_pi(authenticated_user, project_manager, service_account):
     """Test add a PI to a project."""

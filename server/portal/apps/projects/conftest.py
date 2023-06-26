@@ -8,7 +8,6 @@ def service_account(mocker):
     yield mocker.patch('portal.apps.projects.models.base.service_account')
 
 
-
 @pytest.fixture()
 @pytest.mark.django_db
 def project_model(mocker):

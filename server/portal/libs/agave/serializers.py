@@ -5,13 +5,12 @@
 """
 import logging
 import json
-import datetime
-import six
 from tapipy.tapis import TapisResult
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
+
 
 class BaseTapisResultSerializer(json.JSONEncoder):
     """Class to serialize a Tapis response object"""

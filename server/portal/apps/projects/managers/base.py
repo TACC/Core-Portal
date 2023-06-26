@@ -88,21 +88,22 @@ class ProjectsManager(object):
         })
         logger.info('Remove ACLs job id: %s', job.id)
 
-    def get_by_system_id(self, system_id):
-        """Get a single project by system id.
+    # TOODv3: deprecate with projects
+    # def get_by_system_id(self, system_id):
+    #     """Get a single project by system id.
 
-        :param str system_id: System Id.
-        """
-        sys = StorageSystem(
-            self.user.tapis_oauth.client,
-            system_id
-        )
-        prj = Project(
-            self.user.tapis_oauth.client,
-            sys.name,
-            storage=sys
-        )
-        return prj
+    #     :param str system_id: System Id.
+    #     """
+    #     sys = StorageSystem(
+    #         self.user.tapis_oauth.client,
+    #         system_id
+    #     )
+    #     prj = Project(
+    #         self.user.tapis_oauth.client,
+    #         sys.name,
+    #         storage=sys
+    #     )
+    #     return prj
 
     def get_by_project_id(self, project_id):
         """Get a single project.

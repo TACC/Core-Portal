@@ -17,6 +17,7 @@ from tapipy.tapis import TapisResult
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
+
 class TestAgaveUtils(TestCase):
     """Test Agave Serializers"""
 

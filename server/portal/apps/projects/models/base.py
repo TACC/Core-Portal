@@ -182,50 +182,52 @@ class Project(object):
 
         return meta
 
-    def _get_storage(self):
-        """Get storage system for project."""
-        storage = StorageSystem(
-            self._ac,
-            id=ProjectsUtils.project_id_to_system_id(self.project_id),
-        )
-        return storage
+    # TODOv3: deprecate with projects
+    # def _get_storage(self):
+    #     """Get storage system for project."""
+    #     storage = StorageSystem(
+    #         self._ac,
+    #         id=ProjectsUtils.project_id_to_system_id(self.project_id),
+    #     )
+    #     return storage
 
-    @staticmethod
-    def _create_storage(
-            title,
-            storage_id,
-            project_id
-    ):
-        """Create storage for project.
+    # TODOv3: deprecate with projects
+    # @staticmethod
+    # def _create_storage(
+    #         title,
+    #         storage_id,
+    #         project_id
+    # ):
+    #     """Create storage for project.
 
-        :param str title: Project title.
-        :param str storage_id: Storage ID.
-        :param str project_id: Project Id. Preferably in the form PRJ-[0-9]+.
-            This value will also be used as the name.
+    #     :param str title: Project title.
+    #     :param str storage_id: Storage ID.
+    #     :param str project_id: Project Id. Preferably in the form PRJ-[0-9]+.
+    #         This value will also be used as the name.
 
-        .. note:: This method will use the service account to create
-            the storage system.
-        """
-        storage = StorageSystem(
-            client=service_account(),
-            id=storage_id,
-            name=project_id,
-            description=title,
-            site=settings.PORTAL_NAMESPACE
-        )
-        storage.storage.port = settings.PORTAL_PROJECTS_SYSTEM_PORT
-        storage.storage.home_dir = '/'
-        storage.storage.root_dir = os.path.join(
-            settings.PORTAL_PROJECTS_ROOT_DIR,
-            project_id
-        )
-        storage.storage.protocol = 'SFTP'
-        storage.storage.host = settings.PORTAL_PROJECTS_ROOT_HOST
-        set_storage_auth(storage)
+    #     .. note:: This method will use the service account to create
+    #         the storage system.
+    #     """
+    #     storage = StorageSystem(
+    #         client=service_account(),
+    #         id=storage_id,
+    #         name=project_id,
+    #         description=title,
+    #         site=settings.PORTAL_NAMESPACE
+    #     )
+    #     storage.storage.port = settings.PORTAL_PROJECTS_SYSTEM_PORT
+    #     storage.storage.home_dir = '/'
+    #     storage.storage.root_dir = os.path.join(
+    #         settings.PORTAL_PROJECTS_ROOT_DIR,
+    #         project_id
+    #     )
+    #     storage.storage.protocol = 'SFTP'
+    #     storage.storage.host = settings.PORTAL_PROJECTS_ROOT_HOST
+    #     set_storage_auth(storage)
 
-        storage.validate()
-        storage.save()
-        return storage
+    #     storage.validate()
+    #     storage.save()
+    #     return storage
 
     @staticmethod
     def _create_metadata(title, project_id, owner=None):
@@ -297,45 +299,46 @@ class Project(object):
 
         return cls(client, project_id, metadata=meta, storage=storage)
 
-    @classmethod
-    def listing(
-            cls,
-            client,
-            offset=0,
-            limit=100
-    ):
-        """List projects for a username.
+    # TODOv3: deprecate with projects
+    # @classmethod
+    # def listing(
+    #         cls,
+    #         client,
+    #         offset=0,
+    #         limit=100
+    # ):
+    #     """List projects for a username.
 
-        .. note:: When listing projects we first list all the storage
-            systems a user has access to. This is an indirect way to use
-            Agave's permission model. Once we get the storage systems then
-            we retrieve the metadata objects from the database that
-            correspond to the project id defined in the storage system.
+    #     .. note:: When listing projects we first list all the storage
+    #         systems a user has access to. This is an indirect way to use
+    #         Agave's permission model. Once we get the storage systems then
+    #         we retrieve the metadata objects from the database that
+    #         correspond to the project id defined in the storage system.
 
-        :param client: Agave client.
-        :param int offset: Offset.
-        :param int limit: Limit.
-        """
-        systems = StorageSystem.search(
-            client,
-            query={'id.like': '{}*'.format(cls.metadata_name),
-                   'type.eq': StorageSystem.TYPES.STORAGE},
-            offset=offset,
-            limit=limit
-        )
-        for system in systems:
-            try:
-                meta = ProjectMetadata.objects.get(project_id=system.name)
-            except ObjectDoesNotExist:
-                meta = {}
-            prj = cls(
-                client,
-                system.name,
-                metadata=meta,
-                storage=system
-            )
-            prj.storage.absolute_path = prj.absolute_path
-            yield prj
+    #     :param client: Agave client.
+    #     :param int offset: Offset.
+    #     :param int limit: Limit.
+    #     """
+    #     systems = StorageSystem.search(
+    #         client,
+    #         query={'id.like': '{}*'.format(cls.metadata_name),
+    #                'type.eq': StorageSystem.TYPES.STORAGE},
+    #         offset=offset,
+    #         limit=limit
+    #     )
+    #     for system in systems:
+    #         try:
+    #             meta = ProjectMetadata.objects.get(project_id=system.name)
+    #         except ObjectDoesNotExist:
+    #             meta = {}
+    #         prj = cls(
+    #             client,
+    #             system.name,
+    #             metadata=meta,
+    #             storage=system
+    #         )
+    #         prj.storage.absolute_path = prj.absolute_path
+    #         yield prj
 
     def _can_edit_member(self, username):
         """Check if user can edit team members.
