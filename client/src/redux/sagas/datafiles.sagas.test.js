@@ -310,35 +310,36 @@ describe('scrollFiles', () => {
 });
 
 describe('extractFiles', () => {
-  const jobHelperExpected = JSON.stringify({
-    job: {
-      fileInputs: [
-        {
-          name: 'Input File',
-          sourceUrl: 'tapis://test.system/dir/test.zip',
-        },
-      ],
-      name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
-      archiveSystemId: 'test.system',
-      archiveSystemDir: 'dir/',
-      archiveOnAppError: false,
-      appId: 'extract',
-      appVersion: '0.0.1',
-      parameterSet: {
-        appArgs: [],
-        schedulerOptions: [
+  const jobHelperExpected = () =>
+    JSON.stringify({
+      job: {
+        fileInputs: [
           {
-            name: 'TACC Allocation',
-            description:
-              'The TACC allocation associated with this job execution',
-            include: true,
-            arg: '-A TACC-ACI',
+            name: 'Input File',
+            sourceUrl: 'tapis://test.system/dir/test.zip',
           },
         ],
+        name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
+        archiveSystemId: 'test.system',
+        archiveSystemDir: 'dir/',
+        archiveOnAppError: false,
+        appId: 'extract',
+        appVersion: '0.0.1',
+        parameterSet: {
+          appArgs: [],
+          schedulerOptions: [
+            {
+              name: 'TACC Allocation',
+              description:
+                'The TACC allocation associated with this job execution',
+              include: true,
+              arg: '-A TACC-ACI',
+            },
+          ],
+        },
+        execSystemId: 'frontera',
       },
-      execSystemId: 'frontera',
-    },
-  });
+    });
 
   const action = {
     type: 'DATA_FILES_EXTRACT',
@@ -364,8 +365,7 @@ describe('extractFiles', () => {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'extract' },
       })
-
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' },
@@ -386,8 +386,7 @@ describe('extractFiles', () => {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'extract' },
       })
-
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
@@ -427,46 +426,47 @@ describe('compressFiles', () => {
     },
   };
 
-  const jobHelperExpected = JSON.stringify({
-    job: {
-      fileInputs: [
-        {
-          sourceUrl: 'tapis://test.system/test1.txt',
-        },
-        {
-          sourceUrl: 'tapis://test.system/test2.txt',
-        },
-      ],
-      name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
-      archiveSystemId: 'test.system',
-      archiveSystemDir: '',
-      archiveOnAppError: false,
-      appId: 'compress',
-      appVersion: '0.0.1',
-      parameterSet: {
-        appArgs: [
+  const jobHelperExpected = () =>
+    JSON.stringify({
+      job: {
+        fileInputs: [
           {
-            name: 'Archive File Name',
-            arg: 'test',
+            sourceUrl: 'tapis://test.system/test1.txt',
           },
           {
-            name: 'Compression Type',
-            arg: 'zip',
+            sourceUrl: 'tapis://test.system/test2.txt',
           },
         ],
-        schedulerOptions: [
-          {
-            name: 'TACC Allocation',
-            description:
-              'The TACC allocation associated with this job execution',
-            include: true,
-            arg: '-A TACC-ACI',
-          },
-        ],
+        name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
+        archiveSystemId: 'test.system',
+        archiveSystemDir: '',
+        archiveOnAppError: false,
+        appId: 'compress',
+        appVersion: '0.0.1',
+        parameterSet: {
+          appArgs: [
+            {
+              name: 'Archive File Name',
+              arg: 'test',
+            },
+            {
+              name: 'Compression Type',
+              arg: 'zip',
+            },
+          ],
+          schedulerOptions: [
+            {
+              name: 'TACC Allocation',
+              description:
+                'The TACC allocation associated with this job execution',
+              include: true,
+              arg: '-A TACC-ACI',
+            },
+          ],
+        },
+        execSystemId: 'frontera',
       },
-      execSystemId: 'frontera',
-    },
-  });
+    });
 
   it('runs compressFiles saga with success', () => {
     return expectSaga(compressFiles, action)
@@ -481,7 +481,7 @@ describe('compressFiles', () => {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
@@ -502,7 +502,7 @@ describe('compressFiles', () => {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
