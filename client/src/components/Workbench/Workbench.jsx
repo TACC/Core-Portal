@@ -39,7 +39,7 @@ function Workbench() {
     hideManageAccount,
   } = useSelector(
     (state) => ({
-      loading: state.workbench.loading | loadingSystems,
+      loading: state.workbench.loading || loadingSystems,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
