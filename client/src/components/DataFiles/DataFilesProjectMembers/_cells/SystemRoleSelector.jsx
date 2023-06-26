@@ -36,8 +36,14 @@ const setSystemRole = async (projectId, username, role) => {
 };
 
 export const useSystemRole = (projectId, username) => {
-  const query = useQuery(['system-role', projectId, username], () =>
-    getSystemRole(projectId, username)
+  const query = useQuery(
+    ['system-role', projectId, username],
+    () => getSystemRole(projectId, username),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
   );
   const mutation = useMutation(async (role) => {
     await setSystemRole(projectId, username, role);
@@ -56,6 +62,15 @@ const SystemRoleSelector = ({ projectId, username }) => {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
+
+  const readOnlyTeam = useSelector((state) => {
+    const projectSystem = state.systems.storage.configuration.find(
+      (s) => s.scheme === 'projects'
+    );
+
+    return projectSystem?.readOnly;
+  });
+
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
     authenticatedUser
@@ -78,7 +93,8 @@ const SystemRoleSelector = ({ projectId, username }) => {
   if (
     data.role === 'OWNER' ||
     username === authenticatedUser ||
-    !['OWNER', 'ADMIN'].includes(currentUserRole)
+    !['OWNER', 'ADMIN'].includes(currentUserRole) ||
+    readOnlyTeam
   )
     return <span>{roleMap[data.role]}</span>;
   return (
@@ -88,9 +104,6 @@ const SystemRoleSelector = ({ projectId, username }) => {
         onChange={(e) => setSelectedRole(e.target.value)}
         className={styles['project-role-selector']}
       >
-        {username !== authenticatedUser && (
-          <option value="ADMIN">Administrator</option>
-        )}
         <option value="USER">User (read/write)</option>
         <option value="GUEST">Guest (read only)</option>
       </DropdownSelector>

@@ -22,7 +22,7 @@ describe('DataFilesBreadcrumbs', () => {
         api="tapis"
         scheme="private"
         system="frontera.home.username"
-        path="/path/to/the/files"
+        path="/home/username/path/to/the/files"
         section="FilesListing"
       />,
       store,
@@ -34,11 +34,36 @@ describe('DataFilesBreadcrumbs', () => {
       getByText(/My Data \(Frontera\)/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
+    ).toEqual(
+      '/workbench/data/tapis/private/frontera.home.username/home/username/'
+    );
     expect(getByText(/the/).closest('a').getAttribute('href')).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/path/to/the/'
+      '/workbench/data/tapis/private/frontera.home.username/home/username/path/to/the/'
     );
     expect(getByText(/files/).closest('a')).toBeNull();
+  });
+
+  it('renders correct breadcrumbs when in root of system', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const history = createMemoryHistory();
+    const { getByText, debug } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+
+    expect(getByText('Frontera')).toBeDefined();
+    expect(getByText('Frontera').closest('a').getAttribute('href')).toEqual(
+      '/workbench/data/tapis/private/frontera.home.username/'
+    );
   });
 
   it('render breadcrumbs with initial empty systems', () => {

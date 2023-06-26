@@ -11,6 +11,7 @@ const jobSubmitFixture = {
   archiveOnAppError: true,
   appId: 'frontera-hpc-jupyter-1.0u12',
   allocation: 'TACC-ACI',
+  licenseType: 'Jupyter',
 };
 
 export default jobSubmitFixture;

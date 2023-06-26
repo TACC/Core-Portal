@@ -5,9 +5,8 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from portal.views.base import BaseApiView
-from portal.libs.agave.utils import service_account
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.workspace_operations.shared_workspace_operations import list_projects, get_workspace_role
+from portal.apps.users.utils import get_user_data
 
 import logging
 
@@ -23,14 +22,13 @@ class JupyterMountsApiView(BaseApiView):
     This API returns a list of mount definitions for JupyterHub
     """
     def getDatafilesStorageSystems(self):
-        agave = service_account()
         result = []
-        for system in (sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis'):
+        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and
+                       (sys['scheme'] == 'community' or sys['scheme'] == 'public')]:
             try:
-                sys_def = agave.systems.get(systemId=system['system'])
                 result.append(
                     {
-                        "path": sys_def["storage"]["rootDir"],
+                        "path": system.get("homeDir", "/"),
                         "mountPath": "/{namespace}/{name}".format(
                             namespace=settings.PORTAL_NAMESPACE,
                             name=system['name']
@@ -44,15 +42,15 @@ class JupyterMountsApiView(BaseApiView):
 
     def getLocalStorageSystems(self, user):
         result = []
-        for system in settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys():
+        tasdir = get_user_data(user.username)['homeDirectory']
+        for system in [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis' and sys['scheme'] == 'private']:
             try:
-                sys_def = UserSystemsManager(user, system_name=system)
                 result.append(
                     {
-                        "path": sys_def.get_sys_tas_user_dir(),
+                        "path": system['homeDir'].format(tasdir=tasdir, username=user.username),
                         "mountPath": "/{namespace}/{name}".format(
                             namespace=settings.PORTAL_NAMESPACE,
-                            name=sys_def.get_name()
+                            name=system['name']
                         ),
                         "pems": "rw"
                     }
@@ -62,23 +60,18 @@ class JupyterMountsApiView(BaseApiView):
         return result
 
     def getProjectSystems(self, user):
-        mgr = ProjectsManager(user)
-        projects = mgr.list()
+        projects = list_projects(user.tapis_oauth.client)
         result = []
         names = []
         for project in projects:
-            name = project.description
+            name = project["title"]
             # Resolve project name collisions
             if any([existing == name for existing in names]):
-                name = "{name} ({id})".format(name=project.description, id=project.storage.id)
+                name = "{name} ({id})".format(name=project["title"], id=project["id"])
             names.append(name)
+            role = get_workspace_role(user.tapis_oauth.client, project["name"], user.username)
 
-            # Find a matching role, or return None
-            role = next(
-                (role.role for role in project.roles.roles if role.username == user.username),
-                None
-            )
-            if role == "OWNER" or role == "ADMIN":
+            if role == "OWNER" or role == "USER":
                 permissions = "rw"
             elif role == "GUEST":
                 permissions = "ro"
@@ -87,7 +80,7 @@ class JupyterMountsApiView(BaseApiView):
 
             result.append(
                 {
-                    "path": project.absolute_path,
+                    "path": project["path"],
                     "mountPath": "/{namespace}/My Projects/{name}".format(
                         namespace=settings.PORTAL_NAMESPACE,
                         name=name),

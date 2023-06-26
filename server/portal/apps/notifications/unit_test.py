@@ -16,9 +16,13 @@ FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), './json/pending.json')
 FILEDIR_SUBMITTING = os.path.join(os.path.dirname(__file__), './json/submitting.json')
 FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), './json/pending2.json')
 
-webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
-webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2)))
-webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING)))
+with open(FILEDIR_PENDING) as f:
+    webhook_body_pending = json.dumps(json.load(f))
+with open(FILEDIR_PENDING2) as f:
+    webhook_body_pending2 = json.dumps(json.load(f))
+with open(FILEDIR_SUBMITTING) as f:
+    webhook_body_submitting = json.dumps(json.load(f))
+
 
 wh_url = reverse('webhooks:jobs_wh_handler')
 

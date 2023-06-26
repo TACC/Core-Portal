@@ -3,8 +3,12 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   jobs as jobsReducer,
+  // TODOv3: dropV2Jobs
+  jobsv2 as jobsV2Reducer,
   jobDetail as jobDetailReducer,
   initialState as jobsInitalState,
+  // TODOv3: dropV2Jobs
+  initialStateV2 as jobsV2InitalState,
 } from '../reducers/jobs.reducers';
 
 import {
@@ -14,9 +18,15 @@ import {
   watchJobDetails,
   submitJob,
   getJobs,
+  // TODOv3: dropV2Jobs
+  getV2Jobs,
   fetchJobs,
+  // TODOv3: dropV2Jobs
+  fetchV2Jobs,
   selectorNotificationsListNotifs,
   selectorJobsReachedEnd,
+  // TODOv3: dropV2Jobs
+  selectorJobsV2ReachedEnd,
   watchJobs,
   LIMIT,
 } from './jobs.sagas';
@@ -26,13 +36,16 @@ import jobDetailFixture from './fixtures/jobdetail.fixture';
 import appDetailFixture from './fixtures/appdetail.fixture';
 import jobSubmitFixture from './fixtures/jobSubmit.fixture';
 import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
-import jobsListFixture from './fixtures/jobsList.fixture';
+import {
+  jobsListFixture,
+  // TODOv3: dropV2Jobs
+  jobsV2ListFixture,
+} from './fixtures/jobsList.fixture';
 import { notificationsListFixture } from './fixtures/notificationsList.fixture';
 
 jest.mock('cross-fetch');
 
 const initialJobDetail = {
-  jobId: null,
   app: null,
   job: null,
   display: null,
@@ -43,18 +56,20 @@ const initialJobDetail = {
 
 describe('getJobDetails Saga', () => {
   it("should fetch a job's detail and transform it to a displayable state", () =>
-    expectSaga(getJobDetails, { payload: { jobId: 'job_id' } })
+    expectSaga(getJobDetails, {
+      payload: { jobUuid: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007' },
+    })
       .withReducer(jobDetailReducer)
       .provide([
         [matchers.call.fn(fetchJobDetailsUtil), jobDetailFixture],
         [matchers.call.fn(fetchAppDefinitionUtil), appDetailFixture],
       ])
-      .put({ type: 'JOB_DETAILS_FETCH_STARTED', payload: 'job_id' })
-      .call(fetchJobDetailsUtil, 'job_id')
-      .call(
-        fetchAppDefinitionUtil,
-        'prtl.clone.username.FORK.compress-0.1u3-3.0'
-      )
+      .put({
+        type: 'JOB_DETAILS_FETCH_STARTED',
+        payload: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+      })
+      .call(fetchJobDetailsUtil, 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007')
+      .call(fetchAppDefinitionUtil, 'hello-world', '0.0.1')
       .put({
         type: 'JOB_DETAILS_FETCH_SUCCESS',
         payload: {
@@ -71,7 +86,7 @@ describe('getJobDetails Saga', () => {
 
       .hasFinalState({
         ...initialJobDetail,
-        jobId: 'job_id',
+        jobUuid: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
         loading: false,
         loadingError: false,
         loadingErrorMessage: '',
@@ -90,6 +105,9 @@ test('Effect Creators should dispatch sagas', () => {
   testSaga(watchJobs)
     .next()
     .takeLatest('GET_JOBS', getJobs)
+    .next()
+    // TODOv3: dropV2Jobs
+    .takeLatest('GET_V2_JOBS', getV2Jobs)
     .next()
     .takeLeading('SUBMIT_JOB', submitJob)
     .next()
@@ -177,7 +195,7 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({
         type: 'JOBS_LIST',
         payload: {
@@ -214,11 +232,64 @@ describe('getJobs Saga', () => {
       ])
       .put({ type: 'JOBS_LIST_INIT' })
       .put({ type: 'JOBS_LIST_START' })
-      .call(fetchJobs, 0, LIMIT)
+      .call(fetchJobs, 0, LIMIT, '')
       .put({ type: 'JOBS_LIST_ERROR', payload: 'error' })
       .put({ type: 'JOBS_LIST_FINISH' })
       .hasFinalState({
         ...jobsInitalState,
+        error: 'error',
+      })
+      .run());
+});
+
+// TODOv3: dropV2Jobs
+describe('getV2Jobs Saga', () => {
+  it('with offset = 0, it should fetch v2 jobs list and set jobs state appropriately', () =>
+    expectSaga(getV2Jobs, { params: { offset: 0 } })
+      .withReducer(jobsV2Reducer)
+      .provide([[matchers.call.fn(fetchV2Jobs), jobsV2ListFixture]])
+      .put({ type: 'JOBS_V2_LIST_INIT' })
+      .put({ type: 'JOBS_V2_LIST_START' })
+      .call(fetchV2Jobs, 0, LIMIT)
+      .put({
+        type: 'JOBS_V2_LIST',
+        payload: {
+          list: jobsV2ListFixture,
+          reachedEnd: jobsV2ListFixture.length < LIMIT,
+        },
+      })
+      .put({ type: 'JOBS_V2_LIST_FINISH' })
+      .hasFinalState({
+        list: jobsV2ListFixture,
+        submit: { submitting: false },
+        loading: false,
+        reachedEnd: true,
+        error: null,
+      })
+      .run());
+  // TODOv3: dropV2Jobs
+  it('with offset = 51 and reachedEnd = true, it should return without updating the jobs state', () =>
+    expectSaga(getV2Jobs, { params: { offset: 51 } })
+      .withReducer(jobsV2Reducer)
+      .provide([[matchers.select.selector(selectorJobsV2ReachedEnd), true]])
+      .hasFinalState({
+        ...jobsV2InitalState,
+      })
+      .run());
+  // TODOv3: dropV2Jobs
+  it('with error from fetchV2Jobs, the saga should catch the error and set the jobs state accordingly', () =>
+    expectSaga(getV2Jobs, { params: { offset: 0 } })
+      .withReducer(jobsV2Reducer)
+      .provide([
+        [matchers.call.fn(fetchV2Jobs), throwError(new Error('test error'))],
+      ])
+      .put({ type: 'JOBS_V2_LIST_INIT' })
+      .put({ type: 'JOBS_V2_LIST_START' })
+      .call(fetchV2Jobs, 0, LIMIT)
+      .put({ type: 'JOBS_V2_LIST_ERROR', payload: 'error' })
+      .put({ type: 'JOBS_V2_LIST_FINISH' })
+      .hasFinalState({
+        ...jobsV2InitalState,
         error: 'error',
       })
       .run());

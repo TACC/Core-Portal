@@ -13,11 +13,16 @@ import {
   Expand,
   Message,
 } from '_common';
+import queryStringParser from 'query-string';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
-import { isOutputState } from 'utils/jobsUtil';
+import {
+  isOutputState,
+  getOutputPath,
+  isTerminalState,
+  getExecutionPath,
+} from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
-
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
@@ -55,42 +60,75 @@ const reduceInputParameters = (data) =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
+function JobHistoryContent({
+  jobDetails,
+  jobDisplay,
+  jobName,
+  toggle,
+  // TODOv3: dropV2Jobs
+  version,
+}) {
   const dispatch = useDispatch();
-  const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
-  const created = formatDateTime(new Date(jobDetails.created));
-  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
-  const hasFailedStatus = jobDetails.status === 'FAILED';
+
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
 
+  // TODOv3: dropV2Jobs
+  const outputLocation =
+    version === 'v3'
+      ? getOutputPath(jobDetails)
+      : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
+  const hasOutput = isOutputState(jobDetails.status);
+  const created = formatDateTime(new Date(jobDetails.created));
+  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
+  const hasFailedStatus = jobDetails.status === 'FAILED';
+  const hasEnded = isTerminalState(jobDetails.status);
+
+  const appDataObj = {
+    'App ID': jobDetails.appId,
+    'App Version': jobDetails.appVersion,
+  };
+  const lastMessageTitle = hasFailedStatus
+    ? 'Failure Report'
+    : 'Last Status Message';
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated,
+    [lastMessageTitle]: (
+      <Expand
+        detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
+        message={<pre>{jobDetails.lastMessage}</pre>}
+      />
+    ),
   };
+
+  if (version === 'v2') {
+    // TODOv3: dropV2Jobs
+    delete statusDataObj[lastMessageTitle];
+  }
+
+  if (jobDetails.remoteOutcome) {
+    statusDataObj['Remote Outcome'] = jobDetails.remoteOutcome;
+  }
+
   const inputAndParamsDataObj = {
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters),
   };
-  const configDataObj = {};
+  const configDataObj = {
+    'Execution System': jobDisplay.systemName,
+  };
   const outputDataObj = {
     'Job Name': jobName,
-    'Output Location': outputPath,
+    'Output Location': outputLocation,
   };
-
-  statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
-    <Expand
-      detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
-      message={<pre>${jobDetails.lastStatusMessage}</pre>}
-    />
-  );
 
   const resubmitJob = () => {
     dispatch({
       type: 'SUBMIT_JOB',
       payload: {
-        job_id: jobDetails.id,
+        job_uuid: jobDetails.uuid,
         action: 'resubmit',
         onSuccess: {
           type: 'GET_JOBS',
@@ -107,11 +145,22 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Queue = jobDisplay.queue;
   }
 
-  configDataObj['Max Hours'] = jobDetails.maxHours;
+  // TODOv3: dropV2Jobs
+  if (version === 'v3') {
+    configDataObj['Max Minutes'] = jobDetails.maxMinutes;
+  } else {
+    configDataObj['Max Hours'] = jobDetails.maxHours;
+  }
 
-  if ('processorsPerNode' in jobDisplay) {
+  if ('coresPerNode' in jobDisplay) {
+    configDataObj['Cores On Each Node'] = jobDisplay.coresPerNode;
+  }
+
+  // TODOv3: dropV2Jobs
+  if ('processorsPerNode' in jobDisplay && version === 'v2') {
     configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
+
   if ('nodeCount' in jobDisplay) {
     configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
@@ -119,15 +168,15 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
-  if (jobDetails.status !== 'FINISHED')
-    configDataObj['Temporary Working Directory'] = jobDetails.workPath;
-
-  const isTerminalState =
-    jobDetails.status === 'FINISHED' ||
-    jobDetails.status === 'FAILED' ||
-    jobDetails.status === 'STOPPED';
+  // TODOv3: dropV2Jobs
+  if (version === 'v3') {
+    configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
+  } else {
+    configDataObj['Execution Directory'] = jobDetails.workPath;
+  }
 
   const data = {
+    Application: <DescriptionList data={appDataObj} />,
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
     Configuration: <DescriptionList data={configDataObj} />,
@@ -139,18 +188,27 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
       <div className={`${styles['left-panel']} ${styles['panel-content']}`}>
         <DescriptionList
           density="compact"
-          data={{
-            Output: !hideDataFiles && (
-              <DataFilesLink
-                path={outputPath}
-                disabled={!isOutputState(jobDetails.status)}
-              >
-                View in Data Files
-              </DataFilesLink>
-            ),
-          }}
+          data={
+            !hideDataFiles &&
+            version === 'v3' && {
+              Execution: (
+                <DataFilesLink
+                  path={getExecutionPath(jobDetails)}
+                  disabled={hasOutput}
+                >
+                  View in Data Files
+                </DataFilesLink>
+              ),
+              Output: (
+                <DataFilesLink path={outputLocation} disabled={!hasOutput}>
+                  View in Data Files
+                </DataFilesLink>
+              ),
+            }
+          }
         />
-        {isTerminalState && (
+        {hasEnded && version === 'v3' && (
+          // TODOv3: dropV2Jobs
           <Button
             type="primary"
             attr="submit"
@@ -176,17 +234,30 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
+  // TODOv3: dropV2Jobs
+  version: PropTypes.string.isRequired,
 };
 JobHistoryContent.defaultProps = {
   jobName: '',
+  jobDisplay: {},
 };
 
-function JobHistoryModal({ jobId }) {
-  const loading = useSelector((state) => state.jobDetail.loading);
-  const loadingError = useSelector((state) => state.jobDetail.loadingError);
-  const { job, display } = useSelector((state) => state.jobDetail);
+function JobHistoryModal({ uuid, version }) {
+  const { loading, loadingError, job, display } = useSelector((state) => {
+    if (version === 'v3') {
+      return state.jobDetail;
+    } else {
+      // TODOv3: dropV2Jobs
+      const jobv2 = state.jobsv2.list.find((job) => job.id === uuid);
+      return {
+        loading: false,
+        loadingError: null,
+        job: jobv2,
+        display: jobv2.display,
+      };
+    }
+  });
   const { state } = useLocation();
-
   let jobName = job ? job.name : placeHolder;
 
   if (jobName === placeHolder) {
@@ -195,15 +266,35 @@ function JobHistoryModal({ jobId }) {
     }
   }
 
+  const query = queryStringParser.parse(useLocation().search);
+
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
-      fromJobHistoryModal: true,
-    });
+    // TODOv3: dropV2Jobs
+    if (version === 'v3') {
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
+          query.query_string ? `?query_string=${query.query_string}` : ''
+        }`,
+        {
+          fromJobHistoryModal: true,
+        }
+      );
+    } else {
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
+          query.query_string ? `?query_string=${query.query_string}` : ''
+        }`,
+        {
+          fromJobHistoryModal: true,
+        }
+      );
+    }
   };
 
   const headerData = {
-    'Job ID': jobId,
+    // TODOv3: dropV2Jobs
+    ...(version === 'v3' ? { 'Job UUID': uuid } : { 'Job ID': uuid }),
     Application: display ? display.applicationName : placeHolder,
     System: display ? display.systemName : placeHolder,
   };
@@ -238,6 +329,7 @@ function JobHistoryModal({ jobId }) {
               jobDetails={job}
               jobDisplay={display}
               toggle={close}
+              version={version}
             />
           )}
         </div>
@@ -247,7 +339,13 @@ function JobHistoryModal({ jobId }) {
 }
 
 JobHistoryModal.propTypes = {
-  jobId: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
+  // TODOv3: dropV2Jobs
+  version: PropTypes.string.isRequired,
+};
+// TODOv3: dropV2Jobs
+JobHistoryModal.defaultProps = {
+  version: 'v3',
 };
 
 export default JobHistoryModal;

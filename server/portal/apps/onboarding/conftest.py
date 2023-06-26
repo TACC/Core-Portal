@@ -15,14 +15,14 @@ def mock_steps(regular_user, settings):
         step="portal.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.PENDING,
         message="message"
-    ).save()
+    )
 
     completed_step = SetupEvent.objects.create(
         user=regular_user,
         step="portal.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.COMPLETED,
         message="message",
-    ).save()
+    )
     yield (pending_step, completed_step)
 
 
@@ -40,5 +40,5 @@ def mock_retry_step(regular_user, settings):
         step="portal.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.USERWAIT,
         message="message"
-    ).save()
+    )
     yield retry_step

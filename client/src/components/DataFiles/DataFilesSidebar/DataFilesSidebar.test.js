@@ -51,13 +51,17 @@ describe('DataFilesSidebar', () => {
       getByText(/My Data \(Frontera\)/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
+    ).toEqual(
+      '/workbench/data/tapis/private/frontera.home.username/home/username/'
+    );
     expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();
     expect(
       getByText(/My Data \(Longhorn\)/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');
+    ).toEqual(
+      '/workbench/data/tapis/private/longhorn.home.username/home/username/'
+    );
     expect(queryByText(/My Data \(Work\)/)).toBeNull();
   });
 

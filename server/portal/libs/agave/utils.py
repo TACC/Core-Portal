@@ -4,16 +4,11 @@
 """
 import logging
 import os
-import urllib.request
-import urllib.parse
-import urllib.error
 from django.conf import settings
-from agavepy.agave import Agave
+from tapipy.tapis import Tapis
 import requests
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 def to_camel_case(input_str):
@@ -40,71 +35,6 @@ def to_camel_case(input_str):
     return camel_case
 
 
-def walk(client, system, path, bottom_up=False, yield_base=True):
-    """Walk a path in an Agave storage system.
-
-    This generator will yield single
-    :class:`~portal.libs.agave.models.files.BaseFile` object each iteration.
-    A call to ``files.list`` is done for every sub level of
-    :attr:`path`. For a level approach see :func:`walk_levels`
-
-    :param str system: system id.
-    :param str path: path to walk.
-    :param bool bottom_up: if ``True`` walk the path bottom to top.
-    :param bool yield_base: if ``True`` will yield a
-        :class:`~portal.libs.agave.models.files.BaseFile` object representing
-        :attr:`path`
-
-    :returns: childrens of the given file path
-    :rtype: :class:`~portal.libs.agave.models.files.BaseFile`
-
-    .. rubric:: Rationale
-
-    Although walking a farily complicated folder tree purely in Agave calls
-    might seem inefficient, in some project we will not have direct access to
-    the different file systems. This function works almost like :func:`os.walk`
-    instead of returning the listing by levels it returns each one of the files
-    wrapped in a handy class.
-
-    .. warning:
-
-    In order to reduce latency the returned
-    :class:`~portal.libs.agave.models.files.BaseFile` object is constructed
-    from the `agave.files.list` response. This means that some values might be
-    missing. As of Jun/2017 the ``uuid`` is missing from this. To mitigate this
-    we delete the ``_links`` object, that way if the ``uuid`` attribute is
-    accessed, the entire object will be correctly populated.
-
-    .. seealso::
-
-        Class :mod:`portal.libs.agave.models.files.BaseFile`
-
-    """
-    from portal.libs.agave.models.files import BaseFile
-    files = client.files.list(systemId=system,
-                              filePath=urllib.parse.quote(path))
-    for json_file in files:
-        json_file.pop('_links', None)
-        if json_file['name'] == '.':
-            if not yield_base:
-                continue
-        _file = BaseFile(client, **json_file)
-        _file.name = os.path.basename(_file.path)
-        if not bottom_up:
-            yield _file
-        if _file.format == 'folder' and json_file['name'] != ".":
-            for child in walk(
-                    client,
-                    system,
-                    _file.path,
-                    bottom_up=bottom_up,
-                    yield_base=False
-            ):
-                yield child
-        if bottom_up:
-            yield _file
-
-
 def iterate_level(client, system, path, limit=100):
     """Iterate over a filesystem level yielding an attrdict for each file/folder
         on the level.
@@ -118,10 +48,22 @@ def iterate_level(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = client.files.list(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 offset=int(offset),
-                                 limit=int(limit))
+        _page = client.files.listFiles(systemId=system,
+                                       path=path,
+                                       offset=int(offset),
+                                       limit=int(limit))
+        page = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, _page))
         yield from page
         offset += limit
         if len(page) != limit:
@@ -194,17 +136,25 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
 
 
 def service_account():
-    """Return an agave instance with the admin account."""
-    return Agave(
-        api_server=settings.AGAVE_TENANT_BASEURL,
-        token=settings.AGAVE_SUPER_TOKEN)
+    """Return a Tapis instance with the admin account."""
+    return Tapis(
+        base_url=settings.TAPIS_TENANT_BASEURL,
+        access_token=settings.TAPIS_ADMIN_JWT)
+
+
+def user_account(access_token):
+    """Return a Tapis instance with the user credentials"""
+    return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
+                 client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
+                 client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
+                 access_token=access_token)
 
 
 def text_preview(url):
     """Generate a text preview content
     Args:
     ------
-        url (str): postit url from Agave
+        url (str): postit url from Tapis
     Returns:
     ------
         str: text content to preview.
@@ -213,7 +163,7 @@ def text_preview(url):
     """
     try:
         resp = requests.get(url)
-        if (resp.encoding.lower() == 'utf-8'):
+        if (resp.content or (resp.encoding is not None and resp.encoding.lower() == 'utf-8')):
             content = resp.text
             # Raises UnicodeDecodeError for files with non-ascii characters
             content.encode('ascii', 'strict')
@@ -226,14 +176,14 @@ def text_preview(url):
 
 
 def increment_file_name(listing, file_name):
-    if any(x['name'] for x in listing if x['name'] == file_name):
+    if any(x.name for x in listing if x.name == file_name):
         inc = 1
         _ext = os.path.splitext(file_name)[1]
         _name = os.path.splitext(file_name)[0]
         _inc = "({})".format(inc)
         file_name = '{}{}{}'.format(_name, _inc, _ext)
 
-        while any(x['name'] for x in listing if x['name'] == file_name):
+        while any(x.name for x in listing if x.name == file_name):
             inc += 1
             _inc = "({})".format(inc)
             file_name = '{}{}{}'.format(_name, _inc, _ext)
@@ -247,6 +197,6 @@ def get_file_size(client, system, path):
     :param path: path of file
     :return: file size in bytes
     """
-    file_response = client.files.list(systemId=system,
-                                      filePath=urllib.parse.quote(path))
-    return int(file_response[0]["length"])
+    file_response = client.files.listFiles(systemId=system,
+                                           path=path)
+    return int(file_response[0].size)

@@ -1,3 +1,5 @@
+/* TODOv3 update this fixture https://jira.tacc.utexas.edu/browse/WP-68*/
+
 const systemsFixture = {
   storage: {
     configuration: [
@@ -8,6 +10,7 @@ const systemsFixture = {
         api: 'tapis',
         icon: null,
         hidden: true,
+        homeDir: '/home/username',
       },
       {
         name: 'My Data (Frontera)',
@@ -15,6 +18,7 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
+        homeDir: '/home/username',
       },
       {
         name: 'My Data (Longhorn)',
@@ -22,6 +26,7 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
+        homeDir: '/home/username',
       },
       {
         name: 'Community Data',
@@ -30,6 +35,7 @@ const systemsFixture = {
         api: 'tapis',
         icon: null,
         siteSearchPriority: 1,
+        homeDir: '/corral/tacc/aci/CEP/community',
       },
       {
         name: 'Public Data',
@@ -38,13 +44,13 @@ const systemsFixture = {
         api: 'tapis',
         icon: 'publications',
         siteSearchPriority: 0,
+        homeDir: '/corral/tacc/aci/CEP/public',
       },
       {
         name: 'Shared Workspaces',
         scheme: 'projects',
         api: 'tapis',
         icon: null,
-        privilegeRequired: false,
         readOnly: false,
         hideSearchBar: false,
       },
@@ -61,6 +67,7 @@ const systemsFixture = {
     errorMessage: null,
     loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
+    defaultSystem: 'frontera',
   },
   definitions: {
     list: [
@@ -70,6 +77,7 @@ const systemsFixture = {
           host: 'frontera.tacc.utexas.edu',
           rootDir: '/home1/012345/username',
         },
+        effectiveUserId: 'username',
       },
       {
         id: 'longhorn.home.username',
@@ -77,6 +85,7 @@ const systemsFixture = {
           host: 'longhorn.tacc.utexas.edu',
           rootDir: '/home/012345/username',
         },
+        effectiveUserId: 'username',
       },
     ],
     error: false,

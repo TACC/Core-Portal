@@ -10,6 +10,7 @@ const Searchbar = ({
   api,
   scheme,
   system,
+  path,
   resultCount,
   dataType,
   filterTypes,
@@ -28,7 +29,7 @@ const Searchbar = ({
   );
 
   if (!sectionName) {
-    sectionName = useSystemDisplayName({ system, scheme });
+    sectionName = useSystemDisplayName({ system, scheme, path });
   }
 
   const allFilterTypesValue = `All ${dataType ? dataType : ''} Types`;
@@ -137,7 +138,7 @@ const Searchbar = ({
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
           data-testid="summary-of-search-results"
         >
-          {resultCount} results in {sectionName}
+          {resultCount} results in {sectionName || dataType}
         </div>
       )}
       {((hasQuery && !siteSearch) ||
@@ -157,6 +158,7 @@ Searchbar.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
+  path: PropTypes.string.isRequired,
   resultCount: PropTypes.number,
   filterTypes: PropTypes.arrayOf(PropTypes.string),
   infiniteScroll: PropTypes.bool,
@@ -170,6 +172,9 @@ Searchbar.propTypes = {
 
 Searchbar.defaultProps = {
   className: '',
+  scheme: '',
+  system: '',
+  path: '',
   resultCount: 0,
   siteSearch: false,
   disabled: false,

@@ -28,12 +28,17 @@ const DataFilesManageProjectModal = () => {
     };
   });
 
-  const isUserOrGuest = members
+  const canEditSystem = members
     .filter((member) => member.user.username === user.username)
-    .map(
-      (currentUser) =>
-        currentUser.access === 'edit' || currentUser.access === 'read'
-    )[0];
+    .map((currentUser) => currentUser.access === 'owner')[0];
+
+  const readOnlyTeam = useSelector((state) => {
+    const projectSystem = state.systems.storage.configuration.find(
+      (s) => s.scheme === 'projects'
+    );
+
+    return projectSystem?.readOnly || !canEditSystem;
+  });
 
   const toggle = useCallback(() => {
     setTransferMode(false);
@@ -123,7 +128,7 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          {isUserOrGuest ? 'View' : 'Manage'} Team
+          {readOnlyTeam ? 'View' : 'Manage'} Team
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -143,7 +148,7 @@ const DataFilesManageProjectModal = () => {
             </div>
           ) : null}
           <div className={styles['owner-controls']}>
-            {isOwner && members.length > 1 ? (
+            {isOwner && members.length > 1 && !readOnlyTeam ? (
               <Button type="link" onClick={toggleTransferMode}>
                 {transferMode ? 'Cancel Change Ownership' : 'Change Ownership'}
               </Button>

@@ -21,7 +21,7 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.static import static
-from portal.apps.auth.views import agave_oauth as login
+from portal.apps.auth.views import tapis_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView
@@ -52,6 +52,7 @@ urlpatterns = [
     re_path('core/markup/nav', TemplateView.as_view(template_name='includes/nav_portal.raw.html'), name='portal_nav_markup'),
 
     # api
+    path('api/auth/', include('portal.apps.auth.api.urls', namespace='auth_api')),
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
     path('api/workbench/', include('portal.apps.workbench.api.urls', namespace='workbench_api')),
     path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),

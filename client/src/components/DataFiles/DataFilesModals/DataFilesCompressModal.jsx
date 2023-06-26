@@ -13,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useCompress } from 'hooks/datafiles/mutations';
-import { useSelectedFiles, useModal, useFileListing } from 'hooks/datafiles';
+import { useSelectedFiles, useModal } from 'hooks/datafiles';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
@@ -23,19 +23,11 @@ const DataFilesCompressModal = () => {
 
   const { compress, status, setStatus } = useCompress();
   const { getStatus: getModalStatus, toggle: toggleModal } = useModal();
-  const { params } = useFileListing('FilesListing');
 
   const isOpen = getModalStatus('compress');
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const formRef = React.useRef();
-
-  const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' },
-    });
-  };
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -48,17 +40,24 @@ const DataFilesCompressModal = () => {
   const toggle = () => toggleModal({ operation: 'compress', props: {} });
 
   const compressCallback = () => {
-    const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay}${filetype}`;
-    compress({ filename, files: selected });
+    const { filenameDisplay, compressionType } = formRef.current.values;
+    compress({
+      filename: filenameDisplay,
+      files: selected,
+      compressionType,
+      onSuccess: {
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'compress', props: {} },
+      },
+    });
   };
 
   const initialValues = {
     filenameDisplay:
       selectedFiles[0] && selectedFiles.length === 1
         ? selectedFiles[0].name
-        : '',
-    filetype: '.zip',
+        : `Archive_${new Date().toISOString().split('.')[0]}`,
+    compressionType: 'zip',
   };
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
@@ -71,7 +70,6 @@ const DataFilesCompressModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       className="dataFilesModal"
@@ -87,7 +85,7 @@ const DataFilesCompressModal = () => {
       >
         {({ setFieldValue, values, isValid }) => {
           const handleSelectChange = (e) => {
-            setFieldValue('filetype', e.target.value);
+            setFieldValue('compressionType', e.target.value);
           };
           const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
           const buttonDisabled =
@@ -107,21 +105,21 @@ const DataFilesCompressModal = () => {
                     >
                       <Input
                         type="select"
-                        name="filetype"
+                        name="compressionType"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
                         className={styles['bg-color']}
                       >
-                        <option value=".zip">.zip</option>
-                        <option value=".tar.gz">.tar.gz</option>
+                        <option value="zip">.zip</option>
+                        <option value="tgz">.tar.gz</option>
                       </Input>
                     </InputGroupAddon>
                   }
                 />
                 <p>
                   A job to compress these files will be submitted. The
-                  compressed file will appear in this directory.
+                  compressed file archive will appear in this directory.
                 </p>
               </ModalBody>
               <ModalFooter>

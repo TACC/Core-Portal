@@ -62,14 +62,14 @@ const DataFilesShowPathModal = React.memo(() => {
             api={params.api}
             scheme={params.scheme}
             system={params.system}
-            path={params.path + file.path || '/'}
+            path={file.path || '/'}
             section=""
           />
           <dl>
             {params.api === 'tapis' && definition && (
               <>
                 <dt>Storage Host</dt>
-                <dd>{definition.storage.host}</dd>
+                <dd>{definition.host}</dd>
                 <dt>Storage Path</dt>
               </>
             )}
@@ -81,7 +81,7 @@ const DataFilesShowPathModal = React.memo(() => {
             )}
             <dd>
               <TextCopyField
-                value={`${definition.storage.rootDir}${file.path}`}
+                value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
               />
             </dd>
           </dl>

@@ -6,6 +6,7 @@ import { shape, string, arrayOf, bool } from 'prop-types';
 import { Button, SectionHeader, SectionTableWrapper } from '_common';
 import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
+import styles from './ManageAccountTables.module.css';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -47,7 +48,7 @@ TableTemplate.propTypes = {
   }).isRequired,
 };
 
-export const RequiredInformation = () => {
+export const ProfileInformation = () => {
   const dispatch = useDispatch();
   const {
     data: { demographics },
@@ -60,10 +61,8 @@ export const RequiredInformation = () => {
         accessor: ({ firstName, lastName }) =>
           `${firstName || ''} ${lastName || ''}`,
       },
-      { Header: 'Phone No.', accessor: 'phone' },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Institution', accessor: 'institution' },
-      { Header: 'Title', accessor: 'title' },
       { Header: 'Country of Residence', accessor: 'country' },
       { Header: 'Country of Citizenship', accessor: 'citizenship' },
       { Header: 'Ethnicity', accessor: 'ethnicity' },
@@ -82,18 +81,18 @@ export const RequiredInformation = () => {
       manualHeader={
         <SectionHeader
           actions={
-            <Button
-              type="link"
-              className="form-button"
-              onClick={openModal}
-              disabled={errors.fields !== undefined}
+            <a
+              className={`wb-link ${styles['edit-profile-link']}`}
+              href="https://accounts.tacc.utexas.edu/profile"
+              target="_blank"
+              rel="noreferrer"
             >
-              Edit Required Information
-            </Button>
+              Edit Profile Information
+            </a>
           }
           isForList
         >
-          Required Information
+          Profile Information
         </SectionHeader>
       }
       manualContent
@@ -253,27 +252,22 @@ export const Integrations = () => {
     </SectionTableWrapper>
   );
 };
-export const ChangePassword = () => {
+export const PasswordInformation = () => {
   const lastChanged = useSelector((state) => {
     const { data } = state.profile;
     return data.passwordLastChanged;
   });
-  const dispatch = useDispatch();
-  const openModal = () =>
-    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
     <article>
-      <SectionHeader isForList>Change Password</SectionHeader>
+      <SectionHeader isForList>Password Information</SectionHeader>
       <div
         style={{
+          paddingTop: '10px',
           display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          margin: '1rem',
         }}
       >
-        <Button type="primary" onClick={openModal}>
-          Change Password
-        </Button>
         {lastChanged && (
           <span
             style={{
@@ -287,6 +281,14 @@ export const ChangePassword = () => {
             Last Changed {lastChanged}
           </span>
         )}
+        <a
+          className={`wb-link ${styles['change-password-link']}`}
+          href="https://accounts.tacc.utexas.edu/change_password"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Change Password
+        </a>
       </div>
     </article>
   );
@@ -321,57 +323,3 @@ const OrcidCell = ({ cell: { value } }) => (
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
 OrcidCell.defaultProps = WebsiteCell.defaultProps;
-export const OptionalInformation = () => {
-  const {
-    data: { demographics },
-    errors,
-  } = useSelector((state) => state.profile);
-  const dispatch = useDispatch();
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'My Website',
-        accessor: 'website',
-        Cell: WebsiteCell,
-      },
-      {
-        Header: 'Orcid ID',
-        accessor: 'orcid_id',
-        Cell: OrcidCell,
-      },
-      { Header: 'Professional Level', accessor: 'professional_level' },
-      {
-        Header: 'Research Bio',
-        accessor: 'bio',
-      },
-    ],
-    []
-  );
-  const data = useMemo(() => [demographics], []);
-  const openModal = () =>
-    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
-  return (
-    <SectionTableWrapper
-      manualHeader={
-        <SectionHeader
-          actions={
-            <Button
-              type="link"
-              className="form-button"
-              onClick={openModal}
-              disabled={errors.fields !== undefined}
-            >
-              Edit Optional Information
-            </Button>
-          }
-          isForList
-        >
-          Optional Information
-        </SectionHeader>
-      }
-      manualContent
-    >
-      <TableTemplate attributes={{ columns, data }} />
-    </SectionTableWrapper>
-  );
-};

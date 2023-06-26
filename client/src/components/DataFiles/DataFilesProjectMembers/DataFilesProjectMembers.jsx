@@ -28,6 +28,18 @@ const DataFilesProjectMembers = ({
     authenticatedUser ?? null
   );
 
+  const canEditSystem = ['OWNER', 'ADMIN'].includes(
+    authenticatedUserQuery?.data?.role
+  );
+
+  const readOnlyTeam = useSelector((state) => {
+    const projectSystem = state.systems.storage.configuration.find(
+      (s) => s.scheme === 'projects'
+    );
+
+    return projectSystem?.readOnly || !canEditSystem;
+  });
+
   const [selectedUser, setSelectedUser] = useState('');
 
   const [inputUser, setInputUser] = useState('');
@@ -93,19 +105,20 @@ const DataFilesProjectMembers = ({
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
-    Cell: (el) => (
-      <span>
-        <span
-          className={styles['printed-name']}
-        >{`${el.value.first_name} ${el.value.last_name}`}</span>
-        {` ${el.value.username} (${el.value.email})`}
-      </span>
-    ),
+    Cell: (el) => {
+      if (!el.value.first_name) return <span>{el.value.username}</span>;
+      return (
+        <span>
+          <span
+            className={styles['printed-name']}
+          >{`${el.value.first_name} ${el.value.last_name}`}</span>
+          {` ${el.value.username} (${el.value.email})`}
+        </span>
+      );
+    },
   };
   const roleColumn =
-    mode !== 'transfer' &&
-    (!projectId ||
-      ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role))
+    mode !== 'transfer'
       ? [
           {
             Header: 'Role',
@@ -147,7 +160,7 @@ const DataFilesProjectMembers = ({
         <>
           {mode === 'addremove' &&
           el.row.original.access !== 'owner' &&
-          ['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role) ? (
+          !readOnlyTeam ? (
             <Button
               onClick={(e) => onRemove(el.row.original)}
               type="link"
@@ -206,7 +219,7 @@ const DataFilesProjectMembers = ({
 
   return (
     <div className={styles.root}>
-      {['OWNER', 'ADMIN'].includes(authenticatedUserQuery?.data?.role) && (
+      {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
             Add Member

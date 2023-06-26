@@ -1,4 +1,9 @@
-import { getJobDisplayInformation, isOutputState } from 'utils/jobsUtil';
+import {
+  getJobDisplayInformation,
+  // TODOv3: dropV2Jobs
+  getJobDisplayInformationV2,
+  isTerminalState,
+} from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -7,16 +12,6 @@ export const initialState = {
   reachedEnd: false,
   error: null,
 };
-
-function updateJobFromNotification(job, notification) {
-  // update status
-  const updatedJob = { ...job, status: notification.status };
-  if (isOutputState(notification.status)) {
-    // add archive data path to job
-    updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
-  }
-  return updatedJob;
-}
 
 export function jobs(state = initialState, action) {
   switch (action.type) {
@@ -43,9 +38,7 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: state.list.map((job) =>
-          job.id === action.payload.job.id
-            ? { ...action.payload.job, outputLocation: job.outputLocation }
-            : job
+          job.uuid === action.payload.job.uuid ? action.payload.job : job
         ),
       };
     case 'JOBS_LIST_ERROR':
@@ -81,8 +74,12 @@ export function jobs(state = initialState, action) {
     case 'UPDATE_JOBS_FROM_NOTIFICATIONS': {
       const events = action.payload;
       const list = state.list.map((job) => {
-        const event = events.find((e) => e.extra.id === job.id);
-        return event ? updateJobFromNotification(job, event.extra) : job;
+        const event = events.find((e) => e.extra.uuid === job.uuid);
+        const val =
+          !isTerminalState(job.status) && event
+            ? { ...job, ...event.extra }
+            : job;
+        return val;
       });
       return {
         ...state,
@@ -94,21 +91,89 @@ export function jobs(state = initialState, action) {
   }
 }
 
-const initialJobDetail = {
-  jobId: null,
-  app: null,
-  job: null,
-  display: null,
+// TODOv3: dropV2Jobs
+export const initialStateV2 = {
+  list: [],
+  submit: { submitting: false },
   loading: false,
-  loadingError: false,
-  loadingErrorMessage: '',
+  reachedEnd: false,
+  error: null,
+};
+
+// TODOv3: dropV2Jobs
+export function jobsv2(state = initialStateV2, action) {
+  switch (action.type) {
+    case 'JOBS_V2_LIST_INIT':
+      return {
+        ...state,
+        list: [],
+        error: null,
+        reachedEnd: false,
+      };
+    case 'JOBS_V2_LIST_START':
+      return {
+        ...state,
+        error: null,
+        loading: true,
+      };
+    case 'JOBS_V2_LIST':
+      return {
+        ...state,
+        list: state.list.concat(
+          action.payload.list.map((job) => {
+            job.display = getJobDisplayInformationV2(job);
+            return job;
+          })
+        ),
+        reachedEnd: action.payload.reachedEnd,
+      };
+    case 'JOBS_V2_LIST_UPDATE_JOB':
+      return {
+        ...state,
+        list: state.list,
+      };
+    case 'JOBS_V2_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case 'JOBS_V2_LIST_FINISH':
+      return {
+        ...state,
+        loading: false,
+      };
+    default:
+      return state;
+  }
+}
+
+const initialJobDetail = {
+  status: '',
+  message: '',
+  metadata: null,
+  result: {
+    id: '',
+    name: '',
+    uuid: '',
+    appId: '',
+    description: '',
+    lastMessage: '',
+    appVersion: '',
+    archiveSystemId: '',
+    archiveSystemDir: '',
+    created: '',
+    lastUpdated: '',
+    fileInputs: '',
+    parameterSet: '',
+    status: '',
+  },
 };
 
 export function jobDetail(state = initialJobDetail, action) {
   switch (action.type) {
     case 'JOB_DETAILS_FETCH_STARTED':
       return {
-        jobId: action.payload,
+        jobUuid: action.payload,
         app: null,
         job: null,
         display: null,
@@ -119,7 +184,7 @@ export function jobDetail(state = initialJobDetail, action) {
     case 'JOB_DETAILS_FETCH_SUCCESS':
       return {
         ...state,
-        jobId: action.payload.job.id,
+        jobUuid: action.payload.job.uuid,
         job: action.payload.job,
         display: getJobDisplayInformation(
           action.payload.job,

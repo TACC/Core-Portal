@@ -38,7 +38,8 @@ NOTE: This may require a computer restart to take effect.
 2. With Default Keychains > login selected, choose File > Import Items... from the menu.
 3. Navigate to `./server/conf/nginx/certificates`
 4. Select `ca.pem`
-5. Search for CEP and double click on the certificate
+5. Under the "All" or "Certificates" tab,\
+    Search for CEP and double click on the certificate
 6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
 7. Close the window to save.
 
@@ -72,10 +73,10 @@ NOTE: This may require a computer restart to take effect.
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
       - `sudo vim /etc/hosts`
 
-     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+  2. Do this step after going through the server and client code configuration steps in next section.
 
-  2. Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
-  
+     Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+
      _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
       1. Open the Network app utility
       2. Select network connection you’re on (wifi, ethernet, etc)
@@ -132,9 +133,9 @@ OR
     npm ci
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
+-  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
-
+-  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][3]._
 #### Initialize the application in the `core_portal_django` container:
 
     docker exec -it core_portal_django /bin/bash
@@ -160,7 +161,7 @@ Requirements:
 - At least one page in CMS (see above).
 - At least [15% of free disk space](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
 - For Mac/Windows
-    - At least 4GB of RAM allocated to Docker (see Docker Desktop > Preferences > Resources > Advanced).
+    - At least 4GB of RAM allocated to Docker (see Docker Desktop > Settings > Resources > Advanced).
 - For Linux (Locally)
     - Run `sudo sysctl -w vm.max_map_count=2146999999` (The minimum required by [ES](https://www.elastic.co/guide/en/elasticsearch/reference/master/_maximum_map_count_check.html) is 262144 but it doesn't seem to work).
     - Run `sudo sysctl -w vm.overcommit_memory=1`.
@@ -248,10 +249,16 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 
 #### Development Workflow
 We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `main`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
-- Feature branches contain major updates, bug fixes, and hot fixes with respective branch prefixes:
-    - `task/` for features and updates
-    - `bug/` for bugfixes
-    - `fix/` for hotfixes
+- "Feature branches" contain major and minor updates, bug fixes and hot fixes, and other changes with respective branch prefixes:
+    - `feat/` for features and updates
+    - `fix/` for bugfixes and hotfixes
+    - `refactor/` for large internal changes
+    - `style/` for strictly visual changes
+    - `chore/` for no-op changes
+    - `docs/` for documentation
+    - `perf/` for performance improvements
+    - `test/` for test case updates
+    - or other "types" from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 #### Testing Core Styles Changes Locally
 
@@ -286,3 +293,4 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/
+[3]: https://vitejs.dev/

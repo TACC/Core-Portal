@@ -1,10 +1,32 @@
 import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
-export const getMaxQueueRunTime = (app, queueName) => {
-  return app.exec_sys.queues.find((q) => q.name === queueName).maxRequestedTime;
+export const getQueueMaxMinutes = (app, queueName) => {
+  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
+    .maxMinutes;
 };
 
+/**
+ * Get validator for max minutes of a queue
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of max minutes
+ */
+export const getMaxMinutesValidation = (queue) => {
+  return Yup.number()
+    .min(
+      queue.minMinutes,
+      `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
+    )
+    .max(
+      queue.maxMinutes,
+      `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
+    );
+};
+
+// TODOv3  Create ticket for us/Design to decide if we want to continue to present max run time as hh:mm:ss and translate to maxMinutes
+// https://jira.tacc.utexas.edu/browse/WP-99
 /**
  * Create regex pattern for maxRunTime
  * @function
@@ -52,80 +74,40 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
 };
 
 /**
- * Get min node count for queue
- */
-const getMinNodeCount = (queue, app) => {
-  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node count of 3
-  return getSystemName(app.exec_sys.login.host) === 'Frontera' &&
-    queue.name === 'normal'
-    ? 3
-    : 1;
-};
-
-/**
  * Get validator for a node count of a queue
  *
  * @function
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (queue, app) => {
-  const min = getMinNodeCount(queue, app);
+export const getNodeCountValidation = (queue) => {
   return Yup.number()
+    .integer('Node Count must be an integer.')
     .min(
-      min,
-      `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
+      queue.minNodeCount,
+      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
     )
     .max(
-      queue.maxNodes,
-      `Node Count must be less than or equal to ${queue.maxNodes} for the ${queue.name} queue`
+      queue.maxNodeCount,
+      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
     );
 };
 
 /**
- * Get min node count for queue
- */
-const getMaxProcessorsOnEachNode = (queue) =>
-  Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes);
-
-/**
- * Get validator for processors on each node
+ * Get validator for cores on each node
  *
  * @function
  * @param {Object} queue
- * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
+ * @returns {Yup.number()} min/max validation of coresPerNode
  */
-export const getProcessorsOnEachNodeValidation = (queue) => {
-  if (queue.maxProcessorsPerNode === -1) {
-    return Yup.number();
+export const getCoresPerNodeValidation = (queue) => {
+  if (queue.maxCoresPerNode === -1) {
+    return Yup.number().integer();
   }
-  return Yup.number().min(1).max(getMaxProcessorsOnEachNode(queue));
-};
-
-/**
- * Get validator for queues
- *
- * 'normal' queue isn't supported on Frontera for SERIAL (i.e. one node) jobs
- *
- * @function
- * @param {Object} queue
- * @returns {Yup.string()} validation of queue
- */
-export const getQueueValidation = (queue, app) => {
-  return Yup.string()
-    .required('Required')
-    .oneOf(app.exec_sys.queues.map((q) => q.name))
-    .test(
-      'is-not-serial-job-using-normal-queue',
-      'The normal queue does not support serial apps (i.e. Node Count set to 1).',
-      (value, context) => {
-        return !(
-          getSystemName(app.exec_sys.login.host) === 'Frontera' &&
-          queue.name === 'normal' &&
-          app.definition.parallelism === 'SERIAL'
-        );
-      }
-    );
+  return Yup.number()
+    .integer()
+    .min(queue.minCoresPerNode)
+    .max(queue.maxCoresPerNode);
 };
 
 /**
@@ -140,44 +122,46 @@ export const getQueueValidation = (queue, app) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const updatedValues = { ...values };
-  const queue = app.exec_sys.queues.find((q) => q.name === values.batchQueue);
-  const minNode = getMinNodeCount(queue, app);
-  const maxProcessorsOnEachNode = getMaxProcessorsOnEachNode(queue);
+  const queue = app.exec_sys.batchLogicalQueues.find(
+    (q) => q.name === values.execSystemLogicalQueue
+  );
 
-  if (values.nodeCount < minNode) {
-    updatedValues.nodeCount = minNode;
+  if (values.nodeCount < queue.minNodeCount) {
+    updatedValues.nodeCount = queue.minNodeCount;
+  }
+  if (values.nodeCount > queue.maxNodeCount) {
+    updatedValues.nodeCount = queue.maxNodeCount;
   }
 
-  if (values.nodeCount > queue.maxNodes) {
-    updatedValues.nodeCount = queue.maxNodes;
+  if (values.coresPerNode < queue.minCoresPerNode) {
+    updatedValues.coresPerNode = queue.minCoresPerNode;
   }
-
   if (
-    queue.maxProcessorsPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.processorsOnEachNode > maxProcessorsOnEachNode
+    queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
+    values.coresPerNode > queue.maxCoresPerNode
   ) {
-    updatedValues.processorsOnEachNode = maxProcessorsOnEachNode;
+    updatedValues.coresPerNode = queue.maxCoresPerNode;
   }
 
-  /* if user has entered a time and it's somewhat reasonable (i.e. less than max time
-  for all the queues, then we should check if the time works for the new queue and update
-  it if it doesn't.
-   */
-  if (values.maxRunTime) {
-    const longestMaxRequestedTime = app.exec_sys.queues
-      .map((queue) => queue.maxRequestedTime)
-      .sort()
-      .at(-1);
+  if (values.maxMinutes < queue.minMinutes) {
+    updatedValues.maxMinutes = queue.minMinutes;
+  }
+  if (values.maxMinutes > queue.maxMinutes) {
+    updatedValues.maxMinutes = queue.maxMinutes;
+  }
+
+  /* // TODOv3  HH:MM:SS form https://jira.tacc.utexas.edu/browse/WP-99
+
     const runtimeRegExp = new RegExp(
       createMaxRunTimeRegex(longestMaxRequestedTime)
     );
     if (
-      runtimeRegExp.test(values.maxRunTime) &&
-      values.maxRunTime > queue.maxRequestedTime
+      runtimeRegExp.test(values.maxMinutes) &&
+      values.maxMinutes > queue.maxMinutes
     ) {
-      updatedValues.maxRunTime = queue.maxRequestedTime;
+      updatedValues.maxMinutes = queue.maxMinutes;
     }
-  }
+     */
 
   return updatedValues;
 };
