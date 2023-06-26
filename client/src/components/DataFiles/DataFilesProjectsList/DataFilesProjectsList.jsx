@@ -60,7 +60,7 @@ const DataFilesProjectsList = ({ modal }) => {
     {
       Header: 'Workspace Title',
       headerStyle: { textAlign: 'left' },
-      accessor: 'description',
+      accessor: 'title',
       Cell: (el) => (
         <Link
           className="data-files-nav-link"

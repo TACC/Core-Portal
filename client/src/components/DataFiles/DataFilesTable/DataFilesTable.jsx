@@ -11,7 +11,7 @@ import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
-import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
@@ -23,12 +23,15 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
   const dispatch = useDispatch();
   const system = useSelector((state) => state.pushKeys.target);
-  let currSystemHost = useSelector((state) =>
+  const currentUser = useSelector(
+    (state) => state.authenticatedUser.user?.username
+  );
+  const currSystem = useSelector((state) =>
     state.systems.definitions.list.find(
       (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
-  currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
+  const currSystemHost = currSystem ? currSystem.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
   const systemDefErr = useSelector((state) => state.systems.definitions.error);
@@ -94,7 +97,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         .
       </>
     );
-    if (err === '502') {
+    if (err === '500') {
       if (downSystems.includes(currSystemHost)) {
         return (
           <div className="h-100 listing-placeholder">
@@ -108,7 +111,10 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           </div>
         );
       }
-      if (scheme === 'private') {
+      if (
+        ['private', 'projects'].includes(scheme) &&
+        currSystem.effectiveUserId === currentUser
+      ) {
         const link = (strings) => (
           <a
             className="data-files-nav-link"
@@ -123,7 +129,8 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
               There was a problem accessing this file system. If this is your
-              first time logging in, you may need to {link`push your keys`}.
+              first time accessing this system, you may need to{' '}
+              {link`push your keys`}.
             </SectionMessage>
           </div>
         );

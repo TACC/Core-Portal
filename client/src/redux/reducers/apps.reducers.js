@@ -1,6 +1,6 @@
 export const initialState = {
   categoryDict: {},
-  appDict: {},
+  htmlDict: {},
   appIcons: {},
   error: { isError: false },
   loading: false,
@@ -33,7 +33,7 @@ export function apps(state = initialState, action) {
       return {
         ...state,
         categoryDict: unpackCategoryDict(action.payload.tabs),
-        appDict: action.payload.definitions,
+        htmlDict: action.payload.htmlDefinitions,
         appIcons: unpackAppIcons(action.payload.tabs),
         loading: false,
       };
@@ -63,7 +63,7 @@ export const initialAppState = {
   definition: {},
   error: { isError: false },
   loading: false,
-  systemHasKeys: true,
+  systemNeedsKeys: false,
   pushKeysSystem: {},
   exec_sys: {},
   license: {},
@@ -75,7 +75,7 @@ export function app(state = initialAppState, action) {
       return {
         ...state,
         definition: action.payload.definition,
-        systemHasKeys: action.payload.systemHasKeys,
+        systemNeedsKeys: action.payload.systemNeedsKeys,
         pushKeysSystem: action.payload.pushKeysSystem,
         exec_sys: action.payload.exec_sys,
         license: action.payload.license,
@@ -88,7 +88,7 @@ export function app(state = initialAppState, action) {
         loading: true,
         error: { isError: false },
         definition: {},
-        systemHasKeys: true,
+        systemNeedsKeys: false,
         pushKeysSystem: {},
         exec_sys: {},
         license: {},

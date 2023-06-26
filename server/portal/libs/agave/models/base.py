@@ -45,7 +45,7 @@ class BaseAgaveResource(object):  # pylint: disable=too-few-public-methods
 
         :Example:
 
-        >>> client = user.agave_oauth.client
+        >>> client = user.tapis_oauth.client
         >>> obj = BaseAgaveResource(
         ...     client,
         ...     {

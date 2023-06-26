@@ -7,7 +7,6 @@ import {
   fetchSystemsUtil,
   fetchFilesUtil,
   scrollFiles,
-  getLatestApp,
   extractFiles,
   compressFiles,
   jobHelper,
@@ -18,11 +17,15 @@ import {
   compressAppSelector,
   makePublicUtil,
   doMakePublic,
+  defaultAllocationSelector,
 } from './datafiles.sagas';
 import { select } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { fetchAppDefinitionUtil } from './apps.sagas';
+import compressApp from './fixtures/compress.fixture';
+import extractApp from './fixtures/extract.fixture';
 
 jest.mock('cross-fetch');
 
@@ -307,25 +310,44 @@ describe('scrollFiles', () => {
 });
 
 describe('extractFiles', () => {
-  const jobHelperExpected = JSON.stringify({
-    allocation: 'FORK',
-    appId: 'extract-frontera-0.1u1',
-    archive: true,
-    archivePath: 'agave://test.system/dir/',
-    inputs: {
-      inputFile: 'agave://test.system/dir/test.zip',
-    },
-    maxRunTime: '02:00:00',
-    name: 'Extracting Compressed File',
-    parameters: {},
-  });
+  const jobHelperExpected = () =>
+    JSON.stringify({
+      job: {
+        fileInputs: [
+          {
+            name: 'Input File',
+            sourceUrl: 'tapis://test.system/dir/test.zip',
+          },
+        ],
+        name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
+        archiveSystemId: 'test.system',
+        archiveSystemDir: 'dir/',
+        archiveOnAppError: false,
+        appId: 'extract',
+        appVersion: '0.0.1',
+        parameterSet: {
+          appArgs: [],
+          schedulerOptions: [
+            {
+              name: 'TACC Allocation',
+              description:
+                'The TACC allocation associated with this job execution',
+              include: true,
+              arg: '-A TACC-ACI',
+            },
+          ],
+        },
+        execSystemId: 'frontera',
+      },
+    });
 
   const action = {
     type: 'DATA_FILES_EXTRACT',
     payload: {
       file: {
         system: 'test.system',
-        path: '/dir/test.zip',
+        path: 'dir/test.zip',
+        name: 'test.zip',
       },
     },
   };
@@ -333,17 +355,17 @@ describe('extractFiles', () => {
   it('runs extractFiles saga with success', () => {
     return expectSaga(extractFiles, action)
       .provide([
-        [select(extractAppSelector), 'extract-frontera'],
-        [matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1'],
-        [matchers.call.fn(jobHelper), { status: 'ACCEPTED' }],
+        [select(extractAppSelector), 'extract'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
+        [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
+        [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
-      .call(getLatestApp, 'extract-frontera')
+      .call(fetchAppDefinitionUtil, 'extract')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'extract' },
       })
-
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' },
@@ -354,17 +376,17 @@ describe('extractFiles', () => {
   it('runs extractFiles saga with push keys modal', () => {
     return expectSaga(extractFiles, action)
       .provide([
-        [select(extractAppSelector), 'extract-frontera'],
-        [matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1'],
+        [select(extractAppSelector), 'extract'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
+        [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
-      .call(getLatestApp, 'extract-frontera')
+      .call(fetchAppDefinitionUtil, 'extract')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'extract' },
       })
-
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
@@ -387,55 +409,79 @@ describe('compressFiles', () => {
   const action = {
     type: 'DATA_FILES_COMPRESS',
     payload: {
-      filename: 'test.zip',
+      filename: 'test',
       files: [
         {
           system: 'test.system',
-          path: '/test1.txt',
+          path: 'test1.txt',
           name: 'test1.txt',
         },
         {
           system: 'test.system',
-          path: '/test2.txt',
+          path: 'test2.txt',
           name: 'test2.txt',
         },
       ],
+      compressionType: 'zip',
     },
   };
 
-  const jobHelperExpected = JSON.stringify({
-    allocation: 'FORK',
-    appId: 'zippy-frontera-0.1u1',
-    archive: true,
-    archivePath: 'agave://test.system/',
-    maxRunTime: '02:00:00',
-    name: 'Compressing Files',
-    inputs: {
-      inputFiles: [
-        'agave://test.system/test1.txt',
-        'agave://test.system/test2.txt',
-      ],
-    },
-    parameters: {
-      filenames: '"test1.txt" "test2.txt" ',
-      zipfileName: 'test.zip',
-      compression_type: 'zip',
-    },
-  });
+  const jobHelperExpected = () =>
+    JSON.stringify({
+      job: {
+        fileInputs: [
+          {
+            sourceUrl: 'tapis://test.system/test1.txt',
+          },
+          {
+            sourceUrl: 'tapis://test.system/test2.txt',
+          },
+        ],
+        name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
+        archiveSystemId: 'test.system',
+        archiveSystemDir: '',
+        archiveOnAppError: false,
+        appId: 'compress',
+        appVersion: '0.0.1',
+        parameterSet: {
+          appArgs: [
+            {
+              name: 'Archive File Name',
+              arg: 'test',
+            },
+            {
+              name: 'Compression Type',
+              arg: 'zip',
+            },
+          ],
+          schedulerOptions: [
+            {
+              name: 'TACC Allocation',
+              description:
+                'The TACC allocation associated with this job execution',
+              include: true,
+              arg: '-A TACC-ACI',
+            },
+          ],
+        },
+        execSystemId: 'frontera',
+      },
+    });
 
   it('runs compressFiles saga with success', () => {
     return expectSaga(compressFiles, action)
       .provide([
-        [select(compressAppSelector), 'zippy-frontera'],
-        [matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1'],
-        [matchers.call.fn(jobHelper), { status: 'ACCEPTED' }],
+        [select(compressAppSelector), 'compress'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
+        [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
+        [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
-      .call(getLatestApp, 'zippy-frontera')
+      .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
@@ -446,16 +492,17 @@ describe('compressFiles', () => {
   it('runs compressFiles saga with push keys modal', () => {
     return expectSaga(compressFiles, action)
       .provide([
-        [select(compressAppSelector), 'zippy-frontera'],
-        [matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1'],
+        [select(compressAppSelector), 'compress'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
+        [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
-      .call(getLatestApp, 'zippy-frontera')
+      .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'RUNNING', operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected)
+      .call(jobHelper, jobHelperExpected())
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
@@ -578,6 +625,7 @@ describe('fileLink', () => {
           matchers.call.fn(fileLinkUtil),
           {
             data: 'https://postit',
+            expiration: '2023-12-12T22:52:06.300829Z',
           },
         ],
       ])
@@ -587,6 +635,7 @@ describe('fileLink', () => {
           status: {
             method: 'get',
             url: '',
+            expiration: null,
             error: null,
             loading: true,
           },
@@ -600,6 +649,7 @@ describe('fileLink', () => {
           status: {
             method: null,
             url: 'https://postit',
+            expiration: '2023-12-12T22:52:06.300829Z',
             error: null,
             loading: false,
           },

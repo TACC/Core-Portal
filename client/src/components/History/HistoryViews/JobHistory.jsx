@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { LoadingSpinner, SectionTableWrapper } from '_common';
+import { SectionTableWrapper } from '_common';
 import JobsView from '../../Jobs';
 
 import './JobHistory.module.scss';
@@ -12,16 +12,15 @@ const JobHistory = ({ className }) => {
   const { notifs, loading } = useSelector(
     (state) => ({
       notifs: state.notifications.list.notifs,
-      loading: state.notifications.loading,
     }),
     shallowEqual
   );
   const unreadIds = notifs
     .filter((n) => !n.read && n.event_type === 'job')
-    .map((n) => n.extra.id);
+    .map((n) => n.extra.uuid);
   const rowProps = (row) => {
     return {
-      className: unreadIds.includes(row.original.id) ? 'unread' : '',
+      className: unreadIds.includes(row.original.uuid) ? 'unread' : '',
     };
   };
 
@@ -31,12 +30,9 @@ const JobHistory = ({ className }) => {
     <SectionTableWrapper
       className={`job-history ${className}`}
       contentShouldScroll
+      manualContent
     >
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <JobsView showDetails showFancyStatus rowProps={rowProps} />
-      )}
+      <JobsView showDetails showFancyStatus rowProps={rowProps} />
     </SectionTableWrapper>
   );
 };

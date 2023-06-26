@@ -23,6 +23,7 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  authenticatedUser: { user: { username: 'username' } },
 };
 
 const columns = [
@@ -89,13 +90,13 @@ describe('DataFilesTable', () => {
     expect(getByText(/^Path/)).toBeDefined();
   });
 
-  it('should display an error for 502', async () => {
+  it('should display an error for 500', async () => {
     const storeWithError = mockStore({
       ...initialMockState,
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502',
+          FilesListing: '500',
         },
         params: {
           FilesListing: {
@@ -278,11 +279,11 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502',
+          FilesListing: '500',
         },
         params: {
           FilesListing: {
-            system: 'test.system',
+            system: 'frontera.home.username',
             path: 'test/path',
             scheme: 'private',
           },

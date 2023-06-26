@@ -77,6 +77,7 @@ describe('DataFiles', () => {
           errorMessage: null,
           loading: false,
           defaultHost: 'cloud.corral.tacc.utexas.edu',
+          defaultSystem: 'cloud.data',
         },
         definitions: {
           list: [],

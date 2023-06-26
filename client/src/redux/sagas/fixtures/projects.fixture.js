@@ -1,35 +1,17 @@
 export const projectsListingFixture = [
   {
-    owner: null,
-    available: true,
-    description: 'Test Project Title',
-    type: 'STORAGE',
-    uuid: null,
-    revision: null,
-    site: null,
-    default: false,
-    public: false,
-    globalDefault: false,
-    name: 'PROJECT-3',
     id: 'test.site.project.PROJECT-3',
-    status: 'UP',
-    storage: {
-      proxy: null,
-      protocol: null,
-      mirror: false,
-      port: null,
-      publicAppsDir: null,
-      host: null,
-      rootDir: null,
-      homeDir: null,
-      auth: {
-        type: 'SSHKEYS',
-        username: '',
-        publicKey: '',
-        privateKey: '',
-      },
+    name: 'PROJECT-3',
+    host: 'cloud.data.tacc.utexas.edu',
+    updated: '2023-03-07T19:31:17.292220Z',
+    owner: {
+      username: 'username',
+      first_name: 'User',
+      last_name: 'Name',
+      email: 'user@username.com',
     },
-    absolutePath: '/corral-repl/tacc/aci/CEP/projects/PROJECT-3',
+    title: 'Test Project Title',
+    description: 'Test Project Description',
   },
 ];
 
@@ -39,40 +21,6 @@ export const projectMetadataResponse = {
   description: 'Long description of shared workspace',
   created: '2020-12-08T16:34:54.354843+00:00',
   lastModified: '2020-12-08T16:34:54.828181+00:00',
-  owner: {
-    last_name: 'Name',
-    first_name: 'User',
-    email: 'user@username.com',
-    username: 'username',
-  },
-  pi: {
-    last_name: 'Name',
-    first_name: 'User',
-    email: 'user@username.com',
-    username: 'username',
-  },
-  coPis: [
-    {
-      last_name: 'Pi',
-      first_name: 'Co',
-      email: 'user@username.com',
-      username: 'copi',
-    },
-  ],
-  teamMembers: [
-    {
-      last_name: 'Member',
-      first_name: 'Team',
-      email: 'user@username.com',
-      username: 'teammember',
-    },
-  ],
-};
-
-export const projectMetadataFixture = {
-  title: 'My Project',
-  description: 'Long description of shared workspace',
-  projectId: 'TEST-1',
   members: [
     {
       user: {
@@ -102,6 +50,10 @@ export const projectMetadataFixture = {
       access: 'edit',
     },
   ],
+};
+
+export const projectMetadataFixture = {
+  ...projectMetadataResponse,
   loading: false,
   error: null,
 };

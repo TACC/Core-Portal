@@ -28,9 +28,9 @@ export function* handleSocket(action) {
       // parse current jobs list for job event
       const jobsList = yield select((state) => state.jobs.list);
       // notification event contains job id and new status
-      const event = action.extra;
-      const jobIds = jobsList.map((job) => job.id);
-      if (jobIds.includes(event.id)) {
+      const upatedJob = action.extra;
+      const jobIds = jobsList.map((job) => job.uuid);
+      if (jobIds.includes(upatedJob.uuid)) {
         // if event is in current state, update
         yield put({
           type: 'UPDATE_JOBS_FROM_NOTIFICATIONS',

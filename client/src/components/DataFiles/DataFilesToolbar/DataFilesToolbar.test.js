@@ -177,7 +177,9 @@ describe('DataFilesToolbar', () => {
         files: {
           params: {
             FilesListing: {
-              path: '.Trash',
+              system: 'frontera.home.username',
+              path: 'home/username/.Trash',
+              scheme: 'private',
             },
           },
           listing: { FilesListing: [testFile] },
@@ -205,7 +207,9 @@ describe('DataFilesToolbar', () => {
         files: {
           params: {
             FilesListing: {
-              path: '.Trash',
+              system: 'frontera.home.username',
+              path: 'home/username/.Trash',
+              scheme: 'private',
             },
           },
           listing: { FilesListing: [] },

@@ -7,7 +7,7 @@ function useSelectedFiles() {
   const selectedFiles = useSelector((state) =>
     state.files.selected.FilesListing.map((i) => ({
       ...state.files.listing?.FilesListing[i],
-      id: `${state.files.listing?.FilesListing[i].system}${state.files.listing?.FilesListing[i].path}`,
+      id: `${state.files.listing?.FilesListing[i].system}/${state.files.listing?.FilesListing[i].path}`,
     }))
   );
 

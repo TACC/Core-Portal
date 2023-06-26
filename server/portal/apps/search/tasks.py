@@ -2,7 +2,7 @@
 import logging
 from django.conf import settings
 from celery import shared_task
-from portal.libs.agave.utils import service_account
+from portal.libs.agave.utils import user_account, service_account
 from portal.libs.elasticsearch.utils import index_listing
 from portal.apps.users.utils import get_tas_allocations
 from portal.apps.projects.models.metadata import ProjectMetadata
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
-def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
+def tapis_indexer(self, systemId, access_token=None, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
             if sys.get('scheme', None) == 'projects'
@@ -25,7 +25,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
 
-    client = service_account()
+    client = user_account(access_token) if access_token else service_account()
 
     if not filePath.startswith('/'):
         filePath = '/' + filePath
@@ -43,16 +43,16 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
 
 
 @shared_task(bind=True, max_retries=3, queue='default')
-def agave_listing_indexer(self, listing):
+def tapis_listing_indexer(self, listing):
     index_listing(listing)
 
 
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
-        if sys.api == 'tapis':
-            logger.info('INDEXING {} SYSTEM'.format(sys.name))
-            agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
+        if sys['api'] == 'tapis' and sys['scheme'] in ['community', 'public']:
+            logger.info('INDEXING {} SYSTEM'.format(sys['name']))
+            tapis_indexer.apply_async(args=[sys['system']], kwargs={'reindex': reindex})
 
 
 @shared_task(bind=True, max_retries=3, queue='api')

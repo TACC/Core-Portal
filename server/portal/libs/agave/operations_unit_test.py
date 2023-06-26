@@ -1,7 +1,6 @@
 from mock import patch, MagicMock
-from requests.exceptions import HTTPError
 from django.test import TestCase
-from agavepy.agave import AttrDict
+from tapipy.tapis import TapisResult
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
 from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename, makepublic
@@ -10,24 +9,45 @@ from portal.exceptions.api import ApiException
 
 class TestOperations(TestCase):
 
-    @patch('portal.libs.agave.operations.agave_listing_indexer')
+    @patch('portal.libs.agave.operations.tapis_listing_indexer')
     def test_listing(self, mock_indexer):
         client = MagicMock()
-        mock_listing = [AttrDict({'system': 'test.system',
-                                  'path': '/path/to/file'})]
-        client.files.list.return_value = mock_listing
-        ls = listing(client, 'test.system', '/path/to/file')
+        mock_tapis_listing = [TapisResult(**{
+            "mimeType": None,
+            "type": "file",
+            "url": "tapis://cloud.data/path/to/file",
+            "lastModified": "2020-04-23T06:25:56Z",
+            "name": "file",
+            "path": '/path/to/file',
+            "size": 1
+        })]
 
-        client.files.list.assert_called_with(systemId='test.system',
-                                             filePath='/path/to/file',
-                                             offset=1,
-                                             limit=100)
+        client.files.listFiles.return_value = mock_tapis_listing
+        ls = listing(client, 'test.system', '/path/to/file', 1)
 
-        mock_indexer.delay.assert_called_with([{'system': 'test.system',
-                                                'path': '/path/to/file'}])
+        client.files.listFiles.assert_called_with(systemId='test.system',
+                                                  path='/path/to/file',
+                                                  offset=1,
+                                                  limit=100)
 
-        self.assertEqual(ls, {'listing': [{'system': 'test.system',
-                                           'path': '/path/to/file'}],
+        mock_response_listing = [{'system': 'test.system',
+                                  'type': 'file',
+                                  'format': 'raw',
+                                  'mimeType': None,
+                                  'path': '/path/to/file',
+                                  'name': 'file',
+                                  'length': 1,
+                                  'lastModified': '2020-04-23T06:25:56Z',
+                                  '_links': {
+                                      'self': {
+                                          'href': 'tapis://cloud.data/path/to/file'
+                                      }
+                                    }
+                                  }]
+
+        mock_indexer.delay.assert_called_with(mock_response_listing)
+
+        self.assertEqual(ls, {'listing': mock_response_listing,
                               'reachedEnd': True})
 
     @patch('portal.libs.agave.operations.IndexedFile.search')
@@ -59,13 +79,17 @@ class TestOperations(TestCase):
                                         'path': '/path/to/file'}],
                                       'reachedEnd': True, 'count': 1})
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_mkdir(self, mock_indexer):
         client = MagicMock()
-        mkdir(client, 'test.system', '/root', 'testfolder')
-        client.files.manage.assert_called_with(systemId='test.system', filePath='/root', body={'action': 'mkdir', 'path': 'testfolder'})
+        client.access_token.access_token = 'my_access_token'
 
-        mock_indexer.apply_async.assert_called_with(kwargs={'systemId': 'test.system', 'filePath': '/root', 'recurse': False})
+        mkdir(client, 'test.system', '/root', 'testfolder')
+
+        client.files.mkdir.assert_called_with(systemId='test.system', path='/root/testfolder')
+
+        mock_indexer.apply_async.assert_called_with(kwargs={'access_token': 'my_access_token', 'systemId': 'test.system',
+                                                            'filePath': '/root', 'recurse': False})
 
     @patch('portal.libs.agave.operations.move')
     def test_rename(self, mock_move):
@@ -77,17 +101,15 @@ class TestOperations(TestCase):
                                      dest_system='test.system', dest_path='/path/to',
                                      file_name='newname')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_move(self, mock_indexer):
         client = MagicMock()
-        client.files.list.side_effect = HTTPError(response=MagicMock(status_code=404))
-        client.files.manage.return_value = {'nativeFormat': 'dir'}
+        client.files.moveCopy.return_value = {'status': 'success'}
+        client.files.getStatInfo.return_value = TapisResult(**{'dir': True})
 
         move(client, 'test.system', '/path/to/src', 'test.system', '/path/to/dest')
 
-        client.files.manage.assert_called_with(systemId='test.system', filePath='/path/to/src', body={
-            'action': 'move', 'path': 'path/to/dest/src'
-        })
+        client.files.moveCopy.assert_called_with(systemId='test.system', path='/path/to/src', operation='MOVE', newPath='path/to/dest/src')
 
         self.assertEqual(mock_indexer.apply_async.call_count, 3)
 
@@ -96,17 +118,14 @@ class TestOperations(TestCase):
         with self.assertRaises(ApiException):
             move(client, 'test.system', '/path/to/src', 'other.system', '/path/to/dest')
 
-    @patch('portal.libs.agave.operations.agave_indexer')
+    @patch('portal.libs.agave.operations.tapis_indexer')
     def test_copy(self, mock_indexer):
         client = MagicMock()
-        client.files.list.side_effect = HTTPError(response=MagicMock(status_code=404))
-        client.files.manage.return_value = {'nativeFormat': 'dir'}
+        client.files.moveCopy.return_value = {'status': 'success'}
 
         copy(client, 'test.system', '/path/to/src', 'test.system', '/path/to/dest')
 
-        client.files.manage.assert_called_with(systemId='test.system', filePath='/path/to/src', body={
-            'action': 'copy', 'path': 'path/to/dest/src'
-        })
+        client.files.moveCopy.assert_called_with(systemId='test.system', path='/path/to/src', operation='COPY', newPath='path/to/dest/src')
 
         self.assertEqual(mock_indexer.apply_async.call_count, 2)
 
@@ -119,4 +138,4 @@ class TestOperations(TestCase):
         mock_copy.assert_called_with(client,
                                      'test.system',
                                      '/path/to/src',
-                                     'portal.storage.public', '/')
+                                     'cloud.data', '/')

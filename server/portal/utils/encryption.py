@@ -16,6 +16,15 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
+def createKeyPair():
+    private_key = create_private_key()
+    priv_key_str = export_key(private_key, 'PEM')
+    public_key = create_public_key(private_key)
+    publ_key_str = export_key(public_key, 'OpenSSH')
+
+    return priv_key_str, publ_key_str
+
+
 def create_private_key(bits=2048):
     """Creates a brand new RSA key
 
