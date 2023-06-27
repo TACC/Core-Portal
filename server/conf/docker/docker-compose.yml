@@ -7,6 +7,6 @@ services:
         context: ../../../.
         dockerfile: server/conf/docker/Dockerfile
         target: development
-      image: taccwma/core-portal:tapisv3
+      image: taccwma/core-portal:latest
       command: /bin/bash
       container_name: core_portal_django
