@@ -67,7 +67,11 @@
     margin-bottom: var(--vertical-buffer);
   }
 
-  .two-column,
+  .two-column:is(with-unequal-columns),
+  .multi-column {
+    column-fill: auto;
+  }
+  .two-column:not(with-unequal-columns),
   .balance {
     column-fill: balance;
   }
