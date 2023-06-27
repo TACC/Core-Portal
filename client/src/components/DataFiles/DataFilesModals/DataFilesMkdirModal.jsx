@@ -6,7 +6,13 @@ import FormField from '_common/Form/FormField';
 import { useSystemDisplayName } from 'hooks/datafiles';
 import { useModal, useFileListing } from 'hooks/datafiles';
 import { useMkdir } from 'hooks/datafiles/mutations';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Spinner } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Spinner,
+} from 'reactstrap';
 import { Button } from '_common';
 
 const DataFilesMkdirModal = () => {
@@ -59,22 +65,27 @@ const DataFilesMkdirModal = () => {
           onSubmit={mkdirCallback}
         >
           {({ isSubmitting }) => (
-          <Form>
-            <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Creating folder in {systemDisplayName}/{params.path}
-            </ModalHeader>
-            <ModalBody>
-              <FormField
-                name="dirname"
-                label="Enter a name for the new folder:"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button type="primary" size="long" attr="submit" disabled={isSubmitting}>
-                {!isSubmitting ? 'Create Folder' : <Spinner size="sm" /> }
-              </Button>
-            </ModalFooter>
-          </Form>
+            <Form>
+              <ModalHeader toggle={toggle} charCode="&#xe912;">
+                Creating folder in {systemDisplayName}/{params.path}
+              </ModalHeader>
+              <ModalBody>
+                <FormField
+                  name="dirname"
+                  label="Enter a name for the new folder:"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  type="primary"
+                  size="long"
+                  attr="submit"
+                  disabled={isSubmitting}
+                >
+                  {!isSubmitting ? 'Create Folder' : <Spinner size="sm" />}
+                </Button>
+              </ModalFooter>
+            </Form>
           )}
         </Formik>
       </Modal>
