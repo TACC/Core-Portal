@@ -85,7 +85,9 @@ const DefaultSystemRedirect = () => {
   const history = useHistory();
   useEffect(() => {
     if (systemList.length === 0) return;
-    const defaultSystem = systemList[0];
+    const defaultSystem =
+      systemList.find((sys) => sys.display_name === 'Frontera') ??
+      systemList[0];
     history.push(`/workbench/system-status/${defaultSystem.hostname}`);
   }, [systemList]);
   return <></>;
