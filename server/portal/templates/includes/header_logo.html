@@ -7,7 +7,7 @@
   <!-- The header branding replaces this (from external markup). -->
   {# FAQ: Content populated via JavaScript, below #}
 </span>
-<script type="module">
+<script type="module" nonce="{{ CSP_NONCE }}">
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
 
   const placeholder = document.getElementById('header-logo');

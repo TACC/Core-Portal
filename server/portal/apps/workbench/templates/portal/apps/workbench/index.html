@@ -12,18 +12,18 @@
   <div id="react-root"></div>
 {% endblock %}
 {% block scripts %}
-  <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
+  <script nonce="{{ CSP_NONCE }}"> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
 
   {% if DEBUG %}
-    <script type="module">
+    <script type="module" nonce="{{ CSP_NONCE }}">
       import RefreshRuntime from "https://cep.test:3000/core/static/@react-refresh"
       RefreshRuntime.injectIntoGlobalHook(window)
       window.$RefreshReg$ = () => {}
       window.$RefreshSig$ = () => (type) => type
       window.__vite_plugin_react_preamble_installed__ = true
     </script>
-    <script type="module" src="https://cep.test:3000/core/static/@vite/client"></script>
-    <script type="module" src="https://cep.test:3000/core/static/src/index.jsx"></script>
+    <script type="module" nonce="{{ CSP_NONCE }}" src="https://cep.test:3000/core/static/@vite/client"></script>
+    <script type="module" nonce="{{ CSP_NONCE }}" src="https://cep.test:3000/core/static/src/index.jsx"></script>
   {% else %}
     {% include "index.html" %}
   {% endif %}

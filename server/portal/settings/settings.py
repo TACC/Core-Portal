@@ -105,6 +105,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Adding CSP before any response processing happens.
+    'csp.middleware.CSPMiddleware',
     # Django core middleware.
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -132,6 +134,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # CSP: exposes nonce into global context
+                'csp.context_processors.nonce', 
 
                 # what are these for?
                 'django.template.context_processors.i18n',
@@ -322,7 +327,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'portal': {
@@ -702,6 +707,43 @@ SETTINGS: RECAPTCHA
 """
 RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
 RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
+
+"""
+SETTINGS: CSP
+"""
+CSP_CONNECT_SRC = [
+    "'self'",
+    "*.google-analytics.com",
+    "*.googletagmanager.com"
+]
+CSP_DEFAULT_SRC = ["'none'"]
+CSP_FONT_SRC = [
+    "'self'",
+    "*.bootstrapcdn.com",
+    "cdnjs.cloudflare.com",
+	"*.googleapis.com",
+    "*.gstatic.com",
+]
+CSP_FRAME_SRC = ["'self'"]
+CSP_IMG_SRC = [
+    "'self'",
+    "data:",
+    "*.google-analytics.com",
+    "*.googletagmanager.com"
+]
+CSP_STYLE_SRC = [
+    "'self'",
+    "*.bootstrapcdn.com",
+    "cdnjs.cloudflare.com",
+	"*.googleapis.com",
+    "*.gstatic.com",
+]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    'strict-dynamic'
+]
+
+CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
 
 """
 SETTINGS: LOCAL OVERRIDES

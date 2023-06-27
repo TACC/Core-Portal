@@ -5,7 +5,7 @@
           so CMS and User Guide can render this markup into their markup. -->
 
 {# GH-101: Remove style tag i.e. rely only on `site.header.css` #}
-<style type="text/css">
+<style type="text/css" nonce="{{ CSP_NONCE }}">
   .s-portal-nav .icon {
     margin-right: 0.25em;
 

@@ -11,7 +11,7 @@
 
 <!-- Populate search field value from matching URL query parameter -->
 {# FP-858: Instead use `{{request.GET.query_string}}` in CMS Django template #}
-<script>
+<script nonce="{{ CSP_NONCE }}">
   function populateSearchFieldValueFromURLParams() {
     import('/static/site_cms/js/modules/inputFieldValue.js').then((inputFieldValue) => {
       const shadowRoot = document.getElementById('s-search-bar').shadowRoot;
@@ -22,7 +22,7 @@
   }
 </script>
 
-<script type="module">
+<script type="module" nonce="{{ CSP_NONCE }}">
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
   import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
 

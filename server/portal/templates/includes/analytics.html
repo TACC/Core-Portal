@@ -1,8 +1,8 @@
 {% if settings.GOOGLE_ANALYTICS_PROPERTY_ID %}
   {% if settings.DEBUG %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
-    <script>
+    <script nonce="{{ CSP_NONCE }}" async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
+    <script nonce="{{ CSP_NONCE }}">
       var dntStatus = 0;
       // Check for Do Not Track settings.
       function dntCheck() {
@@ -24,8 +24,8 @@
     </script>
   {% else %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
-    <script>
+    <script nonce="{{ CSP_NONCE }}" async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
+    <script nonce="{{ CSP_NONCE }}">
       var dntStatus = 0;
       // Check for Do Not Track settings.
       function dntCheck() {
