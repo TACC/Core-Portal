@@ -7,15 +7,99 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2023-06-26: Tapis v3; Upgrade Django to 3.2
+
+### Added
+
+- TV3-143: Shared Workspace migration scripts (#803)
+- TV3-175: token endpoint (#809)
+- TV3-155, TV3-156: Customizable Tapis v2 Jobs View (#789)
+- TV3-78: Tapis v3 import-apps util (#786)
+- TV3-105: Historical jobs in V3 (#744)
+- FP-319: Job History Search (#756)
+- TV3-55: Job (re)submission backend (#734)
+
+### Changed
+
+- Update Readme (#814), (#815)
+- TV3-176: Revised parameterSet view in AppForm (#812)
+- TV3-173, TV3-174: Regex validation; Dynamic parameterSet (#810)
+- TV3-92: support field type from notes in app definition (#802)
+- TV3-162: Upgrade Django to 3.2 (#798)
+- TV3-169: Replace tapis profile info with TAS info (#801)
+- TV3-167: Update TODOv3 comments (#796)
+- TV3-166: Remove Defuct/Unused Settings (#794), (#776)
+- TV3-161: Shared Workspaces Push Keys (#790)
+- TV3-157: No longer save ssh keypairs in database (#788)
+- TV3-47: Tapis v3 Search (#781)
+- TV3-129: Update Request New Allocation Link (#784)
+- TV3-130: manage account changes (#782)
+- TV3-25: Tapis v3 Shared Workspaces (#771)
+- TV3-79: Tapis v3 Postits (#775)
+- TV3-87: Tapis v3 Compress/Extract Toolbar Utility Apps (#774)
+- TV3-43: Tapis v3 Files Handler (#769)
+- TV3-125: Remove Feedback link (#773)
+- TV3-137: Queue validation for v3 systems (#770)
+- TV3-109 Concatenate homeDir in DataFiles Breadcrumbs (#765)
+- TV3-98: enable app unit tests (#768)
+- TV3-102: Implement relative homeDir listings for Data Files systems (#755)
+- TV3-44: Tapis v3 Notifications (#745)
+- TV3-82: Tapis v3 Push Keys (#739)
+- Tapis v3 long-live client (#747)
+- TV3-51: Tapis v3 app form frontend (#730)
+- TV3-57: Replace JobSubmission model with tags (#736)
+- TV3-80: update token refresh middleware (#732)
+- TV3-67: Tapis v3 App licenses (#726)
+- TV3-52: Tapis v3 Systems Onboarding (#713)
+- TV3-42: Tapis v3 Jobs Listing (#705)
+- TV3-70: Tapis v3 Apps Tray (#720)
+- TV3-50: Tapis v3 apps operations (#711)
+- TV3-2: Tapis v3 Auth (#664)
+
+### Fixed
+
+- TV3-168: Tapis Client UI Delay (#804)
+- TV3-141, TV3-171: Fix Navigation in Copy/Move Modal & Incorrect System Names (#793)
+- TV3-172: Prevent excessive refetching of user roles (#805)
+- TV3-152: Fix workspace jupyter mounts (#800)
+- WP-46: Fix Filter Inconsistencies (#795)
+- TV3-163: Add 10s delay to workaround tapis-issue (#791)
+- TV3-154: Treat 500 errors from file listings as need for keys (#787)
+- TV3-107, TV3-120: Fix incorrect and missing systems (#767)
+- TV3-102: Properly Handle Job Output (#760)
+
+## [2.24.0] - 2023-06-22: Bugfixes; BM preview; Custom stylesheets
+
+### Added
+
+- BM-45: Add preview for Brainmap files (.nii, .nii.gz) (#772)
+- Allow per-project portal stylesheets (#799)
+
+### Changed
+
+- FP-1986: Restrict APCD submissions access (#766)
+- Update local CA certs (#783)
+- Remove Maverick from sysmon and from sysmon fixtures (#808)
+
+### Fixed
+
+- FP-1952: tighter ES network settings (#752)
+- Pin cms version; update cms settings; fix es_domain (#759)
+- Remove Data Submissions from Sidebar (#761)
+- FP-1986: Restrict APCD submissions access (#766)
+- WI-39: remove MFAStep from onboarding (#811)
+
 ## [2.23.0] - 2023-01-18: Minor changes and bugfixes
 
 ### Changed
+
 - FP-1951: Configurable Ticket Attachment Size (#754)
 - FP-1939: Cleanup searchbar and sidebar components (#737)
 - FP-1943: Remove retired Longhorn from system monitor (#738)
 - TV3-93: Tapis v2 verbose historical job data (#748)
 
 ### Fixed
+
 - FP-1928: Fix Data Files Dropdown CSS (#735)
 
 ## [2.22.1] - 2022-11-15: Increase CustomMessageTemplate length
@@ -791,7 +875,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.23.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.0
+[2.24.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.0
 [2.23.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.23.0
 [2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
 [2.22.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.0

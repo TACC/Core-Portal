@@ -2,57 +2,100 @@ import * as Yup from 'yup';
 
 const FormSchema = (app) => {
   const appFields = {
-    appArgs: {},
-    envVariables: {},
+    parameterSet: {
+      appArgs: {},
+      containerArgs: {},
+      schedulerOptions: {},
+      envVariables: {},
+    },
     fileInputs: {},
-    defaults: { fileInputs: {}, appArgs: {} },
-    schema: { fileInputs: {}, appArgs: {} },
+    defaults: {
+      fileInputs: {},
+      parameterSet: {
+        appArgs: {},
+        containerArgs: {},
+        schedulerOptions: {},
+        envVariables: {},
+      },
+    },
+    schema: {
+      fileInputs: {},
+      parameterSet: {
+        appArgs: {},
+        containerArgs: {},
+        schedulerOptions: {},
+        envVariables: {},
+      },
+    },
   };
-  /* TODOv3: handle envVariables  https://jira.tacc.utexas.edu/browse/WP-83 */
-  (app.definition.jobAttributes.parameterSet.appArgs || []).forEach((p) => {
-    const param = p;
-    if (param.notes.isHidden) {
-      return;
-    }
 
-    const field = {
-      label: param.name,
-      description: param.description,
-      required: param.inputMode === 'REQUIRED',
-    };
+  Object.entries(app.definition.jobAttributes.parameterSet).forEach(
+    ([parameterSet, parameterSetValue]) => {
+      if (!Array.isArray(parameterSetValue)) return;
 
-    if (param.notes.enum_values) {
-      field.type = 'select';
-      field.options = param.notes.enum_values;
-      appFields.schema.appArgs[param.name] = Yup.string().oneOf(
-        field.options.map((enumVal) => {
-          if (typeof enumVal === 'string') {
-            return enumVal;
+      parameterSetValue.forEach((param) => {
+        if (param.notes?.isHidden) {
+          return;
+        }
+
+        const field = {
+          label: param.name ?? param.key,
+          description: param.description,
+          required: param.inputMode === 'REQUIRED',
+          readOnly: param.inputMode === 'FIXED',
+          parameterSet: parameterSet,
+        };
+
+        if (param.notes?.enum_values) {
+          field.type = 'select';
+          field.options = param.notes?.enum_values;
+          appFields.schema.parameterSet[parameterSet][field.label] =
+            Yup.string().oneOf(
+              field.options.map((enumVal) => {
+                if (typeof enumVal === 'string') {
+                  return enumVal;
+                }
+                return Object.keys(enumVal)[0];
+              })
+            );
+        } else {
+          if (param.notes?.fieldType === 'email') {
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.string().email('Must be a valid email.');
+          } else if (param.notes?.fieldType === 'number') {
+            field.type = 'number';
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.number();
+          } else {
+            field.type = 'text';
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.string();
           }
-          return Object.keys(enumVal)[0];
-        })
-      );
-    } else {
-      if (p.notes.fieldType === 'email') {
-        appFields.schema.appArgs[param.name] = Yup.string().email(
-          'Must be a valid email.'
-        );
-      } else if (p.notes.fieldType === 'number') {
-        field.type = 'number';
-        appFields.schema.appArgs[param.name] = Yup.number();
-      } else {
-        field.type = 'text';
-        appFields.schema.appArgs[param.name] = Yup.string();
-      }
+        }
+        if (field.required) {
+          appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][field.label].required(
+              'Required'
+            );
+        }
+        if (param.notes?.validator?.regex && param.notes?.validator?.message) {
+          try {
+            const regex = RegExp(param.notes.validator.regex);
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              appFields.schema.parameterSet[parameterSet][field.label].matches(
+                regex,
+                param.notes.validator.message
+              );
+          } catch (SyntaxError) {
+            console.warn('Invalid regex pattern for app');
+          }
+        }
+        appFields.parameterSet[parameterSet][field.label] = field;
+        appFields.defaults.parameterSet[parameterSet][field.label] =
+          param.arg ?? param.value ?? '';
+      });
     }
-    if (field.required) {
-      appFields.schema.appArgs[param.name] =
-        appFields.schema.appArgs[param.name].required('Required');
-    }
-    appFields.appArgs[param.name] = field;
-    appFields.defaults.appArgs[param.name] =
-      param.arg === null || typeof param.arg === 'undefined' ? '' : param.arg;
-  });
+  );
 
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
@@ -65,6 +108,7 @@ const FormSchema = (app) => {
       label: input.name,
       description: input.description,
       required: input.inputMode === 'REQUIRED',
+      readOnly: input.inputMode === 'FIXED',
     };
 
     field.type = 'text';
