@@ -49,7 +49,7 @@ services:
   postgres:
     image: postgres:11.5
     volumes:
-      - core_portal_v3_postgres_data:/var/lib/postgresql/data/portal
+      - core_portal_postgres_data:/var/lib/postgresql/data/portal
     container_name: core_portal_postgres
     environment:
       - POSTGRES_PASSWORD=dev
@@ -140,5 +140,5 @@ volumes:
   core_portal_redis_data:
   core_portal_es_data:
   core_portal_rabbitmq_data:
-  core_portal_v3_postgres_data:
+  core_portal_postgres_data:
   core_cms_postgres_data:
