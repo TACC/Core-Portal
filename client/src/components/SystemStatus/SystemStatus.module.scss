@@ -1,6 +1,6 @@
 /* To override `contentLayoutName` media queries */
 /* CAVEAT: Not supported on Safari until v16 */
-@supports(container-type: inline-size) {
+@supports (container-type: inline-size) {
   /* To allow a container query */
   .root {
     container-type: inline-size;
@@ -23,15 +23,11 @@
   }
 }
 
-
-
 .layout {
   padding-top: var(--global-space--section-top);
   padding-left: var(--global-space--section-left);
   padding-bottom: var(--global-space--section-right);
 }
-
-
 
 .panel-1 {
   /* To align child tables vertically and support scrollbars they could have */
@@ -41,16 +37,12 @@
   gap: 3rem;
 }
 
-
-
 /* Error message */
 .error {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
-
 
 .header {
   padding-bottom: 1.5rem;
