@@ -1,27 +1,40 @@
-.content {
-  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
-  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+/* To override `contentLayoutName` media queries */
+/* CAVEAT: Not supported on Safari until v16 */
+@supports (container-type: inline-size) {
+  /* To allow a container query */
+  .root {
+    container-type: inline-size;
+    container-name: system-section-root;
 
-  /* As a flex child */
-  flex-grow: 1;
-  height: 85%;
-  width: 100% !important;
+    /* FAQ: Only necessary because container-type: (…-)size */
+    /* https://stackoverflow.com/a/73980194/11817077 */
+    width: 100%;
+  }
+
+  /* So we control when column count changes */
+  /* FAQ: The `contentLayoutName` triggers CSS that changes column count based on media query */
+  .layout {
+    column-count: 1;
+  }
+  @container system-section-root (width > 1000px) {
+    .layout {
+      column-count: 2;
+    }
+  }
 }
 
-.sysmon-content {
-  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
-  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
-
-  /* As a flex child */
-  flex-grow: 1;
-  height: 15%;
-  width: 100% !important;
+.layout {
+  padding-top: var(--global-space--section-top);
+  padding-left: var(--global-space--section-left);
+  padding-bottom: var(--global-space--section-right);
 }
 
-.section {
-  width: 50% !important;
+.panel-1 {
+  /* To align child tables vertically and support scrollbars they could have */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 3rem;
 }
 
 /* Error message */
@@ -34,9 +47,6 @@
 .header {
   padding-bottom: 1.5rem;
 }
-
-.header {
-  h3 {
-    font-size: 1.25rem;
-  }
+.header h3 {
+  font-size: 1.25rem;
 }
