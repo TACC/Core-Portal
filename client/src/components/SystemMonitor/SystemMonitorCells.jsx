@@ -12,7 +12,7 @@ const CELL_PROPTYPES = {
 export const Display = ({ cell: { row } }) => (
   <strong>
     <Link
-      className="wb-text-primary"
+      className="wb-link"
       to={`/workbench/system-status/${row.original.hostname}`}
     >
       {row.original.display_name}
