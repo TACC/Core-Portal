@@ -79,7 +79,6 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
     assert "steps" in result
     assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
     assert result["steps"][0]["displayName"] == 'Mock Step'
-    print(result["steps"][0])
     assert result["steps"][0]["state"] == SetupState.COMPLETED
     assert len(result["steps"][0]["events"]) == 2
 

@@ -7,6 +7,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useSystems,
 } from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
@@ -119,16 +120,40 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem({ scheme, system, path });
+
+  const systemName = useSystemDisplayName({ scheme, system, path });
+
+  const homeDir = selectedSystem?.homeDir;
+
+  const isSystemRootPath = !path
+    .replace(/^\/+/, '')
+    .startsWith(homeDir?.replace(/^\/+/, ''));
+
+  const startingPath = isSystemRootPath ? '' : homeDir;
+
+  const systemHomeDirPaths = homeDir?.split('/').filter((x) => !!x);
+
   path
     .split('/')
     .filter((x) => !!x)
-    .reduce((prev, curr) => {
-      const comp = `${prev}/${curr}`;
-      paths.push(comp);
-      pathComps.push(curr);
-      return comp;
+    .reduce((prev, curr, index) => {
+      // don't push path if already part of the system's homeDir at the same index
+      if (
+        isSystemRootPath ||
+        !systemHomeDirPaths ||
+        systemHomeDirPaths[index] !== curr
+      ) {
+        const comp = `${prev}/${curr}`;
+        paths.push(`${startingPath}${comp}`);
+        pathComps.push(curr);
+        return comp;
+      } else {
+        return '';
+      }
     }, '');
-  const root = useSystemDisplayName({ scheme, system });
 
   return (
     <div className={`breadcrumbs ${className}`}>
@@ -147,11 +172,11 @@ const DataFilesBreadcrumbs = ({
         api={api}
         scheme={scheme}
         system={system}
-        path=""
+        path={startingPath}
         section={section}
         isPublic={isPublic}
       >
-        <>{root}</>
+        <>{systemName}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {

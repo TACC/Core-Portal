@@ -11,10 +11,8 @@
     context, if these classes were a direct representation of Agave resources
     then they should live in `portal.libs.agave.models`
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
-from future.utils import python_2_unicode_compatible
 from django.db import models, transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -212,7 +210,7 @@ class Project(object):
             id=storage_id,
             name=project_id,
             description=title,
-            site=settings.PORTAL_DOMAIN
+            site=settings.PORTAL_NAMESPACE
         )
         storage.storage.port = settings.PORTAL_PROJECTS_SYSTEM_PORT
         storage.storage.home_dir = '/'
@@ -541,7 +539,6 @@ class Project(object):
         return self.project_id
 
 
-@python_2_unicode_compatible
 class ProjectId(models.Model):
     """Project ID Model.
 

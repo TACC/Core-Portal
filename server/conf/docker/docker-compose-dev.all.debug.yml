@@ -87,7 +87,7 @@ services:
       - django
 
   websockets:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
@@ -100,7 +100,7 @@ services:
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -118,7 +118,7 @@ services:
     container_name: core_portal_django
 
   workers:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static

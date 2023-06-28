@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.unit_test
    :synopsis: Projects app unit tests.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 from django.conf import settings
@@ -16,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture()
 def agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
 @pytest.fixture()

@@ -5,24 +5,24 @@ import PropTypes from 'prop-types';
 import { Icon } from '_common';
 import JobsSessionModal from '../JobsSessionModal';
 import styles from './JobsStatus.module.scss';
+import { isTerminalState } from 'utils/jobsUtil';
 
 export const STATUS_TEXT_MAP = {
-  ACCEPTED: 'Processing',
   PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
-  STAGING_INPUTS: 'Staging',
-  STAGED: 'Staging',
-  STAGING_JOB: 'Staging',
-  SUBMITTING: 'Submitted',
-  QUEUED: 'Queued',
+  STAGING_INPUTS: 'Queueing',
+  STAGING_JOB: 'Queueing',
+  SUBMITTING_JOB: 'Queueing',
+  QUEUED: 'Queueing',
   RUNNING: 'Running',
-  CLEANING_UP: 'Finishing',
   ARCHIVING: 'Finishing',
   FINISHED: 'Finished',
   STOPPED: 'Stopped',
   FAILED: 'Failure',
   BLOCKED: 'Blocked',
   PAUSED: 'Paused',
+  CANCELLED: 'Cancelled',
+  ARCHIVED: 'Archived', // TODOv3: dropV2Jobs
   toastMap(status) {
     /* Post-process mapped status message to get a toast message translation. */
     const mappedStatus = getStatusText(status);
@@ -62,7 +62,7 @@ export function getBadgeColor(status) {
   }
 }
 
-function JobsStatus({ status, fancy, jobId }) {
+function JobsStatus({ status, fancy, jobUuid }) {
   const [modal, setModal] = React.useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -73,25 +73,17 @@ function JobsStatus({ status, fancy, jobId }) {
   const notifs = useSelector((state) => state.notifications.list.notifs);
   let interactiveSessionLink;
 
-  const jobConcluded = [
-    'CLEANING_UP',
-    'ARCHIVING',
-    'FINISHED',
-    'STOPPED',
-    'FAILED',
-  ];
+  const jobConcluded = isTerminalState(status) || status === 'ARCHIVING';
 
   /* Check if job is not ended AND has interactive session. */
   /* NOTE: Sometimes a job RUNNING status and the interactive webhook come out of order,
   so instead of checking for a running job with a session, we check that the job is not ended.
   */
-  if (!jobConcluded.includes(status)) {
+  if (!jobConcluded) {
     const interactiveNotifs = notifs.filter(
-      (n) =>
-        n.event_type === 'interactive_session_ready' &&
-        !jobConcluded.includes(n.extra.status) // need to account for the possibility of session ready and job status notifs coming out of order
+      (n) => n.event_type === 'interactive_session_ready' && !jobConcluded // need to account for the possibility of session ready and job status notifs coming out of order
     );
-    const notif = interactiveNotifs.find((n) => n.extra.id === jobId);
+    const notif = interactiveNotifs.find((n) => n.extra.uuid === jobUuid);
     interactiveSessionLink = notif ? notif.action_link : null;
   }
 
@@ -127,7 +119,7 @@ function JobsStatus({ status, fancy, jobId }) {
 JobsStatus.propTypes = {
   status: PropTypes.string.isRequired,
   fancy: PropTypes.bool,
-  jobId: PropTypes.string.isRequired,
+  jobUuid: PropTypes.string.isRequired,
 };
 JobsStatus.defaultProps = {
   fancy: false,

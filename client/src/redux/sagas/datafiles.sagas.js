@@ -13,6 +13,7 @@ import {
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 import truncateMiddle from '../../utils/truncateMiddle';
+import { fetchAppDefinitionUtil } from './apps.sagas';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -62,7 +63,7 @@ export function* fetchSystemDefinition(action) {
     const systemJson = yield call(fetchSystemDefinitionUtil, action.payload);
     yield put({
       type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
-      payload: systemJson,
+      payload: systemJson.response,
     });
   } catch (e) {
     yield put({
@@ -77,41 +78,6 @@ export function* watchFetchSystems() {
   // the first result.
   yield takeLeading('FETCH_SYSTEMS', fetchSystems);
   yield takeLeading('FETCH_SYSTEM_DEFINITION', fetchSystemDefinition);
-}
-
-export async function pushKeysUtil(system, form) {
-  const url = `/api/accounts/systems/${system}/keys/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ form, action: 'push' }),
-  });
-  return request;
-}
-
-export function* watchPushKeys() {
-  yield takeLeading('DATA_FILES_PUSH_KEYS', pushKeys);
-}
-
-export function* pushKeys(action) {
-  const form = {
-    password: action.payload.password,
-    token: action.payload.token,
-    type: action.payload.type,
-    hostname: null,
-  };
-
-  yield call(pushKeysUtil, action.payload.system, form);
-
-  yield call(action.payload.reloadCallback);
-  yield put({
-    type: 'DATA_FILES_TOGGLE_MODAL',
-    payload: {
-      operation: 'pushKeys',
-      props: {},
-    },
-  });
 }
 
 export function* watchFetchFiles() {
@@ -201,8 +167,8 @@ export function* fetchFiles(action) {
         code: e.status ? e.status.toString() : '503',
       },
     });
-    // If listing returns 502, body should contain a system def for key pushing.
-    yield e.status === 502 &&
+    // If listing returns 500, body should contain a system def for key pushing.
+    yield e.status === 500 &&
       put({
         type: 'SET_SYSTEM',
         payload: {
@@ -257,7 +223,7 @@ export function* scrollFiles(action) {
 }
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
-  const url = `/api/datafiles/${api}/rename/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -321,7 +287,7 @@ export async function moveFileUtil(
   destSystem,
   destPath
 ) {
-  const url = `/api/datafiles/${api}/move/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -500,7 +466,7 @@ export function* copyFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`,
+        } copied to ${truncateMiddle(`${dest.path}`, 20) || '/'}`,
       },
     });
   }
@@ -514,7 +480,10 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
-  const url = `/api/datafiles/${api}/upload/${scheme}/${system}${apiPath}/`;
+
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
+  );
 
   const request = await fetch(url, {
     method: 'POST',
@@ -601,9 +570,7 @@ export function* preview(action) {
       action.payload.api,
       action.payload.scheme,
       action.payload.system,
-      action.payload.path,
-      action.payload.href,
-      action.payload.length
+      action.payload.path
     );
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
@@ -622,9 +589,8 @@ export function* preview(action) {
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
+export async function previewUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/preview/${scheme}/${system}/${path}`;
   const request = await fetch(url);
   const requestJson = await request.json();
   return requestJson.data;
@@ -635,7 +601,11 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
   if (apiPath === '/') {
     apiPath = '';
   }
-  const url = `/api/datafiles/${api}/mkdir/${scheme}/${system}${apiPath}/`;
+
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/mkdir/${scheme}/${system}/${apiPath}/`
+  );
+
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
@@ -671,7 +641,7 @@ export function* mkdir(action) {
 }
 
 export async function fileLinkUtil(method, scheme, system, path) {
-  const url = `/api/datafiles/link/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/link/${scheme}/${system}/${path}/`;
   return fetchUtil({
     url,
     method,
@@ -694,6 +664,7 @@ export function* fileLink(action) {
       status: {
         method,
         url: '',
+        expiration: null,
         error: null,
         loading: true,
       },
@@ -709,6 +680,7 @@ export function* fileLink(action) {
           status: {
             method: null,
             url: '',
+            expiration: null,
             error: null,
             loading: false,
           },
@@ -723,6 +695,7 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: result.data || '',
+          expiration: result.expiration || '',
           error: null,
           loading: false,
         },
@@ -736,6 +709,7 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: '',
+          expiration: null,
           error: error.toString(),
           loading: false,
         },
@@ -745,9 +719,8 @@ export function* fileLink(action) {
   }
 }
 
-export async function downloadUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
-  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
+export async function downloadUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/download/${scheme}/${system}/${path}`;
   const request = await fetch(url);
 
   const requestJson = await request.json();
@@ -769,26 +742,24 @@ export function* watchDownload() {
 }
 
 export function* download(action) {
-  const { href } = action.payload.file._links.self;
-  const { length } = action.payload.file;
   yield call(
     downloadUtil,
     'tapis',
     'private',
     action.payload.file.system,
-    action.payload.file.path,
-    href,
-    length
+    action.payload.file.path
   );
 }
 
-export async function trashUtil(api, scheme, system, path) {
-  const url = `/api/datafiles/${api}/trash/${scheme}/${system}${path}/`;
+export async function trashUtil(api, scheme, system, path, homeDir) {
+  const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({}),
+    body: JSON.stringify({
+      homeDir: homeDir,
+    }),
   });
 
   if (!request.ok) {
@@ -803,7 +774,7 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path);
+    return call(trashFile, file.system, file.path, action.payload.homeDir);
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -826,13 +797,13 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path) {
+export function* trashFile(system, path, homeDir) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
-    yield call(trashUtil, 'tapis', 'private', system, path);
+    yield call(trashUtil, 'tapis', 'private', system, path, homeDir);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -847,7 +818,7 @@ export function* trashFile(system, path) {
 }
 
 export async function emptyUtil(api, scheme, system, path) {
-  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}/${path}/`;
   const method = 'PUT';
   return fetchUtil({
     url,
@@ -914,53 +885,42 @@ export function* emptyFile(system, path) {
   return 'SUCCESS';
 }
 
-export const getLatestApp = async (name) => {
-  const res = await fetchUtil({
-    url: '/api/workspace/apps',
-    params: {
-      publicOnly: true,
-      name,
-    },
-  });
-  const apps = res.response.appListing;
-  const latestApp = apps
-    .filter((app) => app.id.includes(name))
-    .reduce(
-      (latest, app) => {
-        if (app.version > latest.version) {
-          return app;
-        }
-        if (app.version < latest.version) {
-          return latest;
-        }
-        // Same version of app
-        if (app.revision >= latest.revision) {
-          return app;
-        }
-        return latest;
-      },
-      { revision: null, version: null }
-    );
-  return latestApp.id;
-};
+export const defaultAllocationSelector = (state) =>
+  state.allocations.portal_alloc || state.allocations.active[0].projectName;
 
-const getExtractParams = (file, latestExtract) => {
-  const inputFile = `agave://${file.system}${file.path}`;
-  const archivePath = `agave://${file.system}${file.path.substring(
-    0,
-    file.path.lastIndexOf('/') + 1
-  )}`;
+const getExtractParams = (file, latestExtract, defaultAllocation) => {
+  const inputFile = encodeURI(`tapis://${file.system}/${file.path}`);
+  const archivePath = `${file.path.slice(0, -file.name.length)}`;
   return JSON.stringify({
-    allocation: 'FORK',
-    appId: latestExtract,
-    archive: true,
-    archivePath,
-    inputs: {
-      inputFile,
+    job: {
+      fileInputs: [
+        {
+          name: 'Input File',
+          sourceUrl: inputFile,
+        },
+      ],
+      name: `${latestExtract.definition.id}-${
+        latestExtract.definition.version
+      }_${new Date().toISOString().split('.')[0]}`,
+      archiveSystemId: file.system,
+      archiveSystemDir: archivePath,
+      archiveOnAppError: false,
+      appId: latestExtract.definition.id,
+      appVersion: latestExtract.definition.version,
+      parameterSet: {
+        appArgs: [],
+        schedulerOptions: [
+          {
+            name: 'TACC Allocation',
+            description:
+              'The TACC allocation associated with this job execution',
+            include: true,
+            arg: `-A ${defaultAllocation}`,
+          },
+        ],
+      },
+      execSystemId: latestExtract.definition.jobAttributes.execSystemId,
     },
-    maxRunTime: '02:00:00',
-    name: 'Extracting Compressed File',
-    parameters: {},
   });
 };
 
@@ -968,24 +928,29 @@ export const extractAppSelector = (state) => state.workbench.config.extractApp;
 
 export function* extractFiles(action) {
   try {
-    const extractApp = yield select(extractAppSelector);
-    const latestExtract = yield call(getLatestApp, extractApp);
-    const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
     });
-    const submission = yield call(jobHelper, params);
-    if (submission.execSys) {
-      // If the execution system requires pushing keys, then
-      // bring up the modal and retry the extract action
+    const extractApp = yield select(extractAppSelector);
+    const defaultAllocation = yield select(defaultAllocationSelector);
+    const latestExtract = yield call(fetchAppDefinitionUtil, extractApp);
+    const params = getExtractParams(
+      action.payload.file,
+      latestExtract,
+      defaultAllocation
+    );
+    const res = yield call(jobHelper, params);
+    // If the execution system requires pushing keys, then
+    // bring up the modal and retry the extract action
+    if (res.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys,
+            system: res.execSys,
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { status: 'ERROR', operation: 'extract' },
@@ -993,7 +958,7 @@ export function* extractFiles(action) {
           },
         },
       });
-    } else if (submission.status === 'ACCEPTED') {
+    } else if (res.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' },
@@ -1004,6 +969,9 @@ export function* extractFiles(action) {
       });
     } else {
       throw new Error('Unable to extract files');
+    }
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
     }
   } catch (error) {
     yield put({
@@ -1020,32 +988,56 @@ export function* watchExtract() {
  * Create JSON string of job params
  * @async
  * @param {Array<Object>} files
- * @param {String} zipfileName
+ * @param {String} archiveFileName
  * @returns {String}
  */
-const getCompressParams = (files, zipfileName, latestZippy) => {
-  const inputs = {
-    inputFiles: files.map((file) => `agave://${file.system}${file.path}`),
-  };
-  const parameters = {
-    filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
-    zipfileName,
-    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip',
-  };
-  const archivePath = `agave://${files[0].system}${files[0].path.substring(
-    0,
-    files[0].path.lastIndexOf('/') + 1
-  )}`;
+const getCompressParams = (
+  files,
+  archiveFileName,
+  compressionType,
+  latestCompress,
+  defaultAllocation
+) => {
+  const fileInputs = files.map((file) => ({
+    sourceUrl: encodeURI(`tapis://${file.system}/${file.path}`),
+  }));
+
+  const archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
 
   return JSON.stringify({
-    allocation: 'FORK',
-    appId: latestZippy,
-    archive: true,
-    archivePath,
-    maxRunTime: '02:00:00',
-    name: 'Compressing Files',
-    inputs,
-    parameters,
+    job: {
+      fileInputs: fileInputs,
+      name: `${latestCompress.definition.id}-${
+        latestCompress.definition.version
+      }_${new Date().toISOString().split('.')[0]}`,
+      archiveSystemId: files[0].system,
+      archiveSystemDir: archivePath,
+      archiveOnAppError: false,
+      appId: latestCompress.definition.id,
+      appVersion: latestCompress.definition.version,
+      parameterSet: {
+        appArgs: [
+          {
+            name: 'Archive File Name',
+            arg: archiveFileName,
+          },
+          {
+            name: 'Compression Type',
+            arg: compressionType,
+          },
+        ],
+        schedulerOptions: [
+          {
+            name: 'TACC Allocation',
+            description:
+              'The TACC allocation associated with this job execution',
+            include: true,
+            arg: `-A ${defaultAllocation}`,
+          },
+        ],
+      },
+      execSystemId: latestCompress.definition.jobAttributes.execSystemId,
+    },
   });
 };
 
@@ -1058,43 +1050,45 @@ export function* compressFiles(action) {
     payload: { status: 'ERROR', operation: 'compress' },
   };
   try {
-    const compressApp = yield select(compressAppSelector);
-    const latestZippy = yield call(getLatestApp, compressApp);
-    const params = getCompressParams(
-      action.payload.files,
-      action.payload.filename,
-      latestZippy
-    );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' },
     });
-    const submission = yield call(jobHelper, params);
-    if (submission.execSys) {
-      // If the execution system requires pushing keys, then
-      // bring up the modal and retry the compress action
+    const compressApp = yield select(compressAppSelector);
+    const defaultAllocation = yield select(defaultAllocationSelector);
+    const latestCompress = yield call(fetchAppDefinitionUtil, compressApp);
+    const params = getCompressParams(
+      action.payload.files,
+      action.payload.filename,
+      action.payload.compressionType,
+      latestCompress,
+      defaultAllocation
+    );
+    const res = yield call(jobHelper, params);
+    // If the execution system requires pushing keys, then
+    // bring up the modal and retry the compress action
+    if (res.execSys) {
       yield put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys,
+            system: res.execSys,
             onCancel: compressErrorAction,
           },
         },
       });
-    } else if (submission.status === 'ACCEPTED') {
+    } else if (res.status === 'PENDING') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' },
       });
-      yield put({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'downloadMessage', props: {} },
-      });
     } else {
       throw new Error('Unable to compress files');
+    }
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
     }
   } catch (error) {
     yield put(compressErrorAction);

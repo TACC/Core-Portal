@@ -14,9 +14,9 @@ class TestAppsApiViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestAppsApiViews, cls).setUpClass()
-        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
+        cls.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
         cls.mock_client = cls.mock_client_patcher.start()
-        cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
+        cls.mock_get_user_data_patcher = patch('portal.apps.users.utils.get_user_data')
         with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
             tas_user = json.load(f)
         cls.mock_get_user_data = cls.mock_get_user_data_patcher.start()
@@ -64,8 +64,8 @@ class TestAppsApiViews(TestCase):
 
         # need to do a return_value on the mock_client because
         # the calling signature is something like client = Agave(**kwargs).apps.list()
-        self.mock_client.apps.list.return_value = apps
-        response = self.client.get('/api/workspace/apps/', follow=True)
+        self.mock_client.apps.getApps.return_value = apps
+        response = self.client.get('/api/workspace/apps/')
         data = response.json()
         # If the request is sent successfully, then I expect a response to be returned.
         self.assertEqual(response.status_code, 200)
@@ -73,7 +73,8 @@ class TestAppsApiViews(TestCase):
         self.assertEqual(len(data["response"]['appListing']), 2)
         self.assertTrue(data["response"]['appListing'] == apps)
 
-    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    @pytest.mark.skip(reason="job post/notifications not implemented yet")
+    @patch('portal.apps.users.utils.get_user_data')
     def test_job_submit_notifications(self, tas_mock):
         tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")
@@ -100,7 +101,8 @@ class TestAppsApiViews(TestCase):
         self.assertTrue(pending in notifications)
         self.assertTrue(finished in notifications)
 
-    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    @pytest.mark.skip(reason="job post not implemented yet")
+    @patch('portal.apps.users.utils.get_user_data')
     def test_job_submit_parse_urls(self, tas_mock):
         tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")

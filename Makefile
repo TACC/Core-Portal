@@ -5,7 +5,7 @@ DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
 
 ####
 # `DOCKER_IMAGE_BRANCH` tag is the git tag for the commit if it exists, else the branch on which the commit exists
-DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --tags 2> /dev/null || git symbolic-ref --short HEAD)
+DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --tags 2> /dev/null || git symbolic-ref --short HEAD | sed 's/[^[:alnum:]\.\_\-]/-/g')
 
 .PHONY: build
 build:
@@ -14,12 +14,12 @@ build:
 .PHONY: build-full
 build-full:
 	docker build -t $(DOCKER_IMAGE) --target production -f ./server/conf/docker/Dockerfile .
-	# docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH) # Note: Currently broken for branches with slashes
+	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH) # Note: Special chars replaced with dashes
 
 .PHONY: publish
 publish:
 	docker push $(DOCKER_IMAGE)
-	# docker push $(DOCKER_IMAGE_BRANCH)
+	docker push $(DOCKER_IMAGE_BRANCH)
 
 .PHONY: publish-latest
 publish-latest:

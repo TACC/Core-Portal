@@ -1,7 +1,8 @@
 import {
   getAllocatonFromDirective,
   getJobDisplayInformation,
-  getOutputPathFromHref,
+  getOutputPath,
+  getExecutionPath,
   isTerminalState,
   isOutputState,
 } from './jobsUtil';
@@ -22,7 +23,7 @@ describe('jobsUtil', () => {
     expect(getAllocatonFromDirective('')).toEqual(null);
   });
 
-  it('get app display information', () => {
+  it('get job display information', () => {
     expect(
       getJobDisplayInformation(jobDetailSlurmFixture, appDetailSlurmFixture)
     ).toEqual(jobDisplaySlurmFixture);
@@ -31,25 +32,22 @@ describe('jobsUtil', () => {
     ).toEqual(jobDetailDisplayFixture);
   });
 
-  it('get output path from _links.archiveData.href', () => {
-    expect(
-      getOutputPathFromHref(
-        'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder'
-      )
-    ).toEqual(
-      'frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder'
+  it('get output path from job', () => {
+    expect(getOutputPath(jobDetailFixture)).toEqual(
+      'cloud.data/home/user/tapis-jobs-archive/2023-01-24Z/hello-world_2023-01-24T23:52:57-e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007'
     );
-    expect(
-      getOutputPathFromHref(
-        'https://portals-api.tacc.utexas.edu/jobs/v2/df589633-73a8-4e34-a670-5967474d91df-007/outputs/listings'
-      )
-    ).toEqual(null);
+  });
+
+  it('get execution path from job', () => {
+    expect(getExecutionPath(jobDetailFixture)).toEqual(
+      'frontera/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007'
+    );
   });
 
   it('determine if terminal state', () => {
     expect(isTerminalState('FAILED')).toEqual(true);
     expect(isTerminalState('FINISHED')).toEqual(true);
-    expect(isTerminalState('STOPPED')).toEqual(true);
+    expect(isTerminalState('CANCELLED')).toEqual(true);
     expect(isTerminalState('RUNNING')).toEqual(false);
   });
 

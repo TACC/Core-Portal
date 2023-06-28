@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
+import {
+  NavLink as RRNavLink,
+  useRouteMatch,
+  useLocation,
+} from 'react-router-dom';
+import queryString from 'query-string';
 import { useSelector, shallowEqual } from 'react-redux';
-// import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
@@ -14,6 +19,8 @@ const findAppTab = (categoryDict, appId) => {
 };
 
 const AppBrowser = () => {
+  const location = useLocation();
+  const { appVersion } = queryString.parse(location.search);
   const { params } = useRouteMatch();
   const [activeTab, setActiveTab] = useState();
 
@@ -42,7 +49,6 @@ const AppBrowser = () => {
   } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
     toggle(defaultTab);
   }
-
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
@@ -70,15 +76,22 @@ const AppBrowser = () => {
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
               {categoryDict[category].map((app) => (
-                <div key={app.appId} className="apps-grid-item">
+                <div key={uuidv4()} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}`}
+                    to={
+                      `${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}` +
+                      (app.version ? `?appVersion=${app.version}` : '')
+                    }
                     activeClassName="active"
+                    isActive={() =>
+                      `${params.appId}-${appVersion}` ===
+                      `${app.appId}-${app.version}`
+                    }
                   >
                     <span className="nav-content">
                       <AppIcon appId={app.appId} />
-                      <span className="nav-text">{app.label}</span>
+                      <span className="nav-text">{app.label || app.appId}</span>
                     </span>
                   </NavLink>
                 </div>

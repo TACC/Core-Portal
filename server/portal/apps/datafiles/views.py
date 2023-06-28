@@ -1,11 +1,10 @@
 import json
 import logging
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.users.utils import get_allocations
-from portal.apps.auth.tasks import get_user_storage_systems
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
+from tapipy.errors import InternalServerError
 from portal.views.base import BaseApiView
 from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
@@ -15,11 +14,15 @@ from portal.apps.datafiles.handlers.googledrive_handlers import \
     (googledrive_get_handler,
      googledrive_put_handler)
 from portal.libs.transfer.operations import transfer, transfer_folder
+from portal.libs.agave.serializers import BaseTapisResultSerializer
 from portal.exceptions.api import ApiException
 from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
+from portal.apps.users.utils import get_user_data
 from .utils import notify, NOTIFY_ACTIONS
+import dateutil.parser
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -30,29 +33,30 @@ class SystemListingView(BaseApiView):
 
     def get(self, request):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-        local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        # compare available storage systems to the systems a user can access
-        response = {'system_list': []}
+        response = {}
         if request.user.is_authenticated:
-            if local_systems:
-                user_systems = get_user_storage_systems(request.user.username, local_systems)
-                for system_name, details in user_systems.items():
-                    response['system_list'].append(
-                        {
-                            'name': details['name'],
-                            'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
-                            'type': details.get('type', None),
-                            'scheme': 'private',
-                            'api': 'tapis',
-                            'icon': details['icon'],
-                            'hidden': details['hidden'] if 'hidden' in details else False
-                        }
-                    )
-                default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-                response['default_host'] = default_system['host']
-        if portal_systems:
-            response['system_list'] += portal_systems
+
+            # Evaluate user home dir via TAS
+            username = request.user.username
+            tasdir = get_user_data(username)['homeDirectory']
+            response['system_list'] = [
+                {
+                    **system,
+                    'homeDir': system['homeDir'].format(tasdir=tasdir, username=username)
+                }
+                if 'homeDir' in system else system for system in portal_systems
+            ]
+
+            default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM
+            if default_system:
+                system_id = default_system.get('system')
+                system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=system_id, select='host')
+                response['default_host'] = system_def.host
+                response['default_system'] = system_id
+        else:
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public']
+
         return JsonResponse(response)
 
 
@@ -61,17 +65,24 @@ class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
 
     def get(self, request, systemId):
-        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
+        system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=systemId)
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": system_def
+            },
+            encoder=BaseTapisResultSerializer
+        )
 
 
 class TapisFilesView(BaseApiView):
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
-            if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                    if sys['system'] == system and sys['scheme'] == 'public'):
+            if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+                    if sys['system'] == system and sys['scheme'] == 'public'), None):
                 client = service_account()
             else:
                 return JsonResponse(
@@ -90,24 +101,24 @@ class TapisFilesView(BaseApiView):
 
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
-        except HTTPError as e:
+        except InternalServerError as e:
             error_status = e.response.status_code
             error_json = e.response.json()
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
-            if error_status == 502:
-                # In case of 502 determine cause
-                system = dict(client.systems.get(systemId=system))
+            if error_status == 500:
+                logger.info(e)
+                # In case of 500 determine cause
+                system = client.systems.getSystem(systemId=system)
                 allocations = get_allocations(request.user.username)
 
                 # If user is missing a non-corral allocation mangle error to a 403
-                if not any(system['storage']['host'].endswith(ele) for ele in
-                           list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
-                    e.response.status_code = 403
-                    raise e
+                if not any(system.host.endswith(ele) for ele in
+                           list(allocations['hosts'].keys()) + ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
+                    raise PermissionDenied
 
                 # If a user needs to push keys, return a response specifying the system
                 error_json['system'] = system
-                return JsonResponse(error_json, status=error_status)
+                return JsonResponse(error_json, status=error_status, encoder=BaseTapisResultSerializer)
             raise e
 
         return JsonResponse({'data': response})
@@ -116,7 +127,7 @@ class TapisFilesView(BaseApiView):
             handler=None, system=None, path='/'):
         body = json.loads(request.body)
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden
 
@@ -139,7 +150,7 @@ class TapisFilesView(BaseApiView):
              handler=None, system=None, path='/'):
         body = request.FILES.dict()
         try:
-            client = request.user.agave_oauth.client
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden()
 
@@ -196,8 +207,8 @@ class GoogleDriveFilesView(BaseApiView):
 
 def get_client(user, api):
     client_mappings = {
-        'tapis': 'agave_oauth',
-        'shared': 'agave_oauth',
+        'tapis': 'tapis_oauth',
+        'shared': 'tapis_oauth',
         'googledrive': 'googledrive_user_token',
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
@@ -228,44 +239,45 @@ class TransferFilesView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
-        client = request.user.agave_oauth.client
-        body = {
-            "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
-                tenant=settings.AGAVE_TENANT_BASEURL,
-                system=system,
-                path=path
-            ),
-            "unlimited": True
-        }
-        response = client.postits.create(body=body)
-        postit = response['_links']['self']['href']
-        link = Link.objects.create(
-            agave_uri=f"{system}/{path}",
-            postit_url=postit
+
+        client = request.user.tapis_oauth.client
+
+        # Create postit for unlimited use with a valid period of 1 year
+        postit = client.files.createPostIt(systemId=system, path=path, allowedUses=-1, validSeconds=31536000)
+
+        postit_redeem_url = postit.redeemUrl
+        Link.objects.create(
+            tapis_uri=f"{system}/{path}",
+            postit_url=postit_redeem_url,
+            expiration=dateutil.parser.parse(postit.expiration) if postit.expiration else None
         )
-        link.save()
-        return postit
+        return {"data": postit_redeem_url, "expiration": postit.expiration}
 
     def delete_link(self, request, link):
-        client = request.user.agave_oauth.client
-        response = client.postits.delete(uuid=link.get_uuid())
+        client = request.user.tapis_oauth.client
+
+        postitId = link.get_uuid()
+
+        client.files.deletePostIt(postitId=postitId)
         link.delete()
-        return response
+
+        return "OK"
 
     def get(self, request, scheme, system, path):
         """Given a file, returns a link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
-            return JsonResponse({"data": None})
-        return JsonResponse({"data": link.postit_url})
+            return JsonResponse({"data": None, "expiration": None})
+
+        return JsonResponse({"data": link.postit_url, "expiration": link.expiration})
 
     def delete(self, request, scheme, system, path):
         """Delete an existing link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
         response = self.delete_link(request, link)
@@ -275,11 +287,11 @@ class LinkView(BaseApiView):
         """Generates a new link for a file
         """
         try:
-            Link.objects.get(agave_uri=f"{system}/{path}")
+            Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             # Link doesn't exist - proceed with creating one
-            response = self.create_postit(request, scheme, system, path)
-            return JsonResponse({"data": response})
+            postit = self.create_postit(request, scheme, system, path)
+            return JsonResponse({"data": postit['data'], "expiration": postit['expiration']})
         # Link for this file already exists, raise an exception
         raise ApiException("Link for this file already exists")
 
@@ -287,9 +299,9 @@ class LinkView(BaseApiView):
         """Replace an existing link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            link = Link.objects.get(tapis_uri=f"{system}/{path}")
             self.delete_link(request, link)
         except Link.DoesNotExist:
             raise ApiException("Could not find pre-existing link")
-        response = self.create_postit(request, scheme, system, path)
-        return JsonResponse({"data": response})
+        postit = self.create_postit(request, scheme, system, path)
+        return JsonResponse({"data": postit['data'], "expiration": postit['expiration']})

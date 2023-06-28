@@ -2,131 +2,135 @@ import * as Yup from 'yup';
 
 const FormSchema = (app) => {
   const appFields = {
-    parameters: {},
-    inputs: {},
-    defaults: { inputs: {}, parameters: {} },
-    schema: { inputs: {}, parameters: {} },
+    parameterSet: {
+      appArgs: {},
+      containerArgs: {},
+      schedulerOptions: {},
+      envVariables: {},
+    },
+    fileInputs: {},
+    defaults: {
+      fileInputs: {},
+      parameterSet: {
+        appArgs: {},
+        containerArgs: {},
+        schedulerOptions: {},
+        envVariables: {},
+      },
+    },
+    schema: {
+      fileInputs: {},
+      parameterSet: {
+        appArgs: {},
+        containerArgs: {},
+        schedulerOptions: {},
+        envVariables: {},
+      },
+    },
   };
 
-  (app.definition.parameters || []).forEach((parameter) => {
-    const param = parameter;
-    if (!param.value.visible || param.id.startsWith('_')) {
-      return;
-    }
-    try {
-      RegExp(param.value.validator);
-    } catch (e) {
-      param.value.validator = null;
-    }
+  Object.entries(app.definition.jobAttributes.parameterSet).forEach(
+    ([parameterSet, parameterSetValue]) => {
+      if (!Array.isArray(parameterSetValue)) return;
 
-    const field = {
-      label: param.details.label,
-      description: param.details.description,
-      required: param.value.required,
-    };
-
-    switch (param.value.type) {
-      case 'bool':
-      case 'flag':
-        field.type = 'checkbox';
-        field.checked = param.value.default || false;
-        appFields.schema.parameters[param.id] = Yup.boolean();
-        break;
-
-      case 'enumeration':
-        field.type = 'select';
-        field.options = param.value.enum_values;
-        appFields.schema.parameters[param.id] = Yup.string().oneOf(
-          field.options.map((enumVal) => {
-            if (typeof enumVal === 'string') {
-              return enumVal;
-            }
-            return Object.keys(enumVal)[0];
-          })
-        );
-        break;
-
-      case 'number':
-        appFields.schema.parameters[param.id] = Yup.number();
-        field.type = 'number';
-        break;
-
-      case 'string':
-        field.agaveFile = param.semantics.ontology.includes('agaveFile');
-        if (param.semantics.ontology.includes('email')) {
-          field.type = 'email';
-          appFields.schema.parameters[param.id] = Yup.string().email(
-            'Must be a valid email.'
-          );
-        } else {
-          field.type = 'text';
-          appFields.schema.parameters[param.id] = Yup.string();
+      parameterSetValue.forEach((param) => {
+        if (param.notes?.isHidden) {
+          return;
         }
-        break;
-      default:
-        appFields.schema.parameters[param.id] = Yup.string();
-        field.type = 'text';
-    }
 
-    if (param.value.required) {
-      appFields.schema.parameters[param.id] =
-        appFields.schema.parameters[param.id].required('Required');
-    }
-    if (param.value.validator) {
-      appFields.schema.parameters[param.id] = appFields.schema.parameters[
-        param.id
-      ].matches(param.value.validator);
-    }
-    appFields.parameters[param.id] = field;
-    appFields.defaults.parameters[param.id] =
-      param.value.default === null || typeof param.value.default === 'undefined'
-        ? ''
-        : param.value.default;
-  });
+        const field = {
+          label: param.name ?? param.key,
+          description: param.description,
+          required: param.inputMode === 'REQUIRED',
+          readOnly: param.inputMode === 'FIXED',
+          parameterSet: parameterSet,
+        };
 
-  (app.definition.inputs || []).forEach((i) => {
+        if (param.notes?.enum_values) {
+          field.type = 'select';
+          field.options = param.notes?.enum_values;
+          appFields.schema.parameterSet[parameterSet][field.label] =
+            Yup.string().oneOf(
+              field.options.map((enumVal) => {
+                if (typeof enumVal === 'string') {
+                  return enumVal;
+                }
+                return Object.keys(enumVal)[0];
+              })
+            );
+        } else {
+          if (param.notes?.fieldType === 'email') {
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.string().email('Must be a valid email.');
+          } else if (param.notes?.fieldType === 'number') {
+            field.type = 'number';
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.number();
+          } else {
+            field.type = 'text';
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              Yup.string();
+          }
+        }
+        if (field.required) {
+          appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][field.label].required(
+              'Required'
+            );
+        }
+        if (param.notes?.validator?.regex && param.notes?.validator?.message) {
+          try {
+            const regex = RegExp(param.notes.validator.regex);
+            appFields.schema.parameterSet[parameterSet][field.label] =
+              appFields.schema.parameterSet[parameterSet][field.label].matches(
+                regex,
+                param.notes.validator.message
+              );
+          } catch (SyntaxError) {
+            console.warn('Invalid regex pattern for app');
+          }
+        }
+        appFields.parameterSet[parameterSet][field.label] = field;
+        appFields.defaults.parameterSet[parameterSet][field.label] =
+          param.arg ?? param.value ?? '';
+      });
+    }
+  );
+
+  (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
-    if (input.id.startsWith('_') || !input.value.visible) {
-      return;
-    }
-    try {
-      RegExp(input.value.validator);
-    } catch (e) {
-      input.value.validator = null;
-    }
+    /* TODOv3 consider hidden file inputs https://jira.tacc.utexas.edu/browse/WP-102
+      if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
+        return;
+      }
+      */
     const field = {
-      label: input.details.label,
-      description: input.details.description,
-      required: input.value.required,
+      label: input.name,
+      description: input.description,
+      required: input.inputMode === 'REQUIRED',
+      readOnly: input.inputMode === 'FIXED',
     };
-    if (input.semantics.maxCardinality === 1) {
-      field.type = 'text';
-    } else {
-      field.type = 'array';
-      field.maxItems = input.semantics.maxCardinality;
+
+    field.type = 'text';
+
+    appFields.schema.fileInputs[input.name] = Yup.string();
+    appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
+      input.name
+    ].matches(
+      /^tapis:\/\//g,
+      "Input file must be a valid Tapis URI, starting with 'tapis://'"
+    );
+
+    if (field.required) {
+      appFields.schema.fileInputs[input.name] =
+        appFields.schema.fileInputs[input.name].required('Required');
     }
-    appFields.schema.inputs[input.id] = Yup.string();
-    if (input.value.required) {
-      appFields.schema.inputs[input.id] =
-        appFields.schema.inputs[input.id].required('Required');
-    }
-    if (input.value.validator) {
-      appFields.schema.inputs[input.id] = appFields.schema.inputs[
-        input.id
-      ].matches(input.value.validator);
-    } else {
-      appFields.schema.inputs[input.id] = appFields.schema.inputs[
-        input.id
-      ].matches(
-        /^agave:\/\//g,
-        "Input file must be a valid Tapis URI, starting with 'agave://'"
-      );
-    }
-    appFields.inputs[input.id] = field;
-    appFields.defaults.inputs[input.id] =
-      input.value.default === null || typeof input.value.default === 'undefined'
+
+    appFields.fileInputs[input.name] = field;
+    appFields.defaults.fileInputs[input.name] =
+      input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
-        : input.value.default;
+        : input.sourceUrl;
   });
   return appFields;
 };
