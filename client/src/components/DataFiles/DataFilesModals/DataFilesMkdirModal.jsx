@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Spinner,
 } from 'reactstrap';
 import { Button } from '_common';
 
@@ -81,8 +80,9 @@ const DataFilesMkdirModal = () => {
                   size="long"
                   attr="submit"
                   disabled={isSubmitting}
+                  isLoading={isSubmitting}
                 >
-                  {!isSubmitting ? 'Create Folder' : <Spinner size="sm" />}
+                  Create Folder
                 </Button>
               </ModalFooter>
             </Form>
