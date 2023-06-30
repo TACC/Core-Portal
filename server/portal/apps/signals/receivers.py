@@ -72,18 +72,15 @@ def index_project_on_save(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=SetupEvent, dispatch_uid='setup_event')
-def send_setup_event(sender, instance, created, **kwargs):
-    # Only send the event if it is being saved. (Creation also triggers post_save)
-    if created:
-        return
-
-    logger.debug("Sending setup event through websocket")
+def send_setup_event(sender, instance, **kwargs):
+    logger.info("Sending setup event through websocket")
     setup_event = instance
 
     # All staff will receive websocket notifications so they can see
     # setup event updates for users they are administering
     receiving_users = get_user_model().objects.all().filter(is_staff=True)
     receiving_users = [user for user in receiving_users]
+
     # Add the setup_event's user to the notification list
     receiving_users.append(setup_event.user)
     try:
@@ -91,7 +88,7 @@ def send_setup_event(sender, instance, created, **kwargs):
             "event_type": "setup_event",
             "setup_event": setup_event.to_dict()
         }
-        for user in receiving_users:
+        for user in set(receiving_users):
             async_to_sync(channel_layer.group_send)(
                 user.username,
                 {
@@ -99,15 +96,6 @@ def send_setup_event(sender, instance, created, **kwargs):
                     'body': data
                 }
             )
-
-        # Short expiry. Users viewing onboarding status changes should receive
-        # "live" messages. Users viewing the page after an event happens
-        # should be able to retrieve setup state without needing live
-        # notifications. This also prevents staff from accumulating messages
-        # for all users.
-
-        # TODO: translate this to channels?
-        #  rp.publish_message(msg, expire=10)
 
     except Exception:
         logger.exception(
