@@ -38,8 +38,10 @@
 }
 
 .text {
-  padding-left: 20px;
   font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+}
+.icon + .text {
+  padding-left: 20px;
 }
 
 .disabled {

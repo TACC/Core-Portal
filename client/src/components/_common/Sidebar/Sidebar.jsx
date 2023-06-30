@@ -27,7 +27,9 @@ const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
             styles['content']
           } nav-content`}
         >
-          <Icon name={iconName} />
+          {iconName && (
+            <Icon name={iconName} className={styles['icon']} />
+          )}
           <span className={styles['text']}>{label}</span>
           {children}
         </div>
