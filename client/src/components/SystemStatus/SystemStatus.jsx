@@ -22,7 +22,6 @@ const SystemStatusSidebar = ({ systemList }) => {
       label: `${system.display_name}`,
       disabled: false,
       hidden: false,
-      iconName: '',
     });
   });
 
