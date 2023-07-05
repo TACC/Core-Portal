@@ -122,11 +122,13 @@ const SystemStatus = () => {
 
   const selectedSystem = systemList.find((sys) => sys.hostname === hostname);
 
+  const displayName = selectedSystem?.display_name;
+
   return (
     <Section
       bodyClassName="has-loaded-system-status"
       messageComponentName="SYSTEM STATUS"
-      header={`System Status / ${selectedSystem?.display_name}`}
+      header={`System Status ${displayName ? '/ ' + displayName : ''}`}
       contentLayoutName="hasSidebar"
       content={
         <>

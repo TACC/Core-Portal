@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import styles from './SystemMonitor.module.scss';
 
 const SystemsList = ({ system }) => {
-  var systemList = useSelector((state) => state.systemMonitor.list);
+  let systemList = useSelector((state) => state.systemMonitor.list);
 
   systemList = system
     ? systemList.filter((sys) => sys.hostname === system)
