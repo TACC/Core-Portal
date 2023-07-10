@@ -31,6 +31,8 @@ services:
   memcached:
     image: memcached:latest
     container_name: core_portal_memcached
+    ports:
+      - 127.0.0.1:11211:11211
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
