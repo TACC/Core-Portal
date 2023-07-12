@@ -6,7 +6,7 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 # DJANGO SETTINGS COMMON
 ########################
 
-_DEBUG = False
+_DEBUG = True
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'

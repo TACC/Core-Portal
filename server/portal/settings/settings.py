@@ -713,12 +713,15 @@ SETTINGS: CSP
 """
 CSP_CONNECT_SRC = [
     "'self'",
+    "ws:",
+    "wss:",
     "*.google-analytics.com",
     "*.googletagmanager.com"
 ]
 CSP_DEFAULT_SRC = ["'none'"]
 CSP_FONT_SRC = [
     "'self'",
+    "data:",
     "*.bootstrapcdn.com",
     "cdnjs.cloudflare.com",
 	"*.googleapis.com",
@@ -744,6 +747,9 @@ CSP_SCRIPT_SRC = [
 ]
 
 CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
+
+# By default report only until all issues are resolved
+CSP_REPORT_ONLY = True
 
 """
 SETTINGS: LOCAL OVERRIDES

@@ -11,6 +11,24 @@ export default defineConfig({
   plugins: [
     {...eslint({include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false}), enforce: 'pre', },
     react(),
+    {
+      name: "html-inject-nonce-into-script-tag",
+      enforce: "post",
+      transformIndexHtml(html: string) {
+          const regex = /<script(.*?)/gi;
+          const replacement = '<script nonce="{{ CSP_NONCE }}"$1';
+          return html.replace(regex, replacement);
+      },
+    },
+    {
+      name: "html-inject-nonce-into-link-tag",
+      enforce: "post",
+      transformIndexHtml(html: string) {
+          const regex = /<link(.*?)/gi;
+          const replacement = '<link nonce="{{ CSP_NONCE }}"$1';
+          return html.replace(regex, replacement);
+      },
+    },
   ],
 
   resolve: {
