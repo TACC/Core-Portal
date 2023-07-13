@@ -740,10 +740,11 @@ CSP_STYLE_SRC = [
     "cdnjs.cloudflare.com",
 	"*.googleapis.com",
     "*.gstatic.com",
+    "'unsafe-inline'",
 ]
 CSP_SCRIPT_SRC = [
     "'self'",
-    'strict-dynamic'
+    "'unsafe-inline'",
 ]
 
 CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
