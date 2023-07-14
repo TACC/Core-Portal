@@ -253,7 +253,7 @@ We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/Introdu
     - `feat/` for features and updates
     - `fix/` for bugfixes and hotfixes
     - `refactor/` for large internal changes
-    - `style/` for strictly visual changes
+    - `style/` for code style changes (white-space, formatting, etc.)
     - `chore/` for no-op changes
     - `docs/` for documentation
     - `perf/` for performance improvements
