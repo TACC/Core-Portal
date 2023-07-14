@@ -1,5 +1,4 @@
 from django.core.management import BaseCommand
-from django.utils.six.moves import input
 from django.conf import settings
 import elasticsearch
 from elasticsearch_dsl import Index

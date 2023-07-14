@@ -10,7 +10,6 @@ _DEBUG = True
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_DOMAIN = 'Core Portal'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
@@ -21,8 +20,7 @@ _WH_BASE_URL = ''
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
-                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu', 'ls6.tacc.utexas.edu']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -32,11 +30,8 @@ _RT_QUEUE = 'Web & Mobile Apps'
 _RT_TAG = 'core_portal'
 
 ########################
-# AGAVE SETTINGS
+# TAPIS SETTINGS
 ########################
-
-_AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
-_AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
@@ -50,71 +45,60 @@ _COMMUNITY_INDEX_SCHEDULE = {}
 # DJANGO APP: WORKSPACE
 ########################
 
-_PORTAL_APPS_METADATA_NAMES = ["frontera_apps", "frontera_apps_dev"]
+_PORTAL_APPS_NAMES_SEARCH = ["ALL", _PORTAL_NAMESPACE]
 _PORTAL_ALLOCATION = 'TACC-ACI'
-_PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
+_PORTAL_APPS_DEFAULT_TAB = ''
 
 ########################
 # DJANGO APP: DATA DEPOT
 ########################
 
+_TAPIS_DEFAULT_TRASH_NAME = '.Trash'
+
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-
-_PORTAL_JUPYTER_URL = "https://staging.jupyter.tacc.cloud"
-_PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cloud.corral.work.{username}": "/tacc-work",
-}
-
-_PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'stockyard': {
-        'name': 'My Data (Work)',
-        'description': 'My Data on Stockyard for {username}',
-        'site': 'cep',
-        'systemId': 'cloud.corral.work.{username}',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 2222,
-        'icon': None,
-    },
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'cep',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'cep',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-    }
-}
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
+        'name': 'My Data (Corral)',
+        'system': 'cloud.data',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
+        'icon': None,
+        'keyservice': True,
+        'default': True
+    },
+    {
+        'name': 'My Data (Work)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/work/{tasdir}',
+        'icon': None,
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'Community Data',
-        'system': 'cep.storage.community',
+        'system': 'cloud.data',
         'scheme': 'community',
         'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/community',
         'icon': None,
         'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
-        'system': 'cep.storage.public',
+        'system': 'cloud.data',
         'scheme': 'public',
         'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/public',
         'icon': 'publications',
         'siteSearchPriority': 0
     },
@@ -123,7 +107,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
-        'privilegeRequired': False,
         'readOnly': False,
         'hideSearchBar': False
     },
@@ -158,10 +141,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
-    {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
     },
@@ -181,39 +160,40 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         }
     },
     {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
-    }
+        'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
+        'settings': {
+            'access_systems': ['cloud.data', 'frontera', 'stampede2.community'],  # Tapis systems to grant file access
+            'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with the keys service
+        }
+    },
 ]
 """
 
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
-    {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationStep',
-        'settings': {}
-    }
+        'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
+        'settings': {
+            'access_systems': ['cloud.data', 'frontera', 'ls6'],
+            'credentials_systems': ['cloud.data']
+        }
+    },
 ]
 
 #######################
 # PROJECTS SETTINGS
 #######################
 
-_PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.local.project'
-_PORTAL_PROJECTS_ID_PREFIX = 'LOCAL.CEP'
+_PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.project'
+_PORTAL_PROJECTS_ID_PREFIX = 'CEPV3-DEV'
 _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
-_PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
-_PORTAL_PROJECTS_SYSTEM_PORT = "2222"
-_PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = "cep.project.admin.data.cli"
-_PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
+_PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
+_PORTAL_PROJECTS_SYSTEM_PORT = "22"
+_PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 
 ########################
 # Custom Portal Template Assets
@@ -234,7 +214,7 @@ _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 # Using test account under personal email.
 # To use during dev, Tracking Protection in browser needs to be turned OFF.
 # Need to setup an admin account to aggregate tracking properties for portals.
-# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
+# NOTE: Use the _TAPIS_TENANT_BASEURL URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-114289987-X'
 
 ########################
@@ -249,7 +229,7 @@ _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
-    "compressApp": 'zippy',
+    "compressApp": 'compress',
     "extractApp": 'extract',
     "makePublic": True,
     "hideApps": False,
@@ -261,5 +241,7 @@ _WORKBENCH_SETTINGS = {
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,
-    "hideFeedback": False,
+    "ticketAttachmentMaxSizeMessage": 'Max File Size: 3MB',
+    "ticketAttachmentMaxSize": 3145728,
+    "jobsv2Title": "Historic Jobs"
 }

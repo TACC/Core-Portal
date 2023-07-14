@@ -130,7 +130,10 @@ const DataFilesUploadModal = ({ className, layout }) => {
         {showListing && (
           <div className={styles.listing}>
             <span className={styles['listing-header']}>
-              Uploading to {systemDisplayName}/{params.path}
+              {`Uploading to ${systemDisplayName}/${params.path}`.replace(
+                '//',
+                '/'
+              )}
             </span>
             <DataFilesUploadModalListingTable
               uploadedFiles={uploadedFiles}

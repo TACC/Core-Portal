@@ -9,7 +9,7 @@ import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture'
 import filesFixture from '../../DataFiles/fixtures/DataFiles.files.fixture';
 import { appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
 import allocationsFixture from '../AppForm/fixtures/AppForm.allocations.fixture';
-import { namdAppFixture } from '../AppForm/fixtures/AppForm.app.fixture';
+import { helloWorldAppFixture } from '../AppForm/fixtures/AppForm.app.fixture';
 import { jobsFixture } from '../AppForm/fixtures/AppForm.jobs.fixture';
 import renderComponent from 'utils/testing';
 
@@ -42,6 +42,7 @@ describe('AppsLayout', () => {
     expect(getByText('Something went wrong.')).toBeDefined();
   });
 });
+
 describe('AppsHeader', () => {
   it('renders breadcrumbs', () => {
     const store = mockStore({
@@ -55,7 +56,7 @@ describe('AppsHeader', () => {
         error: {
           isError: false,
         },
-        ...namdAppFixture,
+        ...helloWorldAppFixture,
       },
       pushKeys: {
         modals: filesFixture.modals,

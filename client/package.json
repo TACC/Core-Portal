@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
+    "@niivue/niivue": "^0.32.0",
     "bowser": "^2.9.0",
     "cross-fetch": "^3.1.4",
     "dompurify": "^2.2.2",

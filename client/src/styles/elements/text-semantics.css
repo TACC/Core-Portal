@@ -8,6 +8,10 @@
 code {
   color: unset;
 }
+code > a,
+code > a:hover {
+  color: var(--global-color-accent--normal);
+}
 kbd {
   padding: unset;
   color: unset;

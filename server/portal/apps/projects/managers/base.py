@@ -3,9 +3,7 @@
 .. :module:: portal.apps.projects.managers.base
    :synopsis: Manager for projects
 """
-from __future__ import unicode_literals, absolute_import
 import logging
-from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
@@ -23,7 +21,6 @@ METRICS = logging.getLogger('{}.{}'.format('metrics', __name__))
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
 class ProjectsManager(object):
     """Projects Manager."""
 
@@ -96,11 +93,11 @@ class ProjectsManager(object):
         :param str system_id: System Id.
         """
         sys = StorageSystem(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             system_id
         )
         prj = Project(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             sys.name,
             storage=sys
         )
@@ -112,7 +109,7 @@ class ProjectsManager(object):
         :param str project_id: Project Id.
         """
         prj = Project(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             project_id
         )
         if not prj.storage.uuid:
@@ -158,7 +155,7 @@ class ProjectsManager(object):
             latest_storage_system_id = get_latest_project_storage()
             latest_project_id = get_latest_project_directory()
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
-            ProjectId.objects.create(value=max_value_found).save()
+            ProjectId.objects.create(value=max_value_found)
             prjId = ProjectId.next_id()
 
         project_id = '{prefix}-{prjId}'.format(
@@ -168,7 +165,7 @@ class ProjectsManager(object):
 
         try:
             prj = Project.create(
-                self.user.agave_oauth.client,
+                self.user.tapis_oauth.client,
                 title,
                 project_id,
                 self.user
@@ -190,7 +187,7 @@ class ProjectsManager(object):
                 prj_id=ProjectId.next_id()
             )
             prj = Project.create(
-                self.user.agave_oauth.client,
+                self.user.tapis_oauth.client,
                 title,
                 project_id,
                 self.user
@@ -207,7 +204,7 @@ class ProjectsManager(object):
     def list(self, offset=0, limit=100):
         """List projects."""
         return [prj.storage for prj in Project.listing(
-            self.user.agave_oauth.client,
+            self.user.tapis_oauth.client,
             offset=offset,
             limit=limit
         )]

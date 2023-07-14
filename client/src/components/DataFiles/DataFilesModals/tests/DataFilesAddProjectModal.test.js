@@ -8,6 +8,7 @@ import {
   projectsListingFixture,
   projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
+import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 const mockStore = configureStore();
 
 const initialMockState = {
@@ -37,6 +38,7 @@ const initialMockState = {
       email: 'user@name.com',
     },
   },
+  systems: systemsFixture,
 };
 
 describe('DataFilesAddProjectModal', () => {

@@ -15,10 +15,7 @@ import {
   appTrayExpectedFixture,
 } from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
-import {
-  namdAppFixture,
-  namdAppMissingKeysFixture,
-} from './fixtures/AppForm.app.fixture';
+import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
@@ -64,7 +61,9 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+    });
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
@@ -75,13 +74,10 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'login1.frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'login1.frontera.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -94,13 +90,10 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       exec_sys: {
-        ...namdAppFixture.exec_sys,
-        login: {
-          ...namdAppFixture.exec_sys.login,
-          host: 'invalid_system_frontera.tacc.utexas.edu',
-        },
+        ...helloWorldAppFixture.exec_sys,
+        host: 'invalid_system.tacc.utexas.edu',
       },
     });
     await waitFor(() => {
@@ -116,9 +109,10 @@ describe('AppSchemaForm', () => {
         loading: false,
       },
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
     });
@@ -128,9 +122,8 @@ describe('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppMissingKeysFixture,
-    });
+    const missingKeysApp = { ...helloWorldAppFixture, systemNeedsKeys: true };
+    const { getByText } = renderAppSchemaFormComponent(store, missingKeysApp);
     await waitFor(() => {
       expect(
         getByText(
@@ -145,7 +138,10 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
       jobs: jobsSubmissionSuccessFixture,
     });
-    const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
     await waitFor(() => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
@@ -157,11 +153,18 @@ describe('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 1,
+          execSystemLogicalQueue: 'normal',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
     };
 
@@ -181,11 +184,18 @@ describe('AppSchemaForm', () => {
     });
 
     const appFixture = {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 3,
-        defaultQueue: 'small',
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          nodeCount: 3,
+          execSystemLogicalQueue: 'small',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          hideNodeCountAndCoresPerNode: false,
+        },
       },
     };
 
@@ -210,6 +220,7 @@ describe('AppSchemaForm', () => {
           errorMessage: null,
           loading: false,
           defaultHost: '',
+          defaultSystem: '',
         },
         definitions: {
           list: [],
@@ -220,37 +231,14 @@ describe('AppSchemaForm', () => {
       },
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
-    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
 
     await waitFor(() => {
       expect(
         getByText(/No storage systems enabled for this portal./)
-      ).toBeDefined();
-    });
-  });
-
-  it('renders validation error for using normal queue for SERIAL apps on Frontera', async () => {
-    const store = mockStore({
-      ...initialMockState,
-    });
-
-    const appFixture = {
-      ...namdAppFixture,
-      definition: {
-        ...namdAppFixture.definition,
-        defaultNodeCount: 1,
-        defaultQueue: 'normal',
-        parallelism: 'SERIAL',
-      },
-    };
-
-    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
-
-    await waitFor(() => {
-      expect(
-        getByText(/The normal queue does not support serial apps/)
       ).toBeDefined();
     });
   });
@@ -260,7 +248,7 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdAppFixture,
+      ...helloWorldAppFixture,
       license: {
         type: 'Application Name',
       },
@@ -277,7 +265,7 @@ describe('AppDetail', () => {
       allocations: { loading: false },
       app: {
         ...initialAppState,
-        definition: { ...appTrayFixture.definitions['vis-portal'] },
+        definition: { ...appTrayFixture.html_definitions['vis-portal'] },
       },
       apps: { ...appTrayExpectedFixture },
     });

@@ -5,7 +5,6 @@
 
 from django.db import models
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.core.serializers.json import DjangoJSONEncoder
 
 
@@ -34,7 +33,7 @@ class SetupEvent(models.Model):
     message = models.CharField(max_length=300)
 
     # JSON Data
-    data = JSONField(null=True)
+    data = models.JSONField(null=True)
 
     def __str__(self):
         return '{username} {time} {step} ({state}) - {message} ({data})'.format(

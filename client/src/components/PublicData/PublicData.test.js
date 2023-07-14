@@ -45,6 +45,7 @@ describe('PublicData', () => {
           trashPath: '.Trash',
         },
       },
+      authenticatedUser: { user: null },
     });
     const { getByText } = renderComponent(<PublicData />, store, history);
 

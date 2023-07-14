@@ -2,24 +2,9 @@
     "name": "file.txt",
     "path": "/parent_folder/sub_folder/file.txt",
     "lastModified": "2018-09-11T11:38:18.000-05:00",
-    "length": 5,
-    "permissions": "READ_WRITE",
-    "format": "raw",
+    "size": 5,
+    "nativePermissions": "rw-r--r--",
     "mimeType": "text/plain",
     "type": "file",
-    "system": "portal.home.username",
-    "_links": {
-      "self": {
-        "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder/file.txt"
-      },
-      "system": {
-        "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
-      },
-      "metadata": {
-        "href": "https://api.tacc.utexas.edu/meta/v2/data?q=%7B%22associationIds%22%3A%221502879830585044504-242ac113-0001-002%22%7D"
-      },
-      "history": {
-        "href": "https://api.tacc.utexas.edu/files/v2/history/system/portal.home.username//parent_folder/sub_folder/file.txt"
-      }
-    }
+    "url": "tapis://portal/home/username/parent_folder/sub_folder/file.txt"
 }]

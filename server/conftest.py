@@ -3,14 +3,14 @@ from mock import MagicMock
 import json
 import os
 import tempfile
-from portal.apps.auth.models import AgaveOAuthToken
+from portal.apps.auth.models import TapisOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from django.conf import settings
 
 
 @pytest.fixture
-def mock_agave_client(mocker):
-    yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+def mock_tapis_client(mocker):
+    yield mocker.patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
 
 
 @pytest.fixture
@@ -19,71 +19,56 @@ def mock_googledrive_client(mocker):
 
 
 @pytest.fixture
-def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="username",
                                           password="password",
                                           first_name="Firstname",
                                           last_name="Lastname",
                                           email="user@user.com")
     user = django_user_model.objects.get(username="username")
-    token = AgaveOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
 @pytest.fixture
-def regular_user2(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user2(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="username2",
                                           password="password",
                                           first_name="Firstname2",
                                           last_name="Lastname2",
                                           email="user2@user.com")
     user = django_user_model.objects.get(username="username2")
-    token = AgaveOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
 @pytest.fixture
-def regular_user_with_underscore(django_user_model, django_db_reset_sequences, mock_agave_client):
+def regular_user_with_underscore(django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username="user_name",
                                           password="password",
                                           first_name="Firstname3",
                                           last_name="Lastname3",
                                           email="user_name@user.com")
     user = django_user_model.objects.get(username="user_name")
-    token = AgaveOAuthToken.objects.create(
+    TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -94,22 +79,18 @@ def authenticated_user(client, regular_user):
 
 
 @pytest.fixture
-def staff_user(client, django_user_model, django_db_reset_sequences, mock_agave_client):
+def staff_user(client, django_user_model, django_db_reset_sequences, mock_tapis_client):
     django_user_model.objects.create_user(username='staff', password='password')
     user = django_user_model.objects.get(username='staff')
     user.is_staff = True
-    token = AgaveOAuthToken.objects.create(
+    user.save()
+    TapisOAuthToken.objects.create(
         user=user,
-        token_type="bearer",
-        scope="default",
         access_token="1234fsf",
         refresh_token="123123123",
         expires_in=14400,
         created=1523633447)
-    token.save()
-    profile = PortalProfile.objects.create(user=user)
-    profile.save()
-    user.save()
+    PortalProfile.objects.create(user=user)
     yield user
 
 
@@ -120,33 +101,48 @@ def authenticated_staff(client, staff_user):
 
 
 @pytest.fixture
-def agave_indexer(mocker):
-    yield mocker.patch('portal.libs.agave.operations.agave_indexer')
+def tapis_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.tapis_indexer')
 
 
 @pytest.fixture
-def agave_listing_indexer(mocker):
-    yield mocker.patch('portal.libs.agave.operations.agave_listing_indexer')
+def tapis_listing_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.tapis_listing_indexer')
 
 
 @pytest.fixture
 def agave_storage_system_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_file_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_file_listing_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')) as f:
+        yield json.load(f)
+
+
+@pytest.fixture
+def tapis_file_listing_mock():
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/tapis-file-listing.json')) as f:
+        yield json.load(f)
 
 
 @pytest.fixture
 def agave_listing_mock():
-    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')) as f:
+        yield json.load(f)
+
+
+@pytest.fixture
+def tapis_tokens_create_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/auth/create-tokens-response.json')))
 
 
 @pytest.fixture

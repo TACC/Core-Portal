@@ -1,203 +1,72 @@
 {
-  "wrangler.tacc.utexas.edu": {
-    "hostname": "wrangler.tacc.utexas.edu",
-    "displayName": "Wrangler",
-    "tests": {
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:32:01.730Z"
-      },
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:32:01.735Z"
-      }
-    },
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:32:01Z"
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:32:01Z"
-    },
-    "timestamp": "2020-06-04T16:30:02.552Z",
-    "jobs": {
-      "running": 18,
-      "queued": 1,
-      "other": 5
-    },
-    "totalCpu": 4560,
-    "usedCpu": 2064,
-    "load": 0.45263157894736844
-  },
-  "maverick2.tacc.utexas.edu": {
-    "timestamp": "2020-06-04T16:30:01.993Z",
-    "hostname": "maverick2.tacc.utexas.edu",
-    "displayName": "Maverick2",
-    "jobs": {
-      "running": 13,
-      "queued": 3,
-      "other": 0
-    },
-    "totalCpu": 720,
-    "usedCpu": 384,
-    "load": 0.5333333333333333,
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    },
-    "tests": {
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.431Z"
-      },
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.436Z"
-      }
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    }
-  },
-  "rustler.tacc.utexas.edu": {
-    "hostname": "rustler.tacc.utexas.edu",
-    "displayName": "Rustler",
-    "tests": {
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.561Z"
-      },
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.559Z"
-      }
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    },
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:27:02Z"
-    }
-  },
-  "frontera.tacc.utexas.edu": {
-    "hostname": "frontera.tacc.utexas.edu",
-    "displayName": "Frontera",
-    "tests": {
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.048Z"
-      },
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.051Z"
-      }
-    },
-    "timestamp": "2020-06-04T16:30:16.832Z",
-    "jobs": {
-      "running": 402,
-      "queued": 506,
-      "other": 110
-    },
-    "totalCpu": 448992,
-    "usedCpu": 440504,
-    "load": 0.9810954315444373,
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    }
-  },
-  "lonestar5.tacc.utexas.edu": {
-    "hostname": "lonestar5.tacc.utexas.edu",
-    "displayName": "Lonestar5",
-    "tests": {
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:27:01.973Z"
-      },
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:01.739Z"
-      }
-    },
-    "timestamp": "2020-06-04T16:30:04.867Z",
-    "totalCpu": 60368,
-    "usedCpu": 52296,
-    "load": 0.8662867744500398,
-    "jobs": {
-      "running": 541,
-      "queued": 1,
-      "other": 43
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:01Z"
-    },
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:01Z"
-    }
-  },
-  "stampede2.tacc.utexas.edu": {
+  "Stampede2": {
+    "display_name": "Stampede2",
+    "tas_name": "stampede4",
     "hostname": "stampede2.tacc.utexas.edu",
-    "displayName": "Stampede2",
-    "heartbeat": {
-      "type": "heartbeat",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    },
-    "timestamp": "2020-06-04T16:30:19.476Z",
-    "totalCpu": 1309056,
-    "usedCpu": 1283488,
-    "load": 0.9804683680453701,
-    "jobs": {
-      "running": 1078,
-      "queued": 1263,
-      "other": 183
-    },
-    "ssh": {
-      "type": "ssh",
-      "status": true,
-      "timestamp": "2020-06-04T16:30:02Z"
-    },
-    "tests": {
-      "ssh": {
-        "type": "ssh",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.519Z"
-      },
-      "heartbeat": {
-        "type": "heartbeat",
-        "status": true,
-        "timestamp": "2020-06-04T16:30:02.511Z"
+    "system_type": "COMPUTE",
+    "timestamp": "2022-11-07T14:30:06.059382+00:00",
+    "online": true,
+    "reachable": true,
+    "queues_down": false,
+    "load": 0.5965,
+    "running": 412,
+    "queued": 437,
+    "in_maintenance": false,
+    "next_maintenance": null,
+    "reservations": [
+      {
+        "name": "float_dev",
+        "begin_time": "2022-11-07T10:31:15-06:00",
+        "end_time": "2023-11-07T10:31:15-06:00"
       }
-    }
+    ]
+  },
+  "Frontera": {
+    "display_name": "Frontera",
+    "tas_name": "frontera",
+    "hostname": "frontera.tacc.utexas.edu",
+    "system_type": "COMPUTE",
+    "timestamp": "2022-11-07T14:30:21.414811+00:00",
+    "online": true,
+    "reachable": true,
+    "queues_down": false,
+    "load": 0.97,
+    "running": 365,
+    "waiting": 247,
+    "in_maintenance": false,
+    "next_maintenance": null,
+    "reservations": [
+      {
+        "name": "DAOS",
+        "begin_time": "2021-06-09T15:32:33-05:00",
+        "end_time": "2024-01-25T12:00:00-06:00"
+      },
+      {
+        "name": "HPC_SI_day4",
+        "begin_time": "2022-11-10T11:00:00-06:00",
+        "end_time": "2022-11-10T17:30:00-06:00"
+      },
+      {
+        "name": "float+dev",
+        "begin_time": "2022-11-07T10:30:26-06:00",
+        "end_time": "2023-11-07T10:30:26-06:00"
+      }
+    ]
+  },
+  "Lonestar6": {
+    "display_name": "Lonestar6",
+    "tas_name": "lonestar6",
+    "hostname": "ls6.tacc.utexas.edu",
+    "system_type": "COMPUTE",
+    "timestamp": "2022-11-07T14:30:28.787394+00:00",
+    "online": true,
+    "reachable": true,
+    "queues_down": false,
+    "load": 0.6007,
+    "running": 161,
+    "queued": 38,
+    "in_maintenance": false,
+    "next_maintenance": null,
+    "reservations": []
   }
 }

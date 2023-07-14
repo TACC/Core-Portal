@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, useRouteMatch } from 'react-router-dom';
+import { Route, useRouteMatch, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import './AppLayout.global.css';
@@ -44,14 +44,21 @@ const AppsHeader = (categoryDict) => {
   const appMeta = Object.values(categoryDict.categoryDict)
     .flatMap((e) => e)
     .find((app) => app.appId === params.appId);
-  const path = appMeta ? ` / ${appMeta.label}` : '';
+  const path = appMeta ? ` / ${appMeta.label || appMeta.appId}` : '';
   return `Applications ${path}`;
 };
 
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 const AppsRoutes = () => {
+  const query = useQuery();
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  const appDict = useSelector((state) => state.apps.appDict, shallowEqual);
+  const htmlDict = useSelector((state) => state.apps.htmlDict, shallowEqual);
   const categoryDict = useSelector(
     (state) => state.apps.categoryDict,
     shallowEqual
@@ -76,17 +83,18 @@ const AppsRoutes = () => {
               exact
               path={`${path}/:appId`}
               render={({ match: { params } }) => {
-                const appDef = appDict[params.appId];
+                const appDef = htmlDict[params.appId];
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: { definition: appDict[params.appId] },
+                    payload: { definition: htmlDict[params.appId] },
                   });
                 } else {
                   dispatch({
                     type: 'GET_APP',
                     payload: {
                       appId: params.appId,
+                      appVersion: query.get('appVersion'),
                     },
                   });
                 }

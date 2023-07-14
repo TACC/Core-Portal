@@ -8,9 +8,9 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
+import Searchbar from '_common/Searchbar';
 
 const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
@@ -60,7 +60,7 @@ const DataFilesProjectsList = ({ modal }) => {
     {
       Header: 'Workspace Title',
       headerStyle: { textAlign: 'left' },
-      accessor: 'description',
+      accessor: 'title',
       Cell: (el) => (
         <Link
           className="data-files-nav-link"
@@ -116,7 +116,15 @@ const DataFilesProjectsList = ({ modal }) => {
       contentShouldScroll
       manualContent
     >
-      {!modal && <DataFilesProjectsSearchbar />}
+      {!modal && (
+        <Searchbar
+          api="tapis"
+          scheme="projects"
+          sectionName="Workspace"
+          resultCount={projects.length}
+          infiniteScroll
+        />
+      )}
       <ConditionalWrapper
         condition={!modal}
         wrapper={(children) => {

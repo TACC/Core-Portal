@@ -1,15 +1,16 @@
-import urllib
 import os
 import io
 from django.conf import settings
-from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
+from pathlib import Path
+from tapipy.errors import BaseTapyException
+import requests as r
 
 logger = logging.getLogger(__name__)
 
@@ -37,20 +38,31 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         List of dicts containing file metadata from Elasticsearch
 
     """
-    raw_listing = client.files.list(systemId=system,
-                                    filePath=urllib.parse.quote(path),
-                                    offset=int(offset) + 1,
-                                    limit=int(limit))
+    raw_listing = client.files.listFiles(systemId=system,
+                                         path=path,
+                                         offset=int(offset),
+                                         limit=int(limit))
 
     try:
         # Convert file objects to dicts for serialization.
-        listing = list(map(dict, raw_listing))
+        listing = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
-    agave_listing_indexer.delay(listing)
+    tapis_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
@@ -119,7 +131,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
     else:
         # search without a query should just filter current path
         search = search.sort('name._exact')
-        search = search.filter('term', **{'basePath._exact': '/' + path.strip('/')})
+        search = search.filter('term', **{'basePath._exact': path.strip('/')})
     if filter:
         search = search.filter(filter_query)
 
@@ -132,7 +144,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
             'reachedEnd': len(hits) < int(limit)}
 
 
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
+def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -141,10 +153,6 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
         Tapis client to use.
     system: NoneType
     path: NoneType
-    href: str
-        Tapis href to use for generating the postit.
-    force: bool
-        Wether to force preview by adding ``inline``
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int
@@ -155,20 +163,12 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600, *
     str
     Post it link.
     """
-    # pylint: disable=protected-access
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
-    # pylint: enable=protected-access
-    if force:
-        args['url'] += '?force=True'
 
-    result = client.postits.create(body=args)
-    return result['_links']['self']['href']
+    create_postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+
+    redeemUrl = f'{create_postit_result.redeemUrl}?download=true'
+
+    return redeemUrl
 
 
 def mkdir(client, system, path, dir_name):
@@ -189,18 +189,17 @@ def mkdir(client, system, path, dir_name):
     -------
     dict
     """
-    body = {
-        'action': 'mkdir',
-        'path': dir_name
-    }
-    result = client.files.manage(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 body=body)
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
+    path_input = str(Path(path) / Path(dir_name))
+    client.files.mkdir(systemId=system, path=path_input)
+
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'systemId': system,
                                       'filePath': path,
-                                      'recurse': False})
-    return result
+                                      'recurse': False},
+                              )
+
+    return {"result": "OK"}
 
 
 def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
@@ -233,42 +232,48 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         file_name = src_path.strip('/').split('/')[-1]
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
-    src_path_full = urllib.parse.quote(src_path)
 
     # Handle attempt to move a file into its current path.
-    if src_system == dest_system and src_path_full == dest_path_full:
-        return {'system': src_system, 'path': src_path_full, 'name': file_name}
+    if src_system == dest_system and src_path == dest_path_full:
+        return {'system': src_system, 'path': src_path, 'name': file_name}
 
-    try:
-        # list the directory and check if file_name exists
-        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
-        file_name = increment_file_name(listing=file_listing, file_name=file_name)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
-
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+    # list the directory and check if file_name exists
+    file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
+    file_name = increment_file_name(listing=file_listing, file_name=file_name)
+    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
     if src_system == dest_system:
-        body = {'action': 'move',
-                'path': full_dest_path}
-        move_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
-                                              src_path),
-                                          body=body)
+        move_result = client.files.moveCopy(systemId=src_system,
+                                            path=src_path,
+                                            operation="MOVE",
+                                            newPath=dest_path_full)
 
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
-        agave_indexer.apply_async(kwargs={'systemId': src_system,
+        tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                          'systemId': src_system,
                                           'filePath': os.path.dirname(src_path),
                                           'recurse': False},
-                                  routing_key='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
-                                      'recurse': False}, routing_key='indexing')
-    if move_result['nativeFormat'] == 'dir':
-        agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                          'filePath': full_dest_path, 'recurse': True},
-                                  routing_key='indexing')
+                                  routing_key='indexing'
+                                  )
+
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'systemId': dest_system,
+                                      'filePath': os.path.dirname(dest_path_full),
+                                      'recurse': False},
+                              routing_key='indexing'
+                              )
+
+    # get information about file to check if it is a dir or not
+    file_info = client.files.getStatInfo(systemId=dest_system, path=dest_path_full)
+
+    if (file_info.dir):
+        tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                          'systemId': dest_system,
+                                          'filePath': dest_path_full,
+                                          'recurse': True},
+                                  routing_key='indexing'
+                                  )
+
     return move_result
 
 
@@ -298,42 +303,45 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
 
-    try:
-        # list the directory and check if file_name exists
-        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
-        file_name = increment_file_name(listing=file_listing, file_name=file_name)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+    # list the directory and check if file_name exists
+    file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
+    file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
-    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+
     if src_system == dest_system:
-        body = {'action': 'copy',
-                'path': full_dest_path}
-        copy_result = client.files.manage(systemId=src_system,
-                                          filePath=urllib.parse.quote(
-                                              src_path),
-                                          body=body)
+        copy_result = client.files.moveCopy(systemId=src_system,
+                                            path=src_path,
+                                            operation="COPY",
+                                            newPath=dest_path_full)
     else:
-        src_url = 'agave://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
-        )
-        copy_result = client.files.importData(
-            systemId=dest_system,
-            filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
-            urlToIngest=src_url
-        )
 
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': os.path.dirname(full_dest_path),
+        src_url = f'tapis://{src_system}/{src_path}'
+        dest_url = f'tapis://{dest_system}/{dest_path_full}'
+
+        copy_response = client.files.createTransferTask(elements=[{
+            'sourceURI': src_url,
+            'destinationURI': dest_url
+        }])
+
+        copy_result = {
+            'uuid': copy_response.uuid,
+            'status': copy_response.status,
+        }
+
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'systemId': dest_system,
+                                      'filePath': os.path.dirname(dest_path_full),
                                       'recurse': False},
-                              routing_key='indexing')
-    agave_indexer.apply_async(kwargs={'systemId': dest_system,
-                                      'filePath': full_dest_path,
+                              routing_key='indexing'
+                              )
+
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'systemId': dest_system,
+                                      'filePath': dest_path_full,
                                       'recurse': True},
-                              routing_key='indexing')
+                              routing_key='indexing'
+                              )
 
     return copy_result
 
@@ -353,7 +361,7 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
 
 def delete(client, system, path):
     return client.files.delete(systemId=system,
-                               filePath=urllib.parse.quote(path))
+                               path=path)
 
 
 def rename(client, system, path, new_name):
@@ -380,7 +388,7 @@ def rename(client, system, path, new_name):
                 dest_system=system, dest_path=new_path, file_name=new_name)
 
 
-def trash(client, system, path):
+def trash(client, system, path, homeDir):
     """Move a file to the .Trash folder.
 
     Params
@@ -401,16 +409,16 @@ def trash(client, system, path):
 
     # Create a .Trash path if none exists
     try:
-        client.files.list(systemId=system,
-                          filePath=settings.AGAVE_DEFAULT_TRASH_NAME)
-    except HTTPError as err:
+        client.files.listFiles(systemId=system,
+                               path=f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}')
+    except BaseTapyException as err:
         if err.response.status_code != 404:
-            logger.error("Unexpected exception listing .trash path in {}".format(system))
+            logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     resp = move(client, system, path, system,
-                settings.AGAVE_DEFAULT_TRASH_NAME, file_name)
+                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name)
 
     return resp
 
@@ -432,26 +440,33 @@ def upload(client, system, path, uploaded_file):
     -------
     dict
     """
-    try:
-        file_listing = client.files.list(systemId=system, filePath=path)
-        uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
+    file_listing = client.files.listFiles(systemId=system, path=path)
+    uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
 
-    # the fileName param does not seem to accept a different file name
-    resp = client.files.importData(systemId=system,
-                                   filePath=urllib.parse.quote(path),
-                                   fileToUpload=uploaded_file)
+    base_url = settings.TAPIS_TENANT_BASEURL
+    token = client.access_token.access_token
+    systemId = system
+    dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
-    agave_indexer.apply_async(kwargs={'systemId': system,
+    res = r.post(
+        url=f'{base_url}/v3/files/ops/{systemId}/{dest_path}',
+        files={"file": uploaded_file.file},
+        headers={"X-Tapis-Token": token})
+
+    res.raise_for_status()
+
+    response_json = res.json()
+
+    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
+                                      'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
                               )
-    return dict(resp)
+
+    return response_json
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
+def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
     Params
     ------
@@ -461,8 +476,6 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         Tapis system ID.
     path: str
         Path to the file.
-    href: str
-        Tapis href for the file to be previewed.
     max_uses: int
          Maximum amount the postit link can be used.
     lifetime: int
@@ -476,16 +489,9 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
+    postit = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
 
-    result = client.postits.create(body=args)
-    url = result['_links']['self']['href']
+    url = postit.redeemUrl
     txt = None
     error = None
     file_type = None
@@ -493,6 +499,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
+    elif any([ext for ext in settings.SUPPORTED_BRAINMAP_PREVIEW_EXTS if file_name.endswith(ext)]):
+        file_type = 'brainmap'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
         file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
@@ -535,7 +543,7 @@ def download_bytes(client, system, path):
         BytesIO object representing the downloaded file.
     """
     file_name = os.path.basename(path)
-    resp = client.files.download(systemId=system, filePath=path)
-    result = io.BytesIO(resp.content)
+    resp = client.files.getContents(systemId=system, path=path)
+    result = io.BytesIO(resp)
     result.name = file_name
     return result

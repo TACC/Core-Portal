@@ -82,7 +82,7 @@ module.exports = {
     '.*\\.(css|scss|sass)$': 'identity-obj-proxy',
     '^_common(.*)$': '<rootDir>/src/components/_common$1',
     '^utils(.*)$': '<rootDir>/src/utils$1',
-    '^hooks(.*)$': '<rootDir>/src/hooks$1'
+    '^hooks(.*)$': '<rootDir>/src/hooks$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -127,7 +127,7 @@ module.exports = {
   // runner: "jest-runner",
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  // setupFiles: [],
+  setupFiles: ['./jest.setup.js'],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],
@@ -139,7 +139,7 @@ module.exports = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},

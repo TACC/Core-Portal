@@ -81,20 +81,10 @@ describe('DataFilesProjectFileListing', () => {
     expect(getByText(/Show More/)).toBeDefined();
   });
 
-  it('hides Edit Descriptions and Manage Team when privilege is needed and user is not owner', () => {
+  it('hides Edit Descriptions and Manage Team when readOnly is true or user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
-    initialMockState.systems.storage.configuration[5].privilegeRequired = true;
-    const initialMockStateUnknownUser = {
-      ...initialMockState,
-      projects: {
-        ...initialMockState.projects,
-        metadata: {
-          ...initialMockState.projects.metadata,
-          members: [{ access: 'owner', user: null }],
-        },
-      },
-    };
-    const store = mockStore(initialMockStateUnknownUser);
+    initialMockState.systems.storage.configuration[5].readOnly = true;
+    const store = mockStore(initialMockState);
     const { queryByText } = renderComponent(
       <DataFilesProjectFileListing
         system="test.site.project.PROJECT-3"
@@ -107,9 +97,9 @@ describe('DataFilesProjectFileListing', () => {
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Descriptions and Manage Team when privilege is needed and user is owner', () => {
+  it('shows Edit Descriptions and Manage Team when readOnly is false and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
-    initialMockState.systems.storage.configuration[5].privilegeRequired = true;
+    initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing
@@ -123,11 +113,11 @@ describe('DataFilesProjectFileListing', () => {
     expect(getByText(/Manage Team/)).toBeDefined();
   });
 
-  it('shows Edit Descriptions and Manage Team when privilege is not needed and user not owner', () => {
+  it('hides Edit Descriptions and Manage Team when readOnly is false and user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
-    initialMockState.systems.storage.configuration[5].privilegeRequired = false;
+    initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
-    const { getByText } = renderComponent(
+    const { queryByText } = renderComponent(
       <DataFilesProjectFileListing
         system="test.site.project.PROJECT-3"
         path="/"
@@ -135,15 +125,15 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(getByText(/Edit Descriptions/)).toBeDefined();
-    expect(getByText(/Manage Team/)).toBeDefined();
+    expect(queryByText(/Edit Descriptions/)).toBeNull();
+    expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Descriptions and Manage Team when privilege is not needed and user is not owner', () => {
-    initialMockState.authenticatedUser.user.username = 'member';
-    initialMockState.systems.storage.configuration[5].privilegeRequired = false;
+  it('shows Edit Descriptions and hides Manage Team when readOnly is true and user is owner', () => {
+    initialMockState.authenticatedUser.user.username = 'username';
+    initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
-    const { getByText } = renderComponent(
+    const { queryByText, getByText } = renderComponent(
       <DataFilesProjectFileListing
         system="test.site.project.PROJECT-3"
         path="/"
@@ -152,6 +142,6 @@ describe('DataFilesProjectFileListing', () => {
     );
 
     expect(getByText(/Edit Descriptions/)).toBeDefined();
-    expect(getByText(/Manage Team/)).toBeDefined();
+    expect(queryByText(/Manage Team/)).toBeNull();
   });
 });

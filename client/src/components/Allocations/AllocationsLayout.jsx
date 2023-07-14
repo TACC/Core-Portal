@@ -12,11 +12,9 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import {
-  AllocationsRequestModal,
-  AllocationsTeamViewModal,
-} from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
+import { Sidebar } from '_common';
 
 import './Allocations.global.css';
 
@@ -34,42 +32,40 @@ Header.propTypes = { page: string.isRequired };
 export const Actions = ({ page }) => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
-    <Link to={`${root}/manage`} className="btn btn-primary">
+    <a
+      className="btn btn-primary"
+      href="https://submit-tacc.xras.org/"
+      target="_blank"
+      rel="noreferrer"
+    >
       Request New Allocation
-    </Link>
+    </a>
   );
 };
 Actions.propTypes = { page: string.isRequired };
 
-export const Sidebar = () => (
-  <Nav className="allocations-sidebar" vertical>
-    <NavItem>
-      <NavLink
-        tag={RRNavLink}
-        to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/approved`}
-        activeClassName="active"
-      >
-        <Icon name="approved-allocations" className="link-icon" />
-        <span className="link-text">Approved</span>
-      </NavLink>
-    </NavItem>
-    <NavItem>
-      <NavLink
-        tag={RRNavLink}
-        to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
-        activeClassName="active"
-      >
-        <Icon name="pending" className="link-icon" />
-        <span className="link-text">Expired</span>
-      </NavLink>
-    </NavItem>
-  </Nav>
-);
-
 export const Layout = ({ page }) => {
   const loading = useSelector((state) => state.allocations.loading);
   const history = useHistory();
-  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`;
+
+  const sidebarItems = [
+    {
+      to: `${root}/approved`,
+      label: 'Approved',
+      iconName: 'approved-allocations',
+      disabled: false,
+      hidden: false,
+    },
+    {
+      to: `${root}/expired`,
+      label: 'Expired',
+      iconName: 'pending',
+      disabled: false,
+      hidden: false,
+    },
+  ];
+
   return (
     <Section
       bodyClassName="has-loaded-allocations"
@@ -79,7 +75,7 @@ export const Layout = ({ page }) => {
       headerActions={<Actions page={page} />}
       content={
         <>
-          <Sidebar />
+          <Sidebar sidebarItems={sidebarItems} />
           {loading ? (
             <LoadingSpinner className="allocations-loading-icon" />
           ) : (
@@ -91,23 +87,15 @@ export const Layout = ({ page }) => {
             </SectionTableWrapper>
           )}
           <Switch>
-            <Route exact path={`${root}/manage`}>
-              <AllocationsRequestModal
-                isOpen
-                toggle={() => {
-                  history.push(root);
-                }}
-              />
-            </Route>
-            <Route exact path={`${root}/:projectId(\\d+)`}>
+            <Route exact path={`${root}/${page}/:projectId(\\d+)`}>
               <AllocationsTeamViewModal
                 isOpen
                 toggle={() => {
-                  history.push(root);
+                  history.push(`${root}/${page}`);
                 }}
               />
             </Route>
-            <Redirect to={`${root}`} />
+            <Redirect to={`${root}/${page}`} />
           </Switch>
         </>
       }

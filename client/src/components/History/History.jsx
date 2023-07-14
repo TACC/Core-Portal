@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  Route,
-  Switch,
-  Redirect,
-  useRouteMatch,
-  NavLink as RRNavLink,
-} from 'react-router-dom';
+import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import queryString from 'query-string';
 
 import { Button, Section } from '_common';
@@ -15,6 +8,7 @@ import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
+import { Sidebar } from '_common';
 
 import './History.global.css';
 import styles from './History.module.scss';
@@ -46,24 +40,33 @@ const Actions = () => {
   );
 };
 
-const Sidebar = () => {
+const HistorySidebar = () => {
   const { unreadJobs } = useSelector((state) => state.notifications.list);
-  return (
-    <Nav className={styles.sidebar} vertical>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          to={`${root}/jobs`}
-          activeClassName={styles.active}
-          className="nav-content"
-        >
-          <i className="icon icon-jobs" />
-          <span className={styles['link-text']}>Jobs</span>
-          <HistoryBadge unread={unreadJobs} />
-        </NavLink>
-      </NavItem>
-    </Nav>
-  );
+  const { jobsv2Title } = useSelector((state) => state.workbench.config);
+
+  const sidebarItems = [
+    {
+      to: `${root}/jobs`,
+      label: 'Jobs',
+      iconName: 'jobs',
+      disabled: false,
+      hidden: false,
+      children: <HistoryBadge unread={unreadJobs} />,
+    },
+  ];
+
+  // TODOv3: dropV2Jobs
+  if (jobsv2Title) {
+    sidebarItems.push({
+      to: `${root}/jobsv2`,
+      label: jobsv2Title,
+      iconName: 'jobs',
+      disabled: false,
+      hidden: false,
+    });
+  }
+
+  return <Sidebar sidebarItems={sidebarItems} />;
 };
 
 export const Routes = () => {
@@ -81,11 +84,6 @@ export const Routes = () => {
             pathname === `${root}${ROUTES.JOBS}` &&
             !locationState.fromJobHistoryModal
           ) {
-            dispatch({
-              type: 'GET_JOBS',
-              params: { offset: 0 },
-            });
-
             // Chain events to properly update UI based on read action
             dispatch({
               type: 'FETCH_NOTIFICATIONS',
@@ -112,17 +110,50 @@ export const Routes = () => {
             <>
               <JobHistory className={styles.content} />
               <Route
-                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobUuid`}
+                render={({
+                  match: {
+                    params: { jobUuid },
+                  },
+                }) => {
+                  dispatch({
+                    type: 'GET_JOB_DETAILS',
+                    payload: { jobUuid },
+                  });
+                  return <JobHistoryModal uuid={jobUuid} />;
+                }}
+              />
+            </>
+          );
+        }}
+      />
+
+      <Route
+        // TODOv3: dropV2Jobs
+        path={`${root}${ROUTES.JOBSV2}`}
+        render={({ location: { pathname, state } }) => {
+          const locationState = state || {};
+          // Only mark as read if in pure job history view
+          if (
+            pathname === `${root}${ROUTES.JOBSV2}` &&
+            !locationState.fromJobHistoryModal
+          ) {
+            dispatch({
+              type: 'GET_V2_JOBS',
+              params: { offset: 0 },
+            });
+          }
+          return (
+            <>
+              <JobHistory className={styles.content} />
+              <Route
+                path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}/:jobId`}
                 render={({
                   match: {
                     params: { jobId },
                   },
                 }) => {
-                  dispatch({
-                    type: 'GET_JOB_DETAILS',
-                    payload: { jobId },
-                  });
-                  return <JobHistoryModal jobId={jobId} />;
+                  return <JobHistoryModal uuid={jobId} version="v2" />;
                 }}
               />
             </>
@@ -139,6 +170,7 @@ export const Routes = () => {
 };
 
 const Layout = () => {
+  const { jobsv2Title } = useSelector((state) => state.workbench.config); // TODOv3: dropV2Jobs
   const match = useRouteMatch(`${root}/:historyType`);
   const historyType = match
     ? match.params.historyType.substring(0, 1).toUpperCase() +
@@ -149,12 +181,14 @@ const Layout = () => {
     <Section
       bodyClassName="has-loaded-history"
       messageComponentName="HISTORY"
-      header={`History / ${historyType}`}
+      header={`History / ${
+        historyType === 'Jobsv2' ? jobsv2Title : historyType // TODOv3: dropV2Jobs
+      }`}
       headerClassName={styles['header']}
       headerActions={<Actions />}
       content={
         <>
-          <Sidebar />
+          <HistorySidebar />
           <Routes />
         </>
       }

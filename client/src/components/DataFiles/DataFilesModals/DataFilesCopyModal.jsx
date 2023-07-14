@@ -29,6 +29,8 @@ const DataFilesCopyModal = React.memo(() => {
     fetchListing,
   } = useFileListing('modal');
 
+  const { fetchSelectedSystem } = useSystems();
+
   const dispatch = useDispatch();
 
   const reloadPage = () => {
@@ -58,7 +60,9 @@ const DataFilesCopyModal = React.memo(() => {
       (s) => s.hidden || (s.scheme !== 'private' && s.scheme !== 'projects')
     )
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
-    .map((s) => s.system);
+    .map((s) => `${s.system}${s.homeDir || ''}`);
+
+  const selectedSystem = fetchSelectedSystem(params);
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -139,7 +143,11 @@ const DataFilesCopyModal = React.memo(() => {
               <DataFilesSystemSelector
                 operation="copy"
                 systemId={
-                  params.scheme === 'projects' ? 'shared' : params.system
+                  params.scheme === 'projects'
+                    ? 'shared'
+                    : `${selectedSystem?.system}${
+                        selectedSystem?.homeDir || ''
+                      }`
                 }
                 section="modal"
                 disabled={disabled}

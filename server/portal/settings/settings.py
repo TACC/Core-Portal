@@ -18,9 +18,6 @@ from portal.settings import settings_secret
 logger = logging.getLogger(__file__)
 
 
-def gettext(s): return s  # noqa:E731
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -51,8 +48,15 @@ CSRF_COOKIE_SAMESITE = 'Strict'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
+# https://docs.djangoproject.com/en/3.2/releases/3.0/#security
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
+PORTAL_CSS_FILENAMES = getattr(settings_custom, '_PORTAL_CSS_FILENAMES', [])
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -74,7 +78,6 @@ INSTALLED_APPS = [
     # Django Channels
     'channels',
 
-    'bootstrap4',
     'termsandconditions',
     'impersonate',
 
@@ -94,7 +97,6 @@ INSTALLED_APPS = [
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration',
     'portal.apps.projects',
-    'portal.apps.system_creation',
     'portal.apps.public_data',
     'portal.apps.request_access',
     'portal.apps.site_search',
@@ -111,8 +113,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
     # Throws an Error.
@@ -155,7 +155,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
-AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
+AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.TapisOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
 
 # Password validation
@@ -187,7 +187,7 @@ IMPERSONATE = {
 # this can be set to just '/' if we're not using core portal to create cms sessions
 LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
 LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
-LOGIN_URL = '/auth/agave/'
+LOGIN_URL = '/auth/tapis/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -282,8 +282,8 @@ LOGGING = {
             'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        'agave': {
-            'format': '[AGAVE] %(levelname)s %(asctime)s UTC %(module)s '
+        'tapis': {
+            'format': '[TAPIS] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
@@ -351,18 +351,18 @@ LOGGING = {
 }
 
 """
-SETTINGS: AGAVE
+SETTINGS: TAPIS
 """
 
-# Agave Tenant.
-AGAVE_TENANT_ID = settings_secret._AGAVE_TENANT_ID
-AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
+# Tapis Tenant.
+TAPIS_TENANT_BASEURL = settings_secret._TAPIS_TENANT_BASEURL
 
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
-AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
-AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
-AGAVE_STORAGE_SYSTEM = settings_custom._AGAVE_STORAGE_SYSTEM
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = settings_secret._TAPIS_CLIENT_ID
+TAPIS_CLIENT_KEY = settings_secret._TAPIS_CLIENT_KEY
+
+# Long-live portal admin access token
+TAPIS_ADMIN_JWT = getattr(settings_secret, '_TAPIS_ADMIN_JWT', '')
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -469,34 +469,26 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
-SETTINGS: EXECUTION SYSTEMS
+SETTINGS: TACC EXECUTION SYSTEMS
 """
-PORTAL_EXEC_SYSTEMS = {
-    'data.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
+TACC_EXEC_SYSTEMS = {
+    'corral': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/work2/{}',
         'home_dir': '/home/{}'
     },
-    'stampede2.tacc.utexas.edu': {
+    'stampede2': {
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
-    'ls5.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'longhorn.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'frontera.tacc.utexas.edu': {
+    'frontera': {
+        'work_dir': '/work2/{}',
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     },
-    'maverick2.tacc.utexas.edu': {
-        'scratch_dir': '/work/{}',
-        'home_dir': '/home1/{}'
-    },
-    'ls6.tacc.utexas.edu': {
+    'ls6': {
+        'work_dir': '/work/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
@@ -505,14 +497,12 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
-    settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
-)
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_custom.\
-    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
+
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
     settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
@@ -537,18 +527,7 @@ PORTAL_WORKSPACE_MANAGERS = {
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 
-TOOLBAR_OPTIONS = {
-    'trash_enabled': True,
-    'share_enabled': True,
-    'preview_enabled': True,
-    'preview_images_enabled': True,
-    'copy_enabled': True,
-    'move_enabled': True,
-    'rename_enabled': True,
-    'tag_enabled': True,
-}
-
-AGAVE_DEFAULT_TRASH_NAME = '.Trash'
+TAPIS_DEFAULT_TRASH_NAME = getattr(settings_custom, '_TAPIS_DEFAULT_TRASH_NAME', '.Trash')
 
 PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
     _PORTAL_PROJECTS_SYSTEM_PREFIX
@@ -574,16 +553,6 @@ PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
 COMMUNITY_INDEX_SCHEDULE = settings_custom.\
     _COMMUNITY_INDEX_SCHEDULE
 
-# This setting is not used directly most of the time.
-# We mainly use it when creating the execution system for the pems app
-# but that might not happen in every portal.
-# We are only keeping this in the setting to have written down somewhere
-# so we can refer to this line when looking for this system's ID.
-# Also, it might be useful in the future when we need to do any changes
-# to this system or setup any management commands.
-PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_custom.\
-    _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID
-
 PORTAL_PROJECTS_PEMS_APP_ID = settings_custom.\
     _PORTAL_PROJECTS_PEMS_APP_ID
 
@@ -597,23 +566,13 @@ PORTAL_NAMESPACE = settings_custom.\
 
 PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_custom, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
 
-PORTAL_APPS_METADATA_NAMES = settings_custom._PORTAL_APPS_METADATA_NAMES
+PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
-PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_custom, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
-
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
-                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
-
-# "View in Jupyter Notebook" base URL
-PORTAL_JUPYTER_URL = getattr(settings_custom, '_PORTAL_JUPYTER_URL', None)
-# "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
-PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_custom, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
-
-PORTAL_DOMAIN = settings_custom._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
@@ -641,7 +600,7 @@ ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
-SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
 """
 SETTINGS: EXPORTS
@@ -649,6 +608,7 @@ SETTINGS: EXPORTS
 
 SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
+    'PORTAL_CSS_FILENAMES',
     'DEBUG',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE',
@@ -702,11 +662,16 @@ SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
     '.htm', '.html'
 ]
 
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
+
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 
 # Channels
@@ -730,7 +695,7 @@ CHANNEL_LAYERS = {
 SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
-WORKBENCH_SETTINGS.update({'trashPath': AGAVE_DEFAULT_TRASH_NAME})
+WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
 
 """
 SETTINGS: RECAPTCHA

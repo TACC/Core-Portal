@@ -9,7 +9,7 @@ import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
-import Sidebar from '../Sidebar';
+import WorkbenchSidebar from './WorkbenchSidebar';
 import DataFiles from '../DataFiles';
 import Submissions from '../Submissions';
 import History from '../History';
@@ -39,7 +39,7 @@ function Workbench() {
     hideManageAccount,
   } = useSelector(
     (state) => ({
-      loading: state.workbench.loading | loadingSystems,
+      loading: state.workbench.loading || loadingSystems,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
@@ -76,7 +76,7 @@ function Workbench() {
   return (
     <div className="workbench-wrapper">
       <NotificationToast />
-      <Sidebar
+      <WorkbenchSidebar
         disabled={!setupComplete}
         showUIPatterns={showUIPatterns}
         loading={loading}
@@ -115,9 +115,10 @@ function Workbench() {
                   />
                 )}
                 {showSubmissions && (
-                  <Route path={`${path}${ROUTES.SUBMISSIONS}`}>
-                    <Submissions />
-                  </Route>
+                  <Route
+                    path={`${path}${ROUTES.SUBMISSIONS}`}
+                    component={Submissions}
+                  />
                 )}
                 {!hideApps && (
                   <Route

@@ -4,7 +4,7 @@
 version: "3.8"
 services:
   cms:
-    image: taccwma/core-cms:latest
+    image: taccwma/core-cms:ff737a3
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
@@ -44,7 +44,7 @@ services:
       - core_portal_es_data:/usr/share/elasticsearch/data
     container_name: core_portal_elasticsearch
     ports:
-      - 9200:9200
+      - 127.0.0.1:9200:9200
 
   postgres:
     image: postgres:11.5
@@ -79,15 +79,15 @@ services:
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../../.:/srv/www/portal
     ports:
-      - 80:80
-      - 443:443
+      - 127.0.0.1:80:80
+      - 127.0.0.1:443:443
     container_name: core_portal_nginx
     depends_on:
       - cms
       - django
 
   websockets:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
@@ -100,7 +100,7 @@ services:
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -118,7 +118,7 @@ services:
     container_name: core_portal_django
 
   workers:
-    image: taccwma/core-portal:local
+    image: taccwma/core-portal:latest
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static

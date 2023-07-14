@@ -1,59 +1,111 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { AppIcon, InfiniteScrollTable, Message } from '_common';
-import { getOutputPathFromHref } from 'utils/jobsUtil';
+import { useDispatch, shallowEqual, useSelector } from 'react-redux';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  AppIcon,
+  InfiniteScrollTable,
+  Message,
+  SectionMessage,
+  Section,
+} from '_common';
 import { formatDateTime } from 'utils/timeFormat';
+import { getOutputPath } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
+import Searchbar from '_common/Searchbar';
+import queryStringParser from 'query-string';
 
-function JobsView({ showDetails, showFancyStatus, rowProps }) {
+function JobsView({
+  showDetails,
+  showFancyStatus,
+  rowProps,
+  includeSearchbar,
+}) {
+  // TODOv3: dropV2Jobs
+  const location = useLocation();
+  const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.jobs.loading);
-  const jobs = useSelector((state) => state.jobs.list);
-  const error = useSelector((state) => state.jobs.error);
+  const { error, jobs } = useSelector((state) => {
+    return version === 'v3'
+      ? { ...state.jobs, jobs: state.jobs.list }
+      : // TODOv3: dropV2Jobs
+        { ...state.jobsv2, jobs: state.jobsv2.list };
+  });
+
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles
   );
 
-  const noDataText = (
-    <>
-      No recent jobs. You can submit jobs from the{' '}
-      <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
-        className="wb-link"
-      >
-        Applications Page
-      </Link>
-      .
-    </>
+  const { isJobLoading, isNotificationLoading } = useSelector(
+    (state) => ({
+      isJobLoading: state.jobs.loading,
+      isNotificationLoading: state.notifications.loading,
+    }),
+    shallowEqual
   );
 
-  const infiniteScrollCallback = useCallback(() => {
+  const query = queryStringParser.parse(useLocation().search);
+
+  const noDataText =
+    // TODOv3: dropV2Jobs
+    version === 'v2' || query.query_string ? (
+      'No results found.'
+    ) : (
+      <>
+        No recent jobs. You can submit jobs from the{' '}
+        <Link
+          to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+          className="wb-link"
+        >
+          Applications Page
+        </Link>
+        .
+      </>
+    );
+
+  useEffect(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: jobs.length },
+      params: { offset: 0, queryString: query.query_string || '' },
     });
-  }, [jobs]);
+  }, [dispatch, query.query_string]);
+
+  const infiniteScrollCallback = useCallback(() => {
+    // TODOv3: dropV2Jobs
+    const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
+    dispatch({
+      type: dispatchType,
+      params: { offset: jobs.length, queryString: query.query_string || '' },
+    });
+  }, [dispatch, jobs, query.query_string]);
 
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { id, name },
+        original: { id, uuid, name },
       },
-    }) => (
-      <Link
-        to={{
-          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
-          state: { jobName: name },
-        }}
-        className="wb-link"
-      >
-        View Details
-      </Link>
-    ),
+    }) => {
+      const query = queryStringParser.parse(useLocation().search);
+
+      // TODOv3: dropV2Jobs
+      const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
+      return (
+        <Link
+          to={{
+            pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${jobsPathname}`,
+            state: { jobName: name },
+            search: query.query_string
+              ? `?query_string=${query.query_string}`
+              : '',
+          }}
+          className="wb-link"
+        >
+          View Details
+        </Link>
+      );
+    },
     []
   );
 
@@ -92,36 +144,53 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: (el) => (
-        <JobsStatus
-          status={el.value}
-          fancy={showFancyStatus}
-          jobId={el.row.original.id}
-        />
-      ),
+      Cell: (el) => {
+        // TODOv3: dropV2Jobs
+        if (el.row.original.uuid) {
+          return (
+            <JobsStatus
+              status={el.value}
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.uuid}
+            />
+          );
+        } else {
+          return (
+            <JobsStatus
+              status="ARCHIVED"
+              fancy={showFancyStatus}
+              jobUuid={el.row.original.id}
+            />
+          );
+        }
+      },
       id: 'jobStatusCol',
     },
     {
       Header: 'Job Details',
-      accessor: 'id',
+      accessor: 'uuid',
       show: showDetails,
       Cell: jobDetailLink,
     },
     {
       Header: 'Output Location',
+      show: version === 'v3' /* TODOv3: dropV2Jobs. remove show here  */,
       headerStyle: { textAlign: 'left' },
-      accessor: '_links.archiveData.href',
       Cell: (el) => {
-        const outputPath =
-          el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputPath && !hideDataFiles ? (
-          <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
-            className="wb-link job__path"
-          >
-            {outputPath}
-          </Link>
-        ) : null;
+        // TODOv3: dropV2Jobs
+        if (el.row.original.uuid) {
+          const outputLocation = getOutputPath(el.row.original);
+          return outputLocation && !hideDataFiles ? (
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
+              className="wb-link job__path"
+            >
+              {outputLocation}
+            </Link>
+          ) : null;
+        } else {
+          return null;
+        }
       },
     },
     {
@@ -138,15 +207,33 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const filterColumns = columns.filter((f) => f.show !== false);
 
   return (
-    <InfiniteScrollTable
-      tableColumns={filterColumns}
-      tableData={jobs}
-      onInfiniteScroll={infiniteScrollCallback}
-      isLoading={isLoading}
-      className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-      noDataText={noDataText}
-      getRowProps={rowProps}
-    />
+    <>
+      {includeSearchbar && (
+        <Searchbar
+          api="tapis"
+          resultCount={jobs.length}
+          dataType="Jobs"
+          infiniteScroll
+          disabled={isJobLoading || isNotificationLoading}
+        />
+      )}
+      <div className={includeSearchbar ? 'o-flex-item-table-wrap' : ''}>
+        <InfiniteScrollTable
+          tableColumns={filterColumns}
+          tableData={jobs}
+          onInfiniteScroll={infiniteScrollCallback}
+          isLoading={isJobLoading || isNotificationLoading}
+          className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
+          noDataText={
+            <Section className={'no-results-message'}>
+              <SectionMessage type="info">{noDataText}</SectionMessage>
+            </Section>
+          }
+          getRowProps={rowProps}
+          columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
+        />
+      </div>
+    </>
   );
 }
 
@@ -154,11 +241,13 @@ JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
   rowProps: PropTypes.func,
+  includeSearchbar: PropTypes.bool,
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
   rowProps: (row) => {},
+  includeSearchbar: true,
 };
 
 export default JobsView;

@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.models.metadata
    :synopsis: Metadata model for projects.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from django.conf import settings
 from django.db import models

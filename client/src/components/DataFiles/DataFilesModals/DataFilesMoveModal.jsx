@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -30,6 +30,10 @@ const DataFilesMoveModal = React.memo(() => {
   const dispatch = useDispatch();
   const { data: systems } = useSystems();
 
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem(params);
+
   const reloadPage = () => {
     history.push(location.pathname);
     fetchListing(modalParams);
@@ -48,7 +52,8 @@ const DataFilesMoveModal = React.memo(() => {
     fetchListing({
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system,
+      system: selectedSystem.system,
+      path: `${selectedSystem.homeDir || ''}`,
     });
   };
 

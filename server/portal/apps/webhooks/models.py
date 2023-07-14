@@ -1,9 +1,6 @@
-from __future__ import unicode_literals
-
 from django.db import models
 from django.conf import settings
 from datetime import datetime
-from portal.apps.webhooks.fields import JSONField
 
 
 class ExternalCall(models.Model):
@@ -30,7 +27,7 @@ class ExternalCall(models.Model):
     callback = models.CharField(max_length=300, null=True)
 
     # JSON Data
-    callback_data = JSONField(null=True)
+    callback_data = models.JSONField(null=True)
 
     # If True, webhooks received will still be accepted.
     # Otherwise, a 500 will be returned to the caller.

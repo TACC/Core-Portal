@@ -17,10 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_or_create_custom_messages(user, template):
-    try:
-        message = CustomMessages.objects.get(user=user, template=template)
-    except CustomMessages.DoesNotExist:
-        message = CustomMessages.objects.create(user=user, template=template)
+    message, _ = CustomMessages.objects.get_or_create(user=user, template=template)
 
     return {
         'template': message.template.to_dict(),
@@ -37,15 +34,7 @@ class IntroMessagesView(BaseApiView):
     def put(self, request, *args):
         body = json.loads(request.body)
         for component_name, component_value in body.items():
-            try:
-                db_message = IntroMessages.objects.get(user=request.user, component=component_name)
-                # if the IntroMessage exists
-                if db_message and db_message.unread != component_value:
-                    db_message.unread = component_value
-                    db_message.save()
-            except IntroMessages.DoesNotExist:
-                new_db_message = IntroMessages.objects.create(user=request.user, component=component_name, unread=component_value)
-                new_db_message.save()
+            IntroMessages.objects.update_or_create(user=request.user, component=component_name, defaults={'unread': component_value})
         return JsonResponse({'status': 'OK'})
 
 

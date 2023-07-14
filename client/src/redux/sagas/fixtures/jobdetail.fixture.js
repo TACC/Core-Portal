@@ -1,88 +1,82 @@
 const jobDetailFixture = {
-  id: 'job_id',
-  name: 'compress-0.1u3_2020-07-09T15:56:37',
-  tenantId: 'portals',
-  tenantQueue: 'aloe.jobq.portals.submit.DefaultQueue',
-  status: 'FAILED',
-  lastStatusMessage: 'My last job status',
-  accepted: '2020-07-09T15:57:43.471Z',
-  created: '2020-07-09T15:57:43.000Z',
-  ended: '2020-07-09T15:57:52.273Z',
-  lastUpdated: '2020-07-09T15:57:52.000Z',
-  owner: 'username',
-  roles:
-    'Internal/PORTALS_username_wireless-10-146-162-236.public.utexas.edu_PRODUCTION',
-  systemId: 'username.FORK.exec.stampede2.CLI',
-  appId: 'prtl.clone.username.FORK.compress-0.1u3-3.0',
-  appUuid: '2934015787566109161-242ac11a-0001-005',
-  workPath:
-    '/work/04004/username/username/job-c55ecc23-a098-40f5-aea9-9baa99306e3a-007-compress-0-1u3_2020-07-09t15-56-37',
-  archive: true,
-  archivePath:
-    'archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
-  archiveSystem: 'frontera.home.username',
+  id: 25510,
+  name: 'hello-world_2023-01-24T23:52:57',
+  owner: 'user',
+  tenant: 'portals',
+  description: 'Hello world from user',
+  status: 'FINISHED',
+  lastMessage: 'Setting job status to FINISHED.',
+  created: '2023-01-24T23:53:10.922144Z',
+  ended: '2023-01-24T23:54:22.068318Z',
+  lastUpdated: '2023-01-24T23:54:22.068318Z',
+  uuid: 'e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+  appId: 'hello-world',
+  appVersion: '0.0.1',
+  archiveOnAppError: true,
+  dynamicExecSystem: false,
+  execSystemId: 'frontera',
+  execSystemExecDir:
+    '/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+  execSystemInputDir:
+    '/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+  execSystemOutputDir:
+    '/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007/output',
+  execSystemLogicalQueue: 'development',
+  archiveSystemId: 'cloud.data',
+  archiveSystemDir:
+    '/home/user/tapis-jobs-archive/2023-01-24Z/hello-world_2023-01-24T23:52:57-e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+  dtnSystemId: null,
+  dtnMountSourcePath: null,
+  dtnMountPoint: null,
   nodeCount: 1,
-  processorsPerNode: 1,
-  memoryPerNode: 1,
-  maxHours: 2,
-  inputs: {
-    workingDirectory: 'agave://cep.home.username/COE332',
-  },
-  parameters: {
-    compression_type: 'tgz',
-  },
-  remoteJobId: null,
-  schedulerJobId: null,
-  remoteQueue: 'debug',
-  remoteSubmitted: null,
-  remoteStarted: null,
-  remoteEnded: null,
-  remoteOutcome: null,
-  submitRetries: 0,
-  remoteStatusChecks: 0,
-  failedStatusChecks: 0,
-  lastStatusCheck: null,
+  coresPerNode: 1,
+  memoryMB: 100,
+  maxMinutes: 10,
+  fileInputs:
+    '[{"name": "File to modify", "optional": true, "sourceUrl": "tapis://test.community/system/1/user/test/in.txt", "targetPath": "in.txt", "description": "The full greeting will be appended to the target .txt file", "autoMountLocal": true, "srcSharedAppCtx": false, "destSharedAppCtx": true}]',
+  parameterSet:
+    '{"appArgs": [{"arg": "hello", "name": "Greeting", "notes": "{\\"enum_values\\":[{\\"hello\\":\\"Hello\\"},{\\"hola\\":\\"Hola\\"},{\\"wassup\\":\\"Wassup\\"}]}", "include": null, "description": "Choose a greeting to give to your target"}, {"arg": "world", "name": "Target", "notes": "{}", "include": null, "description": "Whom to address your greeting"}, {"arg": "1", "name": "Sleep Time", "notes": "{\\"fieldType\\":\\"number\\"}", "include": null, "description": "How long to sleep before app execution"}], "envVariables": [{"key": "_tapisAppId", "value": "hello-world", "description": null}, {"key": "_tapisAppVersion", "value": "0.0.1", "description": null}, {"key": "_tapisArchiveOnAppError", "value": "true", "description": null}, {"key": "_tapisArchiveSystemDir", "value": "/home/user/tapis-jobs-archive/2023-01-24Z/hello-world_2023-01-24T23:52:57-e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007", "description": null}, {"key": "_tapisArchiveSystemId", "value": "cloud.data", "description": null}, {"key": "_tapisCoresPerNode", "value": "1", "description": null}, {"key": "_tapisDynamicExecSystem", "value": "false", "description": null}, {"key": "_tapisEffectiveUserId", "value": "user", "description": null}, {"key": "_tapisExecSystemExecDir", "value": "/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007", "description": null}, {"key": "_tapisExecSystemHPCQueue", "value": "development", "description": null}, {"key": "_tapisExecSystemId", "value": "frontera", "description": null}, {"key": "_tapisExecSystemInputDir", "value": "/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007", "description": null}, {"key": "_tapisExecSystemLogicalQueue", "value": "development", "description": null}, {"key": "_tapisExecSystemOutputDir", "value": "/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007/output", "description": null}, {"key": "_tapisJobCreateDate", "value": "2023-01-24Z", "description": null}, {"key": "_tapisJobCreateTime", "value": "23:53:10.922143633Z", "description": null}, {"key": "_tapisJobCreateTimestamp", "value": "2023-01-24T23:53:10.922143633Z", "description": null}, {"key": "_tapisJobName", "value": "hello-world_2023-01-24T23:52:57", "description": null}, {"key": "_tapisJobOwner", "value": "user", "description": null}, {"key": "_tapisJobUUID", "value": "e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007", "description": null}, {"key": "_tapisJobWorkingDir", "value": "/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007", "description": null}, {"key": "_tapisMaxMinutes", "value": "10", "description": null}, {"key": "_tapisMemoryMB", "value": "100", "description": null}, {"key": "_tapisNodes", "value": "1", "description": null}, {"key": "_tapisSysBatchScheduler", "value": "SLURM", "description": null}, {"key": "_tapisSysHost", "value": "frontera.tacc.utexas.edu", "description": null}, {"key": "_tapisSysRootDir", "value": "/", "description": null}, {"key": "_tapisTenant", "value": "portals", "description": null}, {"key": "_webhook_base_url", "value": "https://dev.a2cps.tacc.utexas.edu/webhooks/", "description": null}], "archiveFilter": {"excludes": [], "includes": [], "includeLaunchFiles": true}, "containerArgs": [], "schedulerOptions": [{"arg": "--tapis-profile tacc", "name": "tacc Scheduler Profile", "notes": "{}", "include": null, "description": "Scheduler profile for HPC clusters at TACC"}, {"arg": "-A TACC-ACI", "name": "TACC Allocation", "notes": null, "include": true, "description": "The allocation associated with this job execution"}]}',
+  execSystemConstraints: null,
+  subscriptions: '[]',
   blockedCount: 0,
+  remoteJobId: '5154080',
+  remoteJobId2: null,
+  remoteOutcome: 'FINISHED',
+  remoteResultInfo: '0:0',
+  remoteQueue: null,
+  remoteSubmitted: null,
+  remoteStarted: '2023-01-24T23:53:25.845370Z',
+  remoteEnded: '2023-01-24T23:54:11.639833Z',
+  remoteSubmitRetries: 0,
+  remoteChecksSuccess: 6,
+  remoteChecksFailed: 0,
+  remoteLastStatusCheck: '2023-01-24T23:54:11.615996Z',
+  inputTransactionId: null,
+  inputCorrelationId: null,
+  archiveTransactionId: 'bdbfe8a9-fdf5-42f1-befe-f0b015ac1676',
+  archiveCorrelationId: '2127f621-7204-453c-85b7-533a517d6451',
+  tapisQueue: 'tapis.jobq.submit.DefaultQueue',
   visible: true,
-  _links: {
-    self: {
-      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
-    },
-    app: {
-      href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.FORK.compress-0.1u3-3.0',
-    },
-    executionSystem: {
-      href: 'https://portals-api.tacc.utexas.edu/systems/v2/username.FORK.exec.stampede2.CLI',
-    },
-    archiveSystem: {
-      href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
-    },
-    archiveData: {
-      href: 'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.username/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
-    },
-    owner: {
-      href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
-    },
-    permissions: {
-      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007/pems',
-    },
-    history: {
-      href: 'https://portals-api.tacc.utexas.edu/jobs/v2/c55ecc23-a098-40f5-aea9-9baa99306e3a-007/history',
-    },
-    metadata: {
-      href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22c55ecc23-a098-40f5-aea9-9baa99306e3a-007%22%7D',
-    },
-    notifications: {
-      href: 'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
-    },
-  },
-  _embedded: {
-    metadata: [],
-  },
-  archiveUrl:
-    '/workbench/data-depot/agave/frontera.home.username/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007/',
-  jupyterUrl:
-    'https://jupyter.tacc.cloud/user/username/tree/tacc-work/archive/jobs/2020-07-09/compress-0-1u3_2020-07-09t15-56-37-c55ecc23-a098-40f5-aea9-9baa99306e3a-007',
+  createdby: 'user',
+  createdbyTenant: 'portals',
+  tags: ['portalName: A2CPS'],
+  jobType: 'BATCH',
+  isMpi: false,
+  mpiCmd: null,
+  cmdPrefix: null,
+  sharedAppCtx: true,
+  sharedAppCtxAttribs: [
+    'SAC_EXEC_SYSTEM_ID',
+    'SAC_ARCHIVE_SYSTEM_ID',
+    'SAC_EXEC_SYSTEM_INPUT_DIR',
+    'SAC_EXEC_SYSTEM_EXEC_DIR',
+    'SAC_EXEC_SYSTEM_OUTPUT_DIR',
+    'SAC_ARCHIVE_SYSTEM_DIR',
+  ],
+  notes:
+    '{"label": "Hello World (Sleep 3m)", "helpUrl": "https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/", "hideNodeCountAndCoresPerNode": true}',
+  _fileInputsSpec: null,
+  _parameterSetModel: null,
 };
 
 export default jobDetailFixture;

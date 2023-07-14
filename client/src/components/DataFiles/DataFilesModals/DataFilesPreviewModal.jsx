@@ -1,20 +1,44 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
+import { Niivue } from '@niivue/niivue';
+
+const NiiVue = ({ imageUrl, fileName }) => {
+  const canvas = useRef();
+  useEffect(() => {
+    const volumeList = [
+      {
+        url: imageUrl,
+        name: fileName,
+      },
+    ];
+    const nv = new Niivue();
+    nv.attachToCanvas(canvas.current);
+    nv.loadVolumes(volumeList);
+  }, [imageUrl]);
+
+  return <canvas ref={canvas} height={480} width={640} />;
+};
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.files.modals.preview);
   const params = useSelector((state) => state.files.modalProps.preview);
-  const { href, content, error, isLoading } = useSelector(
+  const { href, content, error, fileType, isLoading } = useSelector(
     (state) => state.files.preview
   );
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
+  const previewUsingBrainmap =
+    !isLoading && !hasError && params.path && fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
+
+  useEffect(() => {
+    if (previewUsingBrainmap) setIsFrameLoading(false);
+  }, [previewUsingBrainmap]);
 
   const toggle = () =>
     dispatch({
@@ -73,7 +97,10 @@ const DataFilesPreviewModal = () => {
             </code>
           </div>
         )}
-        {previewUsingHref && (
+        {previewUsingBrainmap && (
+          <NiiVue imageUrl={href} fileName={params.path}></NiiVue>
+        )}
+        {previewUsingHref && !previewUsingBrainmap && (
           <div className="embed-responsive embed-responsive-4by3">
             <iframe
               title="preview"

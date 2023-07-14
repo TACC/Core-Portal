@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 
 
-def gettext(s): return s
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -41,7 +38,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
 # Application definition
@@ -66,7 +62,6 @@ INSTALLED_APPS = [
     'channels',
 
     # Pipeline.
-    'bootstrap4',
     'termsandconditions',
     'impersonate',
 
@@ -247,8 +242,7 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
-                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
@@ -278,16 +272,14 @@ RT_PW = 'test'
 RT_QUEUE = 'test'
 RT_TAG = 'test_tag'
 
-# Agave Tenant.
-AGAVE_TENANT_ID = 'portal'
-AGAVE_TENANT_BASEURL = 'https://api.example.com'
+# Tapis Tenant.
+TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
 
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = 'test'
-AGAVE_CLIENT_SECRET = 'test'
-AGAVE_SUPER_TOKEN = 'test'
-AGAVE_STORAGE_SYSTEM = 'test'
-AGAVE_DEFAULT_TRASH_NAME = 'test'
+# Tapis Client Configuration
+TAPIS_CLIENT_ID = 'test'
+TAPIS_CLIENT_KEY = 'test'
+TAPIS_ADMIN_JWT = 'test'
+TAPIS_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
 AGAVE_JWT_ISSUER = 'wso2.org/products/am'
@@ -427,11 +419,16 @@ SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
     '.htm', '.html'
 ]
 
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
+
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_TEXT_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
@@ -440,88 +437,48 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-        'hidden': False,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-        'hidden': False,
-    },
-    'stockyard': {
-        'name': 'My Data (Work)',
-        'systemId': 'cloud.corral.work.{username}',
-        'host': 'cloud.corral.tacc.utexas.edu',
-        'rootDir': '/work/{tasdir}',
-        'port': 2222,
-        'icon': None,
-        'hidden': True,
-    }
-}
-
-PORTAL_EXEC_SYSTEMS = {
-    'data.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'stampede2.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'lonestar5.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'longhorn.tacc.utexas.edu': {
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
-    },
-    'frontera.tacc.utexas.edu': {
-        'scratch_dir': '/scratch1/{}',
-        'home_dir': '/home1/{}'
-    }
-}
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
+        'name': 'My Data (Work)',
+        'system': 'cloud.data',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home/{username}',
+        'icon': None,
+        'default': True
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
         'name': 'Community Data',
-        'system': 'portal.storage.community',
+        'system': 'cloud.data',
         'scheme': 'community',
         'api': 'tapis',
+        'homeDir': '/path/to/community',
         'icon': None,
         'siteSearchPriority': 1
     },
     {
         'name': 'Public Data',
-        'system': 'portal.storage.public',
+        'system': 'cloud.data',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None,
+        'homeDir': '/path/to/public',
+        'icon': 'publications',
         'siteSearchPriority': 0
     },
     {
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': 'publications',
-        'privilegeRequired': False,
-        'readOnly': False,
-        'hideSearchBar': False
+        'icon': 'publications'
     },
     {
         'name': 'Google Drive',
@@ -532,9 +489,36 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'integration': 'portal.apps.googledrive_integration'
     }
 ]
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
+
+
+"""
+SETTINGS: TACC EXECUTION SYSTEMS
+"""
+TACC_EXEC_SYSTEMS = {
+    'corral': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/work2/{}',
+        'home_dir': '/home/{}'
+    },
+    'stampede2': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
+    'frontera': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
+    },
+    'ls6': {
+        'work_dir': '/work/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
+}
 
 WH_BASE_URL = "https://testserver"
-PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
 
 WORKBENCH_SETTINGS = {
     "debug": False
