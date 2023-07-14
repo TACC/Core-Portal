@@ -59,10 +59,7 @@ const Layout = ({ hostname }) => {
             {loading ? (
               <LoadingSpinner />
             ) : (
-              <SectionTableWrapper
-                className={styles['content']}
-                contentShouldScroll
-              >
+              <SectionTableWrapper contentShouldScroll>
                 <SystemStatusQueueTable system={selectedSystem} />
               </SectionTableWrapper>
             )}
