@@ -192,7 +192,7 @@ describe('DataFilesListing', () => {
     ],
     [
       '500',
-      /There was a problem accessing this file system. If this is your/,
+      /There was a problem accessing this file system./,
       'private',
     ],
     [

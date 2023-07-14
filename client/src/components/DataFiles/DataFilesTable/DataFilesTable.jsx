@@ -34,7 +34,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
   const { fetchSelectedSystem } = useSystems();
 
-  const selectedSystem = fetchSelectedSystem(params);
+  const selectedSystem = fetchSelectedSystem(params ?? {});
 
   const currSystemHost = currSystem ? currSystem.host : '';
 
@@ -133,7 +133,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
         const sectionMessage = selectedSystem?.keyservice ? (
           <span>
-            For help,{' '}
+            For help, please{' '}
             <Link
               className="wb-link"
               to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
