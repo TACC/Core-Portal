@@ -190,11 +190,7 @@ describe('DataFilesListing', () => {
       /An error occurred loading this directory. For help, please submit/,
       'public',
     ],
-    [
-      '500',
-      /There was a problem accessing this file system./,
-      'private',
-    ],
+    ['500', /There was a problem accessing this file system./, 'private'],
     [
       '404',
       'The file or folder that you are attempting to access does not exist.',

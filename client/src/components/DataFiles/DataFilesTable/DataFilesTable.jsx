@@ -158,8 +158,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         return (
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
-              There was a problem accessing this file system.{' '}
-              {sectionMessage}
+              There was a problem accessing this file system. {sectionMessage}
             </SectionMessage>
           </div>
         );
