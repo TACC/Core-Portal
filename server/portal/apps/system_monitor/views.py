@@ -19,25 +19,38 @@ def _get_unoperational_system(display_name):
 
 class SysmonDataView(BaseApiView):
 
-    def get(self, request):
+    def get(self, request, system_name=None):
         '''
             Pulls and parses data from TACC User Portal then populates and returns a list of Systems objects
         '''
-        systems = []
-        requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
-        systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
-        for sys in requested_systems:
-            if sys not in systems_json:
-                logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
-                systems.append(_get_unoperational_system(sys))
-                continue
-            try:
-                system = System(systems_json[sys]).to_dict()
-                systems.append(system)
-            except Exception:
-                logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
-                systems.append(_get_unoperational_system(sys))
-        return JsonResponse(systems, safe=False)
+
+        if system_name:
+            system_json = requests.get(f'{settings.SYSTEM_MONITOR_URL}{system_name}').json()
+
+            requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
+
+            if (system_json['display_name'] in requested_systems):
+                system_queues = []
+                for queue in system_json['queues'].items():
+                    system_queues.append({'name': queue[0], **queue[1]})
+
+                return JsonResponse(system_queues, safe=False)
+        else:
+            systems = []
+            requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
+            systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
+            for sys in requested_systems:
+                if sys not in systems_json:
+                    logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
+                    systems.append(_get_unoperational_system(sys))
+                    continue
+                try:
+                    system = System(systems_json[sys]).to_dict()
+                    systems.append(system)
+                except Exception:
+                    logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
+                    systems.append(_get_unoperational_system(sys))
+            return JsonResponse(systems, safe=False)
 
 
 class System:

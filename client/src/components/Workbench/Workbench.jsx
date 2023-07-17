@@ -17,6 +17,7 @@ import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
+import SystemStatus from '../SystemStatus';
 import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
@@ -37,6 +38,7 @@ function Workbench() {
     hideAllocations,
     showSubmissions,
     hideManageAccount,
+    hideSystemStatus,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading || loadingSystems,
@@ -49,6 +51,7 @@ function Workbench() {
       hideAllocations: state.workbench.config.hideAllocations,
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
+      hideSystemStatus: state.workbench.config.hideSystemStatus,
     }),
     shallowEqual
   );
@@ -134,6 +137,12 @@ function Workbench() {
                   <Route
                     path={`${path}${ROUTES.ONBOARDINGADMIN}`}
                     component={OnboardingAdmin}
+                  />
+                )}
+                {!hideSystemStatus && (
+                  <Route
+                    path={`${path}${ROUTES.SYSTEM_STATUS}`}
+                    component={SystemStatus}
                   />
                 )}
                 {showUIPatterns && (

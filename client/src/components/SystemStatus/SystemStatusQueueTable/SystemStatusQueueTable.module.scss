@@ -1,0 +1,40 @@
+.root {
+  --table-border: 1px solid black;
+  margin: 0;
+  width: 100%;
+  /* nasystemme */
+  tr > *:nth-child(1) {
+    width: 22%;
+  }
+  /* status */
+  tr > *:nth-child(2) {
+    width: 24%;
+    span {
+      width: 50%;
+    }
+  }
+  /* free */
+  tr > *:nth-child(3) {
+    width: 18%;
+  }
+  /* running */
+  tr > *:nth-child(4) {
+    width: 18%;
+  }
+  /* waiting */
+  tr > *:nth-child(5) {
+    width: 18%;
+  }
+}
+
+.header {
+  font-size: 1rem;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--global-color-accent--normal);
+  padding: 30px;
+}
