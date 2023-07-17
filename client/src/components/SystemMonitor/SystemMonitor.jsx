@@ -3,13 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, Message } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
+import PropTypes from 'prop-types';
 
 import styles from './SystemMonitor.module.scss';
 
-const SystemsList = () => {
-  const systemList = useSelector((state) => state.systemMonitor.list);
+const SystemsList = ({ system }) => {
+  let systemList = useSelector((state) => state.systemMonitor.list);
+
+  systemList = system
+    ? systemList.filter((sys) => sys.hostname === system)
+    : systemList;
+
   const loadingError = useSelector((state) => state.systemMonitor.error);
-  const data = useMemo(() => systemList, []);
+  const data = systemList;
   const columns = useMemo(
     () => [
       {
@@ -19,7 +25,7 @@ const SystemsList = () => {
       },
       {
         accessor: 'is_operational',
-        Header: 'Status',
+        Header: 'System Status',
         Cell: Operational,
       },
       {
@@ -29,15 +35,17 @@ const SystemsList = () => {
       },
       {
         accessor: ({ jobs }) => (jobs ? jobs.running : '--'),
-        Header: 'Running',
+        Header: 'Running Jobs',
       },
       {
         accessor: ({ jobs }) => (jobs ? jobs.queued : '--'),
-        Header: 'Queued',
+        Header: 'Waiting Jobs',
       },
     ],
     []
   );
+
+  const initialTableState = system ? { hiddenColumns: ['display_name'] } : {};
 
   if (loadingError) {
     return (
@@ -51,13 +59,16 @@ const SystemsList = () => {
     useTable({
       columns,
       data,
+      initialState: initialTableState,
     });
   return (
     <table
       {...getTableProps()}
       // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
       // TODO: Create global table styles & Make <InfiniteScrollTable> use them
-      className={`multi-system InfiniteScrollTable o-fixed-header-table ${styles['root']}`}
+      className={`multi-system InfiniteScrollTable o-fixed-header-table ${
+        system ? styles['root-no-system-name'] : styles['root']
+      }`}
     >
       <thead>
         {headerGroups.map((headerGroup) => (
@@ -95,7 +106,14 @@ const SystemsList = () => {
   );
 };
 
-const SystemMonitorView = () => {
+SystemsList.propTypes = {
+  system: PropTypes.string,
+};
+SystemsList.defaultProps = {
+  system: '',
+};
+
+const SystemMonitorView = ({ system }) => {
   const { loading } = useSelector((state) => state.systemMonitor);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -104,7 +122,15 @@ const SystemMonitorView = () => {
   if (loading) {
     return <LoadingSpinner />;
   }
-  return <SystemsList />;
+
+  return <SystemsList system={system} />;
+};
+
+SystemMonitorView.propTypes = {
+  system: PropTypes.string,
+};
+SystemMonitorView.defaultProps = {
+  system: '',
 };
 
 export default SystemMonitorView;
