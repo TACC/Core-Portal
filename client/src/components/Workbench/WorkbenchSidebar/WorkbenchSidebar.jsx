@@ -19,6 +19,9 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideAllocations = useSelector(
     (state) => state.workbench.config.hideAllocations
   );
+  const hideSystemStatus = useSelector(
+    (state) => state.workbench.config.hideSystemStatus
+  );
   const sidebarItems = [
     {
       to: path + ROUTES.DASHBOARD,
@@ -60,6 +63,7 @@ const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
       label: 'System Status',
       iconName: 'data-files',
       disabled: disabled,
+      hidden: hideSystemStatus,
     },
     {
       to: path + ROUTES.UI,

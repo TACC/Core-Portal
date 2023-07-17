@@ -38,6 +38,7 @@ function Workbench() {
     hideAllocations,
     showSubmissions,
     hideManageAccount,
+    hideSystemStatus,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading || loadingSystems,
@@ -50,6 +51,7 @@ function Workbench() {
       hideAllocations: state.workbench.config.hideAllocations,
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
+      hideSystemStatus: state.workbench.config.hideSystemStatus,
     }),
     shallowEqual
   );
@@ -137,10 +139,12 @@ function Workbench() {
                     component={OnboardingAdmin}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.SYSTEM_STATUS}`}
-                  component={SystemStatus}
-                />
+                {!hideSystemStatus && (
+                  <Route
+                    path={`${path}${ROUTES.SYSTEM_STATUS}`}
+                    component={SystemStatus}
+                  />
+                )}
                 {showUIPatterns && (
                   <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
                 )}
