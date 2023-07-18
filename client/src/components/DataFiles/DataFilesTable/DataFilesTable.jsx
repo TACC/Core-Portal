@@ -120,17 +120,6 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         ['private', 'projects'].includes(scheme) &&
         currSystem.effectiveUserId === currentUser
       ) {
-        const link = (strings) => (
-          <a
-            className="data-files-nav-link"
-            type="button"
-            href="#"
-            onClick={pushKeys}
-          >
-            {strings[0]}
-          </a>
-        );
-
         const sectionMessage = selectedSystem?.keyservice ? (
           <span>
             For help, please{' '}
