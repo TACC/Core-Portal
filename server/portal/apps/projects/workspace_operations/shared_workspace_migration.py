@@ -32,6 +32,7 @@ def get_role(project_id, username):
 
 
 def migrate_project(project_id):
+    print(f'Beginning migration for project: {project_id}')
     client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
     try:
@@ -77,9 +78,9 @@ def migrate_project(project_id):
 
     client.systems.changeSystemOwner(systemId=system_id, userName=owner)
 
+    print(f'Successfully migrated project id: {project_id}')
+
 
 def migrate_all_projects():
     for prj in ProjectMetadata.objects.all():
-        print(f'Beginning migration for project: {prj.project_id}')
         migrate_project(prj.project_id)
-        print(f'Successfully migrated project id: {prj.project_id}')
