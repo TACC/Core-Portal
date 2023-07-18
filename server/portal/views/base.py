@@ -9,6 +9,7 @@ from django.views.generic import View
 from django.http import JsonResponse, Http404
 from django.core.exceptions import PermissionDenied
 from portal.exceptions.api import ApiException
+from tapipy.errors import BaseTapyException
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class BaseApiView(View):
             else:
                 logger.info('Error %s', message, exc_info=True, extra=extra)
             return JsonResponse({'message': message}, status=400)
-        except (ConnectionError, HTTPError) as e:
+        except (ConnectionError, HTTPError, BaseTapyException) as e:
             # status code and json content from ConnectionError/HTTPError exceptions
             # are used in the returned response. Note: the handling of these two exceptions
             # is significant as client-side code make use of these status codes (e.g. error
