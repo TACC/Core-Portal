@@ -55,8 +55,10 @@ def migrate_project(project_id):
     except BaseTapyException as e:
         if 'SYSAPI_SYS_EXISTS' in e.message:
             print('A Tapis V3 workspace already exists for this system.')
-            return
-        raise
+        else:
+            print('Error creating workspace system')
+            print(e)
+        return
 
     for co_pi in v2_project.co_pis.all():
         v2_role = get_role(project_id, co_pi.username)
