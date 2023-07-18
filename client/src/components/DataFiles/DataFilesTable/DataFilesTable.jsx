@@ -118,7 +118,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       }
       if (
         ['private', 'projects'].includes(scheme) &&
-        currSystem.effectiveUserId === currentUser
+        currSystem?.effectiveUserId === currentUser
       ) {
         const sectionMessage = selectedSystem?.keyservice ? (
           <span>
