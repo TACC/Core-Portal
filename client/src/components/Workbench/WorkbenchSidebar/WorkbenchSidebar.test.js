@@ -15,8 +15,15 @@ const PUBLIC_PAGES = [
   'Applications',
   'Allocations',
   'History',
+  'System Status',
 ];
-const APP_DATA_PAGES = ['Applications', 'History', 'Data Files', 'Allocations'];
+const APP_DATA_PAGES = [
+  'Applications',
+  'History',
+  'Data Files',
+  'Allocations',
+  'System Status',
+];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
@@ -54,6 +61,7 @@ describe('workbench sidebar', () => {
             hideApps: false,
             hideDataFiles: false,
             hideAllocations: false,
+            hideSystemStatus: false,
           },
         },
         notifications,
@@ -79,6 +87,7 @@ describe('workbench sidebar', () => {
             hideApps: true,
             hideDataFiles: true,
             hideAllocations: true,
+            hideSystemStatus: true,
           },
         },
         notifications,

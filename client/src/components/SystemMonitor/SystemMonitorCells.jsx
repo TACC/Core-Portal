@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pill } from '_common';
 import { shape, string, bool, number } from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -8,8 +9,15 @@ const CELL_PROPTYPES = {
   }).isRequired,
 };
 
-export const Display = ({ cell: { value } }) => (
-  <strong className="wb-text-primary">{value}</strong>
+export const Display = ({ cell: { row } }) => (
+  <strong>
+    <Link
+      className="wb-link"
+      to={`/workbench/system-status/${row.original.hostname}`}
+    >
+      {row.original.display_name}
+    </Link>
+  </strong>
 );
 Display.propTypes = CELL_PROPTYPES;
 
