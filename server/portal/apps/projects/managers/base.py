@@ -10,6 +10,7 @@ from portal.libs.agave.utils import service_account
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.elasticsearch.docs.base import IndexedProject
+from portal.apps.projects.models import Project, ProjectId
 from portal.apps.projects.serializers import MetadataJSONSerializer
 from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
 from django.core.exceptions import ObjectDoesNotExist
