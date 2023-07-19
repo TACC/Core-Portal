@@ -580,19 +580,3 @@ class ProjectId(models.Model):
     def __str__(self):
         """Str -> self.value."""
         return str(self.value)
-
-
-class ProjectSystemSerializer():
-    def default(self, obj):
-        agave_result = super(ProjectSystemSerializer, self).default(obj)
-        try:
-            pi = ProjectMetadata.objects.get(project_id=obj.name).pi
-            agave_result['owner'] = {
-                'username': pi.username,
-                'first_name': pi.first_name,
-                'last_name': pi.last_name,
-                'email': pi.email
-            }
-        except Exception:
-            logger.error("No metadata info for {}".format(obj.name))
-        return agave_result
