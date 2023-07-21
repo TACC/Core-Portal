@@ -45,7 +45,13 @@ module.exports = {
     // PROPERTY
     // Disallow unknown properties.
     'property-no-unknown': [ true, {
-      ignoreProperties: ['composes']
+      ignoreProperties: [
+        'composes',
+        // HACK: Silence stylelint (because Core-Portal#816) until it is updated
+        // TODO: Update stylelint package, then (hopefully) remove these
+        'container-name',
+        'container-type',
+      ]
     }],
 
     // KEYFRAME DECLARATION
@@ -81,6 +87,9 @@ module.exports = {
     // Disallow unknown at-rules.
     'at-rule-no-unknown': [ true, {
         ignoreAtRules: [
+          // HACK: Silence stylelint (because Core-Portal#816) until it is updated
+          // TODO: Update stylelint package, then (hopefully) remove these
+          'container',
           // SASS at-rules
           // SEE: https://sass-lang.com/documentation/at-rules
           'use',

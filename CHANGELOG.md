@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2023-06-29: Fix Onboarding Websockets
+
+### Changed
+
+- Update pull_request_template.md
+
+### Fixed
+
+- fix(docker): use latest not tapisv3 image (#818)
+- Fix SetupEvent not sending websocket notifications (#820)
+
 ## [3.0.0] - 2023-06-26: Tapis v3; Upgrade Django to 3.2
 
 ### Added
@@ -875,7 +886,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.1
 [3.0.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.0
 [2.24.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.0
 [2.23.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.23.0

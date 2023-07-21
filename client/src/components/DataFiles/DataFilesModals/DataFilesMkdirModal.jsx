@@ -58,22 +58,30 @@ const DataFilesMkdirModal = () => {
           validationSchema={validationSchema}
           onSubmit={mkdirCallback}
         >
-          <Form>
-            <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Creating folder in {systemDisplayName}/{params.path}
-            </ModalHeader>
-            <ModalBody>
-              <FormField
-                name="dirname"
-                label="Enter a name for the new folder:"
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button type="primary" size="long" attr="submit">
-                Create Folder
-              </Button>
-            </ModalFooter>
-          </Form>
+          {({ isSubmitting }) => (
+            <Form>
+              <ModalHeader toggle={toggle} charCode="&#xe912;">
+                Creating folder in {systemDisplayName}/{params.path}
+              </ModalHeader>
+              <ModalBody>
+                <FormField
+                  name="dirname"
+                  label="Enter a name for the new folder:"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  type="primary"
+                  size="long"
+                  attr="submit"
+                  disabled={isSubmitting}
+                  isLoading={isSubmitting}
+                >
+                  Create Folder
+                </Button>
+              </ModalFooter>
+            </Form>
+          )}
         </Formik>
       </Modal>
     </>
