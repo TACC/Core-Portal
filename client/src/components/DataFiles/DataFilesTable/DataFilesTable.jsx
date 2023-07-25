@@ -11,11 +11,11 @@ import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
-import { useFileListing } from 'hooks/datafiles';
+import { useFileListing, useSystems } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
-
+import * as ROUTES from '../../../constants/routes';
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
@@ -31,6 +31,11 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
+
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem(params ?? {});
+
   const currSystemHost = currSystem ? currSystem.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
@@ -113,24 +118,36 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       }
       if (
         ['private', 'projects'].includes(scheme) &&
-        currSystem.effectiveUserId === currentUser
+        currSystem?.effectiveUserId === currentUser
       ) {
-        const link = (strings) => (
-          <a
-            className="data-files-nav-link"
-            type="button"
-            href="#"
-            onClick={pushKeys}
-          >
-            {strings[0]}
-          </a>
+        const sectionMessage = selectedSystem?.keyservice ? (
+          <span>
+            For help, please{' '}
+            <Link
+              className="wb-link"
+              to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+            >
+              submit a ticket.
+            </Link>
+          </span>
+        ) : (
+          <span>
+            If this is your first time accessing this system, you may need to{' '}
+            <a
+              className="data-files-nav-link"
+              type="button"
+              href="#"
+              onClick={pushKeys}
+            >
+              push your keys
+            </a>
+          </span>
         );
+
         return (
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
-              There was a problem accessing this file system. If this is your
-              first time accessing this system, you may need to{' '}
-              {link`push your keys`}.
+              There was a problem accessing this file system. {sectionMessage}
             </SectionMessage>
           </div>
         );
