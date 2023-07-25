@@ -559,7 +559,12 @@ export const AppSchemaForm = ({ app }) => {
                     )}
                   </div>
                 )}
-                {Object.keys(appFields.parameterSet).length > 0 && (
+                {Object.entries(appFields.parameterSet)
+                  .map(
+                    ([parameterSet, parameterValue]) =>
+                      Object.keys(parameterValue).length
+                  )
+                  .reduce((a, b) => a + b) > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Parameters</span>
