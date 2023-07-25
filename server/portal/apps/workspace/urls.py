@@ -1,8 +1,8 @@
 """Workspace URLs
 """
-from django.conf.urls import url
+from django.conf.urls import re_path
 from portal.apps.workspace import views
 
 urlpatterns = [
-    url(r'^', views.WorkspaceView.as_view(), name="workspace"),
+    re_path(r'^', views.WorkspaceView.as_view(), name="workspace"),
 ]
