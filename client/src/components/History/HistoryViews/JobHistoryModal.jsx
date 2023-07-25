@@ -156,7 +156,7 @@ function JobHistoryContent({
       },
     });
     toggle();
-  }
+  };
 
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
