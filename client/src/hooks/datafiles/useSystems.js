@@ -13,7 +13,7 @@ function useSystems() {
   const data = useSelector((state) => state.systems?.storage?.configuration);
 
   const fetchSelectedSystem = useCallback(
-    ({ scheme, system, path }) => {
+    ({ scheme = '', system = '', path = '' }) => {
       return data.find((s) => {
         let isHomeDirInPath = true;
 
