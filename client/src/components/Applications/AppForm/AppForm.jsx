@@ -474,7 +474,7 @@ export const AppSchemaForm = ({ app }) => {
               ([parameterSet, parameterValue]) => {
                 return {
                   [parameterSet]: Object.entries(parameterValue)
-                     .map(([k, v]) => {
+                    .map(([k, v]) => {
                       if (!v) return;
                       // filter read only parameters. 'FIXED' parameters are tracked as readOnly
                       if (Object.hasOwn(appFields.parameterSet[parameterSet], k)
