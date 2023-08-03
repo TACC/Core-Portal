@@ -466,6 +466,12 @@ export const AppSchemaForm = ({ app }) => {
           job.fileInputs = Object.values(
             Object.entries(job.fileInputs)
               .map(([k, v]) => {
+                // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
+                if (
+                  Object.hasOwn(appFields.fileInputs, k) &&
+                  appFields.fileInputs[k].readOnly
+                )
+                  return;
                 return {
                   name: k,
                   sourceUrl: !isTargetPathField(k) ? v : null,
@@ -498,6 +504,15 @@ export const AppSchemaForm = ({ app }) => {
                   [parameterSet]: Object.entries(parameterValue)
                     .map(([k, v]) => {
                       if (!v) return;
+                      // filter read only parameters. 'FIXED' parameters are tracked as readOnly
+                      if (
+                        Object.hasOwn(
+                          appFields.parameterSet[parameterSet],
+                          k
+                        ) &&
+                        appFields.parameterSet[parameterSet][k].readOnly
+                      )
+                        return;
                       return parameterSet === 'envVariables'
                         ? { key: k, value: v }
                         : { name: k, arg: v };
