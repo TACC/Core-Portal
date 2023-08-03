@@ -461,7 +461,13 @@ export const AppSchemaForm = ({ app }) => {
 
           job.fileInputs = Object.entries(job.fileInputs)
             .map(([k, v]) => {
-              return { name: k, sourceUrl: v };
+              return { 
+                name: k, 
+                sourceUrl: v, 
+                targetPath: app.definition.jobAttributes.fileInputs.find(
+                  (file) => file.name === k
+                ).targetPath,
+              };
             })
             .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
 
