@@ -1111,7 +1111,7 @@ export function* compressFiles(action) {
           props: {
             onSuccess: action,
             system: res.execSys,
-            onCancel: compressErrorAction,
+            onCancel: compressErrorAction('An error has occurred'),
           },
         },
       });

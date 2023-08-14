@@ -18,6 +18,7 @@ import {
   makePublicUtil,
   doMakePublic,
   defaultAllocationSelector,
+  systemsSelector,
 } from './datafiles.sagas';
 import { select } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
@@ -423,6 +424,7 @@ describe('compressFiles', () => {
         },
       ],
       compressionType: 'zip',
+      scheme: 'private',
     },
   };
 
@@ -473,18 +475,19 @@ describe('compressFiles', () => {
       .provide([
         [select(compressAppSelector), 'compress'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
+        [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
       .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' },
+        payload: { status: { type: 'RUNNING' }, operation: 'compress' },
       })
       .call(jobHelper, jobHelperExpected())
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'compress' },
+        payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
       })
       .run();
   });
@@ -494,13 +497,14 @@ describe('compressFiles', () => {
       .provide([
         [select(compressAppSelector), 'compress'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
+        [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
       .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' },
+        payload: { status: { type: 'RUNNING' }, operation: 'compress' },
       })
       .call(jobHelper, jobHelperExpected())
       .put({
@@ -512,7 +516,10 @@ describe('compressFiles', () => {
             system: 'test.cli.system',
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'compress' },
+              payload: {
+                status: { type: 'ERROR', message: 'An error has occurred' },
+                operation: 'compress',
+              },
             },
           },
         },
