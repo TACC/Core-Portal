@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2023-08-03: v3 model adjustments; bugfixes; core-styles update
+
+### Added
+
+- WP-75: Implement cancel job action (#842)
+
+### Changed
+
+- WI-29: Setup Django Caching (#828)
+- WP-43: System Monitor UI Update (#807)
+- Quick: handle 3dem workspace migrations (#833)
+- TV3-164: Remove 10 second system credential delay (#840)
+- WP-171: Address deprecation warnings in backend (urls and gettext_lazy) (#838)
+- WP-208: Do not squash Tapipy exceptions in BaseApiException (#834)
+- WP-193: core-stlyes update (#837)
+
+### Fixed
+
+- WP-38: Prevent multiple clicks to button, add spinner (#819)
+- docs: fix bad desc of branch prefix "style" (#822)
+- fix:(ui-patterns): show actual class name passed (#663)
+- WP-40: Prevent push keys message and modal for key service systems (#830)
+- Quick: Correctly hide "Parameters" string in app form if none exist #832
+- WP-45: Fix Sysmon blank fields for unoperational systems (#841)
+- WP-194: Filter out readonly parameters and file inputs from job submission (#843)
+
+### Removed
+
+- TV3-139: Cleanup Old Systems Code (#817)
+
 ## [3.0.1] - 2023-06-29: Fix Onboarding Websockets
 
 ### Changed
@@ -886,7 +916,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.0.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.0
 [3.0.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.1
 [3.0.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.0
 [2.24.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.0
