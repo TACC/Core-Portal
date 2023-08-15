@@ -73,7 +73,7 @@ class TestOperations(TestCase):
                                                  fields=[
                                                      "name._exact, name._pattern"],
                                                  default_operator='and'))
-        
+
         mock_search().query().filter.assert_called_with('prefix', **{'path._exact': '/path'})
         mock_search().query().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
         mock_search().query().filter().filter().extra.assert_called_with(from_=int(0), size=int(100))
