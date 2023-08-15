@@ -1006,7 +1006,7 @@ const getCompressParams = (
   let archivePath, archiveSystem;
 
   if (defaultPrivateSystem) {
-    archivePath = defaultPrivateSystem.homeDir.slice(1);
+    archivePath = defaultPrivateSystem.homeDir;
     archiveSystem = defaultPrivateSystem.system;
   } else {
     archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
