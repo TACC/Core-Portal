@@ -1076,7 +1076,7 @@ export function* compressFiles(action) {
     const latestCompress = yield call(fetchAppDefinitionUtil, compressApp);
     const systems = yield select(systemsSelector);
 
-    let defaultPrivateSystem = systems.find((s) => s.default);
+    let defaultPrivateSystem;
 
     if (
       action.payload.scheme !== 'private' &&
