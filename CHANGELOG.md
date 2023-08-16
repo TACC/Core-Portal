@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.1] - 2023-08-16: Fix Files Search Scope
+
+### Fixed
+
+- WP-230: Prevent other users' files from appearing in search results (#847)
+
 ## [3.1.0] - 2023-08-03: v3 model adjustments; bugfixes; core-styles update
 
 ### Added
@@ -29,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs: fix bad desc of branch prefix "style" (#822)
 - fix:(ui-patterns): show actual class name passed (#663)
 - WP-40: Prevent push keys message and modal for key service systems (#830)
-- Quick: Correctly hide "Parameters" string in app form if none exist #832
+- Quick: Correctly hide "Parameters" string in app form if none exist (#832)
 - WP-45: Fix Sysmon blank fields for unoperational systems (#841)
 - WP-194: Filter out readonly parameters and file inputs from job submission (#843)
 
@@ -916,7 +922,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.1
 [3.1.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.0
 [3.0.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.1
 [3.0.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.0.0
