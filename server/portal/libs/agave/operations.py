@@ -110,6 +110,10 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
         List of dicts containing file metadata from Elasticsearch
 
     """
+
+    # Perform a listing to ensure the user has access to the directory they're searching
+    listing(client, system, path)
+
     if filter == 'Folders':
         filter_query = Q('term', **{'format': 'folder'})
     else:
@@ -135,6 +139,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
     if filter:
         search = search.filter(filter_query)
 
+    search = search.filter('prefix', **{'path._exact': path})
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
