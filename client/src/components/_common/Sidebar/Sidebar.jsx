@@ -4,13 +4,7 @@ import { NavLink as RRNavLink } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
-
-function isNotEmptyString(props, propName, componentName) {
-  if (!props[propName] || props[propName].replace(/ /g, '') === '') {
-    return new Error(`No text passed to ${componentName}. Validation failed.`);
-  }
-  return null;
-}
+import isNotEmptyString from '_common/CommonUtils';
 
 const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
   return (

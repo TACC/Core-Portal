@@ -4,6 +4,7 @@ import Icon from '../Icon';
 
 import styles from './Button.module.css';
 import LoadingSpinner from '_common/LoadingSpinner';
+import isNotEmptyString from '_common/CommonUtils';
 
 export const TYPE_MAP = {
   primary: 'primary',
@@ -24,15 +25,6 @@ export const SIZE_MAP = {
 export const SIZES = [''].concat(Object.keys(SIZE_MAP));
 
 export const ATTRIBUTES = ['button', 'submit', 'reset'];
-
-function isNotEmptyString(props, propName, componentName) {
-  if (!props[propName] || props[propName].replace(/ /g, '') === '') {
-    return new Error(
-      `No text passed to <${componentName}> prop "${propName}". Validation failed.`
-    );
-  }
-  return null;
-}
 
 const Button = ({
   children,
