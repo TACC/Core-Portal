@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.24.1] - 2023-08-22: Secure user search endpoint
+
+### Fixed
+
+- Prevent user search endpoint from returning all user profiles (#849)
+
 ## [2.24.0] - 2023-06-22: Bugfixes; BM preview; Custom stylesheets
 
 ### Added
@@ -809,7 +815,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.24.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.24.1...HEAD
+[2.24.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.1
 [2.24.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.24.0
 [2.23.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.23.0
 [2.22.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.22.1
