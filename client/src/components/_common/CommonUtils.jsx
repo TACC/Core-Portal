@@ -7,7 +7,7 @@
 */
 
 export default function isNotEmptyString(props, propName, componentName) {
-    if (!props[propName] || props[propName].replace(/ /g, '') === '') {
+    if (!props[propName] || props[propName] !== 'string'|| props[propName].replace(/ /g, '') === '') {
       return new Error(
         `No text passed to <${componentName}> prop "${propName}". Validation failed.`
       );
