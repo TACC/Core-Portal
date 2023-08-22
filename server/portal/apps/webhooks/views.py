@@ -54,6 +54,14 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     if job_data.status in disallowed_states:
         return None
 
+    if hasattr(job_data, 'notes') and job_data.status == 'FAILED':
+        notes = json.loads(job_data.notes)
+
+        # checks to see if an interactive job ended with tapis timeout code of 0:0
+        if notes.get('isInteractive', False) and job_data.remoteResultInfo == '0:0':
+            job_data.status = 'FINISHED'
+            job_data.remoteOutcome = 'FINISHED'
+
     return job_data
 
 
@@ -122,6 +130,7 @@ class JobsWebhookView(BaseApiView):
             job_details = validate_tapis_job(job_uuid, username, disallowed_states=non_terminal_states)
             if job_details:
                 event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
+                event_data[Notification.EXTRA]['status'] = job_details.status
 
                 try:
                     logger.info('Indexing job output for job={}'.format(job_uuid))
