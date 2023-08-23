@@ -13,7 +13,7 @@ export default function isNotEmptyString(props, propName, componentName) {
     props[propName].replace(/ /g, '') === ''
   ) {
     return new Error(
-      `No text passed to <${componentName}> prop "${propName}". Validation failed.`,
+      `No text passed to <${componentName}> prop "${propName}". Validation failed.`
     );
   }
   return null;
