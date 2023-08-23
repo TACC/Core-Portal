@@ -239,6 +239,7 @@ _WORKBENCH_SETTINGS = {
     "hideAllocations": False,
     "showSubmissions": False,
     "hideManageAccount": False,
+    "hideSystemStatus": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",

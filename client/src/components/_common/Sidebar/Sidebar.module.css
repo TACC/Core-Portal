@@ -10,8 +10,8 @@
   padding-top: 20px;
 }
 
-/* when there is a sidebar inside a section */
-:global(.c-section--has-content-layout-has-sidebar) main {
+/* when there is a sidebar directly inside a section */
+:global(.c-section--has-content-layout-has-sidebar) > main {
   padding-left: 0;
 }
 
@@ -38,8 +38,10 @@
 }
 
 .text {
-  padding-left: 20px;
   font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+}
+.icon + .text {
+  padding-left: 20px;
 }
 
 .disabled {

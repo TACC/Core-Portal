@@ -141,6 +141,23 @@ function JobHistoryContent({
     toggle();
   };
 
+  const cancelJob = () => {
+    dispatch({
+      type: 'SUBMIT_JOB',
+      payload: {
+        job_uuid: jobDetails.uuid,
+        action: 'cancel',
+        onSuccess: {
+          type: 'GET_JOBS',
+          params: {
+            offset: 0,
+          },
+        },
+      },
+    });
+    toggle();
+  };
+
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
   }
@@ -207,6 +224,17 @@ function JobHistoryContent({
             }
           }
         />
+        {!hasEnded && version === 'v3' && (
+          // TODOv3: dropV2Jobs
+          <Button
+            type="primary"
+            attr="submit"
+            className={styles['submit-button']}
+            onClick={cancelJob}
+          >
+            Cancel Job
+          </Button>
+        )}
         {hasEnded && version === 'v3' && (
           // TODOv3: dropV2Jobs
           <Button

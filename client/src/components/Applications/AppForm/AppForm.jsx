@@ -186,12 +186,17 @@ export const AppSchemaForm = ({ app }) => {
     downSystems,
     execSystem,
     defaultSystem,
+    keyService,
   } = useSelector((state) => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       (host) =>
         app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
     );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
+
+    const keyService = state.systems.storage.configuration.find(
+      (sys) => sys.system === defaultSystem && sys.default
+    )?.keyservice;
 
     const hasCorral =
       configuration.length &&
@@ -218,6 +223,7 @@ export const AppSchemaForm = ({ app }) => {
         : [],
       execSystem: state.app ? state.app.exec_sys.host : '',
       defaultSystem,
+      keyService,
     };
   }, shallowEqual);
   const hideManageAccount = useSelector(
@@ -295,6 +301,32 @@ export const AppSchemaForm = ({ app }) => {
       missingAllocation = true;
     }
   }
+
+  const sectionMessage = keyService ? (
+    <span>
+      For help,{' '}
+      <Link
+        className="wb-link"
+        to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+      >
+        submit a ticket.
+      </Link>
+    </span>
+  ) : (
+    <span>
+      If this is your first time logging in, you may need to&nbsp;
+      <a
+        className="data-files-nav-link"
+        type="button"
+        href="#"
+        onClick={pushKeys}
+      >
+        push your keys
+      </a>
+      .
+    </span>
+  );
+
   return (
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand
@@ -302,17 +334,8 @@ export const AppSchemaForm = ({ app }) => {
       {!!(systemNeedsKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
-            There was a problem accessing your default My Data file system. If
-            this is your first time logging in, you may need to&nbsp;
-            <a
-              className="data-files-nav-link"
-              type="button"
-              href="#"
-              onClick={pushKeys}
-            >
-              push your keys
-            </a>
-            .
+            There was a problem accessing your default My Data file system.{' '}
+            {sectionMessage}
           </SectionMessage>
         </div>
       )}
@@ -438,9 +461,15 @@ export const AppSchemaForm = ({ app }) => {
 
           job.fileInputs = Object.entries(job.fileInputs)
             .map(([k, v]) => {
+              // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
+              if (
+                Object.hasOwn(appFields.fileInputs, k) &&
+                appFields.fileInputs[k].readOnly
+              )
+                return;
               return { name: k, sourceUrl: v };
             })
-            .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
+            .filter((fileInput) => fileInput && fileInput.sourceUrl); // filter out any empty values
 
           job.parameterSet = Object.assign(
             {},
@@ -450,6 +479,15 @@ export const AppSchemaForm = ({ app }) => {
                   [parameterSet]: Object.entries(parameterValue)
                     .map(([k, v]) => {
                       if (!v) return;
+                      // filter read only parameters. 'FIXED' parameters are tracked as readOnly
+                      if (
+                        Object.hasOwn(
+                          appFields.parameterSet[parameterSet],
+                          k
+                        ) &&
+                        appFields.parameterSet[parameterSet][k].readOnly
+                      )
+                        return;
                       return parameterSet === 'envVariables'
                         ? { key: k, value: v }
                         : { name: k, arg: v };
@@ -536,7 +574,12 @@ export const AppSchemaForm = ({ app }) => {
                     )}
                   </div>
                 )}
-                {Object.keys(appFields.parameterSet).length > 0 && (
+                {Object.entries(appFields.parameterSet)
+                  .map(
+                    ([parameterSet, parameterValue]) =>
+                      Object.keys(parameterValue).length
+                  )
+                  .reduce((a, b) => a + b) > 0 && (
                   <div className="appSchema-section">
                     <div className="appSchema-header">
                       <span>Parameters</span>
