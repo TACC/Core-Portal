@@ -138,7 +138,7 @@ class HistoricJobsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
-    
+
     @staticmethod
     def check_job_for_timeout(job):
         if hasattr(job, 'notes') and job.status == 'FAILED':
@@ -148,9 +148,9 @@ class JobsView(BaseApiView):
             if notes.get('isInteractive', False) and job.remoteResultInfo == '0:0':
                 job.status = 'FINISHED'
                 job.remoteOutcome = 'FINISHED'
-        
+
         return job
-   
+
     def get(self, request, operation=None):
 
         allowed_actions = ['listing', 'search', 'select']
@@ -164,7 +164,7 @@ class JobsView(BaseApiView):
         data = op(tapis, request)
 
         if (isinstance(data, list)):
-            for index, job in enumerate(data): 
+            for index, job in enumerate(data):
                 data[index] = self.check_job_for_timeout(job)
         else:
             data = self.check_job_for_timeout(data)
