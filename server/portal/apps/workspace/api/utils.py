@@ -9,6 +9,11 @@ def get_tapis_timeout_error_messages(job_id):
 
 
 def check_job_for_timeout(job):
+    """
+    Check an interactive job for timeout status and mark it as finished
+    since Tapis does not have native support for interactive jobs yet
+    """
+
     if (hasattr(job, 'notes')):
         notes = json.loads(job.notes)
 
