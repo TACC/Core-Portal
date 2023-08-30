@@ -9,7 +9,7 @@
 export default function emptyStringValidator(props, propName, componentName) {
   if (
     !props[propName] ||
-    (typeof props[propName] !== 'string') ||
+    typeof props[propName] !== 'string' ||
     props[propName].replace(/ /g, '') === ''
   ) {
     return new Error(
