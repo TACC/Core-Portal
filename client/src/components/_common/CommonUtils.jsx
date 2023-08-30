@@ -6,15 +6,14 @@
  * @returns {String} Message if error, otherwise null
  */
 
-export default function isNotEmptyString(props, propName, componentName) {
+export default function emptyStringValidator(props, propName, componentName) {
   if (
     !props[propName] ||
-    props[propName] !== 'string' ||
+    (typeof props[propName] !== 'string') ||
     props[propName].replace(/ /g, '') === ''
   ) {
     return new Error(
       `No text passed to <${componentName}> prop "${propName}". Validation failed.`
     );
   }
-  return null;
 }

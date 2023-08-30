@@ -4,7 +4,7 @@ import Icon from '../Icon';
 
 import styles from './Button.module.css';
 import LoadingSpinner from '_common/LoadingSpinner';
-import isNotEmptyString from '_common/CommonUtils';
+import emptyStringValidator from '_common/CommonUtils';
 
 export const TYPE_MAP = {
   primary: 'primary',
@@ -117,7 +117,7 @@ const Button = ({
   );
 };
 Button.propTypes = {
-  children: isNotEmptyString,
+  children: emptyStringValidator,
   className: PropTypes.string,
   iconNameBefore: PropTypes.string,
   iconNameAfter: PropTypes.string,
