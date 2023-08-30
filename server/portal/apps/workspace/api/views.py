@@ -140,28 +140,6 @@ class HistoricJobsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
 
-    # @staticmethod
-    # def get_tapis_timeout_error_messages(job_id):
-    #     return [
-    #         'JOBS_EARLY_TERMINATION Job terminated by Tapis because: TIME_EXPIRED',
-    #         f'JOBS_USER_APP_FAILURE The user application ({job_id}) ended with remote status "TIMEOUT" and returned exit code: 0:0.'
-    #     ]
-
-    # @staticmethod
-    # def check_job_for_timeout(job, timeout_messages):
-    #     if (hasattr(job, 'notes')):
-    #         notes = json.loads(job.notes)
-
-    #         is_failed = job.status == 'FAILED'
-    #         is_interactive = notes.get('isInteractive', False)
-    #         has_timeout_message = job.lastMessage in timeout_messages
-
-    #         if is_failed and is_interactive and has_timeout_message:
-    #             job.status = 'FINISHED'
-    #             job.remoteOutcome = 'FINISHED'
-
-    #     return job
-
     def get(self, request, operation=None):
 
         allowed_actions = ['listing', 'search', 'select']
