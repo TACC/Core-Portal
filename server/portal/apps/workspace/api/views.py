@@ -23,6 +23,7 @@ from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
+from portal.apps.workspace.api.utils import check_job_for_timeout
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -139,17 +140,27 @@ class HistoricJobsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
 
-    @staticmethod
-    def check_job_for_timeout(job):
-        if hasattr(job, 'notes') and job.status == 'FAILED':
-            notes = json.loads(job.notes)
+    # @staticmethod
+    # def get_tapis_timeout_error_messages(job_id):
+    #     return [
+    #         'JOBS_EARLY_TERMINATION Job terminated by Tapis because: TIME_EXPIRED',
+    #         f'JOBS_USER_APP_FAILURE The user application ({job_id}) ended with remote status "TIMEOUT" and returned exit code: 0:0.'
+    #     ]
 
-            # checks to see if an interactive job ended with tapis timeout code of 0:0
-            if notes.get('isInteractive', False) and job.remoteResultInfo == '0:0':
-                job.status = 'FINISHED'
-                job.remoteOutcome = 'FINISHED'
+    # @staticmethod
+    # def check_job_for_timeout(job, timeout_messages):
+    #     if (hasattr(job, 'notes')):
+    #         notes = json.loads(job.notes)
 
-        return job
+    #         is_failed = job.status == 'FAILED'
+    #         is_interactive = notes.get('isInteractive', False)
+    #         has_timeout_message = job.lastMessage in timeout_messages
+
+    #         if is_failed and is_interactive and has_timeout_message:
+    #             job.status = 'FINISHED'
+    #             job.remoteOutcome = 'FINISHED'
+
+    #     return job
 
     def get(self, request, operation=None):
 
@@ -165,9 +176,9 @@ class JobsView(BaseApiView):
 
         if (isinstance(data, list)):
             for index, job in enumerate(data):
-                data[index] = self.check_job_for_timeout(job)
+                data[index] = check_job_for_timeout(job)
         else:
-            data = self.check_job_for_timeout(data)
+            data = check_job_for_timeout(data)
 
         return JsonResponse(
             {
