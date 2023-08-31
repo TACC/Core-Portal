@@ -20,6 +20,7 @@ from portal.apps.webhooks.utils import (
     validate_webhook,
     execute_callback
 )
+from portal.apps.workspace.api.utils import check_job_for_timeout
 
 from django.conf import settings
 
@@ -53,6 +54,8 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     # Check to see if the job state should generate a notification
     if job_data.status in disallowed_states:
         return None
+
+    job_data = check_job_for_timeout(job_data)
 
     return job_data
 
@@ -122,6 +125,7 @@ class JobsWebhookView(BaseApiView):
             job_details = validate_tapis_job(job_uuid, username, disallowed_states=non_terminal_states)
             if job_details:
                 event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
+                event_data[Notification.EXTRA]['status'] = job_details.status
 
                 try:
                     logger.info('Indexing job output for job={}'.format(job_uuid))

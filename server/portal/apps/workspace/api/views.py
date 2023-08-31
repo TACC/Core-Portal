@@ -23,6 +23,7 @@ from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
+from portal.apps.workspace.api.utils import check_job_for_timeout
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -138,6 +139,7 @@ class HistoricJobsView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
+
     def get(self, request, operation=None):
 
         allowed_actions = ['listing', 'search', 'select']
@@ -149,6 +151,12 @@ class JobsView(BaseApiView):
 
         op = getattr(self, operation)
         data = op(tapis, request)
+
+        if (isinstance(data, list)):
+            for index, job in enumerate(data):
+                data[index] = check_job_for_timeout(job)
+        else:
+            data = check_job_for_timeout(data)
 
         return JsonResponse(
             {
