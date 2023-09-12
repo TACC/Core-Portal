@@ -19,10 +19,13 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
+  isTargetPathField,
+  getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
+  getTargetPathFieldName,
   updateValuesForQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
@@ -459,17 +462,30 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
 
-          job.fileInputs = Object.entries(job.fileInputs)
-            .map(([k, v]) => {
-              return { 
-                name: k, 
-                sourceUrl: v, 
-                targetPath: app.definition.jobAttributes.fileInputs.find(
-                  (file) => file.name === k
-                ).targetPath,
-              };
-            })
-            .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
+          // Tranform input field values into format that jobs service wants
+          job.fileInputs = Object.values(
+            Object.entries(job.fileInputs)
+              .map(([k, v]) => {
+                return {
+                  name: k,
+                  sourceUrl: !isTargetPathField(k) ? v : null,
+                  targetDir: isTargetPathField(k) ? v : null,
+                };
+              })
+              .filter((fileInput) => fileInput.sourceUrl || fileInput.targetDir) // filter out any empty values
+              .reduce((acc, entry) => { // merge input field and targetPath fields into one.
+                const key = getInputFieldFromTargetPathField(entry.name);
+                if (!acc[key]) {
+                  acc[key] = {};
+                }
+                acc[key]['name'] = key;
+                acc[key]['sourceUrl'] =
+                  acc[key]['sourceUrl'] ?? entry.sourceUrl;
+                acc[key]['targetPath'] =
+                  acc[key]['targetPath'] ?? entry.targetDir;
+                return acc;
+              }, {})
+          ).flat();
 
           job.parameterSet = Object.assign(
             {},
@@ -550,16 +566,23 @@ export const AppSchemaForm = ({ app }) => {
                     </div>
                     {Object.entries(appFields.fileInputs).map(
                       ([name, field]) => {
-                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-81
+                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
                         return (
-                          <FormField
-                            {...field}
-                            name={`fileInputs.${name}`}
-                            tapisFile
-                            SelectModal={DataFilesSelectModal}
-                            placeholder="Browse Data Files"
-                            key={`fileInputs.${name}`}
-                          />
+                          isTargetPathField(name)?                  
+                            <FormField
+                               {...field}
+                               name={`fileInputs.${name}`}
+                               placeholder="Target Path Name"
+                               key={`fileInputs.${name}`}
+                             />:                
+                             <FormField
+                                {...field}
+                                name={`fileInputs.${name}`}
+                                tapisFile
+                                SelectModal={DataFilesSelectModal}
+                                placeholder="Browse Data Files"
+                                key={`fileInputs.${name}`}
+                              />
                         );
                       }
                     )}
