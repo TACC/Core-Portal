@@ -104,7 +104,7 @@ export const initialFilesState = {
     upload: {},
     trash: {},
     empty: {},
-    compress: null,
+    compress: {},
     extract: null,
     link: {
       method: null,

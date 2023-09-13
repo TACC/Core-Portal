@@ -11,6 +11,8 @@ const systemsFixture = {
         icon: null,
         hidden: true,
         homeDir: '/home/username',
+        default: true,
+        keyservice: true,
       },
       {
         name: 'My Data (Frontera)',

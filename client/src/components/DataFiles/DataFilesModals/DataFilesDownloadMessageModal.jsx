@@ -58,6 +58,7 @@ const DataFilesDownloadMessageModal = () => {
       payload: {
         filename: filenameDisplay,
         files: selected,
+        scheme: params.scheme,
         compressionType,
         onSuccess: {
           type: 'DATA_FILES_TOGGLE_MODAL',
@@ -74,6 +75,7 @@ const DataFilesDownloadMessageModal = () => {
         : `Archive_${new Date().toISOString().split('.')[0]}`,
     compressionType: 'zip',
   };
+
   const validationSchema = yup.object().shape({
     filenameDisplay: yup
       .string()
@@ -110,7 +112,8 @@ const DataFilesDownloadMessageModal = () => {
           const handleSelectChange = (e) => {
             setFieldValue('compressionType', e.target.value);
           };
-          const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
+          const formDisabled =
+            status.type === 'RUNNING' || status.type === 'SUCCESS';
           const buttonDisabled =
             formDisabled || !isValid || values.filenameDisplay === '';
           return (
@@ -153,15 +156,21 @@ const DataFilesDownloadMessageModal = () => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+                <InlineMessage
+                  isVisible={status.type === 'SUCCESS'}
+                  type="success"
+                >
                   Successfully started compress job
                 </InlineMessage>
+                {status.type === 'ERROR' && status.message && (
+                  <InlineMessage type="error">{status.message}</InlineMessage>
+                )}
                 <Button
                   disabled={buttonDisabled}
                   type="primary"
-                  size={status === 'ERROR' ? 'long' : 'medium'}
-                  isLoading={status === 'RUNNING'}
-                  iconNameBefore={status === 'ERROR' ? 'alert' : null}
+                  size={status.type === 'ERROR' ? 'long' : 'medium'}
+                  isLoading={status.type === 'RUNNING'}
+                  iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
                   attr="submit"
                 >
                   Compress

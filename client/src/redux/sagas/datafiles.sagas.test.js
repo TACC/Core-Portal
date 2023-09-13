@@ -18,6 +18,7 @@ import {
   makePublicUtil,
   doMakePublic,
   defaultAllocationSelector,
+  systemsSelector,
 } from './datafiles.sagas';
 import { select } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
@@ -26,6 +27,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 import compressApp from './fixtures/compress.fixture';
 import extractApp from './fixtures/extract.fixture';
+import systemsFixture from 'components/DataFiles/fixtures/DataFiles.systems.fixture';
 
 jest.mock('cross-fetch');
 
@@ -406,28 +408,31 @@ describe('extractFiles', () => {
 });
 
 describe('compressFiles', () => {
-  const action = {
-    type: 'DATA_FILES_COMPRESS',
-    payload: {
-      filename: 'test',
-      files: [
-        {
-          system: 'test.system',
-          path: 'test1.txt',
-          name: 'test1.txt',
-        },
-        {
-          system: 'test.system',
-          path: 'test2.txt',
-          name: 'test2.txt',
-        },
-      ],
-      compressionType: 'zip',
-    },
+  const createAction = (scheme) => {
+    return {
+      type: 'DATA_FILES_COMPRESS',
+      payload: {
+        filename: 'test',
+        files: [
+          {
+            system: 'test.system',
+            path: 'test1.txt',
+            name: 'test1.txt',
+          },
+          {
+            system: 'test.system',
+            path: 'test2.txt',
+            name: 'test2.txt',
+          },
+        ],
+        compressionType: 'zip',
+        scheme: scheme,
+      },
+    };
   };
 
-  const jobHelperExpected = () =>
-    JSON.stringify({
+  const createJobHelperExpected = (archiveSystemId, archiveSystemDir) => {
+    return JSON.stringify({
       job: {
         fileInputs: [
           {
@@ -438,8 +443,8 @@ describe('compressFiles', () => {
           },
         ],
         name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
-        archiveSystemId: 'test.system',
-        archiveSystemDir: '',
+        archiveSystemId: archiveSystemId,
+        archiveSystemDir: archiveSystemDir,
         archiveOnAppError: false,
         appId: 'compress',
         appVersion: '0.0.1',
@@ -467,55 +472,86 @@ describe('compressFiles', () => {
         execSystemId: 'frontera',
       },
     });
+  };
 
   it('runs compressFiles saga with success', () => {
-    return expectSaga(compressFiles, action)
+    return expectSaga(compressFiles, createAction('private'))
       .provide([
         [select(compressAppSelector), 'compress'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
+        [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
       .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' },
+        payload: { status: { type: 'RUNNING' }, operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected())
+      .call(jobHelper, createJobHelperExpected('test.system', ''))
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'compress' },
+        payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
       })
       .run();
   });
 
   it('runs compressFiles saga with push keys modal', () => {
-    return expectSaga(compressFiles, action)
+    return expectSaga(compressFiles, createAction('private'))
       .provide([
         [select(compressAppSelector), 'compress'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
+        [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
       .call(fetchAppDefinitionUtil, 'compress')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'compress' },
+        payload: { status: { type: 'RUNNING' }, operation: 'compress' },
       })
-      .call(jobHelper, jobHelperExpected())
+      .call(jobHelper, createJobHelperExpected('test.system', ''))
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',
           props: {
-            onSuccess: action,
+            onSuccess: createAction('private'),
             system: 'test.cli.system',
             onCancel: {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'compress' },
+              payload: {
+                status: { type: 'ERROR', message: 'An error has occurred' },
+                operation: 'compress',
+              },
             },
           },
         },
+      })
+      .run();
+  });
+
+  it('runs compressFiles saga with success for file in a public system', () => {
+    return expectSaga(compressFiles, createAction('public'))
+      .provide([
+        [select(compressAppSelector), 'compress'],
+        [select(defaultAllocationSelector), 'TACC-ACI'],
+        [select(systemsSelector), systemsFixture.storage.configuration],
+        [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
+        [matchers.call.fn(jobHelper), { status: 'PENDING' }],
+      ])
+      .call(fetchAppDefinitionUtil, 'compress')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: { type: 'RUNNING' }, operation: 'compress' },
+      })
+      .call(
+        jobHelper,
+        createJobHelperExpected('corral.home.username', '/home/username')
+      )
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
       })
       .run();
   });
