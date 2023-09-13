@@ -19,10 +19,14 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
+  checkAndSetDefaultTargetPath,
+  isTargetPathField,
+  getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
+  getTargetPathFieldName,
   updateValuesForQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
@@ -459,17 +463,37 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
 
-          job.fileInputs = Object.entries(job.fileInputs)
-            .map(([k, v]) => {
-              // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
-              if (
-                Object.hasOwn(appFields.fileInputs, k) &&
-                appFields.fileInputs[k].readOnly
-              )
-                return;
-              return { name: k, sourceUrl: v };
-            })
-            .filter((fileInput) => fileInput && fileInput.sourceUrl); // filter out any empty values
+          // Transform input field values into format that jobs service wants
+          job.fileInputs = Object.values(
+            Object.entries(job.fileInputs)
+              .map(([k, v]) => {
+                // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
+                if (
+                  Object.hasOwn(appFields.fileInputs, k) &&
+                  appFields.fileInputs[k].readOnly
+                )
+                  return;
+                return {
+                  name: k,
+                  sourceUrl: !isTargetPathField(k) ? v : null,
+                  targetDir: isTargetPathField(k) ? v : null,
+                };
+              })
+              .filter((fileInput) => fileInput.sourceUrl || fileInput.targetDir) // filter out any empty values
+              .reduce((acc, entry) => {
+                // merge input field and targetPath fields into one.
+                const key = getInputFieldFromTargetPathField(entry.name);
+                if (!acc[key]) {
+                  acc[key] = {};
+                }
+                acc[key]['name'] = key;
+                acc[key]['sourceUrl'] =
+                  acc[key]['sourceUrl'] ?? entry.sourceUrl;
+                acc[key]['targetPath'] =
+                  acc[key]['targetPath'] ?? entry.targetDir;
+                return acc;
+              }, {})
+          ).flat();
 
           job.parameterSet = Object.assign(
             {},
@@ -559,8 +583,15 @@ export const AppSchemaForm = ({ app }) => {
                     </div>
                     {Object.entries(appFields.fileInputs).map(
                       ([name, field]) => {
-                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/TV3-81
-                        return (
+                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
+                        return isTargetPathField(name) ? (
+                          <FormField
+                            {...field}
+                            name={`fileInputs.${name}`}
+                            placeholder="Target Path Name"
+                            key={`fileInputs.${name}`}
+                          />
+                        ) : (
                           <FormField
                             {...field}
                             name={`fileInputs.${name}`}

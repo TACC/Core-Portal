@@ -1,4 +1,8 @@
 import * as Yup from 'yup';
+import {
+  checkAndSetDefaultTargetPath,
+  getTargetPathFieldName,
+} from './AppFormUtils';
 
 const FormSchema = (app) => {
   const appFields = {
@@ -131,6 +135,28 @@ const FormSchema = (app) => {
       input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
         : input.sourceUrl;
+
+    // Add targetDir for all sourceUrl
+    const targetPathName = getTargetPathFieldName(input.name);
+    appFields.schema.fileInputs[targetPathName] = Yup.string();
+    appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
+      targetPathName
+    ].matches(
+      /^tapis:\/\//g,
+      "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
+    );
+
+    appFields.schema.fileInputs[targetPathName] = false;
+    appFields.fileInputs[targetPathName] = {
+      label: 'Target Path for ' + input.name,
+      description:
+        "The target path is the location to which data are copied from the input. Empty target path or '*' indicates, the simple directory or file name from the input path is automatically assign to the target path.",
+      required: false,
+      readOnly: field.readOnly,
+      type: 'text',
+    };
+    appFields.defaults.fileInputs[targetPathName] =
+      checkAndSetDefaultTargetPath(input.targetPath);
   });
   return appFields;
 };
