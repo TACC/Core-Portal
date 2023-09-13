@@ -112,7 +112,7 @@ const DataFilesModalButtonCell = ({
   operationOnlyForFolders,
   disabled,
 }) => {
-  const onClick = () => operationCallback(system, path, name);
+  const onClick = () => operationCallback(system, path || '/', name);
   const formatSupportsOperation =
     !operationOnlyForFolders || format === 'folder';
   return (
