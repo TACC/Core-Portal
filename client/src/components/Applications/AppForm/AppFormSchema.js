@@ -135,7 +135,7 @@ const FormSchema = (app) => {
       input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
         : input.sourceUrl;
-    
+
     // Add targetDir for all sourceUrl
     const targetPathName = getTargetPathFieldName(input.name);
     appFields.schema.fileInputs[targetPathName] = Yup.string();
