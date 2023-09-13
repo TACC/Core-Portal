@@ -19,13 +19,13 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
+  checkAndSetDefaultTargetPath,
   isTargetPathField,
   getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
-  getTargetPathFieldName,
   updateValuesForQueue,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
@@ -469,11 +469,14 @@ export const AppSchemaForm = ({ app }) => {
                 return {
                   name: k,
                   sourceUrl: !isTargetPathField(k) ? v : null,
-                  targetDir: isTargetPathField(k) ? v : null,
+                  targetDir: isTargetPathField(k)
+                    ? checkAndSetDefaultTargetPath(v)
+                    : null,
                 };
               })
               .filter((fileInput) => fileInput.sourceUrl || fileInput.targetDir) // filter out any empty values
-              .reduce((acc, entry) => { // merge input field and targetPath fields into one.
+              .reduce((acc, entry) => {
+                // merge input field and targetPath fields into one.
                 const key = getInputFieldFromTargetPathField(entry.name);
                 if (!acc[key]) {
                   acc[key] = {};
@@ -567,22 +570,22 @@ export const AppSchemaForm = ({ app }) => {
                     {Object.entries(appFields.fileInputs).map(
                       ([name, field]) => {
                         // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
-                        return (
-                          isTargetPathField(name)?                  
-                            <FormField
-                               {...field}
-                               name={`fileInputs.${name}`}
-                               placeholder="Target Path Name"
-                               key={`fileInputs.${name}`}
-                             />:                
-                             <FormField
-                                {...field}
-                                name={`fileInputs.${name}`}
-                                tapisFile
-                                SelectModal={DataFilesSelectModal}
-                                placeholder="Browse Data Files"
-                                key={`fileInputs.${name}`}
-                              />
+                        return isTargetPathField(name) ? (
+                          <FormField
+                            {...field}
+                            name={`fileInputs.${name}`}
+                            placeholder="Target Path Name"
+                            key={`fileInputs.${name}`}
+                          />
+                        ) : (
+                          <FormField
+                            {...field}
+                            name={`fileInputs.${name}`}
+                            tapisFile
+                            SelectModal={DataFilesSelectModal}
+                            placeholder="Browse Data Files"
+                            key={`fileInputs.${name}`}
+                          />
                         );
                       }
                     )}

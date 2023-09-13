@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import {
-  getTargetPathFieldName
+  checkAndSetDefaultTargetPath,
+  getTargetPathFieldName,
 } from './AppFormUtils';
 
 const FormSchema = (app) => {
@@ -134,7 +135,7 @@ const FormSchema = (app) => {
       input.sourceUrl === null || typeof input.sourceUrl === 'undefined'
         ? ''
         : input.sourceUrl;
-    
+
     // Add targetDir for all sourceUrl
     const targetPathName = getTargetPathFieldName(input.name);
     appFields.schema.fileInputs[targetPathName] = Yup.string();
@@ -148,15 +149,14 @@ const FormSchema = (app) => {
     appFields.schema.fileInputs[targetPathName] = false;
     appFields.fileInputs[targetPathName] = {
       label: 'Target Path for ' + input.name,
-      description: 'The target path is the location to which data are copied from the input. Empty target path or \'*\' indicates, the simple directory or file name from the input path is automatically assign to the target path.',
+      description:
+        "The target path is the location to which data are copied from the input. Empty target path or '*' indicates, the simple directory or file name from the input path is automatically assign to the target path.",
       required: false,
       readOnly: false,
-      type: 'text'
+      type: 'text',
     };
     appFields.defaults.fileInputs[targetPathName] =
-      input.targetPath === null || typeof input.targetPath === 'undefined'
-        ? '*'
-        : input.targetPath;    
+      checkAndSetDefaultTargetPath(input.targetPath);
   });
   return appFields;
 };

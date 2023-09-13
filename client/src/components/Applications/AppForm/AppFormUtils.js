@@ -195,8 +195,29 @@ export const isTargetPathField = (inputFieldName) => {
  *
  * @function
  * @param {String} targetPathFieldName
- * @returns {String} actual field name 
+ * @returns {String} actual field name
  */
 export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
-  return targetPathFieldName.replace(TARGET_PATH_FIELD_PREFIX,'');
+  return targetPathFieldName.replace(TARGET_PATH_FIELD_PREFIX, '');
+};
+
+/**
+ * Sets the default value if target path is not set.
+ *
+ * @function
+ * @param {String} targetPathFieldValue
+ * @returns {String} target path value
+ */
+export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
+  if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
+    return '*';
+  }
+
+  targetPathFieldValue = targetPathFieldValue.trim();
+
+  if (targetPathFieldValue.trim() === '') {
+    return '*';
+  }
+
+  return targetPathFieldValue;
 };
