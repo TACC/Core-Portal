@@ -19,10 +19,7 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
-<<<<<<< HEAD
   checkAndSetDefaultTargetPath,
-=======
->>>>>>> 47de92d3 (Add target path for every file input)
   isTargetPathField,
   getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
@@ -597,24 +594,6 @@ export const AppSchemaForm = ({ app }) => {
                     {Object.entries(appFields.fileInputs).map(
                       ([name, field]) => {
                         // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
-<<<<<<< HEAD
-                        return isTargetPathField(name) ? (
-                          <FormField
-                            {...field}
-                            name={`fileInputs.${name}`}
-                            placeholder="Target Path Name"
-                            key={`fileInputs.${name}`}
-                          />
-                        ) : (
-                          <FormField
-                            {...field}
-                            name={`fileInputs.${name}`}
-                            tapisFile
-                            SelectModal={DataFilesSelectModal}
-                            placeholder="Browse Data Files"
-                            key={`fileInputs.${name}`}
-                          />
-=======
                         return (
                           isTargetPathField(name)?                  
                             <FormField
@@ -631,7 +610,6 @@ export const AppSchemaForm = ({ app }) => {
                                 placeholder="Browse Data Files"
                                 key={`fileInputs.${name}`}
                               />
->>>>>>> 47de92d3 (Add target path for every file input)
                         );
                       }
                     )}
