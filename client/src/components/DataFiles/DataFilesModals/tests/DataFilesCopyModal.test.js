@@ -69,13 +69,19 @@ describe('DataFilesCopyModal', () => {
     expect(projectLink).toBeDefined();
     expect(store.getActions()).toEqual([
       { type: 'GET_SYSTEM_MONITOR' },
-      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null, modal: 'copy' } },
+      {
+        type: 'PROJECTS_GET_LISTING',
+        payload: { queryString: null, modal: 'copy' },
+      },
     ]);
     fireEvent.click(projectLink);
 
     expect(store.getActions()).toEqual([
       { type: 'GET_SYSTEM_MONITOR' },
-      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null, modal: 'copy' } },
+      {
+        type: 'PROJECTS_GET_LISTING',
+        payload: { queryString: null, modal: 'copy' },
+      },
       {
         type: 'FETCH_FILES',
         payload: {

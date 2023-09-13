@@ -81,7 +81,7 @@ const DataFilesCopyModal = React.memo(() => {
         srcApi: params.api,
         destApi: modalParams.api,
         destSystem: system,
-        destPath: path,
+        destPath: path || '/',
         name,
         callback: reloadPage,
       });
