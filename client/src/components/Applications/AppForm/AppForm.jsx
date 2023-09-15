@@ -479,7 +479,6 @@ export const AppSchemaForm = ({ app }) => {
                   targetDir: isTargetPathField(k) ? v : null,
                 };
               })
-              .filter((fileInput) => fileInput.sourceUrl || fileInput.targetDir) // filter out any empty values
               .reduce((acc, entry) => {
                 // merge input field and targetPath fields into one.
                 const key = getInputFieldFromTargetPathField(entry.name);
@@ -493,7 +492,9 @@ export const AppSchemaForm = ({ app }) => {
                   acc[key]['targetPath'] ?? entry.targetDir;
                 return acc;
               }, {})
-          ).flat();
+          )
+            .flat()
+            .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
 
           job.parameterSet = Object.assign(
             {},
