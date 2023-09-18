@@ -452,15 +452,9 @@ def upload(client, system, path, uploaded_file):
     token = client.access_token.access_token
     systemId = system
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-
-    res = r.post(
-        url=f'{base_url}/v3/files/ops/{systemId}/{dest_path}',
-        files={"file": uploaded_file.file},
-        headers={"X-Tapis-Token": token})
-
-    res.raise_for_status()
-
-    response_json = res.json()
+    
+    response_json = client.files.insert(systemId=systemId, path = dest_path, file = uploaded_file)
+    
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
