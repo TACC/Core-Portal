@@ -10,7 +10,6 @@ from portal.libs.agave.utils import text_preview, get_file_size, increment_file_
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
-import requests as r
 
 logger = logging.getLogger(__name__)
 
@@ -448,14 +447,9 @@ def upload(client, system, path, uploaded_file):
     file_listing = client.files.listFiles(systemId=system, path=path)
     uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
 
-    base_url = settings.TAPIS_TENANT_BASEURL
-    token = client.access_token.access_token
     systemId = system
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    
-    response_json = client.files.insert(systemId=systemId, path = dest_path, file = uploaded_file)
-    
-
+    response_json = client.files.insert(systemId=systemId, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
                                       'filePath': path,
