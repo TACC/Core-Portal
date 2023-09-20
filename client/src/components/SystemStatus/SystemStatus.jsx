@@ -16,14 +16,16 @@ const root = `${ROUTES.WORKBENCH}${ROUTES.SYSTEM_STATUS}`;
 const SystemStatusSidebar = ({ systemList }) => {
   var sidebarItems = [];
 
-  systemList.forEach((system) => {
-    sidebarItems.push({
-      to: `${root}/${system.hostname}`,
-      label: `${system.display_name}`,
-      disabled: false,
-      hidden: false,
+  systemList
+    .sort((a, b) => a.display_name.localeCompare(b.display_name))
+    .forEach((system) => {
+      sidebarItems.push({
+        to: `${root}/${system.hostname}`,
+        label: `${system.display_name}`,
+        disabled: false,
+        hidden: false,
+      });
     });
-  });
 
   return <Sidebar sidebarItems={sidebarItems} />;
 };
