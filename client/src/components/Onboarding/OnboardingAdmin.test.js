@@ -29,5 +29,6 @@ describe('Onboarding Admin View', () => {
 
     const { getByText } = renderOnboardingAdminComponent(store);
     expect(getByText(/First Last/)).toBeDefined();
+    expect(getByText(/username/)).toBeDefined();
   });
 });
