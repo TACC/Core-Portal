@@ -447,9 +447,8 @@ def upload(client, system, path, uploaded_file):
     file_listing = client.files.listFiles(systemId=system, path=path)
     uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
 
-    systemId = system
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    response_json = client.files.insert(systemId=systemId, path=dest_path, file=uploaded_file)
+    response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
                                       'filePath': path,
