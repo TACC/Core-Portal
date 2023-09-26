@@ -62,14 +62,21 @@ const InfiniteScrollTable = ({
     useTable({ columns, data });
 
   const onScroll = ({ target }) => {
-    // added tolerance to deal with inconsistent scroll values
-    const tolerance = 0.5;
+    const clientHeight = target.clientHeight; // int
+    const scrollbarHeight = target.offsetHeight - target.clientHeight; // int
+    const clientRectHeight = target.getBoundingClientRect().height; // decimal
+    const clientCalcHeight = clientRectHeight - scrollbarHeight; // decimal
 
     const difference = target.scrollHeight - target.scrollTop;
 
-    const bottom =
-      difference <= target.clientHeight + tolerance ||
-      difference <= target.clientHeight - tolerance;
+    const bottom = difference <= clientCalcHeight;
+
+    console.log({
+      difference,
+      clientHeight,
+      clientRectHeight,
+      clientCalcHeight,
+    });
 
     if (bottom && target.scrollTop > 0) {
       onInfiniteScroll(tableData.length);
