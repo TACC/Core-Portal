@@ -117,7 +117,7 @@ def agave_storage_system_mock():
 
 
 @pytest.fixture
-def agave_file_mock():
+def tapis_file_mock():
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')) as f:
         yield json.load(f)
 
