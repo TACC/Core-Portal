@@ -101,6 +101,9 @@ const FormSchema = (app) => {
     }
   );
 
+  // The default is to not show target path for file inputs.
+  const showTargetPathForFileInputs =
+    app.definition.notes.showTargetPath ?? false;
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
     /* TODOv3 consider hidden file inputs https://jira.tacc.utexas.edu/browse/WP-102
@@ -137,6 +140,9 @@ const FormSchema = (app) => {
         : input.sourceUrl;
 
     // Add targetDir for all sourceUrl
+    if (!showTargetPathForFileInputs) {
+      return;
+    }
     const targetPathName = getTargetPathFieldName(input.name);
     appFields.schema.fileInputs[targetPathName] = Yup.string();
     appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
@@ -150,7 +156,9 @@ const FormSchema = (app) => {
     appFields.fileInputs[targetPathName] = {
       label: 'Target Path for ' + input.name,
       description:
-        "The target path is the location to which data are copied from the input. Empty target path or '*' indicates, the simple directory or file name from the input path is automatically assign to the target path.",
+        'The name of the ' +
+        input.name +
+        ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
       required: false,
       readOnly: field.readOnly,
       type: 'text',

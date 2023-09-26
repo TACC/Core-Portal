@@ -463,7 +463,12 @@ export const AppSchemaForm = ({ app }) => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
 
-          // Transform input field values into format that jobs service wants
+          // Transform input field values into format that jobs service wants.
+          // File Input structure will have 2 fields if target path is required by the app.
+          // field 1 - has source url
+          // field 2 - has target path for the source url.
+          // tapis wants only 1 field with 2 properties - source url and target path.
+          // The logic below handles that scenario by merging the related fields into 1 field.
           job.fileInputs = Object.values(
             Object.entries(job.fileInputs)
               .map(([k, v]) => {
@@ -494,7 +499,13 @@ export const AppSchemaForm = ({ app }) => {
               }, {})
           )
             .flat()
-            .filter((fileInput) => fileInput.sourceUrl); // filter out any empty values
+            .filter((fileInput) => fileInput.sourceUrl) // filter out any empty values
+            .map((fileInput) => {
+              fileInput.targetPath = checkAndSetDefaultTargetPath(
+                fileInput.targetPath
+              );
+              return fileInput;
+            });
 
           job.parameterSet = Object.assign(
             {},
