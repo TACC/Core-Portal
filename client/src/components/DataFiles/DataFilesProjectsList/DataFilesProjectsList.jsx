@@ -30,6 +30,7 @@ const DataFilesProjectsList = ({ modal }) => {
       type: actionType,
       payload: {
         queryString: modal ? null : query.query_string,
+        modal,
       },
     });
   }, [dispatch, query.query_string]);
