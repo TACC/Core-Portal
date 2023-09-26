@@ -11,9 +11,11 @@ export async function fetchProjectsListing(queryString) {
 }
 
 export function* getProjectsListing(action) {
-  yield put({
-    type: 'DATA_FILES_CLEAR_FILE_SELECTION',
-  });
+  if (!action.payload?.modal) {
+    yield put({
+      type: 'DATA_FILES_CLEAR_FILE_SELECTION',
+    });
+  }
   yield put({
     type: 'PROJECTS_GET_LISTING_STARTED',
   });

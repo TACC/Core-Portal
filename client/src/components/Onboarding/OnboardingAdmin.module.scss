@@ -87,6 +87,12 @@
   background-color: #c6c6c61a;
 }
 
+.username {
+  display: inline-block; /* needed to make margin-top work with span */
+  margin-top: 5px; /* adjust value as needed to create more space between fullname and username */
+  font-weight: bold;
+}
+
 /* HACK: This selector has knowledge of sibling component's internal markup */
 /* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
 /* FAQ: Because <OnboardingStatus> has a superfluous root element */
