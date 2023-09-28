@@ -201,7 +201,7 @@ export const AppSchemaForm = ({ app }) => {
     const hasCorral =
       configuration.length &&
       ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
-        defaultHost.endsWith(s)
+        defaultHost?.endsWith(s)
       );
     return {
       allocations: matchingExecutionHost
