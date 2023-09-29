@@ -254,7 +254,7 @@ export function* renameFile(action) {
       action.payload.api,
       action.payload.scheme,
       file.system,
-      file.path,
+      '/' + file.path,
       action.payload.newName
     );
     yield put({
