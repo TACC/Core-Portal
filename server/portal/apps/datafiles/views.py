@@ -48,7 +48,7 @@ class SystemListingView(BaseApiView):
                 if 'homeDir' in system else system for system in portal_systems
             ]
 
-            default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM
+            default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
             if default_system:
                 system_id = default_system.get('system')
                 system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=system_id, select='host')

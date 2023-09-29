@@ -59,22 +59,21 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Corral)',
-        'system': 'cloud.data',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/home/{username}',
-        'icon': None,
-        'keyservice': True,
-        'default': True
-    },
-    {
         'name': 'My Data (Work)',
         'system': 'frontera',
         'scheme': 'private',
         'api': 'tapis',
         'homeDir': '/work/{tasdir}',
         'icon': None,
+        'default': True
+    },
+    {
+        'name': 'My Data (Scratch)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/scratch1/{tasdir}',
+        'icon': None
     },
     {
         'name': 'My Data (Frontera)',
