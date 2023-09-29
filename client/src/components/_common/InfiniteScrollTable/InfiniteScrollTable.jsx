@@ -62,51 +62,60 @@ const InfiniteScrollTable = ({
     useTable({ columns, data });
 
   const onScroll = ({ target }) => {
-    const bottom =
-      target.scrollHeight - target.scrollTop === target.clientHeight;
+    const scrollbarHeight = target.offsetHeight - target.clientHeight;
+    const clientRectHeight = target.getBoundingClientRect().height;
+    const clientCalcHeight = clientRectHeight - scrollbarHeight;
+    const difference = Math.floor(target.scrollHeight - target.scrollTop);
+
+    const bottom = difference <= clientCalcHeight;
+
     if (bottom && target.scrollTop > 0) {
       onInfiniteScroll(tableData.length);
     }
   };
 
   return (
-    <table
-      {...getTableProps()}
-      className={`${className} InfiniteScrollTable o-fixed-header-table`}
-    >
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()} onScroll={onScroll}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()} {...getRowProps(row)}>
-              {row.cells.map((cell) => {
-                return (
-                  <td
-                    {...cell.getCellProps({ className: cell.column.className })}
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                );
-              })}
+    <div className={'table-container'} onScroll={onScroll}>
+      <table
+        {...getTableProps()}
+        className={`${className} InfiniteScrollTable o-fixed-header-table`}
+      >
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+              ))}
             </tr>
-          );
-        })}
-        <InfiniteScrollLoadingRow isLoading={isLoading} />
-        <InfiniteScrollNoDataRow
-          display={!isLoading && tableData.length === 0}
-          noDataText={noDataText}
-        />
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()} {...getRowProps(row)}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td
+                      {...cell.getCellProps({
+                        className: cell.column.className,
+                      })}
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+          <InfiniteScrollLoadingRow isLoading={isLoading} />
+          <InfiniteScrollNoDataRow
+            display={!isLoading && tableData.length === 0}
+            noDataText={noDataText}
+          />
+        </tbody>
+      </table>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import Jobs from './Jobs';
 import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';
@@ -134,5 +134,36 @@ describe('Jobs View', () => {
     history.push('/jobs');
     const { getByText } = renderJobsComponent(store, history);
     expect(getByText(/unable to retrieve your jobs/)).toBeDefined();
+  });
+
+  it('should dispatch another get jobs event on scroll with proper offset', async () => {
+    const store = mockStore({
+      notifications,
+      jobs: { ...jobs, list: jobsList },
+      workbench: { ...workbench, config: { hideDataFiles: false } },
+      apps: {
+        appIcons: {},
+      },
+    });
+
+    const { container } = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Jobs />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    const scrollContainer = container.querySelector('.table-container');
+
+    fireEvent.scroll(scrollContainer, { target: { scrollTop: 1 } });
+
+    expect(store.getActions()).toEqual([
+      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
+      {
+        type: 'GET_JOBS',
+        params: { offset: jobsList.length, queryString: '' },
+      },
+    ]);
   });
 });
