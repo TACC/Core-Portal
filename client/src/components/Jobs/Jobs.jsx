@@ -75,11 +75,14 @@ function JobsView({
   const infiniteScrollCallback = useCallback(() => {
     // TODOv3: dropV2Jobs
     const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
-    dispatch({
-      type: dispatchType,
-      params: { offset: jobs.length, queryString: query.query_string || '' },
-    });
-  }, [dispatch, jobs, query.query_string]);
+
+    if (!isJobLoading) {
+      dispatch({
+        type: dispatchType,
+        params: { offset: jobs.length, queryString: query.query_string || '' },
+      });
+    }
+  }, [dispatch, jobs, query.query_string, isJobLoading]);
 
   const jobDetailLink = useCallback(
     ({
@@ -217,22 +220,20 @@ function JobsView({
           disabled={isJobLoading || isNotificationLoading}
         />
       )}
-      <div className={includeSearchbar ? 'o-flex-item-table-wrap' : ''}>
-        <InfiniteScrollTable
-          tableColumns={filterColumns}
-          tableData={jobs}
-          onInfiniteScroll={infiniteScrollCallback}
-          isLoading={isJobLoading || isNotificationLoading}
-          className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
-          noDataText={
-            <Section className={'no-results-message'}>
-              <SectionMessage type="info">{noDataText}</SectionMessage>
-            </Section>
-          }
-          getRowProps={rowProps}
-          columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
-        />
-      </div>
+      <InfiniteScrollTable
+        tableColumns={filterColumns}
+        tableData={jobs}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={isJobLoading || isNotificationLoading}
+        className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
+        noDataText={
+          <Section className={'no-results-message'}>
+            <SectionMessage type="info">{noDataText}</SectionMessage>
+          </Section>
+        }
+        getRowProps={rowProps}
+        columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
+      />
     </>
   );
 }
