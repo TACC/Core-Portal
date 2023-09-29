@@ -50,10 +50,7 @@ const DataFilesMoveModal = React.memo(() => {
 
   const onOpened = () => {
     fetchListing({
-      api: 'tapis',
-      scheme: 'private',
-      system: selectedSystem.system,
-      path: `${selectedSystem.homeDir || ''}`,
+      ...params,
     });
   };
 
@@ -68,7 +65,7 @@ const DataFilesMoveModal = React.memo(() => {
       setDisabled(true);
       move({
         destSystem: system,
-        destPath: path,
+        destPath: path || '/',
         callback: reloadPage,
       });
     },
