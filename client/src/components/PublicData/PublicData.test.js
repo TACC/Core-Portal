@@ -47,9 +47,9 @@ describe('PublicData', () => {
       },
       authenticatedUser: { user: null },
     });
-    const { getByText } = renderComponent(<PublicData />, store, history);
+    const { getAllByText } = renderComponent(<PublicData />, store, history);
 
-    expect(getByText(/Public Data/)).toBeDefined();
+    expect(getAllByText(/Public Data/)).toBeDefined();
     expect(history.location.pathname).toEqual(
       '/public-data/tapis/public/cep.storage.public/'
     );

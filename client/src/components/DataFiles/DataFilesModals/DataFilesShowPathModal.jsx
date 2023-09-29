@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
-import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 
 const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
@@ -55,36 +54,16 @@ const DataFilesShowPathModal = React.memo(() => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          Pathnames for {file.name}
+          View Full Path
         </ModalHeader>
         <ModalBody>
-          <DataFilesBreadcrumbs
-            api={params.api}
-            scheme={params.scheme}
-            system={params.system}
-            path={file.path || '/'}
-            section=""
+          <TextCopyField
+            value={`${definition.host}:${definition.rootDir}/${file.path}`.replace(
+              '//',
+              '/'
+            )}
+            renderType="textarea"
           />
-          <dl>
-            {params.api === 'tapis' && definition && (
-              <>
-                <dt>Storage Host</dt>
-                <dd>{definition.host}</dd>
-                <dt>Storage Path</dt>
-              </>
-            )}
-            {params.api === 'googledrive' && (
-              <>
-                <dt>Storage Location</dt>
-                <dd>Google Drive</dd>
-              </>
-            )}
-            <dd>
-              <TextCopyField
-                value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
-              />
-            </dd>
-          </dl>
         </ModalBody>
       </Modal>
     );

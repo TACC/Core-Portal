@@ -1,5 +1,5 @@
 @mixin truncate-with-ellipsis {
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

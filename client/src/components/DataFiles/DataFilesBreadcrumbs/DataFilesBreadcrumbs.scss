@@ -4,6 +4,8 @@
   /* ... */
   @include truncate-with-ellipsis;
   margin-right: 2em;
+  display: flex;
+  align-items: center;
 }
 .breadcrumb-link,
 .breadcrumb-link:hover {
@@ -33,4 +35,103 @@
   .breadcrumbs {
     max-width: 700px;
   }
+}
+
+.data-files-btn {
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
+  border-radius: 0;
+  font-family: 'Roboto, sans-serif';
+}
+
+.data-files-btn-cancel {
+  border-radius: 0;
+}
+
+#path-button-wrapper {
+  padding-left: var(--horizontal-buffer);
+}
+#data-files-path {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-color: #707070;
+}
+
+.data-files-nav {
+  padding-top: 20px;
+}
+
+/* HACK: Quick solution to prevent styles from cascading into header dropdown */
+.go-to-button-dropdown {
+  .dropdown-menu {
+    border-color: var(--global-color-accent--normal);
+    border-radius: 0;
+    margin-top: 11px;
+    padding: 0;
+    width: 200px;
+    vertical-align: top;
+  }
+  .dropdown-menu::before,
+  .dropdown-menu::after {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--global-color-accent--normal);
+    border-left: 10px solid transparent;
+    content: '';
+  }
+  .dropdown-menu::after {
+    top: -9px;
+    left: 15px;
+    border-bottom: 10px solid #ffffff;
+  }
+
+  .dropdown-item {
+    display: inline-block;
+    padding: 10px 6px;
+    color: var(--global-color-primary--x-dark);
+    font-size: 14px;
+    i {
+      padding-right: 19px;
+      font-size: 20px;
+      vertical-align: top;
+    }
+    &:hover {
+      color: var(--global-color-primary--x-dark);
+    }
+  }
+  .dropdown-item:focus,
+  .dropdown-item:hover {
+    background-color: var(--global-color-accent--weak);
+  }
+}
+
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+}
+
+.truncate {
+  display: inline-block;
+  max-width: 600px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 20px;
+}
+
+.multiline-menu-item-wrapper {
+  display: inline-block;
+  padding-left: 5px;
+  line-height: 1.1em;
+  small {
+    display: block;
+    color: var(--global-color-primary--x-dark);
+  }
+}
+
+.breadcrumbs .vertical-align-separator {
+  margin-right: 2px;
+  margin-left: 10px;
 }
