@@ -1,3 +1,4 @@
+import { object } from 'prop-types';
 import { getSystemName } from './systems';
 
 const TERMINAL_STATES = [`FINISHED`, `CANCELLED`, `FAILED`];
@@ -59,9 +60,13 @@ export function getAllocatonFromDirective(directive) {
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
-  const fileInputs = JSON.parse(job.fileInputs);
+  const fileInputs = JSON.parse(job.fileInputs).filter((obj) =>
+    obj.notes != null ? !JSON.parse(obj.notes).isHidden : true
+  );
   const parameterSet = JSON.parse(job.parameterSet);
-  const parameters = parameterSet.appArgs;
+  const parameters = parameterSet.appArgs.filter((obj) =>
+    obj.notes != null ? !JSON.parse(obj.notes).isHidden : true
+  );
   const envVariables = parameterSet.envVariables;
   const schedulerOptions = parameterSet.schedulerOptions;
   const display = {
@@ -104,6 +109,13 @@ export function getJobDisplayInformation(job, app) {
       //                 a webhookUrl will be a required input for interactive jobs,
       //                 but we want to hide that input
 
+      // display.parameters.filter((input) => {
+      //   const matchingParameter = app.definition.inputs.find((obj => {
+      //     return input.id === obj.id;
+      //   }));
+      //   console.log(matchingParameter)
+      // });
+
       // filter non-visible
       // display.inputs.filter((input) => {
       //   const matchingParameter = app.definition.inputs.find((obj) => {
@@ -123,6 +135,22 @@ export function getJobDisplayInformation(job, app) {
       //   }
       //   return true;
       // });
+
+      // Note: Code below also filters v3 parameters by cross referenceing but utilizes more resources
+      // The quicker workaround solution is implemented in Line 63 and 65 and utilizes Array.filter method
+      /*
+      display.parameters.filter((input) => {
+        const matchingParameter = app.definition.jobAttributes.parameterSet.appArgs.find((obj) => {
+          return input.label === obj.name
+        });
+
+        console.log("matching", matchingParameter)
+        if (matchingParameter && matchingParameter.notes.isHidden) {
+          display.parameters.splice(display.parameters.findIndex(item => item.label))
+        }
+        return true
+      })
+      */
 
       const workPath = envVariables.find(
         (env) => env.key === '_tapisJobWorkingDir'
@@ -148,6 +176,7 @@ export function getJobDisplayInformation(job, app) {
       // ignore if there is problem using the app definition to improve display
     }
   }
+
   return display;
 }
 
