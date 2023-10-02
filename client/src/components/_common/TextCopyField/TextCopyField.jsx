@@ -43,6 +43,7 @@ const TextCopyField = ({ value, placeholder, renderType }) => {
           <div className="text-right mt-3">
             <CopyToClipboard text={value}>
               <Button
+                className={styles['copy-button']}
                 onClick={onCopy}
                 disabled={isEmpty}
                 type="secondary"

@@ -216,13 +216,7 @@ const DataFilesBreadcrumbs = ({
           toggle={toggleDropdown}
           className="go-to-button-dropdown"
         >
-          <DropdownToggle
-            color="secondary"
-            id="data-files-path"
-            className="data-files-btn"
-          >
-            Go to ...
-          </DropdownToggle>
+          <DropdownToggle tag={Button}>Go to ...</DropdownToggle>
           <DropdownMenu>
             {reversedPath.slice(1, reversedPath.length).map((path, index) => {
               const folderName = path.split('/').pop();
