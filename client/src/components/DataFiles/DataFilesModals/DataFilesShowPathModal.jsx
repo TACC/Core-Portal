@@ -62,7 +62,7 @@ const DataFilesShowPathModal = React.memo(() => {
               '//',
               '/'
             )}
-            renderType="textarea"
+            displayField="textarea"
           />
         </ModalBody>
       </Modal>
