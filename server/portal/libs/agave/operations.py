@@ -20,7 +20,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     Params
     ------
-    client: agavepy.agave.Agave
+    client: tapipy.tapis.Tapis
         Tapis client to use for the listing.
     system: str
         Tapis system ID.
@@ -92,7 +92,8 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
 
     Params
     ------
-    client: NoneType
+    client: tapipy.tapis.Tapis
+        Tapis client to use for the listing.
     system: str
         Tapis system ID to filter on.
     path: NoneType
