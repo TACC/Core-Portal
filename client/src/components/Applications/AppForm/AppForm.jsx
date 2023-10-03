@@ -501,10 +501,10 @@ export const AppSchemaForm = ({ app }) => {
             .flat()
             .filter((fileInput) => fileInput.sourceUrl) // filter out any empty values
             .map((fileInput) => {
-              if (isTargetPathEmpty(fileInput.targetPath)){
+              if (isTargetPathEmpty(fileInput.targetPath)) {
                 return {
-                  name : fileInput.name,
-                  sourceUrl : fileInput.sourceUrl
+                  name: fileInput.name,
+                  sourceUrl: fileInput.sourceUrl,
                 };
               }
               return fileInput;
