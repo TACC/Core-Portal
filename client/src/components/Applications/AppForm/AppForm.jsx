@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
-  checkAndSetDefaultTargetPath,
+  isTargetPathEmpty,
   isTargetPathField,
   getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
@@ -501,9 +501,12 @@ export const AppSchemaForm = ({ app }) => {
             .flat()
             .filter((fileInput) => fileInput.sourceUrl) // filter out any empty values
             .map((fileInput) => {
-              fileInput.targetPath = checkAndSetDefaultTargetPath(
-                fileInput.targetPath
-              );
+              if (isTargetPathEmpty(fileInput.targetPath)){
+                return {
+                  name : fileInput.name,
+                  sourceUrl : fileInput.sourceUrl
+                };
+              }
               return fileInput;
             });
 
