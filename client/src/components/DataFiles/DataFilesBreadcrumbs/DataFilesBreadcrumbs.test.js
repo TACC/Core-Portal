@@ -89,4 +89,72 @@ describe('DataFilesBreadcrumbs', () => {
         .getAttribute('href')
     ).toEqual('/workbench/data/tapis/projects/');
   });
+
+  it('renders "View Full Path" button and is clickable', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+
+    const button = getByText('View Full Path');
+    expect(button).toBeDefined();
+    expect(button.getAttribute('disabled')).toBe(null);
+  });
+
+  it('renders "View Full Path" button as clickable for googledrive (assumes user connected their googledrive)', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="googledrive"
+        scheme="private"
+        system="frontera.home.username"
+        path="/"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+
+    const button = getByText('View Full Path');
+    expect(button).toBeDefined();
+    expect(button.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('renders "Go to ..." dropdown and can be toggled', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const { getByText, queryByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/path/to/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+
+    const dropdownToggle = getByText('Go to ...');
+    expect(dropdownToggle).toBeDefined();
+
+    // Toggle dropdown
+    dropdownToggle.click();
+
+    // Now, dropdown content should be visible
+    expect(getByText('Root')).toBeDefined();
+  });
 });
