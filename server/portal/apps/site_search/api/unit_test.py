@@ -132,15 +132,16 @@ def test_cms_search_util(mock_dsl_search):
                         'highlight': {'body': ['highlight 1']}}])
 
 
-def test_file_search_util(mock_file_search):
+def test_file_search_util(mock_file_search, regular_user):
     from portal.apps.site_search.api.views import files_search
     mock_file_search.return_value = {'count': 1,
                                      'listing':
                                      [{'name': 'testfile',
                                        'path': '/path/to/testfile'}]}
-    res = files_search('test_query', 'test_system')
+    client = regular_user.tapis_oauth.client
+    res = files_search(client, 'test_query', 'test_system')
 
-    mock_file_search.assert_called_with(None, 'test_system', '/',
+    mock_file_search.assert_called_with(client, 'test_system', '/',
                                         query_string='test_query',
                                         filter=None,
                                         offset=0,
