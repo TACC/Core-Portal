@@ -410,6 +410,10 @@ Generated using nucleoapp.com
   content: "\ea52";
 }
 
+.icon-test-apps::before {
+  content: "\ea55"
+}
+
 .icon-toolbox::before {
   content: "\ea53";
 }

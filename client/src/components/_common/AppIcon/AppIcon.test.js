@@ -15,26 +15,30 @@ const store = mockStore({
       jupyter: 'jupyter',
     },
   },
+  categories: {
+    'test-apps': ['vasp'],
+    'data-processing': ['jupyter'],
+  },
 });
 
 expect.extend({ toHaveAttribute });
 
-function renderAppIcon(appId) {
+function renderAppIcon(appId, category = 'default') {
   return render(
     <Provider store={store}>
-      <AppIcon appId={appId} />
+      <AppIcon appId={appId} category={category} />
     </Provider>
   );
 }
 
 describe('AppIcon', () => {
   it('should render icons for known app IDs', () => {
-    const { getByRole } = renderAppIcon('jupyter');
+    const { getByRole } = renderAppIcon('jupyter', 'data-processing');
     expect(getByRole('img')).toHaveAttribute('class', 'icon icon-jupyter');
   });
-  it('should show generic icons for apps with no appIcon', () => {
-    const { getByRole } = renderAppIcon('vasp');
-    expect(getByRole('img')).toHaveAttribute('class', 'icon icon-applications');
+  it('should show category icons for apps with no appIcon', () => {
+    const { getByRole } = renderAppIcon('vasp', 'test-apps');
+    expect(getByRole('img')).toHaveAttribute('class', 'icon icon-test-apps');
   });
   it('should render icons for prtl.clone apps', () => {
     const { getByRole } = renderAppIcon(
