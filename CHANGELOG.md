@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2023-10-02: V3 integration improvements; bug fixes
+
+### Added
+
+- WP-211: App Form updates to allow target path (#857)
+- WP-272: Include username in Onboarding Admin user listing (#861)
+
+### Changed
+
+- WP-189 Handle timeout exit code for interactive app jobs (#851)
+- WP-163 Compress Archive Path Fix (#846) 
+- WP-105: create common utils function (#850) 
+- WP-172: Minimize unit test warnings (#855)
+- WP-62: Changed upload function to use TAPIS file insert api (#859)
+
+### Fixed
+- WP-249 Shared Workspace Copy Bug Fix (#858)
+- WP-262 Workspace file operations bug fixes (#862)
+- WP-276: Fixed Data Files Add button dropdown off-centered UI (#863)
+- Quick: handle missing default system; enable work as default system locally (#867)
+- WP-52 Jobs View Infinite Scroll Fix (#865)
+- WP-228: Fixed sorting for system list (#860)
+- WP-209: fix deprecated warnings (part II) (#852)
+
+
 ## [3.1.2] - 2023-08-22: Secure user search endpoint
 
 ### Fixed
@@ -929,6 +954,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 v1.0.0 Production release as of Feb 28, 2020.
 
 [unreleased]: https://github.com/TACC/Core-Portal/compare/v3.1.2...HEAD
+[3.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.0
 [3.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.2
 [3.1.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.1
 [3.1.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.0
