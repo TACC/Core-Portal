@@ -21,6 +21,11 @@ def mock_cms_search(mocker):
 
 
 @pytest.fixture
+def mock_service_account(mocker):
+    yield mocker.patch('portal.apps.site_search.api.views.service_account', autospec=True)
+
+
+@pytest.fixture
 def mock_files_search(mocker):
     mocked_fn = mocker.patch('portal.apps.site_search.api.views.files_search')
 
@@ -76,7 +81,7 @@ def test_search_with_auth(regular_user, client, mock_cms_search,
                    'include': True}}
 
 
-def test_search_no_auth(client, mock_cms_search, mock_files_search):
+def test_search_no_auth(client, mock_cms_search, mock_files_search, mock_service_account):
     response = client.get('/api/site-search/?page=0&query_string=test')
 
     assert response.json() == {
@@ -93,7 +98,7 @@ def test_search_no_auth(client, mock_cms_search, mock_files_search):
 
 
 def test_search_public(client, configure_public, mock_cms_search,
-                       mock_files_search):
+                       mock_files_search, mock_service_account):
     response = client.get('/api/site-search/?page=0&query_string=test')
 
     assert response.json() == {
