@@ -233,6 +233,7 @@ function JobsView({
         }
         getRowProps={rowProps}
         columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
+        searchTerm={query.query_string}
       />
     </>
   );
