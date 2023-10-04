@@ -10,9 +10,9 @@ const HighlightSearchTerm = ({ searchTerm, cell, id }) => {
     const parts = content.split(new RegExp(`(${searchTerm})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <mark className="highlight" key={i}>
+        <b className="highlight" key={i}>
           {part}
-        </mark>
+        </b>
       ) : (
         part
       )
@@ -31,7 +31,7 @@ const HighlightSearchTerm = ({ searchTerm, cell, id }) => {
       </Link>
     ) : null;
   } else if (id == 'uuid') {
-    return <mark className="highlight">{cell.render('Cell')}</mark>;
+    return <b className="highlight">{cell.render('Cell')}</b>;
   } else if (id == 'name') {
     const jobName = cell.row.values[id];
 
