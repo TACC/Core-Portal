@@ -442,6 +442,10 @@ Generated using nucleoapp.com
   content: "\ea59";
 }
 
+.icon-utilities::before {
+  content: "\ea06";
+}
+
 .icon-visualization::before {
   content: "\ea5a";
 }
