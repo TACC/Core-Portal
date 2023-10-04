@@ -9,7 +9,7 @@ const AppIcon = ({ appId, category }) => {
   const findAppIcon = (id) => {
     if (!category) {
       console.error('Category is undefined for appId:', id);
-      return 'visualization';
+      return 'applications';
     }
     let appIcon = category.replace(' ', '-').toLowerCase();
     Object.keys(appIcons).forEach((appName) => {
@@ -35,7 +35,7 @@ AppIcon.propTypes = {
 };
 
 AppIcon.defaultProps = {
-  category: 'visualization', 
+  category: 'applications',
 };
 
 export default AppIcon;
