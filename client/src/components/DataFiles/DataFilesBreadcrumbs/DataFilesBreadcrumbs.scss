@@ -48,7 +48,7 @@
 /* .go-to-button-dropdown { */
 #go-to-button-dropdown {
   /* To fix menu not showing */
-  /* HELP: Why does DataFilesSidebar not need this? */
+  /* HELP: Why does DataFilesSidebar not need `!important`? */
   .dropdown-menu {
     opacity: 1 !important;
     pointer-events: auto !important;
