@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import * as ROUTES from '../../../constants/routes';
 import { getOutputPath } from 'utils/jobsUtil';
-import './HighlightSearchTerm.scss';
+import styles from './HighlightSearchTerm.module.scss';
 
 const HighlightSearchTerm = ({ searchTerm, cell, id }) => {
   const highlightParts = (content) => {
     const parts = content.split(new RegExp(`(${searchTerm})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <b className="highlight" key={i}>
+        <b className={styles['highlight']} key={i}>
           {part}
         </b>
       ) : (
@@ -31,7 +31,7 @@ const HighlightSearchTerm = ({ searchTerm, cell, id }) => {
       </Link>
     ) : null;
   } else if (id == 'uuid') {
-    return <b className="highlight">{cell.render('Cell')}</b>;
+    return <b className={styles['highlight']}>{cell.render('Cell')}</b>;
   } else if (id == 'name') {
     const jobName = cell.row.values[id];
 
