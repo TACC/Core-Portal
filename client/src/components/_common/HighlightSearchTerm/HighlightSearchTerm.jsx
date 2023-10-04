@@ -10,7 +10,9 @@ const HighlightSearchTerm = ({ searchTerm, cell, id }) => {
     const parts = content.split(new RegExp(`(${searchTerm})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <mark className="highlight" key={i}>{part}</mark>
+        <mark className="highlight" key={i}>
+          {part}
+        </mark>
       ) : (
         part
       )
