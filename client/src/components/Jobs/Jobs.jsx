@@ -6,6 +6,7 @@ import {
   AppIcon,
   InfiniteScrollTable,
   Message,
+  HighlightSearchTerm,
   SectionMessage,
   Section,
 } from '_common';
@@ -88,7 +89,6 @@ function JobsView({
       },
     }) => {
       const query = queryStringParser.parse(useLocation().search);
-
       // TODOv3: dropV2Jobs
       const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
       return (
@@ -205,7 +205,6 @@ function JobsView({
   ];
 
   const filterColumns = columns.filter((f) => f.show !== false);
-
   return (
     <>
       {includeSearchbar && (
@@ -231,6 +230,7 @@ function JobsView({
           }
           getRowProps={rowProps}
           columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
+          searchTerm={query.query_string}
         />
       </div>
     </>
