@@ -145,11 +145,6 @@ const DataFilesBreadcrumbs = ({
       url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
     }
 
-    if (!url) {
-      console.error('URL is not defined');
-      return;
-    }
-
     return url;
   };
 

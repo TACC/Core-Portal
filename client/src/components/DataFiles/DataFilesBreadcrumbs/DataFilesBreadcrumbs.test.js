@@ -7,6 +7,7 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import { initialSystemState } from '../../../redux/reducers/datafiles.reducers';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
+import { fireEvent } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -136,7 +137,7 @@ describe('DataFilesBreadcrumbs', () => {
     const store = mockStore({
       systems: systemsFixture,
     });
-    const { getByText, queryByText } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="private"
@@ -156,5 +157,60 @@ describe('DataFilesBreadcrumbs', () => {
 
     // Now, dropdown content should be visible
     expect(getByText('Root')).toBeDefined();
+  });
+
+  it('dispatches action to open full path modal on button click', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+      projects: projectsFixture,
+    });
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/home/username/path/to/the/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+    const viewFullPathButton = getByText('View Full Path');
+    fireEvent.click(viewFullPathButton);
+
+    const actions = store.getActions();
+    const expectedActions = {
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'showpath',
+        props: {
+          file: {
+            system: 'frontera.home.username',
+            path: '/home/username/path/to/the/files',
+          },
+        },
+      },
+    };
+    expect(actions).toContainEqual(expectedActions);
+  });
+
+  it('renders pathComp, which is current directory', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const history = createMemoryHistory();
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/home/username/path/to/the/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+    const pathComp = getByText('files');
+    expect(pathComp).toBeDefined();
   });
 });
