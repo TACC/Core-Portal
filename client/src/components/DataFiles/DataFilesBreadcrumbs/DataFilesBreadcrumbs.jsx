@@ -209,6 +209,7 @@ const DataFilesBreadcrumbs = ({
         <ButtonDropdown
           isOpen={dropdownOpen}
           toggle={toggleDropdown}
+          id="go-to-button-dropdown"
           className="go-to-button-dropdown"
         >
           <DropdownToggle tag={Button}>Go to ...</DropdownToggle>
