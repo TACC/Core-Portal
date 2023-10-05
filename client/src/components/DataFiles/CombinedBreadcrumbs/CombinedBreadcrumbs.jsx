@@ -4,7 +4,6 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs.j
 import BreadcrumbsDropdown from '../DataFilesDropdown/DataFilesDropdown.jsx';
 import styles from './CombinedBreadcrumbs.module.scss';
 
-
 const CombinedBreadcrumbs = (props) => {
   return (
     <div className={styles['combined-breadcrumbs']}>
