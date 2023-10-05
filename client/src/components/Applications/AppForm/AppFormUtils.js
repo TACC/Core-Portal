@@ -202,6 +202,27 @@ export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
 };
 
 /**
+ * Check if targetPath is empty on input field
+ *
+ * @function
+ * @param {String} targetPathFieldValue
+ * @returns {boolean} if target path is empty
+ */
+export const isTargetPathEmpty = (targetPathFieldValue) => {
+  if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
+    return true;
+  }
+
+  targetPathFieldValue = targetPathFieldValue.trim();
+
+  if (targetPathFieldValue.trim() === '') {
+    return true;
+  }
+
+  return false;
+};
+
+/**
  * Sets the default value if target path is not set.
  *
  * @function
@@ -209,13 +230,7 @@ export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
  * @returns {String} target path value
  */
 export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
-  if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
-    return '*';
-  }
-
-  targetPathFieldValue = targetPathFieldValue.trim();
-
-  if (targetPathFieldValue.trim() === '') {
+  if (isTargetPathEmpty(targetPathFieldValue)) {
     return '*';
   }
 
