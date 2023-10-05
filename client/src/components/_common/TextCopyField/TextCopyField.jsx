@@ -53,7 +53,7 @@ const TextCopyField = ({ value, placeholder, displayField }) => {
             data-testid="textarea"
             readOnly
           />
-          <div className="text-right mt-3">
+          <div className={styles['button-container']}>
             <CopyToClipboard text={value}>
               <Button {...clipboardProps}>Copy</Button>
             </CopyToClipboard>

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
+import styles from './DataFilesShowPathModal.module.scss';
 
 const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
@@ -53,15 +54,20 @@ const DataFilesShowPathModal = React.memo(() => {
         toggle={toggle}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle} charCode="&#xe912;">
+        <ModalHeader
+          toggle={toggle}
+          charCode="&#xe912;"
+          className={styles['custom-modal-header']}
+        >
           View Full Path
         </ModalHeader>
         <ModalBody>
+          <span className={styles['storage-host']}>Storage Host</span>
+          <span className={styles['storage-values']}>{definition.host}</span>
+          <span className={styles['storage-path']}>Storage Path</span>
           <TextCopyField
-            value={`${definition.host}:${definition.rootDir}/${file.path}`.replace(
-              '//',
-              '/'
-            )}
+            className={styles['custom-textcopyfield']}
+            value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
             displayField="textarea"
           />
         </ModalBody>

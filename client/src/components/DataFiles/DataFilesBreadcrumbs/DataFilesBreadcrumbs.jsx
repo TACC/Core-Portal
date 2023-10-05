@@ -2,12 +2,6 @@ import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from '_common';
-import {
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  ButtonDropdown,
-} from 'reactstrap';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -199,57 +193,20 @@ const DataFilesBreadcrumbs = ({
       }
     }, '');
 
-  const lastTwoPaths = paths.slice(-1);
-  const lastTwoPathComps = pathComps.slice(-1);
+  const fullPath = paths.slice(-1);
+  const currentDirectory = pathComps.slice(-1);
   const reversedPath = paths.reverse();
 
   return (
     <div className="breadcrumb-container">
-      <div id="path-button-wrapper">
-        <ButtonDropdown
-          isOpen={dropdownOpen}
-          toggle={toggleDropdown}
-          id="go-to-button-dropdown"
-          className="go-to-button-dropdown"
-        >
-          <DropdownToggle tag={Button}>Go to ...</DropdownToggle>
-          <DropdownMenu>
-            {reversedPath.slice(1, reversedPath.length).map((path, index) => {
-              const folderName = path.split('/').pop();
-              return (
-                <>
-                  <Link key={index} to={handleNavigation(path)}>
-                    <DropdownItem>
-                      <i className="icon-folder" />
-                      {folderName.length > 20
-                        ? folderName.substring(0, 20)
-                        : folderName}
-                    </DropdownItem>
-                  </Link>
-                </>
-              );
-            })}
-            <DropdownItem divider />
-            <Link to={handleNavigation(homeDir)}>
-              <DropdownItem>
-                <i className="icon-my-data" />
-                <span className="multiline-menu-item-wrapper">
-                  {systemName || 'Shared Workspaces'}
-                  <small>Root</small>
-                </span>
-              </DropdownItem>
-            </Link>
-          </DropdownMenu>
-        </ButtonDropdown>
-      </div>
       <div className={`breadcrumbs ${className}`}>
-        {lastTwoPathComps.length === 0 ? (
+        {currentDirectory.length === 0 ? (
           <span className="system-name truncate">
             {systemName || 'Shared Workspaces'}
           </span>
         ) : (
-          lastTwoPathComps.map((pathComp, i) => {
-            if (i === lastTwoPaths.length - 1) {
+          currentDirectory.map((pathComp, i) => {
+            if (i === fullPath.length - 1) {
               return (
                 <span key={uuidv4()} className="truncate">
                   {pathComp}
@@ -263,7 +220,7 @@ const DataFilesBreadcrumbs = ({
                   api={api}
                   scheme={scheme}
                   system={system}
-                  path={lastTwoPaths[i]}
+                  path={fullPath[i]}
                   section={section}
                 >
                   <>{pathComp}</>
