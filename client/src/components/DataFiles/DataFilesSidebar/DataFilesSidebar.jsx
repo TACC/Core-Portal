@@ -27,7 +27,7 @@ const DataFilesAddButton = ({ readOnly }) => {
       payload: { operation: 'upload', props: {} },
     });
   };
-  const err = useSelector((state) => state.files.error.FilesListing);
+  const hasError = useSelector((state) => state.files.error.FilesListing);
   const { api, scheme } = useSelector(
     (state) => state.files.params.FilesListing
   );
@@ -58,9 +58,10 @@ const DataFilesAddButton = ({ readOnly }) => {
     });
   };
 
+
   const disabled =
     readOnly ||
-    err !== false ||
+    hasError !== false ||
     api !== 'tapis' ||
     (scheme !== 'private' && scheme !== 'projects');
 
