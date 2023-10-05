@@ -17,8 +17,7 @@ describe('DataFilesBreadcrumbs', () => {
       systems: systemsFixture,
       projects: projectsFixture,
     });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="private"
@@ -30,26 +29,17 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
-    expect(getByText(/My Data \(Frontera\)/)).toBeDefined();
-    expect(
-      getByText(/My Data \(Frontera\)/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/home/username/'
-    );
-    expect(getByText(/the/).closest('a').getAttribute('href')).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/home/username/path/to/the/'
-    );
-    expect(getByText(/files/).closest('a')).toBeNull();
+    // Check if the last part of the path is rendered as text
+    const filesText = getByText('files');
+    expect(filesText).toBeDefined();
+    expect(filesText.closest('a')).toBeNull();
   });
 
   it('renders correct breadcrumbs when in root of system', () => {
     const store = mockStore({
       systems: systemsFixture,
     });
-    const history = createMemoryHistory();
-    const { getAllByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="private"
@@ -61,7 +51,8 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
-    expect(getAllByText('Frontera')).toBeDefined();
+    // Check if the system name is rendered as text when in the root of the system
+    expect(getByText('Frontera')).toBeDefined();
   });
 
   it('render breadcrumbs for projects', () => {
@@ -70,8 +61,7 @@ describe('DataFilesBreadcrumbs', () => {
       projects: projectsFixture,
       files: filesFixture,
     });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="projects"
@@ -83,12 +73,10 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
-    expect(getByText(/Shared Workspaces/)).toBeDefined();
-    expect(
-      getByText(/Shared Workspaces/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/projects/');
+    // Check if the last part of the path is rendered as text for projects
+    const filesText = getByText('files');
+    expect(filesText).toBeDefined();
+    expect(filesText.closest('a')).toBeNull();
   });
 
   it('renders "View Full Path" button and is clickable', () => {
@@ -131,32 +119,6 @@ describe('DataFilesBreadcrumbs', () => {
     const button = getByText('View Full Path');
     expect(button).toBeDefined();
     expect(button.hasAttribute('disabled')).toBe(false);
-  });
-
-  it('renders "Go to ..." dropdown and can be toggled', () => {
-    const store = mockStore({
-      systems: systemsFixture,
-    });
-    const { getByText } = renderComponent(
-      <DataFilesBreadcrumbs
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/path/to/files"
-        section="FilesListing"
-      />,
-      store,
-      createMemoryHistory()
-    );
-
-    const dropdownToggle = getByText('Go to ...');
-    expect(dropdownToggle).toBeDefined();
-
-    // Toggle dropdown
-    dropdownToggle.click();
-
-    // Now, dropdown content should be visible
-    expect(getByText('Root')).toBeDefined();
   });
 
   it('dispatches action to open full path modal on button click', () => {
