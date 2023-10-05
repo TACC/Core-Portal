@@ -19,7 +19,8 @@ const DataFilesSystemSelector = ({
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
   const findSystem = (systemAndHomeDirPath) =>
     systemList.find(
-      (system) => `${system.system}${system.homeDir || ''}` === systemAndHomeDirPath
+      (system) =>
+        `${system.system}${system.homeDir || ''}` === systemAndHomeDirPath
     );
   const [selectedSystem, setSelectedSystem] = useState(systemAndHomeDirId);
 

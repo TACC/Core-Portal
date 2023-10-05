@@ -58,7 +58,6 @@ const DataFilesAddButton = ({ readOnly }) => {
     });
   };
 
-
   const disabled =
     readOnly ||
     hasError !== false ||
