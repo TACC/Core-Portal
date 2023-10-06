@@ -4,14 +4,32 @@ import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './AppIcon.scss';
 
+const doesClassExist = (className) => {
+  // Check if the CSS class exists in the stylesheets
+  for (let sheet of document.styleSheets) {
+    try {
+      for (let rule of sheet.cssRules) {
+        if (
+          rule.selectorText &&
+          rule.selectorText.includes(`.${className}::before`)
+        ) {
+          return true;
+        }
+      }
+    } catch (e) {
+      // Handle cross-origin stylesheet errors
+      continue;
+    }
+  }
+  return false;
+};
+
 const AppIcon = ({ appId, category }) => {
   const appIcons = useSelector((state) => state.apps.appIcons);
   const findAppIcon = (id) => {
-    if (!category) {
-      console.error('Category is undefined for appId:', id);
-      return 'applications';
-    }
-    let appIcon = category.replace(' ', '-').toLowerCase();
+    let appIcon = category
+      ? category.replace(' ', '-').toLowerCase()
+      : 'applications';
     Object.keys(appIcons).forEach((appName) => {
       if (id.includes(appName)) {
         appIcon = appIcons[appName].toLowerCase();
@@ -22,6 +40,10 @@ const AppIcon = ({ appId, category }) => {
       appIcon = 'compress';
     } else if (id.includes('extract')) {
       appIcon = 'extract';
+    }
+    // Check if the CSS class exists, if not default to 'icon-applications'
+    if (!doesClassExist(`icon-${appIcon}`)) {
+      appIcon = 'applications';
     }
     return appIcon;
   };
