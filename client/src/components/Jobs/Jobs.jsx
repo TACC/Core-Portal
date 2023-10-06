@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   AppIcon,
   InfiniteScrollTable,
+  HighlightSearchTerm,
   Message,
   SectionMessage,
   Section,
@@ -105,7 +106,7 @@ function JobsView({
           }}
           className="wb-link"
         >
-          View Details
+          {query.query_string ? <b>View Details</b> : 'View Details'}
         </Link>
       );
     },
@@ -133,15 +134,25 @@ function JobsView({
     {
       Header: 'Job Name',
       accessor: 'name',
-      Cell: (el) => (
-        <span
-          title={el.value}
-          id={`jobID${el.row.index}`}
-          className="job__name"
-        >
-          {el.value}
-        </span>
-      ),
+      Cell: (el) => {
+        const query = queryStringParser.parse(useLocation().search);
+        return (
+          <span
+            title={el.value}
+            id={`jobID${el.row.index}`}
+            className="job__name"
+          >
+            {query.query_string ? (
+              <HighlightSearchTerm
+                searchTerm={query.query_string}
+                content={el.value}
+              />
+            ) : (
+              el.value
+            )}
+          </span>
+        );
+      },
     },
     {
       Header: 'Job Status',
@@ -183,12 +194,20 @@ function JobsView({
         // TODOv3: dropV2Jobs
         if (el.row.original.uuid) {
           const outputLocation = getOutputPath(el.row.original);
+          const query = queryStringParser.parse(useLocation().search);
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
               className="wb-link job__path"
             >
-              {outputLocation}
+              {query.query_string ? (
+                <HighlightSearchTerm
+                  searchTerm={query.query_string}
+                  content={outputLocation}
+                />
+              ) : (
+                outputLocation
+              )}
             </Link>
           ) : null;
         } else {
@@ -233,7 +252,6 @@ function JobsView({
         }
         getRowProps={rowProps}
         columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
-        searchTerm={query.query_string}
       />
     </>
   );

@@ -3,7 +3,6 @@ import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
 import './InfiniteScrollTable.scss';
-import { HighlightSearchTerm } from '_common';
 
 const rowContentPropType = PropTypes.oneOfType([
   PropTypes.string,
@@ -55,7 +54,6 @@ const InfiniteScrollTable = ({
   noDataText,
   getRowProps,
   columnMemoProps,
-  searchTerm,
 }) => {
   const columns = React.useMemo(() => tableColumns, columnMemoProps);
   const data = React.useMemo(() => tableData, [tableData]);
@@ -103,18 +101,7 @@ const InfiniteScrollTable = ({
                         className: cell.column.className,
                       })}
                     >
-                      {searchTerm !== '' &&
-                      (cell.column.id === 'name' ||
-                        cell.column.id === 'Output Location' ||
-                        cell.column.id === 'uuid') ? (
-                        <HighlightSearchTerm
-                          searchTerm={searchTerm}
-                          cell={cell}
-                          id={cell.column.id}
-                        />
-                      ) : (
-                        cell.render('Cell')
-                      )}
+                      {cell.render('Cell')}
                     </td>
                   );
                 })}
@@ -141,7 +128,6 @@ InfiniteScrollTable.propTypes = {
   noDataText: rowContentPropType,
   getRowProps: PropTypes.func,
   columnMemoProps: PropTypes.arrayOf(PropTypes.any),
-  searchTerm: PropTypes.string,
   cell: PropTypes.object,
 };
 InfiniteScrollTable.defaultProps = {
@@ -149,7 +135,6 @@ InfiniteScrollTable.defaultProps = {
   isLoading: false,
   className: '',
   noDataText: '',
-  searchTerm: '',
   getRowProps: (row) => {},
   columnMemoProps: [],
 };
