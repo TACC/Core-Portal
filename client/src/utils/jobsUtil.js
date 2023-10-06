@@ -1,4 +1,3 @@
-import { object } from 'prop-types';
 import { getSystemName } from './systems';
 
 const TERMINAL_STATES = [`FINISHED`, `CANCELLED`, `FAILED`];
@@ -60,33 +59,34 @@ export function getAllocatonFromDirective(directive) {
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
-  const fileInputs = JSON.parse(job.fileInputs).filter((obj) =>
-    obj.notes != null ? !JSON.parse(obj.notes).isHidden : true
-  );
+  const filterHiddenObjects = (objects) =>
+    objects
+      .filter((obj) => {
+        const notes = obj.notes ? JSON.parse(obj.notes) : null;
+        return !notes || !notes.isHidden;
+      })
+      .filter((obj) => !(obj.name || obj.sourceUrl || '').startsWith('_'));
+
+  const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);
-  const parameters = parameterSet.appArgs.filter((obj) =>
-    obj.notes != null ? !JSON.parse(obj.notes).isHidden : true
-  );
+  const parameters = filterHiddenObjects(parameterSet.appArgs);
+
   const envVariables = parameterSet.envVariables;
   const schedulerOptions = parameterSet.schedulerOptions;
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
-    inputs: fileInputs
-      .map((input) => ({
-        label: input.name || 'Unnamed Input',
-        id: input.sourceUrl,
-        value: input.sourceUrl,
-      }))
-      .filter((obj) => !obj.id?.startsWith('_')),
+    inputs: fileInputs.map((input) => ({
+      label: input.name || 'Unnamed Input',
+      id: input.sourceUrl,
+      value: input.sourceUrl,
+    })),
 
-    parameters: parameters
-      .map((parameter) => ({
-        label: parameter.name,
-        id: parameter.name,
-        value: parameter.arg,
-      }))
-      .filter((obj) => !obj.id.startsWith('_')),
+    parameters: parameters.map((parameter) => ({
+      label: parameter.name,
+      id: parameter.name,
+      value: parameter.arg,
+    })),
   };
 
   if (app) {
@@ -100,57 +100,6 @@ export function getJobDisplayInformation(job, app) {
 
       display.applicationName =
         app.definition.notes.label || display.applicationName;
-
-      // https://jira.tacc.utexas.edu/browse/WP-100
-      // TODOv3: Maybe should filter with includes? some have null/array values
-      // Note from Sal: We'll probably have to filter with a flag we create
-      //                 ourselves with whatever meta object they allow us to
-      //                 attach to job input args in the future. For example,
-      //                 a webhookUrl will be a required input for interactive jobs,
-      //                 but we want to hide that input
-
-      // display.parameters.filter((input) => {
-      //   const matchingParameter = app.definition.inputs.find((obj => {
-      //     return input.id === obj.id;
-      //   }));
-      //   console.log(matchingParameter)
-      // });
-
-      // filter non-visible
-      // display.inputs.filter((input) => {
-      //   const matchingParameter = app.definition.inputs.find((obj) => {
-      //     return input.id === obj.id;
-      //   });
-      //   if (matchingParameter) {
-      //     return matchingParameter.value.visible;
-      //   }
-      //   return true;
-      // });
-      // display.parameters.filter((input) => {
-      //   const matchingParameter = app.definition.parameters.find((obj) => {
-      //     return input.id === obj.id;
-      //   });
-      //   if (matchingParameter) {
-      //     return matchingParameter.value.visible;
-      //   }
-      //   return true;
-      // });
-
-      // Note: Code below also filters v3 parameters by cross referenceing but utilizes more resources
-      // The quicker workaround solution is implemented in Line 63 and 65 and utilizes Array.filter method
-      /*
-      display.parameters.filter((input) => {
-        const matchingParameter = app.definition.jobAttributes.parameterSet.appArgs.find((obj) => {
-          return input.label === obj.name
-        });
-
-        console.log("matching", matchingParameter)
-        if (matchingParameter && matchingParameter.notes.isHidden) {
-          display.parameters.splice(display.parameters.findIndex(item => item.label))
-        }
-        return true
-      })
-      */
 
       const workPath = envVariables.find(
         (env) => env.key === '_tapisJobWorkingDir'
