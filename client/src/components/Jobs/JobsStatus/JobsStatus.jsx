@@ -72,6 +72,7 @@ function JobsStatus({ status, fancy, jobUuid }) {
 
   const notifs = useSelector((state) => state.notifications.list.notifs);
   let interactiveSessionLink;
+  let message;
 
   const jobConcluded = isTerminalState(status) || status === 'ARCHIVING';
 
@@ -85,6 +86,7 @@ function JobsStatus({ status, fancy, jobUuid }) {
     );
     const notif = interactiveNotifs.find((n) => n.extra.uuid === jobUuid);
     interactiveSessionLink = notif ? notif.action_link : null;
+    message = notif ? notif.message : null;
   }
 
   return (
@@ -109,6 +111,7 @@ function JobsStatus({ status, fancy, jobUuid }) {
             toggle={toggleModal}
             isOpen={modal}
             interactiveSessionLink={interactiveSessionLink}
+            message={message}
           />
         </>
       )}
