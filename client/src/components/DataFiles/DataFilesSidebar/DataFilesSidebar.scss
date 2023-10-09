@@ -24,15 +24,14 @@
   .dropdown-menu {
     border-color: var(--global-color-accent--normal);
     border-radius: 0;
-    margin-top: 11px;
-    padding: 0;
+    margin: 11px 3px 0px;
     width: 200px;
     vertical-align: top;
   }
   .dropdown-menu::before {
     position: absolute;
     top: -10px;
-    left: 65px;
+    left: 67px;
     border-right: 10px solid transparent;
     border-bottom: 10px solid var(--global-color-accent--normal);
     border-left: 10px solid transparent;
@@ -42,7 +41,7 @@
   .dropdown-menu::after {
     position: absolute;
     top: -9px;
-    left: 66px;
+    left: 68px;
     border-right: 9px solid transparent;
     border-bottom: 9px solid #ffffff;
     border-left: 9px solid transparent;
