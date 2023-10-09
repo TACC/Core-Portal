@@ -106,11 +106,10 @@ const FormSchema = (app) => {
     app.definition.notes.showTargetPath ?? false;
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
-    /* TODOv3 consider hidden file inputs https://jira.tacc.utexas.edu/browse/WP-102
-      if (input.name.startsWith('_') || !input.value.visible) {  // TODOv3 visible or hidden
-        return;
-      }
-      */
+    if (input.notes?.isHidden) {
+      return;
+    }
+
     const field = {
       label: input.name,
       description: input.description,
