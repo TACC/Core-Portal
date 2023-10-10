@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -15,11 +16,16 @@ import {
   appTrayExpectedFixture,
 } from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
-import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
+import {
+  helloWorldAppFixture,
+  helloWorldAppSubmissionPayloadFixture,
+} from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
+import timekeeper from 'timekeeper';
 
+const frozenDate = '2023-10-01';
 const mockStore = configureStore();
 const initialMockState = {
   allocations: allocationsFixture,
@@ -56,6 +62,11 @@ function renderAppSchemaFormComponent(store, app) {
 }
 
 describe('AppSchemaForm', () => {
+  beforeAll(() => {
+    // Lock Time
+    timekeeper.freeze(new Date(frozenDate));
+  });
+
   it('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState,
@@ -256,6 +267,162 @@ describe('AppSchemaForm', () => {
     await waitFor(() => {
       expect(getByText(/Activate your Application Name license/)).toBeDefined();
     });
+  });
+
+  it('job submission with file input mode FIXED', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { getByText, container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          fileInputs: [
+            {
+              name: 'File to copy',
+              description: 'A fixed file used by the app',
+              inputMode: 'FIXED',
+              autoMountLocal: true,
+              sourceUrl:
+                'tapis://corral-tacc/tacc/aci/secure-test/rallyGolf.jpg',
+              targetPath: 'rallyGolf.jpg',
+            },
+          ],
+        },
+      },
+    });
+    const hiddenFileInput = container.querySelector(
+      'input[name="fileInputs.File to copy"]'
+    );
+    // FIXED fields are still shown in UI but not submitted.
+    expect(hiddenFileInput).toBeInTheDocument();
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+    const payload = {
+      ...helloWorldAppSubmissionPayloadFixture,
+      job: {
+        ...helloWorldAppSubmissionPayloadFixture.job,
+        name: 'hello-world-0.0.1_' + frozenDate + 'T00:00:00',
+      },
+    };
+
+    await waitFor(() => {
+      expect(store.getActions()).toEqual([
+        { type: 'GET_SYSTEM_MONITOR' },
+        { type: 'SUBMIT_JOB', payload: payload },
+      ]);
+    });
+  });
+
+  it('job submission with file input hidden', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { getByText, container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          fileInputs: [
+            {
+              name: 'File to copy',
+              description: 'A fixed file used by the app',
+              inputMode: 'REQUIRED',
+              autoMountLocal: true,
+              sourceUrl:
+                'tapis://corral-tacc/tacc/aci/secure-test/rallyGolf.jpg',
+              targetPath: 'rallyGolf.jpg',
+              notes: {
+                isHidden: true,
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    const hiddenFileInput = container.querySelector(
+      'input[name="fileInputs.File to copy"]'
+    );
+    expect(hiddenFileInput).not.toBeInTheDocument();
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+    const payload = {
+      ...helloWorldAppSubmissionPayloadFixture,
+      job: {
+        ...helloWorldAppSubmissionPayloadFixture.job,
+        name: 'hello-world-0.0.1_' + frozenDate + 'T00:00:00',
+      },
+    };
+
+    await waitFor(() => {
+      expect(store.getActions()).toEqual([
+        { type: 'GET_SYSTEM_MONITOR' },
+        { type: 'SUBMIT_JOB', payload: payload },
+      ]);
+    });
+  });
+
+  it('job submission with custom target path', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const { getByText, container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          showTargetPath: true,
+        },
+      },
+    });
+
+    const fileInput = container.querySelector(
+      'input[name="fileInputs.File to modify"]'
+    );
+    const file = 'tapis://foo/bar.txt';
+    const targetPathForFile = 'baz.txt';
+    fireEvent.change(fileInput, { target: { value: file } });
+    const targetPathInput = container.querySelector(
+      'input[name="fileInputs._TargetPath_File to modify"]'
+    );
+    fireEvent.change(targetPathInput, { target: { value: targetPathForFile } });
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+    const payload = {
+      ...helloWorldAppSubmissionPayloadFixture,
+      job: {
+        ...helloWorldAppSubmissionPayloadFixture.job,
+        fileInputs: [
+          {
+            name: 'File to modify',
+            sourceUrl: file,
+            targetPath: targetPathForFile,
+          },
+        ],
+        name: 'hello-world-0.0.1_' + frozenDate + 'T00:00:00',
+      },
+    };
+
+    await waitFor(() => {
+      expect(store.getActions()).toEqual([
+        { type: 'GET_SYSTEM_MONITOR' },
+        { type: 'SUBMIT_JOB', payload: payload },
+      ]);
+    });
+  });
+
+  afterAll(() => {
+    timekeeper.reset();
   });
 });
 
