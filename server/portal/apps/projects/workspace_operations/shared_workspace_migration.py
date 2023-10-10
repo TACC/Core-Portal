@@ -62,7 +62,11 @@ def migrate_project(project_id):
 
     for co_pi in v2_project.co_pis.all():
         v2_role = get_role(project_id, co_pi.username)
-        v3_role = ROLE_MAP[v2_role]
+        try:
+            v3_role = ROLE_MAP[v2_role]
+        except KeyError:
+            print(f'ERROR: No role found for: {v2_role}')
+            v3_role = "reader"
         try:
             add_user_to_workspace(client, project_id, co_pi.username, v3_role)
         except NotFoundError:
@@ -71,7 +75,11 @@ def migrate_project(project_id):
 
     for team_member in v2_project.team_members.all():
         v2_role = get_role(project_id, team_member.username)
-        v3_role = ROLE_MAP[v2_role]
+        try:
+            v3_role = ROLE_MAP[v2_role]
+        except KeyError:
+            print(f'ERROR: No role found for: {v2_role}')
+            v3_role = "reader"
         try:
             add_user_to_workspace(client, project_id, team_member.username, v3_role)
         except NotFoundError:

@@ -161,6 +161,7 @@ class InteractiveWebhookView(BaseApiView):
         job_uuid = request.POST.get('job_uuid', None)
         job_owner = request.POST.get('owner', None)
         address = request.POST.get('address', None)
+        message = request.POST.get('message', None)
 
         if not address:
             msg = "Missing required interactive webhook parameter: address"
@@ -173,6 +174,9 @@ class InteractiveWebhookView(BaseApiView):
             Notification.USER: job_owner,
             Notification.ACTION_LINK: address
         }
+
+        if message:
+            event_data[Notification.MESSAGE] = message
 
         # confirm that there is a corresponding running tapis job before sending notification
         try:

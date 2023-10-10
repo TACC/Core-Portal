@@ -3,6 +3,7 @@ from elasticsearch_dsl import Search
 from portal.libs.agave.operations import search as search_operation
 from portal.views.base import BaseApiView
 from django.conf import settings
+from portal.libs.agave.utils import service_account
 import logging
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,8 @@ def cms_search(query_string, offset=0, limit=10):
     return total, results
 
 
-def files_search(query_string, system, filter=None, offset=0, limit=10):
-    res = search_operation(None, system, '/', offset=offset, limit=limit,
+def files_search(client, query_string, system, filter=None, offset=0, limit=10):
+    res = search_operation(client, system, '/', offset=offset, limit=limit,
                            query_string=query_string, filter=filter)
     return (res['count'], res['listing'])
 
@@ -62,8 +63,9 @@ class SiteSearchApiView(BaseApiView):
                                in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
                                if conf['scheme'] == 'public'
                                and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
+            client = request.user.tapis_oauth.client if (request.user.is_authenticated and request.user.profile.setup_complete) else service_account()
             (public_total, public_results) = \
-                files_search(qs, public_conf['system'], filter=filter,
+                files_search(client, qs, public_conf['system'], filter=filter,
                              offset=offset, limit=limit)
             response['public'] = {'count': public_total,
                                   'listing': public_results,
@@ -80,8 +82,9 @@ class SiteSearchApiView(BaseApiView):
                          in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
                          if conf['scheme'] == 'community'
                          and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
+                client = request.user.tapis_oauth.client
                 (community_total, community_results) = \
-                    files_search(qs, community_conf['system'], filter=filter,
+                    files_search(client, qs, community_conf['system'], filter=filter,
                                  offset=offset,
                                  limit=limit)
                 response['community'] = {'count': community_total,
