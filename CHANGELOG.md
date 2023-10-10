@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.2] - 2023-10-10: Interactive App Session Messages and Input file bug fix
+
+### Fixed
+WP-315: Handle interactive session messages (#877)
+WP-313 and WP-314: Input file fixes for hidden and FIXED types (#880)
+
+
 ## [3.2.1] - 2023-10-05: Search and Target Path fixes
 
 ### Fixed
@@ -960,6 +967,7 @@ WP-306: Fix target path regression (#871)
 v1.0.0 Production release as of Feb 28, 2020.
 
 [unreleased]: https://github.com/TACC/Core-Portal/compare/v3.2.1...HEAD
+[3.2.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.2
 [3.2.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.1
 [3.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.0
 [3.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.2
