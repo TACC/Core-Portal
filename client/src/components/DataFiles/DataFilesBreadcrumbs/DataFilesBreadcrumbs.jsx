@@ -189,11 +189,7 @@ const DataFilesBreadcrumbs = ({
         ) : (
           currentDirectory.map((pathComp, i) => {
             if (i === fullPath.length - 1) {
-              return (
-                <span key={uuidv4()}>
-                  {truncateMiddle(pathComp, 30)}
-                </span>
-              );
+              return <span key={uuidv4()}>{truncateMiddle(pathComp, 30)}</span>;
             }
           })
         )}
