@@ -24,14 +24,51 @@
 /* Nested to prevent styles from affecting CMS header dropdown */
 .data-files-sidebar {
   .dropdown-menu {
-    margin-top: 11px;
+    border-color: var(--global-color-accent--normal);
+    border-radius: 0;
+    margin: 11px 3px 0;
+    width: 200px;
+    vertical-align: top;
+  }
+  .dropdown-menu::before {
+    position: absolute;
+    top: -10px;
+    left: 67px;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--global-color-accent--normal);
+    border-left: 10px solid transparent;
+    margin-left: 20px;
+    content: '';
   }
   .dropdown-menu::after {
     top: -9px;
-    left: 66px;
-    border-right-width: 9px;
-    border-bottom-width: 9px;
-    border-left-width: 9px;
+    left: 68px;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid #ffffff;
+    border-left: 9px solid transparent;
+    margin-left: 20px;
+    content: '';
+  }
+
+  .dropdown-item {
+    padding: 10px 6px;
+    color: var(--global-color-primary--x-dark);
+    font-size: 14px;
+    i {
+      padding-right: 19px;
+      font-size: 20px;
+      vertical-align: middle;
+    }
+    &:hover {
+      color: var(--global-color-primary--x-dark);
+    }
+  }
+  .dropdown-item:focus,
+  .dropdown-item:hover {
+    /* FAQ: Before FP-1083, value was #E6E0FB, which matched Design
+            and was `--global-color-accent` at 25% opacity on white…
+            which is what `--global-color-accent--weak` is now */
+    background-color: var(--global-color-accent--weak);
   }
 }
 
