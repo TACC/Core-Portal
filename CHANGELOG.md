@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.2.2] - 2023-10-10: Interactive App Session Messages and Input file bug fix
 
 ### Fixed
-WP-315: Handle interactive session messages (#877)
-WP-313 and WP-314: Input file fixes for hidden and FIXED types (#880)
+- WP-315: Handle interactive session messages (#877)
+- WP-313 and WP-314: Input file fixes for hidden and FIXED types (#880)
 
 
 ## [3.2.1] - 2023-10-05: Search and Target Path fixes
