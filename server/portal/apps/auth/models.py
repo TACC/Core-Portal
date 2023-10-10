@@ -6,6 +6,7 @@ from django.db import models
 from django.conf import settings
 from tapipy.tapis import Tapis
 from django.db import transaction
+from threading import Lock
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ class TapisOAuthToken(models.Model):
     refresh_token = models.CharField(max_length=2048)
     expires_in = models.BigIntegerField()
     created = models.BigIntegerField()
+    lock = Lock()
 
     @property
     def expired(self):
@@ -81,7 +83,8 @@ class TapisOAuthToken(models.Model):
         with transaction.atomic():
             if self.expired:
                 try:
-                    client.refresh_tokens()
+                    with lock:
+                        client.refresh_tokens()
                 except Exception:
                     logger.exception('Tapis Token refresh failed')
                     raise
