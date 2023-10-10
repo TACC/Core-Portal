@@ -486,6 +486,7 @@ export const AppSchemaForm = ({ app }) => {
                   targetDir: isTargetPathField(k) ? v : null,
                 };
               })
+              .filter((v) => v) //filter nulls
               .reduce((acc, entry) => {
                 // merge input field and targetPath fields into one.
                 const key = getInputFieldFromTargetPathField(entry.name);
