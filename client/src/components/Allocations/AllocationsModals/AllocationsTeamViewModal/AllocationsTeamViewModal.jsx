@@ -78,10 +78,13 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
     },
     [dispatch]
   );
-
+  
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabChange = (e, newValue) => {
     setSelectedTab(newValue);
+    if (selectedTab === 0){
+      setCard(null) 
+    }
   };
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
