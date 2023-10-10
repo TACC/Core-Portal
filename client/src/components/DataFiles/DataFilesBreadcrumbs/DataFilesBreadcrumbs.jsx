@@ -13,6 +13,7 @@ import {
   useModal,
   useSystems,
 } from 'hooks/datafiles';
+import truncateMiddle from 'utils/truncateMiddle';
 
 const BreadcrumbLink = ({
   api,
@@ -124,24 +125,6 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  const handleNavigation = (targetPath) => {
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
-    let url;
-
-    if (scheme === 'projects' && !targetPath) {
-      url = `${basePath}/${api}/projects/`;
-    } else if (api === 'googledrive' && !targetPath) {
-      url = `${basePath}/${api}/${scheme}/${system}/`;
-    } else {
-      url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
-    }
-
-    return url;
-  };
-
   const dispatch = useDispatch();
 
   const fileData = {
@@ -195,38 +178,23 @@ const DataFilesBreadcrumbs = ({
 
   const fullPath = paths.slice(-1);
   const currentDirectory = pathComps.slice(-1);
-  const reversedPath = paths.reverse();
 
   return (
     <div className="breadcrumb-container">
       <div className={`breadcrumbs ${className}`}>
         {currentDirectory.length === 0 ? (
-          <span className="system-name truncate">
-            {systemName || 'Shared Workspaces'}
+          <span className="system-name">
+            {truncateMiddle(systemName || 'Shared Workspaces', 30)}
           </span>
         ) : (
           currentDirectory.map((pathComp, i) => {
             if (i === fullPath.length - 1) {
               return (
-                <span key={uuidv4()} className="truncate">
-                  {pathComp}
+                <span key={uuidv4()}>
+                  {truncateMiddle(pathComp, 30)}
                 </span>
               );
             }
-            return (
-              <React.Fragment key={uuidv4()}>
-                <span className="vertical-align-separator">/</span>
-                <BreadcrumbLink
-                  api={api}
-                  scheme={scheme}
-                  system={system}
-                  path={fullPath[i]}
-                  section={section}
-                >
-                  <>{pathComp}</>
-                </BreadcrumbLink>
-              </React.Fragment>
-            );
           })
         )}
       </div>

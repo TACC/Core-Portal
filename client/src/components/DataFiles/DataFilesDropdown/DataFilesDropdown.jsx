@@ -48,9 +48,13 @@ const BreadcrumbsDropdown = ({
   const startingPath = isSystemRootPath ? '' : homeDir;
 
   const pathComponents = path.split('/').filter((x) => !!x);
-  let currentPath = startingPath;
+  const startingPathComponents = startingPath.split('/').filter((x) => !!x);
+  const overlapIndex = pathComponents.findIndex(
+    (component, index) => startingPathComponents[index] !== component
+  );
 
-  pathComponents.slice(3).forEach((component) => {
+  let currentPath = startingPath;
+  pathComponents.slice(overlapIndex).forEach((component) => {
     currentPath = `${currentPath}/${component}`;
     paths.push(currentPath);
   });
