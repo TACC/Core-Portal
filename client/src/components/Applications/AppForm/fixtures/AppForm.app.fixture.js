@@ -237,3 +237,49 @@ export const helloWorldAppFixture = {
     type: null,
   },
 };
+
+export const helloWorldAppSubmissionPayloadFixture = {
+  job: {
+    fileInputs: [],
+    parameterSet: {
+      appArgs: [
+        {
+          name: 'Greeting',
+          arg: 'hello',
+        },
+        {
+          name: 'Target',
+          arg: 'world',
+        },
+        {
+          name: 'Sleep Time',
+          arg: '30',
+        },
+      ],
+      containerArgs: [],
+      schedulerOptions: [
+        {
+          name: 'TACC Allocation',
+          description: 'The TACC allocation associated with this job execution',
+          include: true,
+          arg: '-A TACC-ACI',
+        },
+      ],
+      envVariables: [],
+    },
+    name: 'hello-world-0.0.1',
+    nodeCount: 1,
+    coresPerNode: 1,
+    maxMinutes: 10,
+    archiveSystemId: 'frontera',
+    archiveSystemDir:
+      'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
+    archiveOnAppError: true,
+    appId: 'hello-world',
+    appVersion: '0.0.1',
+    execSystemId: 'frontera',
+    execSystemLogicalQueue: 'development',
+  },
+  licenseType: null,
+  isInteractive: false,
+};
