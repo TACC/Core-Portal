@@ -3,22 +3,20 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './AppIcon.scss';
+import iconStyles from '../../../styles/trumps/icon.css';
+import iconFontsStyles from '../../../styles/trumps/icon.fonts.css';
 
-const doesClassExist = (className) => {
-  // Check if the CSS class exists in the stylesheets
-  for (let sheet of document.styleSheets) {
-    try {
-      for (let rule of sheet.cssRules) {
-        if (
-          rule.selectorText &&
-          rule.selectorText.includes(`.${className}::before`)
-        ) {
-          return true;
-        }
+const doesClassExist = (className, stylesheets) => {
+  for (let stylesheet of stylesheets) {
+    //Required to make this work with Jest/identity-obj-proxy
+    if (typeof stylesheet === 'object') {
+      if (stylesheet[className]) {
+        return true;
       }
-    } catch (e) {
-      // Handle cross-origin stylesheet errors
-      continue;
+    } else if (typeof stylesheet === 'string') {
+      if (stylesheet.includes(`.${className}::before`)) {
+        return true;
+      }
     }
   }
   return false;
@@ -42,7 +40,7 @@ const AppIcon = ({ appId, category }) => {
       appIcon = 'extract';
     }
     // Check if the CSS class exists, if not default to 'icon-applications'
-    if (!doesClassExist(`icon-${appIcon}`)) {
+    if (!doesClassExist(`icon-${appIcon}`, [iconFontsStyles, iconStyles])) {
       appIcon = 'applications';
     }
     return appIcon;
