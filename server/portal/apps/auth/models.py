@@ -82,16 +82,13 @@ class TapisOAuthToken(models.Model):
 
         with transaction.atomic():
             try:
-                with self.lock:
-                    if self.expired:
-                        client.refresh_tokens()
+                if self.expired:
+                    with self.lock:
+                        if self.expired:
+                            client.refresh_tokens()
             except Exception:
                 logger.exception('Tapis Token refresh failed')
                 raise
-
-            self.update(created=int(time.time()),
-                        access_token=client.access_token.access_token,
-                        expires_in=client.access_token.expires_in().total_seconds())
 
         return client
 
