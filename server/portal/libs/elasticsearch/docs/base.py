@@ -17,37 +17,21 @@ logger = logging.getLogger(__name__)
 
 
 class IndexedProject(Document):
+    id = Keyword()
     title = Text(fields={'_exact': Keyword()})
     description = Text()
-    created = Date()
-    lastModified = Date()
-    projectId = Keyword()
+    path = Text()
+    name = Text()
+    host = Text()
     owner = Object(
-        properties={
-            'username': Keyword(),
-            'fullName': Text()
-        }
+            properties={
+                'username': Keyword(),
+                'firstName': Text(),
+                'lastName': Text(),
+                'email': Text()
+            }
     )
-    pi = Object(
-        properties={
-            'username': Keyword(),
-            'fullName': Text()
-        }
-    )
-    coPIs = Object(
-        multi=True,
-        properties={
-            'username': Keyword(),
-            'fullName': Text()
-        }
-    )
-    teamMembers = Object(
-        multi=True,
-        properties={
-            'username': Keyword(),
-            'fullName': Text()
-        }
-    )
+    updated = Date()
 
     @classmethod
     def from_id(cls, projectId):

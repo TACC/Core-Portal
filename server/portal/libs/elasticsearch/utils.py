@@ -207,6 +207,8 @@ def index_listing(files):
         file_dict = dict(_file)
         if file_dict['name'][0] == '.':
             continue
+        if not file_dict['path'].startswith('/'):
+            file_dict['path'] = '/' + file_dict['path']
         file_dict['lastUpdated'] = current_time()
         file_dict['basePath'] = os.path.dirname(file_dict['path'])
         file_uuid = file_uuid_sha256(file_dict['system'], file_dict['path'])
@@ -217,5 +219,27 @@ def index_listing(files):
             '_op_type': 'update',
             'doc_as_upsert': True
             })
+
+    bulk(client, ops)
+
+
+def index_project_listing(projects):
+    from portal.libs.elasticsearch.docs.base import IndexedProject
+
+    idx = IndexedProject.Index.name
+    client = get_connection('default')
+    ops = []
+
+    for _project in projects:
+        project_dict = dict(_project)
+        project_dict['lastUpdated'] = current_time()
+        project_uuid = get_sha256_hash(project_dict['id'])
+        ops.append({
+            '_index': idx,
+            '_id': project_uuid,
+            'doc': project_dict,
+            '_op_type': 'update',
+            'doc_as_upsert': True
+        })
 
     bulk(client, ops)

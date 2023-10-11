@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from celery import shared_task
 from portal.libs.agave.utils import user_account, service_account
-from portal.libs.elasticsearch.utils import index_listing
+from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 from portal.apps.users.utils import get_tas_allocations
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.libs.elasticsearch.docs.base import (IndexedAllocation,
@@ -78,3 +78,8 @@ def index_project(self, project_id):
     project_doc = IndexedProject(**project_dict)
     project_doc.meta.id = project_id
     project_doc.save()
+
+
+@shared_task(bind=True, max_retries=3, queue='default')
+def tapis_project_listing_indexer(self, projects):
+    index_project_listing(projects)
