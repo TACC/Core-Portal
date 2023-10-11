@@ -232,7 +232,7 @@ def index_project_listing(projects):
 
     for _project in projects:
         project_dict = dict(_project)
-        project_dict['lastUpdated'] = current_time()
+        project_dict['updated'] = current_time()
         project_uuid = get_sha256_hash(project_dict['id'])
         ops.append({
             '_index': idx,
