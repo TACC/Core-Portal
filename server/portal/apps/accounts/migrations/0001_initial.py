@@ -32,8 +32,6 @@ class Migration(migrations.Migration):
             name='PortalProfile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                # ('ethnicity', models.CharField(max_length=255)),
-                # ('gender', models.CharField(max_length=255)),
                 ('setup_complete', models.BooleanField(default=False)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],

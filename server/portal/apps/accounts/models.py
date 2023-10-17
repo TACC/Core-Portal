@@ -26,12 +26,6 @@ class PortalProfile(models.Model):
         related_name='profile',
         on_delete=models.CASCADE
     )
-    # ethnicity = models.CharField(max_length=255)
-    # gender = models.CharField(max_length=255)
-    # bio = models.CharField(max_length=4096, default=None, null=True, blank=True)
-    # website = models.CharField(max_length=256, default=None, null=True, blank=True)
-    # orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
-    # professional_level = models.CharField(max_length=256, default=None, null=True)
 
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login
