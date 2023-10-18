@@ -44,7 +44,6 @@ const appShape = PropTypes.shape({
     coresPerNode: PropTypes.number,
     maxMinutes: PropTypes.number,
     tags: PropTypes.arrayOf(PropTypes.string),
-    queueFilter: PropTypes.arrayOf(PropTypes.string),
   }),
   systemNeedsKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
@@ -269,7 +268,6 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
-    queueFilter: app.definition.notes.queueFilter,
   };
 
   let missingAllocation = false;
