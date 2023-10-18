@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class IndexedProject(Document):
-    id = Keyword()
+    id = Keyword(fields={'_exact': Keyword()})
     title = Text(fields={'_exact': Keyword()})
     description = Text()
     path = Text()
