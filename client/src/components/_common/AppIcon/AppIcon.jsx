@@ -5,22 +5,7 @@ import Icon from '_common/Icon';
 import './AppIcon.scss';
 import iconStyles from '../../../styles/trumps/icon.css';
 import iconFontsStyles from '../../../styles/trumps/icon.fonts.css';
-
-const doesClassExist = (className, stylesheets) => {
-  for (let stylesheet of stylesheets) {
-    //Required to make this work with Jest/identity-obj-proxy
-    if (typeof stylesheet === 'object') {
-      if (stylesheet[className]) {
-        return true;
-      }
-    } else if (typeof stylesheet === 'string') {
-      if (stylesheet.includes(`.${className}::before`)) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
+import doesClassExist from 'utils/doesClassExist';
 
 const AppIcon = ({ appId, category }) => {
   const appIcons = useSelector((state) => state.apps.appIcons);
