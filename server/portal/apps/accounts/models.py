@@ -26,7 +26,6 @@ class PortalProfile(models.Model):
         related_name='profile',
         on_delete=models.CASCADE
     )
-
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login
     setup_complete = models.BooleanField(default=False)
