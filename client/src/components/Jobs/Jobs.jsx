@@ -47,10 +47,7 @@ function JobsView({
     shallowEqual
   );
 
-  const query = React.useMemo(
-    () => queryStringParser.parse(location.search),
-    [location.search]
-  );
+  const query = queryStringParser.parse(useLocation().search);
 
   const noDataText =
     // TODOv3: dropV2Jobs
