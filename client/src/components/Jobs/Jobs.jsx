@@ -47,7 +47,10 @@ function JobsView({
     shallowEqual
   );
 
-  const query = queryStringParser.parse(useLocation().search);
+  const query = React.useMemo(
+    () => queryStringParser.parse(location.search),
+    [location.search]
+  );
 
   const noDataText =
     // TODOv3: dropV2Jobs
@@ -91,8 +94,6 @@ function JobsView({
         original: { id, uuid, name },
       },
     }) => {
-      const query = queryStringParser.parse(useLocation().search);
-
       // TODOv3: dropV2Jobs
       const jobsPathname = uuid ? `/jobs/${uuid}` : `/jobsv2/${id}`;
       return (
@@ -110,7 +111,7 @@ function JobsView({
         </Link>
       );
     },
-    []
+    [query]
   );
 
   if (error) {
@@ -135,7 +136,6 @@ function JobsView({
       Header: 'Job Name',
       accessor: 'name',
       Cell: (el) => {
-        const query = queryStringParser.parse(useLocation().search);
         return (
           <span
             title={el.value}
@@ -194,7 +194,7 @@ function JobsView({
         // TODOv3: dropV2Jobs
         if (el.row.original.uuid) {
           const outputLocation = getOutputPath(el.row.original);
-          const query = queryStringParser.parse(useLocation().search);
+
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
@@ -251,7 +251,7 @@ function JobsView({
           </Section>
         }
         getRowProps={rowProps}
-        columnMemoProps={[version]} /* TODOv3: dropV2Jobs. */
+        columnMemoProps={[version, query]} /* TODOv3: dropV2Jobs. */
       />
     </>
   );
