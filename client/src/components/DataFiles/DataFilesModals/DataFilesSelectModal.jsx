@@ -72,7 +72,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={`${selectedSystem?.system}${
+                systemAndHomeDirId={`${selectedSystem?.system}${
                   selectedSystem?.homeDir || ''
                 }`}
                 section="modal"

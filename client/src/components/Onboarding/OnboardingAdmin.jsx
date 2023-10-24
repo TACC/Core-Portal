@@ -120,6 +120,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
           {index === 0 && (
             <td rowSpan={stepCount} className={styles.name}>
               {`${user.firstName} ${user.lastName}`}
+              <br />
+              <span className={styles.username}>{user.username}</span>
             </td>
           )}
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>

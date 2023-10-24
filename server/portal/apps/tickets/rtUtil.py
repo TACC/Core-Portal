@@ -47,7 +47,7 @@ class DjangoRt:
                                           files=attachments,
                                           Subject=subject,
                                           Text=problem_description,
-                                          Requestors=requestor,
+                                          Requestor=requestor,
                                           Cc=cc,
                                           CF_resource=settings.RT_TAG)
 

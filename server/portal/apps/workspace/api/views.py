@@ -179,7 +179,7 @@ class JobsView(BaseApiView):
 
         data = client.jobs.getJobSearchList(
             limit=limit,
-            startAfter=offset,
+            skip=offset,
             orderBy='lastUpdated(desc),name(asc)',
             _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
             select='allAttributes'

@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
+export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
+
 export const getQueueMaxMinutes = (app, queueName) => {
   return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
     .maxMinutes;
@@ -164,4 +166,73 @@ export const updateValuesForQueue = (app, values) => {
      */
 
   return updatedValues;
+};
+
+/**
+ * Get the field name used for target path in AppForm
+ *
+ * @function
+ * @param {String} inputFieldName
+ * @returns {String} field Name prefixed with target path
+ */
+export const getTargetPathFieldName = (inputFieldName) => {
+  return TARGET_PATH_FIELD_PREFIX + inputFieldName;
+};
+
+/**
+ * Whether a field name is a system defined field for Target Path
+ *
+ * @function
+ * @param {String} inputFieldName
+ * @returns {String} field Name suffixed with target path
+ */
+export const isTargetPathField = (inputFieldName) => {
+  return inputFieldName && inputFieldName.startsWith(TARGET_PATH_FIELD_PREFIX);
+};
+
+/**
+ * From target path field name, derive the original input field name.
+ *
+ * @function
+ * @param {String} targetPathFieldName
+ * @returns {String} actual field name
+ */
+export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
+  return targetPathFieldName.replace(TARGET_PATH_FIELD_PREFIX, '');
+};
+
+/**
+ * Check if targetPath is empty on input field
+ *
+ * @function
+ * @param {String} targetPathFieldValue
+ * @returns {boolean} if target path is empty
+ */
+export const isTargetPathEmpty = (targetPathFieldValue) => {
+  if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
+    return true;
+  }
+
+  targetPathFieldValue = targetPathFieldValue.trim();
+
+  if (targetPathFieldValue.trim() === '') {
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * Sets the default value if target path is not set.
+ *
+ * @function
+ * @param {String} targetPathFieldValue
+ * @returns {String} target path value
+ */
+export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
+  if (isTargetPathEmpty(targetPathFieldValue)) {
+    return '*';
+  }
+
+  return targetPathFieldValue;
 };

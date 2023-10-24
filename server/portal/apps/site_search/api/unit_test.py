@@ -21,6 +21,11 @@ def mock_cms_search(mocker):
 
 
 @pytest.fixture
+def mock_service_account(mocker):
+    yield mocker.patch('portal.apps.site_search.api.views.service_account', autospec=True)
+
+
+@pytest.fixture
 def mock_files_search(mocker):
     mocked_fn = mocker.patch('portal.apps.site_search.api.views.files_search')
 
@@ -76,7 +81,7 @@ def test_search_with_auth(regular_user, client, mock_cms_search,
                    'include': True}}
 
 
-def test_search_no_auth(client, mock_cms_search, mock_files_search):
+def test_search_no_auth(client, mock_cms_search, mock_files_search, mock_service_account):
     response = client.get('/api/site-search/?page=0&query_string=test')
 
     assert response.json() == {
@@ -93,7 +98,7 @@ def test_search_no_auth(client, mock_cms_search, mock_files_search):
 
 
 def test_search_public(client, configure_public, mock_cms_search,
-                       mock_files_search):
+                       mock_files_search, mock_service_account):
     response = client.get('/api/site-search/?page=0&query_string=test')
 
     assert response.json() == {
@@ -132,15 +137,16 @@ def test_cms_search_util(mock_dsl_search):
                         'highlight': {'body': ['highlight 1']}}])
 
 
-def test_file_search_util(mock_file_search):
+def test_file_search_util(mock_file_search, regular_user):
     from portal.apps.site_search.api.views import files_search
     mock_file_search.return_value = {'count': 1,
                                      'listing':
                                      [{'name': 'testfile',
                                        'path': '/path/to/testfile'}]}
-    res = files_search('test_query', 'test_system')
+    client = regular_user.tapis_oauth.client
+    res = files_search(client, 'test_query', 'test_system')
 
-    mock_file_search.assert_called_with(None, 'test_system', '/',
+    mock_file_search.assert_called_with(client, 'test_system', '/',
                                         query_string='test_query',
                                         filter=None,
                                         offset=0,
