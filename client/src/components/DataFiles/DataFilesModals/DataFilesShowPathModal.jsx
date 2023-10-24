@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
 import styles from './DataFilesShowPathModal.module.scss';
 
-const DataFilesShowPathModal = React.memo(() => {
+const DataFilesShowPathModal = React.memo(({ api }) => {
   const dispatch = useDispatch();
   const params = useSelector(
     (state) => state.files.params.FilesListing,
@@ -62,14 +62,28 @@ const DataFilesShowPathModal = React.memo(() => {
           View Full Path
         </ModalHeader>
         <ModalBody>
-          <span className={styles['storage-host']}>Storage Host</span>
-          <span className={styles['storage-values']}>{definition.host}</span>
-          <span className={styles['storage-path']}>Storage Path</span>
-          <TextCopyField
-            className={styles['custom-textcopyfield']}
-            value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
-            displayField="textarea"
-          />
+          {(params.api === 'tapis' || api === 'tapis') && definition && (
+            <>
+              <span className={styles['storage-host']}>Storage Host</span>
+              <span className={styles['storage-values']}>
+                {definition.host}
+              </span>
+              <span className={styles['storage-path']}>Storage Path</span>
+              <TextCopyField
+                className={styles['custom-textcopyfield']}
+                value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
+                displayField="textarea"
+              />
+            </>
+          )}
+          {params.api === 'googledrive' && (
+            <>
+              <span className={styles['storage-location']}>
+                Storage Location
+              </span>
+              <span className={styles['storage-google']}>Google Drive</span>
+            </>
+          )}
         </ModalBody>
       </Modal>
     );

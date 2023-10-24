@@ -194,12 +194,8 @@ const DataFilesBreadcrumbs = ({
           })
         )}
       </div>
-      {systemName && api !== 'googledrive' ? (
+      {systemName && api === 'tapis' && (
         <Button type="link" onClick={openFullPathModal}>
-          View Full Path
-        </Button>
-      ) : (
-        <Button type="link" disabled={true} onClick={openFullPathModal}>
           View Full Path
         </Button>
       )}

@@ -79,48 +79,6 @@ describe('DataFilesBreadcrumbs', () => {
     expect(filesText.closest('a')).toBeNull();
   });
 
-  it('renders "View Full Path" button and is clickable', () => {
-    const store = mockStore({
-      systems: systemsFixture,
-    });
-    const { getByText } = renderComponent(
-      <DataFilesBreadcrumbs
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/"
-        section="FilesListing"
-      />,
-      store,
-      createMemoryHistory()
-    );
-
-    const button = getByText('View Full Path');
-    expect(button).toBeDefined();
-    expect(button.getAttribute('disabled')).toBe(null);
-  });
-
-  it('renders "View Full Path" button as clickable for googledrive (assumes user connected their googledrive)', () => {
-    const store = mockStore({
-      systems: systemsFixture,
-    });
-    const { getByText } = renderComponent(
-      <DataFilesBreadcrumbs
-        api="googledrive"
-        scheme="private"
-        system="frontera.home.username"
-        path="/"
-        section="FilesListing"
-      />,
-      store,
-      createMemoryHistory()
-    );
-
-    const button = getByText('View Full Path');
-    expect(button).toBeDefined();
-    expect(button.hasAttribute('disabled')).toBe(false);
-  });
-
   it('dispatches action to open full path modal on button click', () => {
     const store = mockStore({
       systems: systemsFixture,
