@@ -58,12 +58,6 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "ethnicity": "",
-      "gender": "",
-      "bio": null,
-      "website": null,
-      "orcid_id": null,
-      "professional_level": null,
       "setup_complete": true
     }
   }
