@@ -248,7 +248,10 @@ function JobsView({
           </Section>
         }
         getRowProps={rowProps}
-        columnMemoProps={[version, query]} /* TODOv3: dropV2Jobs. */
+        columnMemoProps={[
+          version,
+          query,
+        ]} /* TODOv3: dropV2Jobs. Refactor version prop. */
       />
     </>
   );
