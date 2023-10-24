@@ -4,7 +4,12 @@ import { bool, func, string } from 'prop-types';
 import './JobsSessionModal.global.scss';
 import styles from './JobsSessionModal.module.scss';
 
-const JobsSessionModal = ({ isOpen, toggle, interactiveSessionLink }) => {
+const JobsSessionModal = ({
+  isOpen,
+  toggle,
+  interactiveSessionLink,
+  message,
+}) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} contentClassName="session-modal">
       <ModalHeader
@@ -18,6 +23,7 @@ const JobsSessionModal = ({ isOpen, toggle, interactiveSessionLink }) => {
         <span>
           Click the button below to connect to the interactive session.
         </span>
+        {message && <b>{message}</b>}
         <span>To end the job, quit the application within the session.</span>
         <span>
           Files may take some time to appear in the output location after the

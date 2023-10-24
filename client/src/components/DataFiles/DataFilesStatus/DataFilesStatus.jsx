@@ -38,17 +38,18 @@ const OPERATION_MAP = {
       case 'upload':
       case 'move':
       case 'copy': {
-        const destPath = response.path.split('/').slice(0, -1).join('/');
-        const projectName = findProjectTitle(projectList, response.systemId);
+        const { path, systemId, source } = response;
+        const destPath = path.split('/').slice(0, -1).join('/');
+        const projectName = findProjectTitle(projectList, systemId);
 
         let op = mappedOp;
 
         if (mappedOp === 'copied') {
           const srcSystem =
-            response.source.split('/')[0] === 'https:'
-              ? response.source.split('/')[7]
-              : response.source.split('/')[2];
-          const destSystem = response.systemId;
+            source.split('/')[0] === 'https:'
+              ? source.split('/')[7]
+              : source.split('/')[2];
+          const destSystem = systemId;
           if (srcSystem !== destSystem) {
             op = 'started copying';
           }
@@ -62,7 +63,7 @@ const OPERATION_MAP = {
         } else {
           dest =
             destPath === '/' || destPath === ''
-              ? `${findSystemDisplayName(systemList, response.systemId)}/`
+              ? `${findSystemDisplayName(systemList, systemId)}/`
               : destPath;
         }
 

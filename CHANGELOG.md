@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.1] - 2023-10-05: Search and Target Path fixes
+
+### Fixed
+WP-297: Fix site search for public and community data (#870)
+WP-306: Fix target path regression (#871)
+
 ## [3.2.0] - 2023-10-02: V3 integration improvements; bug fixes
 
 ### Added
@@ -953,7 +959,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.1.2...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.2.1...HEAD
+[3.2.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.1
 [3.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.0
 [3.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.2
 [3.1.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.1

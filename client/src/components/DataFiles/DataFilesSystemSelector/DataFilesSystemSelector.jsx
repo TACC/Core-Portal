@@ -5,7 +5,7 @@ import { DropdownSelector } from '_common';
 import styles from './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({
-  systemId,
+  systemAndHomeDirId,
   section,
   disabled,
   operation,
@@ -17,11 +17,12 @@ const DataFilesSystemSelector = ({
     (state) => state.systems.storage.configuration
   );
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
-  const findSystem = (id) =>
+  const findSystem = (systemAndHomeDirPath) =>
     systemList.find(
-      (system) => `${system.system}${system.homeDir || ''}` === id
+      (system) =>
+        `${system.system}${system.homeDir || ''}` === systemAndHomeDirPath
     );
-  const [selectedSystem, setSelectedSystem] = useState(systemId);
+  const [selectedSystem, setSelectedSystem] = useState(systemAndHomeDirId);
 
   const openSystem = useCallback(
     (event) => {
@@ -69,7 +70,7 @@ const DataFilesSystemSelector = ({
   };
 
   useEffect(() => {
-    setSelectedSystem(systemId);
+    setSelectedSystem(systemAndHomeDirId);
   }, []);
 
   const dropdownSystems = systemList.filter(
@@ -111,7 +112,7 @@ const DataFilesSystemSelector = ({
 };
 
 DataFilesSystemSelector.propTypes = {
-  systemId: PropTypes.string,
+  systemAndHomeDirId: PropTypes.string,
   section: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   operation: PropTypes.string.isRequired,
@@ -120,7 +121,7 @@ DataFilesSystemSelector.propTypes = {
 };
 
 DataFilesSystemSelector.defaultProps = {
-  systemId: '',
+  systemAndHomeDirId: '',
   disabled: false,
   showProjects: false,
   excludedSystems: [],

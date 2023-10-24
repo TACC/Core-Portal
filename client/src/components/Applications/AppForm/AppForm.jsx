@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
-  checkAndSetDefaultTargetPath,
+  isTargetPathEmpty,
   isTargetPathField,
   getInputFieldFromTargetPathField,
   getQueueMaxMinutes,
@@ -484,6 +484,7 @@ export const AppSchemaForm = ({ app }) => {
                   targetDir: isTargetPathField(k) ? v : null,
                 };
               })
+              .filter((v) => v) //filter nulls
               .reduce((acc, entry) => {
                 // merge input field and targetPath fields into one.
                 const key = getInputFieldFromTargetPathField(entry.name);
@@ -501,9 +502,12 @@ export const AppSchemaForm = ({ app }) => {
             .flat()
             .filter((fileInput) => fileInput.sourceUrl) // filter out any empty values
             .map((fileInput) => {
-              fileInput.targetPath = checkAndSetDefaultTargetPath(
-                fileInput.targetPath
-              );
+              if (isTargetPathEmpty(fileInput.targetPath)) {
+                return {
+                  name: fileInput.name,
+                  sourceUrl: fileInput.sourceUrl,
+                };
+              }
               return fileInput;
             });
 
@@ -688,11 +692,21 @@ export const AppSchemaForm = ({ app }) => {
                         )
                         .map((q) => q.name)
                         .sort()
-                        .map((queueName) => (
-                          <option key={queueName} value={queueName}>
-                            {queueName}
-                          </option>
-                        ))
+                        .map((queueName) =>
+                          app.definition.notes.queueFilter ? (
+                            app.definition.notes.queueFilter.includes(
+                              queueName
+                            ) && (
+                              <option key={queueName} value={queueName}>
+                                {queueName}
+                              </option>
+                            )
+                          ) : (
+                            <option key={queueName} value={queueName}>
+                              {queueName}
+                            </option>
+                          )
+                        )
                         .sort()}
                     </FormField>
                   )}
