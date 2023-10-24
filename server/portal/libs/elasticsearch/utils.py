@@ -219,3 +219,25 @@ def index_listing(files):
             })
 
     bulk(client, ops)
+
+
+def index_project_listing(projects):
+    from portal.libs.elasticsearch.docs.base import IndexedProject
+
+    idx = IndexedProject.Index.name
+    client = get_connection('default')
+    ops = []
+
+    for _project in projects:
+        project_dict = dict(_project)
+        project_dict['updated'] = current_time()
+        project_uuid = get_sha256_hash(project_dict['id'])
+        ops.append({
+            '_index': idx,
+            '_id': project_uuid,
+            'doc': project_dict,
+            '_op_type': 'update',
+            'doc_as_upsert': True
+        })
+
+    bulk(client, ops)

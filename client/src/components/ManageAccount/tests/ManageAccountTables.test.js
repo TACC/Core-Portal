@@ -21,12 +21,6 @@ const dummyState = {
   },
   data: {
     demographics: {
-      ethnicity: 'Asian',
-      gender: 'Male',
-      bio: '',
-      website: 'http://owais.io',
-      orcid_id: 'test',
-      professional_level: 'Staff (support, administration, etc)',
       username: 'ojamil',
       email: 'ojamil@tacc.utexas.edu',
       firstName: 'Owais',
@@ -77,8 +71,6 @@ describe('Profile Information Component', () => {
       'Institution',
       'Country of Residence',
       'Country of Citizenship',
-      'Ethnicity',
-      'Gender',
     ];
     headings.forEach((heading) => {
       expect(getByText(heading)).toBeInTheDocument();
