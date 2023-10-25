@@ -3,27 +3,21 @@
   "model": "accounts.portalprofile",
   "pk": 1,
   "fields": {
-    "user": 1,
-    "ethnicity": "",
-    "gender": ""
+    "user": 1
   }
 },
 {
   "model": "accounts.portalprofile",
   "pk": 2,
   "fields": {
-    "user": 2,
-    "ethnicity": "",
-    "gender": ""
+    "user": 2
   }
 },
 {
   "model": "accounts.portalprofile",
   "pk": 3,
   "fields": {
-    "user": 3,
-    "ethnicity": "",
-    "gender": ""
+    "user": 3
   }
 },
 {
