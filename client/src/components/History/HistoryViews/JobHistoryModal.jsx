@@ -122,6 +122,8 @@ function JobHistoryContent({
   const outputDataObj = {
     'Job Name': jobName,
     'Output Location': outputLocation,
+    'Archive System': jobDetails.archiveSystemId,
+    'Archive Directory': jobDetails.archiveSystemDir,
   };
 
   const resubmitJob = () => {

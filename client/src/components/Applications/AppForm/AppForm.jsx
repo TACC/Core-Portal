@@ -692,11 +692,21 @@ export const AppSchemaForm = ({ app }) => {
                         )
                         .map((q) => q.name)
                         .sort()
-                        .map((queueName) => (
-                          <option key={queueName} value={queueName}>
-                            {queueName}
-                          </option>
-                        ))
+                        .map((queueName) =>
+                          app.definition.notes.queueFilter ? (
+                            app.definition.notes.queueFilter.includes(
+                              queueName
+                            ) && (
+                              <option key={queueName} value={queueName}>
+                                {queueName}
+                              </option>
+                            )
+                          ) : (
+                            <option key={queueName} value={queueName}>
+                              {queueName}
+                            </option>
+                          )
+                        )
                         .sort()}
                     </FormField>
                   )}
