@@ -50,7 +50,7 @@ services:
       - 127.0.0.1:9200:9200
 
   postgres:
-    image: postgres:11.5
+    image: postgres:12.0
     volumes:
       - core_portal_postgres_data:/var/lib/postgresql/data/portal
     container_name: core_portal_postgres
@@ -61,7 +61,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/portal
 
   postgrescms:
-    image: postgres:11.5
+    image: postgres:12.0
     volumes:
       - core_cms_postgres_data:/var/lib/postgresql/data/portal
     container_name: core_cms_postgres
