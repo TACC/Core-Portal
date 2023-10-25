@@ -4,12 +4,31 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
 import styles from './DataFilesShowPathModal.module.scss';
 
-const DataFilesShowPathModal = React.memo(({ api }) => {
+const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
   const params = useSelector(
     (state) => state.files.params.FilesListing,
     shallowEqual
   );
+
+  const modalParams = useSelector(
+    (state) => state.files.params.modal,
+    shallowEqual
+  );
+
+  const modalApi = useSelector(
+    (state) => state.files.params.modal.api,
+    shallowEqual
+  );
+
+  useEffect(() => {
+    if (modalApi === 'tapis' && modalParams.system) {
+      dispatch({
+        type: 'FETCH_SYSTEM_DEFINITION',
+        payload: modalParams.system,
+      });
+    }
+  }, [modalParams, dispatch]);
 
   useEffect(() => {
     if (params.api === 'tapis' && params.system) {
@@ -62,7 +81,7 @@ const DataFilesShowPathModal = React.memo(({ api }) => {
           View Full Path
         </ModalHeader>
         <ModalBody>
-          {(params.api === 'tapis' || api === 'tapis') && definition && (
+          {(params.api === 'tapis' || modalApi === 'tapis') && definition && (
             <>
               <span className={styles['storage-host']}>Storage Host</span>
               <span className={styles['storage-values']}>
@@ -71,7 +90,10 @@ const DataFilesShowPathModal = React.memo(({ api }) => {
               <span className={styles['storage-path']}>Storage Path</span>
               <TextCopyField
                 className={styles['custom-textcopyfield']}
-                value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
+                value={`${definition.rootDir}/${file.path}`.replace(
+                  /\/{2,3}/g,
+                  '/'
+                )}
                 displayField="textarea"
               />
             </>
@@ -81,7 +103,7 @@ const DataFilesShowPathModal = React.memo(({ api }) => {
               <span className={styles['storage-location']}>
                 Storage Location
               </span>
-              <span className={styles['storage-google']}>Google Drive</span>
+              <span className={styles['storage-values']}>Google Drive</span>
             </>
           )}
         </ModalBody>

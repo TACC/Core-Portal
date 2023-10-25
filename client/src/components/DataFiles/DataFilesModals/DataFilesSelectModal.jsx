@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,8 +23,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     shallowEqual
   );
 
-  const [apiValue, setApiValue] = useState(null);
-
   const selectRef = React.useRef();
   const onOpened = () => {
     const systemParams = {
@@ -33,7 +31,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       system: systems.filter((s) => !s.hidden)[0].system,
       path: systems.filter((s) => !s.hidden)[0]?.homeDir || '',
     };
-    setApiValue(systemParams.api);
+
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: { ...systemParams, section: 'modal' },
@@ -100,7 +98,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
                 />
               )}
             </div>
-            <DataFilesShowPathModal api={apiValue} />
+            <DataFilesShowPathModal />
             <div className="filesListing">
               {showProjects ? (
                 <DataFilesProjectsList modal="select" />

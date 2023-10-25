@@ -49,6 +49,10 @@ const DataFilesSystemSelector = ({
         },
       });
       dispatch({
+        type: 'FETCH_SYSTEM_DEFINITION',
+        payload: system.system,
+      });
+      dispatch({
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
