@@ -234,7 +234,7 @@ OnboardingAdminList.propTypes = {
 const OnboardingAdmin = () => {
   const dispatch = useDispatch();
   const [eventLogModalParams, setEventLogModalParams] = useState(null);
-  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
+  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false); // Add state to set the incomplete
 
   const toggleShowIncomplete = () => {
     setShowIncompleteOnly((prev) => !prev);
@@ -314,6 +314,7 @@ const OnboardingAdmin = () => {
                 id="incompleteuser"
                 role="checkbox"
                 aria-label="Show Incomplete Only"
+                name="sasas"
                 tabIndex={0}
                 onClick={toggleShowIncomplete}
               />
