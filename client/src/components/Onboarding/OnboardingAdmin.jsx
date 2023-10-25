@@ -6,6 +6,7 @@ import {
   SectionMessage,
   Message,
   Paginator,
+  Checkbox,
 } from '_common';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
@@ -233,10 +234,23 @@ OnboardingAdminList.propTypes = {
 const OnboardingAdmin = () => {
   const dispatch = useDispatch();
   const [eventLogModalParams, setEventLogModalParams] = useState(null);
+  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
+
+  const toggleShowIncomplete = () => {
+    setShowIncompleteOnly((prev) => !prev);
+  };
 
   const { users, offset, limit, total, query, loading, error } = useSelector(
     (state) => state.onboarding.admin
   );
+
+  const filteredUsers = users.filter((user) => {
+    if (showIncompleteOnly) {
+      return !user.setupComplete;
+    } else {
+      return true;
+    }
+  });
 
   const paginationCallback = useCallback(
     (page) => {
@@ -289,22 +303,38 @@ const OnboardingAdmin = () => {
       <div className={styles['container']}>
         <div className={styles['container-header']}>
           <h5>Administrator Controls</h5>
-          <OnboardingAdminSearchbar />
+          <div className={styles['search-checkbox-container']}>
+            <OnboardingAdminSearchbar />
+            <label
+              className={styles['checkbox-label']}
+              htmlFor="incompleteuser"
+            >
+              <Checkbox
+                isChecked={showIncompleteOnly}
+                id="incompleteuser"
+                role="checkbox"
+                aria-label="Show Incomplete Only"
+                tabIndex={0}
+                onClick={toggleShowIncomplete}
+              />
+              Show Incomplete
+            </label>
+          </div>
         </div>
-        {users.length === 0 && (
+        {filteredUsers.length === 0 && (
           <div className={styles['no-users-placeholder']}>
             <Message type="warn">No users to show.</Message>
           </div>
         )}
         <div className={styles['user-container']}>
-          {users.length > 0 && (
+          {filteredUsers.length > 0 && (
             <OnboardingAdminList
-              users={users}
+              users={filteredUsers}
               viewLogCallback={viewLogCallback}
             />
           )}
         </div>
-        {users.length > 0 && (
+        {filteredUsers.length > 0 && (
           <div className={styles['paginator-container']}>
             <Paginator
               current={current}

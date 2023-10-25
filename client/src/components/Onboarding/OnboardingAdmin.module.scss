@@ -24,6 +24,23 @@
   margin-bottom: 1.5em;
 }
 
+.search-checkbox-container {
+  display: flex;
+  width: 45%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 130px;
+  margin: 0;
+  font-weight: bold;
+  font-size: 13px;
+}
+
 .paginator-container {
   width: 100%;
   display: flex;
