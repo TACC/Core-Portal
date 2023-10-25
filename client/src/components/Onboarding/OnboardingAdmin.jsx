@@ -244,13 +244,9 @@ const OnboardingAdmin = () => {
     (state) => state.onboarding.admin
   );
 
-  const filteredUsers = users.filter((user) => {
-    if (showIncompleteOnly) {
-      return !user.setupComplete;
-    } else {
-      return true;
-    }
-  });
+  const filteredUsers = users.filter((user) =>
+    showIncompleteOnly ? !user.setupComplete : true
+  );
 
   const paginationCallback = useCallback(
     (page) => {
