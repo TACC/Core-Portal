@@ -151,15 +151,14 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
 
 const AppInfo = ({ app }) => {
   const categoryDict = useSelector((state) => state.apps.categoryDict);
-  const getAppCategory = (appId) => {
-    let category = null;
-    Object.entries(categoryDict).forEach(([cat, apps]) => {
+const getAppCategory = (appId) => {
+  for (const [cat, apps] of Object.entries(categoryDict)) {
       if (apps.some((app) => app.appId === appId)) {
-        category = cat;
+        return cat;
       }
-    });
-    return category;
-  };
+  }
+  return null;
+ };
 
   const appCategory = getAppCategory(app.definition.id);
 
