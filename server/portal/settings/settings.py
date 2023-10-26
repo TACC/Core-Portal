@@ -45,6 +45,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'Strict'
 
+CSRF_TRUSTED_ORIGINS = ['https://cep.test']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
@@ -64,6 +65,10 @@ ROOT_URLCONF = 'portal.urls'
 
 INSTALLED_APPS = [
 
+    # Django Channels
+    'channels',
+    "daphne",
+    
     # Core Django.
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,9 +80,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
-    # Django Channels
-    'channels',
-
+    # Pipeline.
     'termsandconditions',
     'impersonate',
 
