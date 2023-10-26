@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Django Channels
     'channels',
-    "daphne",
+    'daphne',
 
     # Core Django.
     'django.contrib.admin',
