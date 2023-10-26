@@ -56,20 +56,21 @@ tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 
 [[package]]
 name = "asttokens"
-version = "2.4.0"
+version = "2.4.1"
 description = "Annotate AST trees with source code positions"
 optional = false
 python-versions = "*"
 files = [
-    {file = "asttokens-2.4.0-py2.py3-none-any.whl", hash = "sha256:cf8fc9e61a86461aa9fb161a14a0841a03c405fa829ac6b202670b3495d2ce69"},
-    {file = "asttokens-2.4.0.tar.gz", hash = "sha256:2e0171b991b2c959acc6c49318049236844a5da1d65ba2672c4880c1c894834e"},
+    {file = "asttokens-2.4.1-py2.py3-none-any.whl", hash = "sha256:051ed49c3dcae8913ea7cd08e46a606dba30b79993209636c4875bc1d637bc24"},
+    {file = "asttokens-2.4.1.tar.gz", hash = "sha256:b03869718ba9a6eb027e134bfdf69f38a236d681c83c160d510768af11254ba0"},
 ]
 
 [package.dependencies]
 six = ">=1.12.0"
 
 [package.extras]
-test = ["astroid", "pytest"]
+astroid = ["astroid (>=1,<2)", "astroid (>=2,<4)"]
+test = ["astroid (>=1,<2)", "astroid (>=2,<4)", "pytest"]
 
 [[package]]
 name = "async-timeout"
@@ -366,22 +367,22 @@ pycparser = "*"
 
 [[package]]
 name = "channels"
-version = "2.4.0"
+version = "3.0.5"
 description = "Brings async, event-driven capabilities to Django. Django 2.2 and up only."
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "channels-2.4.0-py2.py3-none-any.whl", hash = "sha256:80a5ad1962ae039a3dcc0a5cb5212413e66e2f11ad9e9db8004834436daf3400"},
-    {file = "channels-2.4.0.tar.gz", hash = "sha256:08e756406d7165cb32f6fc3090c0643f41ca9f7e0f7fada0b31194662f20f414"},
+    {file = "channels-3.0.5-py3-none-any.whl", hash = "sha256:3813b8025bf85509769793aca720e6c3b1c5bde1cb253a961252bf0242b60a26"},
+    {file = "channels-3.0.5.tar.gz", hash = "sha256:a3dc3339cc033e7c2afe083fb3dedf74fc5009815967e317e080e7bfdc92ea26"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.2,<4.0"
-daphne = ">=2.3,<3.0"
+asgiref = ">=3.5.0,<4"
+daphne = ">=3.0,<4"
 Django = ">=2.2"
 
 [package.extras]
-tests = ["async-generator (>=1.10,<2.0)", "async-timeout (>=3.0,<4.0)", "coverage (>=4.5,<5.0)", "pytest (>=4.4,<5.0)", "pytest-asyncio (>=0.10,<1.0)", "pytest-django (>=3.4,<4.0)"]
+tests = ["async-timeout", "coverage (>=4.5,<5.0)", "pytest", "pytest-asyncio", "pytest-django"]
 
 [[package]]
 name = "channels-redis"
@@ -706,17 +707,17 @@ tox = ["tox"]
 
 [[package]]
 name = "daphne"
-version = "2.5.0"
+version = "3.0.2"
 description = "Django ASGI (HTTP/WebSocket) server"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 files = [
-    {file = "daphne-2.5.0-py2.py3-none-any.whl", hash = "sha256:aa64840015709bbc9daa3c4464a4a4d437937d6cda10a9b51e913eb319272553"},
-    {file = "daphne-2.5.0.tar.gz", hash = "sha256:1ca46d7419103958bbc9576fb7ba3b25b053006e22058bc97084ee1a7d44f4ba"},
+    {file = "daphne-3.0.2-py3-none-any.whl", hash = "sha256:a9af943c79717bc52fe64a3c236ae5d3adccc8b5be19c881b442d2c3db233393"},
+    {file = "daphne-3.0.2.tar.gz", hash = "sha256:76ffae916ba3aa66b46996c14fa713e46004788167a4873d647544e750e0e99f"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.2,<4.0"
+asgiref = ">=3.2.10,<4"
 autobahn = ">=0.18"
 twisted = {version = ">=18.7", extras = ["tls"]}
 
@@ -2308,6 +2309,24 @@ pluggy = ">=0.12,<2.0"
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.21.1"
+description = "Pytest support for asyncio"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-asyncio-0.21.1.tar.gz", hash = "sha256:40a7eae6dded22c7b604986855ea48400ab15b069ae38116e8c01238e9eeb64d"},
+    {file = "pytest_asyncio-0.21.1-py3-none-any.whl", hash = "sha256:8666c1c8ac02631d7c51ba282e0c69a8a452b211ffedf2599099845da5c5c37b"},
+]
+
+[package.dependencies]
+pytest = ">=7.0.0"
+
+[package.extras]
+docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
+testing = ["coverage (>=6.2)", "flaky (>=3.5.0)", "hypothesis (>=5.7.1)", "mypy (>=0.931)", "pytest-trio (>=0.7.0)"]
+
+[[package]]
 name = "pytest-cov"
 version = "4.1.0"
 description = "Pytest plugin for measuring coverage."
@@ -3128,4 +3147,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1c77fb61bb9f3274977f7b26465f6206da37deac6a342eab8a67aea1f77000d2"
+content-hash = "d9394c240e885c8eb0f1cd3483ea48afe55728f576731c2be46974e2c6a91a6c"
