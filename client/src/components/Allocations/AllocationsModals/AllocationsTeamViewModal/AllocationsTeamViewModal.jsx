@@ -78,7 +78,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
     },
     [dispatch]
   );
-  
+
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabChange = (e, newValue) => {
     setSelectedTab(newValue);
