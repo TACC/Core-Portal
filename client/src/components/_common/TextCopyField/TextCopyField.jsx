@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import styles from './TextCopyField.module.scss';
 
-const TextCopyField = ({ value, placeholder }) => {
+const TextCopyField = ({ value, placeholder, displayField }) => {
   const transitionDuration = 0.15; // second(s)
   const stateDuration = 1; // second(s)
   const stateTimeout = transitionDuration + stateDuration; // second(s)
@@ -28,34 +28,53 @@ const TextCopyField = ({ value, placeholder }) => {
     event.preventDefault();
   };
 
+  const clipboardProps = {
+    onClick: onCopy,
+    disabled: isEmpty,
+    type: 'secondary',
+    size: 'medium',
+    className: styles['copy-button'],
+    iconNameBefore: isCopied ? 'approved-reverse' : 'link',
+  };
+
+  const fieldProps = {
+    onChange: onChange,
+    value: value,
+    placeholder: placeholder,
+  };
+
   return (
     <div className="input-group">
-      <div className="input-group-prepend">
-        <CopyToClipboard text={value}>
-          <Button
-            className={styles['copy-button']}
-            // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
-            //      - `data-attribute` and `attr()` (pending browser support)
-            //      - PostCSS and JSON variables (pending greater need for this)
-            onClick={onCopy}
-            disabled={isEmpty}
-            type="secondary"
-            size="medium"
-            iconNameBefore={isCopied ? 'approved-reverse' : 'link'}
-          >
-            Copy
-          </Button>
-        </CopyToClipboard>
-      </div>
-      <input
-        type="text"
-        onChange={onChange}
-        value={value}
-        className={`form-control ${styles.input}`}
-        placeholder={placeholder}
-        data-testid="input"
-        readOnly
-      />
+      {displayField === 'textarea' ? (
+        <>
+          <textarea
+            {...fieldProps}
+            className={`${styles.textarea}`}
+            data-testid="textarea"
+            readOnly
+          />
+          <div className={styles['button-container']}>
+            <CopyToClipboard text={value}>
+              <Button {...clipboardProps}>Copy</Button>
+            </CopyToClipboard>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="input-group-prepend">
+            <CopyToClipboard text={value}>
+              <Button {...clipboardProps}>Copy</Button>
+            </CopyToClipboard>
+          </div>
+          <input
+            {...fieldProps}
+            type="text"
+            className={`form-control ${styles.input}`}
+            data-testid="input"
+            readOnly
+          />
+        </>
+      )}
     </div>
   );
 };
@@ -63,11 +82,13 @@ const TextCopyField = ({ value, placeholder }) => {
 TextCopyField.propTypes = {
   value: PropTypes.string,
   placeholder: PropTypes.string,
+  displayField: PropTypes.oneOf(['input', 'textarea']),
 };
 
 TextCopyField.defaultProps = {
   value: '',
   placeholder: '',
+  displayField: 'input', //Default to input (original)
 };
 
 export default TextCopyField;

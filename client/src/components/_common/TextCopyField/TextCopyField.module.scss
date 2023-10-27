@@ -2,6 +2,17 @@
   composes: form-control from '../../../styles/components/bootstrap.form.css';
 }
 
+.textarea {
+  width: 100%;
+  height: 100px;
+  margin-left: 15px;
+}
+
+.button-container {
+  padding-top: 10px;
+  margin-left: 318px;
+}
+
 .copy-button {
   /* May be changed by JavaScript which also needs the value */
   --transition-duration: 0;

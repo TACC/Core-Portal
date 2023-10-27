@@ -15,7 +15,7 @@ import { useFileListing, useSystems } from 'hooks/datafiles';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
-import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
+import CombinedBreadcrumbs from './CombinedBreadcrumbs/CombinedBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
@@ -138,7 +138,7 @@ const DataFiles = () => {
         listingParams.system === noPHISystem ? 'UNPROTECTED' : 'DATA'
       }
       header={
-        <DataFilesBreadcrumbs
+        <CombinedBreadcrumbs
           api={listingParams.api}
           scheme={listingParams.scheme}
           system={listingParams.system}
