@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2023-10-27: V3 integration improvements; bug fixes
+
+### Added
+
+- WP-164 Implement Workspace Search (#886)
+- WP-288: Implement Queue Filter for V3 apps (#883)
+- WP-100: Display all Job Attributes in Jobs History > View Details (#868)
+- WP-72: Workspace Search - Highlight matching search terms (#873)
+- WP-273: App Category icon (#874)
+- WP-32: Ability to see incomplete onboarding status in onboarding page. (#891)
+
+### Changed
+
+- WP-299: Add Data Files button dropdown needs minor adjustment in alignment (#878)
+- WP-65: Data Files: Display full paths for concatenated breadcrumbs or filepaths (#866)
+- WP-278: Data Files: Update Design of View Path Modal (#866)
+- WP-279: Data Files: Support <TextCopyField> That Can Show All Text (#866)
+
+### Fixed
+- WA-314: Input file fixes for hidden and FIXED types (#880)
+- WP-66: Refactor DataFiles components to have more descriptive prop and variable names (#885 and #876)
+- WP-109-remove-unused-django-fields  (#887)
+- Fix email confirmation for tickets (#879)
+
 ## [3.2.1] - 2023-10-05: Search and Target Path fixes
 
 ### Fixed
@@ -959,7 +983,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.2.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.0
 [3.2.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.1
 [3.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.0
 [3.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.1.2
