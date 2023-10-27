@@ -82,10 +82,16 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabChange = (e, newValue) => {
     setSelectedTab(newValue);
-    if (selectedTab === 0){
-      setCard(null) 
-    }
   };
+
+  let selectedUser = useState(null);
+  if (removingUserOperation) {
+    selectedUser = removingUserOperation.username;
+  }
+  if (card && card.username === selectedUser) {
+    setCard(null);
+  }
+  
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
       <ModalHeader className="has-MuiTabs" toggle={toggle} charCode="&#xe912;">
