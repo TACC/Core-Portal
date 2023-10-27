@@ -16,10 +16,7 @@ const DataFilesShowPathModal = React.memo(() => {
     shallowEqual
   );
 
-  const modalApi = useSelector(
-    (state) => state.files.params.modal.api,
-    shallowEqual
-  );
+const { api: modalApi } = modalParams;
 
   useEffect(() => {
     if (modalApi === 'tapis' && modalParams.system) {
