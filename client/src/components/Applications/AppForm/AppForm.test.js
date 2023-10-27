@@ -442,3 +442,58 @@ describe('AppDetail', () => {
     ).toBeDefined();
   });
 });
+
+const mockAppWithQueueFilter = {
+  ...helloWorldAppFixture,
+  definition: {
+    ...helloWorldAppFixture.definition,
+    notes: {
+      ...helloWorldAppFixture.definition.notes,
+      queueFilter: ['rtx', 'small'],
+    },
+  },
+};
+
+const mockAppWithoutQueueFilter = {
+  ...helloWorldAppFixture,
+  definition: {
+    ...helloWorldAppFixture.definition,
+    notes: {
+      ...helloWorldAppFixture.definition.notes,
+      queueFilter: null,
+    },
+  },
+};
+
+describe('AppSchemaForm queueFilter tests', () => {
+  it('renders only the queues specified in the queueFilter', () => {
+    const { container } = renderAppSchemaFormComponent(
+      mockStore(initialMockState),
+      mockAppWithQueueFilter
+    );
+
+    const targetDropdown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    const options = Array.from(targetDropdown.querySelectorAll('option'));
+    expect(options).toHaveLength(2);
+    expect(options[0].textContent).toBe('rtx');
+    expect(options[1].textContent).toBe('small');
+  });
+
+  it('renders all queues when no queueFilter is present', () => {
+    const { container } = renderAppSchemaFormComponent(
+      mockStore(initialMockState),
+      mockAppWithoutQueueFilter
+    );
+
+    const targetDropdown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    const options = Array.from(targetDropdown.querySelectorAll('option'));
+    expect(options).toHaveLength(3);
+    expect(options[0].textContent).toBe('development');
+    expect(options[1].textContent).toBe('rtx');
+    expect(options[2].textContent).toBe('small');
+  });
+});
