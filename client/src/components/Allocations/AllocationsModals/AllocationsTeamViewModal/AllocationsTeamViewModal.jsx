@@ -84,8 +84,8 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
     setSelectedTab(newValue);
   };
 
-  let selectedUser = useState(null);
-  if (removingUserOperation) {
+  let selectedUser = null;
+  if (removingUserOperation && removingUserOperation.username) {
     selectedUser = removingUserOperation.username;
   }
   if (card && card.username === selectedUser) {
