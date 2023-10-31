@@ -91,7 +91,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   if (card && card.username === selectedUser) {
     setCard(null);
   }
-  
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
       <ModalHeader className="has-MuiTabs" toggle={toggle} charCode="&#xe912;">
