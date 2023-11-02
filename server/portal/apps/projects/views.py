@@ -86,8 +86,14 @@ class ProjectsApiView(BaseApiView):
             search = search.extra(from_=int(offset), size=int(limit))
 
             res = search.execute()
-            hits = [hit.to_dict() for hit in res]
-            listing = hits
+            hits = list(map(lambda hit: hit.id, res))
+            if hits:
+                client = request.user.tapis_oauth.client
+                listing = list_projects(client)
+                filtered_list = filter(lambda prj: prj['id'] in hits, listing)
+                listing = list(filtered_list)
+            else:
+                listing = []
         else:
             client = request.user.tapis_oauth.client
             listing = list_projects(client)
