@@ -85,7 +85,9 @@ const DataFilesProjectsList = ({ modal }) => {
       Header: 'ID',
       headerStyle: { textAlign: 'left' },
       accessor: 'name',
-      Cell: (el) => <span>{el.value.split('-').slice(-1)[0]}</span>,
+      Cell: (el) => (
+        <span>{el.value ? el.value.split('-').slice(-1)[0] : ''}</span>
+      ),
     },
   ];
 
