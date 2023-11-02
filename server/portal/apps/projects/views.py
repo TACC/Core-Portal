@@ -87,13 +87,13 @@ class ProjectsApiView(BaseApiView):
 
             res = search.execute()
             hits = list(map(lambda hit: hit.id, res))
+            listing = []
+            # Filter search results to projects specific to user
             if hits:
                 client = request.user.tapis_oauth.client
                 listing = list_projects(client)
                 filtered_list = filter(lambda prj: prj['id'] in hits, listing)
                 listing = list(filtered_list)
-            else:
-                listing = []
         else:
             client = request.user.tapis_oauth.client
             listing = list_projects(client)
