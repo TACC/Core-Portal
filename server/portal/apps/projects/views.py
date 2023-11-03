@@ -87,16 +87,14 @@ class ProjectsApiView(BaseApiView):
             search = search.filter('prefix', **{'id': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}'})
 
             res = search.execute()
-            hits = [hit.to_dict() for hit in res]
-            listing = hits
-            # hits = list(map(lambda hit: hit.id, res))
-            # listing = []
-            # # Filter search results to projects specific to user
-            # if hits:
-            #     client = request.user.tapis_oauth.client
-            #     listing = list_projects(client)
-            #     filtered_list = filter(lambda prj: prj['id'] in hits, listing)
-            #     listing = list(filtered_list)
+            hits = list(map(lambda hit: hit.id, res))
+            listing = []
+            # Filter search results to projects specific to user
+            if hits:
+                client = request.user.tapis_oauth.client
+                listing = list_projects(client)
+                filtered_list = filter(lambda prj: prj['id'] in hits, listing)
+                listing = list(filtered_list)
         else:
             client = request.user.tapis_oauth.client
             listing = list_projects(client)
