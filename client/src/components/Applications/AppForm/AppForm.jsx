@@ -150,6 +150,18 @@ const AdjustValuesWhenQueueChanges = ({ app }) => {
 };
 
 const AppInfo = ({ app }) => {
+  const categoryDict = useSelector((state) => state.apps.categoryDict);
+  const getAppCategory = (appId) => {
+    for (const [cat, apps] of Object.entries(categoryDict)) {
+      if (apps.some((app) => app.appId === appId)) {
+        return cat;
+      }
+    }
+    return null;
+  };
+
+  const appCategory = getAppCategory(app.definition.id);
+
   return (
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
@@ -163,7 +175,7 @@ const AppInfo = ({ app }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <AppIcon appId={app.definition.id} />{' '}
+          <AppIcon appId={app.definition.id} category={appCategory} />{' '}
           <span>{app.definition.notes.label} Documentation</span>
         </a>
       ) : null}

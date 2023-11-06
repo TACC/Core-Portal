@@ -1,14 +1,19 @@
 import React from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Button } from '_common';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
+import '../DataFilesModals/DataFilesShowPathModal.jsx';
 import {
   useSystemDisplayName,
   useFileListing,
   useModal,
   useSystems,
 } from 'hooks/datafiles';
+import truncateMiddle from 'utils/truncateMiddle';
 
 const BreadcrumbLink = ({
   api,
@@ -35,7 +40,7 @@ const BreadcrumbLink = ({
     case 'FilesListing':
       return (
         <Link
-          className="breadcrumb-link"
+          className="breadcrumb-link truncate"
           to={`${basePath}/${api}/${scheme}/${system}${path}/`}
         >
           {children}
@@ -46,7 +51,7 @@ const BreadcrumbLink = ({
       return (
         <span>
           <a
-            className="breadcrumb-link"
+            className="breadcrumb-link truncate"
             href={`/workbench/data/${api}/${scheme}/${system}${path}/`}
             onClick={onClick}
           >
@@ -120,6 +125,22 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
 
+  const dispatch = useDispatch();
+
+  const fileData = {
+    system: system,
+    path: path,
+  };
+
+  const openFullPathModal = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'showpath', props: { file: fileData } },
+    });
+  };
+
   const { fetchSelectedSystem } = useSystems();
 
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
@@ -155,52 +176,29 @@ const DataFilesBreadcrumbs = ({
       }
     }, '');
 
+  const fullPath = paths.slice(-1);
+  const currentDirectory = pathComps.slice(-1);
+
   return (
-    <div className={`breadcrumbs ${className}`}>
-      {scheme === 'projects' && (
-        <>
-          <RootProjectsLink
-            api={api}
-            section={section}
-            operation={operation}
-            label="Shared Workspaces"
-          />{' '}
-          {system && `/ `}
-        </>
+    <div className="breadcrumb-container">
+      <div className={`breadcrumbs ${className}`}>
+        {currentDirectory.length === 0 ? (
+          <span className="system-name">
+            {truncateMiddle(systemName || 'Shared Workspaces', 30)}
+          </span>
+        ) : (
+          currentDirectory.map((pathComp, i) => {
+            if (i === fullPath.length - 1) {
+              return <span key={uuidv4()}>{truncateMiddle(pathComp, 30)}</span>;
+            }
+          })
+        )}
+      </div>
+      {systemName && api === 'tapis' && (
+        <Button type="link" onClick={openFullPathModal}>
+          View Full Path
+        </Button>
       )}
-      <BreadcrumbLink
-        api={api}
-        scheme={scheme}
-        system={system}
-        path={startingPath}
-        section={section}
-        isPublic={isPublic}
-      >
-        <>{systemName}</>
-      </BreadcrumbLink>
-      {pathComps.map((pathComp, i) => {
-        if (i < paths.length - 2) {
-          return ' /... ';
-        }
-        if (i === paths.length - 1) {
-          return <span key={uuidv4()}> / {pathComp}</span>;
-        }
-        return (
-          <React.Fragment key={uuidv4()}>
-            {' '}
-            /{' '}
-            <BreadcrumbLink
-              api={api}
-              scheme={scheme}
-              system={system}
-              path={paths[i]}
-              section={section}
-            >
-              <>{pathComp}</>
-            </BreadcrumbLink>
-          </React.Fragment>
-        );
-      })}
     </div>
   );
 };

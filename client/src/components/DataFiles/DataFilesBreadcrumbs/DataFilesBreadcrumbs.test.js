@@ -7,6 +7,7 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import { initialSystemState } from '../../../redux/reducers/datafiles.reducers';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
+import { fireEvent } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -16,8 +17,7 @@ describe('DataFilesBreadcrumbs', () => {
       systems: systemsFixture,
       projects: projectsFixture,
     });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="private"
@@ -29,26 +29,17 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
-    expect(getByText(/My Data \(Frontera\)/)).toBeDefined();
-    expect(
-      getByText(/My Data \(Frontera\)/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/home/username/'
-    );
-    expect(getByText(/the/).closest('a').getAttribute('href')).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/home/username/path/to/the/'
-    );
-    expect(getByText(/files/).closest('a')).toBeNull();
+    // Check if the last part of the path is rendered as text
+    const filesText = getByText('files');
+    expect(filesText).toBeDefined();
+    expect(filesText.closest('a')).toBeNull();
   });
 
   it('renders correct breadcrumbs when in root of system', () => {
     const store = mockStore({
       systems: systemsFixture,
     });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="private"
@@ -60,36 +51,8 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
+    // Check if the system name is rendered as text when in the root of the system
     expect(getByText('Frontera')).toBeDefined();
-    expect(getByText('Frontera').closest('a').getAttribute('href')).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/'
-    );
-  });
-
-  it('render breadcrumbs with initial empty systems', () => {
-    const store = mockStore({
-      systems: initialSystemState,
-      projects: projectsFixture,
-    });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
-      <DataFilesBreadcrumbs
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/path/to/the/files"
-        section="FilesListing"
-      />,
-      store,
-      createMemoryHistory()
-    );
-
-    expect(getByText(/Frontera/)).toBeDefined();
-    expect(
-      getByText(/Frontera/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
   });
 
   it('render breadcrumbs for projects', () => {
@@ -98,8 +61,7 @@ describe('DataFilesBreadcrumbs', () => {
       projects: projectsFixture,
       files: filesFixture,
     });
-    const history = createMemoryHistory();
-    const { getByText, debug } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"
         scheme="projects"
@@ -111,11 +73,64 @@ describe('DataFilesBreadcrumbs', () => {
       createMemoryHistory()
     );
 
-    expect(getByText(/Shared Workspaces/)).toBeDefined();
-    expect(
-      getByText(/Shared Workspaces/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/projects/');
+    // Check if the last part of the path is rendered as text for projects
+    const filesText = getByText('files');
+    expect(filesText).toBeDefined();
+    expect(filesText.closest('a')).toBeNull();
+  });
+
+  it('dispatches action to open full path modal on button click', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+      projects: projectsFixture,
+    });
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/home/username/path/to/the/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+    const viewFullPathButton = getByText('View Full Path');
+    fireEvent.click(viewFullPathButton);
+
+    const actions = store.getActions();
+    const expectedActions = {
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'showpath',
+        props: {
+          file: {
+            system: 'frontera.home.username',
+            path: '/home/username/path/to/the/files',
+          },
+        },
+      },
+    };
+    expect(actions).toContainEqual(expectedActions);
+  });
+
+  it('renders pathComp, which is current directory', () => {
+    const store = mockStore({
+      systems: systemsFixture,
+    });
+    const history = createMemoryHistory();
+    const { getByText } = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/home/username/path/to/the/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+    const pathComp = getByText('files');
+    expect(pathComp).toBeDefined();
   });
 });

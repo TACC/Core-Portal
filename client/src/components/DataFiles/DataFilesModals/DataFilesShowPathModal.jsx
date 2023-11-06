@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
-import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
+import styles from './DataFilesShowPathModal.module.scss';
 
 const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
@@ -10,6 +10,22 @@ const DataFilesShowPathModal = React.memo(() => {
     (state) => state.files.params.FilesListing,
     shallowEqual
   );
+
+  const modalParams = useSelector(
+    (state) => state.files.params.modal,
+    shallowEqual
+  );
+
+  const { api: modalApi } = modalParams;
+
+  useEffect(() => {
+    if (modalApi === 'tapis' && modalParams.system) {
+      dispatch({
+        type: 'FETCH_SYSTEM_DEFINITION',
+        payload: modalParams.system,
+      });
+    }
+  }, [modalParams, dispatch]);
 
   useEffect(() => {
     if (params.api === 'tapis' && params.system) {
@@ -54,37 +70,39 @@ const DataFilesShowPathModal = React.memo(() => {
         toggle={toggle}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle} charCode="&#xe912;">
-          Pathnames for {file.name}
+        <ModalHeader
+          toggle={toggle}
+          charCode="&#xe912;"
+          className={styles['custom-modal-header']}
+        >
+          View Full Path
         </ModalHeader>
         <ModalBody>
-          <DataFilesBreadcrumbs
-            api={params.api}
-            scheme={params.scheme}
-            system={params.system}
-            path={file.path || '/'}
-            section=""
-          />
-          <dl>
-            {params.api === 'tapis' && definition && (
-              <>
-                <dt>Storage Host</dt>
-                <dd>{definition.host}</dd>
-                <dt>Storage Path</dt>
-              </>
-            )}
-            {params.api === 'googledrive' && (
-              <>
-                <dt>Storage Location</dt>
-                <dd>Google Drive</dd>
-              </>
-            )}
-            <dd>
+          {(params.api === 'tapis' || modalApi === 'tapis') && definition && (
+            <>
+              <span className={styles['storage-host']}>Storage Host</span>
+              <span className={styles['storage-values']}>
+                {definition.host}
+              </span>
+              <span className={styles['storage-path']}>Storage Path</span>
               <TextCopyField
-                value={`${definition.rootDir}/${file.path}`.replace('//', '/')}
+                className={styles['custom-textcopyfield']}
+                value={`${definition.rootDir}/${file.path}`.replace(
+                  /\/{2,3}/g,
+                  '/'
+                )}
+                displayField="textarea"
               />
-            </dd>
-          </dl>
+            </>
+          )}
+          {params.api === 'googledrive' && (
+            <>
+              <span className={styles['storage-location']}>
+                Storage Location
+              </span>
+              <span className={styles['storage-values']}>Google Drive</span>
+            </>
+          )}
         </ModalBody>
       </Modal>
     );
