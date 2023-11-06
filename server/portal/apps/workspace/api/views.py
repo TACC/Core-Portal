@@ -188,7 +188,12 @@ class JobsView(BaseApiView):
         return data
 
     def search(self, client, request):
-
+        '''
+        Search using tapis in specific portal with providing query string.
+        Additonal parameters for search:
+        limit - limit param from request, otherwise default to 10
+        offset - offset param from request, otherwise default to 0
+        '''
         query_string = request.GET.get('query_string')
 
         limit = int(request.GET.get('limit', 10))
@@ -197,10 +202,10 @@ class JobsView(BaseApiView):
 
         sql_queries = [
             f"(tags IN ('portalName: {portal_name}')) AND",
-            f"(name like '%{query_string}%') OR",
+            f"((name like '%{query_string}%') OR",
             f"(archiveSystemDir like '%{query_string}%') OR",
             f"(appId like '%{query_string}%') OR",
-            f"(archiveSystemId like '%{query_string}%')",
+            f"(archiveSystemId like '%{query_string}%'))",
         ]
 
         data = client.jobs.getJobSearchListByPostSqlStr(
@@ -212,7 +217,6 @@ class JobsView(BaseApiView):
             },
             select="allAttributes"
         )
-
         return data
 
     def delete(self, request, *args, **kwargs):
