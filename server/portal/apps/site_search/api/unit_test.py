@@ -144,7 +144,7 @@ def test_file_search_util(mock_file_search, regular_user):
                                      [{'name': 'testfile',
                                        'path': '/path/to/testfile'}]}
     client = regular_user.tapis_oauth.client
-    res = files_search(client, 'test_query', 'test_system')
+    res = files_search(client, 'test_query', 'test_system', '/',)
 
     mock_file_search.assert_called_with(client, 'test_system', '/',
                                         query_string='test_query',
