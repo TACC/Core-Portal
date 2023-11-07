@@ -36,8 +36,8 @@ def cms_search(query_string, offset=0, limit=10):
     return total, results
 
 
-def files_search(client, query_string, system, filter=None, offset=0, limit=10):
-    res = search_operation(client, system, '/', offset=offset, limit=limit,
+def files_search(client, query_string, system, path, filter=None, offset=0, limit=10):
+    res = search_operation(client, system, path, offset=offset, limit=limit,
                            query_string=query_string, filter=filter)
     return (res['count'], res['listing'])
 
@@ -65,7 +65,7 @@ class SiteSearchApiView(BaseApiView):
                                and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
             client = request.user.tapis_oauth.client if (request.user.is_authenticated and request.user.profile.setup_complete) else service_account()
             (public_total, public_results) = \
-                files_search(client, qs, public_conf['system'], filter=filter,
+                files_search(client, qs, public_conf['system'], public_conf.get("homeDir", "/"), filter=filter,
                              offset=offset, limit=limit)
             response['public'] = {'count': public_total,
                                   'listing': public_results,
@@ -84,7 +84,7 @@ class SiteSearchApiView(BaseApiView):
                          and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
                 client = request.user.tapis_oauth.client
                 (community_total, community_results) = \
-                    files_search(client, qs, community_conf['system'], filter=filter,
+                    files_search(client, qs, community_conf['system'], community_conf.get("homeDir", "/"), filter=filter,
                                  offset=offset,
                                  limit=limit)
                 response['community'] = {'count': community_total,
