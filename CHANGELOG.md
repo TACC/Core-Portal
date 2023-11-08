@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.1] - 2023-11-07: Search related bug fixes and App Icon fix
+- WP-355: Fixing issue with icons on dev/prod sites (#892)
+- WP-354: Workspace search - filter results visible to user (#893)
+- WP-356: Site Search: For files, use home dir to isolate the search (#897)
+- WP-361: Jobs Search - restrict search to a specific portal (#896)
+
 ## [3.3.0] - 2023-10-27: V3 integration improvements; bug fixes
 
 ### Added
@@ -983,7 +989,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.1...HEAD
+[3.3.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.1
 [3.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.0
 [3.2.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.1
 [3.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.0
