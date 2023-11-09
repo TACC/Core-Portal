@@ -84,7 +84,6 @@ class ProjectsApiView(BaseApiView):
 
             search = search.query(ngram_query | wildcard_query)
             search = search.extra(from_=int(offset), size=int(limit))
-            search = search.filter('prefix', **{'id': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}'})
 
             res = search.execute()
             hits = list(map(lambda hit: hit.id, res))
