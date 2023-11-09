@@ -44,8 +44,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'Strict'
-# for local testing 
-CSRF_TRUSTED_ORIGINS = ['https://cep.test'] 
+# for local testing
+CSRF_TRUSTED_ORIGINS = settings_custom._CSRF_TRUSTED_ORIGINS
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']

@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime
 from django.utils import timezone
 
 
