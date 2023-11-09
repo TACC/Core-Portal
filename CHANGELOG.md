@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+## [3.3.2] - 2023-11-09: workspace search fails on frontera portal
+- WP-380: Remove id prefix filter on workspace search (#898)
+  
 ## [3.3.1] - 2023-11-07: Search related bug fixes and App Icon fix
 - WP-355: Fixing issue with icons on dev/prod sites (#892)
 - WP-354: Workspace search - filter results visible to user (#893)
@@ -989,7 +991,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.2...HEAD
+[3.3.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.2
 [3.3.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.1
 [3.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.0
 [3.2.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.2.1
