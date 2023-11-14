@@ -1,39 +1,26 @@
-@import '../../../styles/components/dropdown-menu.css';
+/*
+Dropdown
 
-.data-files-btn {
-  background-color: var(--global-color-accent--normal);
-  border-color: var(--global-color-accent--normal);
-  border-radius: 0;
-}
+A menu of navigation elements.
 
-.data-files-btn-cancel {
-  border-radius: 0;
-}
-
-#add-button-wrapper {
-  padding-left: var(--horizontal-buffer);
-}
-#data-files-add {
-  width: 174px;
-}
-
-.data-files-nav {
-  padding-top: 20px;
-}
+Styleguide Components.Dropdown
+*/
 
 /* Nested to prevent styles from affecting CMS header dropdown */
-.data-files-sidebar {
+.workbench-wrapper {
   .dropdown-menu {
     border-color: var(--global-color-accent--normal);
     border-radius: 0;
-    margin: 11px 3px 0;
+    margin-top: 11px;
+    padding: 0;
     width: 200px;
     vertical-align: top;
   }
-  .dropdown-menu::before {
+  .dropdown-menu::before,
+  .dropdown-menu::after {
     position: absolute;
     top: -10px;
-    left: 67px;
+    left: 65px;
     border-right: 10px solid transparent;
     border-bottom: 10px solid var(--global-color-accent--normal);
     border-left: 10px solid transparent;
@@ -41,20 +28,14 @@
     content: '';
   }
   .dropdown-menu::after {
-    top: -9px;
-    left: 68px;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid #ffffff;
-    border-left: 9px solid transparent;
-    margin-left: 20px;
-    content: '';
+    border-bottom-color: var(--global-color-primary--xx-light);
   }
 
   .dropdown-item {
     padding: 10px 6px;
     color: var(--global-color-primary--x-dark);
     font-size: 14px;
-    i {
+    & i {
       padding-right: 19px;
       font-size: 20px;
       vertical-align: middle;
@@ -69,20 +50,5 @@
             and was `--global-color-accent` at 25% opacity on white…
             which is what `--global-color-accent--weak` is now */
     background-color: var(--global-color-accent--weak);
-  }
-}
-
-.complex-dropdown-item {
-  border-top: 1px solid #707070;
-  display: flex;
-}
-
-.multiline-menu-item-wrapper {
-  display: inline-block;
-  padding-left: 5px;
-  line-height: 1.1em;
-  small {
-    display: block;
-    color: var(--global-color-primary--x-dark);
   }
 }

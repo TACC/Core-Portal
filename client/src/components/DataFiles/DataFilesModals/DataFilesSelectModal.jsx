@@ -6,6 +6,7 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsList';
+import DataFilesShowPathModal from './DataFilesShowPathModal';
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const systems = useSelector(
@@ -21,6 +22,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     (state) => state.files.params.modal,
     shallowEqual
   );
+
   const selectRef = React.useRef();
   const onOpened = () => {
     const systemParams = {
@@ -29,6 +31,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       system: systems.filter((s) => !s.hidden)[0].system,
       path: systems.filter((s) => !s.hidden)[0]?.homeDir || '',
     };
+
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: { ...systemParams, section: 'modal' },
@@ -39,6 +42,10 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
         operation: 'select',
         props: {},
       },
+    });
+    dispatch({
+      type: 'FETCH_SYSTEM_DEFINITION',
+      payload: systemParams.system,
     });
   };
   const selectCallback = (system, path) => {
@@ -72,7 +79,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={`${selectedSystem?.system}${
+                systemAndHomeDirId={`${selectedSystem?.system}${
                   selectedSystem?.homeDir || ''
                 }`}
                 section="modal"
@@ -91,6 +98,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
                 />
               )}
             </div>
+            <DataFilesShowPathModal />
             <div className="filesListing">
               {showProjects ? (
                 <DataFilesProjectsList modal="select" />

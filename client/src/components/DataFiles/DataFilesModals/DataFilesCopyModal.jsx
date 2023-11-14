@@ -142,7 +142,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemId={
+                systemAndHomeDirId={
                   params.scheme === 'projects'
                     ? 'shared'
                     : `${selectedSystem?.system}${

@@ -3,11 +3,16 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './AppIcon.scss';
+import iconStyles from '../../../styles/trumps/icon.css';
+import iconFontsStyles from '../../../styles/trumps/icon.fonts.css';
+import doesClassExist from 'utils/doesClassExist';
 
-const AppIcon = ({ appId }) => {
+const AppIcon = ({ appId, category }) => {
   const appIcons = useSelector((state) => state.apps.appIcons);
   const findAppIcon = (id) => {
-    let appIcon = 'applications';
+    let appIcon = category
+      ? category.replace(' ', '-').toLowerCase()
+      : 'applications';
     Object.keys(appIcons).forEach((appName) => {
       if (id.includes(appName)) {
         appIcon = appIcons[appName].toLowerCase();
@@ -19,6 +24,10 @@ const AppIcon = ({ appId }) => {
     } else if (id.includes('extract')) {
       appIcon = 'extract';
     }
+    // Check if the CSS class exists, if not default to 'icon-applications'
+    if (!doesClassExist(`icon-${appIcon}`, [iconFontsStyles, iconStyles])) {
+      appIcon = 'applications';
+    }
     return appIcon;
   };
   const iconName = findAppIcon(appId);
@@ -27,6 +36,11 @@ const AppIcon = ({ appId }) => {
 };
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired,
+  category: PropTypes.string,
+};
+
+AppIcon.defaultProps = {
+  category: 'applications',
 };
 
 export default AppIcon;

@@ -17,7 +17,9 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
         list_projects, get_project, create_shared_workspace,\
         update_project, get_workspace_role, change_user_role, add_user_to_workspace,\
         remove_user, transfer_ownership
-
+from portal.apps.search.tasks import tapis_project_listing_indexer
+from portal.libs.elasticsearch.indexes import IndexedProject
+from elasticsearch_dsl import Q
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,12 +65,41 @@ class ProjectsApiView(BaseApiView):
         }
         ```
         """
-        # TODOv3: Support Elasticsearch queries for V3 projects https://jira.tacc.utexas.edu/browse/TV3-160
-        # query_string = request.GET.get('query_string')
-        # offset = int(request.GET.get('offset', 0))
-        # limit = int(request.GET.get('limit', 100))
-        client = request.user.tapis_oauth.client
-        listing = list_projects(client)
+
+        query_string = request.GET.get('query_string')
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+
+        listing = []
+
+        if query_string:
+            search = IndexedProject.search()
+
+            ngram_query = Q("query_string", query=query_string,
+                            fields=["title", "id"],
+                            minimum_should_match='100%',
+                            default_operator='or')
+
+            wildcard_query = Q("wildcard", title=f'*{query_string}*') | Q("wildcard", id=f'*{query_string}*')
+
+            search = search.query(ngram_query | wildcard_query)
+            search = search.extra(from_=int(offset), size=int(limit))
+
+            res = search.execute()
+            hits = list(map(lambda hit: hit.id, res))
+            listing = []
+            # Filter search results to projects specific to user
+            if hits:
+                client = request.user.tapis_oauth.client
+                listing = list_projects(client)
+                filtered_list = filter(lambda prj: prj['id'] in hits, listing)
+                listing = list(filtered_list)
+        else:
+            client = request.user.tapis_oauth.client
+            listing = list_projects(client)
+
+        tapis_project_listing_indexer.delay(listing)
+
         return JsonResponse({"status": 200, "response": listing})
 
     def post(self, request):  # pylint: disable=no-self-use
