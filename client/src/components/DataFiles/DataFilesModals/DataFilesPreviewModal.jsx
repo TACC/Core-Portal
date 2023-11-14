@@ -29,6 +29,7 @@ const DataFilesPreviewModal = () => {
   const { href, content, error, fileType, isLoading } = useSelector(
     (state) => state.files.preview
   );
+  console.log(useSelector(state => state.files.preview))
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
@@ -116,7 +117,7 @@ const DataFilesPreviewModal = () => {
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
-            <Button className={styles.button} href={href} target="_blank">
+            <Button className={styles.button} href={href} target={fileType === 'other' ? "" : "_blank"}> 
               <i className="icon-exit" />
               <span className="toolbar-button-text">Preview File</span>
             </Button>
