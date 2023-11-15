@@ -20,7 +20,7 @@ import * as ROUTES from '../../../constants/routes';
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
 
-  const isPublicSystem = params.scheme === 'public';
+  const isPublicSystem = params?.scheme === 'public';
 
   const { api: currentListing, scheme } = params ?? {};
 

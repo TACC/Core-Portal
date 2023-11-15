@@ -2,8 +2,7 @@ import json
 import logging
 from portal.apps.users.utils import get_allocations
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.urls import reverse
+from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 from tapipy.errors import InternalServerError
 from portal.views.base import BaseApiView
