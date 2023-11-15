@@ -274,9 +274,12 @@ def list_projects(client):
 
     fields = "id,host,description,notes,updated,owner,rootDir"
     query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
+    # use limit as -1 to allow search to corelate with
+    # all projects available to the api user
     listing = client.systems.getSystems(listType='ALL',
                                         search=query,
-                                        select=fields)
+                                        select=fields,
+                                        limit=-1)
 
     serialized_listing = map(lambda prj: {
         "id": prj.id,
