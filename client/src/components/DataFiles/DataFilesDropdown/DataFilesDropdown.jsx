@@ -126,7 +126,9 @@ const BreadcrumbsDropdown = ({
               <span className="multiline-menu-item-wrapper">
                 {scheme === 'projects'
                   ? 'Shared Workspaces'
-                  : systemName || 'Shared Workspaces'}
+                  : (systemName.length > 20
+                      ? systemName.substring(0, 20)
+                      : systemName) || 'Shared Workspaces'}
                 {homeDir ? <small>Root</small> : null}
               </span>
             </DropdownItem>
