@@ -86,7 +86,7 @@ class ProjectsApiView(BaseApiView):
             search = search.extra(from_=int(offset), size=int(limit))
 
             res = search.execute()
-            hits = list(map(lambda hit: hit.id, res))
+            hits = [hit.id for hit in res if hasattr(hit, 'id') and hit.id is not None]
             listing = []
             # Filter search results to projects specific to user
             if hits:
