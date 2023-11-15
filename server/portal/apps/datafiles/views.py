@@ -2,7 +2,8 @@ import json
 import logging
 from portal.apps.users.utils import get_allocations
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.urls import reverse
 from requests.exceptions import HTTPError
 from tapipy.errors import InternalServerError
 from portal.views.base import BaseApiView
@@ -60,12 +61,20 @@ class SystemListingView(BaseApiView):
         return JsonResponse(response)
 
 
-@method_decorator(login_required, name='dispatch')
 class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
 
     def get(self, request, systemId):
-        system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=systemId)
+        try:
+            client = request.user.tapis_oauth.client
+        except AttributeError:
+            # Make sure that we only let unauth'd users see public systems
+            public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
+            if public_sys and public_sys['system'] == systemId:
+                client = service_account()
+            else:
+                return JsonResponse({'message': 'Unauthorized'}, status=401)
+        system_def = client.systems.getSystem(systemId=systemId)
         return JsonResponse(
             {
                 "status": 200,
@@ -81,8 +90,8 @@ class TapisFilesView(BaseApiView):
             client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
-            if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                    if sys['system'] == system and sys['scheme'] == 'public'), None):
+            public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
+            if public_sys and public_sys['system'] == system and path.startswith(public_sys['homeDir'].strip('/')):
                 client = service_account()
             else:
                 return JsonResponse(
