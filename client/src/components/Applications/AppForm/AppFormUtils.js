@@ -3,9 +3,9 @@ import { getSystemName } from 'utils/systems';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 
-export const getQueueMaxMinutes = (app, queueName) => {
-  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
-    .maxMinutes;
+export const getQueueMaxMinutes = (exec_sys, queueName) => {
+  return exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
+    ?.maxMinutes;
 };
 
 /**
@@ -123,8 +123,9 @@ export const getCoresPerNodeValidation = (queue) => {
  * @returns {Object} updated/fixed values
  */
 export const updateValuesForQueue = (app, values) => {
+  const exec_sys = getExecSystemFromId(app, values.execSystemId);
   const updatedValues = { ...values };
-  const queue = app.exec_sys.batchLogicalQueues.find(
+  const queue = exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
   );
 
@@ -166,6 +167,59 @@ export const updateValuesForQueue = (app, values) => {
      */
 
   return updatedValues;
+};
+
+/**
+ * Get the field name used for target path in AppForm
+ *
+ * @function
+ * @param {String} inputFieldName
+ * @returns {String} field Name prefixed with target path
+ */
+export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
+  const queueName =
+    queue_name ??
+    app.definition.jobAttributes.execSystemLogicalQueue ??
+    exec_sys?.batchDefaultLogicalQueue;
+  return (
+    exec_sys.batchLogicalQueues.find((q) => q.name === queueName) ||
+    exec_sys.batchLogicalQueues[0]
+  );
+};
+
+export const getAppQueueValues = (app, queues) => {
+  /*
+    Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
+    while hideNodeCountAndCoresPerNode is true
+    */
+  return queues
+    .filter(
+      (q) =>
+        !app.definition.notes.hideNodeCountAndCoresPerNode ||
+        (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
+          app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
+    )
+    .map((q) => q.name)
+    .filter((queueName) =>
+      app.definition.notes.queueFilter
+        ? app.definition.notes.queueFilter.includes(queueName)
+        : true
+    )
+    .sort();
+};
+
+export const getExecSystemFromId = (app, execSystemId) => {
+  if (
+    app.availableExecSystems &&
+    Object.keys(app.availableExecSystems).length > 0
+  ) {
+    return app.availableExecSystems.find(
+      (exec_sys) => exec_sys.id === execSystemId
+    );
+  }
+  if (app.exec_sys.id === execSystemId) return app.exec_sys;
+
+  return null;
 };
 
 /**

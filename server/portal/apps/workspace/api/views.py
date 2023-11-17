@@ -43,6 +43,16 @@ def _get_user_app_license(license_type, user):
     lic = license_model.objects.filter(user=user).first()
     return lic
 
+# List of all exec systems available. 
+# Number of systems available today is low, so info control on
+# results is not needed at this time.
+def _get_all_exec_systems(user):
+    tapis = user.tapis_oauth.client
+    # Intentionally not using  search='(canExec.eq.true)'), because
+    # is it really slow and make the UI look unresponsive.
+    return tapis.systems.getSystems(listType='ALL', select='allAttributes', search='(canExec.eq.true)')
+
+
 
 def _get_app(app_id, app_version, user):
     tapis = user.tapis_oauth.client
@@ -52,8 +62,13 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
     data = {'definition': app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data['exec_sys'] = tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
+    has_dynamic_exec_system = getattr(app_def.notes, 'dynamicExecSystem', False)
+    if (has_dynamic_exec_system):
+        data['availableExecSystems'] = _get_all_exec_systems(user)
+        data['exec_sys'] = next((exec_sys for exec_sys in data['availableExecSystems'] if exec_sys.id == app_def.jobAttributes.execSystemId), data['availableExecSystems'][0] if data['availableExecSystems'] else None)
+    else:
+        # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
+        data['exec_sys'] = tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
 
     lic_type = _app_license_type(app_def)
     data['license'] = {

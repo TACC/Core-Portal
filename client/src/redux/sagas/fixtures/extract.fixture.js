@@ -87,6 +87,7 @@ export const extractApp = {
     created: '2023-03-08T22:38:29.409242Z',
     updated: '2023-03-16T22:23:22.822513Z',
   },
+  availableExecSystems: availableExecSystemsFixture,
   exec_sys: {
     isPublic: true,
     isDynamicEffectiveUser: true,
