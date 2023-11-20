@@ -197,9 +197,7 @@ describe('DataFilesTable', () => {
         </BrowserRouter>
       </Provider>
     );
-    expect(
-      getByText(/You are missing the required allocation for this system./)
-    ).toBeDefined();
+    expect(getByText(/You must be logged in to view this data./)).toBeDefined();
   });
 
   it('should display an error for 400 when the api is Google Drive', async () => {

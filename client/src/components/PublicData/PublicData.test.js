@@ -16,6 +16,7 @@ const systems = {
       {
         name: 'Public Data',
         system: 'cep.storage.public',
+        homeDir: '/',
         scheme: 'public',
         api: 'tapis',
         icon: null,
