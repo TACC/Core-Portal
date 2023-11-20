@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useFileListing, useSystems } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
@@ -19,6 +19,9 @@ import * as ROUTES from '../../../constants/routes';
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
+
+  const isPublicSystem = params?.scheme === 'public';
+
   const { api: currentListing, scheme } = params ?? {};
 
   const dispatch = useDispatch();
@@ -170,6 +173,14 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       );
     }
     if (err === '403') {
+      if (isPublicSystem)
+        return (
+          <div className="h-100 listing-placeholder">
+            <SectionMessage type="warning">
+              You must be logged in to view this data.
+            </SectionMessage>
+          </div>
+        );
       return (
         <div className="h-100 listing-placeholder">
           <SectionMessage type="warning">
