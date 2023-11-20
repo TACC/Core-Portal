@@ -161,7 +161,7 @@ def test_get_system_forbidden(client, regular_user, mock_tapis_client, agave_sto
     mock_tapis_client.systems.get.return_value = agave_storage_system_mock
 
     response = client.get("/api/datafiles/systems/definition/MySystem/")
-    assert response.status_code == 302  # redirect to login
+    assert response.status_code == 401
 
 
 @pytest.fixture
