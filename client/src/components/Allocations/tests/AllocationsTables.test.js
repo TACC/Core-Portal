@@ -27,7 +27,6 @@ describe('Allocations Table', () => {
       <Provider
         store={mockStore({
           allocations: mockInitialState,
-          profile: { data: { demographics: { firstName: '', lastName: '' } } },
         })}
       >
         <MemoryRouter initialEntries={['/workbench/allocations']}>
@@ -56,7 +55,6 @@ describe('Allocations Table', () => {
         ...mockInitialState,
         errors: { listing: new Error('PC Load Letter') },
       },
-      profile: { data: { demographics: { firstName: '', lastName: '' } } },
     });
     rerender(
       <Provider store={storeWithError}>

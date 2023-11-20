@@ -67,11 +67,6 @@ const mockInitialState = {
       results: {},
     },
   },
-  profile: {
-    data: {
-      demographics: {},
-    },
-  },
 };
 const Wrapper = ({ store, children }) => (
   <Provider store={store}>{children}</Provider>
