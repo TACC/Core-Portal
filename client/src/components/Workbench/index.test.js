@@ -22,7 +22,6 @@ describe('AppRouter', () => {
     renderComponent(<AppRouter />, store);
     expect(store.getActions()).toEqual([
       { type: 'FETCH_AUTHENTICATED_USER' },
-      { type: 'GET_PROFILE_DATA' },
       { type: 'FETCH_WORKBENCH' },
       { type: 'FETCH_SYSTEMS' },
       { type: 'FETCH_INTRO' },

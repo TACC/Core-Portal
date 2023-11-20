@@ -116,7 +116,11 @@ const DataFilesPreviewModal = () => {
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
-            <Button className={styles.button} href={href} target="_blank">
+            <Button
+              className={styles.button}
+              href={href}
+              target={fileType === 'other' ? '' : '_blank'}
+            >
               <i className="icon-exit" />
               <span className="toolbar-button-text">Preview File</span>
             </Button>
