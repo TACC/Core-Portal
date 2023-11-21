@@ -19,5 +19,5 @@ application = ProtocolTypeRouter({
         URLRouter(
             portal.apps.notifications.routing.websocket_urlpatterns
         )
-    ),
+    )
 })
