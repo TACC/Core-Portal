@@ -26,13 +26,36 @@ from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
+from impersonate import views as impersonate_views
 admin.autodiscover()
 
 urlpatterns = [
 
     # admin.
     path('core/admin/', admin.site.urls),
-    path('core/admin/impersonate/', include('impersonate.urls')),
+
+    path(
+        'core/admin/impersonate/stop/',
+        impersonate_views.stop_impersonate,
+        name='impersonate-stop',
+    ),
+    path(
+        'core/admin/impersonate/list/',
+        impersonate_views.list_users,
+        {'template': 'impersonate/list_users.html'},
+        name='impersonate-list',
+    ),
+    path(
+        'core/admin/impersonate/search/',
+        impersonate_views.search_users,
+        {'template': 'impersonate/search_users.html'},
+        name='impersonate-search',
+    ),
+    path(
+        'core/admin/impersonate/<int:uid>/',
+        impersonate_views.impersonate,
+        name='impersonate-start',
+    ),
 
     # terms-and-conditions
     path('terms/', include('termsandconditions.urls')),
