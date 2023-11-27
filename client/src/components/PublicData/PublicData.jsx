@@ -14,6 +14,7 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
+import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPathModal';
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import styles from './PublicData.module.css';
@@ -46,7 +47,9 @@ const PublicData = () => {
   useEffect(() => {
     const pathLength = location.pathname.split('/').length;
     if (publicDataSystem.system && pathLength < 6) {
-      history.push(`/public-data/tapis/public/${publicDataSystem.system}/`);
+      history.push(
+        `/public-data/tapis/public/${publicDataSystem.system}${publicDataSystem.homeDir}`
+      );
     }
   }, [publicDataSystem.system]);
 
@@ -67,6 +70,7 @@ const PublicData = () => {
         </Route>
       </Switch>
       <DataFilesPreviewModal />
+      <DataFilesShowPathModal />
     </>
   );
 };

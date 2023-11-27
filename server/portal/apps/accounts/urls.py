@@ -2,7 +2,7 @@
 .. module:: portal.apps.accounts.urls
    :synopsis: Accounts URLs
 """
-from django.conf.urls import re_path
+from django.urls import re_path
 from django.contrib.auth.views import LogoutView
 from portal.apps.accounts.views import accounts
 from portal.apps.accounts import views

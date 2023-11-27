@@ -199,7 +199,7 @@ def test_admin_route(client, authenticated_staff):
     # If the user is authenticated and is_staff, then the route should
     # return a JsonResponse
     response = client.get("/api/onboarding/admin/")
-    assert type(response) == JsonResponse
+    assert isinstance(response, JsonResponse)
 
 
 def test_admin_route_is_protected(authenticated_user, client):

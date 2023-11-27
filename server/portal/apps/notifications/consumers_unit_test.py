@@ -46,8 +46,8 @@ async def auth_connect(user):
 
     # Pass session ID in headers to authenticate.
     communicator = WebsocketCommunicator(
-        NotificationsConsumer,
-        path='/ws/notifications/'
+        NotificationsConsumer.as_asgi(),
+        path='/ws/notifications/',
     )
     communicator.scope['user'] = user
     connected, _ = await communicator.connect()

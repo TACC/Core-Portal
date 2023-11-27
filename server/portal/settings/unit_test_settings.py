@@ -47,6 +47,10 @@ ROOT_URLCONF = 'portal.urls'
 
 INSTALLED_APPS = [
 
+    # Django Channels
+    'channels',
+    'daphne',
+
     # Core Django.
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,9 +61,6 @@ INSTALLED_APPS = [
 
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
-
-    # Django Channels
-    'channels',
 
     # Pipeline.
     'termsandconditions',

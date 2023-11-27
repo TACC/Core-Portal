@@ -13,7 +13,8 @@ Styleguide Components.Dropdown
     border-radius: 0;
     margin-top: 11px;
     padding: 0;
-    width: 200px;
+    min-width: 200px;
+    width: auto;
     vertical-align: top;
   }
   .dropdown-menu::before,
