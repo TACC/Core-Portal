@@ -39,3 +39,8 @@
 .is-normal {
   background-color: var(--global-color-accent--normal);
 }
+
+.is-unavaialble {
+  background-color: transparent;
+  color: inherit;
+}

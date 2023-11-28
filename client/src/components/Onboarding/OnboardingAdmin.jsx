@@ -237,17 +237,21 @@ const OnboardingAdmin = () => {
   const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
 
   const toggleShowIncomplete = () => {
+    dispatch({
+      type: 'FETCH_ONBOARDING_ADMIN_LIST',
+      payload: {
+        offset,
+        limit,
+        query: null,
+        showIncompleteOnly: !showIncompleteOnly, // Toggle the parameter
+      },
+    });
     setShowIncompleteOnly((prev) => !prev);
   };
 
   const { users, offset, limit, total, query, loading, error } = useSelector(
     (state) => state.onboarding.admin
   );
-
-  const filteredUsers = users.filter((user) =>
-    showIncompleteOnly ? !user.setupComplete : true
-  );
-
   const paginationCallback = useCallback(
     (page) => {
       dispatch({
@@ -256,10 +260,11 @@ const OnboardingAdmin = () => {
           offset: (page - 1) * limit,
           limit,
           query,
+          showIncompleteOnly,
         },
       });
     },
-    [offset, limit, query]
+    [offset, limit, query, showIncompleteOnly]
   );
 
   const viewLogCallback = useCallback(
@@ -276,7 +281,7 @@ const OnboardingAdmin = () => {
   useEffect(() => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: { offset, limit, query: null },
+      payload: { offset, limit, query: null, showIncompleteOnly },
     });
   }, [dispatch]);
 
@@ -294,6 +299,7 @@ const OnboardingAdmin = () => {
       </div>
     );
   }
+
   return (
     <div className={styles.root}>
       <div className={styles['container']}>
@@ -302,7 +308,7 @@ const OnboardingAdmin = () => {
           <div className={styles['search-checkbox-container']}>
             <OnboardingAdminSearchbar />
             <label
-              className={styles['checkbox-label']}
+              className={styles['checkbox-label-container']}
               htmlFor="incompleteuser"
             >
               <Checkbox
@@ -313,24 +319,24 @@ const OnboardingAdmin = () => {
                 tabIndex={0}
                 onClick={toggleShowIncomplete}
               />
-              Show Incomplete
+              <span className={styles['label']}>Show Only Incomplete</span>
             </label>
           </div>
         </div>
-        {filteredUsers.length === 0 && (
+        {users.length === 0 && (
           <div className={styles['no-users-placeholder']}>
             <Message type="warn">No users to show.</Message>
           </div>
         )}
         <div className={styles['user-container']}>
-          {filteredUsers.length > 0 && (
+          {users.length > 0 && (
             <OnboardingAdminList
-              users={filteredUsers}
+              users={users}
               viewLogCallback={viewLogCallback}
             />
           )}
         </div>
-        {filteredUsers.length > 0 && (
+        {users.length > 0 && (
           <div className={styles['paginator-container']}>
             <Paginator
               current={current}
