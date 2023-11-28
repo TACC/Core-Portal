@@ -10,7 +10,6 @@ export async function fetchOnboardingAdminList(
   showIncompleteOnly
 ) {
   const params = { offset, limit, showIncompleteOnly };
-  console.log('in sagas 1', showIncompleteOnly);
   if (q) {
     params.q = q;
   }
@@ -32,7 +31,6 @@ export function* getOnboardingAdminList(action) {
       query,
       showIncompleteOnly
     );
-    console.log('in sagas 2', showIncompleteOnly);
     yield put({
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
       payload: {
