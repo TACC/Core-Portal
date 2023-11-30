@@ -28,6 +28,7 @@ _SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera']
 
 _RT_QUEUE = 'Web & Mobile Apps'
 _RT_TAG = 'core_portal'
+_CSRF_TRUSTED_ORIGINS = ['https://cep.test']
 
 ########################
 # TAPIS SETTINGS
