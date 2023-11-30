@@ -7,6 +7,7 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
+import * as DataFilesModalListingTable from '../DataFilesModals/DataFilesModalTables/DataFilesModalListingTable';
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
@@ -248,5 +249,60 @@ describe('DataFilesListing', () => {
       </Provider>
     );
     expect(queryByText(/Search/)).toBeNull();
+  });
+});
+
+describe('DataFilesListing - Section Name Determination', () => {
+  const mockStore = configureStore();
+  const store = mockStore(initialMockState);
+
+  beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+  });
+
+  it('sets sectionName to systemDisplayName when path is homeDir', () => {
+    jest
+      .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
+      .mockImplementationOnce(() => 'Mock System Name');
+
+    const { getByPlaceholderText } = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <DataFilesListing
+            api="tapis"
+            scheme="private"
+            system="test.system"
+            path="/home/user" // Same as homeDir
+          />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    expect(getByPlaceholderText('Search Mock System Name')).toBeInTheDocument();
+  });
+
+  it('sets sectionName to current directory name when path is not homeDir', () => {
+    const currentDirName = 'Current Directory Name';
+    jest
+      .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
+      .mockImplementationOnce(() => currentDirName);
+
+    const { getByPlaceholderText } = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <DataFilesListing
+            api="tapis"
+            scheme="private"
+            system="test.system"
+            path="/home/user/some/other/dir" // Different from homeDir
+          />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    expect(
+      getByPlaceholderText(`Search ${currentDirName}`)
+    ).toBeInTheDocument();
   });
 });
