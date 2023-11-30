@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.4.0] - 2023-11-27: Django upgrade to 4 and bug fixes
+### Changed
+
+- WP-271: Upgrade Django to 4.2 and update other 3rd party dependencies (#895) 
+- WP-320: No new tab when downloading files from My Data (#900)
+- WP-388: Handle text overflow on longer system labels(systemName) (#901)
+
+### Fixed
+
+- User impersonation url fix (#902)
+- WP-104: phantom entry in ViewTab when user removed (#884)
+- WP-287: Remove login url redirect to profile data
+- WP-390: Fix Public Data View (#903)
+- Projects Search: Handle Scenario where Id is missing (#899)
+  
 ## [3.3.2] - 2023-11-09: workspace search fails on frontera portal
 - WP-380: Remove id prefix filter on workspace search (#898)
   
@@ -991,7 +1006,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.3.2...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.0
 [3.3.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.2
 [3.3.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.1
 [3.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.0

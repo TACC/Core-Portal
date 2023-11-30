@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.api.urls
    :synopsis: Manager handling anything pertaining to accounts
 """
-from django.conf.urls import re_path
+from django.urls import re_path
 from portal.apps.accounts.api.views.systems import SystemKeysView
 
 app_name = 'portal_accounts_api'

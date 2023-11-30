@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime
+from django.utils import timezone
 
 
 class ExternalCall(models.Model):
@@ -21,7 +21,7 @@ class ExternalCall(models.Model):
     )
 
     # Timestamp for outbound external call
-    time = models.DateTimeField(default=datetime.now)
+    time = models.DateTimeField(default=timezone.now)
 
     # Callback class to be executed when a webhook is received
     callback = models.CharField(max_length=300, null=True)

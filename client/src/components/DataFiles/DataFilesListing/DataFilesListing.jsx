@@ -2,7 +2,12 @@ import React, { useCallback, useLayoutEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, shallowEqual } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import {
+  useSelectedFiles,
+  useFileListing,
+  useSystems,
+  useSystemDisplayName,
+} from 'hooks/datafiles';
 import {
   CheckboxCell,
   CheckboxHeaderCell,
@@ -14,6 +19,7 @@ import {
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
+import { getCurrentDirectory } from '../DataFilesModals/DataFilesModalTables/DataFilesModalListingTable';
 
 const fileTypes = [
   'Audio',
@@ -142,6 +148,19 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     return cells;
   }, [api, showViewPath, fileNavCellCallback]);
 
+  const { fetchSelectedSystem } = useSystems();
+  const selectedSystem = fetchSelectedSystem({ scheme, system, path });
+  const systemDisplayName = useSystemDisplayName({ scheme, system, path });
+  const homeDir = selectedSystem?.homeDir;
+
+  // Check if the current path is the home directory itself
+  const isAtHomeDir = path.replace(/^\/+/, '') === homeDir?.replace(/^\/+/, '');
+
+  // Determine the sectionName based on the path (if homeDir, use systemDisplayName--else use current dir)
+  const sectionName = isAtHomeDir
+    ? systemDisplayName
+    : getCurrentDirectory(path);
+
   return (
     <>
       {!hideSearchBar && (
@@ -149,6 +168,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           api={api}
           scheme={scheme}
           system={system}
+          sectionName={sectionName}
           path={path}
           resultCount={files.length}
           dataType="Files"
