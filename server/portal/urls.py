@@ -31,9 +31,7 @@ admin.autodiscover()
 
 urlpatterns = [
 
-    # admin.
-    path('core/admin/', admin.site.urls),
-
+    # django-impersonate
     path(
         'core/admin/impersonate/stop/',
         impersonate_views.stop_impersonate,
@@ -56,6 +54,9 @@ urlpatterns = [
         impersonate_views.impersonate,
         name='impersonate-start',
     ),
+
+    # admin.
+    path('core/admin/', admin.site.urls),
 
     # terms-and-conditions
     path('terms/', include('termsandconditions.urls')),
