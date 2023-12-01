@@ -432,7 +432,7 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 # Channels
-ASGI_APPLICATION = 'portal.routing.application'
+ASGI_APPLICATION = 'portal.asgi.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
