@@ -242,7 +242,7 @@ const OnboardingAdmin = () => {
       payload: {
         offset,
         limit,
-        query: null,
+        query,
         showIncompleteOnly: !showIncompleteOnly, // Toggle the parameter
       },
     });
