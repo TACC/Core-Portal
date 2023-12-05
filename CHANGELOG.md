@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.4.1] - 2023-12-05: Fix web hook and impersonation bug
+- WP-400: Fix impersonate url (#912)
+- Bug: Fix websockets via ASGI_APPLICATION setting (#909)
+
+
 ## [3.4.0] - 2023-11-27: Django upgrade to 4 and bug fixes
 ### Changed
 
@@ -1007,6 +1013,7 @@ WP-306: Fix target path regression (#871)
 v1.0.0 Production release as of Feb 28, 2020.
 
 [unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.0...HEAD
+[3.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.1
 [3.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.0
 [3.3.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.2
 [3.3.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.1
