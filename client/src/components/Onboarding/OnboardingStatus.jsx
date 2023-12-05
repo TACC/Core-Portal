@@ -23,7 +23,7 @@ const getContents = (step) => {
       type = 'success';
       break;
     case null:
-      type = 'unavaialble';
+      type = 'unavailable';
       break;
     default:
       type = 'normal';
