@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.4.1] - 2023-12-05: Fix web hook and impersonation bug
 - WP-400: Fix impersonate url (#912)
-- Bug: Fix websockets via ASGI_APPLICATION setting (#909)
+- Bug: Fix websockets via ASGI_APPLICATION setting (#913)
 
 
 ## [3.4.0] - 2023-11-27: Django upgrade to 4 and bug fixes
