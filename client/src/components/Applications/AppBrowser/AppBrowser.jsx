@@ -18,6 +18,16 @@ const findAppTab = (categoryDict, appId) => {
   );
 };
 
+const sortApps = (apps) => {
+  if (!apps || apps.length === 0) {
+    return [];
+  }
+
+  return apps.sort((a, b) =>
+    (a.label || a.appId).localeCompare(b.label || b.appId)
+  );
+};
+
 const AppBrowser = () => {
   const location = useLocation();
   const { appVersion } = queryString.parse(location.search);
@@ -71,11 +81,12 @@ const AppBrowser = () => {
           </NavItem>
         ))}
       </Nav>
+      {console.log('console logging categoryDict', categoryDict)}
       <TabContent id="appBrowser-tray" activeTab={activeTab}>
         {Object.keys(categoryDict).map((category) => (
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
-              {categoryDict[category].map((app) => (
+              {sortApps(categoryDict[category]).map((app) => (
                 <div key={uuidv4()} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
