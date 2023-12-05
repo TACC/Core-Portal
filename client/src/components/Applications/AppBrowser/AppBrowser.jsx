@@ -81,7 +81,6 @@ const AppBrowser = () => {
           </NavItem>
         ))}
       </Nav>
-      {console.log('console logging categoryDict', categoryDict)}
       <TabContent id="appBrowser-tray" activeTab={activeTab}>
         {Object.keys(categoryDict).map((category) => (
           <TabPane tabId={category} key={`${category}tabPane`}>
