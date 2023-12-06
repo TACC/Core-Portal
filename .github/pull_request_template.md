@@ -4,7 +4,7 @@
 
 ## Related
 
-* [WP-XYZ](https://jira.tacc.utexas.edu/browse/WP-XYZ)
+* [WP-XYZ](https://tacc-main.atlassian.net/browse/WP-XYZ)
 
 ## Changes
 
