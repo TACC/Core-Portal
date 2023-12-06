@@ -444,7 +444,7 @@ class AppsTrayView(BaseApiView):
                 matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
                 if matching_app:
                     tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
-
+            tapis_apps = sorted(tapis_apps, key=lambda app: app['label'] or app['appId'])
             html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
                              .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
