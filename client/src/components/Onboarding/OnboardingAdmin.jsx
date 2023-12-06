@@ -240,7 +240,7 @@ const OnboardingAdmin = () => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: {
-        offset,
+        offset: 0,
         limit,
         query,
         showIncompleteOnly: !showIncompleteOnly, // Toggle the parameter
