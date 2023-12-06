@@ -168,7 +168,7 @@ export function* fetchFiles(action) {
       },
     });
     // If listing returns 500, body should contain a system def for key pushing.
-    yield e.status === 500 &&
+    yield (e.status === 500 || e.status === 401) &&
       put({
         type: 'SET_SYSTEM',
         payload: {
