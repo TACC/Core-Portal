@@ -234,11 +234,19 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     authenticated_staff.profile.setup_complete = True
     authenticated_staff.profile.save()
 
+    # Make a request without 'showIncompleteOnly' parameter
     response = client.get("/api/onboarding/admin/")
     result = json.loads(response.content)
 
     users = result["users"]
 
+    # Make a request with 'showIncompleteOnly' parameter set to true
+    response_incomplete_users = client.get("/api/onboarding/admin/?showIncompleteOnly=true")
+    result_incomplete_users = json.loads(response_incomplete_users.content)
+
+    users_incomplete = result_incomplete_users["users"]
+
+    # Assertions without 'showIncompleteOnly'
     # The first result should be the regular_user, since they have not completed setup
     assert users[0]["username"] == regular_user.username
 
@@ -247,6 +255,13 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
 
     # There should be two users returned
     assert len(users) == 2
+
+    # Assertions with 'showIncompleteOnly=true'
+    assert users_incomplete[0]["username"] == regular_user.username
+    assert users_incomplete[0]['steps'][0]['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
+
+    # There should be one user since only one user has setup_complete = True
+    assert len(users_incomplete) == 1
 
 
 def test_get_search(client, authenticated_staff, regular_user, mock_steps):

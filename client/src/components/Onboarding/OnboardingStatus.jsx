@@ -22,6 +22,9 @@ const getContents = (step) => {
     case 'completed':
       type = 'success';
       break;
+    case null:
+      type = 'unavailable';
+      break;
     default:
       type = 'normal';
   }
@@ -38,6 +41,8 @@ const getContents = (step) => {
     case 'failed':
     case 'error':
       return <Pill type={type}>Unsuccessful</Pill>;
+    case null:
+      return <Pill type={type}>Unavailable</Pill>;
     case 'completed':
       return <Pill type={type}>Completed</Pill>;
     case 'processing':

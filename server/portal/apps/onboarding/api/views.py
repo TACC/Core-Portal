@@ -264,8 +264,13 @@ class SetupAdminView(BaseApiView):
         if q:
             query = q_to_model_queries(q)
             results = results.filter(query)
+        show_incomplete_only = request.GET.get('showIncompleteOnly', 'False').lower()
+        # Filter users based on the showIncompleteOnly parameter
+        if show_incomplete_only == 'true':
+            results = results.filter(profile__setup_complete=False)
         # Get users, with most recently joined users that do not have setup_complete, first
         results = results.order_by('-date_joined', 'profile__setup_complete', 'last_name', 'first_name')
+
         # Uncomment this line to simulate many user results
         # results = list(results) * 105
         total = len(results)
