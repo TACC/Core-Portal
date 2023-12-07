@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.4.2] - 2023-12-07: Fix web hook and impersonation bug
+## [3.4.2] - 2023-12-07: Fix push key handling
 ### Fixed
 
 - WP-402: handle 401 unauthorized Tapis error for pushing keys (#915, #916)
