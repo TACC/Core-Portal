@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.2] - 2023-12-07: Fix web hook and impersonation bug
+### Fixed
+
+- WP-402: handle 401 unauthorized Tapis error for pushing keys (#915, #916)
+
 ## [3.4.1] - 2023-12-05: Fix web hook and impersonation bug
+### Fixed
+
 - WP-400: Fix impersonate url (#912)
 - Bug: Fix websockets via ASGI_APPLICATION setting (#913)
 
@@ -1012,7 +1019,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.2...HEAD
+[3.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.2
 [3.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.1
 [3.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.0
 [3.3.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.3.2
