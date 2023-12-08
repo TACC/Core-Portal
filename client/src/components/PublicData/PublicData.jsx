@@ -18,6 +18,8 @@ import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPa
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import styles from './PublicData.module.css';
+import dropdownStyles from '../../styles/components/dropdown-menu.css';
+import CombinedBreadcrumbs from '../DataFiles/CombinedBreadcrumbs/CombinedBreadcrumbs';
 
 const PublicData = () => {
   const history = useHistory();
@@ -98,9 +100,9 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
     <Section
       // HACK: Replicate wrapper class gives button correct global style
       // WARNING: Applies unused and redundant `.workbench-content` styles
-      className="workbench-content"
+      className="workbench-content workbench-wrapper"
       header={
-        <DataFilesBreadcrumbs
+        <CombinedBreadcrumbs
           api={api}
           scheme={scheme}
           system={system}
