@@ -227,10 +227,12 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     """
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+
+    # Add permissions for current owner to prevent removal from project after transferring ownership
     set_workspace_acls(service_client,
                        settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
                        workspace_id,
-                       new_owner,
+                       old_owner,
                        "add",
                        "writer")
 
