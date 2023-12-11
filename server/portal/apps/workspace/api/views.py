@@ -459,6 +459,7 @@ class AppsTrayView(BaseApiView):
 
                 categoryResult["apps"].append(app)
 
+            categoryResult["apps"] = sorted(categoryResult["apps"], key=lambda app: app['label'] or app['appId'])
             categories.append(categoryResult)
 
         return categories, html_definitions
