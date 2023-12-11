@@ -26,7 +26,7 @@ export const helloWorldAppFixture = {
       execSystemInputDir: '${JobWorkingDir}',
       execSystemOutputDir: '${JobWorkingDir}/output',
       execSystemLogicalQueue: 'development',
-      archiveSystemId: 'cloud.data',
+      archiveSystemId: 'frontera',
       archiveSystemDir:
         'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
       archiveOnAppError: true,
