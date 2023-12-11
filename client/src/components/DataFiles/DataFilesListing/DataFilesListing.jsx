@@ -161,11 +161,24 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     isRootDir || path.replace(/^\/+/, '') === homeDir?.replace(/^\/+/, '');
 
   // Determine the sectionName with added handling for root directory
-  const sectionName = isAtHomeDir
-    ? isRootDir
-      ? 'Root'
-      : systemDisplayName
-    : getCurrentDirectory(path);
+  function determineSectionName(
+    isAtHomeDir,
+    isRootDir,
+    systemDisplayName,
+    path
+  ) {
+    if (isAtHomeDir) {
+      return isRootDir ? 'Root' : systemDisplayName;
+    }
+    return getCurrentDirectory(path);
+  }
+
+  const sectionName = determineSectionName(
+    isAtHomeDir,
+    isRootDir,
+    systemDisplayName,
+    path
+  );
 
   return (
     <>
