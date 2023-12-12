@@ -153,13 +153,32 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const systemDisplayName = useSystemDisplayName({ scheme, system, path });
   const homeDir = selectedSystem?.homeDir;
 
-  // Check if the current path is the home directory itself
-  const isAtHomeDir = path.replace(/^\/+/, '') === homeDir?.replace(/^\/+/, '');
+  // Check if the current path is the root directory
+  const isRootDir = path === '/' || path === '';
 
-  // Determine the sectionName based on the path (if homeDir, use systemDisplayName--else use current dir)
-  const sectionName = isAtHomeDir
-    ? systemDisplayName
-    : getCurrentDirectory(path);
+  // Adjusted check for home directory
+  const isAtHomeDir =
+    isRootDir || path.replace(/^\/+/, '') === homeDir?.replace(/^\/+/, '');
+
+  // Determine the sectionName with added handling for root directory
+  function determineSectionName(
+    isAtHomeDir,
+    isRootDir,
+    systemDisplayName,
+    path
+  ) {
+    if (isAtHomeDir) {
+      return isRootDir ? 'Root' : systemDisplayName;
+    }
+    return getCurrentDirectory(path);
+  }
+
+  const sectionName = determineSectionName(
+    isAtHomeDir,
+    isRootDir,
+    systemDisplayName,
+    path
+  );
 
   return (
     <>
