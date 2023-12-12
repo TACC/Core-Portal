@@ -22,25 +22,44 @@
   border-bottom: 1px solid #707070;
   padding-bottom: 8px;
   margin-bottom: 1.5em;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .search-checkbox-container {
   display: flex;
-  width: 45%;
-  justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 990px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.checkbox-label {
+.checkbox-label-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 130px;
-  margin: 0;
-  font-weight: bold;
   font-size: 13px;
+  margin: 0 0 0 20px;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 991px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 }
 
+.label {
+  font-weight: bold;
+  margin: 0 0 0 10px;
+}
 .paginator-container {
   width: 100%;
   display: flex;
@@ -100,8 +119,9 @@
 .user > td:not(.has-wrappable-content):not(.status) {
   @include truncate-with-ellipsis;
 }
-.user:nth-child(even) > td:not(.staffwait):not(.name) {
-  background-color: #c6c6c61a;
+.user:nth-child(4n),
+.user:nth-child(4n-1) > td:not(.staffwait) {
+  background-color: #f4f4f4;
 }
 
 .username {

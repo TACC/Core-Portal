@@ -3,8 +3,13 @@ import { fetchUtil } from 'utils/fetchUtil';
 import Cookies from 'js-cookie';
 
 // Admin listing of all users
-export async function fetchOnboardingAdminList(offset, limit, q) {
-  const params = { offset, limit };
+export async function fetchOnboardingAdminList(
+  offset,
+  limit,
+  q,
+  showIncompleteOnly
+) {
+  const params = { offset, limit, showIncompleteOnly };
   if (q) {
     params.q = q;
   }
@@ -18,8 +23,14 @@ export async function fetchOnboardingAdminList(offset, limit, q) {
 export function* getOnboardingAdminList(action) {
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' });
   try {
-    const { offset, limit, query } = action.payload;
-    const result = yield call(fetchOnboardingAdminList, offset, limit, query);
+    const { offset, limit, query, showIncompleteOnly } = action.payload;
+    const result = yield call(
+      fetchOnboardingAdminList,
+      offset,
+      limit,
+      query,
+      showIncompleteOnly
+    );
     yield put({
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
       payload: {

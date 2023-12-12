@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from tapipy.errors import BaseTapyException, InternalServerError
+from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -107,7 +107,7 @@ class AppsView(BaseApiView):
 
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
-                except InternalServerError:
+                except (InternalServerError, UnauthorizedError):
                     success = _test_listing_with_existing_keypair(system_def, request.user)
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
@@ -300,7 +300,7 @@ class JobsView(BaseApiView):
             for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
-                except InternalServerError:
+                except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     success = _test_listing_with_existing_keypair(system_def, request.user)
                     if not success:
@@ -459,6 +459,7 @@ class AppsTrayView(BaseApiView):
 
                 categoryResult["apps"].append(app)
 
+            categoryResult["apps"] = sorted(categoryResult["apps"], key=lambda app: app['label'] or app['appId'])
             categories.append(categoryResult)
 
         return categories, html_definitions
