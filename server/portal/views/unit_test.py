@@ -5,7 +5,6 @@ from portal.exceptions.api import ApiException
 from portal.libs.exceptions import PortalLibException
 import requests
 import json
-from portal.views.views import health_check
 
 
 # route to be used for testing purposes
