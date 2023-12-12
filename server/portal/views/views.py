@@ -24,6 +24,7 @@ def project_version(request):
 
     return HttpResponse(version, content_type='text/plain')
 
+
 def health_check(request):
     health_status = {'status': 'healthy'}
     return JsonResponse(health_status)
