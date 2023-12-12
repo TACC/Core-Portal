@@ -5,6 +5,8 @@ from portal.exceptions.api import ApiException
 from portal.libs.exceptions import PortalLibException
 import requests
 import json
+from portal.views.views import health_check
+
 
 # route to be used for testing purposes
 API_ROUTE = '/api/system-monitor/'
@@ -110,3 +112,8 @@ def test_exception(client, api_method_mock):
     response = client.get(API_ROUTE)
     assert response.status_code == 500
     assert json.loads(response.content) == {'message': 'Something went wrong here...'}
+
+def test_health_check(client, ):
+    response = client.get('/core/health-check')
+    assert response.status_code == 200
+    assert json.loads(response.content) == {'status': 'healthy'}

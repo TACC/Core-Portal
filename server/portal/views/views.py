@@ -1,5 +1,5 @@
 import logging
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -23,3 +23,7 @@ def project_version(request):
         version = 'UNKNOWN'
 
     return HttpResponse(version, content_type='text/plain')
+
+def health_check(request):
+    health_status = {'status': 'healthy'}
+    return JsonResponse(health_status)
