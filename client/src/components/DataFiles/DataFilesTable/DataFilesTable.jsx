@@ -105,7 +105,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         .
       </>
     );
-    if (err === '500') {
+    if (err === '500' || err === '401') {
       if (downSystems.includes(currSystemHost)) {
         return (
           <div className="h-100 listing-placeholder">

@@ -290,7 +290,7 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystem || app.definition.jobAttributes.archiveSystemId,
+      app.definition.jobAttributes.archiveSystemId || defaultSystem,
     archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
@@ -803,14 +803,19 @@ export const AppSchemaForm = ({ app }) => {
                         description="System into which output files are archived after application execution."
                         name="archiveSystemId"
                         type="text"
-                        placeholder={defaultSystem}
+                        placeholder={
+                          app.definition.archiveSystemId || defaultSystem
+                        }
                       />
                       <FormField
                         label="Archive Directory"
                         description="Directory into which output files are archived after application execution."
                         name="archiveSystemDir"
                         type="text"
-                        placeholder="HOST_EVAL($WORK)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}" // TODOv3: Determine safe root path for archiving https://jira.tacc.utexas.edu/browse/WP-103
+                        placeholder={
+                          app.definition.archiveSystemDir ||
+                          'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}'
+                        }
                       />
                     </>
                   ) : null}

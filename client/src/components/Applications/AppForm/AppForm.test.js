@@ -72,11 +72,20 @@ describe('AppSchemaForm', () => {
       ...initialMockState,
     });
 
-    const { getByText } = renderAppSchemaFormComponent(store, {
+    const { getByText, container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
     });
+
+    const archiveSystemId = container.querySelector(
+      'input[name="archiveSystemId"]'
+    );
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
+
+      // use app definition default archive system
+      expect(archiveSystemId.value).toBe(
+        helloWorldAppFixture.definition.jobAttributes.archiveSystemId
+      );
     });
   });
 

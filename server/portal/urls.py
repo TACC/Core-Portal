@@ -27,6 +27,7 @@ from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
 from impersonate import views as impersonate_views
+from portal.views.views import health_check
 admin.autodiscover()
 
 urlpatterns = [
@@ -111,5 +112,9 @@ urlpatterns = [
 
     # version check.
     path('version/', portal_version),
+
+    # health check
+    path('core/health-check', health_check)
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
