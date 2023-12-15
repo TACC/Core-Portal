@@ -15,7 +15,7 @@ import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
@@ -188,7 +188,23 @@ AppInfo.propTypes = {
 };
 
 export const AppSchemaForm = ({ app }) => {
+  const history = useHistory();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const dispatch = useDispatch();
+  useEffect(() => {
+    setShowSuccessMessage(false);
+
+    const unlisten = history.listen(() => {
+      setShowSuccessMessage(false);
+      jobSubmission.error = null;
+      jobSubmission.response = null;
+    });
+
+    return () => {
+      unlisten();
+    };
+  }, [showSuccessMessage, history]);
+
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
@@ -387,6 +403,7 @@ export const AppSchemaForm = ({ app }) => {
           </SectionMessage>
         </div>
       )}
+
       {jobSubmission.response && (
         <>
           {jobSubmission.error ? (
@@ -591,6 +608,7 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             setSubmitting(false);
             resetForm(initialValues);
+            setShowSuccessMessage(true);
             const formTop = document.getElementById('appBrowser-wrapper');
             formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
