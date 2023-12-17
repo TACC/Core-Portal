@@ -30,6 +30,7 @@ import {
   getQueueValueForExecSystem,
   getAppQueueValues,
   getExecSystemFromId,
+  matchExecSysWithAllocations,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -162,7 +163,9 @@ const HandleDependentFieldChanges = ({ app, updateFormState }) => {
 
         // Update form state, used outside the form.
         updateFormState.setExecSys(exec_sys);
-        updateFormState.setAppQueueValues(getAppQueueValues(app, exec_sys.batchLogicalQueues));
+        updateFormState.setAppQueueValues(
+          getAppQueueValues(app, exec_sys.batchLogicalQueues)
+        );
         updateFormState.setAllocationsForExecSys(exec_sys);
       }
 
@@ -236,21 +239,11 @@ export const AppSchemaForm = ({ app }) => {
     keyService,
     execSystemsWithAllocation,
   } = useSelector((state) => {
-    const matchingExecutionHostsMap = app.availableExecSystems.reduce((map, exec_sys) => {
-      const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-        host =>
-          exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
-      );
-      
-      if (matchingExecutionHost) {
-        map.set(exec_sys.id, state.allocations.hosts[matchingExecutionHost]);
-      }
-    
-      return map;
-    }, new Map());
-
+    const matchingExecutionHostsMap = matchExecSysWithAllocations(
+      app,
+      state.allocations
+    );
     const execSystemsWithAllocation = [...matchingExecutionHostsMap.keys()];
-    
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
 
     const keyService = state.systems.storage.configuration.find(
@@ -307,23 +300,27 @@ export const AppSchemaForm = ({ app }) => {
   const appFields = FormSchema(app);
   const [currentValues, setCurrentValues] = useState({
     execSys: app.exec_sys,
-    allocations: execSystemAllocationsMap.get(app.exec_sys.id)??[],
+    allocations: execSystemAllocationsMap.get(app.exec_sys.id) ?? [],
     appQueueValues: getAppQueueValues(app, app.exec_sys.batchLogicalQueues),
   });
-   
-   const updateFormState = {
+
+  const updateFormState = {
     setExecSys: (newValue) => {
-      setCurrentValues(prevState => ({ ...prevState, execSys: newValue }));
+      setCurrentValues((prevState) => ({ ...prevState, execSys: newValue }));
     },
     setAllocationsForExecSys: (execSys) => {
-      setCurrentValues(prevState => ({ ...prevState, allocations: execSystemAllocationsMap.get(execSys?.id)??[] }));
+      setCurrentValues((prevState) => ({
+        ...prevState,
+        allocations: execSystemAllocationsMap.get(execSys?.id) ?? [],
+      }));
     },
     setAppQueueValues: (newValue) => {
-      setCurrentValues(prevState => ({ ...prevState, appQueueValues: newValue }));
+      setCurrentValues((prevState) => ({
+        ...prevState,
+        appQueueValues: newValue,
+      }));
     },
-    
-   };
-   
+  };
 
   // initial form values
   const initialValues = {
@@ -352,7 +349,10 @@ export const AppSchemaForm = ({ app }) => {
     if (currentValues.allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
-      initialValues.allocation = currentValues.allocations.length === 1 ? currentValues.allocations[0] : '';
+      initialValues.allocation =
+        currentValues.allocations.length === 1
+          ? currentValues.allocations[0]
+          : '';
     }
     if (!hasDefaultAllocation && hasStorageSystems) {
       jobSubmission.error = true;
@@ -745,7 +745,7 @@ export const AppSchemaForm = ({ app }) => {
                   {app.availableExecSystems &&
                     Object.keys(execSystemsWithAllocation).length > 0 && (
                       <FormField
-                        label="System"
+                        label="Execution System"
                         name="execSystemId"
                         description="Select the system this job will execute on."
                         type="select"

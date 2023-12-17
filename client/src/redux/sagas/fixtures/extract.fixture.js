@@ -1,3 +1,5 @@
+import availableExecSystemsFixture from './executionsystems.fixture.js';
+
 export const extractApp = {
   definition: {
     sharedAppCtx: true,
