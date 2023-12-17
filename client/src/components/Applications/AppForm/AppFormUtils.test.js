@@ -37,6 +37,7 @@ describe('AppFormUtils', () => {
     nodeCount: 1,
     coresPerNode: 1,
     maxMinutes: '',
+    execSystemId: 'frontera',
   };
 
   it('handles node count validation', () => {

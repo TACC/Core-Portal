@@ -170,7 +170,11 @@ export const updateValuesForQueue = (app, values) => {
 };
 
 /**
- * Get the field name used for target path in AppForm
+ * Get the default queue for a execution system.
+ * Queue Name determination order:
+ *   1. Use given queue name.
+ *   2. Otherwise, use the app default queue.
+ *   3. Otherwise, use the execution system default queue.
  *
  * @function
  * @param {String} inputFieldName
@@ -187,6 +191,14 @@ export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
   );
 };
 
+/**
+ * Apply two filters and get the list of queues applicable.
+ * Filters:
+ * 1. If Node and Core per Node is enabled, only allow
+ *    queues which match min and max node count with job attributes
+ * 2. if queue filter list is set, only allow queues in that list.
+ * @returns list of queues in sorted order
+ */
 export const getAppQueueValues = (app, queues) => {
   /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
@@ -208,11 +220,11 @@ export const getAppQueueValues = (app, queues) => {
     .sort();
 };
 
+/**
+ * Get the execution system object for a given id of the execution system.
+ */
 export const getExecSystemFromId = (app, execSystemId) => {
-  if (
-    app.availableExecSystems &&
-    Object.keys(app.availableExecSystems).length > 0
-  ) {
+  if (app.availableExecSystems?.length) {
     return app.availableExecSystems.find(
       (exec_sys) => exec_sys.id === execSystemId
     );
@@ -220,6 +232,34 @@ export const getExecSystemFromId = (app, execSystemId) => {
   if (app.exec_sys.id === execSystemId) return app.exec_sys;
 
   return null;
+};
+
+/**
+ * Build a map of allocations applicable to each execution
+ * system based on the host match.
+ * Handle case where dynamic execution system is provided.
+ * @param {*} app 
+ * @param {*} allocations 
+ * @returns a Map of allocations applicable to each execution system.
+ */
+export const matchExecSysWithAllocations = (app, allocations) => {
+  let exec_systems = [app.exec_sys];
+
+  if (app.availableExecSystems?.length) {
+    exec_systems = app.availableExecSystems;
+  }
+
+  return exec_systems.reduce((map, exec_sys) => {
+    const matchingExecutionHost = Object.keys(allocations.hosts).find(
+      (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
+    );
+
+    if (matchingExecutionHost) {
+      map.set(exec_sys.id, allocations.hosts[matchingExecutionHost]);
+    }
+
+    return map;
+  }, new Map());
 };
 
 /**

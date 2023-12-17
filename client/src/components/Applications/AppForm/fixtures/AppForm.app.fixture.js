@@ -1,5 +1,3 @@
-import availableExecSystemsFixture from './fixtures/AppForm.executionsystems.fixture';
-
 export const helloWorldAppFixture = {
   definition: {
     sharedAppCtx: true,
@@ -128,7 +126,6 @@ export const helloWorldAppFixture = {
     created: '2022-12-12T23:40:16.158241Z',
     updated: '2023-02-14T21:45:08.818354Z',
   },
-  availableExecSystems: availableExecSystemsFixture,
   exec_sys: {
     isPublic: true,
     isDynamicEffectiveUser: true,
