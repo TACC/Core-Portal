@@ -238,8 +238,8 @@ export const getExecSystemFromId = (app, execSystemId) => {
  * Build a map of allocations applicable to each execution
  * system based on the host match.
  * Handle case where dynamic execution system is provided.
- * @param {*} app 
- * @param {*} allocations 
+ * @param {*} app
+ * @param {*} allocations
  * @returns a Map of allocations applicable to each execution system.
  */
 export const matchExecSysWithAllocations = (app, allocations) => {
