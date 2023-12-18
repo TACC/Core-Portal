@@ -46,7 +46,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const reloadPage = () => {
     history.push(location.pathname);
   };
-  
+
   const systemList = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
@@ -56,10 +56,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
     (sys) => sys.system === params.system && sys.scheme === params.scheme
   );
 
-  const { projectId } = useSelector(
-    (state) => state.projects.metadata
-  );
-  
+  const { projectId } = useSelector((state) => state.projects.metadata);
+
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
@@ -69,7 +67,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     authenticatedUser
   );
 
-  const isGuest = authenticatedUserQuery?.data?.role === 'GUEST'
+  const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
 
   const inTrash = useSelector((state) => {
     // remove leading slash from homeDir value
