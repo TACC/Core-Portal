@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -45,7 +46,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const reloadPage = () => {
     history.push(location.pathname);
   };
-
   const systemList = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
@@ -54,6 +54,21 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const selectedSystem = systemList.find(
     (sys) => sys.system === params.system && sys.scheme === params.scheme
   );
+
+  const { projectId } = useSelector(
+    (state) => state.projects.metadata
+  );
+  
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user.username
+  );
+
+  const { query: authenticatedUserQuery } = useSystemRole(
+    projectId,
+    authenticatedUser
+  );
+
+  const isGuest = authenticatedUserQuery?.data?.role === 'GUEST'
 
   const inTrash = useSelector((state) => {
     // remove leading slash from homeDir value
@@ -177,10 +192,10 @@ const DataFilesToolbar = ({ scheme, api }) => {
     'areMultipleFilesOrFolderSelected',
     permissionParams
   );
-  const canRename = getFilePermissions('rename', permissionParams);
+  const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canTrash = getFilePermissions('trash', permissionParams);
+  const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
