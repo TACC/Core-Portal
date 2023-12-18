@@ -69,6 +69,10 @@
   composes: c-button--secondary from '../../../styles/components/c-button.css';
 }
 
+.ownership-button {
+  margin-left: 5px;
+}
+
 div > .project-role-selector {
   height: auto; /* overwrite .form-control height to accommodate dropdown selector next to small button in this instance */
 }

@@ -46,6 +46,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const reloadPage = () => {
     history.push(location.pathname);
   };
+  
   const systemList = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
