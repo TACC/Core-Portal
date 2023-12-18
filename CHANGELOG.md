@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.3] - 2023-12-11: Fix push key handling
+### Fixed
+
+- WP-408: use archiveSystemId set in app definition as default (#917)
+
+
 ## [3.4.2] - 2023-12-07: Fix push key handling
 ### Fixed
 
@@ -1019,7 +1025,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.2...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.3...HEAD
+[3.4.3]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.3
 [3.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.2
 [3.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.1
 [3.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.0
