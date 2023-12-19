@@ -122,7 +122,7 @@ const DataFilesPreviewModal = () => {
               target={fileType === 'other' ? '' : '_blank'}
             >
               <i className="icon-exit" />
-              <span className="toolbar-button-text">Preview File</span>
+              <span className="toolbar-button-text">Download File</span>
             </Button>
           </div>
         )}
