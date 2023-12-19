@@ -50,8 +50,8 @@ describe('DataFilesToolbar', () => {
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
@@ -84,8 +84,8 @@ describe('DataFilesToolbar', () => {
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
@@ -118,8 +118,8 @@ describe('DataFilesToolbar', () => {
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
@@ -152,8 +152,8 @@ describe('DataFilesToolbar', () => {
         },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
@@ -195,8 +195,8 @@ describe('DataFilesToolbar', () => {
           operationStatus: { trash: false },
         },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
@@ -228,8 +228,8 @@ describe('DataFilesToolbar', () => {
         },
         //listing: {  } },
         systems: systemsFixture,
-        projects: {metadata: []},
-        authenticatedUser: {user: {username: 'testuser' }},
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
       }),
       createMemoryHistory()
     );
