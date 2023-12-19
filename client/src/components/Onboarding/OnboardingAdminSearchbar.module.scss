@@ -17,7 +17,13 @@
 /* WARN: Non-standard un-documented first-party breakpoint */
 @media (max-width: 1700px) {
   .query-fieldset {
-    width: 460px;
+    width: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .query-fieldset {
+    width: 260px;
   }
 }
 /* FP-563: Support count in status message */

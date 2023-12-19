@@ -4,7 +4,7 @@ from portal.apps.users.utils import get_allocations
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
-from tapipy.errors import InternalServerError
+from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
@@ -109,11 +109,11 @@ class TapisFilesView(BaseApiView):
 
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
-        except InternalServerError as e:
+        except (InternalServerError, UnauthorizedError) as e:
             error_status = e.response.status_code
             error_json = e.response.json()
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
-            if error_status == 500:
+            if error_status == 500 or error_status == 401:
                 logger.info(e)
                 # In case of 500 determine cause
                 system = client.systems.getSystem(systemId=system)
