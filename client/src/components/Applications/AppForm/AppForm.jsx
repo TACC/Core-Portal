@@ -189,6 +189,7 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
@@ -387,6 +388,7 @@ export const AppSchemaForm = ({ app }) => {
           </SectionMessage>
         </div>
       )}
+
       {jobSubmission.response && (
         <>
           {jobSubmission.error ? (

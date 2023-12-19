@@ -18,15 +18,7 @@ const getCurrentApp = (state) => state.app;
 
 function* getApp(action) {
   const { appId, appVersion } = action.payload;
-  const currentApp = yield select(getCurrentApp);
 
-  if (
-    currentApp.definition.id === appId &&
-    currentApp.definition.version === appVersion &&
-    !currentApp.systemNeedsKeys
-  ) {
-    return;
-  }
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
   try {
