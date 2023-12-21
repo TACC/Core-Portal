@@ -5,6 +5,8 @@ from portal.views.base import BaseApiView
 from django.conf import settings
 from portal.libs.agave.utils import service_account
 import logging
+from tapipy.errors import BaseTapyException
+
 logger = logging.getLogger(__name__)
 
 
@@ -73,6 +75,8 @@ class SiteSearchApiView(BaseApiView):
                                   'include': True}
         except StopIteration:
             pass
+        except BaseTapyException as e:
+            self._handle_tapis_ssh_exception(e)
 
         if request.user.is_authenticated and \
                 request.user.profile.setup_complete:
@@ -93,5 +97,15 @@ class SiteSearchApiView(BaseApiView):
                                          'include': True}
             except StopIteration:
                 pass
-
+            except BaseTapyException as e:
+                self._handle_tapis_ssh_exception(e)
         return JsonResponse(response)
+
+    def _handle_tapis_ssh_exception(self, e):
+        if 'SSH_POOL_MISSING_CREDENTIALS' in str(e) or 'SSH_FX_PERMISSION_DENIED' in str(e):
+            # in case of these error types, user is not authenticated
+            # or does not have access do not fail the entire search
+            # request, log the issue.
+            logger.exception("Error retrieving search results due to TAPIS SSH related error: {}".format(str(e)))
+        else:
+            raise
