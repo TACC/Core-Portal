@@ -69,6 +69,6 @@ describe('Data Files Preview Modal', () => {
     expect(getByText(/File Preview:/)).toBeDefined();
     expect(getByText(/test\.txt/)).toBeDefined();
     expect(getByText('Unable to show preview.')).toBeDefined();
-    expect(getByText(/Preview File/)).toBeDefined();
+    expect(getByText(/Download File/)).toBeDefined();
   });
 });
