@@ -10,7 +10,6 @@ from mock import patch, call
 from django.test import TestCase
 from django.conf import settings
 from portal.libs.agave import utils as AgaveUtils
-from unittest import skip
 from tapipy.tapis import TapisResult
 
 # pylint: disable=invalid-name
@@ -79,44 +78,6 @@ class TestAgaveUtils(TestCase):
         res = AgaveUtils.to_camel_case(attr)
         self.assertEqual(res, 'someAttribute')
 
-    @skip(reason="TODOv3: update for v3 tapis")
-    def test_walk(self):
-        """Test `walk` util function."""
-        self.magave.reset_mock()
-        agave_dir = [obj for obj in self.agave_listing
-                     if obj['type'] == 'dir' and obj['name'] != '.'][0]
-        sub_root = copy.deepcopy(agave_dir)
-        sub_root['name'] = '.'
-        self.magave.files.list.side_effect = [
-            self.agave_listing,
-            [sub_root, self.agave_file]
-        ]
-        paths_visited = []
-        for child in AgaveUtils.walk(
-                self.magave,
-                self.agave_listing[0]['system'],
-                os.path.basename(self.agave_listing[0]['path'])
-        ):
-            paths_visited.append(child.path)
-
-        self.assertEqual(
-            self.magave.files.list.call_args_list,
-            [call(
-                systemId=self.agave_listing[0]['system'],
-                filePath=os.path.basename(self.agave_listing[0]['path'])),
-             call(
-                 systemId=agave_dir['system'],
-                 filePath=agave_dir['path'])]
-        )
-        flat_listing = self.agave_listing + [self.agave_file]
-
-        for index, path in enumerate(paths_visited):
-            self.assertEqual(
-                path,
-                flat_listing[index]['path']
-            )
-
-    @skip(reason="TODOv3: update for v3 tapis")
     def test_walk_levels(self):
         """Test `walk_levels` util."""
         self.magave.reset_mock()
@@ -125,14 +86,14 @@ class TestAgaveUtils(TestCase):
         sub_root = copy.deepcopy(agave_dir)
         sub_root['name'] = '.'
         listings = [
-            self.agave_listing,
-            [sub_root, self.agave_file],
+            [TapisResult(**f) for f in self.agave_listing],
+            [TapisResult(**sub_root), TapisResult(**self.agave_file)],
         ]
         listings_check = [
             self.agave_listing,
             [sub_root, self.agave_file],
         ]
-        self.magave.files.list.side_effect = listings
+        self.magave.files.listFiles.side_effect = listings
 
         levels_visited = []
 
@@ -144,15 +105,15 @@ class TestAgaveUtils(TestCase):
             levels_visited.append((root, folders, files))
 
         self.assertEqual(
-            self.magave.files.list.call_args_list,
+            self.magave.files.listFiles.call_args_list,
             [call(
                 systemId=self.agave_listing[0]['system'],
-                filePath=self.agave_listing[0]['path'],
+                path=self.agave_listing[0]['path'],
                 offset=0,
                 limit=100),
              call(
                  systemId=agave_dir['system'],
-                 filePath=agave_dir['path'],
+                 path=agave_dir['path'],
                  offset=0,
                  limit=100)
              ]

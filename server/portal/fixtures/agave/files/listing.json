@@ -7,7 +7,9 @@
     "format": "folder",
     "mimeType": "text/directory",
     "type": "dir",
+    "size": 2,
     "system": "portal.home.username",
+    "url": "tapis://portal/home/username/parent_folder",
     "_links": {
       "self": {
         "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder"
@@ -33,6 +35,8 @@
     "system": "portal.home.username",
     "mimeType": "application/octet-stream",
     "type": "file",
+    "size": 10,
+    "url": "tapis://portal/home/username/parent_folder/file_one.json",
     "_links": {
       "self": {
         "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/file_one.json"
@@ -42,23 +46,25 @@
       }
     }
   },
-    {
-      "name": "sub_folder",
-      "path": "/parent_folder/sub_folder",
-      "lastModified": "2018-09-11T11:39:53.000-05:00",
-      "length": 22,
-      "permissions": "ALL",
-      "format": "folder",
-      "system": "portal.home.username",
-      "mimeType": "text/directory",
-      "type": "dir",
-      "_links": {
-        "self": {
-          "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder"
-        },
-        "system": {
-          "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
-        }
+  {
+    "name": "sub_folder",
+    "path": "/parent_folder/sub_folder",
+    "lastModified": "2018-09-11T11:39:53.000-05:00",
+    "length": 22,
+    "permissions": "ALL",
+    "format": "folder",
+    "system": "portal.home.username",
+    "mimeType": "text/directory",
+    "type": "dir",
+    "size": 1,
+    "url": "tapis://portal/home/username/parent_folder/sub_folder",
+    "_links": {
+      "self": {
+        "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder"
+      },
+      "system": {
+        "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
       }
     }
+  }
 ]
