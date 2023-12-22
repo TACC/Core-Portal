@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
-import { Button } from 'reactstrap';
+import { Button } from '_common';
 import styles from '../DataFilesProjectMembers.module.scss';
 import LoadingSpinner from '_common/LoadingSpinner';
 
@@ -109,7 +109,8 @@ const SystemRoleSelector = ({ projectId, username }) => {
       </DropdownSelector>
       {data.role !== selectedRole && !isFetching && (
         <Button
-          style={{ marginLeft: '5px' }}
+          type="secondary"
+          size="small"
           className={styles['ownership-button']}
           onClick={() => setSystemRole(selectedRole)}
         >
