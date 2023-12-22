@@ -68,6 +68,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
+  const isUser = authenticatedUserQuery?.data?.role === 'USER';
 
   const inTrash = useSelector((state) => {
     // remove leading slash from homeDir value
@@ -192,7 +193,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     permissionParams
   );
   const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
-  const canMove = getFilePermissions('move', permissionParams);
+  const canMove = getFilePermissions('move', permissionParams) && !isUser;
   const canCopy = getFilePermissions('copy', permissionParams);
   const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
   const canCompress = getFilePermissions('compress', permissionParams);
