@@ -32,6 +32,7 @@ class TapisOAuthToken(models.Model):
         :rtype: bool
         """
         return self.is_token_expired(self.created, self.expires_in)
+        return self.is_token_expired(self.created, self.expires_in)
 
     @property
     def created_at(self):
@@ -71,12 +72,13 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        # Optimize build only if enabled by the portal via `ENABLE_OPTIMIZED_OAUTH_REFRESH`
+        # Use new code path only if enabled.
         if settings.ENABLE_OPTIMIZED_OAUTH_REFRESH:
             return self.optimized_client()
 
         client = self.build_client()
 
+        # replace atomic with db
         with transaction.atomic():
             if self.expired:
                 try:
@@ -90,6 +92,46 @@ class TapisOAuthToken(models.Model):
                             expires_in=client.access_token.expires_in().total_seconds())
 
         return client
+
+    def optimized_client(self):
+        """Tapis client to limit one request to Tapis per User.
+
+        :return: Tapis client using refresh token.
+        :rtype: :class:Tapis
+        """
+        client = self.build_client()
+        if self.expired:
+            logger.info('Tapis OAuth token expired')
+            with transaction.atomic():
+                # Get a lock on this user's token row in db.
+                refreshed_token = TapisOAuthToken.objects.select_for_update().filter(user=self.user).first()
+                if self.is_token_expired(refreshed_token.created, refreshed_token.expires_in):
+                    try:
+                        logger.info('Refreshing tapis oauth token')
+                        client.refresh_tokens()
+                    except Exception:
+                        logger.exception('Tapis Token refresh failed')
+                        raise
+
+                    self.update(created=int(time.time()),
+                                access_token=client.access_token.access_token,
+                                expires_in=client.access_token.expires_in().total_seconds())
+                else:
+                    logger.info('Token updated by another request. Refreshing token from DB.')
+                    # Token is no longer expired, refresh latest token info from DB and update client
+                    self.refresh_from_db()
+                    client = self.build_client()
+
+        return client
+
+    def build_client(self):
+        return Tapis(
+            base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
+            client_id=getattr(settings, "TAPIS_CLIENT_ID"),
+            client_key=getattr(settings, "TAPIS_CLIENT_KEY"),
+            access_token=self.access_token,
+            refresh_token=self.refresh_token,
+        )
 
     def optimized_client(self):
         """Tapis client to limit one request to Tapis per User.
