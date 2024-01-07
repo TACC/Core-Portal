@@ -718,6 +718,11 @@ RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
 RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
 """
+SETTINGS: OPTIONAL FEATURES. Edit settings_custom
+"""
+ENABLE_OPTIMIZED_OAUTH_REFRESH = getattr(settings_custom, '_ENABLE_OPTIMIZED_OAUTH_REFRESH', False)
+
+"""
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
