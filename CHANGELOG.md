@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0]
+
+### Added
+
+- WP-358: sort apps inside category before rendering (#914)
+- WP-367: Adding Public Data CMS Nav (#918)
+- WI-15: Add health check for site status (#919)
+
+### Fixed
+
+- WP-59: Reload app page after every navigation (#920)
+- WP-398: 'Preview File' button should say 'Download File'(#924)
+- WP-47: fix shared workspace manage team modal (#922)
+- WP-379: Error handling for site search results (#925)
+- WP-97: Fix TestAgaveUtils#test_walk_levels (#926)
+
+
 ## [3.4.3] - 2023-12-11: Fix push key handling
 ### Fixed
 
@@ -1025,7 +1042,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.4.3...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/TACC/Core-Portal/compare/v3.5.0
 [3.4.3]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.3
 [3.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.2
 [3.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.1
