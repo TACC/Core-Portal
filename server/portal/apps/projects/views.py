@@ -137,7 +137,10 @@ class ProjectInstanceApiView(BaseApiView):
         :param str project_id: Project Id.
         :param str system_id: System Id.
         """
-        project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+        # Based on url mapping, either system_id or project_id is always available.
+        if system_id is not None:
+            project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+
         prj = get_project(request.user.tapis_oauth.client, project_id)
 
         return JsonResponse(
