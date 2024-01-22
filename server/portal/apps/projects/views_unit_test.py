@@ -1,187 +1,500 @@
 import pytest
 from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.search.tasks import tapis_project_listing_indexer
+from portal.libs.elasticsearch.indexes import IndexedProject
 from mock import MagicMock
 import json
+from tapipy.tapis import TapisResult
+from django.conf import settings
 
 
 @pytest.fixture
 def mock_project_mgr(mocker):
-    mocker.patch('portal.apps.projects.views.ProjectsManager.list')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.search')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.get_project')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.create')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.update_prj')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.add_member')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.remove_member')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.change_project_role')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.change_system_role')
-    mocker.patch('portal.apps.projects.views.ProjectsManager.role_for_user')
+    mocker.patch("portal.apps.projects.views.ProjectsManager.list")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.search")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.get_project")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.create")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.update_prj")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.add_member")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.remove_member")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.change_project_role")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.change_system_role")
+    mocker.patch("portal.apps.projects.views.ProjectsManager.role_for_user")
     return ProjectsManager
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_projects_get(regular_user, client, mock_project_mgr):
-    mock_project_mgr.list.return_value = {'projectId': 'PRJ-123'}
-    client.force_login(regular_user)
-
-    response = client.get('/api/projects/')
-
-    mock_project_mgr.list.assert_called_with(offset=0, limit=100)
-    assert response.status_code == 200
-    assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
-    }
-
-
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_projects_search(regular_user, client, mock_project_mgr):
-    mock_project_mgr.search.return_value = {'projectId': 'PRJ-123'}
-    client.force_login(regular_user)
-
-    response = client.get('/api/projects/?query_string=testsearch')
-
-    mock_project_mgr.search.assert_called_with(query_string='testsearch', offset=0, limit=100)
-    assert response.status_code == 200
-    assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
-    }
-
-
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_projects_post(authenticated_user, client, mock_project_mgr):
-    mock_project = MagicMock(storage={'name': 'PRJ-123'}, project_id='PRJ-123')
-    mock_project_mgr.create.return_value = mock_project
-
-    response = client.post(
-        '/api/projects/',
-        {
-            'title': 'Test Title',
-            'members': [
-                {
-                    'username': 'username',
-                    'access': 'owner'
-                }
-            ]
-        },
-        content_type='application/json'
+@pytest.fixture()
+def mock_service_account(mocker):
+    return mocker.patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
     )
 
-    mock_project_mgr.create.assert_called_with('Test Title')
-    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'pi', 'username')
+
+@pytest.fixture
+def mock_project_search_indexer(mocker):
+    mocker.patch("portal.apps.search.tasks.tapis_project_listing_indexer.delay")
+    return tapis_project_listing_indexer
+
+
+@pytest.fixture
+def mock_project_index(mocker):
+    mocker.patch("portal.libs.elasticsearch.indexes.IndexedProject.search")
+    return IndexedProject
+
+
+@pytest.fixture
+def project_list(authenticated_user):
+    return {
+        "tapis_response": [
+            TapisResult(
+                **{
+                    "id": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123",
+                    "rootDir": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                    "host": "cloud.data.tacc.utexas.edu",
+                    "created": "2023-01-07T19:31:17.292220Z",
+                    "updated": "2023-03-07T19:31:17.292220Z",
+                    "owner": authenticated_user.username,
+                    "notes": {"title": "Foo title", "description": "foo description"},
+                }
+            ),
+            TapisResult(
+                **{
+                    "id": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-456",
+                    "rootDir": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                    "host": "cloud.data.tacc.utexas.edu",
+                    "created": "2023-01-07T19:31:17.292220Z",
+                    "updated": "2023-03-07T19:31:17.292220Z",
+                    "owner": authenticated_user.username,
+                    "notes": {"title": "Bar title", "description": "bar description"},
+                }
+            ),
+        ],
+        "api_response": [
+            {
+                "description": "foo description",
+                "host": "cloud.data.tacc.utexas.edu",
+                "id": "test.project.PRJ-123",
+                "name": "PRJ-123",
+                "owner": {
+                    "email": authenticated_user.email,
+                    "first_name": authenticated_user.first_name,
+                    "last_name": authenticated_user.last_name,
+                    "username": authenticated_user.username,
+                },
+                "path": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                "title": "Foo title",
+                "updated": "2023-03-07T19:31:17.292220Z",
+            },
+            {
+                "description": "bar description",
+                "host": "cloud.data.tacc.utexas.edu",
+                "id": "test.project.PRJ-456",
+                "name": "PRJ-456",
+                "owner": {
+                    "email": authenticated_user.email,
+                    "first_name": authenticated_user.first_name,
+                    "last_name": authenticated_user.last_name,
+                    "username": authenticated_user.username,
+                },
+                "path": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                "title": "Bar title",
+                "updated": "2023-03-07T19:31:17.292220Z",
+            },
+        ],
+    }
+
+
+def test_projects_get(
+    authenticated_user,
+    client,
+    mock_tapis_client,
+    mock_project_search_indexer,
+    project_list,
+):
+    mock_tapis_client.systems.getSystems.return_value = [
+        project_list["tapis_response"][0]
+    ]
+
+    client.force_login(authenticated_user)
+    response = client.get("/api/projects/")
+
     assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'name': 'PRJ-123'}
+        "status": 200,
+        "response": [project_list["api_response"][0]],
     }
+    fields = "id,host,description,notes,updated,owner,rootDir"
+    query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
+    mock_tapis_client.systems.getSystems.assert_called_with(
+        listType="ALL", search=query, select=fields, limit=-1
+    )
+    mock_project_search_indexer.delay.assert_called_with(
+        [project_list["api_response"][0]]
+    )
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_project_instance_get_by_id(regular_user, client, mock_project_mgr):
-    mock_project_mgr.get_project.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
+def test_projects_search(
+    authenticated_user,
+    client,
+    mock_tapis_client,
+    mock_project_index,
+    mock_project_search_indexer,
+    project_list,
+):
+    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
+        IndexedProject(**project_list["api_response"][1])
+    ]
+    mock_tapis_client.systems.getSystems.return_value = [
+        project_list["tapis_response"][1]
+    ]
 
-    response = client.get('/api/projects/PRJ-123/')
-
-    mock_project_mgr.get_project.assert_called_with('PRJ-123', None)
+    response = client.get("/api/projects/?query_string=bar")
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": [project_list["api_response"][1]],
     }
+    mock_project_search_indexer.delay.assert_called_with(
+        [project_list["api_response"][1]]
+    )
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_project_instance_get_by_system(regular_user, client, mock_project_mgr):
-    mock_project_mgr.get_project.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
+def test_projects_search_result_not_in_tapis(
+    authenticated_user,
+    client,
+    mock_tapis_client,
+    mock_project_index,
+    mock_project_search_indexer,
+    project_list,
+):
+    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
+        IndexedProject(**project_list["api_response"][1])
+    ]
 
-    response = client.get('/api/projects/system/cep.project.PRJ-123/')
+    response = client.get("/api/projects/?query_string=bar")
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": []}
+    mock_project_search_indexer.delay.assert_called_with([])
 
-    mock_project_mgr.get_project.assert_called_with(None, 'cep.project.PRJ-123')
+
+def test_projects_post(
+    authenticated_user, client, mock_service_account, mock_tapis_client
+):
+    response = client.post(
+        "/api/projects/",
+        {
+            "title": "Test Title",
+            "members": [{"username": authenticated_user.username, "access": "owner"}],
+        },
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {"id": "test.project.test.project-2"},
     }
+    # 1. service account creates dir client.files.mkdir
+    # 2. service account client sets client.files.setFacl
+    # 3. standard client creates workspace client.systems.createSystem
+    mock_service_account().files.mkdir.assert_called_with(
+        systemId="projects.system.name", path="test.project-2"
+    )
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path="test.project-2",
+        operation="ADD",
+        recursionMethod="PHYSICAL",
+        aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+    )
+    mock_tapis_client.systems.createSystem.assert_called()
+    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
+        "test.project.test.project-2"
+    )
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_project_instance_patch(regular_user, client, mock_project_mgr):
-    mock_project_mgr.update_prj.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
+def test_project_instance_get_by_id(
+    authenticated_user, client, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
+        **{"users": [authenticated_user.username]}
+    )
 
-    response = client.patch('/api/projects/PRJ-123/', json.dumps({'title': 'New Title'}))
-
-    mock_project_mgr.update_prj.assert_called_with('PRJ-123', None, **{'title': 'New Title'})
+    response = client.get("/api/projects/PRJ-123/")
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {
+            "title": project_list["api_response"][0]["title"],
+            "description": project_list["api_response"][0]["description"],
+            "created": project_list["tapis_response"][0].created,
+            "projectId": project_list["api_response"][0]["name"],
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                }
+            ],
+        },
     }
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_project_change_role(regular_user, client, mock_project_mgr):
-    mock_project_mgr.change_project_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
+def test_project_instance_get_by_system(
+    authenticated_user, client, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
+        **{"users": [authenticated_user.username]}
+    )
 
-    patch_body = {'action': 'change_project_role', 'username': 'test_user', 'oldRole': 'co_pi', 'newRole': 'team_member'}
+    response = client.get("/api/projects/system/test.project.PRJ-123/")
+    assert response.status_code == 200
 
-    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
-
-    mock_project_mgr.change_project_role.assert_called_with('PRJ-123', 'test_user', 'co_pi', 'team_member')
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {
+            "title": project_list["api_response"][0]["title"],
+            "description": project_list["api_response"][0]["description"],
+            "created": project_list["tapis_response"][0].created,
+            "projectId": project_list["api_response"][0]["name"],
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                }
+            ],
+        },
     }
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_project_change_system_role(regular_user, client, mock_project_mgr):
-    mock_project_mgr.change_system_role.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
+def test_project_instance_patch(
+    authenticated_user, client, mock_tapis_client, project_list
+):
+    updated_project = project_list["tapis_response"][0]
+    updated_project.notes.title = "New Title"
+    updated_project.notes.description = "new description"
+    mock_tapis_client.systems.getSystem.return_value = updated_project
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
+        **{"users": [authenticated_user.username]}
+    )
 
-    patch_body = {'action': 'change_system_role', 'username': 'test_user', 'newRole': 'USER'}
+    response = client.patch(
+        "/api/projects/PRJ-123/",
+        json.dumps({"title": "New Title", "description": "new description"}),
+    )
 
-    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
+    mock_tapis_client.systems.patchSystem.assert_called_with(
+        systemId="test.project.PRJ-123",
+        notes={"title": "New Title", "description": "new description"},
+    )
 
-    mock_project_mgr.change_system_role.assert_called_with('PRJ-123', 'test_user', 'USER')
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {
+            "title": "New Title",
+            "description": "new description",
+            "created": project_list["tapis_response"][0].created,
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                }
+            ],
+            "projectId": project_list["api_response"][0]["name"],
+        },
     }
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_members_view_add(regular_user, client, mock_project_mgr):
-    mock_project_mgr.add_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    client.force_login(regular_user)
-    patch_body = {'action': 'add_member', 'username': 'test_user'}
+def test_project_change_role(authenticated_user, client, mock_project_mgr):
+    mock_project_mgr.change_project_role.return_value = MagicMock(
+        metadata={"projectId": "PRJ-123"}
+    )
 
-    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
+    patch_body = {
+        "action": "change_project_role",
+        "username": "test_user",
+        "oldRole": "co_pi",
+        "newRole": "team_member",
+    }
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+
+    mock_project_mgr.change_project_role.assert_called_with(
+        "PRJ-123", "test_user", "co_pi", "team_member"
+    )
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": {"projectId": "PRJ-123"}}
+
+
+def test_project_change_system_role(
+    authenticated_user, client, mock_service_account, mock_tapis_client
+):
+    # USER translates to writer role
+    patch_body = {
+        "action": "change_system_role",
+        "username": "test_user",
+        "newRole": "USER",
+    }
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": "OK"}
+    # System Id used in setFacl is project root system name
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path="PRJ-123",
+        operation="ADD",
+        recursionMethod="PHYSICAL",
+        aclString="d:u:test_user:rwX,u:test_user:rwX",
+    )
+    # Grant request are on the specific project system id
+    mock_tapis_client.systems.grantUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "EXECUTE"],
+    )
+    mock_tapis_client.files.grantPermissions.assert_called_with(
+        systemId="test.project.PRJ-123",
+        path="/",
+        username="test_user",
+        permission="MODIFY",
+    )
+
+
+def test_members_view_add(
+    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
+        **{"users": [authenticated_user.username, "test_user"]}
+    )
+    mock_tapis_client.files.getPermissions.return_value = TapisResult(
+        **{"permission": "MODIFY"}
+    )
+
+    patch_body = {"action": "add_member", "username": "test_user"}
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
 
     # All new members now have co_pi status since we no longer have distinctions
     # between members and co_pis, and an individual may not become a pi
     # until they have "edit" access (co_pi status)
-    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'team_member', 'test_user')
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {
+            "created": project_list["tapis_response"][0].created,
+            "description": project_list["api_response"][0]["description"],
+            "projectId": "PRJ-123",
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                },
+                {
+                    "user": {
+                        "username": "test_user",
+                        "first_name": "",
+                        "last_name": "",
+                        "email": "",
+                    },
+                    "access": "edit",
+                },
+            ],
+            "title": project_list["api_response"][0]["title"],
+        },
     }
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path="PRJ-123",
+        operation="ADD",
+        recursionMethod="PHYSICAL",
+        aclString="d:u:test_user:rwX,u:test_user:rwX",
+    )
+    mock_tapis_client.systems.shareSystem.assert_called_with(
+        systemId="test.project.PRJ-123", users=["test_user"]
+    )
+    mock_tapis_client.systems.grantUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "EXECUTE"],
+    )
+    mock_tapis_client.files.grantPermissions.assert_called_with(
+        systemId="test.project.PRJ-123",
+        path="/",
+        username="test_user",
+        permission="MODIFY",
+    )
 
 
-@pytest.mark.skip(reason="TODOv3: update Shared Workspaces fixtures")
-def test_members_view_remove(regular_user, client, mock_project_mgr):
-    mock_project_mgr.remove_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
-    mock_project_mgr.role_for_user.return_value = 'co_pi'
-    client.force_login(regular_user)
-    patch_body = {'action': 'remove_member', 'username': 'test_user'}
+def test_members_view_remove(
+    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    patch_body = {"action": "remove_member", "username": "test_user"}
 
-    response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
-
-    mock_project_mgr.remove_member.assert_called_with(project_id='PRJ-123',
-                                                      member_type='co_pi',
-                                                      username='test_user')
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+    assert response.status_code == 200
     assert response.json() == {
-        'status': 200,
-        'response': {'projectId': 'PRJ-123'}
+        "status": 200,
+        "response": {
+            "created": project_list["tapis_response"][0].created,
+            "description": project_list["api_response"][0]["description"],
+            "projectId": "PRJ-123",
+            "title": project_list["api_response"][0]["title"],
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                }
+            ],
+        },
     }
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path="PRJ-123",
+        operation="REMOVE",
+        recursionMethod="PHYSICAL",
+        aclString="d:u:test_user,u:test_user",
+    )
+    mock_tapis_client.systems.removeUserCredential.assert_called_with(
+        systemId="test.project.PRJ-123", userName="test_user"
+    )
+    mock_tapis_client.systems.unShareSystem.assert_called_with(
+        systemId="test.project.PRJ-123", users=["test_user"]
+    )
+    mock_tapis_client.systems.revokeUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "MODIFY", "EXECUTE"],
+    )
+    mock_tapis_client.files.deletePermissions.assert_called_with(
+        systemId="test.project.PRJ-123", path="/", username="test_user"
+    )
