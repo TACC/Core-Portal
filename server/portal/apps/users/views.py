@@ -19,7 +19,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
 from portal.apps.users.utils import (get_allocations, get_user_data, get_per_user_allocation_usage,
-                                     add_user, remove_user, get_project_from_id, get_project_users_from_id)
+                                     add_user, remove_user, get_project_from_id, get_project_users_from_id, check_tacc_aci_membership)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,12 @@ class AuthenticatedView(BaseApiView):
     def get(self, request):
         if request.user.is_authenticated:
             u = request.user
+            is_tacc_aci_member = check_tacc_aci_membership(u)
+
+            if (check_tacc_aci_membership(u)):
+                u.is_staff = is_tacc_aci_member
+                u.is_superuser = is_tacc_aci_member
+                u.save()
 
             out = {
                 "first_name": u.first_name,
@@ -38,8 +44,11 @@ class AuthenticatedView(BaseApiView):
                 "oauth": {
                     "expires_in": u.tapis_oauth.expires_in,
                 },
-                "isStaff": u.is_staff
+                "isStaff": u.is_staff,
+                "isSuperuser": u.is_superuser,
             }
+
+            print("out before returning", out)
 
             return JsonResponse(out)
         return JsonResponse({'message': 'Unauthorized'}, status=401)
@@ -143,6 +152,8 @@ class TeamView(BaseApiView):
         : rtype: dict
         """
         usernames = get_project_users_from_id(project_id)
+        logger.info(f"Project users: {usernames}")
+
         return JsonResponse({'response': usernames}, safe=False)
 
 

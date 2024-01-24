@@ -42,9 +42,25 @@ class TestUserApiViews(TestCase):
         token.user = user
         token.save()
         user.is_staff = False
+        user.is_superuser = False
         user.save()
 
-    def test_auth_view(self):
+    @patch('portal.apps.users.utils.check_tacc_aci_membership')
+    def test_auth_view(self, mock_check_tacc_aci_membership):
+        mock_check_tacc_aci_membership.return_value = True
+        self.client.login(username='test', password='test')
+        resp = self.client.get("/api/users/auth/", follow=True)
+        data = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        # should only return user data system and community
+        self.assertTrue(data["username"] == 'test')
+        self.assertTrue(data["email"] == "test@test.com")
+        self.assertTrue(data["isStaff"])
+        self.assertTrue(data["isSuperuser"])
+
+    @patch('portal.apps.users.utils.check_tacc_aci_membership')
+    def test_auth_view_nonsuper(self, mock_check_tacc_aci_membership):
+        mock_check_tacc_aci_membership.return_value = False
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/users/auth/", follow=True)
         data = resp.json()
@@ -53,6 +69,7 @@ class TestUserApiViews(TestCase):
         self.assertTrue(data["username"] == 'test')
         self.assertTrue(data["email"] == "test@test.com")
         self.assertFalse(data["isStaff"])
+        self.assertFalse(data["isSuperuser"])
 
     def test_auth_view_noauth(self):
         resp = self.client.get("/api/users/auth/", follow=True)
