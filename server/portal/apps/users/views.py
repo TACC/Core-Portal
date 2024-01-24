@@ -31,9 +31,9 @@ class AuthenticatedView(BaseApiView):
             u = request.user
             is_tacc_aci_member = check_tacc_aci_membership(u)
 
-            if (check_tacc_aci_membership(u)):
-                u.is_staff = is_tacc_aci_member
-                u.is_superuser = is_tacc_aci_member
+            if is_tacc_aci_member:
+                u.is_staff = True
+                u.is_superuser = True
                 u.save()
 
             out = {
@@ -47,8 +47,6 @@ class AuthenticatedView(BaseApiView):
                 "isStaff": u.is_staff,
                 "isSuperuser": u.is_superuser,
             }
-
-            print("out before returning", out)
 
             return JsonResponse(out)
         return JsonResponse({'message': 'Unauthorized'}, status=401)
