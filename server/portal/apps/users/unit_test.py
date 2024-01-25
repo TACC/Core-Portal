@@ -58,7 +58,8 @@ class TestUserApiViews(TestCase):
         self.assertTrue(data["isStaff"])
         self.assertTrue(data["isSuperuser"])
 
-    @patch('portal.apps.users.utils.get_project_users_from_name')    
+    @patch('portal.apps.users.utils.get_project_users_from_name')
+    # test when user is not in TACC-ACI group i.e. not superuser
     def test_auth_view_nosuper(self, mock_get_project_users):
         mock_get_project_users.return_value = []
         self.client.login(username='test', password='test')
