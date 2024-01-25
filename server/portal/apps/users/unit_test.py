@@ -25,11 +25,14 @@ class TestUserApiViews(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mock_client_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client')
+        cls.mock_check_tacc_aci_membership_patcher =  patch('portal.apps.users.utils.check_tacc_aci_membership')
         cls.mock_client = cls.mock_client_patcher.start()
+        cls.mock_check_tacc_aci_membership = cls.mock_check_tacc_aci_membership_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
         cls.mock_client_patcher.stop()
+        cls.mock_check_tacc_aci_membership_patcher.stop()
 
     def setUp(self):
         User = get_user_model()
@@ -45,9 +48,8 @@ class TestUserApiViews(TestCase):
         user.is_superuser = False
         user.save()
 
-    @patch('portal.apps.users.utils.check_tacc_aci_membership')
-    def test_auth_view(self, mock_check_tacc_aci_membership):
-        mock_check_tacc_aci_membership.return_value = True
+    def test_auth_view(self):
+        self.mock_check_tacc_aci_membership.return_value = True
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/users/auth/", follow=True)
         data = resp.json()
@@ -58,9 +60,8 @@ class TestUserApiViews(TestCase):
         self.assertTrue(data["isStaff"])
         self.assertTrue(data["isSuperuser"])
 
-    @patch('portal.apps.users.utils.check_tacc_aci_membership')
-    def test_auth_view_nonsuper(self, mock_check_tacc_aci_membership):
-        mock_check_tacc_aci_membership.return_value = False
+    def test_auth_view_nosuper(self):
+        self.mock_check_tacc_aci_membership.return_value = False
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/users/auth/", follow=True)
         data = resp.json()
