@@ -19,7 +19,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
 from portal.apps.users.utils import (get_allocations, get_user_data, get_per_user_allocation_usage,
-                                     add_user, remove_user, get_project_from_id, get_project_users_from_id, check_tacc_aci_membership)
+                                     add_user, remove_user, get_project_from_id, get_project_users_from_id, check_user_groups)
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +29,19 @@ class AuthenticatedView(BaseApiView):
     def get(self, request):
         if request.user.is_authenticated:
             u = request.user
-            is_tacc_aci_member = check_tacc_aci_membership(u)
+            portal_roles = settings.PORTAL_ELEVATED_ROLES
+            if portal_roles is not None:
+                for role, groups_and_users in portal_roles.items():
+                    if role == "staff" and not u.is_staff:
+                        if str(u.username) in groups_and_users["usernames"] or check_user_groups(u, groups_and_users["groups"]):
+                            u.is_staff = True
+                            u.save()
 
-            if is_tacc_aci_member:
-                u.is_staff = True
-                u.is_superuser = True
-                u.save()
+                    elif role == "superuser" and not u.is_superuser:
+                        if str(u.username) in groups_and_users["usernames"] or check_user_groups(u, groups_and_users["groups"]):
+                            u.is_superuser = True
+                            u.save()
+                            logger.info("user is set to superuser")
 
             out = {
                 "first_name": u.first_name,

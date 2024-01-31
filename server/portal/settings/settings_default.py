@@ -246,3 +246,14 @@ _WORKBENCH_SETTINGS = {
     "ticketAttachmentMaxSize": 3145728,
     "jobsv2Title": "Historic Jobs"
 }
+
+_PORTAL_ELEVATED_ROLES = {
+  "staff": {
+    "groups": [],
+    "usernames": []
+  },
+  "superuser": {
+    "groups": [],
+    "usernames": []
+  }
+}

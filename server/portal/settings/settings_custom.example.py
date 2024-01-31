@@ -261,3 +261,14 @@ _WORKBENCH_SETTINGS = {
     },
     "jobsv2Title": "Historic Jobs"
 }
+
+_PORTAL_ELEVATED_ROLES = {
+  "staff": {
+    "groups": [],
+    "usernames": []
+  },
+  "superuser": {
+    "groups": [],
+    "usernames": []
+  }
+}

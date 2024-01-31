@@ -261,11 +261,12 @@ def remove_user(project_id, user_id):
     return resp['result']
 
 
-def check_tacc_aci_membership(username):
-    project_users = get_project_users_from_name("TACC-ACI")
-    # Check if username is in TACC-ACI group
-    for user in project_users:
-        if user['username'] == str(username):
-            return True
+def check_user_groups(username, groups):
+    for group in groups:
+        project_users = get_project_users_from_name(group)
+        # Check if username is in one of the group in the groups array
+        for user in project_users:
+            if user['username'] == str(username):
+                return True
 
     return False

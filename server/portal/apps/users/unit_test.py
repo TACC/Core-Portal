@@ -30,6 +30,7 @@ class TestUserApiViews(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.mock_client_patcher.stop()
+        
 
     def setUp(self):
         User = get_user_model()
@@ -44,10 +45,8 @@ class TestUserApiViews(TestCase):
         user.is_staff = False
         user.is_superuser = False
         user.save()
-
-    @patch('portal.apps.users.utils.get_project_users_from_name')
-    def test_auth_view(self, mock_get_project_users):
-        mock_get_project_users.return_value = [{'username': 'test'}]
+    
+    def test_auth_view(self):
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/users/auth/", follow=True)
         data = resp.json()
@@ -55,22 +54,6 @@ class TestUserApiViews(TestCase):
         # should only return user data system and community
         self.assertTrue(data["username"] == 'test')
         self.assertTrue(data["email"] == "test@test.com")
-        self.assertTrue(data["isStaff"])
-        self.assertTrue(data["isSuperuser"])
-
-    @patch('portal.apps.users.utils.get_project_users_from_name')
-    # test when user is not in TACC-ACI group i.e. not superuser
-    def test_auth_view_nosuper(self, mock_get_project_users):
-        mock_get_project_users.return_value = []
-        self.client.login(username='test', password='test')
-        resp = self.client.get("/api/users/auth/", follow=True)
-        data = resp.json()
-        self.assertEqual(resp.status_code, 200)
-        # should only return user data system and community
-        self.assertTrue(data["username"] == 'test')
-        self.assertTrue(data["email"] == "test@test.com")
-        self.assertFalse(data["isStaff"])
-        self.assertFalse(data["isSuperuser"])
 
     def test_auth_view_noauth(self):
         resp = self.client.get("/api/users/auth/", follow=True)
