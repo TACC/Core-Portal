@@ -525,7 +525,6 @@ WORKBENCH_SETTINGS = {
     "debug": False
 }
 
-
 PORTAL_ELEVATED_ROLES = {
   "staff": {
     "groups": [],
