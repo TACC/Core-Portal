@@ -157,7 +157,6 @@ class TeamView(BaseApiView):
         : rtype: dict
         """
         usernames = get_project_users_from_id(project_id)
-        logger.info(f"Project users: {usernames}")
 
         return JsonResponse({'response': usernames}, safe=False)
 

@@ -30,7 +30,6 @@ class TestUserApiViews(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.mock_client_patcher.stop()
-        
 
     def setUp(self):
         User = get_user_model()
@@ -45,7 +44,7 @@ class TestUserApiViews(TestCase):
         user.is_staff = False
         user.is_superuser = False
         user.save()
-    
+
     def test_auth_view(self):
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/users/auth/", follow=True)
