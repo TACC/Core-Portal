@@ -29,9 +29,10 @@ import {
   updateValuesForQueue,
   getQueueValueForExecSystem,
   getAppQueueValues,
-  getExecSystemFromId,
   matchExecSysWithAllocations,
 } from './AppFormUtils';
+import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
+
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
@@ -50,18 +51,13 @@ const appShape = PropTypes.shape({
   }),
   systemNeedsKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
-  availableExecSystems: PropTypes.arrayOf(
+  execSystems: PropTypes.arrayOf(
     PropTypes.shape({
       host: PropTypes.string,
       scheduler: PropTypes.string,
       batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
     })
   ),
-  exec_sys: PropTypes.shape({
-    host: PropTypes.string,
-    scheduler: PropTypes.string,
-    batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
-  }),
   license: PropTypes.shape({
     type: PropTypes.string,
     enabled: PropTypes.bool,
@@ -148,7 +144,6 @@ const HandleDependentFieldChanges = ({ app, updateFormState }) => {
   // Grab values and update if queue changes
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
-    // Update exec system values first.
     if (previousValues) {
       let valueUpdated = false;
       let updatedValues = { ...values };
@@ -161,7 +156,6 @@ const HandleDependentFieldChanges = ({ app, updateFormState }) => {
         updatedValues = updateValuesForQueue(app, updatedValues);
         valueUpdated = true;
 
-        // Update form state, used outside the form.
         updateFormState.setExecSys(exec_sys);
         updateFormState.setAppQueueValues(
           getAppQueueValues(app, exec_sys.batchLogicalQueues)
@@ -271,7 +265,7 @@ export const AppSchemaForm = ({ app }) => {
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.host : '',
+      execSystem: getDefaultExecSystem(app) ?? '',
       defaultSystem,
       keyService,
       execSystemsWithAllocation,
@@ -299,9 +293,9 @@ export const AppSchemaForm = ({ app }) => {
 
   const appFields = FormSchema(app);
   const [currentValues, setCurrentValues] = useState({
-    execSys: app.exec_sys,
-    allocations: execSystemAllocationsMap.get(app.exec_sys.id) ?? [],
-    appQueueValues: getAppQueueValues(app, app.exec_sys.batchLogicalQueues),
+    execSys: execSystem,
+    allocations: execSystemAllocationsMap.get(execSystem.id) ?? [],
+    appQueueValues: getAppQueueValues(app, execSystem.batchLogicalQueues),
   });
 
   const updateFormState = {
@@ -344,7 +338,7 @@ export const AppSchemaForm = ({ app }) => {
   if (app.definition.jobType === 'BATCH') {
     initialValues.execSystemLogicalQueue = getQueueValueForExecSystem(
       app,
-      app.exec_sys
+      getExecSystemFromId(app, app.definition.jobAttributes.execSystemId)
     ).name;
     if (currentValues.allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
@@ -742,8 +736,8 @@ export const AppSchemaForm = ({ app }) => {
                   <div className="appSchema-header">
                     <span>Configuration</span>
                   </div>
-                  {app.availableExecSystems &&
-                    Object.keys(execSystemsWithAllocation).length > 0 && (
+                  {app.execSystems &&
+                    Object.keys(execSystemsWithAllocation).length > 1 && (
                       <FormField
                         label="Execution System"
                         name="execSystemId"

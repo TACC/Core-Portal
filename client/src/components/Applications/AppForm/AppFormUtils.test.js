@@ -3,12 +3,14 @@ import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
 import { getNodeCountValidation, updateValuesForQueue } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
-  const normalQueue = helloWorldAppFixture.exec_sys.batchLogicalQueues.find(
-    (q) => q.name === 'normal'
-  );
-  const smallQueue = helloWorldAppFixture.exec_sys.batchLogicalQueues.find(
-    (q) => q.name === 'small'
-  );
+  const normalQueue =
+    helloWorldAppFixture.execSystems[0].batchLogicalQueues.find(
+      (q) => q.name === 'normal'
+    );
+  const smallQueue =
+    helloWorldAppFixture.execSystems[0].batchLogicalQueues.find(
+      (q) => q.name === 'small'
+    );
 
   const parallelFronteraApp = {
     ...helloWorldAppFixture,

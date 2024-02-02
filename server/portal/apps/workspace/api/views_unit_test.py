@@ -309,9 +309,7 @@ def test_get_app_dynamic_exec_sys(
     assert response_json["definition"]["id"] == "hello-world"
     assert response_json["definition"]["version"] == "0.0.1"
     if dynamic_exec_system:
-        assert "availableExecSystems" in response_json
-        assert len(response_json["availableExecSystems"]) == 2
+        assert len(response_json["execSystems"]) == 2
     else:
-        assert "availableExecSystems" not in response_json
-
-    assert response_json["exec_sys"]["id"] == "frontera"
+        assert len(response_json["execSystems"]) == 1
+        assert response_json["execSystems"][0]["id"] == "frontera"

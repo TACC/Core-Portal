@@ -1,4 +1,4 @@
-export const availableExecSystemsFixture = [
+export const execSystemsFixture = [
   {
     isPublic: true,
     isDynamicEffectiveUser: true,

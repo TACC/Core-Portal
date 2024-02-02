@@ -69,20 +69,12 @@ def _get_app(app_id, app_version, user):
 
     has_dynamic_exec_system = getattr(app_def.notes, "dynamicExecSystem", False)
     if has_dynamic_exec_system:
-        data["availableExecSystems"] = _get_all_exec_systems(user)
-        data["exec_sys"] = next(
-            (
-                exec_sys
-                for exec_sys in data["availableExecSystems"]
-                if exec_sys.id == app_def.jobAttributes.execSystemId
-            ),
-            data["availableExecSystems"][0] if data["availableExecSystems"] else None,
-        )
+        data["execSystems"] = _get_all_exec_systems(user)
     else:
         # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-        data["exec_sys"] = tapis.systems.getSystem(
+        data["execSystems"] = [tapis.systems.getSystem(
             systemId=app_def.jobAttributes.execSystemId
-        )
+        )]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}

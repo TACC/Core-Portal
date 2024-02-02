@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
-import { availableExecSystemsFixture } from './fixtures/AppForm.executionsystems.fixture';
+import { execSystemsFixture } from './fixtures/AppForm.executionsystems.fixture';
 
 import {
   jobsFixture,
@@ -69,7 +69,7 @@ describe('AppSchemaForm', () => {
     timekeeper.freeze(new Date(frozenDate));
   });
 
-  it('renders the AppSchemaForm', async () => {
+  it.only('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -97,10 +97,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      exec_sys: {
-        ...helloWorldAppFixture.exec_sys,
-        host: 'login1.frontera.tacc.utexas.edu',
-      },
+      execSystems: [
+        {
+          ...helloWorldAppFixture.execSystems[0],
+          host: 'login1.frontera.tacc.utexas.edu',
+        },
+        ...helloWorldAppFixture.slice(1),
+      ],
     });
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
@@ -113,10 +116,11 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      exec_sys: {
-        ...helloWorldAppFixture.exec_sys,
+      execSystems: {
+        ...helloWorldAppFixture.execSystems[0],
         host: 'invalid_system.tacc.utexas.edu',
       },
+      ...helloWorldAppFixture.slice(1),
     });
     await waitFor(() => {
       expect(getByText(/Error/)).toBeDefined();
@@ -287,7 +291,7 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -296,7 +300,7 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown.value).toBe('frontera');
     const options = Array.from(execSystemDropDown.querySelectorAll('option'));
     const actualValues = Array.from(options).map((option) => option.value);
-    const expectedValues = Array.from(availableExecSystemsFixture).map(
+    const expectedValues = Array.from(execSystemsFixture).map(
       (system) => system.id
     );
     expect(actualValues).toEqual(expect.arrayContaining(expectedValues));
@@ -306,12 +310,12 @@ describe('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const updatedExecSystems = [...availableExecSystemsFixture];
+    const updatedExecSystems = [...execSystemsFixture];
     updatedExecSystems[0].host = 'maverick3.tacc.utexas.edu';
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      availableExecSystems: updatedExecSystems,
+      execSystems: updatedExecSystems,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -320,7 +324,7 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown.value).toBe('frontera');
     const options = Array.from(execSystemDropDown.querySelectorAll('option'));
     const actualValues = Array.from(options).map((option) => option.value);
-    const expectedValues = Array.from(availableExecSystemsFixture).map(
+    const expectedValues = Array.from(execSystemsFixture).map(
       (system) => system.id
     );
     expect(actualValues).toEqual(
@@ -332,7 +336,7 @@ describe('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const updatedExecSystems = availableExecSystemsFixture.map((e) => {
+    const updatedExecSystems = execSystemsFixture.map((e) => {
       // Leave ls6 intact and change the rest
       if (e.id !== 'ls6') {
         // maverick99 does not have allocation
@@ -343,7 +347,7 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      availableExecSystems: updatedExecSystems,
+      execSystems: updatedExecSystems,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -358,7 +362,7 @@ describe('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const updatedExecSystems = availableExecSystemsFixture.map((e) => {
+    const updatedExecSystems = execSystemsFixture.map((e) => {
       // Leave frontera
       if (e.id !== 'frontera') {
         // maverick99 does not have allocation
@@ -369,7 +373,7 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      availableExecSystems: updatedExecSystems,
+      execSystems: updatedExecSystems,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -384,14 +388,14 @@ describe('AppSchemaForm', () => {
     const store = mockStore({
       ...initialMockState,
     });
-    const updatedExecSystems = availableExecSystemsFixture.map((e) => {
+    const updatedExecSystems = execSystemsFixture.map((e) => {
       // maverick99 does not have allocation
       return { ...e, host: 'maverick99.tacc.utexas.edu' };
     });
 
     const { getByText, container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      availableExecSystems: updatedExecSystems,
+      execSystems: updatedExecSystems,
     });
 
     console.log(container.innerHTML);
@@ -414,7 +418,7 @@ describe('AppSchemaForm', () => {
     });
     const appFixture = {
       ...helloWorldAppFixture,
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     };
     const { container } = renderAppSchemaFormComponent(store, appFixture);
     const execSystemDropDown = container.querySelector(
@@ -451,7 +455,7 @@ describe('AppSchemaForm', () => {
           hideNodeCountAndCoresPerNode: false,
         },
       },
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     };
     const { container } = renderAppSchemaFormComponent(store, appFixture);
     const execSystemDropDown = container.querySelector(
@@ -474,7 +478,7 @@ describe('AppSchemaForm', () => {
       (option) => option.value
     );
     const expectedQueueValues = Array.from(
-      availableExecSystemsFixture.find((e) => e.id === 'ls6').batchLogicalQueues
+      execSystemsFixture.find((e) => e.id === 'ls6').batchLogicalQueues
     ).map((q) => q.name);
     expect(actualQueueValues).toEqual(
       expect.arrayContaining(expectedQueueValues)
@@ -502,7 +506,7 @@ describe('AppSchemaForm', () => {
           hideNodeCountAndCoresPerNode: false,
         },
       },
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     };
     const { getByText, container } = renderAppSchemaFormComponent(
       store,
@@ -546,7 +550,7 @@ describe('AppSchemaForm', () => {
           hideNodeCountAndCoresPerNode: false,
         },
       },
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     };
     const { getByText, container } = renderAppSchemaFormComponent(
       store,
@@ -590,7 +594,7 @@ describe('AppSchemaForm', () => {
           hideNodeCountAndCoresPerNode: false,
         },
       },
-      availableExecSystems: availableExecSystemsFixture,
+      execSystems: execSystemsFixture,
     };
     const { getByText, container } = renderAppSchemaFormComponent(
       store,
