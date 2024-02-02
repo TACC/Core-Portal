@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { getSystemName } from 'utils/systems';
+import { getExecSystemFromId } from 'utils/apps';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 
@@ -221,20 +221,6 @@ export const getAppQueueValues = (app, queues) => {
 };
 
 /**
- * Get the execution system object for a given id of the execution system.
- */
-export const getExecSystemFromId = (app, execSystemId) => {
-  if (app.availableExecSystems?.length) {
-    return app.availableExecSystems.find(
-      (exec_sys) => exec_sys.id === execSystemId
-    );
-  }
-  if (app.exec_sys.id === execSystemId) return app.exec_sys;
-
-  return null;
-};
-
-/**
  * Build a map of allocations applicable to each execution
  * system based on the host match.
  * Handle case where dynamic execution system is provided.
@@ -243,13 +229,7 @@ export const getExecSystemFromId = (app, execSystemId) => {
  * @returns a Map of allocations applicable to each execution system.
  */
 export const matchExecSysWithAllocations = (app, allocations) => {
-  let exec_systems = [app.exec_sys];
-
-  if (app.availableExecSystems?.length) {
-    exec_systems = app.availableExecSystems;
-  }
-
-  return exec_systems.reduce((map, exec_sys) => {
+  return app.execSystems.reduce((map, exec_sys) => {
     const matchingExecutionHost = Object.keys(allocations.hosts).find(
       (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
     );
