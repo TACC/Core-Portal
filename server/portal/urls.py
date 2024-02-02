@@ -89,6 +89,7 @@ urlpatterns = [
     path('api/jupyter_mounts/', include('portal.apps.jupyter_mounts.api.urls', namespace='jupyter_mounts_api')),
     path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
     path('api/site-search/', include('portal.apps.site_search.api.urls', namespace='site_search_api')),
+    path('api/forms/', include('portal.apps.forms.urls', namespace='forms')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),

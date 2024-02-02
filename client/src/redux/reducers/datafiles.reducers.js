@@ -161,6 +161,7 @@ export const initialFilesState = {
     editproject: false,
     makePublic: false,
     downloadMessage: false,
+    dynamicform: false,
   },
   modalProps: {
     preview: {},
@@ -174,6 +175,7 @@ export const initialFilesState = {
     showpath: {},
     makePublic: {},
     downloadMessage: {},
+    dynamicform: {},
   },
   refs: {},
   preview: {

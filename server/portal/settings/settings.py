@@ -26,6 +26,10 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
 else:
     from portal.settings import settings_default as settings_custom
 
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_forms.py')):
+    from portal.settings import settings_forms
+
+
 FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
 ]
@@ -527,6 +531,8 @@ PORTAL_SEARCH_MANAGERS = {
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
+
+FORMS = getattr(settings_forms, '_FORMS', {})
 
 """
 SETTINGS: EXTERNAL DATA RESOURCES

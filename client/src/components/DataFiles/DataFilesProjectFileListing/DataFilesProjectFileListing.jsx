@@ -64,6 +64,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     });
   };
 
+  const onAddSampleData = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'dynamicform',
+        props: { formName: 'ADD_SAMPLE_DATA' },
+      },
+    });
+  };
+
   if (metadata.loading) {
     return (
       <div className={styles['root-placeholder']}>
@@ -98,6 +108,10 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           ) : null}
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
+          </Button>
+          <span className={styles.separator}>|</span>
+          <Button type="link" onClick={onAddSampleData}>
+            Add Sample Data
           </Button>
         </div>
       }
