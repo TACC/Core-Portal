@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import styles from './DataFilesFormModal.module.scss';
 
 const DataFilesFormModal = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,12 @@ const DataFilesFormModal = () => {
     return query;
   };
 
-  const { data, isLoading } = useFormFields(formName);
+  const { data: form, isLoading } = useFormFields(formName);
+
+  const initialValues = form?.form_fields.reduce((acc, field) => {
+    acc[field.name] = field.value || '';
+    return acc;
+  }, {})
 
   const toggle = useCallback(() => {
     dispatch({
@@ -41,22 +47,34 @@ const DataFilesFormModal = () => {
     });
   }, []);
 
+  const handleSubmit = (values) => {
+    console.log("FORM SUBMIT", values)
+  }
+
   return (
     <div>
       <Modal
-        size="xl"
+        size="lg"
         isOpen={isOpen}
         toggle={toggle}
-        className="dataFilesModal"
+        className={styles['modal-dialog']}
       >
-        <Formik>
+        <Formik
+            onSubmit={handleSubmit}
+            initialValues={initialValues}
+        >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
-              {formName}
+              {form?.heading}
             </ModalHeader>
-            <ModalBody>
-              <DynamicForm formFields={data ?? []}></DynamicForm>
+            <ModalBody className={styles['modal-body-container']}>
+              <DynamicForm formFields={form?.form_fields ?? []}></DynamicForm>
             </ModalBody>
+            {form?.footer && (
+                <ModalFooter>
+                    <DynamicForm formFields={form.footer.fields ?? []}></DynamicForm>
+                </ModalFooter>
+            )}
           </Form>
         </Formik>
       </Modal>

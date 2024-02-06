@@ -64,15 +64,15 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     });
   };
 
-  const onAddSampleData = () => {
+  const onOpenFormModal = (form_name) => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'dynamicform',
-        props: { formName: 'ADD_SAMPLE_DATA' },
+        props: { formName: form_name },
       },
     });
-  };
+  }
 
   if (metadata.loading) {
     return (
@@ -110,8 +110,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
           <span className={styles.separator}>|</span>
-          <Button type="link" onClick={onAddSampleData}>
+          <Button type="link" onClick={() => onOpenFormModal('ADD_SAMPLE_DATA')}>
             Add Sample Data
+          </Button>
+          <span className={styles.separator}>|</span>
+          <Button type="link" onClick={() => onOpenFormModal('ADD_ORIGIN_DATASET')}>
+            Add Origin Dataset
+          </Button>
+          <span className={styles.separator}>|</span>
+          <Button type="link" onClick={() => onOpenFormModal('ADD_ANALYSIS_DATASET')}>
+            Add Analysis Dataset
           </Button>
         </div>
       }

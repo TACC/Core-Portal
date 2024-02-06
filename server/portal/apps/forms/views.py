@@ -9,4 +9,4 @@ class FormsView(BaseApiView):
         form_name = request.GET.get('form_name')
         form = settings.FORMS.get(form_name)
 
-        return JsonResponse(form, safe=False)
+        return JsonResponse(form)
