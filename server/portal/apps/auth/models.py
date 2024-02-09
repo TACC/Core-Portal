@@ -77,7 +77,6 @@ class TapisOAuthToken(models.Model):
 
         client = self.build_client()
 
-        # replace atomic with db
         with transaction.atomic():
             if self.expired:
                 try:
