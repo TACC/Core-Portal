@@ -71,7 +71,7 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        # Use new code path only if enabled.
+        # Optimize build only if enabled by the portal via `ENABLE_OPTIMIZED_OAUTH_REFRESH`
         if settings.ENABLE_OPTIMIZED_OAUTH_REFRESH:
             return self.optimized_client()
 
