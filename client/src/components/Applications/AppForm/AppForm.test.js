@@ -332,7 +332,7 @@ describe('AppSchemaForm', () => {
     );
   });
 
-  it('displays correctly when only one execution system different from default has allocation', async () => {
+  it('displays correctly when only one non-default execution system has allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
