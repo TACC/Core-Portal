@@ -53,6 +53,7 @@ class TestUserApiViews(TestCase):
         # should only return user data system and community
         self.assertTrue(data["username"] == 'test')
         self.assertTrue(data["email"] == "test@test.com")
+        self.assertFalse(data["isStaff"])
 
     def test_auth_view_noauth(self):
         resp = self.client.get("/api/users/auth/", follow=True)
