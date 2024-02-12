@@ -248,12 +248,12 @@ _WORKBENCH_SETTINGS = {
 }
 
 _PORTAL_ELEVATED_ROLES = {
-  "staff": {
-    "groups": [],
+  "is_staff": {
+    "groups": ["TACC-ACI"],
     "usernames": []
   },
-  "superuser": {
-    "groups": [],
+  "is_superuser": {
+    "groups": ["TACC-ACI"],
     "usernames": []
   }
 }
