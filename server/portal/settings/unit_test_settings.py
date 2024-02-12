@@ -526,11 +526,11 @@ WORKBENCH_SETTINGS = {
 }
 
 PORTAL_ELEVATED_ROLES = {
-  "staff": {
+  "is_staff": {
     "groups": [],
     "usernames": []
   },
-  "superuser": {
+  "is_superuser": {
     "groups": [],
     "usernames": []
   }
