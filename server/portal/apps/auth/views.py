@@ -83,13 +83,13 @@ def launch_setup_checks(user):
             if str(user.username) in groups_and_users["usernames"] or check_user_groups(user, groups_and_users["groups"]):
                 user.is_staff = True
                 user.save()
-                logger.info("user is set to staff")
+                logger.info(f"user {user.username} is set to staff")
 
         elif role == "is_superuser" and not user.is_superuser:
             if str(user.username) in groups_and_users["usernames"] or check_user_groups(user, groups_and_users["groups"]):
                 user.is_superuser = True
                 user.save()
-                logger.info("user is set to superuser")
+                logger.info(f"user {user.username} is set to superuser")
 
 
 def tapis_oauth_callback(request):
