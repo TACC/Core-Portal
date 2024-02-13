@@ -42,6 +42,7 @@ class TestUserApiViews(TestCase):
         token.user = user
         token.save()
         user.is_staff = False
+        user.is_superuser = False
         user.save()
 
     def test_auth_view(self):

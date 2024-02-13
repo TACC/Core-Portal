@@ -246,3 +246,14 @@ _WORKBENCH_SETTINGS = {
     "ticketAttachmentMaxSize": 3145728,
     "jobsv2Title": "Historic Jobs"
 }
+
+_PORTAL_ELEVATED_ROLES = {
+  "is_staff": {
+    "groups": ["TACC-ACI"],
+    "usernames": []
+  },
+  "is_superuser": {
+    "groups": ["TACC-ACI"],
+    "usernames": []
+  }
+}
