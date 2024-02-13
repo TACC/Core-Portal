@@ -31,27 +31,23 @@ def get_role(project_id, username):
     return req.json()["result"]["role"]
 
 
-def migrate_project(project_id):
+def migrate_project(v2_project):
+    project_id = v2_project["projectId"]
     print(f'Beginning migration for project: {project_id}')
     client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
-    try:
-        v2_project = ProjectMetadata.objects.get(project_id=project_id)
-    except MultipleObjectsReturned:
-        print('FAILURE: more than 1 project with this ID')
-        return
 
     try:
-        owner = v2_project.owner.username
-    except AttributeError:
+        owner = v2_project['owner']['username']
+    except (AttributeError, TypeError):
         try:
-            owner = v2_project.pi.username
-        except AttributeError:
+            owner = v2_project['pi']['username']
+        except (AttributeError, TypeError):
             print('No owner or PI specified')
             return
 
     try:
-        create_workspace_system(client, project_id, v2_project.title, v2_project.description)
+        create_workspace_system(client, project_id, v2_project['title'], v2_project['description'])
     except BaseTapyException as e:
         if 'SYSAPI_SYS_EXISTS' in e.message:
             print('A Tapis V3 workspace already exists for this system.')
@@ -60,28 +56,36 @@ def migrate_project(project_id):
             print(e)
         return
 
-    for co_pi in v2_project.co_pis.all():
-        v2_role = get_role(project_id, co_pi.username)
+    for co_pi in v2_project['coPis']:
+        if co_pi["username"] == settings.PORTAL_ADMIN_USERNAME:
+            print(f'Warning: cannot set role for system owner. Skipping user: {co_pi["username"]}')
+            continue
+
+        v2_role = get_role(project_id, co_pi["username"])
         try:
             v3_role = ROLE_MAP[v2_role]
         except KeyError:
             print(f'ERROR: No role found for: {v2_role}')
             v3_role = "reader"
         try:
-            add_user_to_workspace(client, project_id, co_pi.username, v3_role)
+            add_user_to_workspace(client, project_id, co_pi["username"], v3_role)
         except NotFoundError:
             print('ERROR: Workspace directory not found')
             return
 
-    for team_member in v2_project.team_members.all():
-        v2_role = get_role(project_id, team_member.username)
+    for team_member in v2_project['teamMembers']:
+        if team_member["username"] == settings.PORTAL_ADMIN_USERNAME:
+            print(f'Warning: cannot set role for system owner. Skipping user: {team_member["username"]}')
+            continue
+
+        v2_role = get_role(project_id, team_member["username"])
         try:
             v3_role = ROLE_MAP[v2_role]
         except KeyError:
             print(f'ERROR: No role found for: {v2_role}')
             v3_role = "reader"
         try:
-            add_user_to_workspace(client, project_id, team_member.username, v3_role)
+            add_user_to_workspace(client, project_id, team_member["username"], v3_role)
         except NotFoundError:
             print('ERROR: Workspace directory not found')
             return
@@ -92,5 +96,5 @@ def migrate_project(project_id):
 
 
 def migrate_all_projects():
-    for prj in ProjectMetadata.objects.all():
-        migrate_project(prj.project_id)
+    for prj in projs:
+        migrate_project(prj)

@@ -7,9 +7,7 @@ from pytas.http import TASClient
 from rt import Rt
 
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 class ProjectMembershipStep(AbstractStep):
@@ -83,7 +81,7 @@ class ProjectMembershipStep(AbstractStep):
         try:
             if tracker.login():
                 result = tracker.create_ticket(
-                    Queue=self.settings.get('rt_queue') or 'Accounting',
+                    Queue=self.settings.get('rt_queue', settings.RT_QUEUE) or 'Accounts',
                     Subject='{project} Project Membership Request for {username}'.format(
                         project=self.project['title'],
                         username=self.user.username
