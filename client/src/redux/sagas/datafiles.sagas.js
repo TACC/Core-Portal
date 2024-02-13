@@ -889,7 +889,7 @@ export const defaultAllocationSelector = (state) =>
   state.allocations.portal_alloc || state.allocations.active[0].projectName;
 
 const getExtractParams = (file, latestExtract, defaultAllocation) => {
-  const inputFile = encodeURI(`tapis://${file.system}/${file.path}`);
+  const inputFile = `tapis://${file.system}/${file.path}`;
   const archivePath = `${file.path.slice(0, -file.name.length)}`;
   return JSON.stringify({
     job: {
@@ -1000,7 +1000,7 @@ const getCompressParams = (
   defaultAllocation
 ) => {
   const fileInputs = files.map((file) => ({
-    sourceUrl: encodeURI(`tapis://${file.system}/${file.path}`),
+    sourceUrl: `tapis://${file.system}/${file.path}`,
   }));
 
   let archivePath, archiveSystem;
