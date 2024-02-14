@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -14,6 +14,7 @@ import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
+  const [addon, setAddon] = useState(null);
   const { fetchListing } = useFileListing('FilesListing');
   useEffect(() => {
     dispatch({
@@ -38,6 +39,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
   );
+
+  const { hasProjectFileListingToolbarAddon, portalName } = useSelector((state) => ({
+      hasProjectFileListingToolbarAddon: state.workbench.config.hasProjectFileListingAddon,
+      portalName: state.workbench.portalName
+    })
+  ) 
+
+  useEffect(async () => {
+    if (hasProjectFileListingToolbarAddon) {
+      const module = await import(`../../_custom/${portalName}/DataFilesProjectListingAddon/DataFilesProjectListingAddon`);
+      setAddon(module.default)
+    }
+  })
 
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
@@ -64,15 +78,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     });
   };
 
-  const onOpenFormModal = (form_name) => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'dynamicform',
-        props: { formName: form_name },
-      },
-    });
-  }
 
   if (metadata.loading) {
     return (
@@ -109,18 +114,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
-          <span className={styles.separator}>|</span>
-          <Button type="link" onClick={() => onOpenFormModal('ADD_SAMPLE_DATA')}>
-            Add Sample Data
-          </Button>
-          <span className={styles.separator}>|</span>
-          <Button type="link" onClick={() => onOpenFormModal('ADD_ORIGIN_DATASET')}>
-            Add Origin Dataset
-          </Button>
-          <span className={styles.separator}>|</span>
-          <Button type="link" onClick={() => onOpenFormModal('ADD_ANALYSIS_DATASET')}>
-            Add Analysis Dataset
-          </Button>
+          {hasProjectFileListingToolbarAddon ? addon : null}
         </div>
       }
       manualContent

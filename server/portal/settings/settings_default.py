@@ -239,6 +239,7 @@ _WORKBENCH_SETTINGS = {
     "hideManageAccount": False,
     "hideSystemStatus": False,
     "hasUserGuide": True,
+    "hasProjectFileListingAddon": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,

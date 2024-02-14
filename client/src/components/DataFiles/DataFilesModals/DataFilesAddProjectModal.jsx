@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
+import DataFilesProjectFormAddon from '../../_custom/drp/DataFilesAddProjectFormAddon/DataFilesAddProjectFormAddon';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -114,6 +115,7 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
+                <DataFilesProjectFormAddon></DataFilesProjectFormAddon>
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
