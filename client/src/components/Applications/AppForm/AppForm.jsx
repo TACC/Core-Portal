@@ -746,12 +746,12 @@ export const AppSchemaForm = ({ app }) => {
                         required
                       >
                         {execSystemsWithAllocation
+                          .sort()
                           .map((exec_system_id) => (
                             <option key={exec_system_id} value={exec_system_id}>
                               {exec_system_id}
                             </option>
-                          ))
-                          .sort()}
+                          ))}
                       </FormField>
                     )}
                   {app.definition.jobType === 'BATCH' && (
