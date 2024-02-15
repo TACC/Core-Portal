@@ -14,7 +14,7 @@ import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
-  const [addon, setAddon] = useState(null);
+  const [AddonComponent, setAddonComponent] = useState(null);
   const { fetchListing } = useFileListing('FilesListing');
   useEffect(() => {
     dispatch({
@@ -40,18 +40,26 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         .map((currentUser) => currentUser.access === 'owner')[0]
   );
 
-  const { hasProjectFileListingToolbarAddon, portalName } = useSelector((state) => ({
-      hasProjectFileListingToolbarAddon: state.workbench.config.hasProjectFileListingAddon,
-      portalName: state.workbench.portalName
+  const { hasProjectFileListingToolbarAddon, portalName } = useSelector(
+    (state) => ({
+      hasProjectFileListingToolbarAddon:
+        state.workbench.config.hasProjectFileListingAddon,
+      portalName: state.workbench.portalName,
     })
-  ) 
+  );
 
-  useEffect(async () => {
+  useEffect(() => {
+    const loadAddonComponent = async () => {
+      const module = await import(
+        `../../_custom/${portalName}/DataFilesProjectListingAddon/DataFilesProjectListingAddon`
+      );
+      setAddonComponent(() => module.default);
+    };
+
     if (hasProjectFileListingToolbarAddon) {
-      const module = await import(`../../_custom/${portalName}/DataFilesProjectListingAddon/DataFilesProjectListingAddon`);
-      setAddon(module.default)
+      loadAddonComponent();
     }
-  })
+  }, [hasProjectFileListingToolbarAddon, portalName]);
 
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
@@ -77,7 +85,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       payload: { operation: 'manageproject', props: {} },
     });
   };
-
 
   if (metadata.loading) {
     return (
@@ -114,7 +121,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
-          {hasProjectFileListingToolbarAddon ? addon : null}
+          {hasProjectFileListingToolbarAddon && AddonComponent && (
+            <AddonComponent />
+          )}
         </div>
       }
       manualContent

@@ -115,7 +115,7 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
-                <DataFilesProjectFormAddon></DataFilesProjectFormAddon>
+              <DataFilesProjectFormAddon></DataFilesProjectFormAddon>
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
