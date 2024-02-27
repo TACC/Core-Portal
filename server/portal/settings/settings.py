@@ -717,6 +717,8 @@ SETTINGS: RECAPTCHA
 RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
 RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
+PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
+
 """
 SETTINGS: LOCAL OVERRIDES
 """
