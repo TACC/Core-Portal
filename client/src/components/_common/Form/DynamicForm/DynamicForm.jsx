@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FormField from '../FormField';
-import Button from '_common/Button';
+import { Button } from '_common';
 
 const DynamicForm = ({ formFields }) => {
   const renderFormField = (field) => {
@@ -44,15 +44,14 @@ const DynamicForm = ({ formFields }) => {
               );
             })}
           </FormField>
-        );
-      case 'radio':
+        ); 
+        case 'radio':
         return (
           <div>
             <label className="bold-label">{field.label}</label>
             {field.options.map((option) => (
               <div key={option.value}>
                 <input
-                  className="radio-input"
                   type="radio"
                   id={option.value}
                   name={field.name}
@@ -61,6 +60,19 @@ const DynamicForm = ({ formFields }) => {
                 <label htmlFor={option.value}>{option.label}</label>
               </div>
             ))}
+          </div>
+  
+        );
+      case 'file': // Adding support for file type
+        return (
+          <div>
+            <FormField
+                name={field.name}
+                label={field.label}
+                type="file"
+                description={field?.description}
+                required={field?.validation?.required}
+              />
           </div>
         );
       case 'submit':
