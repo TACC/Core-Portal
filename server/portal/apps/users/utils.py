@@ -259,3 +259,10 @@ def remove_user(project_id, user_id):
     if resp['status'] != 'success':
         raise ApiException("Failed to delete user: '{}'".format(resp['message']))
     return resp['result']
+
+
+def check_user_groups(username, groups):
+    return any(
+        user['username'] == str(username)
+        for group in groups for user in get_project_users_from_name(group)
+    )

@@ -524,3 +524,14 @@ WH_BASE_URL = "https://testserver"
 WORKBENCH_SETTINGS = {
     "debug": False
 }
+
+PORTAL_ELEVATED_ROLES = {
+  "is_staff": {
+    "groups": [],
+    "usernames": []
+  },
+  "is_superuser": {
+    "groups": [],
+    "usernames": []
+  }
+}
