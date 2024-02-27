@@ -44,8 +44,8 @@ const DynamicForm = ({ formFields }) => {
               );
             })}
           </FormField>
-        ); 
-        case 'radio':
+        );
+      case 'radio':
         return (
           <div>
             <label className="bold-label">{field.label}</label>
@@ -61,18 +61,17 @@ const DynamicForm = ({ formFields }) => {
               </div>
             ))}
           </div>
-  
         );
       case 'file': // Adding support for file type
         return (
           <div>
             <FormField
-                name={field.name}
-                label={field.label}
-                type="file"
-                description={field?.description}
-                required={field?.validation?.required}
-              />
+              name={field.name}
+              label={field.label}
+              type="file"
+              description={field?.description}
+              required={field?.validation?.required}
+            />
           </div>
         );
       case 'submit':

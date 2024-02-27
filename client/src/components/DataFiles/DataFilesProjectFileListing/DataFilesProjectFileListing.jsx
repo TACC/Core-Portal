@@ -15,10 +15,11 @@ import styles from './DataFilesProjectFileListing.module.scss';
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
-  
+
   // logic to render addonComponents for DRP
-  const portalName = useSelector(state => state.workbench.portalName);
-  const addonComponents = portalName === 'DRP' && useAddonComponents({ portalName: 'DRP' });
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const addonComponents =
+    portalName === 'DRP' && useAddonComponents({ portalName: 'DRP' });
 
   useEffect(() => {
     dispatch({
@@ -43,8 +44,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
   );
-
-
 
   // const { hasProjectFileListingToolbarAddon, portalName } = useSelector(
   //   (state) => ({
@@ -119,7 +118,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           {canEditSystem ? (
             <>
               {/* AddonComponent for DRP portal */}
-              {addonComponents && addonComponents.DataFilesProjectListingAddon ? (
+              {addonComponents &&
+              addonComponents.DataFilesProjectListingAddon ? (
                 <addonComponents.DataFilesProjectListingAddon />
               ) : (
                 <>

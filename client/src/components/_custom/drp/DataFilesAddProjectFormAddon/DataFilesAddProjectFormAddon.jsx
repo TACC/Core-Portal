@@ -19,7 +19,7 @@ const DataFilesProjectFormAddon = () => {
         <DynamicForm formFields={form?.form_fields ?? []} />
       )}
     </div>
-    );
+  );
 };
 
 export default DataFilesProjectFormAddon;
