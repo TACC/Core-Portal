@@ -10,11 +10,15 @@ export const getExecSystemFromId = (app, execSystemId) => {
 };
 
 /**
- * Get the execution system object for a given id of the execution system.
+ * Gets the exec system for the default set in the job attributes.
+ * Otherwise, get the first entry.
  */
 export const getDefaultExecSystem = (app) => {
   if (app?.execSystems?.length) {
-    return getExecSystemFromId(app, app.execSystemId) ?? app.execSystems[0];
+    return (
+      getExecSystemFromId(app, app.definition.jobAttributes.execSystemId) ??
+      app.execSystems[0]
+    );
   }
 
   return null;
