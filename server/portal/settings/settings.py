@@ -116,6 +116,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
@@ -729,17 +730,6 @@ SETTINGS: INTERNAL DOCS
 """
 INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
 INTERNAL_DOCS_URL = getattr(settings_custom, '_INTERNAL_DOCS_URL', '')
-
-
-"""
-SETTINGS: OPTIONAL FEATURES. Edit settings_custom
-"""
-ENABLE_OPTIMIZED_OAUTH_REFRESH = getattr(settings_custom, '_ENABLE_OPTIMIZED_OAUTH_REFRESH', False)
-
-"""
-SETTINGS: OPTIONAL FEATURES. Edit settings_custom
-"""
-ENABLE_OPTIMIZED_OAUTH_REFRESH = getattr(settings_custom, '_ENABLE_OPTIMIZED_OAUTH_REFRESH', False)
 
 """
 SETTINGS: LOCAL OVERRIDES
