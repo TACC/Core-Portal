@@ -46,9 +46,9 @@ def _get_user_app_license(license_type, user):
 
 
 def _get_all_exec_systems(user):
-    """List of all execution systems available for the user."""
+    """List of all enabled execution systems available for the user."""
     tapis = user.tapis_oauth.client
-    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search="(canExec.eq.true)")
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search="(canExec.eq.true)~(enabled.eq.true)")
 
 
 def _get_app(app_id, app_version, user):

@@ -21,14 +21,30 @@ describe('app utility to get Execution System from Id', () => {
 
 describe('app utility to get Default Execution System from Id', () => {
   it('returns the matching default exec system', () => {
-    expect(getDefaultExecSystem(helloWorldAppFixture).id).toEqual('frontera');
+    const app = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          execSystemId: 'ls6',
+        },
+      },
+    };
+    expect(getDefaultExecSystem(app).id).toEqual('ls6');
   });
   it('returns first exec system when execSystemId does not match', () => {
     const app = {
       ...helloWorldAppFixture,
-      execSystemId: 'foobar',
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          execSystemId: 'foobar',
+        },
+      },
     };
-    expect(getDefaultExecSystem(helloWorldAppFixture).id).toEqual('frontera');
+    expect(getDefaultExecSystem(app).id).toEqual('frontera');
   });
   it('returns null with empty exec system array', () => {
     const app = {

@@ -177,8 +177,9 @@ export const updateValuesForQueue = (app, values) => {
  *   3. Otherwise, use the execution system default queue.
  *
  * @function
- * @param {String} inputFieldName
- * @returns {String} field Name prefixed with target path
+ * @param {any} app App Shape defined in AppForm.jsx
+ * @param {any} exec_sys execution system, shape defined in AppForm.jsx
+ * @returns {String} queue_name nullable, queue name to lookup
  */
 export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
   const queueName =

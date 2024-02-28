@@ -310,6 +310,7 @@ def test_get_app_dynamic_exec_sys(
     assert response_json["definition"]["version"] == "0.0.1"
     if dynamic_exec_system:
         assert len(response_json["execSystems"]) == 2
+        mock_tapis_client.systems.getSystems.assert_called_with(listType='ALL', select='allAttributes', search='(canExec.eq.true)~(enabled.eq.true)')
     else:
         assert len(response_json["execSystems"]) == 1
         assert response_json["execSystems"][0]["id"] == "frontera"

@@ -749,15 +749,15 @@ export const AppSchemaForm = ({ app }) => {
                           .sort()
                           .map((exec_system_id) => (
                             <option key={exec_system_id} value={exec_system_id}>
-                              {exec_system_id}
+                              {getSystemName(
+                                getExecSystemFromId(app, exec_system_id)?.host
+                              )}{' '}
+                              - {exec_system_id}
                             </option>
                           ))}
                       </FormField>
                     )}
                   {app.definition.jobType === 'BATCH' && (
-                    // TODO: Add option for exec system. form field.
-                    //
-
                     <FormField
                       label="Queue"
                       name="execSystemLogicalQueue"
