@@ -9,7 +9,7 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 _DEBUG = True
 
 # Namespace for portal
-_PORTAL_NAMESPACE = 'CEP'
+_PORTAL_NAMESPACE = 'DRP'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
@@ -240,6 +240,7 @@ _WORKBENCH_SETTINGS = {
     "hideSystemStatus": False,
     "hasUserGuide": True,
     "hasProjectFileListingAddon": True,
+    "hasCustomSagas": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,

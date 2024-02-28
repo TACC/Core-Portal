@@ -10,8 +10,17 @@ from portal.libs.agave.utils import text_preview, get_file_size, increment_file_
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
+from portal.apps.datafiles.models import DataFilesMetadata
 
 logger = logging.getLogger(__name__)
+
+
+def get_datafile_metadata(system, path):
+    try: 
+        metadata_record = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
+        return metadata_record.metadata
+    except: 
+        return None
 
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
@@ -41,6 +50,9 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          path=path,
                                          offset=int(offset),
                                          limit=int(limit))
+    
+    
+    folder_metadata = get_datafile_metadata(system=system, path=path)
 
     try:
         # Convert file objects to dicts for serialization.
@@ -55,14 +67,16 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
             'lastModified': f.lastModified,
             '_links': {
                 'self': {'href': f.url}
-            }}, raw_listing))
+            },
+            'metadata': get_datafile_metadata(system=system, path=f.path)
+        }, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -176,7 +190,7 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     return redeemUrl
 
 
-def mkdir(client, system, path, dir_name):
+def mkdir(client, system, path, dir_name, metadata):
     """Create a new directory.
 
     Params
@@ -197,6 +211,15 @@ def mkdir(client, system, path, dir_name):
 
     path_input = str(Path(path) / Path(dir_name))
     client.files.mkdir(systemId=system, path=path_input)
+
+    if metadata is not None: 
+        files_metadata = DataFilesMetadata(
+            path = f'{system}/{path_input.strip("/")}',
+            metadata = metadata
+        )
+
+        files_metadata.save()
+        print(f'File Metadata for path {path_input} saved successfully')
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,

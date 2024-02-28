@@ -7,14 +7,24 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import styles from './DataFilesFormModal.module.scss';
+import { useFileListing } from 'hooks/datafiles';
+import { useHistory, useLocation } from 'react-router-dom';
+
 
 const DataFilesFormModal = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+
+  const reloadPage = () => {
+    history.push(location.pathname);
+  };
 
   const { formName } = useSelector(
     (state) => state.files.modalProps.dynamicform
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
+  const { params } = useFileListing('FilesListing');
 
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
@@ -48,7 +58,10 @@ const DataFilesFormModal = () => {
   }, []);
 
   const handleSubmit = (values) => {
-    console.log('FORM SUBMIT', values);
+    dispatch({
+      type: formName,
+      payload: { params, values, reloadPage },
+    });
   };
 
   return (

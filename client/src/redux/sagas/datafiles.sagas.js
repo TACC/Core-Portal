@@ -596,7 +596,7 @@ export async function previewUtil(api, scheme, system, path) {
   return requestJson.data;
 }
 
-export async function mkdirUtil(api, scheme, system, path, dirname) {
+export async function mkdirUtil(api, scheme, system, path, dirname, metadata) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
@@ -610,7 +610,7 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dir_name: dirname }),
+    body: JSON.stringify({ dir_name: dirname, metadata: metadata ?? null }),
   });
 
   return request;

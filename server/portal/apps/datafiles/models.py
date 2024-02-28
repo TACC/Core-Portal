@@ -21,3 +21,11 @@ class Link(models.Model):
             'updated': str(self.updated),
             'expiration': str(self.expiration)
         }
+
+class DataFilesMetadata(models.Model):
+
+    path = models.CharField(max_length=255, primary_key=True)
+    metadata = models.JSONField()
+
+    def __str__(self):
+        return self.path

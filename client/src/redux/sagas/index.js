@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all, select, takeEvery, fork } from 'redux-saga/effects';
 import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
@@ -53,6 +53,24 @@ import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
 
+function* watchStartCustomSaga() {
+  yield takeEvery('START_CUSTOM_SAGA', startCustomSaga);
+}
+
+function* startCustomSaga(action) {
+  const portalName = yield select((state) => {
+    return state.workbench.portalName;
+  });
+
+  const { default: customSaga } = yield import(
+    `./_custom/${portalName.toLowerCase()}.sagas`
+  );
+
+  if (customSaga) {
+    yield fork(customSaga);
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     watchJobs(),
@@ -102,5 +120,6 @@ export default function* rootSaga() {
     watchProjects(),
     watchUsers(),
     watchSiteSearch(),
+    watchStartCustomSaga(),
   ]);
 }

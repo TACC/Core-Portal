@@ -7,7 +7,6 @@ import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import DataFilesProjectFormAddon from '../../_custom/drp/DataFilesAddProjectFormAddon/DataFilesAddProjectFormAddon';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -115,7 +114,6 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
-              <DataFilesProjectFormAddon></DataFilesProjectFormAddon>
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
