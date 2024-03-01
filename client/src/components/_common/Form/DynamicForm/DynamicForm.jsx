@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import FormField from '../FormField';
 import { Button } from '_common';
+import { useFormikContext } from 'formik'
 
 const DynamicForm = ({ formFields }) => {
+
+  // For file processing
+  const { setFieldValue } = useFormikContext();
+
   const renderFormField = (field) => {
     switch (field.type) {
       case 'text':
@@ -71,6 +76,7 @@ const DynamicForm = ({ formFields }) => {
               type="file"
               description={field?.description}
               required={field?.validation?.required}
+              onChange={(event) => { setFieldValue("file", event.currentTarget.files[0]) }}
             />
           </div>
         );

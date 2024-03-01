@@ -18,8 +18,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
-  const addonComponents =
-    portalName === 'DRP' && useAddonComponents({ portalName: 'DRP' });
+  
+  const { DataFilesProjectFileListingAddon } = useAddonComponents({portalName})
 
   useEffect(() => {
     dispatch({
@@ -44,27 +44,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
   );
-
-  // const { hasProjectFileListingToolbarAddon, portalName } = useSelector(
-  //   (state) => ({
-  //     hasProjectFileListingToolbarAddon:
-  //       state.workbench.config.hasProjectFileListingAddon,
-  //     portalName: state.workbench.portalName,
-  //   })
-  // );
-
-  // useEffect(() => {
-  //   const loadAddonComponent = async () => {
-  //     const module = await import(
-  //       `../../_custom/${portalName}/DataFilesProjectListingAddon/DataFilesProjectListingAddon.jsx`
-  //     );
-  //     setAddonComponent(() => module.default);
-  //   };
-
-  //   if (hasProjectFileListingToolbarAddon) {
-  //     loadAddonComponent();
-  //   }
-  // }, [hasProjectFileListingToolbarAddon, portalName]);
 
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
@@ -118,10 +97,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           {canEditSystem ? (
             <>
               {/* AddonComponent for DRP portal */}
-              {addonComponents &&
-              addonComponents.DataFilesProjectListingAddon ? (
-                <addonComponents.DataFilesProjectListingAddon />
-              ) : (
+              {DataFilesProjectFileListingAddon ? <DataFilesProjectFileListingAddon />
+              : (
                 <>
                   <Button type="link" onClick={onEdit}>
                     Edit Descriptions

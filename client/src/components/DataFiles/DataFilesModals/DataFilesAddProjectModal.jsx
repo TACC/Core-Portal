@@ -20,8 +20,7 @@ const DataFilesAddProjectModal = () => {
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
-  const addonComponents =
-    portalName === 'DRP' && useAddonComponents({ portalName: 'DRP' });
+  const { DataFilesAddProjectModalAddon } = useAddonComponents({portalName})
 
   useEffect(() => {
     setMembers([
@@ -120,10 +119,7 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
-              {addonComponents &&
-                addonComponents.DataFilesAddProjectFormAddon && (
-                  <addonComponents.DataFilesAddProjectFormAddon />
-                )}
+              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}

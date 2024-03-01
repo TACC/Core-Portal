@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './DataFilesProjectListingAddon.module.scss';
+import styles from './DataFilesProjectFileListingAddon.module.scss';
 
 const DataFilesProjectFileListingAddon = () => {
   const dispatch = useDispatch();

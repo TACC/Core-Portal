@@ -1,26 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-function useAddonComponents({ portalName }) {
+const useAddonComponents = ({ portalName }) => {
   const [addonComponents, setAddonComponents] = useState({});
-  const hasAddons = useSelector((state) => state.workbench.config.hasAddons);
+  const addons = useSelector((state) => state.workbench.config.addons);
   useEffect(() => {
     const loadAddonComponents = async () => {
       try {
-        const addOns = {};
-        for (const addOnName of hasAddons) {
+        for (const addonName of addons) {
           const module = await import(
-            `../../components/_custom/${portalName}/${addOnName}/${addOnName}.jsx`
+            `../../components/_custom/${portalName}/${addonName}/${addonName}.jsx`
           );
-          addOns[addOnName] = module.default;
+          setAddonComponents(prevComponents => ({
+            ...prevComponents,
+            [addonName]: module.default 
+          }));
         }
-        setAddonComponents(addOns);
       } catch (error) {
         console.error('Error loading addon components:', error);
       }
     };
 
-    if (hasAddons) {
+    if (addons) {
       loadAddonComponents();
     }
   }, []);

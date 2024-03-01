@@ -2,12 +2,14 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
-const DataFilesProjectFormAddon = () => {
+
+const DataFilesAddProjectModalAddon = () => {
+  
   const { data: form, isLoading } = useQuery('form_ADD_PROJECT', () =>
     fetchUtil({
       url: 'api/forms',
       params: {
-        form_name: 'ADD_PROJECT',
+        form_name: 'ADD_PROJECT_ADDON',
       },
     })
   );
@@ -22,4 +24,4 @@ const DataFilesProjectFormAddon = () => {
   );
 };
 
-export default DataFilesProjectFormAddon;
+export default DataFilesAddProjectModalAddon;
