@@ -752,7 +752,7 @@ export const AppSchemaForm = ({ app }) => {
                               {getSystemName(
                                 getExecSystemFromId(app, exec_system_id)?.host
                               )}{' '}
-                              - {exec_system_id}
+                              : {exec_system_id}
                             </option>
                           ))}
                       </FormField>
