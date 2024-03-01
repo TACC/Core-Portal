@@ -69,7 +69,7 @@ describe('AppSchemaForm', () => {
     timekeeper.freeze(new Date(frozenDate));
   });
 
-  it.only('renders the AppSchemaForm', async () => {
+  it('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -102,7 +102,7 @@ describe('AppSchemaForm', () => {
           ...helloWorldAppFixture.execSystems[0],
           host: 'login1.frontera.tacc.utexas.edu',
         },
-        ...helloWorldAppFixture.slice(1),
+        ...helloWorldAppFixture.execSystems.slice(1),
       ],
     });
     await waitFor(() => {
@@ -116,14 +116,17 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      execSystems: {
-        ...helloWorldAppFixture.execSystems[0],
-        host: 'invalid_system.tacc.utexas.edu',
-      },
-      ...helloWorldAppFixture.slice(1),
+      execSystems: [
+        {
+          ...helloWorldAppFixture.execSystems[0],
+          host: 'invalid_system.frontera.tacc.utexas.edu',
+        },
+        ...helloWorldAppFixture.execSystems.slice(1),
+      ],
     });
+    // If a host with no allocation is provided, it is dropped from the list of exec systems.
     await waitFor(() => {
-      expect(getByText(/Error/)).toBeDefined();
+      expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
 
@@ -332,7 +335,7 @@ describe('AppSchemaForm', () => {
     );
   });
 
-  it('displays correctly when only one non-default execution system has allocation', async () => {
+  it('does not display exec system when only one non-default execution system has allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -352,13 +355,10 @@ describe('AppSchemaForm', () => {
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );
-    expect(execSystemDropDown).not.toBeNull();
-    expect(execSystemDropDown.value).toBe('ls6');
-    const options = Array.from(execSystemDropDown.querySelectorAll('option'));
-    expect(options).toHaveLength(1);
+    expect(execSystemDropDown).toBeNull();
   });
 
-  it('displays correctly when default execution system has allocation', async () => {
+  it('does not display exec system  when only default execution system has allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -378,10 +378,7 @@ describe('AppSchemaForm', () => {
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );
-    expect(execSystemDropDown).not.toBeNull();
-    expect(execSystemDropDown.value).toBe('frontera');
-    const options = Array.from(execSystemDropDown.querySelectorAll('option'));
-    expect(options).toHaveLength(1);
+    expect(execSystemDropDown).toBeNull();
   });
 
   it('displays error when no exec system has allocation', async () => {
@@ -402,7 +399,7 @@ describe('AppSchemaForm', () => {
     await waitFor(() => {
       expect(
         getByText(
-          /Error: You need an allocation on Frontera to run this application/
+          /Error: You need an allocation on Maverick99 to run this application/
         )
       ).toBeDefined();
     });
@@ -516,6 +513,7 @@ describe('AppSchemaForm', () => {
       'select[name="execSystemId"]'
     );
     expect(execSystemDropDown.value).toBe('frontera');
+    expect(execSystemDropDown).toHaveTextContent('Frontera : frontera');
 
     fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
     expect(execSystemDropDown.value).toBe('ls6');
