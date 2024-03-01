@@ -8,14 +8,19 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useFileListing } from 'hooks/datafiles';
+import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
-  const [AddonComponent, setAddonComponent] = useState(null);
   const { fetchListing } = useFileListing('FilesListing');
+
+  // logic to render addonComponents for DRP
+  const portalName = useSelector((state) => state.workbench.portalName);
+  
+  const { DataFilesProjectFileListingAddon } = useAddonComponents({portalName})
+
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
@@ -39,27 +44,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
   );
-
-  const { hasProjectFileListingToolbarAddon, portalName } = useSelector(
-    (state) => ({
-      hasProjectFileListingToolbarAddon:
-        state.workbench.config.hasProjectFileListingAddon,
-      portalName: state.workbench.portalName,
-    })
-  );
-
-  useEffect(() => {
-    const loadAddonComponent = async () => {
-      const module = await import(
-        `../../_custom/${portalName}/DataFilesProjectListingAddon/DataFilesProjectListingAddon`
-      );
-      setAddonComponent(() => module.default);
-    };
-
-    if (hasProjectFileListingToolbarAddon) {
-      loadAddonComponent();
-    }
-  }, [hasProjectFileListingToolbarAddon, portalName]);
 
   const readOnlyTeam = useSelector((state) => {
     const projectSystem = state.systems.storage.configuration.find(
@@ -112,18 +96,21 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         <div className={styles.controls}>
           {canEditSystem ? (
             <>
-              <Button type="link" onClick={onEdit}>
-                Edit Descriptions
-              </Button>
-              <span className={styles.separator}>|</span>
+              {/* AddonComponent for DRP portal */}
+              {DataFilesProjectFileListingAddon ? <DataFilesProjectFileListingAddon />
+              : (
+                <>
+                  <Button type="link" onClick={onEdit}>
+                    Edit Descriptions
+                  </Button>
+                  <span className={styles.separator}>|</span>
+                </>
+              )}
             </>
           ) : null}
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
-          {hasProjectFileListingToolbarAddon && AddonComponent && (
-            <AddonComponent />
-          )}
         </div>
       }
       manualContent

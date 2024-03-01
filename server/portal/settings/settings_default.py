@@ -241,6 +241,7 @@ _WORKBENCH_SETTINGS = {
     "hasUserGuide": True,
     "hasProjectFileListingAddon": True,
     "hasCustomSagas": True,
+    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon'],
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,

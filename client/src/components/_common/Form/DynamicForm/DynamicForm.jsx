@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FormField from '../FormField';
-import Button from '_common/Button';
+import { Button } from '_common';
+import { useFormikContext } from 'formik'
 
 const DynamicForm = ({ formFields }) => {
+
+  // For file processing
+  const { setFieldValue } = useFormikContext();
+
   const renderFormField = (field) => {
     switch (field.type) {
       case 'text':
@@ -52,7 +57,6 @@ const DynamicForm = ({ formFields }) => {
             {field.options.map((option) => (
               <div key={option.value}>
                 <input
-                  className="radio-input"
                   type="radio"
                   id={option.value}
                   name={field.name}
@@ -61,6 +65,19 @@ const DynamicForm = ({ formFields }) => {
                 <label htmlFor={option.value}>{option.label}</label>
               </div>
             ))}
+          </div>
+        );
+      case 'file': // Adding support for file type
+        return (
+          <div>
+            <FormField
+              name={field.name}
+              label={field.label}
+              type="file"
+              description={field?.description}
+              required={field?.validation?.required}
+              onChange={(event) => { setFieldValue("file", event.currentTarget.files[0]) }}
+            />
           </div>
         );
       case 'submit':

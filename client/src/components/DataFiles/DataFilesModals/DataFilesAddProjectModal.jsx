@@ -7,6 +7,7 @@ import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
+import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -16,6 +17,10 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
+
+  // logic to render addonComponents for DRP
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesAddProjectModalAddon } = useAddonComponents({portalName})
 
   useEffect(() => {
     setMembers([
@@ -114,6 +119,7 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
+              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
