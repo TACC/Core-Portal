@@ -222,13 +222,13 @@ export function* scrollFiles(action) {
   }
 }
 
-export async function renameFileUtil(api, scheme, system, path, newName) {
+export async function renameFileUtil(api, scheme, system, path, newName, metadata) {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ new_name: newName }),
+    body: JSON.stringify({ new_name: newName, metadata: metadata ?? null }),
   });
   if (!response.ok) {
     throw new Error(response.status);
@@ -255,7 +255,8 @@ export function* renameFile(action) {
       action.payload.scheme,
       file.system,
       '/' + file.path,
-      action.payload.newName
+      action.payload.newName,
+      file.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -285,14 +286,16 @@ export async function moveFileUtil(
   system,
   path,
   destSystem,
-  destPath
+  destPath, 
+  index,
+  metadata
 ) {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
+    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath, metadata: metadata ?? null }),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -318,7 +321,8 @@ export function* moveFile(src, dest, index) {
       src.path,
       dest.system,
       dest.path,
-      index
+      index,
+      src.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',

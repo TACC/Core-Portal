@@ -1,6 +1,7 @@
 import os
 import io
 from django.conf import settings
+from django.db import transaction
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
@@ -21,6 +22,17 @@ def get_datafile_metadata(system, path):
         return metadata_record.metadata
     except: 
         return None
+
+@transaction.atomic
+def update_datafile_metadata(system, name, old_path, new_path, metadata):
+    files_metadata = DataFilesMetadata.objects.get(path=f'{system}/{old_path.strip("/")}')
+    files_metadata.name = name
+    files_metadata.path = f'{system}/{new_path}'  
+    files_metadata.metadata = metadata
+    files_metadata.save()
+
+    for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
+        update_datafile_metadata(system=system, name=child.name, old_path=child.path.split('/', 1)[1], new_path=f"{new_path}/{child.name}", metadata=child.metadata)
 
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
@@ -189,8 +201,8 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
 
     return redeemUrl
 
-
-def mkdir(client, system, path, dir_name, metadata):
+@transaction.atomic
+def mkdir(client, system, path, dir_name, metadata=None):
     """Create a new directory.
 
     Params
@@ -210,10 +222,10 @@ def mkdir(client, system, path, dir_name, metadata):
     """
 
     path_input = str(Path(path) / Path(dir_name))
-    client.files.mkdir(systemId=system, path=path_input)
 
     if metadata is not None: 
         files_metadata = DataFilesMetadata(
+            name = dir_name,
             path = f'{system}/{path_input.strip("/")}',
             metadata = metadata
         )
@@ -221,16 +233,18 @@ def mkdir(client, system, path, dir_name, metadata):
         files_metadata.save()
         print(f'File Metadata for path {path_input} saved successfully')
 
+    client.files.mkdir(systemId=system, path=path_input)
+
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'systemId': system,
-                                      'filePath': path,
-                                      'recurse': False},
-                              )
+                                    'systemId': system,
+                                    'filePath': path,
+                                    'recurse': False},
+                            )
 
     return {"result": "OK"}
 
-
-def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
+@transaction.atomic
+def move(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None):
     """Move a current file to the given destination.
 
     Params
@@ -269,6 +283,9 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
     file_name = increment_file_name(listing=file_listing, file_name=file_name)
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+
+    if metadata is not None:
+        update_datafile_metadata(system=dest_system, name=file_name, old_path=src_path.strip("/"), new_path=dest_path_full.strip("/"), metadata=metadata)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -391,8 +408,7 @@ def delete(client, system, path):
     return client.files.delete(systemId=system,
                                path=path)
 
-
-def rename(client, system, path, new_name):
+def rename(client, system, path, new_name, metadata=None):
     """Renames a file. This is performed under the hood by moving the file to
     the same parent folder but with a new name.
 
@@ -413,8 +429,7 @@ def rename(client, system, path, new_name):
     """
     new_path = os.path.dirname(path)
     return move(client, src_system=system, src_path=path,
-                dest_system=system, dest_path=new_path, file_name=new_name)
-
+                dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata)
 
 def trash(client, system, path, homeDir):
     """Move a file to the .Trash folder.
