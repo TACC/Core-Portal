@@ -58,15 +58,17 @@ const DataFilesAddProjectModal = () => {
     history.push(`${match.path}/tapis/projects/${system}`);
   };
 
-  const addproject = ({ title }) => {
+  const addproject = (values) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
-        title,
+        title: values.title,
+        description: values.description || null,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
         })),
+        metadata: DataFilesAddProjectModalAddon ? values : null,
         onCreate,
       },
     });

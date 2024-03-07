@@ -20,6 +20,8 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
+from portal.apps.projects.models.metadata import ProjectsMetadata
+from django.db import transaction
 
 LOGGER = logging.getLogger(__name__)
 
@@ -102,13 +104,24 @@ class ProjectsApiView(BaseApiView):
 
         return JsonResponse({"status": 200, "response": listing})
 
+    @transaction.atomic
     def post(self, request):  # pylint: disable=no-self-use
         """POST handler."""
         data = json.loads(request.body)
         title = data['title']
+        description = data['description']
+        metadata = data['metadata']
 
         client = request.user.tapis_oauth.client
-        system_id = create_shared_workspace(client, title, request.user.username)
+        system_id = create_shared_workspace(client, title, request.user.username, description)
+
+        if metadata is not None: 
+            project_metadata = ProjectsMetadata(
+                project_id = system_id,
+                metadata = metadata
+            )
+
+            project_metadata.save()
 
         return JsonResponse(
             {
@@ -143,6 +156,12 @@ class ProjectInstanceApiView(BaseApiView):
 
         prj = get_project(request.user.tapis_oauth.client, project_id)
 
+        try: 
+            project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
+            prj.update(project_metadata.metadata)
+        except: 
+            pass
+
         return JsonResponse(
             {
                 'status': 200,
@@ -150,6 +169,7 @@ class ProjectInstanceApiView(BaseApiView):
             }
         )
 
+    @transaction.atomic
     def patch(
             self,
             request,
@@ -183,6 +203,12 @@ class ProjectInstanceApiView(BaseApiView):
         :param str project_id: Project Id.
         """
         data = json.loads(request.body)
+        metadata = data['metadata']
+
+        if metadata is not None: 
+            project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
+            project_metadata.metadata = metadata
+            project_metadata.save()
 
         client = request.user.tapis_oauth.client
         workspace_def = update_project(client, project_id, data['title'], data['description'])

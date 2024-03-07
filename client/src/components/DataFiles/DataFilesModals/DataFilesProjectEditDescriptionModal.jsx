@@ -6,6 +6,7 @@ import FormField from '_common/Form/FormField';
 import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,9 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({ portalName })
 
   const initialValues = useMemo(
     () => ({
@@ -52,6 +56,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
+            metadata: DataFilesProjectEditDescriptionModalAddon ? values : null
           },
         },
       });
@@ -109,6 +114,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 type="textarea"
                 className={styles['description-textarea']}
               />
+              {DataFilesProjectEditDescriptionModalAddon && <DataFilesProjectEditDescriptionModalAddon />}
               <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">
