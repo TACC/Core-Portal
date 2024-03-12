@@ -28,6 +28,7 @@ class DataFilesMetadata(models.Model):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     metadata = models.JSONField(default=dict, blank=True)
     path = models.CharField(max_length=1024, unique=True)
+    project = models.ForeignKey('projects.ProjectsMetadata', on_delete=models.CASCADE, related_name='data_files')
 
     def __str__(self):
         return self.path

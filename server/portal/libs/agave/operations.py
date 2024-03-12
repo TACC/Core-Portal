@@ -11,6 +11,7 @@ from portal.libs.agave.utils import text_preview, get_file_size, increment_file_
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
+from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 
 logger = logging.getLogger(__name__)
@@ -224,10 +225,14 @@ def mkdir(client, system, path, dir_name, metadata=None):
     path_input = str(Path(path) / Path(dir_name))
 
     if metadata is not None: 
+
+        project_instance = ProjectsMetadata.objects.get(project_id=system)
+
         files_metadata = DataFilesMetadata(
             name = dir_name,
             path = f'{system}/{path_input.strip("/")}',
-            metadata = metadata
+            metadata = metadata,
+            project = project_instance
         )
 
         files_metadata.save()
