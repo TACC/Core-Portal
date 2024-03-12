@@ -212,6 +212,10 @@ class ProjectInstanceApiView(BaseApiView):
 
         client = request.user.tapis_oauth.client
         workspace_def = update_project(client, project_id, data['title'], data['description'])
+
+        if metadata is not None: 
+            workspace_def.update(metadata)
+
         return JsonResponse(
             {
                 'status': 200,
