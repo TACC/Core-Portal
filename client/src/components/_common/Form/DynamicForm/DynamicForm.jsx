@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import FormField from '../FormField';
 import { Button } from '_common';
 import { useFormikContext } from 'formik'
+import { FormGroup, Input } from 'reactstrap';
+import './DynamicForm.scss';
 
 const DynamicForm = ({ formFields }) => {
 
   // For file processing
-  const { setFieldValue } = useFormikContext();
+  const { setFieldValue, values, handleChange, handleBlur } = useFormikContext();
 
   const renderFormField = (field) => {
     switch (field.type) {
@@ -52,20 +54,23 @@ const DynamicForm = ({ formFields }) => {
         );
       case 'radio':
         return (
-          <div>
-            <label className="bold-label">{field.label}</label>
+          <FormGroup>
+            <label className='bold-label'>{field.label}</label>
             {field.options.map((option) => (
-              <div key={option.value}>
-                <input
-                  type="radio"
-                  id={option.value}
-                  name={field.name}
-                  value={option.value}
-                />
-                <label htmlFor={option.value}>{option.label}</label>
-              </div>
+              <FormGroup key={option.value} className='radio-input'>
+              <Input 
+                type='radio' 
+                id={option.value} 
+                name={field.name} 
+                value={option.value} 
+                checked={values[field.name] === option.value}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              <label htmlFor={option.value}>{option.label}</label>
+            </FormGroup>
             ))}
-          </div>
+          </FormGroup>
         );
       case 'file': // Adding support for file type
         return (
@@ -82,7 +87,7 @@ const DynamicForm = ({ formFields }) => {
         );
       case 'submit':
         return (
-          <Button type={'primary'} attr={'submit'}>
+          <Button type={'primary'} attr={'submit'} size={'long'}>
             {field.label}
           </Button>
         );

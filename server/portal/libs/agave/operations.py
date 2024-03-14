@@ -28,8 +28,9 @@ def get_datafile_metadata(system, path):
 def update_datafile_metadata(system, name, old_path, new_path, metadata):
     files_metadata = DataFilesMetadata.objects.get(path=f'{system}/{old_path.strip("/")}')
     files_metadata.name = name
-    files_metadata.path = f'{system}/{new_path}'  
+    files_metadata.path = f"{system}/{new_path.strip('/')}" 
     files_metadata.metadata = metadata
+    files_metadata.metadata['name'] = name
     files_metadata.save()
 
     for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
@@ -578,8 +579,20 @@ def download_bytes(client, system, path):
     io.BytesIO
         BytesIO object representing the downloaded file.
     """
-    file_name = os.path.basename(path)
+    file_name = os.path.basename(path) 
     resp = client.files.getContents(systemId=system, path=path)
     result = io.BytesIO(resp)
     result.name = file_name
     return result
+
+@transaction.atomic
+def update_metadata(client, system, path, old_name, new_name, metadata):
+    new_path = os.path.dirname(path)
+
+    if old_name != new_name:
+        move_result = move(client, src_system=system, src_path=path,
+                dest_system=system, dest_path=new_path, file_name=new_name)
+        move_message = move_result['message'].split('DestinationPath: ', 1)[1]
+        new_name = ('/' + move_message).rsplit('/', 1)[1]
+        
+    update_datafile_metadata(system=system, name=new_name, old_path=path, new_path=f'{new_path.strip("/")}/{new_name}', metadata=metadata)

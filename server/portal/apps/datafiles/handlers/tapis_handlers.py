@@ -11,7 +11,7 @@ allowed_actions = {
     'public': ['listing', 'search', 'copy', 'download', 'preview'],
     'community': ['listing', 'search', 'copy', 'download', 'preview'],
     'projects': ['listing', 'search', 'copy', 'download', 'mkdir',
-                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic']
+                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'update_metadata']
 }
 
 
