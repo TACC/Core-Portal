@@ -16,6 +16,7 @@ function AppRouter() {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
+  const hasCustomSagas = useSelector((state) => state.workbench.config.hasCustomSagas);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
@@ -29,6 +30,13 @@ function AppRouter() {
       dispatch({ type: 'FETCH_CUSTOM_MESSAGES' });
     }
   }, [authenticatedUser]);
+
+  useEffect(() => {
+    if (hasCustomSagas) {
+      dispatch({ type: 'START_CUSTOM_SAGA' });
+    }
+  }, [hasCustomSagas]);
+
   return (
     <Router>
       <Route path="/search/:filter?" component={SiteSearch} />

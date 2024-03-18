@@ -82,3 +82,10 @@ class ProjectMetadata(AbstractProjectMetadata):
         from portal.apps.projects.serializers import MetadataJSONSerializer
 
         return MetadataJSONSerializer().default(self)
+
+class ProjectsMetadata(models.Model):
+    project_id = models.CharField(max_length=255, primary_key=True)
+    metadata = models.JSONField(default=dict, null=True)
+
+    def __str__(self):
+        return self.project_id

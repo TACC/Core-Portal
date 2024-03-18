@@ -116,7 +116,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str):
+def create_shared_workspace(client: Tapis, title: str, owner: str, description=""):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -134,7 +134,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
                        "writer")
 
     # User creates the system and adds their credential
-    system_id = create_workspace_system(client, workspace_id, title)
+    system_id = create_workspace_system(client, workspace_id, title, description)
     # priv_key, pub_key = createKeyPair()
     # register_public_key(owner,
     #                     pub_key,

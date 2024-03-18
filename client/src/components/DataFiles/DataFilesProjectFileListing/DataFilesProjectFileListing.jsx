@@ -96,21 +96,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         <div className={styles.controls}>
           {canEditSystem ? (
             <>
-              {/* AddonComponent for DRP portal */}
-              {DataFilesProjectFileListingAddon ? <DataFilesProjectFileListingAddon />
-              : (
-                <>
-                  <Button type="link" onClick={onEdit}>
-                    Edit Descriptions
-                  </Button>
-                  <span className={styles.separator}>|</span>
-                </>
-              )}
+              <Button type="link" onClick={onEdit}>
+                Edit Descriptions
+              </Button>
+              <span className={styles.separator}>|</span>
             </>
           ) : null}
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
+          { DataFilesProjectFileListingAddon && <DataFilesProjectFileListingAddon /> }
         </div>
       }
       manualContent

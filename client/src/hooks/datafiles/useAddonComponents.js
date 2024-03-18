@@ -25,7 +25,6 @@ const useAddonComponents = ({ portalName }) => {
       loadAddonComponents();
     }
   }, []);
-  console.log('truuu', addonComponents);
   return addonComponents;
 }
 

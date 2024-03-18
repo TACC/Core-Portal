@@ -222,13 +222,13 @@ export function* scrollFiles(action) {
   }
 }
 
-export async function renameFileUtil(api, scheme, system, path, newName) {
+export async function renameFileUtil(api, scheme, system, path, newName, metadata) {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ new_name: newName }),
+    body: JSON.stringify({ new_name: newName, metadata: metadata ?? null }),
   });
   if (!response.ok) {
     throw new Error(response.status);
@@ -255,7 +255,8 @@ export function* renameFile(action) {
       action.payload.scheme,
       file.system,
       '/' + file.path,
-      action.payload.newName
+      action.payload.newName,
+      file.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -285,14 +286,16 @@ export async function moveFileUtil(
   system,
   path,
   destSystem,
-  destPath
+  destPath, 
+  index,
+  metadata
 ) {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
+    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath, metadata: metadata ?? null }),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -318,7 +321,8 @@ export function* moveFile(src, dest, index) {
       src.path,
       dest.system,
       dest.path,
-      index
+      index,
+      src.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -596,7 +600,7 @@ export async function previewUtil(api, scheme, system, path) {
   return requestJson.data;
 }
 
-export async function mkdirUtil(api, scheme, system, path, dirname) {
+export async function mkdirUtil(api, scheme, system, path, dirname, metadata) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
@@ -610,7 +614,7 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dir_name: dirname }),
+    body: JSON.stringify({ dir_name: dirname, metadata: metadata ?? null }),
   });
 
   return request;
@@ -1166,4 +1170,20 @@ export function* doMakePublic(action) {
 
 export function* watchMakePublic() {
   yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
+}
+
+export async function updateMetadataUtil(api, scheme, system, path, oldName, newName, metadata) {
+  const url = `/api/datafiles/${api}/update_metadata/${scheme}/${system}/${path}/`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: JSON.stringify({ old_name: oldName, new_name: newName, metadata: metadata ?? null }),
+  });
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+
+  const responseJson = await response.json();
+  return responseJson.data;
 }

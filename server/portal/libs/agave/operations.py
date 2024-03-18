@@ -1,6 +1,7 @@
 import os
 import io
 from django.conf import settings
+from django.db import transaction
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
@@ -10,8 +11,30 @@ from portal.libs.agave.utils import text_preview, get_file_size, increment_file_
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
+from portal.apps.projects.models.metadata import ProjectsMetadata
+from portal.apps.datafiles.models import DataFilesMetadata
 
 logger = logging.getLogger(__name__)
+
+
+def get_datafile_metadata(system, path):
+    try: 
+        metadata_record = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
+        return metadata_record.metadata
+    except: 
+        return None
+
+@transaction.atomic
+def update_datafile_metadata(system, name, old_path, new_path, metadata):
+    files_metadata = DataFilesMetadata.objects.get(path=f'{system}/{old_path.strip("/")}')
+    files_metadata.name = name
+    files_metadata.path = f"{system}/{new_path.strip('/')}" 
+    files_metadata.metadata = metadata
+    files_metadata.metadata['name'] = name
+    files_metadata.save()
+
+    for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
+        update_datafile_metadata(system=system, name=child.name, old_path=child.path.split('/', 1)[1], new_path=f"{new_path}/{child.name}", metadata=child.metadata)
 
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
@@ -41,6 +64,9 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          path=path,
                                          offset=int(offset),
                                          limit=int(limit))
+    
+    
+    folder_metadata = get_datafile_metadata(system=system, path=path)
 
     try:
         # Convert file objects to dicts for serialization.
@@ -55,14 +81,16 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
             'lastModified': f.lastModified,
             '_links': {
                 'self': {'href': f.url}
-            }}, raw_listing))
+            },
+            'metadata': get_datafile_metadata(system=system, path=f.path)
+        }, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -175,8 +203,8 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
 
     return redeemUrl
 
-
-def mkdir(client, system, path, dir_name):
+@transaction.atomic
+def mkdir(client, system, path, dir_name, metadata=None):
     """Create a new directory.
 
     Params
@@ -196,18 +224,33 @@ def mkdir(client, system, path, dir_name):
     """
 
     path_input = str(Path(path) / Path(dir_name))
+
+    if metadata is not None: 
+
+        project_instance = ProjectsMetadata.objects.get(project_id=system)
+
+        files_metadata = DataFilesMetadata(
+            name = dir_name,
+            path = f'{system}/{path_input.strip("/")}',
+            metadata = metadata,
+            project = project_instance
+        )
+
+        files_metadata.save()
+        print(f'File Metadata for path {path_input} saved successfully')
+
     client.files.mkdir(systemId=system, path=path_input)
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                      'systemId': system,
-                                      'filePath': path,
-                                      'recurse': False},
-                              )
+                                    'systemId': system,
+                                    'filePath': path,
+                                    'recurse': False},
+                            )
 
     return {"result": "OK"}
 
-
-def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
+@transaction.atomic
+def move(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None):
     """Move a current file to the given destination.
 
     Params
@@ -246,6 +289,9 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     file_listing = client.files.listFiles(systemId=dest_system, path=dest_path)
     file_name = increment_file_name(listing=file_listing, file_name=file_name)
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+
+    if metadata is not None:
+        update_datafile_metadata(system=dest_system, name=file_name, old_path=src_path.strip("/"), new_path=dest_path_full.strip("/"), metadata=metadata)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -368,8 +414,7 @@ def delete(client, system, path):
     return client.files.delete(systemId=system,
                                path=path)
 
-
-def rename(client, system, path, new_name):
+def rename(client, system, path, new_name, metadata=None):
     """Renames a file. This is performed under the hood by moving the file to
     the same parent folder but with a new name.
 
@@ -390,8 +435,7 @@ def rename(client, system, path, new_name):
     """
     new_path = os.path.dirname(path)
     return move(client, src_system=system, src_path=path,
-                dest_system=system, dest_path=new_path, file_name=new_name)
-
+                dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata)
 
 def trash(client, system, path, homeDir):
     """Move a file to the .Trash folder.
@@ -535,8 +579,20 @@ def download_bytes(client, system, path):
     io.BytesIO
         BytesIO object representing the downloaded file.
     """
-    file_name = os.path.basename(path)
+    file_name = os.path.basename(path) 
     resp = client.files.getContents(systemId=system, path=path)
     result = io.BytesIO(resp)
     result.name = file_name
     return result
+
+@transaction.atomic
+def update_metadata(client, system, path, old_name, new_name, metadata):
+    new_path = os.path.dirname(path)
+
+    if old_name != new_name:
+        move_result = move(client, src_system=system, src_path=path,
+                dest_system=system, dest_path=new_path, file_name=new_name)
+        move_message = move_result['message'].split('DestinationPath: ', 1)[1]
+        new_name = ('/' + move_message).rsplit('/', 1)[1]
+        
+    update_datafile_metadata(system=system, name=new_name, old_path=path, new_path=f'{new_path.strip("/")}/{new_name}', metadata=metadata)

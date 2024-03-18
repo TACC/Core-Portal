@@ -18,9 +18,6 @@ const DataFilesProjectFileListingAddon = () => {
 
   return (
     <>
-      <Button type="link" onClick={() => onOpenFormModal('EDIT_PROJECT')}>
-        Edit Project
-      </Button>
       <span className={styles.separator}>|</span>
       <Button type="link" onClick={() => onOpenFormModal('ADD_SAMPLE_DATA')}>
         Add Sample Data
