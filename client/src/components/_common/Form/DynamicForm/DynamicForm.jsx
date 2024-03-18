@@ -6,7 +6,6 @@ import { FormGroup, Input } from 'reactstrap';
 import './DynamicForm.scss';
 
 const DynamicForm = ({ formFields }) => {
-
   // For file processing
   const { setFieldValue, values, handleChange, handleBlur } = useFormikContext();
 
@@ -43,15 +42,14 @@ const DynamicForm = ({ formFields }) => {
             description={field?.description}
             required={field?.validation?.required}
           >
-            {field.options.map((option) => {
-              return (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              );
-            })}
+            {field.options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </FormField>
         );
+
       case 'radio':
         return (
           <FormGroup>
@@ -81,7 +79,9 @@ const DynamicForm = ({ formFields }) => {
               type="file"
               description={field?.description}
               required={field?.validation?.required}
-              onChange={(event) => { setFieldValue("file", event.currentTarget.files[0]) }}
+              onChange={(event) => {
+                setFieldValue('file', event.currentTarget.files[0]);
+              }}
             />
           </div>
         );

@@ -44,9 +44,10 @@ const DataFilesFormModal = () => {
   };
 
   const { data: form, isLoading } = useFormFields(formName);
-
+  
   const initialValues = form?.form_fields.reduce((acc, field) => {
-    acc[field.name] = field.value || '';
+    const value = field.options && field.options.length > 0 ? field.options[0].value : '';
+    acc[field.name] = value;
     return acc;
   }, {});
 
@@ -64,6 +65,15 @@ const DataFilesFormModal = () => {
     });
   };
 
+  const validationSchema = Yup.object().shape({
+    ...(form?.form_fields ?? []).reduce((schema, field) => {
+      if (field.validation?.required) {
+        schema[field.name] = Yup.string().required(`${field.label} is required`);
+      }
+      return schema;
+    }, {}),
+  });  
+
   return (
     <>
       {form && (
@@ -74,7 +84,7 @@ const DataFilesFormModal = () => {
             toggle={toggle}
             className={styles['modal-dialog']}
           >
-            <Formik onSubmit={handleSubmit} initialValues={initialValues}>
+            <Formik onSubmit={handleSubmit} validationSchema={validationSchema} initialValues={initialValues}>
               <Form>
                 <ModalHeader toggle={toggle} charCode="&#xe912;">
                   {form.heading}
