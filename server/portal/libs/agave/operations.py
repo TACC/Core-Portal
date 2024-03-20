@@ -592,6 +592,7 @@ def update_metadata(client, system, path, old_name, new_name, metadata):
     if old_name != new_name:
         move_result = move(client, src_system=system, src_path=path,
                 dest_system=system, dest_path=new_path, file_name=new_name)
+        # update the name in the case it was changed during the move operation
         move_message = move_result['message'].split('DestinationPath: ', 1)[1]
         new_name = ('/' + move_message).rsplit('/', 1)[1]
         
