@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
-import { getSystemName } from 'utils/systems';
+import { getExecSystemFromId } from 'utils/apps';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 
-export const getQueueMaxMinutes = (app, queueName) => {
-  return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
-    .maxMinutes;
+export const getQueueMaxMinutes = (exec_sys, queueName) => {
+  return exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
+    ?.maxMinutes;
 };
 
 /**
@@ -123,8 +123,9 @@ export const getCoresPerNodeValidation = (queue) => {
  * @returns {Object} updated/fixed values
  */
 export const updateValuesForQueue = (app, values) => {
+  const exec_sys = getExecSystemFromId(app, values.execSystemId);
   const updatedValues = { ...values };
-  const queue = app.exec_sys.batchLogicalQueues.find(
+  const queue = exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
   );
 
@@ -166,6 +167,80 @@ export const updateValuesForQueue = (app, values) => {
      */
 
   return updatedValues;
+};
+
+/**
+ * Get the default queue for a execution system.
+ * Queue Name determination order:
+ *   1. Use given queue name.
+ *   2. Otherwise, use the app default queue.
+ *   3. Otherwise, use the execution system default queue.
+ *
+ * @function
+ * @param {any} app App Shape defined in AppForm.jsx
+ * @param {any} exec_sys execution system, shape defined in AppForm.jsx
+ * @returns {String} queue_name nullable, queue name to lookup
+ */
+export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
+  const queueName =
+    queue_name ??
+    app.definition.jobAttributes.execSystemLogicalQueue ??
+    exec_sys?.batchDefaultLogicalQueue;
+  return (
+    exec_sys.batchLogicalQueues.find((q) => q.name === queueName) ||
+    exec_sys.batchLogicalQueues[0]
+  );
+};
+
+/**
+ * Apply two filters and get the list of queues applicable.
+ * Filters:
+ * 1. If Node and Core per Node is enabled, only allow
+ *    queues which match min and max node count with job attributes
+ * 2. if queue filter list is set, only allow queues in that list.
+ * @returns list of queues in sorted order
+ */
+export const getAppQueueValues = (app, queues) => {
+  /*
+    Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
+    while hideNodeCountAndCoresPerNode is true
+    */
+  return queues
+    .filter(
+      (q) =>
+        !app.definition.notes.hideNodeCountAndCoresPerNode ||
+        (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
+          app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
+    )
+    .map((q) => q.name)
+    .filter((queueName) =>
+      app.definition.notes.queueFilter
+        ? app.definition.notes.queueFilter.includes(queueName)
+        : true
+    )
+    .sort();
+};
+
+/**
+ * Build a map of allocations applicable to each execution
+ * system based on the host match.
+ * Handle case where dynamic execution system is provided.
+ * @param {*} app
+ * @param {*} allocations
+ * @returns a Map of allocations applicable to each execution system.
+ */
+export const matchExecSysWithAllocations = (app, allocations) => {
+  return app.execSystems.reduce((map, exec_sys) => {
+    const matchingExecutionHost = Object.keys(allocations.hosts).find(
+      (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
+    );
+
+    if (matchingExecutionHost) {
+      map.set(exec_sys.id, allocations.hosts[matchingExecutionHost]);
+    }
+
+    return map;
+  }, new Map());
 };
 
 /**

@@ -17,6 +17,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
+
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
@@ -30,7 +31,7 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
 def _app_license_type(app_def):
-    app_lic_type = getattr(app_def.notes, 'licenseType', None)
+    app_lic_type = getattr(app_def.notes, "licenseType", None)
     lic_type = app_lic_type if app_lic_type in LICENSE_TYPES else None
     return lic_type
 
@@ -44,16 +45,27 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
+def _get_all_exec_systems(user):
+    """List of all enabled execution systems available for the user."""
+    tapis = user.tapis_oauth.client
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search="(canExec.eq.true)~(enabled.eq.true)")
+
+
 def _get_app(app_id, app_version, user):
     tapis = user.tapis_oauth.client
     if app_version:
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
+
     data = {'definition': app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data['exec_sys'] = tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
+    has_dynamic_exec_system = getattr(app_def.notes, 'dynamicExecSystem', False)
+    if has_dynamic_exec_system:
+        data['execSystems'] = _get_all_exec_systems(user)
+    else:
+        # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
+        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
     data['license'] = {

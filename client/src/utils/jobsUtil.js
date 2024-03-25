@@ -1,4 +1,5 @@
 import { getSystemName } from './systems';
+import { getExecSystemFromId } from './apps';
 
 const TERMINAL_STATES = [`FINISHED`, `CANCELLED`, `FAILED`];
 
@@ -93,7 +94,9 @@ export function getJobDisplayInformation(job, app) {
     // Improve any values with app information
     try {
       try {
-        display.systemName = getSystemName(app.exec_sys.host);
+        display.systemName = getSystemName(
+          getExecSystemFromId(app, job.execSystemId)?.host
+        );
       } catch (ignore) {
         // ignore if there is problem improving the system name
       }
