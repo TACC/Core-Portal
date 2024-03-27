@@ -10,8 +10,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 
 function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
-
-  const location = useLocation();
   if (file && isEdit) {
     yield call(
       updateMetadataUtil,
