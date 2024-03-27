@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import FormField from '../FormField';
 import { Button } from '_common';
-import { useFormikContext } from 'formik'
+import { useFormikContext } from 'formik';
 import { FormGroup, Input } from 'reactstrap';
 import './DynamicForm.scss';
 
 const DynamicForm = ({ formFields }) => {
   // For file processing
-  const { setFieldValue, values, handleChange, handleBlur } = useFormikContext();
+  const { setFieldValue, values, handleChange, handleBlur } =
+    useFormikContext();
 
   const renderFormField = (field) => {
     switch (field.type) {
@@ -42,31 +43,43 @@ const DynamicForm = ({ formFields }) => {
             description={field?.description}
             required={field?.validation?.required}
           >
-            {field.options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            {field.optgroups
+              ? field.optgroups.map((optgroup) => {
+                  return (
+                    <optgroup label={optgroup.label}>
+                      {optgroup.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })
+              : field.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
           </FormField>
         );
 
       case 'radio':
         return (
           <FormGroup>
-            <label className='bold-label'>{field.label}</label>
+            <label className="bold-label">{field.label}</label>
             {field.options.map((option) => (
-              <FormGroup key={option.value} className='radio-input'>
-              <Input 
-                type='radio' 
-                id={option.value} 
-                name={field.name} 
-                value={option.value} 
-                checked={values[field.name] === option.value}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              <label htmlFor={option.value}>{option.label}</label>
-            </FormGroup>
+              <FormGroup key={option.value} className="radio-input">
+                <Input
+                  type="radio"
+                  id={option.value}
+                  name={field.name}
+                  value={option.value}
+                  checked={values[field.name] === option.value}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <label htmlFor={option.value}>{option.label}</label>
+              </FormGroup>
             ))}
           </FormGroup>
         );

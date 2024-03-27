@@ -586,10 +586,8 @@ def download_bytes(client, system, path):
     return result
 
 @transaction.atomic
-def update_metadata(client, system, path, old_name, new_name, metadata):
-    new_path = os.path.dirname(path)
-
-    if old_name != new_name:
+def update_metadata(client, system, path, new_path, old_name, new_name, metadata):
+    if (old_name != new_name) or (os.path.dirname(path) != new_path):
         move_result = move(client, src_system=system, src_path=path,
                 dest_system=system, dest_path=new_path, file_name=new_name)
         # update the name in the case it was changed during the move operation
