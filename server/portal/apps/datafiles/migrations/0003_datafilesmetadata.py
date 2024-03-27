@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0003_projectsmetadata'),
+        ('projects', '0004_projectsmetadata'),
         ('datafiles', '0002_auto_20230317_2209'),
     ]
 
