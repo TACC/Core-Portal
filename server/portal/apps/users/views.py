@@ -38,7 +38,7 @@ class AuthenticatedView(BaseApiView):
                 "oauth": {
                     "expires_in": u.tapis_oauth.expires_in,
                 },
-                "isStaff": u.is_staff
+                "isStaff": u.is_staff,
             }
 
             return JsonResponse(out)
@@ -143,6 +143,7 @@ class TeamView(BaseApiView):
         : rtype: dict
         """
         usernames = get_project_users_from_id(project_id)
+
         return JsonResponse({'response': usernames}, safe=False)
 
 

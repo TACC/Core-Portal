@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=1.5.0 \
+ENV POETRY_VERSION=1.8.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
@@ -67,8 +67,8 @@ WORKDIR /srv/www/portal/server
 # `production` image is used for deployed runtime environments
 FROM python-base as production
 
-# install node 16.x
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+# install node 20.x
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH

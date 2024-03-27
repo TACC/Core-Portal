@@ -17,7 +17,7 @@ from portal.apps.onboarding.execute import (
     new_user_setup_check
 )
 from portal.apps.search.tasks import index_allocations
-
+from portal.apps.users.utils import check_user_groups
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f'metrics.{__name__}')
@@ -76,6 +76,20 @@ def launch_setup_checks(user):
         logger.info("Already onboarded, running non-onboarding steps (e.g. update cached "
                     "allocation information) for %s", user.username)
         index_allocations.apply_async(args=[user.username])
+
+    portal_roles = settings.PORTAL_ELEVATED_ROLES
+    for role, groups_and_users in portal_roles.items():
+        if role == "is_staff" and not user.is_staff:
+            if str(user.username) in groups_and_users["usernames"] or check_user_groups(user, groups_and_users["groups"]):
+                user.is_staff = True
+                user.save()
+                logger.info(f"user {user.username} is set to staff")
+
+        elif role == "is_superuser" and not user.is_superuser:
+            if str(user.username) in groups_and_users["usernames"] or check_user_groups(user, groups_and_users["groups"]):
+                user.is_superuser = True
+                user.save()
+                logger.info(f"user {user.username} is set to superuser")
 
 
 def tapis_oauth_callback(request):

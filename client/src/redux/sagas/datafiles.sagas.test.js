@@ -311,99 +311,111 @@ describe('scrollFiles', () => {
   });
 });
 
-describe('extractFiles', () => {
-  const jobHelperExpected = () =>
-    JSON.stringify({
-      job: {
-        fileInputs: [
-          {
-            name: 'Input File',
-            sourceUrl: 'tapis://test.system/dir/test.zip',
-          },
-        ],
-        name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
-        archiveSystemId: 'test.system',
-        archiveSystemDir: 'dir/',
-        archiveOnAppError: false,
-        appId: 'extract',
-        appVersion: '0.0.1',
-        parameterSet: {
-          appArgs: [],
-          schedulerOptions: [
-            {
-              name: 'TACC Allocation',
-              description:
-                'The TACC allocation associated with this job execution',
-              include: true,
-              arg: '-A TACC-ACI',
-            },
-          ],
-        },
-        execSystemId: 'frontera',
-      },
-    });
-
-  const action = {
-    type: 'DATA_FILES_EXTRACT',
-    payload: {
-      file: {
-        system: 'test.system',
-        path: 'dir/test.zip',
-        name: 'test.zip',
-      },
+describe('Test extract with different file names', () => {
+  // Paths without and with space to ensure there is no encoding.
+  const sourceUrlPaths = [
+    { tapis_path: 'tapis://test.system/dir/test.zip', name: 'test.zip' },
+    {
+      tapis_path: 'tapis://test.system/dir/test file.zip',
+      name: 'test file.zip',
     },
-  };
-
-  it('runs extractFiles saga with success', () => {
-    return expectSaga(extractFiles, action)
-      .provide([
-        [select(extractAppSelector), 'extract'],
-        [select(defaultAllocationSelector), 'TACC-ACI'],
-        [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
-        [matchers.call.fn(jobHelper), { status: 'PENDING' }],
-      ])
-      .call(fetchAppDefinitionUtil, 'extract')
-      .put({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'extract' },
-      })
-      .call(jobHelper, jobHelperExpected())
-      .put({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'SUCCESS', operation: 'extract' },
-      })
-      .run();
-  });
-
-  it('runs extractFiles saga with push keys modal', () => {
-    return expectSaga(extractFiles, action)
-      .provide([
-        [select(extractAppSelector), 'extract'],
-        [select(defaultAllocationSelector), 'TACC-ACI'],
-        [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
-        [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
-      ])
-      .call(fetchAppDefinitionUtil, 'extract')
-      .put({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: 'RUNNING', operation: 'extract' },
-      })
-      .call(jobHelper, jobHelperExpected())
-      .put({
-        type: 'SYSTEMS_TOGGLE_MODAL',
-        payload: {
-          operation: 'pushKeys',
-          props: {
-            onSuccess: action,
-            system: 'test.cli.system',
-            onCancel: {
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: 'ERROR', operation: 'extract' },
+  ];
+  sourceUrlPaths.forEach((pathInfo) => {
+    describe('extractFiles', () => {
+      const jobHelperExpected = () =>
+        JSON.stringify({
+          job: {
+            fileInputs: [
+              {
+                name: 'Input File',
+                sourceUrl: pathInfo['tapis_path'],
+              },
+            ],
+            name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
+            archiveSystemId: 'test.system',
+            archiveSystemDir: 'dir/',
+            archiveOnAppError: false,
+            appId: 'extract',
+            appVersion: '0.0.1',
+            parameterSet: {
+              appArgs: [],
+              schedulerOptions: [
+                {
+                  name: 'TACC Allocation',
+                  description:
+                    'The TACC allocation associated with this job execution',
+                  include: true,
+                  arg: '-A TACC-ACI',
+                },
+              ],
             },
+            execSystemId: 'frontera',
+          },
+        });
+
+      const action = {
+        type: 'DATA_FILES_EXTRACT',
+        payload: {
+          file: {
+            system: 'test.system',
+            path: `dir/${pathInfo['name']}`,
+            name: pathInfo['name'],
           },
         },
-      })
-      .run();
+      };
+
+      it('runs extractFiles saga with success', () => {
+        return expectSaga(extractFiles, action)
+          .provide([
+            [select(extractAppSelector), 'extract'],
+            [select(defaultAllocationSelector), 'TACC-ACI'],
+            [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
+            [matchers.call.fn(jobHelper), { status: 'PENDING' }],
+          ])
+          .call(fetchAppDefinitionUtil, 'extract')
+          .put({
+            type: 'DATA_FILES_SET_OPERATION_STATUS',
+            payload: { status: 'RUNNING', operation: 'extract' },
+          })
+          .call(jobHelper, jobHelperExpected())
+          .put({
+            type: 'DATA_FILES_SET_OPERATION_STATUS',
+            payload: { status: 'SUCCESS', operation: 'extract' },
+          })
+          .run();
+      });
+
+      it('runs extractFiles saga with push keys modal', () => {
+        return expectSaga(extractFiles, action)
+          .provide([
+            [select(extractAppSelector), 'extract'],
+            [select(defaultAllocationSelector), 'TACC-ACI'],
+            [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
+            [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
+          ])
+          .call(fetchAppDefinitionUtil, 'extract')
+          .put({
+            type: 'DATA_FILES_SET_OPERATION_STATUS',
+            payload: { status: 'RUNNING', operation: 'extract' },
+          })
+          .call(jobHelper, jobHelperExpected())
+          .put({
+            type: 'SYSTEMS_TOGGLE_MODAL',
+            payload: {
+              operation: 'pushKeys',
+              props: {
+                onSuccess: action,
+                system: 'test.cli.system',
+                onCancel: {
+                  type: 'DATA_FILES_SET_OPERATION_STATUS',
+                  payload: { status: 'ERROR', operation: 'extract' },
+                },
+              },
+            },
+          })
+          .run();
+      });
+    });
   });
 });
 
@@ -421,8 +433,8 @@ describe('compressFiles', () => {
           },
           {
             system: 'test.system',
-            path: 'test2.txt',
-            name: 'test2.txt',
+            path: 'test 2.txt',
+            name: 'test 2.txt',
           },
         ],
         compressionType: 'zip',
@@ -439,7 +451,7 @@ describe('compressFiles', () => {
             sourceUrl: 'tapis://test.system/test1.txt',
           },
           {
-            sourceUrl: 'tapis://test.system/test2.txt',
+            sourceUrl: 'tapis://test.system/test 2.txt',
           },
         ],
         name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
