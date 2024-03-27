@@ -7,7 +7,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import styles from './DataFilesFormModal.module.scss';
-import { useFileListing } from 'hooks/datafiles';
+import { useFileListing, useSelectedFiles } from 'hooks/datafiles';
 import { useHistory, useLocation } from 'react-router-dom';
 
 
@@ -20,7 +20,7 @@ const DataFilesFormModal = () => {
     history.push(location.pathname);
   };
 
-  const { formName } = useSelector(
+  const { formName, selectedFile } = useSelector(
     (state) => state.files.modalProps.dynamicform
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
@@ -44,10 +44,11 @@ const DataFilesFormModal = () => {
   };
 
   const { data: form, isLoading } = useFormFields(formName);
-  
+  const { selectedFiles } = useSelectedFiles();
+
   const initialValues = form?.form_fields.reduce((acc, field) => {
     const value = field.options && field.options.length > 0 ? field.options[0].value : '';
-    acc[field.name] = value;
+    acc[field.name] = selectedFile ? selectedFile.metadata[field.name] : value
     return acc;
   }, {});
 
@@ -61,7 +62,7 @@ const DataFilesFormModal = () => {
   const handleSubmit = (values) => {
     dispatch({
       type: formName,
-      payload: { params, values, reloadPage },
+      payload: { params, values, reloadPage, selectedFile: selectedFiles[0] },
     });
   };
 
