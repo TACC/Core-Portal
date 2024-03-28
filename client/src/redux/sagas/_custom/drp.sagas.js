@@ -1,61 +1,38 @@
 import {
-    takeLatest,
-    takeLeading,
-    put,
-    call,
-    all,
-    race,
-    take,
-    select,
-  } from 'redux-saga/effects';
-import { mkdirUtil, renameFileUtil, updateMetadataUtil } from '../datafiles.sagas';
+  takeLatest,
+  put,
+  call,
+} from 'redux-saga/effects';
+import {
+  mkdirUtil,updateMetadataUtil,
+} from '../datafiles.sagas';
+import { useHistory, useLocation } from 'react-router-dom';
 
 
-export function* addSampleData(action) {
-  console.log('ADD SAMPLE DATA', action);
-
-  const { params, values, reloadPage: reloadCallback } = action.payload
-  yield call(mkdir, params, { ...values, data_type: 'sample' }, reloadCallback);
-}
-
-export function* editSampleData(action) {
-  const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload
-  yield call(update, params, { ...values, data_type: 'sample' }, reloadCallback, selectedFile);
-}
-
-export function* addAnalysisDataset(action) {
-  console.log('ADD ANALYSIS DATA', action);
-
-  const { params, values, reloadPage: reloadCallback } = action.payload
-  yield call(mkdir, params, { ...values, data_type: 'analysis_data' }, reloadCallback);
-}
-
-export function* editAnalysisDataset(action) {
-  const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload
-  yield call(update, params, { ...values, data_type: 'analysis_data' }, reloadCallback, selectedFile);
-}
-
-export function* addOriginDataset(action) {
-  const { params, values, reloadPage: reloadCallback } = action.payload
-  yield call(mkdir, params, { ...values, data_type: 'origin_data' }, reloadCallback);
-}
-
-export function* editOriginDataset(action) {
-  const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload
-  yield call(update, params, { ...values, data_type: 'origin_data' }, reloadCallback, selectedFile);
-}
-
-
-function* mkdir(params, values, reloadCallback) {
-  yield call(
-    mkdirUtil,
-    params.api,
-    params.scheme,
-    params.system,
-    params.path,
-    values.name, 
-    values
-  )
+function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
+  if (file && isEdit) {
+    yield call(
+      updateMetadataUtil,
+      params.api,
+      params.scheme,
+      params.system,
+      '/' + file.path,
+      '/' + path,
+      file.name,
+      values.name,
+      values
+    );
+  } else {
+    yield call(
+      mkdirUtil,
+      params.api,
+      params.scheme,
+      params.system,
+      path,
+      values.name,
+      values
+    );
+  }
 
   yield call(reloadCallback);
 
@@ -66,36 +43,57 @@ function* mkdir(params, values, reloadCallback) {
       props: {},
     },
   });
+
 }
 
-function* update(params, values, reloadCallback, file) {
+function* handleSampleData(action, isEdit) {
+  const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload;
   yield call(
-    updateMetadataUtil,
-    params.api, 
-    params.scheme, 
-    params.system,
-    '/' + file.path, 
-    file.name,
-    values.name, 
-    values
+    executeOperation, isEdit, params, {...values, data_type: 'sample'}, reloadCallback, selectedFile
   )
+}
 
-  yield call(reloadCallback);
+function* handleOriginData(action, isEdit) {
+  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: samples } = action.payload;
 
-  yield put({
-    type: 'DATA_FILES_TOGGLE_MODAL',
-    payload: {
-      operation: 'dynamicform',
-      props: {},
-    },
-  });
+  const sample = samples.find(
+    (sample) => sample.id === parseInt(values.sample)
+  );
+
+  // get the path without system name
+  const path = sample.path.split('/').slice(1).join('/');
+  yield call(
+    executeOperation, isEdit, params, { ...values, data_type: 'origin_data' }, reloadCallback, selectedFile, path
+  )
+}
+
+function* handleAnalysisData(action, isEdit) {
+  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: samples } = action.payload;
+
+  let { originDataId, path, sampleId } = samples.reduce((acc, sample) => {
+    const originData = sample.origin_data.find(
+      (originData) => originData.id === parseInt(values.base_origin_data)
+    );
+    if (originData) {
+      acc.originDataId = originData.id;
+      acc.path = originData.path;
+      acc.sampleId = sample.id;
+    }
+    return acc;
+  }, {});
+
+  // get the path without system name
+  path = path.split('/').slice(1).join('/');
+  yield call(
+    executeOperation, isEdit, params, {...values, data_type: 'analysis_data', sample: sampleId, base_origin_data: originDataId}, reloadCallback, selectedFile, path
+  )
 }
 
 export default function* watchDRP() {
-  yield takeLatest('ADD_SAMPLE_DATA', addSampleData);
-  yield takeLatest('EDIT_SAMPLE_DATA', editSampleData);
-  yield takeLatest('ADD_ANALYSIS_DATASET', addAnalysisDataset);
-  yield takeLatest('EDIT_ANALYSIS_DATASET', editAnalysisDataset);
-  yield takeLatest('ADD_ORIGIN_DATASET', addOriginDataset);
-  yield takeLatest('EDIT_ORIGIN_DATASET', editOriginDataset);
+  yield takeLatest('ADD_SAMPLE_DATA', action => handleSampleData(action, false));
+  yield takeLatest('EDIT_SAMPLE_DATA', action => handleSampleData(action, true));
+  yield takeLatest('ADD_ANALYSIS_DATASET', action => handleAnalysisData(action, false));
+  yield takeLatest('EDIT_ANALYSIS_DATASET', action => handleAnalysisData(action, true));
+  yield takeLatest('ADD_ORIGIN_DATASET', action => handleOriginData(action, false));
+  yield takeLatest('EDIT_ORIGIN_DATASET', action => handleOriginData(action, true));
 }

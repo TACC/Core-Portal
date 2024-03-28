@@ -10,7 +10,6 @@ import styles from './DataFilesFormModal.module.scss';
 import { useFileListing, useSelectedFiles } from 'hooks/datafiles';
 import { useHistory, useLocation } from 'react-router-dom';
 
-
 const DataFilesFormModal = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -20,35 +19,24 @@ const DataFilesFormModal = () => {
     history.push(location.pathname);
   };
 
-  const { formName, selectedFile } = useSelector(
+  const { form, selectedFile, formName, additionalData } = useSelector(
     (state) => state.files.modalProps.dynamicform
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
   const { params } = useFileListing('FilesListing');
 
-  const getFormFields = async (formName) => {
-    const response = await fetchUtil({
-      url: 'api/forms',
-      params: {
-        form_name: formName,
-      },
-    });
-    return response;
-  };
-
-  const useFormFields = (formName) => {
-    const query = useQuery(['form', formName], () => getFormFields(formName), {
-      enabled: !!formName,
-    });
-    return query;
-  };
-
-  const { data: form, isLoading } = useFormFields(formName);
   const { selectedFiles } = useSelectedFiles();
 
   const initialValues = form?.form_fields.reduce((acc, field) => {
-    const value = field.options && field.options.length > 0 ? field.options[0].value : '';
-    acc[field.name] = selectedFile ? selectedFile.metadata[field.name] : value
+    let value = '';
+    if (field.optgroups) {
+      value = field.optgroups[0].options[0]?.value;
+    } else {
+      value =
+        field.options && field.options.length > 0 ? field.options[0].value : '';
+    }
+
+    acc[field.name] = selectedFile ? selectedFile.metadata[field.name] : value;
     return acc;
   }, {});
 
@@ -62,18 +50,26 @@ const DataFilesFormModal = () => {
   const handleSubmit = (values) => {
     dispatch({
       type: formName,
-      payload: { params, values, reloadPage, selectedFile: selectedFiles[0] },
+      payload: {
+        params,
+        values,
+        reloadPage,
+        selectedFile: selectedFiles[0],
+        additionalData,
+      },
     });
   };
 
   const validationSchema = Yup.object().shape({
     ...(form?.form_fields ?? []).reduce((schema, field) => {
       if (field.validation?.required) {
-        schema[field.name] = Yup.string().required(`${field.label} is required`);
+        schema[field.name] = Yup.string().required(
+          `${field.label} is required`
+        );
       }
       return schema;
     }, {}),
-  });  
+  });
 
   return (
     <>
@@ -85,7 +81,11 @@ const DataFilesFormModal = () => {
             toggle={toggle}
             className={styles['modal-dialog']}
           >
-            <Formik onSubmit={handleSubmit} validationSchema={validationSchema} initialValues={initialValues}>
+            <Formik
+              onSubmit={handleSubmit}
+              validationSchema={validationSchema}
+              initialValues={initialValues}
+            >
               <Form>
                 <ModalHeader toggle={toggle} charCode="&#xe912;">
                   {form.heading}

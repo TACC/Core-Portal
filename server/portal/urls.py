@@ -119,3 +119,12 @@ urlpatterns = [
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# custom endpoint
+if settings.WORKBENCH_SETTINGS.get('hasCustomEndpoints'):
+    urlpatterns.append(
+        path(
+            f'api/{settings.PORTAL_NAMESPACE.lower()}/', 
+            include(f'portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.urls', namespace='custom')
+        )
+    )
