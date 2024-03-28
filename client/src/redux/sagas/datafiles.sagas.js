@@ -755,7 +755,7 @@ export function* download(action) {
   );
 }
 
-export async function trashUtil(api, scheme, system, path, homeDir) {
+export async function trashUtil(api, scheme, system, path, homeDir, metadata) {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
@@ -763,6 +763,7 @@ export async function trashUtil(api, scheme, system, path, homeDir) {
     credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
+      metadata: metadata ?? null
     }),
   });
 
@@ -778,7 +779,7 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path, action.payload.homeDir);
+    return call(trashFile, file.system, file.path, action.payload.homeDir, file.metadata);
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -801,13 +802,13 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, homeDir) {
+export function* trashFile(system, path, homeDir, metadata) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
-    yield call(trashUtil, 'tapis', 'private', system, path, homeDir);
+    yield call(trashUtil, 'tapis', 'private', system, path, homeDir, metadata);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',

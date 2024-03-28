@@ -52,8 +52,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
     shallowEqual
   );
 
+  // A project system has different fields than a regular system
   const selectedSystem = systemList.find(
-    (sys) => sys.system === params.system && sys.scheme === params.scheme
+    (sys) => {
+      if (params.scheme === 'projects') {
+        return params.api === sys.api && sys.scheme === params.scheme;
+      } else {
+        return sys.system === params.system && sys.scheme === params.scheme
+      }
+    }
   );
 
   const { projectId } = useSelector((state) => state.projects.metadata);
@@ -70,13 +77,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
 
   const inTrash = useSelector((state) => {
-    // remove leading slash from homeDir value
-    const homeDir = selectedSystem?.homeDir?.slice(1);
-    if (!homeDir) return false;
-
-    return state.files.params.FilesListing.path.startsWith(
-      `${homeDir}/${state.workbench.config.trashPath}`
-    );
+    if (selectedSystem?.scheme === 'projects') {
+      return state.files.params.FilesListing.path.startsWith(
+        `${state.workbench.config.trashPath}`
+      );
+    } else {
+      // remove leading slash from homeDir value
+      const homeDir = selectedSystem?.homeDir?.slice(1);
+      if (!homeDir) return false;
+  
+      return state.files.params.FilesListing.path.startsWith(
+        `${homeDir}/${state.workbench.config.trashPath}`
+      );
+    }
   });
 
   const trashedFiles = useSelector((state) =>

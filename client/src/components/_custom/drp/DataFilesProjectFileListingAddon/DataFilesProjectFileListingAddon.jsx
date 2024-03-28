@@ -103,7 +103,7 @@ const DataFilesProjectFileListingAddon = () => {
     <>
       <span className={styles.separator}>|</span>
       {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'sample' ? (
+      selectedFiles[0]?.metadata?.['data_type'] === 'sample' ? (
         <Button
           type="link"
           onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
@@ -117,7 +117,7 @@ const DataFilesProjectFileListingAddon = () => {
       )}
       <span className={styles.separator}>|</span>
       {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'origin_data' ? (
+      selectedFiles[0]?.metadata?.['data_type'] === 'origin_data' ? (
         <Button
           type="link"
           onClick={() =>
@@ -136,7 +136,7 @@ const DataFilesProjectFileListingAddon = () => {
       )}
       <span className={styles.separator}>|</span>
       {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'analysis_data' ? (
+      selectedFiles[0]?.metadata?.['data_type'] === 'analysis_data' ? (
         <Button
           type="link"
           onClick={() =>
