@@ -470,7 +470,7 @@ def trash(client, system, path, homeDir, metadata=None):
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME, metadata={})
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME, metadata={} if metadata is not None else None)
 
     resp = move(client, system, path, system,
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)
