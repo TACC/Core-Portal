@@ -18,9 +18,10 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesProjectFileListingAddon, DataFilesProjectFileListingMetadataAddon } = useAddonComponents({portalName})
-  console.log('DataFilesProjectFileListingAddon', DataFilesProjectFileListingAddon)
-  console.log('DataFilesProjectFileListingMetadataAddon', DataFilesProjectFileListingMetadataAddon)
+  const {
+    DataFilesProjectFileListingAddon,
+    DataFilesProjectFileListingMetadataAddon,
+  } = useAddonComponents({ portalName });
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
@@ -31,9 +32,11 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   useEffect(() => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
-  
+
   const metadata = useSelector((state) => state.projects.metadata);
-  const folderMetadata = useSelector((state) => state.files.folderMetadata?.FilesListing);
+  const folderMetadata = useSelector(
+    (state) => state.files.folderMetadata?.FilesListing
+  );
 
   const canEditSystem = useSelector(
     (state) =>
@@ -95,12 +98,13 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       header={
         <div className={styles.title}>
           {folderMetadata?.name || metadata.title}
-          {folderMetadata?.data_type && 
+          {folderMetadata?.data_type && (
             <span className={styles['dataTypeBox']}>
               {folderMetadata.data_type}
             </span>
-          }
-        </div>}
+          )}
+        </div>
+      }
       headerActions={
         <div className={styles.controls}>
           {canEditSystem ? (
@@ -114,7 +118,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           <Button type="link" onClick={onManage}>
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
-          { DataFilesProjectFileListingAddon && <DataFilesProjectFileListingAddon /> }
+          {DataFilesProjectFileListingAddon && (
+            <DataFilesProjectFileListingAddon />
+          )}
         </div>
       }
       manualContent
@@ -126,8 +132,17 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        { folderMetadata?.description || metadata.description && <ShowMore>{folderMetadata?.description || metadata.description}</ShowMore> }
-        { folderMetadata && <DataFilesProjectFileListingMetadataAddon folderMetadata={folderMetadata} /> }
+        {folderMetadata?.description ||
+          (metadata.description && (
+            <ShowMore>
+              {folderMetadata?.description || metadata.description}
+            </ShowMore>
+          ))}
+        {folderMetadata && (
+          <DataFilesProjectFileListingMetadataAddon
+            folderMetadata={folderMetadata}
+          />
+        )}
       </div>
       <DataFilesListing
         api="tapis"
