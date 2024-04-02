@@ -18,9 +18,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
-  
-  const { DataFilesProjectFileListingAddon } = useAddonComponents({portalName})
-
+  const { DataFilesProjectFileListingAddon, DataFilesProjectFileListingMetadataAddon } = useAddonComponents({portalName})
+  console.log('DataFilesProjectFileListingAddon', DataFilesProjectFileListingAddon)
+  console.log('DataFilesProjectFileListingMetadataAddon', DataFilesProjectFileListingMetadataAddon)
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
@@ -31,8 +31,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   useEffect(() => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
-
+  
   const metadata = useSelector((state) => state.projects.metadata);
+  const folderMetadata = useSelector((state) => state.files.folderMetadata?.FilesListing);
 
   const canEditSystem = useSelector(
     (state) =>
@@ -69,8 +70,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       payload: { operation: 'manageproject', props: {} },
     });
   };
-
-  if (metadata.loading) {
+  const isLoading = metadata.loading || folderMetadata?.loading;
+  if (isLoading) {
     return (
       <div className={styles['root-placeholder']}>
         <LoadingSpinner />
@@ -91,7 +92,15 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     <SectionTableWrapper
       className={styles.root}
-      header={<div className={styles.title}>{metadata.title}</div>}
+      header={
+        <div className={styles.title}>
+          {folderMetadata?.name || metadata.title}
+          {folderMetadata?.data_type && 
+            <span className={styles['dataTypeBox']}>
+              {folderMetadata.data_type}
+            </span>
+          }
+        </div>}
       headerActions={
         <div className={styles.controls}>
           {canEditSystem ? (
@@ -117,7 +126,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
+        { folderMetadata?.description || metadata.description && <ShowMore>{folderMetadata?.description || metadata.description}</ShowMore> }
+        { folderMetadata && <DataFilesProjectFileListingMetadataAddon folderMetadata={folderMetadata} /> }
       </div>
       <DataFilesListing
         api="tapis"

@@ -121,6 +121,7 @@ export const initialFilesState = {
     FilesListing: false,
     modal: false,
   },
+  folderMetadata: null,
   listing: {
     FilesListing: [],
     modal: [],
@@ -195,6 +196,7 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: true },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {...state.folderMetadata,[action.payload.section]: null },
         listing: { ...state.listing, [action.payload.section]: [] },
         params: {
           ...state.params,
@@ -218,6 +220,7 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {...state.folderMetadata,[action.payload.section]: action.payload.folderMetadata },
         listing: {
           ...state.listing,
           [action.payload.section]: [...action.payload.files],

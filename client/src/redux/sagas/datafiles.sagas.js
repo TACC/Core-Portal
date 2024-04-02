@@ -153,6 +153,7 @@ export function* fetchFiles(action) {
       type: 'FETCH_FILES_SUCCESS',
       payload: {
         files: listingResponse.listing,
+        folderMetadata: listingResponse.folder_metadata,
         reachedEnd: listingResponse.reachedEnd,
         nextPageToken: listingResponse.nextPageToken,
         section: action.payload.section,
