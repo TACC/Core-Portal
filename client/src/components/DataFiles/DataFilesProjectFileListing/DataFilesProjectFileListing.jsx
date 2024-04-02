@@ -138,7 +138,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
               {folderMetadata?.description || metadata.description}
             </ShowMore>
           ))}
-        {folderMetadata && (
+        {folderMetadata && DataFilesProjectFileListingMetadataAddon && (
           <DataFilesProjectFileListingMetadataAddon
             folderMetadata={folderMetadata}
           />
