@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import queryStringParser from 'query-string';
 import {
   InfiniteScrollTable,
@@ -18,6 +18,13 @@ const DataFilesProjectsList = ({ modal }) => {
   );
   const modalProps = useSelector((state) => state.files.modalProps[modal]);
   const query = queryStringParser.parse(useLocation().search);
+
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
@@ -59,7 +66,7 @@ const DataFilesProjectsList = ({ modal }) => {
 
   const columns = [
     {
-      Header: 'Workspace Title',
+      Header: `${sharedWorkspacesDisplayName} Title`,
       headerStyle: { textAlign: 'left' },
       accessor: 'title',
       Cell: (el) => (
@@ -92,14 +99,14 @@ const DataFilesProjectsList = ({ modal }) => {
   ];
 
   const noDataText = query.query_string
-    ? 'No Shared Workspaces match your search term.'
-    : "You don't have any Shared Workspaces.";
+    ? `No ${sharedWorkspacesDisplayName} match your search term.`
+    : `You don't have any ${sharedWorkspacesDisplayName}`;
 
   if (error) {
     return (
       <div className={styles['root-placeholder']}>
         <SectionMessage type="error">
-          There was a problem retrieving your Shared Workspaces.
+          There was a problem retrieving your {sharedWorkspacesDisplayName}.
         </SectionMessage>
       </div>
     );
@@ -123,7 +130,7 @@ const DataFilesProjectsList = ({ modal }) => {
         <Searchbar
           api="tapis"
           scheme="projects"
-          sectionName="Workspace"
+          sectionName={sharedWorkspacesDisplayName}
           resultCount={projects.length}
           infiniteScroll
         />

@@ -86,7 +86,7 @@ const DataFilesAddButton = ({ readOnly }) => {
           </DropdownItem>
           {sharedWorkspaces && !sharedWorkspaces.readOnly && (
             <DropdownItem onClick={toggleAddProjectModal}>
-              <i className="icon-folder" /> Shared Workspace
+              <i className="icon-folder" /> {sharedWorkspaces.name}
             </DropdownItem>
           )}
           <DropdownItem
