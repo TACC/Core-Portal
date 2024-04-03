@@ -60,64 +60,13 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Work)',
-        'system': 'frontera',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/work/{tasdir}',
-        'icon': None,
-        'default': True
-    },
-    {
-        'name': 'My Data (Scratch)',
-        'system': 'frontera',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/scratch1/{tasdir}',
-        'icon': None
-    },
-    {
-        'name': 'My Data (Frontera)',
-        'system': 'frontera',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/home1/{tasdir}',
-        'icon': None,
-    },
-    {
-        'name': 'Community Data',
-        'system': 'cloud.data',
-        'scheme': 'community',
-        'api': 'tapis',
-        'homeDir': '/corral/tacc/aci/CEP/community',
-        'icon': None,
-        'siteSearchPriority': 1
-    },
-    {
-        'name': 'Public Data',
-        'system': 'cloud.data',
-        'scheme': 'public',
-        'api': 'tapis',
-        'homeDir': '/corral/tacc/aci/CEP/public',
-        'icon': 'publications',
-        'siteSearchPriority': 0
-    },
-    {
-        'name': 'Shared Workspaces',
+        'name': 'Project',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': False,
         'hideSearchBar': False
     },
-    {
-        'name': 'Google Drive',
-        'system': 'googledrive',
-        'scheme': 'private',
-        'api': 'googledrive',
-        'icon': None,
-        'integration': 'portal.apps.googledrive_integration'
-    }
 ]
 
 ########################
