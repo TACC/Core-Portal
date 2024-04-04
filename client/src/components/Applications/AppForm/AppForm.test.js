@@ -7,7 +7,10 @@ import { BrowserRouter } from 'react-router-dom';
 import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
-import { execSystemsFixture } from './fixtures/AppForm.executionsystems.fixture';
+import {
+  execSystemsFixture,
+  executionSystemNotesFixture,
+} from './fixtures/AppForm.executionsystems.fixture';
 
 import {
   jobsFixture,
@@ -295,6 +298,13 @@ describe('AppSchemaForm', () => {
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
       execSystems: execSystemsFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -303,9 +313,9 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown.value).toBe('frontera');
     const options = Array.from(execSystemDropDown.querySelectorAll('option'));
     const actualValues = Array.from(options).map((option) => option.value);
-    const expectedValues = Array.from(execSystemsFixture).map(
-      (system) => system.id
-    );
+    const expectedValues = Array.from(
+      executionSystemNotesFixture['dynamicExecSystems']
+    ).map((system) => system.value);
     expect(actualValues).toEqual(expect.arrayContaining(expectedValues));
   });
 
@@ -318,7 +328,14 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      execSystems: updatedExecSystems,
+      execSystems: execSystemsFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -335,7 +352,7 @@ describe('AppSchemaForm', () => {
     );
   });
 
-  it('does not display exec system when only one non-default execution system has allocation', async () => {
+  it('only one execution system has allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -350,7 +367,30 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
       execSystems: updatedExecSystems,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('ls6');
+  });
+
+  it('does not display exec system when dynamic exec system is not enabled', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      execSystems: execSystemsFixture,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
@@ -358,13 +398,14 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown).toBeNull();
   });
 
-  it('does not display exec system  when only default execution system has allocation', async () => {
+  it('default exec system is not in allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
     const updatedExecSystems = execSystemsFixture.map((e) => {
-      // Leave frontera
-      if (e.id !== 'frontera') {
+      // Frontera is default and not in allocation list.
+      // Keep ls6, everything else set to maverick as allocation host.
+      if (e.id !== 'ls6') {
         // maverick99 does not have allocation
         return { ...e, host: 'maverick99.tacc.utexas.edu' };
       }
@@ -373,18 +414,28 @@ describe('AppSchemaForm', () => {
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
       execSystems: updatedExecSystems,
     });
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );
-    expect(execSystemDropDown).toBeNull();
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('ls6');
+    expect(execSystemDropDown).toHaveTextContent('Lonestar6');
   });
 
   it('displays error when no exec system has allocation', async () => {
     const store = mockStore({
       ...initialMockState,
     });
+    // set all exec system mapped to maverick99 which does not have allocation
     const updatedExecSystems = execSystemsFixture.map((e) => {
       // maverick99 does not have allocation
       return { ...e, host: 'maverick99.tacc.utexas.edu' };
@@ -409,12 +460,71 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown).toBeNull();
   });
 
+  it('does not display exec system and allocation UI for FORK jobs', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobType: "FORK",
+      },
+      execSystems: execSystemsFixture,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).toBeNull();
+    const allocationDropDown = container.querySelector(
+      'select[name="allocation"]'
+    );
+    expect(allocationDropDown).toBeNull();
+  });
+
+  it('shows UI error when no exec systems match with no allocations', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    // set all exec system mapped to maverick99 which does not have allocation
+    const updatedExecSystems = execSystemsFixture.map((e) => {
+      // maverick99 does not have allocation
+      return { ...e, host: 'maverick99.tacc.utexas.edu' };
+    });
+
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: updatedExecSystems,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).toBeNull();
+  });
+
   it('displays all dependent field options after switching exec systems', async () => {
     const store = mockStore({
       ...initialMockState,
     });
     const appFixture = {
       ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
       execSystems: execSystemsFixture,
     };
     const { container } = renderAppSchemaFormComponent(store, appFixture);
@@ -449,6 +559,7 @@ describe('AppSchemaForm', () => {
         ...helloWorldAppFixture.definition,
         notes: {
           ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
           hideNodeCountAndCoresPerNode: false,
         },
       },
@@ -500,6 +611,7 @@ describe('AppSchemaForm', () => {
         },
         notes: {
           ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
           hideNodeCountAndCoresPerNode: false,
         },
       },
@@ -513,10 +625,11 @@ describe('AppSchemaForm', () => {
       'select[name="execSystemId"]'
     );
     expect(execSystemDropDown.value).toBe('frontera');
-    expect(execSystemDropDown).toHaveTextContent('Frontera : frontera');
+    expect(execSystemDropDown).toHaveTextContent('Frontera');
 
     fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
     expect(execSystemDropDown.value).toBe('ls6');
+    expect(execSystemDropDown).toHaveTextContent('Lonestar6');
 
     // Check limits for ls6 normal queue. 300 max minutes
     await waitFor(() => {
@@ -545,6 +658,7 @@ describe('AppSchemaForm', () => {
         ...helloWorldAppFixture.definition,
         notes: {
           ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
           hideNodeCountAndCoresPerNode: false,
         },
       },
@@ -589,6 +703,7 @@ describe('AppSchemaForm', () => {
         ...helloWorldAppFixture.definition,
         notes: {
           ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
           hideNodeCountAndCoresPerNode: false,
         },
       },

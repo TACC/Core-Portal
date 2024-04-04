@@ -496,3 +496,11 @@ export const execSystemsFixture = [
     updated: '2023-12-07T23:56:00.252891Z',
   },
 ];
+
+export const executionSystemNotesFixture = {
+  dynamicExecSystems: {
+    maverick2: 'Maverick2',
+    frontera: 'Frontera',
+    ls6: 'Lonestar6',
+  },
+};

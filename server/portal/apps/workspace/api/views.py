@@ -25,6 +25,7 @@ from portal.apps.onboarding.steps.system_access_v3 import create_system_credenti
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import check_job_for_timeout
+from tapipy.tapis import TapisResult
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -45,10 +46,12 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
-def _get_all_exec_systems(user):
+def _get_exec_systems(user, systems):
     """List of all enabled execution systems available for the user."""
     tapis = user.tapis_oauth.client
-    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search="(canExec.eq.true)~(enabled.eq.true)")
+    system_id_search = ','.join(systems)
+    search_string = f"(id.in.{system_id_search})~(canExec.eq.true)~(enabled.eq.true)"
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
 
 def _get_app(app_id, app_version, user):
@@ -60,9 +63,9 @@ def _get_app(app_id, app_version, user):
 
     data = {'definition': app_def}
 
-    has_dynamic_exec_system = getattr(app_def.notes, 'dynamicExecSystem', False)
-    if has_dynamic_exec_system:
-        data['execSystems'] = _get_all_exec_systems(user)
+    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', TapisResult()).__dict__.keys()
+    if len(exec_systems) > 0:
+        data['execSystems'] = _get_exec_systems(user, exec_systems)
     else:
         # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
         data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]

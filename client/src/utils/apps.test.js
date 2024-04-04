@@ -1,5 +1,6 @@
 import { getExecSystemFromId, getDefaultExecSystem } from './apps';
 import { helloWorldAppFixture } from '../components/Applications/AppForm/fixtures/AppForm.app.fixture';
+import { executionSystemNotesFixture } from '../components/Applications/AppForm/fixtures/AppForm.executionsystems.fixture';
 
 describe('app utility to get Execution System from Id', () => {
   it('returns available exec system', () => {
@@ -42,9 +43,14 @@ describe('app utility to get Default Execution System from Id', () => {
           ...helloWorldAppFixture.definition.jobAttributes,
           execSystemId: 'foobar',
         },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
       },
     };
-    expect(getDefaultExecSystem(app).id).toEqual('frontera');
+    debugger;
+    expect(getDefaultExecSystem(app, ['frontera','ls6']).id).toEqual('frontera');
   });
   it('returns null with empty exec system array', () => {
     const app = {

@@ -117,7 +117,7 @@ function JobHistoryContent({
     ...reduceInputParameters(jobDisplay.parameters),
   };
   const configDataObj = {
-    'Execution System': jobDisplay.systemName,
+    'System': jobDisplay.systemName,
   };
   const outputDataObj = {
     'Job Name': jobName,
@@ -185,6 +185,10 @@ function JobHistoryContent({
   }
   if ('allocation' in jobDisplay) {
     configDataObj.Allocation = jobDisplay.allocation;
+  }
+
+  if ('notes' in jobDisplay) {
+    configDataObj.notes = jobDisplay.notes;
   }
 
   // TODOv3: dropV2Jobs

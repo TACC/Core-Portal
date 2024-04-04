@@ -4,8 +4,8 @@ import { getExecSystemFromId } from 'utils/apps';
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 
 export const getQueueMaxMinutes = (exec_sys, queueName) => {
-  return exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
-    ?.maxMinutes;
+  return exec_sys?.batchLogicalQueues.find((q) => q.name === queueName)
+    ?.maxMinutes??0;
 };
 
 /**
@@ -16,6 +16,9 @@ export const getQueueMaxMinutes = (exec_sys, queueName) => {
  * @returns {Yup.number()} min/max validation of max minutes
  */
 export const getMaxMinutesValidation = (queue) => {
+  if (!queue) {
+    return Yup.number();
+  }
   return Yup.number()
     .min(
       queue.minMinutes,
@@ -83,6 +86,9 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * @returns {Yup.number()} min/max validation of node count
  */
 export const getNodeCountValidation = (queue) => {
+  if (!queue) {
+    return Yup.number();
+  }
   return Yup.number()
     .integer('Node Count must be an integer.')
     .min(
@@ -103,6 +109,9 @@ export const getNodeCountValidation = (queue) => {
  * @returns {Yup.number()} min/max validation of coresPerNode
  */
 export const getCoresPerNodeValidation = (queue) => {
+  if (!queue) {
+    return Yup.number();
+  }
   if (queue.maxCoresPerNode === -1) {
     return Yup.number().integer();
   }
@@ -187,13 +196,13 @@ export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
     app.definition.jobAttributes.execSystemLogicalQueue ??
     exec_sys?.batchDefaultLogicalQueue;
   return (
-    exec_sys.batchLogicalQueues.find((q) => q.name === queueName) ||
-    exec_sys.batchLogicalQueues[0]
+    exec_sys?.batchLogicalQueues.find((q) => q.name === queueName) ||
+    exec_sys?.batchLogicalQueues[0]
   );
 };
 
 /**
- * Apply two filters and get the list of queues applicable.
+ * Apply the following two filters and get the list of queues applicable.
  * Filters:
  * 1. If Node and Core per Node is enabled, only allow
  *    queues which match min and max node count with job attributes
@@ -205,7 +214,7 @@ export const getAppQueueValues = (app, queues) => {
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
     */
-  return queues
+  return (queues ?? [])
     .filter(
       (q) =>
         !app.definition.notes.hideNodeCountAndCoresPerNode ||
@@ -225,6 +234,7 @@ export const getAppQueueValues = (app, queues) => {
  * Build a map of allocations applicable to each execution
  * system based on the host match.
  * Handle case where dynamic execution system is provided.
+ * If there is no allocation for a given exec system, skip it.
  * @param {*} app
  * @param {*} allocations
  * @returns a Map of allocations applicable to each execution system.
@@ -311,3 +321,29 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
 
   return targetPathFieldValue;
 };
+
+/**
+ * Gets the execution systems with portal's default allocation.
+ * It will return empty list, if there is no allocation system matching portal's
+ * default allocation.
+ * @param {Map} execSystemAllocationsMap 
+ * @param {String} portalAllocation 
+ */
+export const getExecSystemsForPortalAllocation = (execSystemAllocationsMap, portalAllocation) => {
+  // Look at each execution system and its corressponding allocations
+  // Gather all execution system whose allocation is the default portal allocation.
+  const execSystems = [];
+  execSystemAllocationsMap.forEach((execAllocations, execSystem) => {
+    if (execAllocations.includes(portalAllocation)) {
+      execSystems.push(execSystem);
+    }
+  });
+  // If user does not have any execution systems matching portalAllocation,
+  // this list will be empty.
+  return execSystems;
+  
+};
+
+export const isAppUsingDynamicExecSystem = (app) => {
+  return !!app.definition.notes.dynamicExecSystems;
+}
