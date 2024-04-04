@@ -1,4 +1,9 @@
 {
+    "Stampede3": {
+        "name": "Stampede3",
+        "host": "stampede3.tacc.utexas.edu",
+        "type": "HPC"
+    },
     "Stampede4": {
         "name": "Stampede2",
         "host": "stampede2.tacc.utexas.edu",
