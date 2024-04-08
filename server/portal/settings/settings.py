@@ -483,7 +483,7 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
-SETTINGS: TACC EXECUTION SYSTEMS
+SETTINGS: TACC EXECUTION SYSTEMS.
 """
 TACC_EXEC_SYSTEMS = {
     'corral': {
@@ -492,6 +492,11 @@ TACC_EXEC_SYSTEMS = {
         'home_dir': '/home/{}'
     },
     'stampede2': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
+    'stampede3': {
         'work_dir': '/work2/{}',
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
