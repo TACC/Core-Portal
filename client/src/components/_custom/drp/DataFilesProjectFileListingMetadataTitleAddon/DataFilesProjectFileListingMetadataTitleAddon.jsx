@@ -120,10 +120,10 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
         onOpenSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
       case 'origin_data':
-        onOpenOriginDataModal('EDIT_ORIGIN_DATASET', null);
+        onOpenOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':
-        onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', null);
+        onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
         break;
       default:
         break;
@@ -140,7 +140,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
       )}
       <Button
           type="link"
-          onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', editFile)}
+          onClick={() => onEditData(folderMetadata.data_type)}
         >
 
           Edit Data

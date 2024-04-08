@@ -8,7 +8,7 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useAddonComponents, useFileListing } from 'hooks/datafiles';
+import { useAddonComponents, useFileListing, useSelectedFiles } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
@@ -21,6 +21,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   const {
     DataFilesProjectFileListingAddon,
     DataFilesProjectFileListingMetadataAddon,
+    DataFilesProjectFileListingMetadataTitleAddon,
   } = useAddonComponents({ portalName });
   useEffect(() => {
     dispatch({
@@ -73,8 +74,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       payload: { operation: 'manageproject', props: {} },
     });
   };
-  const isLoading = metadata.loading || folderMetadata?.loading;
-  if (isLoading) {
+
+  if (metadata.loading) {
     return (
       <div className={styles['root-placeholder']}>
         <LoadingSpinner />
@@ -97,14 +98,18 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       className={styles.root}
       header={
         <div className={styles.title}>
-          {folderMetadata?.name || metadata.title}
-          {folderMetadata?.data_type && (
-            <span className={styles['dataTypeBox']}>
-              {folderMetadata.data_type}
-            </span>
+          {path !== '/' ? (
+            folderMetadata && DataFilesProjectFileListingMetadataTitleAddon && 
+              <DataFilesProjectFileListingMetadataTitleAddon 
+                folderMetadata={folderMetadata} 
+                system={system}
+                path={path}/>
+          ) : (
+            metadata.title
           )}
         </div>
       }
+
       headerActions={
         <div className={styles.controls}>
           {canEditSystem ? (
@@ -132,17 +137,18 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        {folderMetadata?.description ||
-          (metadata.description && (
-            <ShowMore>
-              {folderMetadata?.description || metadata.description}
-            </ShowMore>
-          ))}
-        {folderMetadata && DataFilesProjectFileListingMetadataAddon && (
-          <DataFilesProjectFileListingMetadataAddon
-            folderMetadata={folderMetadata}
-          />
-        )}
+      <>
+          {path !== '/'
+            ? <ShowMore key={`${system}-${path}`}>
+                {folderMetadata && DataFilesProjectFileListingMetadataAddon && (
+                  <DataFilesProjectFileListingMetadataAddon
+                    folderMetadata={folderMetadata}
+                  />
+                )}
+              </ShowMore>
+            : <ShowMore>{metadata.description}</ShowMore>
+          }
+      </>
       </div>
       <DataFilesListing
         api="tapis"
