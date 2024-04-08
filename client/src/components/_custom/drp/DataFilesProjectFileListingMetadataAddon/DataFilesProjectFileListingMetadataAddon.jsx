@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Section, SectionContent } from '_common';
+import { Section, SectionContent, } from '_common';
 import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
 
 const  DataDisplay = ({ data }) => {
@@ -38,7 +38,10 @@ const  DataDisplay = ({ data }) => {
 
 const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata }) => {
   return (
-    <DataDisplay data={folderMetadata} />
+    <>
+      {folderMetadata.description}
+      <DataDisplay data={folderMetadata} />
+    </>
   );
 };
 
