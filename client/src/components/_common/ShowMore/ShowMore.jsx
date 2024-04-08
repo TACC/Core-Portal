@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
@@ -13,8 +13,10 @@ const ShowMore = ({ className, children }) => {
 
   const { height, ref } = useResizeDetector();
 
+  // overflowThreshold to account for minor differences in height for example 84.5 and 85
+  const overflowThreshold = 1;
   const hasOverflow =
-    ref && ref.current ? ref.current.scrollHeight > height : false;
+    ref && ref.current ? (ref.current.scrollHeight - height) > overflowThreshold : false;
 
   return (
     <>
