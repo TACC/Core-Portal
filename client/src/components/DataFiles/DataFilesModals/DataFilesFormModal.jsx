@@ -15,8 +15,9 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = () => {
-    history.push(location.pathname);
+  const reloadPage = (updatedPath = "") => {
+    const path = updatedPath ? location.pathname.replace(/\/[^\/]+\/?$/, '/' + updatedPath) : location.pathname;
+    history.push(path);
   };
 
   const { form, selectedFile, formName, additionalData } = useSelector(
@@ -24,8 +25,6 @@ const DataFilesFormModal = () => {
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
   const { params } = useFileListing('FilesListing');
-
-  const { selectedFiles } = useSelectedFiles();
 
   const initialValues = form?.form_fields.reduce((acc, field) => {
     let value = '';
@@ -54,7 +53,7 @@ const DataFilesFormModal = () => {
         params,
         values,
         reloadPage,
-        selectedFile: selectedFiles[0],
+        selectedFile,
         additionalData,
       },
     });

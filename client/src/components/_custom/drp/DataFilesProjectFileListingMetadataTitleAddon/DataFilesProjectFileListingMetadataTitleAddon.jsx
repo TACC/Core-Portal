@@ -11,22 +11,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
 
-  // reconstruct editFile to mimic SelectedFile object
-  const editFile = {
-    "format": "folder",
-    "id" : system + "/" + path,
-    "metadata": folderMetadata,
-    "name": path,
-    "system": system,
-    "path": path,
-    "type": "dir",
-    "_links": {
-      "self": {
-        "href": "tapis://" + system + "/" + path,
-      },
-    }
-  }
-
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
       url: 'api/forms',
@@ -49,14 +33,12 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
   };
 
   const onOpenSampleModal = async (formName, selectedFile) => {
-    console.log("Selected file in MetadataTitleAddon", selectedFile)
     const form = await getFormFields(formName);
-
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'dynamicform',
-        props: { form, selectedFile: editFile, formName },
+        props: { form, selectedFile, formName },
       },
     });
   };
@@ -115,6 +97,22 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
   };
 
   const onEditData = (dataType) => {
+    const name = path.split('/').pop();
+    // reconstruct editFile to mimic SelectedFile object
+    const editFile = {
+      "format": "folder",
+      "id" : system + "/" + path,
+      "metadata": folderMetadata,
+      "name": name,
+      "system": system,
+      "path": path,
+      "type": "dir",
+      "_links": {
+        "self": {
+          "href": "tapis://" + system + "/" + path,
+        },
+      }
+    };
     switch (dataType) {
       case 'sample':
         onOpenSampleModal('EDIT_SAMPLE_DATA', editFile);
