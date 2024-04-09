@@ -8,7 +8,7 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useAddonComponents, useFileListing, useSelectedFiles } from 'hooks/datafiles';
+import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
