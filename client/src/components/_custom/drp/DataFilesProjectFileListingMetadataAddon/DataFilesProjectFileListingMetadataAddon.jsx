@@ -4,7 +4,14 @@ import { Section, SectionContent, } from '_common';
 import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
 
 const  DataDisplay = ({ data }) => {
-  const formatLabel = (key) => key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  
+  // Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
+  const formatLabel = (key) => 
+    key.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+  //filter out empty values and unwanted keys
   const processedData = Object.entries(data)
     .filter(([key, value]) => value !== "" && key !== "name" && key !== "description")
     .map(([key, value]) => ({
@@ -12,11 +19,13 @@ const  DataDisplay = ({ data }) => {
       value: value,
     }));
 
+    // Divide processed data into chunks for two-column layout display
     const chunkSize = Math.ceil(processedData.length / 2);
     const chunks = [];
     for (let i = 0; i < processedData.length; i += chunkSize) {
       chunks.push(processedData.slice(i, i + chunkSize));
     }
+    
     const renderDataEntries = (entries) => (
       entries.map(({ label, value }, index) => (
         <div key={index}>
@@ -24,7 +33,8 @@ const  DataDisplay = ({ data }) => {
         </div>
       ))
     );
-    
+
+    // Render each data entry within its chunk for two-column layout
     return (
       <Section contentLayoutName="twoColumn">
         {chunks.map((chunk, index) => (

@@ -16,6 +16,7 @@ const DataFilesFormModal = () => {
   const location = useLocation();
 
   const reloadPage = (updatedPath = "") => {
+    // using regex to replace last segment of pathname with optional parameter 'updatedPath' to navigate to a new path
     const path = updatedPath ? location.pathname.replace(/\/[^\/]+\/?$/, '/' + updatedPath) : location.pathname;
     history.push(path);
   };

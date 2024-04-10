@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss';
 import { Button } from '_common';
-import { useSelectedFiles } from 'hooks/datafiles';
 import { fetchUtil } from 'utils/fetchUtil';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system, path }) => {
@@ -128,12 +127,18 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
     }
   }
 
+  // Function to format the data_type value from snake_case to Label Case i.e. origin_data -> Origin Data
+  const formatDatatype = (data_type) => 
+    data_type.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
   return (
     <>
       {folderMetadata.name}
       {folderMetadata?.data_type && (
         <span className={styles['dataTypeBox']}>
-          {folderMetadata.data_type}
+          {formatDatatype(folderMetadata.data_type)}
         </span>
       )}
       <Button
