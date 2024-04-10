@@ -9,7 +9,7 @@ const useAddonComponents = ({ portalName }) => {
       try {
         for (const addonName of addons) {
           const module = await import(
-            `../../components/_custom/${portalName}/${addonName}/${addonName}.jsx`
+            `../../components/_custom/${portalName.toLowerCase()}/${addonName}/${addonName}.jsx`
           );
           setAddonComponents(prevComponents => ({
             ...prevComponents,

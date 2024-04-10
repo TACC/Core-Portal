@@ -49,7 +49,7 @@ class SystemListingView(BaseApiView):
             ]
 
             default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
-            if default_system:
+            if default_system and default_system.get('scheme') != 'projects':
                 system_id = default_system.get('system')
                 system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=system_id, select='host')
                 response['default_host'] = system_def.host

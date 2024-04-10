@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '_common';
@@ -62,6 +63,12 @@ const BreadcrumbsDropdown = ({
   const overlapIndex = pathComponents.findIndex(
     (component, index) => startingPathComponents[index] !== component
   );
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
 
   let currentPath = startingPath;
   pathComponents.slice(overlapIndex).forEach((component) => {
@@ -125,8 +132,8 @@ const BreadcrumbsDropdown = ({
               <i className="icon-my-data" />
               <span className="multiline-menu-item-wrapper">
                 {scheme === 'projects'
-                  ? 'Shared Workspaces'
-                  : systemName || 'Shared Workspaces'}
+                  ? sharedWorkspacesDisplayName
+                  : systemName || sharedWorkspacesDisplayName}
                 {homeDir ? <small>Root</small> : null}
               </span>
             </DropdownItem>
