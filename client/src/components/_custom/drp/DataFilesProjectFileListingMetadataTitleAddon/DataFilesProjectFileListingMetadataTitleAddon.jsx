@@ -140,7 +140,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
           type="link"
           onClick={() => onEditData(folderMetadata.data_type)}
         >
-
           Edit Data
         </Button>
     </>
