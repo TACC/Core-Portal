@@ -92,13 +92,13 @@ const DataFilesFormModal = () => {
                 </ModalHeader>
                 <ModalBody className={styles['modal-body-container']}>
                   <DynamicForm
-                    formFields={form.form_fields ?? []}
+                    initialFormFields={form.form_fields ?? []}
                   ></DynamicForm>
                 </ModalBody>
                 {form?.footer && (
                   <ModalFooter>
                     <DynamicForm
-                      formFields={form.footer.fields ?? []}
+                      initialFormFields={form.footer.fields ?? []}
                     ></DynamicForm>
                   </ModalFooter>
                 )}
