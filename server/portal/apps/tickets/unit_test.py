@@ -77,6 +77,7 @@ def mock_tracker(mocker, rt_ticket):
 
 @pytest.mark.parametrize('rt_ticket', [
     {'id': 1, 'Requestors': ["UserName1@Example.COM", "Username2@Example.com"], 'Cc': []},
+    {'id': 1, 'Requestors': "UserName1@Example.COM,Username2@Example.com", 'Cc': []},
     {'id': 1, 'Requestors': ["username1@example.com", "username2@example.com"], 'Cc': []}], indirect=True)
 def test_rt_hasaccess_requestors_or_cc(mock_tracker):
     rtTester = RtUtilTestable(mock_tracker)
@@ -86,7 +87,9 @@ def test_rt_hasaccess_requestors_or_cc(mock_tracker):
 
 @pytest.mark.parametrize('rt_ticket', [
     {'id': 1, 'Requestors': ["Foo@example.com"], 'Cc': ["UserName1@Example.COM", "username2@example.com"]},
+    {'id': 1, 'Requestors': ["Foo@example.com"], 'Cc': "UserName1@Example.COM,username2@example.com"},
     {'id': 1, 'Requestors': ["Foo@example.com"], 'Cc': ["username1@example.com", "username2@example.com"]},
+    {'id': 1, 'Cc': ["username1@example.com", "username2@example.com"]},
     {'id': 1, 'Requestors': [], 'Cc': ["username1@example.com", "username2@example.com"]}], indirect=True)
 def test_rt_hasaccess_cc(mock_tracker):
     rtTester = RtUtilTestable(mock_tracker)
@@ -97,6 +100,7 @@ def test_rt_hasaccess_cc(mock_tracker):
 @pytest.mark.parametrize('rt_ticket', [
     {'id': 1, 'Requestors': ["foo@example.com"], 'Cc': ["baz@example.com"]},
     {'id': 1, 'Requestors': ["FOO@example.com"], 'Cc': ["BAZ@example.com"]},
+    {'id': 1},
     {'id': 1, 'Requestors': [], 'Cc': []}], indirect=True)
 def test_rt_hasnoaccess(mock_tracker):
     rtTester = RtUtilTestable(mock_tracker)

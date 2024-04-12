@@ -60,7 +60,7 @@ class DjangoRt:
     def hasAccess(self, ticket_id, user=None):
         if user and ticket_id:
             ticket = self.tracker.get_ticket(ticket_id)
-            if user.lower() in map(str.lower, ticket.get('Requestors', '')) or user.lower() in map(str.lower, ticket.get('Cc', '')):
+            if DjangoRt.contains_user(ticket.get('Requestors', ''), user) or DjangoRt.contains_user(ticket.get('Cc', ''), user):
                 return True
 
         return False
@@ -68,3 +68,13 @@ class DjangoRt:
     def getAttachment(self, ticket_id, attachment_id):
         ticketAttachment = self.tracker.get_attachment(ticket_id, attachment_id)
         return ticketAttachment
+
+    @staticmethod
+    def contains_user(ticket_field_data, user):
+        user_lower = user.lower()
+        
+        if isinstance(ticket_field_data, str):
+            return user_lower in ticket_field_data.lower()
+        elif isinstance(ticket_field_data, list):
+            return user_lower in map(str.lower, ticket_field_data)        
+        return user.lower() in ticket_field_data
