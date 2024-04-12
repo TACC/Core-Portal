@@ -60,7 +60,7 @@ class DjangoRt:
     def hasAccess(self, ticket_id, user=None):
         if user and ticket_id:
             ticket = self.tracker.get_ticket(ticket_id)
-            if user in ticket.get('Requestors', '') or user in ticket.get('Cc', ''):
+            if user.lower() in map(str.lower, ticket.get('Requestors', '')) or user.lower() in map(str.lower, ticket.get('Cc', '')):
                 return True
 
         return False

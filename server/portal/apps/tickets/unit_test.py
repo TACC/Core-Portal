@@ -2,6 +2,7 @@ import pytest
 from django.http import HttpResponse
 from django.http import HttpRequest
 from portal.apps.tickets.utils import get_recaptcha_verification
+from portal.apps.tickets import rtUtil
 
 
 @pytest.fixture(autouse=True)
@@ -46,3 +47,57 @@ def test_get_recaptcha_verification(mocker, requests_mock, regular_user):
     request.POST['recaptchaResponse'] = 'string'
     result = get_recaptcha_verification(request)
     assert result['success'] == recaptchaSuccess['success']
+
+
+class RtUtilTestable(rtUtil.DjangoRt):
+    '''
+    Tester for rtUtil.DjangoRt.
+    '''
+
+    def __init__(self, tracker):
+        # Set the attributes directly
+        self.rtHost = 'mock_host'
+        self.rtUn = 'mock_rt_user'
+        self.rtPw = 'mock_pw'
+        self.rtQueue = ''
+        self.tracker = tracker
+
+
+@pytest.fixture
+def rt_ticket(request):
+    return request.param
+
+
+@pytest.fixture
+def mock_tracker(mocker, rt_ticket):
+    mock_tracker = mocker.MagicMock()
+    mock_tracker.get_ticket.return_value = rt_ticket
+    yield mock_tracker
+
+
+@pytest.mark.parametrize('rt_ticket', [
+    {'id': 1, 'Requestors': ["UserName1@Example.COM", "Username2@Example.com"], 'Cc': []},
+    {'id': 1, 'Requestors': ["username1@example.com", "username2@example.com"], 'Cc': []}], indirect=True)
+def test_rt_hasaccess_requestors_or_cc(mock_tracker):
+    rtTester = RtUtilTestable(mock_tracker)
+    assert rtTester.hasAccess(1, 'Username1@Example.com') is True
+    assert rtTester.hasAccess(1, 'Username2@Example.com') is True
+
+
+@pytest.mark.parametrize('rt_ticket', [
+    {'id': 1, 'Requestors': ["Foo@example.com"], 'Cc': ["UserName1@Example.COM", "username2@example.com"]},
+    {'id': 1, 'Requestors': ["Foo@example.com"], 'Cc': ["username1@example.com", "username2@example.com"]},
+    {'id': 1, 'Requestors': [], 'Cc': ["username1@example.com", "username2@example.com"]}], indirect=True)
+def test_rt_hasaccess_cc(mock_tracker):
+    rtTester = RtUtilTestable(mock_tracker)
+    assert rtTester.hasAccess(1, 'Username1@Example.com') is True
+    assert rtTester.hasAccess(1, 'Username2@Example.com') is True
+
+
+@pytest.mark.parametrize('rt_ticket', [
+    {'id': 1, 'Requestors': ["foo@example.com"], 'Cc': ["baz@example.com"]},
+    {'id': 1, 'Requestors': ["FOO@example.com"], 'Cc': ["BAZ@example.com"]},
+    {'id': 1, 'Requestors': [], 'Cc': []}], indirect=True)
+def test_rt_hasnoaccess(mock_tracker):
+    rtTester = RtUtilTestable(mock_tracker)
+    assert rtTester.hasAccess(1, 'Username1@Example.com') is False
