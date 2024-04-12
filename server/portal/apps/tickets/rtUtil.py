@@ -77,4 +77,4 @@ class DjangoRt:
             return user_lower in ticket_field_data.lower()
         elif isinstance(ticket_field_data, list):
             return user_lower in map(str.lower, ticket_field_data)
-        return user.lower() in ticket_field_data
+        return user_lower in ticket_field_data
