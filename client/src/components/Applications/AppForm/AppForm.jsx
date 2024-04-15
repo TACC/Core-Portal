@@ -461,7 +461,9 @@ export const AppSchemaForm = ({ app }) => {
               execSystemLogicalQueue: getLogicalQueueValidation(app),
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue, app),
-              maxMinutes: getMaxMinutesValidation(queue, app).required('Required'),
+              maxMinutes: getMaxMinutesValidation(queue, app).required(
+                'Required'
+              ),
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
               allocation: getAllocationValidation(allocations, app),

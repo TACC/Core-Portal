@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
-export const FORK_JOB_MAX_MINUTES = 60*24;
+export const FORK_JOB_MAX_MINUTES = 60 * 24;
 
 export const getQueueMaxMinutes = (app, queueName) => {
   if (isJobTypeFork(app)) {
@@ -255,11 +255,8 @@ export const getAllocationValidation = (allocations, app) => {
   }
 
   return Yup.string()
-  .required('Required')
-  .oneOf(
-    allocations,
-    'Please select an allocation from the dropdown.'
-  );
+    .required('Required')
+    .oneOf(allocations, 'Please select an allocation from the dropdown.');
 };
 
 export const getLogicalQueueValidation = (app) => {
@@ -268,10 +265,10 @@ export const getLogicalQueueValidation = (app) => {
   }
 
   Yup.string()
-  .required('Required')
-  .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name));
+    .required('Required')
+    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name));
 };
 
 export const isJobTypeFork = (app) => {
-  return app.definition.jobType == "FORK";
-}
+  return app.definition.jobType == 'FORK';
+};
