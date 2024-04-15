@@ -28,6 +28,8 @@ import {
   getCoresPerNodeValidation,
   getTargetPathFieldName,
   updateValuesForQueue,
+  getLogicalQueueValidation,
+  getAllocationValidation,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -456,20 +458,13 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              execSystemLogicalQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name)),
+              execSystemLogicalQueue: getLogicalQueueValidation(app),
               nodeCount: getNodeCountValidation(queue, app),
-              coresPerNode: getCoresPerNodeValidation(queue),
-              maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              coresPerNode: getCoresPerNodeValidation(queue, app),
+              maxMinutes: getMaxMinutesValidation(queue, app).required('Required'),
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
-              allocation: Yup.string()
-                .required('Required')
-                .oneOf(
-                  allocations,
-                  'Please select an allocation from the dropdown.'
-                ),
+              allocation: getAllocationValidation(allocations, app),
             });
             return schema;
           });
