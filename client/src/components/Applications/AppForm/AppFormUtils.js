@@ -10,7 +10,7 @@ export const getQueueMaxMinutes = (app, queueName) => {
   }
 
   return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
-    ?.maxMinutes;
+    .maxMinutes;
 };
 
 /**
