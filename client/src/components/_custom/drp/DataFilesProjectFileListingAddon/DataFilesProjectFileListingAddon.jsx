@@ -102,57 +102,57 @@ const DataFilesProjectFileListingAddon = () => {
   return (
     <>
       <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'sample' ? (
-        <Button
-          type="link"
-          onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
-        >
-          Edit Sample Data
-        </Button>
-      ) : (
-        <Button type="link" onClick={() => onOpenSampleModal('ADD_SAMPLE_DATA')}>
-          Add Sample Data
-        </Button>
-      )}
+      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
+        selectedFiles[0].metadata['data_type'] === 'sample' ? (
+          <Button
+            type="link"
+            onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
+          >
+            Edit Sample Data
+          </Button>
+        ) : (
+          <Button type="link" onClick={() => onOpenSampleModal('ADD_SAMPLE_DATA')}>
+            Add Sample Data
+          </Button>
+        )}
       <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'origin_data' ? (
-        <Button
-          type="link"
-          onClick={() =>
-            onOpenOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
-          }
-        >
-          Edit Origin Dataset
-        </Button>
-      ) : (
-        <Button
-          type="link"
-          onClick={() => onOpenOriginDataModal('ADD_ORIGIN_DATASET')}
-        >
-          Add Origin Dataset
-        </Button>
-      )}
+      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
+        selectedFiles[0].metadata['data_type'] === 'origin_data' ? (
+          <Button
+            type="link"
+            onClick={() =>
+              onOpenOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
+            }
+          >
+            Edit Origin Dataset
+          </Button>
+        ) : (
+          <Button
+            type="link"
+            onClick={() => onOpenOriginDataModal('ADD_ORIGIN_DATASET')}
+          >
+            Add Origin Dataset
+          </Button>
+        )}
       <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 &&
-      selectedFiles[0]?.metadata['data_type'] === 'analysis_data' ? (
-        <Button
-          type="link"
-          onClick={() =>
-            onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
-          }
-        >
-          Edit Analysis Dataset
-        </Button>
-      ) : (
-        <Button
-          type="link"
-          onClick={() => onOpenAnalysisDataModal('ADD_ANALYSIS_DATASET')}
-        >
-          Add Analysis Dataset
-        </Button>
-      )}
+      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
+        selectedFiles[0].metadata['data_type'] === 'analysis_data' ? (
+          <Button
+            type="link"
+            onClick={() =>
+              onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
+            }
+          >
+            Edit Analysis Dataset
+          </Button>
+        ) : (
+          <Button
+            type="link"
+            onClick={() => onOpenAnalysisDataModal('ADD_ANALYSIS_DATASET')}
+          >
+            Add Analysis Dataset
+          </Button>
+        )}
       <span className={styles.separator}>|</span>
     </>
   );

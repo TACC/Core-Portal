@@ -46,14 +46,24 @@ const  DataDisplay = ({ data }) => {
     );
 }
 
-const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata }) => {
+const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata, metadata, path }) => {
   return (
     <>
-      {folderMetadata.description}
-      <DataDisplay data={folderMetadata} />
+    {path !== '/' ? (
+      <>
+        {folderMetadata && (
+          <>
+            {folderMetadata.description}
+            <DataDisplay data={folderMetadata} />
+          </>
+        )}
+      </>
+    ) : (
+      metadata.description
+    )}
     </>
   );
-};
+}
 
 DataFilesProjectFileListingMetadataAddon.propTypes = {
   folderMetadata: PropTypes.object.isRequired,

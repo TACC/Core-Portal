@@ -5,7 +5,7 @@ import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss'
 import { Button } from '_common';
 import { fetchUtil } from 'utils/fetchUtil';
 
-const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system, path }) => {
+const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadata, system, path }) => {
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
@@ -133,22 +133,30 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, system,
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
-  return (
-    <>
-      {folderMetadata.name}
-      {folderMetadata?.data_type && (
-        <span className={styles['dataTypeBox']}>
-          {formatDatatype(folderMetadata.data_type)}
-        </span>
-      )}
-      <Button
-          type="link"
-          onClick={() => onEditData(folderMetadata.data_type)}
-        >
-          Edit Data
-        </Button>
-    </>
-  );
+    return (
+      <>
+        {path !== '/' ? (
+          <>
+            {folderMetadata && (
+              <>
+                {folderMetadata.name}
+                <span className={styles['dataTypeBox']}>
+                  {formatDatatype(folderMetadata.data_type)}
+                </span>
+                <Button
+                  type="link"
+                  onClick={() => onEditData(folderMetadata.data_type)}
+                >
+                  Edit Data
+                </Button>
+              </>
+            )}
+          </>
+        ) : (
+          metadata.title
+        )}
+      </>
+    );
 };
 
 DataFilesProjectFileListingMetadataTitleAddon.propTypes = {

@@ -92,21 +92,23 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       </div>
     );
   }
-
+  
   return (
     <SectionTableWrapper
       className={styles.root}
       header={
         <div className={styles.title}>
-          {path !== '/' ? (
-            folderMetadata && DataFilesProjectFileListingMetadataTitleAddon && 
+          {
+            DataFilesProjectFileListingMetadataTitleAddon ? 
               <DataFilesProjectFileListingMetadataTitleAddon 
-                folderMetadata={folderMetadata} 
-                system={system}
-                path={path}/>
-          ) : (
-            metadata.title
-          )}
+                  folderMetadata={folderMetadata}
+                  metadata={metadata} 
+                  system={system}
+                  path={path}/>
+                           
+            : metadata.title
+          }
+          
         </div>
       }
 
@@ -138,15 +140,17 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       */}
       <div className={styles.description}>
       <>
-          {path !== '/'
-            ? <ShowMore key={`${system}-${path}`}>
-                {folderMetadata && DataFilesProjectFileListingMetadataAddon && (
-                  <DataFilesProjectFileListingMetadataAddon
-                    folderMetadata={folderMetadata}
-                  />
-                )}
-              </ShowMore>
-            : <ShowMore>{metadata.description}</ShowMore>
+
+          {DataFilesProjectFileListingMetadataTitleAddon ? 
+            <ShowMore key={`${system}-${path}`}>  
+              <DataFilesProjectFileListingMetadataAddon 
+                folderMetadata={folderMetadata}
+                metadata={metadata}
+                path={path}
+              />
+            </ShowMore> 
+              
+          : <ShowMore>{metadata.description}</ShowMore>
           }
       </>
       </div>
