@@ -2,11 +2,11 @@ import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
-export const FORK_JOB_MAX_MINUTES = 60 * 24;
+export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 
 export const getQueueMaxMinutes = (app, queueName) => {
-  if (isJobTypeFork(app)) {
-    return FORK_JOB_MAX_MINUTES;
+  if (!isJobTypeBATCH(app)) {
+    return DEFAULT_JOB_MAX_MINUTES;
   }
 
   return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
@@ -21,8 +21,8 @@ export const getQueueMaxMinutes = (app, queueName) => {
  * @returns {Yup.number()} min/max validation of max minutes
  */
 export const getMaxMinutesValidation = (queue, app) => {
-  if (isJobTypeFork(app)) {
-    return Yup.number().max(FORK_JOB_MAX_MINUTES);
+  if (!isJobTypeBATCH(app)) {
+    return Yup.number().max(DEFAULT_JOB_MAX_MINUTES);
   }
   return Yup.number()
     .min(
@@ -90,11 +90,7 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (queue, app) => {
-  if (isJobTypeFork(app)) {
-    return Yup.number().integer().min(1).max(1);
-  }
-
+export const getNodeCountValidation = (queue) => {
   return Yup.number()
     .integer('Node Count must be an integer.')
     .min(
@@ -114,8 +110,8 @@ export const getNodeCountValidation = (queue, app) => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of coresPerNode
  */
-export const getCoresPerNodeValidation = (queue, app) => {
-  if (queue?.maxCoresPerNode === -1 || isJobTypeFork(app)) {
+export const getCoresPerNodeValidation = (queue) => {
+  if (queue.maxCoresPerNode === -1) {
     return Yup.number().integer();
   }
   return Yup.number()
@@ -249,26 +245,12 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
   return targetPathFieldValue;
 };
 
-export const getAllocationValidation = (allocations, app) => {
-  if (isJobTypeFork(app)) {
-    return Yup.string();
-  }
-
+export const getAllocationValidation = (allocations) => {
   return Yup.string()
     .required('Required')
     .oneOf(allocations, 'Please select an allocation from the dropdown.');
 };
 
-export const getLogicalQueueValidation = (app) => {
-  if (isJobTypeFork(app)) {
-    return Yup.string();
-  }
-
-  Yup.string()
-    .required('Required')
-    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name));
-};
-
-export const isJobTypeFork = (app) => {
-  return app.definition.jobType == 'FORK';
+export const isJobTypeBATCH = (app) => {
+  return app.definition.jobType === 'BATCH';
 };

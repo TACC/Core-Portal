@@ -26,10 +26,9 @@ import {
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
-  getTargetPathFieldName,
   updateValuesForQueue,
-  getLogicalQueueValidation,
   getAllocationValidation,
+  isJobTypeBATCH,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -286,7 +285,9 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   let missingAllocation = false;
-  if (app.definition.jobType === 'BATCH') {
+  if (isJobTypeBATCH(app)) {
+    initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
+    initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
     initialValues.execSystemLogicalQueue = (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
@@ -458,15 +459,25 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              execSystemLogicalQueue: getLogicalQueueValidation(app),
-              nodeCount: getNodeCountValidation(queue, app),
-              coresPerNode: getCoresPerNodeValidation(queue, app),
+              execSystemLogicalQueue: isJobTypeBATCH(app)
+                ? Yup.string()
+                    .required('Required')
+                    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
+                : Yup.string().notRequired(),
+              nodeCount: isJobTypeBATCH(app)
+                ? getNodeCountValidation(queue)
+                : Yup.number().notRequired(),
+              coresPerNode: isJobTypeBATCH(app)
+                ? getCoresPerNodeValidation(queue)
+                : Yup.number().notRequired(),
               maxMinutes: getMaxMinutesValidation(queue, app).required(
                 'Required'
               ),
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
-              allocation: getAllocationValidation(allocations, app),
+              allocation: isJobTypeBATCH(app)
+                ? getAllocationValidation(allocations, app)
+                : Yup.string().notRequired(),
             });
             return schema;
           });
