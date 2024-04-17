@@ -4,8 +4,10 @@ import { getExecSystemFromId } from 'utils/apps';
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 
 export const getQueueMaxMinutes = (exec_sys, queueName) => {
-  return exec_sys?.batchLogicalQueues.find((q) => q.name === queueName)
-    ?.maxMinutes??0;
+  return (
+    exec_sys?.batchLogicalQueues.find((q) => q.name === queueName)
+      ?.maxMinutes ?? 0
+  );
 };
 
 /**
@@ -326,10 +328,13 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
  * Gets the execution systems with portal's default allocation.
  * It will return empty list, if there is no allocation system matching portal's
  * default allocation.
- * @param {Map} execSystemAllocationsMap 
- * @param {String} portalAllocation 
+ * @param {Map} execSystemAllocationsMap
+ * @param {String} portalAllocation
  */
-export const getExecSystemsForPortalAllocation = (execSystemAllocationsMap, portalAllocation) => {
+export const getExecSystemsForPortalAllocation = (
+  execSystemAllocationsMap,
+  portalAllocation
+) => {
   // Look at each execution system and its corressponding allocations
   // Gather all execution system whose allocation is the default portal allocation.
   const execSystems = [];
@@ -341,9 +346,8 @@ export const getExecSystemsForPortalAllocation = (execSystemAllocationsMap, port
   // If user does not have any execution systems matching portalAllocation,
   // this list will be empty.
   return execSystems;
-  
 };
 
 export const isAppUsingDynamicExecSystem = (app) => {
   return !!app.definition.notes.dynamicExecSystems;
-}
+};

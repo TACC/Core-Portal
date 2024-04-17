@@ -469,7 +469,7 @@ describe('AppSchemaForm', () => {
       ...helloWorldAppFixture,
       definition: {
         ...helloWorldAppFixture.definition,
-        jobType: "FORK",
+        jobType: 'FORK',
       },
       execSystems: execSystemsFixture,
     });
@@ -493,7 +493,6 @@ describe('AppSchemaForm', () => {
       // maverick99 does not have allocation
       return { ...e, host: 'maverick99.tacc.utexas.edu' };
     });
-
 
     const { container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,

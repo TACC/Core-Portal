@@ -237,9 +237,12 @@ export const AppSchemaForm = ({ app }) => {
   } = useSelector((state) => {
     const matchingExecutionHostsMap = matchExecSysWithAllocations(
       app,
-      state.allocations,
+      state.allocations
     );
-    const execSystemsWithAllocation = getExecSystemsForPortalAllocation(matchingExecutionHostsMap, state.allocations.portal_alloc);
+    const execSystemsWithAllocation = getExecSystemsForPortalAllocation(
+      matchingExecutionHostsMap,
+      state.allocations.portal_alloc
+    );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
 
     const keyService = state.systems.storage.configuration.find(
@@ -363,9 +366,12 @@ export const AppSchemaForm = ({ app }) => {
       missingAllocation = true;
     } else if (!currentValues.allocations.length) {
       jobSubmission.error = true;
-      let message = 'You need access to at least one system and corressponding allocation to run this application.';
+      let message =
+        'You need access to at least one system and corressponding allocation to run this application.';
       if (!isAppUsingDynamicExecSystem(app)) {
-        message = `You need an allocation on ${getSystemName(currentValues.execSys.host)} to run this application.`;
+        message = `You need an allocation on ${getSystemName(
+          currentValues.execSys.host
+        )} to run this application.`;
       }
       jobSubmission.response = {
         message: message,
@@ -516,7 +522,7 @@ export const AppSchemaForm = ({ app }) => {
                 .required('Required'),
               execSystemLogicalQueue: Yup.string()
                 .required('Required')
-                .oneOf(exec_sys?.batchLogicalQueues.map((q) => q.name)??[]),
+                .oneOf(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []),
               nodeCount: getNodeCountValidation(queue, app),
               coresPerNode: getCoresPerNodeValidation(queue),
               maxMinutes: getMaxMinutesValidation(queue).required('Required'),

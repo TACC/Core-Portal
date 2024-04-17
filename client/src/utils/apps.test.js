@@ -50,7 +50,9 @@ describe('app utility to get Default Execution System from Id', () => {
       },
     };
     debugger;
-    expect(getDefaultExecSystem(app, ['frontera','ls6']).id).toEqual('frontera');
+    expect(getDefaultExecSystem(app, ['frontera', 'ls6']).id).toEqual(
+      'frontera'
+    );
   });
   it('returns null with empty exec system array', () => {
     const app = {

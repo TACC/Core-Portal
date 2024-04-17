@@ -26,7 +26,7 @@ export const getDefaultExecSystem = (app, execSystems) => {
     if (execSystems.includes(execSystemId)) {
       return getExecSystemFromId(app, execSystemId);
     }
-    
+
     // If not found, return the first execSystem from the provided list
     return getExecSystemFromId(app, execSystems[0]);
   }
