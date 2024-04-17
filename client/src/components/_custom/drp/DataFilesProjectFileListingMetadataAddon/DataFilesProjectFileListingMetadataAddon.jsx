@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Section, SectionContent, } from '_common';
+import { Section, SectionContent, LoadingSpinner } from '_common';
 import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
+import { useFileListing } from 'hooks/datafiles';
 
 const  DataDisplay = ({ data }) => {
   
@@ -47,20 +48,21 @@ const  DataDisplay = ({ data }) => {
 }
 
 const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata, metadata, path }) => {
+
+  const { loading } = useFileListing('FilesListing');
+
   return (
     <>
-    {path !== '/' ? (
-      <>
-        {folderMetadata && (
+      {!loading && (
+        folderMetadata ? (
           <>
             {folderMetadata.description}
             <DataDisplay data={folderMetadata} />
           </>
-        )}
-      </>
-    ) : (
-      metadata.description
-    )}
+        ) : (
+          metadata.description
+        )
+      )}
     </>
   );
 }

@@ -108,7 +108,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                            
             : metadata.title
           }
-          
         </div>
       }
 
@@ -140,8 +139,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       */}
       <div className={styles.description}>
       <>
-
-          {DataFilesProjectFileListingMetadataTitleAddon ? 
+          {DataFilesProjectFileListingMetadataAddon ? 
             <ShowMore key={`${system}-${path}`}>  
               <DataFilesProjectFileListingMetadataAddon 
                 folderMetadata={folderMetadata}

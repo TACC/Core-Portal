@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss';
-import { Button } from '_common';
+import { Button, LoadingSpinner } from '_common';
 import { fetchUtil } from 'utils/fetchUtil';
+import { useFileListing } from 'hooks/datafiles';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadata, system, path }) => {
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
+
+  const { loading } = useFileListing('FilesListing');
 
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
@@ -135,25 +138,25 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 
     return (
       <>
-        {path !== '/' ? (
-          <>
-            {folderMetadata && (
-              <>
-                {folderMetadata.name}
-                <span className={styles['dataTypeBox']}>
-                  {formatDatatype(folderMetadata.data_type)}
-                </span>
-                <Button
-                  type="link"
-                  onClick={() => onEditData(folderMetadata.data_type)}
-                >
-                  Edit Data
-                </Button>
-              </>
-            )}
-          </>
+        {loading ? (
+          <LoadingSpinner placement="inline" />
         ) : (
-          metadata.title
+          folderMetadata ? ( 
+            <>
+              {folderMetadata.name}
+              <span className={styles['dataTypeBox']}>
+                {formatDatatype(folderMetadata.data_type)}
+              </span>
+              <Button
+                type="link"
+                onClick={() => onEditData(folderMetadata.data_type)}
+              >
+                Edit Data
+              </Button>
+            </>
+          ) : (
+            metadata.title
+          )
         )}
       </>
     );
