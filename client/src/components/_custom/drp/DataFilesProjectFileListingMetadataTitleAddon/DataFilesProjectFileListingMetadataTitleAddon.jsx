@@ -23,7 +23,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
     return response;
   };
 
-  const getSamples = async (projectId, getOriginData = false) => {
+  const getDatasets = async (projectId, getOriginData = false) => {
     const response = await fetchUtil({
       url: `api/${portalName.toLowerCase()}`,
       params: {
@@ -47,7 +47,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 
   const onOpenOriginDataModal = async (formName, selectedFile) => {
     const form = await getFormFields(formName);
-    const samples = await getSamples(projectId);
+    const { samples } = await getDatasets(projectId);
 
     form.form_fields.map((field) => {
       if (field.name === 'sample') {
@@ -71,21 +71,26 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 
   const onOpenAnalysisDataModal = async (formName, selectedFile) => {
     const form = await getFormFields(formName);
-    const samples = await getSamples(projectId, true);
+    const { samples, origin_data: originDatasets } = await getDatasets(projectId, true);
 
     form.form_fields.map((field) => {
-      if (field.name === 'base_origin_data') {
-        field.optgroups = samples.map((sample) => {
+      if (field.name === 'sample') {
+        field.options = samples.map((sample) => {
           return {
+            value: parseInt(sample.id),
             label: sample.name,
-            options: sample.origin_data.map((originData) => {
-              return {
-                value: parseInt(originData.id),
-                label: originData.name,
-              };
-            }),
           };
         });
+      } else if (field.name === 'base_origin_data') {
+        field.options = originDatasets.map((originData) => {
+          return {
+            value: parseInt(originData.id),
+            label: originData.name,
+            dependentId: parseInt(originData.metadata.sample),
+          };
+        })
+        // Add a blank option to the select
+        field.options.unshift({ value: '', label: '' });
       }
     });
 
@@ -93,7 +98,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'dynamicform',
-        props: { selectedFile, form, formName, additionalData: samples },
+        props: { selectedFile, form, formName, additionalData: { samples, originDatasets } },
       },
     });
   };
