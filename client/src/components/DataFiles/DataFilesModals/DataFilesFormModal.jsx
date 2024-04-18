@@ -48,6 +48,11 @@ const DataFilesFormModal = () => {
   }, []);
 
   const handleSubmit = (values) => {
+
+    Object.keys(values).forEach(key => {
+      values[key] = typeof(values[key]) === 'string' ? values[key].trim() : values[key];
+    });
+
     dispatch({
       type: formName,
       payload: {
