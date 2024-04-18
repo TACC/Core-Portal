@@ -550,9 +550,12 @@ export const AppSchemaForm = ({ app }) => {
                         appFields.parameterSet[parameterSet][k].readOnly
                       )
                         return;
+                      // Convert the value to a string, if necessary
+                      const transformedValue =
+                        typeof v === 'number' ? v.toString() : v;
                       return parameterSet === 'envVariables'
-                        ? { key: k, value: v }
-                        : { name: k, arg: v };
+                        ? { key: k, value: transformedValue }
+                        : { name: k, arg: transformedValue };
                     })
                     .filter((v) => v), // filter out any empty values
                 };
