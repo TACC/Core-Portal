@@ -20,7 +20,7 @@ _WH_BASE_URL = ''
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede2', 'Lonestar6', 'Frontera']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede3', 'Lonestar6', 'Frontera']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -191,7 +191,7 @@ _WORKBENCH_SETTINGS = {
     "hasProjectFileListingAddon": True,
     "hasCustomSagas": True,
     "hasCustomEndpoints": True,
-    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon'],
+    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon'],
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,
