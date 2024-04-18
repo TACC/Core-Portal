@@ -2,8 +2,13 @@ import * as Yup from 'yup';
 import { getSystemName } from 'utils/systems';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
+export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 
 export const getQueueMaxMinutes = (app, queueName) => {
+  if (!isJobTypeBATCH(app)) {
+    return DEFAULT_JOB_MAX_MINUTES;
+  }
+
   return app.exec_sys.batchLogicalQueues.find((q) => q.name === queueName)
     .maxMinutes;
 };
@@ -15,7 +20,10 @@ export const getQueueMaxMinutes = (app, queueName) => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of max minutes
  */
-export const getMaxMinutesValidation = (queue) => {
+export const getMaxMinutesValidation = (queue, app) => {
+  if (!isJobTypeBATCH(app)) {
+    return Yup.number().max(DEFAULT_JOB_MAX_MINUTES);
+  }
   return Yup.number()
     .min(
       queue.minMinutes,
@@ -235,4 +243,14 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
   }
 
   return targetPathFieldValue;
+};
+
+export const getAllocationValidation = (allocations) => {
+  return Yup.string()
+    .required('Required')
+    .oneOf(allocations, 'Please select an allocation from the dropdown.');
+};
+
+export const isJobTypeBATCH = (app) => {
+  return app.definition.jobType === 'BATCH';
 };
