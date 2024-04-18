@@ -2,8 +2,13 @@ import * as Yup from 'yup';
 import { getExecSystemFromId } from 'utils/apps';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
+export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 
 export const getQueueMaxMinutes = (exec_sys, queueName) => {
+  if (!isJobTypeBATCH(app)) {
+    return DEFAULT_JOB_MAX_MINUTES;
+  }
+  
   return (
     exec_sys?.batchLogicalQueues.find((q) => q.name === queueName)
       ?.maxMinutes ?? 0
@@ -17,10 +22,14 @@ export const getQueueMaxMinutes = (exec_sys, queueName) => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of max minutes
  */
-export const getMaxMinutesValidation = (queue) => {
+export const getMaxMinutesValidation = (queue, app) => {
+  if (!isJobTypeBATCH(app)) {
+    return Yup.number().max(DEFAULT_JOB_MAX_MINUTES);
+  }
   if (!queue) {
     return Yup.number();
   }
+
   return Yup.number()
     .min(
       queue.minMinutes,
@@ -350,4 +359,14 @@ export const getExecSystemsForPortalAllocation = (
 
 export const isAppUsingDynamicExecSystem = (app) => {
   return !!app.definition.notes.dynamicExecSystems;
+};
+
+export const getAllocationValidation = (allocations) => {
+  return Yup.string()
+    .required('Required')
+    .oneOf(allocations, 'Please select an allocation from the dropdown.');
+};
+
+export const isJobTypeBATCH = (app) => {
+  return app.definition.jobType === 'BATCH';
 };
