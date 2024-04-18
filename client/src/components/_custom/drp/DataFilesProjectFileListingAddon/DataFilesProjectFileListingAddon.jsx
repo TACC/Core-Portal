@@ -158,7 +158,6 @@ const DataFilesProjectFileListingAddon = () => {
             Add Analysis Dataset
           </Button>
         )}
-      <span className={styles.separator}>|</span>
     </>
   );
 };
