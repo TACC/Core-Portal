@@ -528,7 +528,7 @@ export const AppSchemaForm = ({ app }) => {
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
                     .required('Required')
-                    .oneOf(app.exec_sys?.batchLogicalQueues.map((q) => q.name)?? []),
+                    .oneOf(exec_sys?.batchLogicalQueues.map((q) => q.name)??[])
                 : Yup.string().notRequired(),
               nodeCount: isJobTypeBATCH(app)
                 ? getNodeCountValidation(queue)
@@ -821,7 +821,7 @@ export const AppSchemaForm = ({ app }) => {
                   )}
                   <FormField
                     label="Maximum Job Runtime (minutes)"
-                    description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+                    description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(app,
                       getExecSystemFromId(app, values.execSystemId),
                       values.execSystemLogicalQueue
                     )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}

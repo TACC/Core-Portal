@@ -4,7 +4,7 @@ import { getExecSystemFromId } from 'utils/apps';
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 
-export const getQueueMaxMinutes = (exec_sys, queueName) => {
+export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
   if (!isJobTypeBATCH(app)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
