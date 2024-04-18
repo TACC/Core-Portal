@@ -5,6 +5,28 @@ import { useFormikContext } from 'formik';
 import { FormGroup, Input } from 'reactstrap';
 import './DynamicForm.scss';
 
+const updateFormFieldsBasedOnDependency = (formFields, values) => {
+  return formFields.map((field) => {
+
+    const { dependency } = field;
+
+    if (dependency) {
+      if (dependency.type === 'filter') {
+        const filteredOptions = field.options.filter(option => option.dependentId == values[dependency.name]);
+        const updatedOptions = [{ value: '', label: '' }, ...filteredOptions];
+        return { ...field, hidden: false, filteredOptions: updatedOptions };
+      } else if (dependency.type === 'visibility') {
+        if (dependency.value) {
+          return { ...field, hidden: field.dependency.value !== values[field.dependency.name] };
+        } else {
+          return { ...field, hidden: !field.hidden };
+        }
+      }
+    }
+    return field;
+  });
+};
+
 const DynamicForm = ({ initialFormFields }) => {
 
   const [formFields, setFormFields] = useState(initialFormFields);
@@ -12,33 +34,14 @@ const DynamicForm = ({ initialFormFields }) => {
   const { setFieldValue, values, handleChange, handleBlur } = useFormikContext();
 
   // This function updates and filters any dependant fields. Field dependency is described in the form config file
-  const handleDependentFieldUpdate = (value) => {
-    const updatedFormFields = formFields.map((field) => {
-
-      if (field.dependency?.type === 'filter') {
-        const filteredOptions = field.options.filter(option => option.dependentId == value);
-        const updatedOptions = [{ value: '', label: '' }, ...filteredOptions];
-        return { ...field, hidden: false, filteredOptions: updatedOptions};
-      } else if (field.dependency?.type === 'visibility') {
-        if (field.dependency.value) {
-          return { ...field, hidden: field.dependency.value !== value};
-        } else {
-          return { ...field, hidden: !field.hidden};
-        }
-      }
-
-      return field;
-    });
-
+  const handleDependentFieldUpdate = (value, modifiedField) => {
+    const updatedFormFields = updateFormFieldsBasedOnDependency(formFields, { ...values, [modifiedField.name]: value });
     setFormFields(updatedFormFields);
-  }
+  };
 
   useEffect(() => {
-    formFields.forEach((field) => {
-      if (values[field.name]) {
-        handleDependentFieldUpdate(values[field.name]);
-      }
-    });
+    const updatedFormFields = updateFormFieldsBasedOnDependency(formFields, values);
+    setFormFields(updatedFormFields);
   }, []);
 
   const renderFormField = (field) => {
@@ -80,7 +83,7 @@ const DynamicForm = ({ initialFormFields }) => {
             required={field?.validation?.required}
             onChange={(event) => {
               setFieldValue(field.name, event.target.value);
-              handleDependentFieldUpdate(event.target.value);
+              handleDependentFieldUpdate(event.target.value, field);
             }}
           >
             {/* If we have a select with optgroup */}
