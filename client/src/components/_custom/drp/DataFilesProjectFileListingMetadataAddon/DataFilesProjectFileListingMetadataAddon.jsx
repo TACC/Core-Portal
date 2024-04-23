@@ -37,7 +37,7 @@ const  DataDisplay = ({ data }) => {
 
     // Render each data entry within its chunk for two-column layout
     return (
-      <Section contentLayoutName="twoColumn">
+      <Section contentLayoutName="twoColumn" className={`${styles['metadata-section']}`}>
         {chunks.map((chunk, index) => (
           <SectionContent key={index}>
             {renderDataEntries(chunk)}
