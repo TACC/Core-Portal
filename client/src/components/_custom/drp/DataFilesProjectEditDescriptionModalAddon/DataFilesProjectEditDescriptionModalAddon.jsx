@@ -34,7 +34,7 @@ const DataFilesProjectEditDescriptionModalAddon = () => {
   return (
     <div>
       {!isLoading && form &&
-        <DynamicForm formFields={form?.form_fields ?? []} />
+        <DynamicForm initialFormFields={form?.form_fields ?? []} />
       }
     </div>
   );
