@@ -156,7 +156,10 @@ class TapisFilesView(BaseApiView):
 
     def post(self, request, operation=None, scheme=None,
              handler=None, system=None, path='/'):
+        
+        metadata = json.loads(request.POST.get('metadata', None))
         body = request.FILES.dict()
+
         try:
             client = request.user.tapis_oauth.client
         except AttributeError:
@@ -171,7 +174,7 @@ class TapisFilesView(BaseApiView):
                                                                 path,
                                                                 body['uploaded_file'].name))
 
-            response = tapis_post_handler(client, scheme, system, path, operation, body=body)
+            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc

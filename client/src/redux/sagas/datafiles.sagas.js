@@ -478,13 +478,14 @@ export function* copyFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export async function uploadFileUtil(api, scheme, system, path, file) {
+export async function uploadFileUtil(api, scheme, system, path, file, metadata) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
+  formData.append('metadata', metadata ? JSON.stringify(metadata) : null);
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
@@ -515,7 +516,8 @@ export function* uploadFiles(action) {
       action.payload.system,
       action.payload.path,
       file.data,
-      file.id
+      file.id,
+      file.metadata
     );
   });
 
@@ -537,13 +539,13 @@ export function* uploadFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* uploadFile(api, scheme, system, path, file, index) {
+export function* uploadFile(api, scheme, system, path, file, index, metadata) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'UPLOADING', key: index, operation: 'upload' },
   });
   try {
-    yield call(uploadFileUtil, api, scheme, system, path, file);
+    yield call(uploadFileUtil, api, scheme, system, path, file, metadata);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: index, operation: 'upload' },
