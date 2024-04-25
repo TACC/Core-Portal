@@ -91,6 +91,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           href={row.original._links.self.href}
           isPublic={isPublic}
           length={row.original.length}
+          metadata={row.original.metadata}
         />
       );
     },

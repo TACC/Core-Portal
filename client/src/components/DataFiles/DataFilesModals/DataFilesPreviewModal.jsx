@@ -4,6 +4,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 import { Niivue } from '@niivue/niivue';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const NiiVue = ({ imageUrl, fileName }) => {
   const canvas = useRef();
@@ -35,6 +36,9 @@ const DataFilesPreviewModal = () => {
   const previewUsingBrainmap =
     !isLoading && !hasError && params.path && fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesPreviewModalAddon } = useAddonComponents({portalName})
 
   useEffect(() => {
     if (previewUsingBrainmap) setIsFrameLoading(false);
@@ -84,7 +88,7 @@ const DataFilesPreviewModal = () => {
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         File Preview: {params.name}
       </ModalHeader>
-      <ModalBody className={styles.root}>
+      <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
           <div className={styles['loading-style']}>
             <LoadingSpinner />
@@ -112,7 +116,7 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <div className={styles.error}>
+          <div className={`${styles.error} ${DataFilesPreviewModalAddon ? styles['error-condensed'] : ''}`}>
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
@@ -126,6 +130,7 @@ const DataFilesPreviewModal = () => {
             </Button>
           </div>
         )}
+        {DataFilesPreviewModalAddon && params.metadata && !isLoading && <DataFilesPreviewModalAddon metadata={params.metadata} />}
       </ModalBody>
     </Modal>
   );

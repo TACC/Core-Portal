@@ -191,7 +191,7 @@ _WORKBENCH_SETTINGS = {
     "hasProjectFileListingAddon": True,
     "hasCustomSagas": True,
     "hasCustomEndpoints": True,
-    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 'DataFilesUploadModalAddon'],
+    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon'],
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,
