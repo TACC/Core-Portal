@@ -57,7 +57,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   const showDataType = useSelector(
     (state) => state.workbench.portalName === 'DRP'
   );
-  
 
   const {
     data: files,
@@ -67,8 +66,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     fetchMore,
   } = useFileListing('FilesListing');
   const { selectFile } = useSelectedFiles();
-
-  console.log("data", files)
 
   useLayoutEffect(() => {
     fetchListing({ api, scheme, system, path });
