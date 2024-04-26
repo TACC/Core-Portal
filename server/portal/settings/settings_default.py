@@ -192,6 +192,7 @@ _WORKBENCH_SETTINGS = {
     "hasCustomSagas": True,
     "hasCustomEndpoints": True,
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon'],
+    "allowedFileActions": ['trash', 'download'],
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,

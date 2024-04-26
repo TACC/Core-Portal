@@ -16,6 +16,7 @@ import {
   LastModifiedCell,
   FileIconCell,
   ViewPathCell,
+  DataTypeCell,
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
@@ -53,6 +54,11 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
+  const showDataType = useSelector(
+    (state) => state.workbench.portalName === 'DRP'
+  );
+  
+
   const {
     data: files,
     loading,
@@ -61,6 +67,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     fetchMore,
   } = useFileListing('FilesListing');
   const { selectFile } = useSelectedFiles();
+
+  console.log("data", files)
 
   useLayoutEffect(() => {
     fetchListing({ api, scheme, system, path });
@@ -143,6 +151,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         Header: 'Path',
         width: 0.1,
         Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
+      });
+    }    
+    
+    if (showDataType) {
+      cells.splice(3, 0, {  // Inserting at index 3 after 'Name'
+        Header: 'Data Type',
+        accessor: 'metadata.data_type',
+        Cell: DataTypeCell,
+        width: 0.2,
       });
     }
     return cells;
