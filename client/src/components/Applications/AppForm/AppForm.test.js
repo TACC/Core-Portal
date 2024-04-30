@@ -313,10 +313,13 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown.value).toBe('frontera');
     const options = Array.from(execSystemDropDown.querySelectorAll('option'));
     const actualValues = Array.from(options).map((option) => option.value);
-    const expectedValues = Array.from(
-      executionSystemNotesFixture['dynamicExecSystems']
-    ).map((system) => system.value);
-    expect(actualValues).toEqual(expect.arrayContaining(expectedValues));
+    const expectedValuesWithEmpty = [
+      '',
+      ...executionSystemNotesFixture['dynamicExecSystems'],
+    ];
+    expect(actualValues).toEqual(
+      expect.arrayContaining(expectedValuesWithEmpty)
+    );
   });
 
   it('displays only execution systems with allocations', async () => {
@@ -431,7 +434,7 @@ describe('AppSchemaForm', () => {
     expect(execSystemDropDown).toHaveTextContent('Lonestar6');
   });
 
-  it('displays error when no exec system has allocation', async () => {
+  it('displays error when there is no allocation available', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -450,7 +453,7 @@ describe('AppSchemaForm', () => {
     await waitFor(() => {
       expect(
         getByText(
-          /Error: You need an allocation on Maverick99 to run this application/
+          /Error: You need an allocation to run this application. Please click/
         )
       ).toBeDefined();
     });
@@ -508,7 +511,9 @@ describe('AppSchemaForm', () => {
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );
-    expect(execSystemDropDown).toBeNull();
+    expect(execSystemDropDown.querySelector('option').textContent.trim()).toBe(
+      ''
+    );
   });
 
   it('displays all dependent field options after switching exec systems', async () => {
@@ -592,7 +597,7 @@ describe('AppSchemaForm', () => {
     );
   });
 
-  it('displays correctly when both exec system and queue limit changes', async () => {
+  it('displays correctly with dynamic exec system and different queue limits', async () => {
     const store = mockStore({
       ...initialMockState,
     });
@@ -624,11 +629,15 @@ describe('AppSchemaForm', () => {
       'select[name="execSystemId"]'
     );
     expect(execSystemDropDown.value).toBe('frontera');
-    expect(execSystemDropDown).toHaveTextContent('Frontera');
+    expect(
+      execSystemDropDown.options[execSystemDropDown.selectedIndex].textContent
+    ).toBe('Frontera');
 
     fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
     expect(execSystemDropDown.value).toBe('ls6');
-    expect(execSystemDropDown).toHaveTextContent('Lonestar6');
+    expect(
+      execSystemDropDown.options[execSystemDropDown.selectedIndex].textContent
+    ).toBe('Lonestar6');
 
     // Check limits for ls6 normal queue. 300 max minutes
     await waitFor(() => {

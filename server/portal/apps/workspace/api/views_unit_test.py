@@ -290,7 +290,7 @@ def test_get_app_dynamic_exec_sys(
     with open(os.path.join(settings.BASE_DIR, "fixtures/tapis/apps/hello-world-app-def.json")) as f:
         app = json.load(f)
         if dynamic_exec_system:
-            app["notes"]["dynamicExecSystems"] = {"frontera": "Frontera", "ls6": "Lonestar6"}
+            app["notes"]["dynamicExecSystems"] = ["frontera", "ls6"]
 
     # setup tapis mocks
     mock_tapis_client.apps.getApp.return_value = TapisResult(**app)

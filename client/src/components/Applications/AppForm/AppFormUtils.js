@@ -8,7 +8,7 @@ export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
   if (!isJobTypeBATCH(app)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
-  
+
   return (
     exec_sys?.batchLogicalQueues.find((q) => q.name === queueName)
       ?.maxMinutes ?? 0
@@ -144,6 +144,9 @@ export const getCoresPerNodeValidation = (queue) => {
  */
 export const updateValuesForQueue = (app, values) => {
   const exec_sys = getExecSystemFromId(app, values.execSystemId);
+  if (!exec_sys) {
+    return values;
+  }
   const updatedValues = { ...values };
   const queue = exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
@@ -186,6 +189,31 @@ export const updateValuesForQueue = (app, values) => {
     }
      */
 
+  return updatedValues;
+};
+
+/**
+ * Handle exec system changes in the App Form.
+ * @param {*} app
+ * @param {*} values
+ * @param {*} formStateUpdateHandler
+ * @returns updatedValues
+ */
+export const execSystemChangeHandler = (
+  app,
+  values,
+  formStateUpdateHandler
+) => {
+  const exec_sys = getExecSystemFromId(app, values.execSystemId);
+  let updatedValues = { ...values };
+  updatedValues.execSystemLogicalQueue = getQueueValueForExecSystem(
+    app,
+    exec_sys
+  )?.name;
+  updatedValues = updateValuesForQueue(app, updatedValues);
+  formStateUpdateHandler.setAppQueueValues(
+    getAppQueueValues(app, exec_sys?.batchLogicalQueues)
+  );
   return updatedValues;
 };
 
@@ -242,26 +270,36 @@ export const getAppQueueValues = (app, queues) => {
 };
 
 /**
- * Build a map of allocations applicable to each execution
- * system based on the host match.
- * Handle case where dynamic execution system is provided.
- * If there is no allocation for a given exec system, skip it.
+ * Builds a Map of Allocation project names to exec system id's supported
+ * by the allocation
  * @param {*} app
  * @param {*} allocations
- * @returns a Map of allocations applicable to each execution system.
+ * @returns a Map of Allocation project id to exec system id
  */
-export const matchExecSysWithAllocations = (app, allocations) => {
-  return app.execSystems.reduce((map, exec_sys) => {
-    const matchingExecutionHost = Object.keys(allocations.hosts).find(
-      (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
-    );
+export const buildMapOfAllocationsToExecSystems = (app, allocations) => {
+  const allocationToExecSystems = new Map();
 
-    if (matchingExecutionHost) {
-      map.set(exec_sys.id, allocations.hosts[matchingExecutionHost]);
-    }
+  Object.entries(allocations.hosts).forEach(([host, allocationsForHost]) => {
+    allocationsForHost.forEach((allocation) => {
+      const matchingExecutionHosts = [];
+      app.execSystems.forEach((exec_sys) => {
+        if (exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)) {
+          matchingExecutionHosts.push(exec_sys.id);
+        }
+      });
 
-    return map;
-  }, new Map());
+      if (matchingExecutionHosts.length > 0) {
+        const existingAllocations =
+          allocationToExecSystems.get(allocation) || [];
+        allocationToExecSystems.set(allocation, [
+          ...existingAllocations,
+          ...matchingExecutionHosts,
+        ]);
+      }
+    });
+  });
+
+  return allocationToExecSystems;
 };
 
 /**
@@ -334,39 +372,64 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
 };
 
 /**
- * Gets the execution systems with portal's default allocation.
- * It will return empty list, if there is no allocation system matching portal's
- * default allocation.
- * @param {Map} execSystemAllocationsMap
- * @param {String} portalAllocation
+ * @param {*} app
+ * @returns True, if notes section in app definition has dynamicExecSystems property.
+ *          Otherwise, false.
  */
-export const getExecSystemsForPortalAllocation = (
-  execSystemAllocationsMap,
-  portalAllocation
-) => {
-  // Look at each execution system and its corressponding allocations
-  // Gather all execution system whose allocation is the default portal allocation.
-  const execSystems = [];
-  execSystemAllocationsMap.forEach((execAllocations, execSystem) => {
-    if (execAllocations.includes(portalAllocation)) {
-      execSystems.push(execSystem);
-    }
-  });
-  // If user does not have any execution systems matching portalAllocation,
-  // this list will be empty.
-  return execSystems;
-};
-
 export const isAppUsingDynamicExecSystem = (app) => {
   return !!app.definition.notes.dynamicExecSystems;
 };
 
+/**
+ * @param {*} allocations
+ * @returns Yup validation schema for allocation
+ */
 export const getAllocationValidation = (allocations) => {
   return Yup.string()
     .required('Required')
     .oneOf(allocations, 'Please select an allocation from the dropdown.');
 };
 
+/**
+ * @param {*} app
+ * @returns true, if the job type is BATCH, otherwise false.
+ */
 export const isJobTypeBATCH = (app) => {
   return app.definition.jobType === 'BATCH';
+};
+
+/**
+ * Build list of all allocation if using dynamic exec syste,
+ * Otherwise, only provides allocation list matching
+ * the execution host.
+ * @param {*} app
+ * @param {*} allocations
+ * @returns List of type String
+ */
+export const getAllocationList = (app, allocations) => {
+  if (isAppUsingDynamicExecSystem(app)) {
+    return allocations.active.map((alloc) => alloc['projectName']);
+  }
+
+  const matchingExecutionHost = Object.keys(allocations.hosts).find(
+    (host) =>
+      app.execSystems[0].host === host ||
+      app.execSystems[0].host.endsWith(`.${host}`)
+  );
+
+  return matchingExecutionHost ? allocations.hosts[matchingExecutionHost] : [];
+};
+
+/**
+ * @param {*} allocationList
+ * @param {*} portalAlloc
+ * @returns portalAlloc if available, otherwise first item in allocation list.
+ *          If list is empty, returns empty string.
+ */
+export const getDefaultAllocation = (allocationList, portalAlloc) => {
+  if (allocationList.includes(portalAlloc)) {
+    return portalAlloc;
+  }
+
+  return allocationList.length === 1 ? allocationList[0] : '';
 };

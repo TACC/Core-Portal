@@ -227,7 +227,9 @@ export const helloWorldAppFixture = {
       batchSchedulerProfile: 'tacc',
       jobCapabilities: [],
       tags: [],
-      notes: {},
+      notes: {
+        label: 'Frontera',
+      },
       importRefId: null,
       uuid: 'ca524f9e-6574-4a40-a075-0429c807d6c8',
       deleted: false,
@@ -388,7 +390,9 @@ export const helloWorldAppFixture = {
       batchSchedulerProfile: 'tacc-apptainer',
       jobCapabilities: [],
       tags: [],
-      notes: {},
+      notes: {
+        label: 'Lonestar6',
+      },
       importRefId: null,
       uuid: '50e0b7c8-3998-45e5-8dc5-05918ff9a660',
       allowChildren: false,

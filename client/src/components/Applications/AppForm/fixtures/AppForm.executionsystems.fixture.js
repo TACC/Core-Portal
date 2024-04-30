@@ -86,7 +86,9 @@ export const execSystemsFixture = [
     batchSchedulerProfile: 'tacc-apptainer',
     jobCapabilities: [],
     tags: [],
-    notes: {},
+    notes: {
+      label: 'Maverick2',
+    },
     importRefId: null,
     uuid: '88f46763-69f4-491f-9121-45c940b00fa7',
     allowChildren: false,
@@ -154,7 +156,10 @@ export const execSystemsFixture = [
     batchSchedulerProfile: 'tacc-apptainer',
     jobCapabilities: [],
     tags: [],
-    notes: {},
+    tags: [],
+    notes: {
+      label: 'Frontera custom',
+    },
     importRefId: null,
     uuid: '45117119-88b4-42aa-b901-439553d93fc7',
     allowChildren: false,
@@ -292,7 +297,9 @@ export const execSystemsFixture = [
     batchSchedulerProfile: 'tacc-apptainer',
     jobCapabilities: [],
     tags: [],
-    notes: {},
+    notes: {
+      label: 'Lonestar6',
+    },
     importRefId: null,
     uuid: 'aa6f7866-5139-4207-ad0b-474d1f2a3c9c',
     allowChildren: false,
@@ -486,7 +493,9 @@ export const execSystemsFixture = [
     batchSchedulerProfile: 'tacc-apptainer',
     jobCapabilities: [],
     tags: [],
-    notes: {},
+    notes: {
+      label: 'Frontera',
+    },
     importRefId: null,
     uuid: 'ca927bda-2616-48a9-9613-b986be471342',
     allowChildren: false,
@@ -498,9 +507,5 @@ export const execSystemsFixture = [
 ];
 
 export const executionSystemNotesFixture = {
-  dynamicExecSystems: {
-    maverick2: 'Maverick2',
-    frontera: 'Frontera',
-    ls6: 'Lonestar6',
-  },
+  dynamicExecSystems: ['maverick2', 'frontera', 'ls6'],
 };
