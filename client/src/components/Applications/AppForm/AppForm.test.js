@@ -430,6 +430,53 @@ describe('AppSchemaForm', () => {
     });
   });
 
+  it('job submission with number field', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
+    const numberFieldInput = container.querySelector(
+      'input[name="parameterSet.appArgs.Sleep Time"]'
+    );
+    expect(numberFieldInput).toBeInTheDocument();
+    expect(numberFieldInput.type).toBe('number');
+    const newValue = '22';
+    fireEvent.change(numberFieldInput, { target: { value: newValue } });
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+    const payload = {
+      ...helloWorldAppSubmissionPayloadFixture,
+      job: {
+        ...helloWorldAppSubmissionPayloadFixture.job,
+        name: 'hello-world-0.0.1_' + frozenDate + 'T00:00:00',
+      },
+    };
+
+    payload.job.parameterSet.appArgs = payload.job.parameterSet.appArgs.map(
+      (argObj) => {
+        if (argObj.name === 'Sleep Time') {
+          return {
+            ...argObj,
+            arg: newValue,
+          };
+        }
+        return argObj;
+      }
+    );
+
+    await waitFor(() => {
+      expect(store.getActions()).toEqual([
+        { type: 'GET_SYSTEM_MONITOR' },
+        { type: 'SUBMIT_JOB', payload: payload },
+      ]);
+    });
+  });
+
   afterAll(() => {
     timekeeper.reset();
   });

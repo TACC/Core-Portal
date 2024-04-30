@@ -26,8 +26,9 @@ import {
   getMaxMinutesValidation,
   getNodeCountValidation,
   getCoresPerNodeValidation,
-  getTargetPathFieldName,
   updateValuesForQueue,
+  getAllocationValidation,
+  isJobTypeBATCH,
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -284,7 +285,9 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   let missingAllocation = false;
-  if (app.definition.jobType === 'BATCH') {
+  if (isJobTypeBATCH(app)) {
+    initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
+    initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
     initialValues.execSystemLogicalQueue = (
       (app.definition.jobAttributes.execSystemLogicalQueue
         ? app.exec_sys.batchLogicalQueues.find(
@@ -456,20 +459,25 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              execSystemLogicalQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name)),
-              nodeCount: getNodeCountValidation(queue, app),
-              coresPerNode: getCoresPerNodeValidation(queue),
-              maxMinutes: getMaxMinutesValidation(queue).required('Required'),
+              execSystemLogicalQueue: isJobTypeBATCH(app)
+                ? Yup.string()
+                    .required('Required')
+                    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
+                : Yup.string().notRequired(),
+              nodeCount: isJobTypeBATCH(app)
+                ? getNodeCountValidation(queue)
+                : Yup.number().notRequired(),
+              coresPerNode: isJobTypeBATCH(app)
+                ? getCoresPerNodeValidation(queue)
+                : Yup.number().notRequired(),
+              maxMinutes: getMaxMinutesValidation(queue, app).required(
+                'Required'
+              ),
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
-              allocation: Yup.string()
-                .required('Required')
-                .oneOf(
-                  allocations,
-                  'Please select an allocation from the dropdown.'
-                ),
+              allocation: isJobTypeBATCH(app)
+                ? getAllocationValidation(allocations, app)
+                : Yup.string().notRequired(),
             });
             return schema;
           });
@@ -542,9 +550,12 @@ export const AppSchemaForm = ({ app }) => {
                         appFields.parameterSet[parameterSet][k].readOnly
                       )
                         return;
+                      // Convert the value to a string, if necessary
+                      const transformedValue =
+                        typeof v === 'number' ? v.toString() : v;
                       return parameterSet === 'envVariables'
-                        ? { key: k, value: v }
-                        : { name: k, arg: v };
+                        ? { key: k, value: transformedValue }
+                        : { name: k, arg: transformedValue };
                     })
                     .filter((v) => v), // filter out any empty values
                 };
