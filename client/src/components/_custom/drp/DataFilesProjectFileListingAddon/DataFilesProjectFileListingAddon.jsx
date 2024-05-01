@@ -49,15 +49,15 @@ const DataFilesProjectFileListingAddon = () => {
   const onOpenOriginDataModal = async (formName, selectedFile) => {
     const form = await getFormFields(formName);
     const { samples } = await getDatasets(projectId);
-
+    
     form.form_fields.map((field) => {
       if (field.name === 'sample') {
-        field.options = samples.map((sample) => {
+        field.options.push(...samples.map((sample) => {
           return {
             value: parseInt(sample.id),
             label: sample.name,
           };
-        });
+        }));
       }
     });
 
@@ -76,22 +76,20 @@ const DataFilesProjectFileListingAddon = () => {
 
     form.form_fields.map((field) => {
       if (field.name === 'sample') {
-        field.options = samples.map((sample) => {
+        field.options.push(...samples.map((sample) => {
           return {
             value: parseInt(sample.id),
             label: sample.name,
           };
-        });
+        }));
       } else if (field.name === 'base_origin_data') {
-        field.options = originDatasets.map((originData) => {
+        field.options.push(...originDatasets.map((originData) => {
           return {
             value: parseInt(originData.id),
             label: originData.name,
             dependentId: parseInt(originData.metadata.sample),
           };
-        })
-        // Add a blank option to the select
-        field.options.unshift({ value: '', label: '' });
+        }));
       }
     });
 
