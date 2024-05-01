@@ -166,7 +166,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 };
 
 DataFilesProjectFileListingMetadataTitleAddon.propTypes = {
-  folderMetadata: PropTypes.object.isRequired,
+  folderMetadata: PropTypes.shape({}).isRequired,
 };
 
 export default DataFilesProjectFileListingMetadataTitleAddon;

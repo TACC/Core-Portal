@@ -182,8 +182,9 @@ ViewPathCell.propTypes = {
   file: PropTypes.shape({}).isRequired,
 };
 
-export const DataTypeCell = ({ cell }) => {
-  const dataType = cell.value;
+export const DataTypeCell = ({ file }) => {
+
+  const dataType = file.metadata ? file.metadata.data_type : file.type;
   
   const formatDatatype = (data_type) => 
     data_type.split('_')
@@ -198,5 +199,5 @@ export const DataTypeCell = ({ cell }) => {
 }
 
 DataTypeCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
+  file: PropTypes.shape({}).isRequired,
 };

@@ -54,9 +54,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
-  const showDataType = useSelector(
-    (state) => state.workbench.portalName === 'DRP'
-  );
+  const { showDataFileType } = useSelector((state) => state.workbench.config);
 
   const {
     data: files,
@@ -151,11 +149,10 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       });
     }    
     
-    if (showDataType) {
+    if (showDataFileType) {
       cells.splice(3, 0, {  // Inserting at index 3 after 'Name'
         Header: 'Data Type',
-        accessor: 'metadata.data_type',
-        Cell: DataTypeCell,
+        Cell: (el) => <DataTypeCell file={el.row.original} />,
         width: 0.2,
       });
     }
