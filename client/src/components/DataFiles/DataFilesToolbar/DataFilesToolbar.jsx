@@ -58,7 +58,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const { projectId } = useSelector((state) => state.projects.metadata);
 
-  const allowedFileActions = useSelector((state) => state.workbench.config.allowedFileActions);
+  const { allowedFileActions } = useSelector((state) => state.workbench.config);
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
@@ -106,7 +106,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench.config.makeLink &&
       api === 'tapis' &&
       (scheme === 'private' || scheme === 'projects')
-  );
+  ) && allowedFileActions.includes('link');
 
   const showCompress = !!useSelector(
     (state) => state.workbench.config.extractApp && modifiableUserData && allowedFileActions.includes('compress')

@@ -188,7 +188,6 @@ _WORKBENCH_SETTINGS = {
     "hideManageAccount": False,
     "hideSystemStatus": False,
     "hasUserGuide": True,
-    "hasProjectFileListingAddon": True,
     "hasCustomSagas": True,
     "hasCustomEndpoints": True,
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon'],
