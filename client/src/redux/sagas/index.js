@@ -63,7 +63,7 @@ function* startCustomSaga(action) {
   });
 
   const { default: customSaga } = yield import(
-    `./_custom/${portalName.toLowerCase()}.sagas`
+    `./_custom/${portalName.toLowerCase()}.sagas.js`
   );
 
   if (customSaga) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
@@ -45,6 +45,13 @@ const DataFilesAddProjectModal = () => {
       state.projects.operation.error
     );
   });
+  
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
 
   const toggle = () => {
     dispatch({
@@ -107,14 +114,14 @@ const DataFilesAddProjectModal = () => {
         >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Add Shared Workspace
+              Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
               <FormField
                 name="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    {sharedWorkspacesDisplayName} Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
@@ -131,7 +138,7 @@ const DataFilesAddProjectModal = () => {
             <ModalFooter>
               {error ? (
                 <InlineMessage type="error">
-                  Your shared workspace could not be created
+                  Your {sharedWorkspacesDisplayName} could not be created
                 </InlineMessage>
               ) : null}
               <Button
@@ -140,7 +147,7 @@ const DataFilesAddProjectModal = () => {
                 attr="submit"
                 isLoading={isCreating}
               >
-                Add Workspace
+                Add {sharedWorkspacesDisplayName}
               </Button>
             </ModalFooter>
           </Form>

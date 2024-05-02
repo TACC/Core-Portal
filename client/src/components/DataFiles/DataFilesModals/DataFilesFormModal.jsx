@@ -15,8 +15,10 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = () => {
-    history.push(location.pathname);
+  const reloadPage = (updatedPath = "") => {
+    // using regex to replace last segment of pathname with optional parameter 'updatedPath' to navigate to a new path
+    const path = updatedPath ? location.pathname.replace(/\/[^\/]+\/?$/, '/' + updatedPath) : location.pathname;
+    history.push(path);
   };
 
   const { form, selectedFile, formName, additionalData } = useSelector(
@@ -24,8 +26,6 @@ const DataFilesFormModal = () => {
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
   const { params } = useFileListing('FilesListing');
-
-  const { selectedFiles } = useSelectedFiles();
 
   const initialValues = form?.form_fields.reduce((acc, field) => {
     let value = '';
@@ -48,13 +48,18 @@ const DataFilesFormModal = () => {
   }, []);
 
   const handleSubmit = (values) => {
+
+    Object.keys(values).forEach(key => {
+      values[key] = typeof(values[key]) === 'string' ? values[key].trim() : values[key];
+    });
+
     dispatch({
       type: formName,
       payload: {
         params,
         values,
         reloadPage,
-        selectedFile: selectedFiles[0],
+        selectedFile,
         additionalData,
       },
     });
@@ -92,13 +97,13 @@ const DataFilesFormModal = () => {
                 </ModalHeader>
                 <ModalBody className={styles['modal-body-container']}>
                   <DynamicForm
-                    formFields={form.form_fields ?? []}
+                    initialFormFields={form.form_fields ?? []}
                   ></DynamicForm>
                 </ModalBody>
                 {form?.footer && (
                   <ModalFooter>
                     <DynamicForm
-                      formFields={form.footer.fields ?? []}
+                      initialFormFields={form.footer.fields ?? []}
                     ></DynamicForm>
                   </ModalFooter>
                 )}

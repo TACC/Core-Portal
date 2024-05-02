@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './DataFilesProjectFileListingAddon.module.scss';
-import { useSelectedFiles } from 'hooks/datafiles';
-import { useQuery } from 'react-query';
+import PropTypes from 'prop-types';
+import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss';
+import { Button, LoadingSpinner } from '_common';
 import { fetchUtil } from 'utils/fetchUtil';
+import { useFileListing } from 'hooks/datafiles';
 
-const DataFilesProjectFileListingAddon = () => {
+const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadata, system, path }) => {
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
-  const { selectedFiles } = useSelectedFiles();
+
+  const { loading } = useFileListing('FilesListing');
 
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
@@ -34,9 +35,7 @@ const DataFilesProjectFileListingAddon = () => {
   };
 
   const onOpenSampleModal = async (formName, selectedFile) => {
-
     const form = await getFormFields(formName);
-
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
@@ -49,7 +48,7 @@ const DataFilesProjectFileListingAddon = () => {
   const onOpenOriginDataModal = async (formName, selectedFile) => {
     const form = await getFormFields(formName);
     const { samples } = await getDatasets(projectId);
-    
+
     form.form_fields.map((field) => {
       if (field.name === 'sample') {
         field.options.push(...samples.map((sample) => {
@@ -102,62 +101,72 @@ const DataFilesProjectFileListingAddon = () => {
     });
   };
 
-  return (
-    <>
-      <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
-        selectedFiles[0].metadata['data_type'] === 'sample' ? (
-          <Button
-            type="link"
-            onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
-          >
-            Edit Sample Data
-          </Button>
+  const onEditData = (dataType) => {
+    const name = path.split('/').pop();
+    // reconstruct editFile to mimic SelectedFile object
+    const editFile = {
+      "format": "folder",
+      "id" : system + "/" + path,
+      "metadata": folderMetadata,
+      "name": name,
+      "system": system,
+      "path": path,
+      "type": "dir",
+      "_links": {
+        "self": {
+          "href": "tapis://" + system + "/" + path,
+        },
+      }
+    };
+    switch (dataType) {
+      case 'sample':
+        onOpenSampleModal('EDIT_SAMPLE_DATA', editFile);
+        break;
+      case 'origin_data':
+        onOpenOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
+        break;
+      case 'analysis_data':
+        onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Function to format the data_type value from snake_case to Label Case i.e. origin_data -> Origin Data
+  const formatDatatype = (data_type) => 
+    data_type.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    return (
+      <>
+        {loading ? (
+          <LoadingSpinner placement="inline" />
         ) : (
-          <Button type="link" onClick={() => onOpenSampleModal('ADD_SAMPLE_DATA')}>
-            Add Sample Data
-          </Button>
+          folderMetadata ? ( 
+            <>
+              {folderMetadata.name}
+              <span className={styles['dataTypeBox']}>
+                {formatDatatype(folderMetadata.data_type)}
+              </span>
+              <Button
+                type="link"
+                onClick={() => onEditData(folderMetadata.data_type)}
+              >
+                Edit Data
+              </Button>
+            </>
+          ) : (
+            metadata.title
+          )
         )}
-      <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
-        selectedFiles[0].metadata['data_type'] === 'origin_data' ? (
-          <Button
-            type="link"
-            onClick={() =>
-              onOpenOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
-            }
-          >
-            Edit Origin Dataset
-          </Button>
-        ) : (
-          <Button
-            type="link"
-            onClick={() => onOpenOriginDataModal('ADD_ORIGIN_DATASET')}
-          >
-            Add Origin Dataset
-          </Button>
-        )}
-      <span className={styles.separator}>|</span>
-      {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
-        selectedFiles[0].metadata['data_type'] === 'analysis_data' ? (
-          <Button
-            type="link"
-            onClick={() =>
-              onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
-            }
-          >
-            Edit Analysis Dataset
-          </Button>
-        ) : (
-          <Button
-            type="link"
-            onClick={() => onOpenAnalysisDataModal('ADD_ANALYSIS_DATASET')}
-          >
-            Add Analysis Dataset
-          </Button>
-        )}
-    </>
-  );
+      </>
+    );
 };
 
-export default DataFilesProjectFileListingAddon;
+DataFilesProjectFileListingMetadataTitleAddon.propTypes = {
+  folderMetadata: PropTypes.shape({}).isRequired,
+};
+
+export default DataFilesProjectFileListingMetadataTitleAddon;

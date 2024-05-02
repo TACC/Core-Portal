@@ -18,7 +18,7 @@ const DataFilesAddProjectModalAddon = () => {
       {isLoading ? (
         <p>Loading form...</p>
       ) : (
-        <DynamicForm formFields={form?.form_fields ?? []} />
+        <DynamicForm initialFormFields={form?.form_fields ?? []} />
       )}
     </div>
   );

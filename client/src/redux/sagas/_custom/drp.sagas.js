@@ -34,7 +34,13 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
     );
   }
 
-  yield call(reloadCallback);
+  if (isEdit && file.path === params.path) {
+    // reload to new URL if name/path is changed
+    yield call (reloadCallback, values.name)
+  }
+  else {
+    yield call(reloadCallback);
+  }
 
   yield put({
     type: 'DATA_FILES_TOGGLE_MODAL',
@@ -48,8 +54,14 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
 
 function* handleSampleData(action, isEdit) {
   const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload;
+
+  const metadata = {
+    ...values,
+    data_type: 'sample',
+  }
+
   yield call(
-    executeOperation, isEdit, params, {...values, data_type: 'sample'}, reloadCallback, selectedFile
+    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile
   )
 }
 
@@ -60,32 +72,42 @@ function* handleOriginData(action, isEdit) {
     (sample) => sample.id === parseInt(values.sample)
   );
 
+  const metadata = {
+    ...values,
+    data_type: 'origin_data',
+    sample: sample.id,
+  }
+
   // get the path without system name
   const path = sample.path.split('/').slice(1).join('/');
   yield call(
-    executeOperation, isEdit, params, { ...values, data_type: 'origin_data' }, reloadCallback, selectedFile, path
+    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, path
   )
 }
 
 function* handleAnalysisData(action, isEdit) {
-  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: samples } = action.payload;
+  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: { samples, originDatasets } } = action.payload;
 
-  let { originDataId, path, sampleId } = samples.reduce((acc, sample) => {
-    const originData = sample.origin_data.find(
-      (originData) => originData.id === parseInt(values.base_origin_data)
-    );
-    if (originData) {
-      acc.originDataId = originData.id;
-      acc.path = originData.path;
-      acc.sampleId = sample.id;
-    }
-    return acc;
-  }, {});
+  const sample = samples.find(
+    (sample) => sample.id === parseInt(values.sample)
+  );
 
-  // get the path without system name
-  path = path.split('/').slice(1).join('/');
+  const originData = originDatasets.find(
+    (originData) => originData.id === parseInt(values.base_origin_data)
+  );
+
+  let path = originData ? originData.path : sample.path;
+  path = path.split('/').slice(1).join('/')
+
+  const metadata = {
+    ...values, 
+    data_type: 'analysis_data',
+    sample: sample.id, 
+    base_origin_data: originData ? originData.id : ''
+  }
+
   yield call(
-    executeOperation, isEdit, params, {...values, data_type: 'analysis_data', sample: sampleId, base_origin_data: originDataId}, reloadCallback, selectedFile, path
+    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, path
   )
 }
 
