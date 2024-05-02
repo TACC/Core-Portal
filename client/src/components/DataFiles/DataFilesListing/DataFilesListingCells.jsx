@@ -181,3 +181,23 @@ export const ViewPathCell = ({ file }) => {
 ViewPathCell.propTypes = {
   file: PropTypes.shape({}).isRequired,
 };
+
+export const DataTypeCell = ({ file }) => {
+
+  const dataType = file.metadata ? file.metadata.data_type : file.type;
+  
+  const formatDatatype = (data_type) => 
+    data_type.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+  return dataType ? (
+    <span className="dataTypeBox">
+      {formatDatatype(dataType)}
+    </span>
+  ) : null;
+}
+
+DataTypeCell.propTypes = {
+  file: PropTypes.shape({}).isRequired,
+};

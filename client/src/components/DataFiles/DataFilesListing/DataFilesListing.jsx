@@ -16,6 +16,7 @@ import {
   LastModifiedCell,
   FileIconCell,
   ViewPathCell,
+  DataTypeCell,
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
@@ -52,6 +53,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     (state) =>
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
+
+  const { showDataFileType } = useSelector((state) => state.workbench.config);
 
   const {
     data: files,
@@ -143,6 +146,14 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         Header: 'Path',
         width: 0.1,
         Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
+      });
+    }    
+    
+    if (showDataFileType) {
+      cells.splice(3, 0, {  // Inserting at index 3 after 'Name'
+        Header: 'Data Type',
+        Cell: (el) => <DataTypeCell file={el.row.original} />,
+        width: 0.2,
       });
     }
     return cells;

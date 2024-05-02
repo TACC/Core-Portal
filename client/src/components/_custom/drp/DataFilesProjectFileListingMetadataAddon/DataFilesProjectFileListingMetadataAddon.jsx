@@ -67,7 +67,7 @@ const  DataDisplay = ({ data, path }) => {
   return (
     <Section contentLayoutName="twoColumn" className={`${styles['metadata-section']}`}>
       {chunks.map((chunk, index) => (
-        <SectionContent key={index}>
+        <SectionContent layoutName='oneColumn' key={index}>
           {renderDataEntries(chunk)}
         </SectionContent>
       ))}
@@ -96,7 +96,7 @@ const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata, metadata, pa
 }
 
 DataFilesProjectFileListingMetadataAddon.propTypes = {
-  folderMetadata: PropTypes.object.isRequired,
+  folderMetadata: PropTypes.shape({}).isRequired,
 };
 
 export default DataFilesProjectFileListingMetadataAddon;

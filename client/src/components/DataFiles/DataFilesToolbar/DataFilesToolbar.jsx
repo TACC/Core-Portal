@@ -58,6 +58,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const { projectId } = useSelector((state) => state.projects.metadata);
 
+  const { allowedFileActions } = useSelector((state) => state.workbench.config);
+
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
@@ -88,13 +90,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
-  const showMove = modifiableUserData;
+  const showCopy =  allowedFileActions.includes('copy');  
 
-  const showRename = modifiableUserData;
+  const showMove = modifiableUserData && allowedFileActions.includes('move');
 
-  const showTrash = modifiableUserData;
+  const showRename = modifiableUserData && allowedFileActions.includes('rename');
 
-  const showDownload = api === 'tapis';
+  const showTrash = modifiableUserData && allowedFileActions.includes('trash');
+
+  const showDownload = api === 'tapis' && allowedFileActions.includes('download');
 
   const showMakeLink = useSelector(
     (state) =>
@@ -102,14 +106,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench.config.makeLink &&
       api === 'tapis' &&
       (scheme === 'private' || scheme === 'projects')
-  );
+  ) && allowedFileActions.includes('link');
 
   const showCompress = !!useSelector(
-    (state) => state.workbench.config.extractApp && modifiableUserData
+    (state) => state.workbench.config.extractApp && modifiableUserData && allowedFileActions.includes('compress')
   );
 
   const showExtract = !!useSelector(
-    (state) => state.workbench.config.compressApp && modifiableUserData
+    (state) => state.workbench.config.compressApp && modifiableUserData && allowedFileActions.includes('extract')
   );
 
   const showMakePublic = useSelector(
@@ -236,12 +240,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
             disabled={!canMove}
           />
         )}
+        {showCopy && (
         <ToolbarButton
           text="Copy"
           onClick={toggleCopyModal}
           iconName="copy"
           disabled={!canCopy}
         />
+        )}
         {showDownload && (
           <ToolbarButton
             text="Download"
