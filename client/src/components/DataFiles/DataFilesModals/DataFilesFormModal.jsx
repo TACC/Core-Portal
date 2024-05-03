@@ -17,9 +17,13 @@ const DataFilesFormModal = () => {
 
   const reloadPage = (updatedPath = '') => {
     // using regex to get the url up until the project name
-    const projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/).*/, '$1');
+    let projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/).*/, '$1');
+    
+    if (projectUrl.endsWith('/')) {
+      projectUrl = projectUrl.slice(0, -1);
+    }
 
-    const path = updatedPath ? `${projectUrl}${updatedPath}` : `${projectUrl}`;
+    const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
     history.push(path);
   };
 
