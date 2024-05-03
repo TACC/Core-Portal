@@ -15,9 +15,11 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = (updatedPath = "") => {
-    // using regex to replace last segment of pathname with optional parameter 'updatedPath' to navigate to a new path
-    const path = updatedPath ? location.pathname.replace(/\/[^\/]+\/?$/, '/' + updatedPath) : location.pathname;
+  const reloadPage = (updatedPath = '') => {
+    // using regex to get the url up until the project name
+    const projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/).*/, '$1');
+
+    const path = updatedPath ? `${projectUrl}${updatedPath}` : `${projectUrl}`;
     history.push(path);
   };
 

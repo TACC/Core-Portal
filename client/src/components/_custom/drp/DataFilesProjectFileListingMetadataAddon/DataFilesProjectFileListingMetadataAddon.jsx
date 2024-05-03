@@ -5,7 +5,7 @@ import { useLocation, Link } from 'react-router-dom';
 import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
 import { useFileListing } from 'hooks/datafiles';
 
-const excludeKeys = ['name', 'description', 'data_type', 'sample', 'origin_data'];
+const excludeKeys = ['name', 'description', 'data_type', 'sample', 'base_origin_data'];
 
 const  DataDisplay = ({ data, path }) => {
 

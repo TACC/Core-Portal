@@ -5,7 +5,7 @@ import { useFormikContext } from 'formik';
 import { FormGroup, Input } from 'reactstrap';
 import './DynamicForm.scss';
 
-const updateFormFieldsBasedOnDependency = (formFields, values) => {
+const updateFormFieldsBasedOnDependency = (formFields, values, setFieldValue, modifiedField) => {
   return formFields.map((field) => {
 
     const { dependency } = field;
@@ -14,7 +14,13 @@ const updateFormFieldsBasedOnDependency = (formFields, values) => {
       if (dependency.type === 'filter') {
         const filteredOptions = field.options.filter(option => option.dependentId == values[dependency.name]);
         const updatedOptions = [{ value: '', label: '' }, ...filteredOptions];
-        return { ...field, hidden: false, filteredOptions: updatedOptions };
+
+        // only update the field value if the modified field is the dependency field
+        if (modifiedField && modifiedField.name === dependency.name) {
+          setFieldValue(field.name, updatedOptions[0].value);
+        }
+
+        return { ...field, hidden: false, filteredOptions: updatedOptions, value: '' };
       } else if (dependency.type === 'visibility') {
         if (dependency.value) {
           return { ...field, hidden: field.dependency.value !== values[field.dependency.name] };
@@ -35,7 +41,7 @@ const DynamicForm = ({ initialFormFields }) => {
 
   // This function updates and filters any dependant fields. Field dependency is described in the form config file
   const handleDependentFieldUpdate = (value, modifiedField) => {
-    const updatedFormFields = updateFormFieldsBasedOnDependency(formFields, { ...values, [modifiedField.name]: value });
+    const updatedFormFields = updateFormFieldsBasedOnDependency(formFields, { ...values, [modifiedField.name]: value }, setFieldValue, modifiedField);
     setFormFields(updatedFormFields);
   };
 
