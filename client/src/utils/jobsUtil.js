@@ -94,9 +94,9 @@ export function getJobDisplayInformation(job, app) {
     // Improve any values with app information
     try {
       try {
-        display.systemName = getSystemName(
-          getExecSystemFromId(app, job.execSystemId)?.host
-        );
+        const execSys = getExecSystemFromId(app, job.execSystemId);
+        display.systemName =
+          execSys?.notes?.label ?? getSystemName(execSys?.host);
       } catch (ignore) {
         // ignore if there is problem improving the system name
       }
