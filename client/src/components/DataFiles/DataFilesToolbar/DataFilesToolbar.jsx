@@ -52,11 +52,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
     shallowEqual
   );
 
+  // A project system has different fields than a regular system
   const selectedSystem = systemList.find(
-    (sys) => sys.system === params.system && sys.scheme === params.scheme
+    (sys) => {
+      if (params.scheme === 'projects') {
+        return params.api === sys.api && sys.scheme === params.scheme;
+      } else {
+        return sys.system === params.system && sys.scheme === params.scheme
+      }
+    }
   );
 
   const { projectId } = useSelector((state) => state.projects.metadata);
+
+  const { allowedFileActions } = useSelector((state) => state.workbench.config);
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
@@ -70,13 +79,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
 
   const inTrash = useSelector((state) => {
-    // remove leading slash from homeDir value
-    const homeDir = selectedSystem?.homeDir?.slice(1);
-    if (!homeDir) return false;
-
-    return state.files.params.FilesListing.path.startsWith(
-      `${homeDir}/${state.workbench.config.trashPath}`
-    );
+    if (selectedSystem?.scheme === 'projects') {
+      return state.files.params.FilesListing.path.startsWith(
+        `${state.workbench.config.trashPath}`
+      );
+    } else {
+      // remove leading slash from homeDir value
+      const homeDir = selectedSystem?.homeDir?.slice(1);
+      if (!homeDir) return false;
+  
+      return state.files.params.FilesListing.path.startsWith(
+        `${homeDir}/${state.workbench.config.trashPath}`
+      );
+    }
   });
 
   const trashedFiles = useSelector((state) =>
@@ -88,13 +103,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
-  const showMove = modifiableUserData;
+  const showCopy =  allowedFileActions.includes('copy');  
 
-  const showRename = modifiableUserData;
+  const showMove = modifiableUserData && allowedFileActions.includes('move');
 
-  const showTrash = modifiableUserData;
+  const showRename = modifiableUserData && allowedFileActions.includes('rename');
 
-  const showDownload = api === 'tapis';
+  const showTrash = modifiableUserData && allowedFileActions.includes('trash');
+
+  const showDownload = api === 'tapis' && allowedFileActions.includes('download');
 
   const showMakeLink = useSelector(
     (state) =>
@@ -102,14 +119,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench.config.makeLink &&
       api === 'tapis' &&
       (scheme === 'private' || scheme === 'projects')
-  );
+  ) && allowedFileActions.includes('link');
 
   const showCompress = !!useSelector(
-    (state) => state.workbench.config.extractApp && modifiableUserData
+    (state) => state.workbench.config.extractApp && modifiableUserData && allowedFileActions.includes('compress')
   );
 
   const showExtract = !!useSelector(
-    (state) => state.workbench.config.compressApp && modifiableUserData
+    (state) => state.workbench.config.compressApp && modifiableUserData && allowedFileActions.includes('extract')
   );
 
   const showMakePublic = useSelector(
@@ -236,12 +253,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
             disabled={!canMove}
           />
         )}
+        {showCopy && (
         <ToolbarButton
           text="Copy"
           onClick={toggleCopyModal}
           iconName="copy"
           disabled={!canCopy}
         />
+        )}
         {showDownload && (
           <ToolbarButton
             text="Download"

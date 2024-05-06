@@ -34,13 +34,7 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
     );
   }
 
-  if (isEdit && file.path === params.path) {
-    // reload to new URL if name/path is changed
-    yield call (reloadCallback, values.name)
-  }
-  else {
-    yield call(reloadCallback);
-  }
+  yield call(reloadCallback, path);
 
   yield put({
     type: 'DATA_FILES_TOGGLE_MODAL',

@@ -409,8 +409,14 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
                 dest_path,
                 *args, **kwargs)
 
-
+@transaction.atomic
 def delete(client, system, path):
+    # Delete file metadata
+    try:
+        DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}').delete()
+    except DataFilesMetadata.DoesNotExist:
+        pass
+
     return client.files.delete(systemId=system,
                                path=path)
 
@@ -437,7 +443,7 @@ def rename(client, system, path, new_name, metadata=None):
     return move(client, src_system=system, src_path=path,
                 dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata)
 
-def trash(client, system, path, homeDir):
+def trash(client, system, path, homeDir, metadata=None):
     """Move a file to the .Trash folder.
 
     Params
@@ -464,10 +470,10 @@ def trash(client, system, path, homeDir):
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME, metadata={} if metadata is not None else None)
 
     resp = move(client, system, path, system,
-                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name)
+                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)
 
     return resp
 
