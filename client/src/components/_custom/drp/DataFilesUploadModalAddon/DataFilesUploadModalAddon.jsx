@@ -12,8 +12,11 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
 
     const [uploadedFilesWithMetadata, setUploadedFilesWithMetadata] = useState([]);
 
+    // regex from old digitalrocks portal
+    const standardImageType = /(\.|\/)(gif|jpe?g|png|tiff?)$/i;
+
     useEffect(() => {
-        setUploadedFilesWithMetadata(uploadedFiles.filter((file) => file.data.name.split('.').pop() === 'raw'));
+        setUploadedFilesWithMetadata(uploadedFiles.filter((file) => !standardImageType.test(file.data.name)));
     }, [uploadedFiles])
 
 
@@ -31,7 +34,7 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
             if (uploadedFile.data.name === file.data.name) {
                 return {
                     ...uploadedFile,
-                    metadata: values
+                    metadata: {name: uploadedFile.data.name, ...values}
                 }
             }
             return uploadedFile;

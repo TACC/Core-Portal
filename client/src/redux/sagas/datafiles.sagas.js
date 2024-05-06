@@ -485,7 +485,7 @@ export async function uploadFileUtil(api, scheme, system, path, file, metadata) 
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
-  formData.append('metadata', metadata ? JSON.stringify(metadata) : null);
+  formData.append('metadata', metadata ? JSON.stringify({data_type: 'file', ...metadata}) : null);
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
