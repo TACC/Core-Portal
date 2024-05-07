@@ -5,6 +5,7 @@ import styles from './DataFilesProjectFileListingAddon.module.scss';
 import { useSelectedFiles } from 'hooks/datafiles';
 import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
+import { createSampleModalHandler, createOriginDataModalHandler, createAnalysisDataModalHandler } from '../utils/datasetFormHandlers';
 
 const DataFilesProjectFileListingAddon = () => {
   const dispatch = useDispatch();
@@ -12,95 +13,9 @@ const DataFilesProjectFileListingAddon = () => {
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { selectedFiles } = useSelectedFiles();
 
-  const getFormFields = async (formName) => {
-    const response = await fetchUtil({
-      url: 'api/forms',
-      params: {
-        form_name: formName,
-      },
-    });
-    return response;
-  };
-
-  const getDatasets = async (projectId, getOriginData = false) => {
-    const response = await fetchUtil({
-      url: `api/${portalName.toLowerCase()}`,
-      params: {
-        project_id: projectId,
-        get_origin_data: getOriginData,
-      },
-    });
-    return response;
-  };
-
-  const onOpenSampleModal = async (formName, selectedFile) => {
-
-    const form = await getFormFields(formName);
-
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'dynamicform',
-        props: { form, selectedFile, formName },
-      },
-    });
-  };
-
-  const onOpenOriginDataModal = async (formName, selectedFile) => {
-    const form = await getFormFields(formName);
-    const { samples } = await getDatasets(projectId);
-    
-    form.form_fields.map((field) => {
-      if (field.name === 'sample') {
-        field.options.push(...samples.map((sample) => {
-          return {
-            value: parseInt(sample.id),
-            label: sample.name,
-          };
-        }));
-      }
-    });
-
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'dynamicform',
-        props: { selectedFile, form, formName, additionalData: samples },
-      },
-    });
-  };
-
-  const onOpenAnalysisDataModal = async (formName, selectedFile) => {
-    const form = await getFormFields(formName);
-    const { samples, origin_data: originDatasets } = await getDatasets(projectId, true);
-
-    form.form_fields.map((field) => {
-      if (field.name === 'sample') {
-        field.options.push(...samples.map((sample) => {
-          return {
-            value: parseInt(sample.id),
-            label: sample.name,
-          };
-        }));
-      } else if (field.name === 'base_origin_data') {
-        field.options.push(...originDatasets.map((originData) => {
-          return {
-            value: parseInt(originData.id),
-            label: originData.name,
-            dependentId: parseInt(originData.metadata.sample),
-          };
-        }));
-      }
-    });
-
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'dynamicform',
-        props: { selectedFile, form, formName, additionalData: { samples, originDatasets } },
-      },
-    });
-  };
+  const handleOpenSampleModal = createSampleModalHandler(dispatch);
+  const handleOriginDataModal = createOriginDataModalHandler(dispatch, projectId, portalName);
+  const handleAnalysisDataModal = createAnalysisDataModalHandler(dispatch, projectId, portalName);
 
   return (
     <>
@@ -109,12 +24,12 @@ const DataFilesProjectFileListingAddon = () => {
         selectedFiles[0].metadata['data_type'] === 'sample' ? (
           <Button
             type="link"
-            onClick={() => onOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
+            onClick={() => handleOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
           >
             Edit Sample Data
           </Button>
         ) : (
-          <Button type="link" onClick={() => onOpenSampleModal('ADD_SAMPLE_DATA')}>
+          <Button type="link" onClick={() => handleOpenSampleModal('ADD_SAMPLE_DATA')}>
             Add Sample Data
           </Button>
         )}
@@ -124,7 +39,7 @@ const DataFilesProjectFileListingAddon = () => {
           <Button
             type="link"
             onClick={() =>
-              onOpenOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
+              handleOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
             }
           >
             Edit Origin Dataset
@@ -132,7 +47,7 @@ const DataFilesProjectFileListingAddon = () => {
         ) : (
           <Button
             type="link"
-            onClick={() => onOpenOriginDataModal('ADD_ORIGIN_DATASET')}
+            onClick={() => handleOriginDataModal('ADD_ORIGIN_DATASET')}
           >
             Add Origin Dataset
           </Button>
@@ -143,7 +58,7 @@ const DataFilesProjectFileListingAddon = () => {
           <Button
             type="link"
             onClick={() =>
-              onOpenAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
+              handleAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
             }
           >
             Edit Analysis Dataset
@@ -151,7 +66,7 @@ const DataFilesProjectFileListingAddon = () => {
         ) : (
           <Button
             type="link"
-            onClick={() => onOpenAnalysisDataModal('ADD_ANALYSIS_DATASET')}
+            onClick={() => handleAnalysisDataModal('ADD_ANALYSIS_DATASET')}
           >
             Add Analysis Dataset
           </Button>
