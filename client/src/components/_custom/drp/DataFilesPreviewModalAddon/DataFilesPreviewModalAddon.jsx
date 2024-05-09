@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { Form, Formik } from 'formik';
-import { LoadingSpinner, Section, SectionHeader } from '_common';
+import { Expand, LoadingSpinner, Section, SectionHeader } from '_common';
 import styles from './DataFilesPreviewModalAddon.module.scss';
 import { useFileListing } from 'hooks/datafiles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,9 +68,11 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
     return (
         !isLoading && form &&
         <>
+        <Expand
+            detail={'Metadata'}
+            message={
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 <Form>
-                    <span className={styles['listing-header']}>Metadata</span>
                     <Section 
                         className={styles['section']}
                         contentLayoutName={'oneColumn'}
@@ -89,7 +91,8 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
                         )}
                 </Form>
             </Formik>
-
+            }
+         />                 
         </>
     )
 
