@@ -12,8 +12,11 @@ const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata, metadata, pa
   const { loading } = useFileListing('FilesListing');
 
   const getProjectMetadata = (metadata) => {
+
+    const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' }
+
     const formattedMetadata = {
-      created: formatDate(new Date(metadata.created)),
+      created: new Date(metadata.created).toLocaleDateString('en-US', dateOptions),
       license: metadata.license ?? 'None',
     }
 
