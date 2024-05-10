@@ -33,7 +33,7 @@ const updateFormFieldsBasedOnDependency = (formFields, values, setFieldValue, mo
   });
 };
 
-const DynamicForm = ({ initialFormFields }) => {
+const DynamicForm = ({ initialFormFields, onChange }) => {
 
   const [formFields, setFormFields] = useState(initialFormFields);
   // For file processing
@@ -49,6 +49,10 @@ const DynamicForm = ({ initialFormFields }) => {
     const updatedFormFields = updateFormFieldsBasedOnDependency(formFields, values);
     setFormFields(updatedFormFields);
   }, []);
+
+  useEffect(() => {
+    onChange && onChange(formFields, values);
+  }, [formFields, values]);
 
   const renderFormField = (field) => {
 

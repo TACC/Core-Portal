@@ -105,6 +105,20 @@ function* handleAnalysisData(action, isEdit) {
   )
 }
 
+function* handleFile(action, isEdit) {
+
+  const { params, values, reloadPage: reloadCallback, selectedFile } = action.payload;
+
+  const metadata = {
+    ...values,
+    data_type: 'file',
+  }
+
+  yield call(
+    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, params.path
+  )
+}
+
 export default function* watchDRP() {
   yield takeLatest('ADD_SAMPLE_DATA', action => handleSampleData(action, false));
   yield takeLatest('EDIT_SAMPLE_DATA', action => handleSampleData(action, true));
@@ -112,4 +126,5 @@ export default function* watchDRP() {
   yield takeLatest('EDIT_ANALYSIS_DATASET', action => handleAnalysisData(action, true));
   yield takeLatest('ADD_ORIGIN_DATASET', action => handleOriginData(action, false));
   yield takeLatest('EDIT_ORIGIN_DATASET', action => handleOriginData(action, true));
+  yield takeLatest('EDIT_FILE', action => handleFile(action, true))
 }

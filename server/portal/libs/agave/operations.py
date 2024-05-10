@@ -478,7 +478,7 @@ def trash(client, system, path, homeDir, metadata=None):
     return resp
 
 
-def upload(client, system, path, uploaded_file):
+def upload(client, system, path, uploaded_file, metadata=None):
     """Upload a file.
     Params
     ------
@@ -499,6 +499,21 @@ def upload(client, system, path, uploaded_file):
     uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
+
+    if metadata is not None: 
+
+        project_instance = ProjectsMetadata.objects.get(project_id=system)
+
+        files_metadata = DataFilesMetadata(
+            name = uploaded_file.name,
+            path = f'{system}/{dest_path.strip("/")}',
+            metadata = metadata,
+            project = project_instance
+        )
+
+        files_metadata.save()
+        print(f'File Metadata for path {dest_path} saved successfully')
+
     response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
