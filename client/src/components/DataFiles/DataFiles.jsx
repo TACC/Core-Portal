@@ -11,7 +11,7 @@ import {
   SectionMessage,
   LoadingSpinner,
 } from '_common';
-import { useFileListing, useSystems } from 'hooks/datafiles';
+import { useFileListing, useSystems, useAddonComponents } from 'hooks/datafiles';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -43,8 +43,30 @@ const DefaultSystemRedirect = () => {
 
 const DataFilesSwitch = React.memo(() => {
   const { path } = useRouteMatch();
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+
+  console.log('portalName', portalName)
+
+  const { DataFilesProjectPublish } = useAddonComponents({ portalName });
+
+  console.log('DataFilesProjectPublish', DataFilesProjectPublish)
+
   return (
     <Switch>
+      {DataFilesProjectPublish &&
+        <Route
+        path={`${path}/tapis/projects/:system/publish`}
+        render={({ match: { params } }) => {
+            return (
+              <SectionTableWrapper contentShouldScroll>
+                <DataFilesProjectPublish system={params.system} path={'/'} api={'tapis'} scheme={'projects'} />
+              </SectionTableWrapper>
+            )
+            
+          }}
+        />
+      } 
       <Route
         path={`${path}/tapis/projects/:system/:path*`}
         render={({ match: { params } }) => {

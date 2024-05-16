@@ -3,11 +3,11 @@ import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
 import { useSelectedFiles } from 'hooks/datafiles';
-import { useQuery } from 'react-query';
-import { fetchUtil } from 'utils/fetchUtil';
 import { createSampleModalHandler, createOriginDataModalHandler, createAnalysisDataModalHandler } from '../utils/datasetFormHandlers';
+import * as ROUTES from '../../../../constants/routes';
+import { Link } from 'react-router-dom';
 
-const DataFilesProjectFileListingAddon = () => {
+const DataFilesProjectFileListingAddon = ({ system }) => {
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
@@ -71,6 +71,11 @@ const DataFilesProjectFileListingAddon = () => {
             Add Analysis Dataset
           </Button>
         )}
+        <span className={styles.separator}>|</span>
+        <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/publish`}>
+            Request Publication
+        </Link>
+
     </>
   );
 };

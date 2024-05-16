@@ -185,7 +185,7 @@ function Wizard<T>({ steps, memo, formSubmit }: WizardProps<T>) {
             />
           ))}
         </StepWizard>
-        <WizardSummary steps={steps} {...stepWizardProps} />
+        {/* <WizardSummary steps={steps} {...stepWizardProps} /> */}
       </div>
     </WizardContext.Provider>
   );

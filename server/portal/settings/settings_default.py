@@ -192,7 +192,7 @@ _WORKBENCH_SETTINGS = {
     "hasCustomEndpoints": True,
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 
                'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 
-               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon'],
+               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish'],
     "allowedFileActions": ['trash', 'download'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
