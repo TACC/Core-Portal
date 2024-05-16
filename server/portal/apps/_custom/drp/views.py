@@ -1,3 +1,4 @@
+import json
 from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
@@ -23,3 +24,31 @@ class DigitalRocksSampleView(BaseApiView):
         }
 
         return JsonResponse(response_data)
+    
+class DigitalRocksTreeView(BaseApiView):
+
+    @staticmethod
+    def construct_tree(records, parent_id=None):
+        tree = {}
+        for record in records:
+            if record['parent'] == parent_id:
+                node_dict = {
+                    "id": record['id'],  
+                    "name": record['name'],
+                    "path": record['path'],
+                    "metadata": record['metadata'],
+                    "children": DigitalRocksTreeView.construct_tree(records, record['id'])
+                }
+                tree[record['id']] = node_dict
+        return [tree[node_id] for node_id in tree]
+    
+    def get(self, request):
+
+        project_id = request.GET.get('project_id')
+        full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
+
+        records = DataFilesMetadata.objects.filter(project_id=full_project_id).values('id', 'parent', 'name', 'path', 'metadata')
+
+        tree = self.construct_tree(records)
+
+        return JsonResponse(tree, safe=False)
