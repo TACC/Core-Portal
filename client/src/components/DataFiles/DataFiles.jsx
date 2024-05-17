@@ -46,11 +46,7 @@ const DataFilesSwitch = React.memo(() => {
 
   const portalName = useSelector((state) => state.workbench.portalName);
 
-  console.log('portalName', portalName)
-
   const { DataFilesProjectPublish } = useAddonComponents({ portalName });
-
-  console.log('DataFilesProjectPublish', DataFilesProjectPublish)
 
   return (
     <Switch>
