@@ -28,14 +28,13 @@ const ReviewProjectStructure = ({ projectTree }) => {
 
   const { params } = useFileListing('FilesListing');
 
-  console.log("PARAMS", params)
-
   const handleNodeToggle = (event, nodeIds) => {
     // Update the list of expanded nodes
     setExpandedNodes(nodeIds);
   };
 
-  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName)
+  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
+    useDrpDatasetModals(projectId, portalName, false);
 
   const onEdit = () => {
     dispatch({
@@ -53,7 +52,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
       metadata: node.metadata,
       name: node.metadata.name,
       system: params.system,
-      path: node.path,
+      path: node.path.split('/').slice(1).join('/'),
       type: 'dir',
       _links: {
         self: {
@@ -81,11 +80,12 @@ const ReviewProjectStructure = ({ projectTree }) => {
               api: params.api,
               scheme: params.scheme,
               system: params.system,
-              path: node.path,
-              name: node.metadata.name, // Assuming 'name' is from node.metadata
+              path: node.path.split('/').slice(1).join('/'),
+              name: node.metadata.name,
               href: 'tapis://' + node.path,
-              length: node.metadata.length, // Assuming 'length' is from node.metadata
+              length: node.metadata.length,
               metadata: node.metadata,
+              useReloadCallback: false,
             },
           },
         });
@@ -112,7 +112,11 @@ const ReviewProjectStructure = ({ projectTree }) => {
           >
             {expandedNodes.includes(node.id) && (
               <div className={styles['description-div']}>
-                <Button type="link" onClick={() => onEditData(node)}>
+                <Button
+                  className={styles['edit-button']}
+                  type="link"
+                  onClick={() => onEditData(node)}
+                >
                   {node.metadata.data_type === 'file' ? 'View' : 'Edit'}
                 </Button>
                 <div className={styles['description']}>

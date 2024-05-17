@@ -6,8 +6,11 @@ import {
   DescriptionList,
 } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
+import { useDispatch } from 'react-redux';
 
 const ProjectDescription = ({ project }) => {
+  const dispatch = useDispatch();
+
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',

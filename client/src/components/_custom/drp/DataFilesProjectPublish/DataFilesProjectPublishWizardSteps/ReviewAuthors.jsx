@@ -14,7 +14,13 @@ import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
 
 const ReviewAuthors = ({ project }) => {
-  return <ReorderUserList users={project.members} />;
+  return (
+    <SectionTableWrapper
+      header={<div className={styles.title}>Review Authors and Citation</div>}
+    >
+      <ReorderUserList users={project.members} />
+    </SectionTableWrapper>
+  );
 };
 
 export default ReviewAuthors;

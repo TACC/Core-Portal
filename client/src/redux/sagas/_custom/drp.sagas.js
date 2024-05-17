@@ -34,7 +34,9 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
     );
   }
 
-  yield call(reloadCallback, path);
+  if (reloadCallback) {
+    yield call(reloadCallback, path);
+  }
 
   yield put({
     type: 'DATA_FILES_TOGGLE_MODAL',
@@ -114,8 +116,10 @@ function* handleFile(action, isEdit) {
     data_type: 'file',
   }
 
+  const path = selectedFile.path.split('/').slice(0, -1).join('/')
+
   yield call(
-    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, params.path
+    executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, path
   )
 }
 

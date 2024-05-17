@@ -28,8 +28,6 @@ const ReorderUserList = ({ users }) => {
         setReorderedUsers(reordered);
     }
 
-    console.log('reorderedUsers', reorderedUsers)
-
     return (
         <>
           {reorderedUsers.map((user, index) => (
