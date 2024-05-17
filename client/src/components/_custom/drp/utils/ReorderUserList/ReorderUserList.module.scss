@@ -1,0 +1,17 @@
+.user-div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust spacing between rows as needed */
+    justify-content: flex-start;
+    width: 30%;
+  }
+  
+  .user-name {
+    flex-grow: 1; /* Take up available space */
+    margin-right: 10px; /* Space between name and buttons */
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+  }
