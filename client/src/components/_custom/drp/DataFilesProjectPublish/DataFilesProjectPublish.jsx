@@ -1,30 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  ShowMore,
-  LoadingSpinner,
-  SectionMessage,
-  SectionTableWrapper,
-  DescriptionList,
-  Section,
-  SectionContent,
-  Expand,
-} from '_common';
+import { SectionTableWrapper } from '_common';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
 import styles from './DataFilesProjectPublish.module.scss';
 import { fetchUtil } from 'utils/fetchUtil';
-import { TreeItem, TreeView } from '@material-ui/lab';
-import Icon from '_common/Icon';
 import * as ROUTES from '../../../../constants/routes';
-import {
-  createAnalysisDataModalHandler,
-  createOriginDataModalHandler,
-  createSampleModalHandler,
-} from '../utils/datasetFormHandlers';
-import DataDisplay from '../utils/DataDisplay/DataDisplay';
-import ReorderUserList from '../utils/ReorderUserList/ReorderUserList';
 import ProjectDescription from './DataFilesProjectPublishWizardSteps/ProjectDescription';
 import PublicationInstructions from './DataFilesProjectPublishWizardSteps/PublicationInstructions';
 import ReviewProjectStructure from './DataFilesProjectPublishWizardSteps/ReviewProjectStructure';

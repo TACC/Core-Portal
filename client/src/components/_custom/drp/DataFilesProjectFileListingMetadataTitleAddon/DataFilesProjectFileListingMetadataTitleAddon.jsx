@@ -5,7 +5,7 @@ import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss'
 import { Button, LoadingSpinner } from '_common';
 import { fetchUtil } from 'utils/fetchUtil';
 import { useFileListing } from 'hooks/datafiles';
-import { createSampleModalHandler, createOriginDataModalHandler, createAnalysisDataModalHandler } from '../utils/datasetFormHandlers';
+import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadata, system, path }) => {
   const dispatch = useDispatch();
@@ -14,9 +14,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 
   const { loading } = useFileListing('FilesListing');
 
-  const handleSampleModal = createSampleModalHandler(dispatch);
-  const handleOriginDataModal = createOriginDataModalHandler(dispatch, projectId, portalName);
-  const handleAnalysisDataModal = createAnalysisDataModalHandler(dispatch, projectId, portalName);
+  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName)
 
   const onEditData = (dataType) => {
     const name = path.split('/').pop();
@@ -37,13 +35,13 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
     };
     switch (dataType) {
       case 'sample':
-        handleSampleModal('EDIT_SAMPLE_DATA', editFile);
+        createSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
       case 'origin_data':
-        handleOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
+        createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':
-        handleAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
+        createAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
         break;
       default:
         break;

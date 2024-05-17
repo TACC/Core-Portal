@@ -14,13 +14,9 @@ import {
 import { TreeItem, TreeView } from '@material-ui/lab';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import DataDisplay from '../../utils/DataDisplay/DataDisplay';
-import {
-  createSampleModalHandler,
-  createOriginDataModalHandler,
-  createAnalysisDataModalHandler,
-} from '../../utils/datasetFormHandlers';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFileListing } from 'hooks/datafiles';
+import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
 
 const ReviewProjectStructure = ({ projectTree }) => {
   const dispatch = useDispatch();
@@ -39,17 +35,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
     setExpandedNodes(nodeIds);
   };
 
-  const handleSampleModal = createSampleModalHandler(dispatch);
-  const handleOriginDataModal = createOriginDataModalHandler(
-    dispatch,
-    projectId,
-    portalName
-  );
-  const handleAnalysisDataModal = createAnalysisDataModalHandler(
-    dispatch,
-    projectId,
-    portalName
-  );
+  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName)
 
   const onEdit = () => {
     dispatch({
@@ -77,13 +63,13 @@ const ReviewProjectStructure = ({ projectTree }) => {
     };
     switch (dataType) {
       case 'sample':
-        handleSampleModal('EDIT_SAMPLE_DATA', editFile);
+        createSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
       case 'origin_data':
-        handleOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
+        createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':
-        handleAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
+        createAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
         break;
       case 'file':
         // Dispatch an action to toggle the modal for previewing the file

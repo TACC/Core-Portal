@@ -3,19 +3,16 @@ import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
 import { useSelectedFiles } from 'hooks/datafiles';
-import { createSampleModalHandler, createOriginDataModalHandler, createAnalysisDataModalHandler } from '../utils/datasetFormHandlers';
-import * as ROUTES from '../../../../constants/routes';
+import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import { Link } from 'react-router-dom';
+import * as ROUTES from '../../../../constants/routes';
 
 const DataFilesProjectFileListingAddon = ({ system }) => {
-  const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { selectedFiles } = useSelectedFiles();
 
-  const handleOpenSampleModal = createSampleModalHandler(dispatch);
-  const handleOriginDataModal = createOriginDataModalHandler(dispatch, projectId, portalName);
-  const handleAnalysisDataModal = createAnalysisDataModalHandler(dispatch, projectId, portalName);
+  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName);
 
   return (
     <>
@@ -24,12 +21,12 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
         selectedFiles[0].metadata['data_type'] === 'sample' ? (
           <Button
             type="link"
-            onClick={() => handleOpenSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
+            onClick={() => createSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
           >
             Edit Sample Data
           </Button>
         ) : (
-          <Button type="link" onClick={() => handleOpenSampleModal('ADD_SAMPLE_DATA')}>
+          <Button type="link" onClick={() => createSampleModal('ADD_SAMPLE_DATA')}>
             Add Sample Data
           </Button>
         )}
@@ -39,7 +36,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
           <Button
             type="link"
             onClick={() =>
-              handleOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
+              createOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
             }
           >
             Edit Origin Dataset
@@ -47,7 +44,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
         ) : (
           <Button
             type="link"
-            onClick={() => handleOriginDataModal('ADD_ORIGIN_DATASET')}
+            onClick={() => createOriginDataModal('ADD_ORIGIN_DATASET')}
           >
             Add Origin Dataset
           </Button>
@@ -58,7 +55,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
           <Button
             type="link"
             onClick={() =>
-              handleAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
+              createAnalysisDataModal('EDIT_ANALYSIS_DATASET', selectedFiles[0])
             }
           >
             Edit Analysis Dataset
@@ -66,7 +63,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
         ) : (
           <Button
             type="link"
-            onClick={() => handleAnalysisDataModal('ADD_ANALYSIS_DATASET')}
+            onClick={() => createAnalysisDataModal('ADD_ANALYSIS_DATASET')}
           >
             Add Analysis Dataset
           </Button>
