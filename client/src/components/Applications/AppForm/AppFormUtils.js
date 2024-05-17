@@ -433,3 +433,17 @@ export const getDefaultAllocation = (allocationList, portalAlloc) => {
 
   return allocationList.length === 1 ? allocationList[0] : '';
 };
+
+/**
+ * Yup validation for system. Only runs for apps
+ * with dynamic execution system.
+ * @param {*} app
+ * @returns Yup validation.
+ */
+export const getExecSystemIdValidation = (app) => {
+  return isJobTypeBATCH(app) && isAppUsingDynamicExecSystem(app)
+    ? Yup.string()
+        .required(`A system is required to run this application.`)
+        .oneOf(app.execSystems?.map((e) => e.id) ?? [])
+    : Yup.string().notRequired();
+};

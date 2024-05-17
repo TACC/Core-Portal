@@ -36,6 +36,7 @@ import {
   buildMapOfAllocationsToExecSystems,
   getAllocationList,
   getDefaultAllocation,
+  getExecSystemIdValidation,
 } from './AppFormUtils';
 import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
 
@@ -362,7 +363,6 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   let missingAllocation = false;
-  let missingExecSystem = false;
   if (isJobTypeBATCH(app)) {
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
@@ -393,8 +393,6 @@ export const AppSchemaForm = ({ app }) => {
             )} to run this application.`,
       };
       missingAllocation = true;
-    } else if (isAppUsingDynamicExecSystem && !formState.execSystems.length) {
-      missingExecSystem = true;
     }
   }
 
@@ -467,16 +465,6 @@ export const AppSchemaForm = ({ app }) => {
           </SectionMessage>
         </div>
       )}
-      {missingExecSystem && (
-        <div className="appDetail-error">
-          <SectionMessage type="warning">
-            <span>
-              You need access to at least one system on the allocation{' '}
-              {`${initialValues.allocation}`} to run this application.
-            </span>
-          </SectionMessage>
-        </div>
-      )}
 
       {jobSubmission.response && (
         <>
@@ -532,8 +520,7 @@ export const AppSchemaForm = ({ app }) => {
               exec_sys,
               values.execSystemLogicalQueue
             );
-            const names = exec_sys?.batchLogicalQueues.map((q) => q.name) ?? [];
-            console.log('logical queue list ' + names);
+            const currentExecSystems = formState.execSystems;
             const schema = Yup.object({
               parameterSet: Yup.object({
                 ...Object.assign(
@@ -550,9 +537,13 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
+              execSystemId: getExecSystemIdValidation(
+                app,
+                initialValues.allocation
+              ),
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
-                    .required('Required logical system queue')
+                    .required('Required.')
                     .oneOf(
                       exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
                     )
@@ -569,7 +560,17 @@ export const AppSchemaForm = ({ app }) => {
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
               allocation: isJobTypeBATCH(app)
-                ? getAllocationValidation(allocations, app)
+                ? getAllocationValidation(allocations).test(
+                    'exec-systems-check',
+                    'You need an allocation with access to at least one system to run this application.',
+                    function (value) {
+                      const isValidExecSystems =
+                        !isAppUsingDynamicExecSystem ||
+                        (isAppUsingDynamicExecSystem &&
+                          currentExecSystems.length > 0);
+                      return isValidExecSystems;
+                    }
+                  )
                 : Yup.string().notRequired(),
             });
             return schema;
@@ -662,7 +663,10 @@ export const AppSchemaForm = ({ app }) => {
           ).batchLogicalQueues.find(
             (q) => q.name === values.execSystemLogicalQueue
           );
-          if (app.definition.jobAttributes.memoryMB > queue.maxMemoryMB) {
+          if (
+            queue &&
+            app.definition.jobAttributes.memoryMB > queue.maxMemoryMB
+          ) {
             job.memoryMB = queue.maxMemoryMB;
           }
 
