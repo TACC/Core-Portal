@@ -655,6 +655,16 @@ export const AppSchemaForm = ({ app }) => {
               }
             )
           );
+          // Before job submission, ensure the memory limit is not above queue limit.
+          const queue = getExecSystemFromId(
+            app,
+            values.execSystemId
+          ).batchLogicalQueues.find(
+            (q) => q.name === values.execSystemLogicalQueue
+          );
+          if (app.definition.jobAttributes.memoryMB > queue.maxMemoryMB) {
+            job.memoryMB = queue.maxMemoryMB;
+          }
 
           // Add allocation scheduler option
           if (job.allocation) {
