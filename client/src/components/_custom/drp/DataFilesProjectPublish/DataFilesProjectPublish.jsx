@@ -6,47 +6,19 @@ import Wizard from '_common/Wizard';
 import styles from './DataFilesProjectPublish.module.scss';
 import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../../../constants/routes';
-import ProjectDescription from './DataFilesProjectPublishWizardSteps/ProjectDescription';
-import PublicationInstructions from './DataFilesProjectPublishWizardSteps/PublicationInstructions';
-import ReviewProjectStructure from './DataFilesProjectPublishWizardSteps/ReviewProjectStructure';
-import ReviewAuthors from './DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { ProjectDescriptionStep } from './DataFilesProjectPublishWizardSteps/ProjectDescription';
+import { PublicationInstructionsStep } from './DataFilesProjectPublishWizardSteps/PublicationInstructions';
+import { ReviewProjectStructureStep } from './DataFilesProjectPublishWizardSteps/ReviewProjectStructure';
+import { ReviewAuthorsStep } from './DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { SubmitPublicationRequestStep } from './DataFilesProjectPublishWizardSteps/SubmitPublicationRequest';
 
 const DataFilesProjectPublish = ({ system }) => {
-  
-  // FIX THIS
-  const portalName = 'drp';
-  const projectId = 'CEPV3-DEV-1133';
-
-  const getTree = async (projectId, portalName) => {
-    const response = await fetchUtil({
-      url: `api/${portalName.toLowerCase()}/tree`,
-      params: {
-        project_id: projectId,
-      },
-    });
-
-    return response;
-  };
-
-  const [tree, setTree] = useState([]);
-
-  const { dynamicFormModal, previewModal } = useSelector((state) => ({
-    dynamicFormModal: state.files.modals.dynamicform,
-    previewModal: state.files.modals.preview,
-  }));
-
-  const fetchTree = useCallback(async () => {
-    const response = await getTree(projectId, portalName);
-    setTree(response);
-  }, [projectId, portalName]);
-
-  useEffect(() => {
-    if (!dynamicFormModal || !previewModal) {
-      fetchTree();
-    }
-  }, [projectId, portalName, dynamicFormModal, previewModal, fetchTree]);
 
   const dispatch = useDispatch();
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { projectId } = useSelector((state) => state.projects.metadata);
+  const [users, setUsers] = useState([]);
+  const [tree, setTree] = useState([]);
 
   useEffect(() => {
     dispatch({
@@ -55,40 +27,47 @@ const DataFilesProjectPublish = ({ system }) => {
     });
   }, [system]);
 
-  const { metadata } = useSelector((state) => state.projects);
+  const { dynamicFormModal, previewModal, metadata } = useSelector((state) => ({
+    dynamicFormModal: state.files.modals.dynamicform,
+    previewModal: state.files.modals.preview,
+    metadata: state.projects.metadata,
+  }));
 
-  const formSubmit = (values) => {
-    // console.log('DataFilesProjectPublish: formSubmit: ', values);
-  };
+  const fetchTree = useCallback(async () => {
+    try {
+      const response = await fetchUtil({
+        url: `api/${portalName.toLowerCase()}/tree`,
+        params: {
+          project_id: projectId,
+        },
+      });
+      setTree(response);
+    } catch (error) {
+      console.error('Error fetching tree data:', error);
+      setTree([]);
+    }
+  }, [portalName, projectId]);
+
+  useEffect(() => {
+    // workaround to get updated data after modal closes
+    if (!dynamicFormModal || !previewModal) {
+      fetchTree();
+    }
+  }, [dynamicFormModal, previewModal, fetchTree]);
 
   const wizardSteps = [
-    {
-      id: 'publication_instructions',
-      name: 'Publication Instructions',
-      render: <PublicationInstructions />,
-      initialValues: {},
-    },
-    {
-      id: 'project_description',
-      name: 'Project Description',
-      render: <ProjectDescription project={metadata} />,
-      initialValues: {},
-    },
-    {
-      id: 'project_structure',
-      name: 'Review Project Structure',
-      render: <ReviewProjectStructure projectTree={tree} />,
-      initialValues: {},
-    },
-    {
-      id: 'project_authors',
-      name: 'Review Authors and Citations',
-      render: <ReviewAuthors project={metadata} />,
-      initialValues: {},
-    },
+    PublicationInstructionsStep(),
+    ProjectDescriptionStep({ project: metadata }),
+    ReviewProjectStructureStep({ projectTree: tree }),
+    ReviewAuthorsStep({ project: metadata, users, setUsers}),
+    SubmitPublicationRequestStep(),
   ];
 
-  // do the wizard now
+  const formSubmit = (values) => {
+    // save ordered users to db. Add to project metadata?
+    console.log('DataFilesProjectPublish: formSubmit: ', values);
+    console.log('Ordered users', users)
+  };
 
   return (
     <>

@@ -38,6 +38,7 @@ const ProjectDescription = ({ project }) => {
           Created: formatDate(new Date(project.created)),
           Abstract: <ShowMore> {project.description} </ShowMore>,
           Keywords: project.keywords ?? '',
+          License: project.license ?? 'None',
         }}
         direction={'vertical'}
       />
@@ -45,4 +46,9 @@ const ProjectDescription = ({ project }) => {
   );
 };
 
-export default ProjectDescription;
+export const ProjectDescriptionStep = ({ project }) => ({
+  id: 'project_description',
+  name: 'Project Description',
+  render: <ProjectDescription project={project} />,
+  initialValues: {},
+});

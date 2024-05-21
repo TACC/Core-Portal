@@ -2,35 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { Button, Icon } from '_common';
 import styles from './ReorderUserList.module.scss'
 
-const ReorderUserList = ({ users }) => {
-
-    const [reorderedUsers, setReorderedUsers] = useState([]);
-
-    useEffect(() => {
-        const formattedUsers = users.map(user => user.user);
-        setReorderedUsers(formattedUsers);
-    }, [users]);
-
+const ReorderUserList = ({ users, setUsers }) => {
 
     const moveUp = (index) => {
-        const reordered = [...reorderedUsers];
+        const reordered = [...users];
         const temp = reordered[index - 1];
         reordered[index - 1] = reordered[index];
         reordered[index] = temp;
-        setReorderedUsers(reordered);
+        setUsers(reordered);
     };
 
     const moveDown = (index) => {
-        const reordered = [...reorderedUsers];
+        const reordered = [...users];
         const temp = reordered[index + 1];
         reordered[index + 1] = reordered[index];
         reordered[index] = temp;
-        setReorderedUsers(reordered);
+        setUsers(reordered);
     }
 
     return (
         <>
-          {reorderedUsers.map((user, index) => (
+          {users.map((user, index) => (
             <div key={index} className={styles['user-div']}>
               <span className={styles['user-name']}>{user.last_name}, {user.first_name}</span>
               <div className={styles['button-group']}>

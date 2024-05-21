@@ -32,4 +32,9 @@ const PublicationInstructions = () => {
   );
 };
 
-export default PublicationInstructions;
+export const PublicationInstructionsStep = () => ({
+  id: 'publication_instructions',
+  name: 'Publication Instructions',
+  render: <PublicationInstructions />,
+  initialValues: {},
+});

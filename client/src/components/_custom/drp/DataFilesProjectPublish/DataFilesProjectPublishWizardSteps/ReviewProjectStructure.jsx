@@ -204,4 +204,9 @@ const ReviewProjectStructure = ({ projectTree }) => {
   );
 };
 
-export default ReviewProjectStructure;
+export const ReviewProjectStructureStep = ({ projectTree }) => ({
+  id: 'project_structure',
+  name: 'Review Project Structure',
+  render: <ReviewProjectStructure projectTree={projectTree} />,
+  initialValues: {},
+});

@@ -56,3 +56,21 @@
     font-size: 0.875rem;
     padding-bottom: 5px;
   }
+
+  .citation-box {
+    border: 1px solid var(--global-color-primary--light);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: white;
+  }
+
+  .required-text {
+    color: red;
+  }
+
+  .submit-div {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
