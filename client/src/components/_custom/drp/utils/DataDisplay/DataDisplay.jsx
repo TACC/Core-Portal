@@ -50,8 +50,9 @@ const DataDisplay = ({ data, path, excludeKeys }) => {
         value: typeof(value) === 'string' ? formatLabel(value) : value
       }));
 
-    
-    processedData.unshift(...processSampleAndOriginData(data, path));
+    if (path) {
+      processedData.unshift(...processSampleAndOriginData(data, path));
+    }
   
     // Divide processed data into chunks for two-column layout display
     const chunkSize = Math.ceil(processedData.length / 2);

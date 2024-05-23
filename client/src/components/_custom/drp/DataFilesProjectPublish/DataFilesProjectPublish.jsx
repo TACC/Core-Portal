@@ -1,0 +1,103 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { LoadingSpinner, SectionTableWrapper } from '_common';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import Wizard from '_common/Wizard';
+import styles from './DataFilesProjectPublish.module.scss';
+import { fetchUtil } from 'utils/fetchUtil';
+import * as ROUTES from '../../../../constants/routes';
+import { ProjectDescriptionStep } from './DataFilesProjectPublishWizardSteps/ProjectDescription';
+import { PublicationInstructionsStep } from './DataFilesProjectPublishWizardSteps/PublicationInstructions';
+import { ReviewProjectStructureStep } from './DataFilesProjectPublishWizardSteps/ReviewProjectStructure';
+import { ReviewAuthorsStep } from './DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { SubmitPublicationRequestStep } from './DataFilesProjectPublishWizardSteps/SubmitPublicationRequest';
+
+const DataFilesProjectPublish = ({ system }) => {
+  const dispatch = useDispatch();
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { projectId } = useSelector((state) => state.projects.metadata);
+  const [users, setUsers] = useState([]);
+  const [tree, setTree] = useState([]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'PROJECTS_GET_METADATA',
+      payload: system,
+    });
+  }, [system]);
+
+  const { dynamicFormModal, previewModal, metadata } = useSelector((state) => ({
+    dynamicFormModal: state.files.modals.dynamicform,
+    previewModal: state.files.modals.preview,
+    metadata: state.projects.metadata,
+  }));
+
+  const fetchTree = useCallback(async () => {
+    try {
+      const response = await fetchUtil({
+        url: `api/${portalName.toLowerCase()}/tree`,
+        params: {
+          project_id: projectId,
+        },
+      });
+      setTree(response);
+    } catch (error) {
+      console.error('Error fetching tree data:', error);
+      setTree([]);
+    }
+  }, [portalName, projectId]);
+
+  useEffect(() => {
+    // workaround to get updated data after modal closes
+    if (!dynamicFormModal || !previewModal) {
+      fetchTree();
+    }
+  }, [dynamicFormModal, previewModal, fetchTree]);
+
+  const wizardSteps = [
+    PublicationInstructionsStep(),
+    ProjectDescriptionStep({ project: metadata }),
+    ReviewProjectStructureStep({ projectTree: tree }),
+    ReviewAuthorsStep({ project: metadata, users, setUsers }),
+    SubmitPublicationRequestStep(),
+  ];
+
+  const formSubmit = (values) => {
+    // save ordered users to db. Add to project metadata?
+    console.log('DataFilesProjectPublish: formSubmit: ', values);
+    console.log('Ordered users', users);
+  };
+
+  return (
+    <>
+      {metadata.loading ? (
+        <LoadingSpinner />
+      ) : (
+        <SectionTableWrapper
+          className={styles.root}
+          header={
+            <div className={styles.title}>
+              Request Project Publication | {metadata.title}
+            </div>
+          }
+          headerActions={
+            <div className={styles.controls}>
+              <>
+                <Link
+                  className="wb-link"
+                  to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}`}
+                >
+                  Back to Project
+                </Link>
+              </>
+            </div>
+          }
+        >
+          <Wizard steps={wizardSteps} formSubmit={formSubmit} />
+        </SectionTableWrapper>
+      )}
+    </>
+  );
+};
+
+export default DataFilesProjectPublish;

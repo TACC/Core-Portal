@@ -125,7 +125,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
           {DataFilesProjectFileListingAddon && (
-            <DataFilesProjectFileListingAddon />
+            <DataFilesProjectFileListingAddon system={system} />
           )}
         </div>
       }

@@ -17,9 +17,9 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
     const { params } = useFileListing('FilesListing');
 
-    const file = useSelector(
+    const { useReloadCallback, ...file } = useSelector(
         (state) => state.files.modalProps.preview
-      );
+    );
 
     const { data: form, isLoading } = useQuery('form_UPLOAD_FILE', () =>
     fetchUtil({
@@ -65,7 +65,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
           payload: {
             params,
             values,
-            reloadPage,
+            reloadPage: useReloadCallback ? reloadPage : null,
             selectedFile: file
           },
         });

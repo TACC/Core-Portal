@@ -16,6 +16,14 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
     const standardImageType = /(\.|\/)(gif|jpe?g|png|tiff?)$/i;
 
     useEffect(() => {
+
+        // if the uploaded files don't have basic metadata, add metadata
+        if (!uploadedFiles.every((file) => file.metadata)) {
+          setUploadedFiles(uploadedFiles.map(file => { 
+            return {...file, metadata: { data_type: 'file' }}
+          }))
+        }
+
         setUploadedFilesWithMetadata(uploadedFiles.filter((file) => !standardImageType.test(file.data.name)));
     }, [uploadedFiles])
 

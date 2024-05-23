@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
 import { useSelectedFiles } from 'hooks/datafiles';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
+import { Link } from 'react-router-dom';
+import * as ROUTES from '../../../../constants/routes';
 
-const DataFilesProjectFileListingAddon = () => {
+const DataFilesProjectFileListingAddon = ({ system }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { selectedFiles } = useSelectedFiles();
@@ -66,6 +68,11 @@ const DataFilesProjectFileListingAddon = () => {
             Add Analysis Dataset
           </Button>
         )}
+        <span className={styles.separator}>|</span>
+        <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/publish`}>
+            Request Publication
+        </Link>
+
     </>
   );
 };

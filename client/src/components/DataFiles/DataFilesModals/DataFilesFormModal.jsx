@@ -27,7 +27,7 @@ const DataFilesFormModal = () => {
     history.push(path);
   };
 
-  const { form, selectedFile, formName, additionalData } = useSelector(
+  const { form, selectedFile, formName, additionalData, useReloadCallback } = useSelector(
     (state) => state.files.modalProps.dynamicform
   );
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
@@ -64,7 +64,7 @@ const DataFilesFormModal = () => {
       payload: {
         params,
         values,
-        reloadPage,
+        reloadPage: useReloadCallback ? reloadPage : null,
         selectedFile,
         additionalData,
       },
