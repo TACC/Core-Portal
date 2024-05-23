@@ -37,7 +37,6 @@ const MLACitation = ({ project, users }) => {
 };
 
 const ReviewAuthors = ({ project, users, setUsers }) => {
-
   useEffect(() => {
     const formattedUsers = project.members.map((user) => user.user);
     setUsers(formattedUsers);

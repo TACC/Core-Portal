@@ -13,7 +13,6 @@ import { ReviewAuthorsStep } from './DataFilesProjectPublishWizardSteps/ReviewAu
 import { SubmitPublicationRequestStep } from './DataFilesProjectPublishWizardSteps/SubmitPublicationRequest';
 
 const DataFilesProjectPublish = ({ system }) => {
-
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
@@ -59,14 +58,14 @@ const DataFilesProjectPublish = ({ system }) => {
     PublicationInstructionsStep(),
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
-    ReviewAuthorsStep({ project: metadata, users, setUsers}),
+    ReviewAuthorsStep({ project: metadata, users, setUsers }),
     SubmitPublicationRequestStep(),
   ];
 
   const formSubmit = (values) => {
     // save ordered users to db. Add to project metadata?
     console.log('DataFilesProjectPublish: formSubmit: ', values);
-    console.log('Ordered users', users)
+    console.log('Ordered users', users);
   };
 
   return (

@@ -9,12 +9,6 @@
     padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
   }
 
-  .prj main {
-    margin-right: 0;
-    margin-bottom: 10px;
-
-  }
-
   .title {
     @include truncate-with-ellipsis;
     max-width: 1400px;
@@ -26,20 +20,23 @@
     align-items: flex-start;
   }
 
+  .section-project-structure main {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
   .tree-label {
     padding-top: 10px;
     padding-bottom: 10px;
     border: 1px solid var(--global-color-primary--light);
-    // border-radius: 10px;
 
-    &:hover {
-        background-color: white;
-    }
+    // &:hover {
+    //     background-color: white;
+    // }
   }
 
-  .description-div {
+  .metadata-description-div {
     border: 1px solid var(--global-color-primary--light);   
-    // border-top-style: none;
     margin-left: 2px;
     padding: 10px;
   }
@@ -48,7 +45,7 @@
     font-size: 0.875rem;
   }
 
-  .section main {
+  .description-section main {
     padding-left: 1px;
   }
 
@@ -66,7 +63,7 @@
   }
 
   .required-text {
-    color: red;
+    color: var(--global-color-danger--normal);
   }
 
   .submit-div {

@@ -97,7 +97,10 @@ const ReviewProjectStructure = ({ projectTree }) => {
 
   const renderTree = (node) => (
     <>
-      <Section className={styles['prj']} contentLayoutName="oneColumn">
+      <Section
+        className={styles['section-project-structure']}
+        contentLayoutName="oneColumn"
+      >
         <div>
           <TreeItem
             key={node.id}
@@ -105,13 +108,11 @@ const ReviewProjectStructure = ({ projectTree }) => {
             label={node.name}
             classes={{
               label: styles['tree-label'],
-              root: styles['tree-root'],
-              content: styles['tree-content'],
             }}
             onLabelClick={() => handleNodeToggle}
           >
             {expandedNodes.includes(node.id) && (
-              <div className={styles['description-div']}>
+              <div className={styles['metadata-description-div']}>
                 <Button
                   className={styles['edit-button']}
                   type="link"
@@ -169,7 +170,10 @@ const ReviewProjectStructure = ({ projectTree }) => {
         </div>
       }
     >
-      <Section contentLayoutName={'oneColumn'} className={styles['section']}>
+      <Section
+        contentLayoutName={'oneColumn'}
+        className={styles['description-section']}
+      >
         <div className={styles['description']}>
           <p>
             Review the data tree structure to make sure that the relationships

@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, FormGroup, Input } from 'reactstrap';
 import { useFormikContext } from 'formik';
 import { SectionTableWrapper, Section } from '_common';
 import * as Yup from 'yup';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 
+const validationSchema = Yup.object({
+  reviewInfo: Yup.boolean().oneOf([true], 'Must be checked'),
+  reviewRelatedPublications: Yup.boolean().oneOf([true], 'Must be checked'),
+});
+
 const SubmitPublicationRequest = () => {
-  const { handleChange, handleBlur, values, isValid } =
-    useFormikContext();
+  const { handleChange, handleBlur, values } = useFormikContext();
+
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+
+  useEffect(() => {
+    validationSchema.isValid(values).then((valid) => {
+      setSubmitDisabled(!valid);
+    });
+  }, [values]);
 
   return (
     <SectionTableWrapper
@@ -51,7 +63,7 @@ const SubmitPublicationRequest = () => {
           curator Maria Esteva before submitting the data for publication.
         </div>
         <div className={styles['submit-div']}>
-          <Button type="submit" color="primary" disabled={!isValid}>
+          <Button type="submit" color="primary" disabled={submitDisabled}>
             Submit Publication Request
           </Button>
         </div>
@@ -68,8 +80,5 @@ export const SubmitPublicationRequestStep = () => ({
     reviewInfo: false,
     reviewRelatedPublications: false,
   },
-  validationSchema: Yup.object({
-    reviewInfo: Yup.boolean().oneOf([true]),
-    reviewRelatedPublications: Yup.boolean().oneOf([true]),
-  }),
+  validationSchema,
 });
