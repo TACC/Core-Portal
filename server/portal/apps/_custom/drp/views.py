@@ -44,10 +44,15 @@ class DigitalRocksTreeView(BaseApiView):
     
     def get(self, request):
 
+        metadata_data_types = ['sample', 'origin_data', 'analysis_data', 'file']
+
         project_id = request.GET.get('project_id')
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        records = DataFilesMetadata.objects.filter(project_id=full_project_id).values('id', 'parent', 'name', 'path', 'metadata')
+        records = DataFilesMetadata.objects.filter(
+                project_id=full_project_id,
+                metadata__data_type__in=metadata_data_types
+            ).values('id', 'parent', 'name', 'path', 'metadata')
 
         tree = self.construct_tree(records)
 

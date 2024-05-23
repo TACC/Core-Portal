@@ -59,7 +59,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
         {loading ? (
           <LoadingSpinner placement="inline" />
         ) : (
-          folderMetadata ? ( 
+          folderMetadata && folderMetadata.data_type ? ( 
             <>
               {folderMetadata.name}
               <span className={styles['dataTypeBox']}>
