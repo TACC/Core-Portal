@@ -52,6 +52,7 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
           field.options.push(
             ...samples.map((sample) => {
               return {
+                ...sample.metadata,
                 value: parseInt(sample.id),
                 label: sample.name,
               };
@@ -64,7 +65,7 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'dynamicform',
-          props: { selectedFile, form, formName, additionalData: samples, useReloadCallback },
+          props: { selectedFile, form, formName, additionalData: { samples }, useReloadCallback },
         },
       });
     }

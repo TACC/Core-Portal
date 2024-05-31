@@ -62,7 +62,7 @@ function* handleSampleData(action, isEdit) {
 }
 
 function* handleOriginData(action, isEdit) {
-  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: samples } = action.payload;
+  const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: { samples } } = action.payload;
 
   const sample = samples.find(
     (sample) => sample.id === parseInt(values.sample)
