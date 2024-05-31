@@ -12,16 +12,17 @@ import {
 } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
+import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersList';
 
-const MLACitation = ({ project, users }) => {
+const MLACitation = ({ project, authors }) => {
   let authorString;
 
-  if (users.length === 1) {
-    authorString = `${users[0].last_name}, ${users[0].first_name}`;
-  } else if (users.length === 2) {
-    authorString = `${users[0].last_name}, ${users[0].first_name}, and ${users[1].last_name}, ${users[1].first_name}`;
+  if (authors.length === 1) {
+    authorString = `${authors[0].last_name}, ${authors[0].first_name}`;
+  } else if (authors.length === 2) {
+    authorString = `${authors[0].last_name}, ${authors[0].first_name}, and ${authors[1].last_name}, ${authors[1].first_name}`;
   } else {
-    authorString = `${users[0].last_name}, ${users[0].first_name}, et al`;
+    authorString = `${authors[0].last_name}, ${authors[0].first_name}, et al`;
   }
 
   const mlaText = `${authorString}. "${project.title}." Digital Rocks Portal `;
@@ -36,29 +37,69 @@ const MLACitation = ({ project, users }) => {
   );
 };
 
-const ReviewAuthors = ({ project, users, setUsers }) => {
+const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
+  const [authors, setAuthors] = useState([]);
+  const [members, setMembers] = useState([]);
+
   useEffect(() => {
-    const formattedUsers = project.members.map((user) => user.user);
-    setUsers(formattedUsers);
+    const owners = project.members
+      .filter((user) => user.access === 'owner')
+      .map((user) => ({ ...user.user, isOwner: true }));
+
+    const members = project.members
+      .filter(
+        (user) =>
+          (user.access === 'read' || user.access === 'edit') &&
+          !authors.includes(user.user)
+      )
+      .map((user) => user.user);
+
+    setAuthors(owners);
+    setMembers(members);
+    onAuthorsUpdate(owners);
   }, [project]);
+
+  const onReorder = (authors) => {
+    setAuthors(authors);
+    onAuthorsUpdate(authors);
+  };
+
+  const onAddAuthor = (member) => {
+    const newAuthors = [...authors, member];
+    setAuthors(newAuthors);
+    setMembers((prevMembers) => prevMembers.filter((m) => m !== member));
+    onAuthorsUpdate(newAuthors);
+  };
+
+  const onRemoveCoAuthor = (member) => {
+    const newAuthors = authors.filter((a) => a !== member);
+    setAuthors(newAuthors);
+    setMembers((prevMembers) => [...prevMembers, member]);
+    onAuthorsUpdate(newAuthors);
+  };
 
   return (
     <SectionTableWrapper
       header={<div className={styles.title}>Review Authors and Citation</div>}
     >
-      {users.length > 0 && project && (
+      {authors.length > 0 && project && (
         <Section contentLayoutName={'oneColumn'}>
-          <MLACitation project={project} users={users} />
-          <ReorderUserList users={users} setUsers={setUsers} />
+          <MLACitation project={project} authors={authors} />
+          <ReorderUserList
+            users={authors}
+            onReorder={onReorder}
+            onRemoveAuthor={onRemoveCoAuthor}
+          />
+          <ProjectMembersList members={members} onAddCoAuthor={onAddAuthor} />
         </Section>
       )}
     </SectionTableWrapper>
   );
 };
 
-export const ReviewAuthorsStep = ({ project, users, setUsers }) => ({
+export const ReviewAuthorsStep = ({ project, onAuthorsUpdate }) => ({
   id: 'project_authors',
   name: 'Review Authors and Citations',
-  render: <ReviewAuthors project={project} users={users} setUsers={setUsers} />,
+  render: <ReviewAuthors project={project} onAuthorsUpdate={onAuthorsUpdate} />,
   initialValues: {},
 });

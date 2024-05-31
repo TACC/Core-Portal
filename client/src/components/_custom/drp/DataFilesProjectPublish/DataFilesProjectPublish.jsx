@@ -16,7 +16,7 @@ const DataFilesProjectPublish = ({ system }) => {
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
-  const [users, setUsers] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [tree, setTree] = useState([]);
 
   useEffect(() => {
@@ -54,18 +54,22 @@ const DataFilesProjectPublish = ({ system }) => {
     }
   }, [dynamicFormModal, previewModal, fetchTree]);
 
+  const handleAuthorsUpdate = (authors) => {
+    setAuthors(authors);
+  }
+
   const wizardSteps = [
     PublicationInstructionsStep(),
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
-    ReviewAuthorsStep({ project: metadata, users, setUsers }),
+    ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: handleAuthorsUpdate}),
     SubmitPublicationRequestStep(),
   ];
 
   const formSubmit = (values) => {
     // save ordered users to db. Add to project metadata?
     console.log('DataFilesProjectPublish: formSubmit: ', values);
-    console.log('Ordered users', users);
+    console.log('Ordered users', authors);
   };
 
   return (
