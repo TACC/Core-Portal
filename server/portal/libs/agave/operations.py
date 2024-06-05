@@ -13,6 +13,7 @@ from pathlib import Path
 from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
+from portal.apps import SCHEMA_MAPPING
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +27,13 @@ def get_datafile_metadata(system, path):
 
 @transaction.atomic
 def update_datafile_metadata(system, name, old_path, new_path, metadata):
+    
+    validated_metadata = validate_datafile_metadata({**metadata, 'name': name})
+
     files_metadata = DataFilesMetadata.objects.get(path=f'{system}/{old_path.strip("/")}')
     files_metadata.name = name
     files_metadata.path = f"{system}/{new_path.strip('/')}" 
-    files_metadata.metadata = metadata
-    files_metadata.metadata['name'] = name
+    files_metadata.metadata = validated_metadata
     files_metadata.save()
 
     for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
@@ -229,10 +232,12 @@ def mkdir(client, system, path, dir_name, metadata=None):
 
         project_instance = ProjectsMetadata.objects.get(project_id=system)
 
+        validated_metadata = validate_datafile_metadata(metadata)
+
         files_metadata = DataFilesMetadata(
             name = dir_name,
             path = f'{system}/{path_input.strip("/")}',
-            metadata = metadata,
+            metadata = validated_metadata,
             project = project_instance
         )
 
@@ -504,10 +509,12 @@ def upload(client, system, path, uploaded_file, metadata=None):
 
         project_instance = ProjectsMetadata.objects.get(project_id=system)
 
+        validated_metadata = validate_datafile_metadata(metadata)
+
         files_metadata = DataFilesMetadata(
             name = uploaded_file.name,
             path = f'{system}/{dest_path.strip("/")}',
-            metadata = metadata,
+            metadata = validated_metadata,
             project = project_instance
         )
 
@@ -616,3 +623,10 @@ def update_metadata(client, system, path, new_path, old_name, new_name, metadata
         new_name = ('/' + move_message).rsplit('/', 1)[1]
         
     update_datafile_metadata(system=system, name=new_name, old_path=path, new_path=f'{new_path.strip("/")}/{new_name}', metadata=metadata)
+
+def validate_datafile_metadata(metadata): 
+    portal_name = settings.PORTAL_NAMESPACE
+    schema = SCHEMA_MAPPING[portal_name][metadata.get('data_type')]
+    validated_model = schema.model_validate(metadata)
+
+    return validated_model.model_dump(exclude_none=True)

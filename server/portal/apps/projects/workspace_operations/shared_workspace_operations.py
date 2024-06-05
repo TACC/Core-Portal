@@ -116,12 +116,13 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str, description=""):
+def create_shared_workspace(client: Tapis, title: str, owner: str, description="", predefind_workspace_number=None):
     """
     Create a workspace system owned by user whose client is passed.
     """
     service_client = service_account()
-    workspace_number = increment_workspace_count()
+    force = predefind_workspace_number if predefind_workspace_number else None
+    workspace_number = increment_workspace_count(force)
     workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
     # Service client creates directory and gives owner write permissions

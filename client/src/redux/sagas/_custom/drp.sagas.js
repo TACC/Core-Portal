@@ -10,6 +10,11 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 
 function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
+
+  const filteredValues = Object.fromEntries(
+    Object.entries(values).filter(([key, value]) => value !== "" && value !== null)
+  )
+
   if (file && isEdit) {
     yield call(
       updateMetadataUtil,
@@ -20,7 +25,7 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
       '/' + path,
       file.name,
       values.name,
-      values
+      filteredValues
     );
   } else {
     yield call(
@@ -30,7 +35,7 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
       params.system,
       path,
       values.name,
-      values
+      filteredValues
     );
   }
 
