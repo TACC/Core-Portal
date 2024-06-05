@@ -53,9 +53,9 @@ export const WizardNavigation: React.FC = () => {
           <Button attr="submit" type="primary" onClick={onContinue}>
             Continue
           </Button>
-          <Button attr="submit" type="secondary" onClick={onSkip}>
+          {/* <Button attr="submit" type="secondary" onClick={onSkip}>
             Skip to End
-          </Button>
+          </Button> */}
         </>
       )}
     </div>
