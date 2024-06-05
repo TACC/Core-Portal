@@ -52,7 +52,7 @@ class DigitalRocksTreeView(BaseApiView):
         records = DataFilesMetadata.objects.filter(
                 project_id=full_project_id,
                 metadata__data_type__in=metadata_data_types
-            ).values('id', 'parent', 'name', 'path', 'metadata')
+            ).order_by('created_at').values('id', 'parent', 'name', 'path', 'metadata', 'created_at')
 
         tree = self.construct_tree(records)
 

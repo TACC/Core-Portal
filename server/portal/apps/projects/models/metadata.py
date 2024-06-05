@@ -6,6 +6,7 @@
 import logging
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -86,6 +87,8 @@ class ProjectMetadata(AbstractProjectMetadata):
 class ProjectsMetadata(models.Model):
     project_id = models.CharField(max_length=255, primary_key=True)
     metadata = models.JSONField(default=dict, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.project_id
