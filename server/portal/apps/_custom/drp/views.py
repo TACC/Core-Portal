@@ -12,7 +12,7 @@ class DigitalRocksSampleView(BaseApiView):
 
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        samples = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='sample').values('id', 'name', 'path')
+        samples = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='sample').values('id', 'name', 'path', 'metadata')
         origin_data = []
         
         if get_origin_data == 'true':

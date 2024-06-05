@@ -16,15 +16,21 @@ from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.workspace_operations.shared_workspace_operations import \
         list_projects, get_project, create_shared_workspace, \
         update_project, get_workspace_role, change_user_role, add_user_to_workspace, \
-        remove_user, transfer_ownership
+        remove_user, transfer_ownership, increment_workspace_count
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import transaction
+from portal.apps import SCHEMA_MAPPING
 
 LOGGER = logging.getLogger(__name__)
 
+def validate_project_metadata(metadata):
+    portal_name = settings.PORTAL_NAMESPACE
+    schema = SCHEMA_MAPPING[portal_name]['project']
+    validated_model = schema.model_validate(metadata)
+    return validated_model.model_dump(exclude_none=True)
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -112,16 +118,20 @@ class ProjectsApiView(BaseApiView):
         description = data['description']
         metadata = data['metadata']
 
-        client = request.user.tapis_oauth.client
-        system_id = create_shared_workspace(client, title, request.user.username, description)
+        workspace_number = increment_workspace_count()
+        workspace_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
         if metadata is not None: 
+
             project_metadata = ProjectsMetadata(
-                project_id = system_id,
-                metadata = metadata
+                project_id = workspace_id,
+                metadata = validate_project_metadata(metadata)
             )
 
             project_metadata.save()
+        
+        client = request.user.tapis_oauth.client
+        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number)
 
         return JsonResponse(
             {
@@ -207,7 +217,7 @@ class ProjectInstanceApiView(BaseApiView):
 
         if metadata is not None: 
             project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            project_metadata.metadata = metadata
+            project_metadata.metadata = validate_project_metadata(metadata)
             project_metadata.save()
 
         client = request.user.tapis_oauth.client
