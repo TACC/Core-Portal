@@ -4,7 +4,7 @@ from typing import Optional, Literal
 
 class DrpProjectRelatedDatasets(BaseModel):
     """Model for DRP Project Related Datasets"""
-    
+
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -100,10 +100,10 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     procedure: Optional[str] = None
     equipment: Optional[str] = None
     algorithm_description: Optional[str] = None
-    grain_size_min: Optional[str] = None
-    grain_size_max: Optional[str] = None
-    grain_size_avg: Optional[str] = None
-    porosity: Optional[str] = None
+    grain_size_min: Optional[float] = None
+    grain_size_max: Optional[float] = None
+    grain_size_avg: Optional[float] = None
+    porosity: Optional[float] = None
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
     identifier: Optional[str] = None
