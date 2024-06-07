@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, Message } from '_common';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
 
@@ -76,19 +76,19 @@ const DataFilesProjectEditDescriptionModal = () => {
   });
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Descriptions
-      </ModalHeader>
-      <ModalBody>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={setProjectTitleDescription}
-          validationSchema={validationSchema}
-        >
-          {({ isValid, dirty }) => (
-            <Form>
-              <FormField
+    <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
+      <Formik
+        initialValues={initialValues}
+        onSubmit={setProjectTitleDescription}
+        validationSchema={validationSchema}
+      >
+        {({ isValid, dirty }) => (
+          <Form>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
+              Edit Project
+            </ModalHeader>
+            <ModalBody className={styles['modal-body']}>
+            <FormField
                 name="title"
                 aria-label="title"
                 label={
@@ -115,6 +115,8 @@ const DataFilesProjectEditDescriptionModal = () => {
                 className={styles['description-textarea']}
               />
               {DataFilesProjectEditDescriptionModalAddon && <DataFilesProjectEditDescriptionModalAddon />}
+            </ModalBody>
+            <ModalFooter>
               <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">
@@ -132,10 +134,10 @@ const DataFilesProjectEditDescriptionModal = () => {
                   Update Changes
                 </Button>
               </div>
-            </Form>
-          )}
+            </ModalFooter>
+          </Form>
+        )}
         </Formik>
-      </ModalBody>
     </Modal>
   );
 };

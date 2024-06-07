@@ -33,6 +33,7 @@ const DataFilesFormModal = () => {
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
   const { params } = useFileListing('FilesListing');
 
+  // TODO: Add support for array type fields
   const initialValues = form?.form_fields.reduce((acc, field) => {
     let value = '';
     if (field.optgroups) {
