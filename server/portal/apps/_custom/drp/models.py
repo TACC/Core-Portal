@@ -113,7 +113,7 @@ class DrpSampleMetadata(DrpDatasetMetadata):
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Origin Dataset Metadata"""
 
-    is_segmented: bool
+    is_segmented: Literal["yes", "no"]
     voxel_x: Optional[float] = None
     voxel_y: Optional[float] = None
     voxel_z: Optional[float] = None
@@ -123,24 +123,26 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
         "millimeter",
         "other"
     ]] = None
-    sample: str
+    sample: int
     imaging_center: Optional[str] = None
     imaging_equipment_and_model: Optional[str] = None
     image_format: Optional[str] = None
     image_dimensions: Optional[str] = None
     image_byte_order: Optional[str] = None
     dimensionality: Optional[str] = None
+    external_uri: Optional[str] = None
 
-class DrpAnalysisDatasetMetadata(BaseModel):
+class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Analysis Dataset Metadata"""
 
-    is_segmented: bool
-    sample: str
-    base_origin_data: Optional[str] = None
-    analysis_type: Literal[
+    is_segmented: Literal["yes", "no"]
+    sample: int
+    base_origin_data: Optional[int] = None
+    dataset_type: Literal[
         "machine_learning",
         "simulation",
         "experimental",
         "characterization",
         "other"
     ]
+    external_uri: Optional[str] = None
