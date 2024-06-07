@@ -9,9 +9,9 @@ class DrpProjectRelatedDatasets(BaseModel):
         extra="forbid",
     )
 
-    title: str
-    description: str = ""
-    link: str = ""
+    dataset_title: str
+    dataset_description: str = ""
+    dataset_link: str = ""
 
 class DrpProjectRelatedSoftware(BaseModel):
     """Model for DRP Project Related Software"""
@@ -20,9 +20,9 @@ class DrpProjectRelatedSoftware(BaseModel):
         extra="forbid",
     )
 
-    title: str
-    description: str = ""
-    link: str = ""
+    software_title: str
+    software_description: str = ""
+    software_link: str = ""
 
 class DrpProjectRelatedPublications(BaseModel):
     """Model for DRP Project Related Publications"""
@@ -31,12 +31,12 @@ class DrpProjectRelatedPublications(BaseModel):
         extra="forbid",
     )
 
-    title: str
-    author: str
-    date_of_publication: str
-    publisher: str
-    abstract: Optional[str] = None
-    link: Optional[str] = None
+    publication_title: str
+    publication_author: str
+    publication_date_of_publication: str
+    publication_publisher: str
+    publication_description: Optional[str] = None
+    publication_link: Optional[str] = None
 
 
 class DrpProjectMetadata(BaseModel):

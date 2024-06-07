@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import FormField from '../FormField';
-import { Button } from '_common';
+import { Button, Expand } from '_common';
 import { useFormikContext } from 'formik';
 import { FormGroup, Input } from 'reactstrap';
-import './DynamicForm.scss';
+import { FieldArray } from 'formik';
+import styles from './DynamicForm.module.scss'
 
 
 const DynamicForm = ({ initialFormFields, onChange }) => {
@@ -158,13 +159,59 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 ))}
           </FormField>
         );
-
+        // uses FieldArray from formik to handle array fields. arrayHelpers from FieldArray is used to add and remove fields
+        case 'array':
+          return (
+            <>    
+                <FieldArray
+                  key={field.name}
+                  name={field.name}
+                  render={arrayHelpers => (
+                      <div>
+                          <div>
+                            <h2>{field.label}</h2>
+                          </div>
+                          {values[field.name]?.map((_, index) => (
+                              <div key={index} className={styles['array-input-container']}>
+                                <Expand
+                                  className={styles['expand-card']}
+                                  detail={values[field.name][index][field.fields[0].name] || ''}
+                                  isOpenDefault={values[field.name][index][field.fields[0].name] === '' ? true : false}
+                                  message={
+                                    <>
+                                      {field.fields.map(subField => (
+                                        <div key={subField.name}>
+                                            {renderFormField({
+                                                ...subField,
+                                                name: `${field.name}[${index}].${subField.name}`
+                                            })}
+                                        </div>
+                                      ))}
+                                      <Button type="secondary" onClick={() => arrayHelpers.remove(index)}>Remove</Button>
+                                    </>
+                                  }
+                                />
+                              </div>
+                          ))}
+                          <Button className={styles['button-full']} type="secondary" iconNameBefore={'add'} onClick={() => arrayHelpers.push(
+                            field.fields.reduce((acc, subField) => {
+                              acc[subField.name] = '';
+                              return acc;
+                            }, {})
+                          )}>Add {field.label}</Button>
+                      </div>
+                  )}
+                />
+            </>
+              
+              
+          );
       case 'radio':
         return (
           <FormGroup>
-            <label className="bold-label">{field.label}</label>
+            <label className={styles['bold-label']}>{field.label}</label>
             {field.options.map((option) => (
-              <FormGroup key={option.value} className="radio-input">
+              <FormGroup key={option.value} className={styles['radio-input']}>
                 <Input
                   type="radio"
                   id={option.value}

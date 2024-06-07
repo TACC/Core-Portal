@@ -20,6 +20,14 @@
     align-items: flex-start;
   }
 
+  .project-expand-card {
+    padding-top: 20px;
+  }
+
+  .project-expand-card > div:first-child {
+    padding-bottom: 20px;
+  }
+
   .section-project-structure main {
     margin-right: 0;
     margin-bottom: 10px;

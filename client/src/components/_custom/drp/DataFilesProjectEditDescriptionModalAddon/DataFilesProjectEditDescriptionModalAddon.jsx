@@ -25,7 +25,16 @@ const DataFilesProjectEditDescriptionModalAddon = () => {
     if (!isLoading && form && metadata) {
       form.form_fields.forEach(field => {
         if (metadata.hasOwnProperty(field.name)) {
-          setFieldValue(field.name, metadata[field.name])
+          // If the field is an array, we need to set the value for each subfield using index to access the correct value
+          if (field.type === 'array') {
+            metadata[field.name].forEach((item, index) => {
+              field.fields.forEach(subField => {
+                setFieldValue(`${field.name}[${index}].${subField.name}`, item[subField.name])
+              });
+            })
+          } else {
+            setFieldValue(field.name, metadata[field.name])
+          }
         }
       });
     }
