@@ -50,6 +50,7 @@ class DrpProjectMetadata(BaseModel):
     description: str = ""
     license: Optional[str] = None
     doi: Optional[str] = None
+    keywords: Optional[str] = None
     related_datasets: list[DrpProjectRelatedDatasets] = []
     related_software: list[DrpProjectRelatedSoftware] = []
     related_publications: list[DrpProjectRelatedPublications] = []

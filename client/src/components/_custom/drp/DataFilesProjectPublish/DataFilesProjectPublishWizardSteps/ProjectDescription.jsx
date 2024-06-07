@@ -34,7 +34,7 @@ const ProjectDescription = ({ project }) => {
       projectData['Keywords'] = project.keywords
     }
 
-    if (project.related_publications.length > 0) {
+    if (project.related_publications?.length > 0) {
       const relatedPublicationCards = project.related_publications.map((publication) => {
         return (
           <Expand
@@ -58,7 +58,7 @@ const ProjectDescription = ({ project }) => {
       projectData['Related Publications'] = relatedPublicationCards
     }
 
-    if (project.related_datasets.length > 0) {
+    if (project.related_datasets?.length > 0) {
       const relatedDatasetCards = project.related_datasets.map((dataset) => {
         return (
           <Expand
@@ -82,7 +82,7 @@ const ProjectDescription = ({ project }) => {
       projectData['Related Datasets'] = relatedDatasetCards
     }
 
-    if (project.related_software.length > 0) {
+    if (project.related_software?.length > 0) {
       const relatedSoftwareCards = project.related_software.map((software) => {
         return (
           <Expand
