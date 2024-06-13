@@ -1,5 +1,5 @@
 
-from portal.apps._custom.drp.models import DrpProjectMetadata, DrpSampleMetadata, DrpOriginDatasetMetadata, DrpAnalysisDatasetMetadata
+from portal.apps._custom.drp.models import DrpProjectMetadata, DrpSampleMetadata, DrpOriginDatasetMetadata, DrpAnalysisDatasetMetadata, DrpFileMetadata
 
 
 SCHEMA_MAPPING = {
@@ -7,6 +7,7 @@ SCHEMA_MAPPING = {
         'project': DrpProjectMetadata,
         'sample': DrpSampleMetadata,
         'origin_data': DrpOriginDatasetMetadata,
-        'analysis_data': DrpAnalysisDatasetMetadata
+        'analysis_data': DrpAnalysisDatasetMetadata,
+        'file': DrpFileMetadata
     }
 }

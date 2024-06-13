@@ -141,8 +141,29 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     dataset_type: Literal[
         "machine_learning",
         "simulation",
+        "geometric_analysis",
         "experimental",
         "characterization",
         "other"
     ]
     external_uri: Optional[str] = None
+
+class DrpFileMetadata(BaseModel):
+    """Model for DRP File Metadata"""
+
+    model_config = ConfigDict(
+        extra="forbid",
+    ) 
+
+    data_type: Literal['file']
+    name: Optional[str] = None
+    image_type: Optional[Literal[
+        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real', 
+        '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
+    ]] = None
+    height: Optional[int] = None
+    width: Optional[int] = None
+    number_of_images: Optional[int] = None
+    offset_to_first_image: Optional[int] = None
+    gap_between_images: Optional[int] = None
+    byte_order: Optional[Literal['big_endian', 'little_endian']] = None
