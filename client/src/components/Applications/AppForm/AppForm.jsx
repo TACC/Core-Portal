@@ -27,9 +27,19 @@ import {
   getNodeCountValidation,
   getCoresPerNodeValidation,
   updateValuesForQueue,
+  getQueueValueForExecSystem,
+  getAppQueueValues,
+  execSystemChangeHandler,
+  isAppUsingDynamicExecSystem,
   getAllocationValidation,
   isJobTypeBATCH,
+  buildMapOfAllocationsToExecSystems,
+  getAllocationList,
+  getDefaultAllocation,
+  getExecSystemIdValidation,
 } from './AppFormUtils';
+import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
+
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
@@ -48,11 +58,13 @@ const appShape = PropTypes.shape({
   }),
   systemNeedsKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
-  exec_sys: PropTypes.shape({
-    host: PropTypes.string,
-    scheduler: PropTypes.string,
-    batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
-  }),
+  execSystems: PropTypes.arrayOf(
+    PropTypes.shape({
+      host: PropTypes.string,
+      scheduler: PropTypes.string,
+      batchLogicalQueues: PropTypes.arrayOf(PropTypes.shape({})),
+    })
+  ),
   license: PropTypes.shape({
     type: PropTypes.string,
     enabled: PropTypes.bool,
@@ -128,25 +140,58 @@ export const AppDetail = () => {
 };
 
 /**
- * AdjustValuesWhenQueueChanges is a component that makes uses of
+ * HandleDependentFieldChanges is a component that makes uses of
  * useFormikContext to ensure that when users switch queues, some
  * variables are updated to match the queue specifications (i.e.
  * correct node count, runtime etc)
  */
-const AdjustValuesWhenQueueChanges = ({ app }) => {
+const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
   const [previousValues, setPreviousValues] = useState();
 
   // Grab values and update if queue changes
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
-    if (
-      previousValues &&
-      previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
-    ) {
-      setValues(updateValuesForQueue(app, values));
+    if (previousValues) {
+      let valueUpdated = false;
+      let updatedValues = { ...values };
+
+      // Set the current allocation
+      // If there is dynamic exec system setup, then
+      //  1. adjust the list of available systems (dependent on allocation)
+      //  2. set the default exec system.
+      //  3. update queue dependency based on exec system change.
+      if (previousValues.allocation !== values.allocation) {
+        const newExecSys = formStateUpdateHandler.setExecSysForAllocation(
+          values.allocation,
+          values.execSystemId
+        );
+        updatedValues.execSystemId = newExecSys?.id;
+        updatedValues = execSystemChangeHandler(
+          app,
+          updatedValues,
+          formStateUpdateHandler
+        );
+        valueUpdated = true;
+      }
+      if (previousValues.execSystemId !== values.execSystemId) {
+        updatedValues = execSystemChangeHandler(
+          app,
+          values,
+          formStateUpdateHandler
+        );
+        valueUpdated = true;
+      }
+
+      if (
+        previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
+      ) {
+        updatedValues = updateValuesForQueue(app, values);
+        valueUpdated = true;
+      }
+      if (valueUpdated) setValues(updatedValues);
     }
     setPreviousValues(values);
-  }, [app, values, setValues]);
+  }, [app, values, setValues, formStateUpdateHandler]);
   return null;
 };
 
@@ -205,10 +250,11 @@ export const AppSchemaForm = ({ app }) => {
     execSystem,
     defaultSystem,
     keyService,
+    allocationToExecSysMap,
   } = useSelector((state) => {
-    const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-      (host) =>
-        app.exec_sys.host === host || app.exec_sys.host.endsWith(`.${host}`)
+    const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
+      app,
+      state.allocations
     );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
 
@@ -222,9 +268,7 @@ export const AppSchemaForm = ({ app }) => {
         defaultHost?.endsWith(s)
       );
     return {
-      allocations: matchingExecutionHost
-        ? state.allocations.hosts[matchingExecutionHost]
-        : [],
+      allocations: getAllocationList(app, state.allocations),
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
       hasDefaultAllocation:
@@ -239,9 +283,14 @@ export const AppSchemaForm = ({ app }) => {
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.host : '',
+      execSystem:
+        getDefaultExecSystem(
+          app,
+          allocationToExecSysMap.get(state.allocations.portal_alloc) ?? []
+        ) ?? '',
       defaultSystem,
       keyService,
+      allocationToExecSysMap,
     };
   }, shallowEqual);
   const hideManageAccount = useSelector(
@@ -265,6 +314,35 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   const appFields = FormSchema(app);
+  const initialAllocation = getDefaultAllocation(allocations, portalAlloc);
+  // This additional form state setup is needed for exec system and queue system
+  // lists in the form. These lists can change dynamically based on allocation
+  // and exec system. Right now, values in AppFormik are managed
+  // by state in AppFormik context.
+  const [formState, setformState] = useState({
+    execSystems: allocationToExecSysMap.get(initialAllocation) ?? [],
+    appQueueValues: getAppQueueValues(app, execSystem?.batchLogicalQueues),
+  });
+
+  const formStateUpdateHandler = {
+    setExecSysForAllocation: (alloc, exec_system_id) => {
+      setformState((prevState) => ({
+        ...prevState,
+        execSystems: allocationToExecSysMap.get(alloc) ?? [],
+      }));
+      return getDefaultExecSystem(
+        app,
+        allocationToExecSysMap.get(alloc) ?? [],
+        exec_system_id
+      );
+    },
+    setAppQueueValues: (newValue) => {
+      setformState((prevState) => ({
+        ...prevState,
+        appQueueValues: newValue,
+      }));
+    },
+  };
 
   // initial form values
   const initialValues = {
@@ -288,21 +366,15 @@ export const AppSchemaForm = ({ app }) => {
   if (isJobTypeBATCH(app)) {
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
-    initialValues.execSystemLogicalQueue = (
-      (app.definition.jobAttributes.execSystemLogicalQueue
-        ? app.exec_sys.batchLogicalQueues.find(
-            (q) =>
-              q.name === app.definition.jobAttributes.execSystemLogicalQueue
-          )
-        : app.exec_sys.batchLogicalQueues.find(
-            (q) => q.name === app.exec_sys.batchDefaultLogicalQueue
-          )) || app.exec_sys.batchLogicalQueues[0]
-    ).name;
-    if (allocations.includes(portalAlloc)) {
-      initialValues.allocation = portalAlloc;
-    } else {
-      initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
-    }
+    initialValues.execSystemId = getDefaultExecSystem(
+      app,
+      formState.execSystems
+    )?.id;
+    initialValues.allocation = initialAllocation;
+    initialValues.execSystemLogicalQueue = getQueueValueForExecSystem(
+      app,
+      getExecSystemFromId(app, initialValues.execSystemId)
+    )?.name;
     if (!hasDefaultAllocation && hasStorageSystems) {
       jobSubmission.error = true;
       jobSubmission.response = {
@@ -314,9 +386,11 @@ export const AppSchemaForm = ({ app }) => {
     } else if (!allocations.length) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: `You need an allocation on ${getSystemName(
-          app.exec_sys.host
-        )} to run this application.`,
+        message: isAppUsingDynamicExecSystem
+          ? `You need an allocation to run this application.`
+          : `You need an allocation on ${getSystemName(
+              app.exec_sys.host
+            )} to run this application.`,
       };
       missingAllocation = true;
     }
@@ -440,9 +514,13 @@ export const AppSchemaForm = ({ app }) => {
             return Yup.mixed().notRequired();
           }
           return Yup.lazy((values) => {
-            const queue = app.exec_sys.batchLogicalQueues.find(
-              (q) => q.name === values.execSystemLogicalQueue
+            const exec_sys = getExecSystemFromId(app, values.execSystemId);
+            const queue = getQueueValueForExecSystem(
+              app,
+              exec_sys,
+              values.execSystemLogicalQueue
             );
+            const currentExecSystems = formState.execSystems;
             const schema = Yup.object({
               parameterSet: Yup.object({
                 ...Object.assign(
@@ -459,10 +537,16 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
+              execSystemId: getExecSystemIdValidation(
+                app,
+                initialValues.allocation
+              ),
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
-                    .required('Required')
-                    .oneOf(app.exec_sys.batchLogicalQueues.map((q) => q.name))
+                    .required('Required.')
+                    .oneOf(
+                      exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
+                    )
                 : Yup.string().notRequired(),
               nodeCount: isJobTypeBATCH(app)
                 ? getNodeCountValidation(queue)
@@ -471,12 +555,22 @@ export const AppSchemaForm = ({ app }) => {
                 ? getCoresPerNodeValidation(queue)
                 : Yup.number().notRequired(),
               maxMinutes: getMaxMinutesValidation(queue, app).required(
-                'Required'
+                'Required max minutes'
               ),
               archiveSystemId: Yup.string(),
               archiveSystemDir: Yup.string(),
               allocation: isJobTypeBATCH(app)
-                ? getAllocationValidation(allocations, app)
+                ? getAllocationValidation(allocations).test(
+                    'exec-systems-check',
+                    'You need an allocation with access to at least one system to run this application.',
+                    function (value) {
+                      const isValidExecSystems =
+                        !isAppUsingDynamicExecSystem ||
+                        (isAppUsingDynamicExecSystem &&
+                          currentExecSystems.length > 0);
+                      return isValidExecSystems;
+                    }
+                  )
                 : Yup.string().notRequired(),
             });
             return schema;
@@ -562,6 +656,19 @@ export const AppSchemaForm = ({ app }) => {
               }
             )
           );
+          // Before job submission, ensure the memory limit is not above queue limit.
+          const queue = getExecSystemFromId(
+            app,
+            values.execSystemId
+          ).batchLogicalQueues.find(
+            (q) => q.name === values.execSystemLogicalQueue
+          );
+          if (
+            queue &&
+            app.definition.jobAttributes.memoryMB > queue.maxMemoryMB
+          ) {
+            job.memoryMB = queue.maxMemoryMB;
+          }
 
           // Add allocation scheduler option
           if (job.allocation) {
@@ -615,7 +722,10 @@ export const AppSchemaForm = ({ app }) => {
             (app.definition.jobType === 'BATCH' && missingAllocation);
           return (
             <Form>
-              <AdjustValuesWhenQueueChanges app={app} />
+              <HandleDependentFieldChanges
+                app={app}
+                formStateUpdateHandler={formStateUpdateHandler}
+              />
               <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
                 {Object.keys(appFields.fileInputs).length > 0 && (
                   <div className="appSchema-section">
@@ -695,50 +805,65 @@ export const AppSchemaForm = ({ app }) => {
                   </div>
                   {app.definition.jobType === 'BATCH' && (
                     <FormField
+                      label="Allocation"
+                      name="allocation"
+                      description="Select the project allocation you would like to use with this job submission."
+                      type="select"
+                      required
+                    >
+                      <option hidden disabled>
+                        {' '}
+                      </option>
+                      {allocations.sort().map((projectId) => (
+                        <option key={projectId} value={projectId}>
+                          {projectId}
+                        </option>
+                      ))}
+                    </FormField>
+                  )}
+                  {app.definition.jobType === 'BATCH' &&
+                    isAppUsingDynamicExecSystem(app) && (
+                      <FormField
+                        label="System"
+                        name="execSystemId"
+                        description="Select the system this job will execute on. The systems available to run the job is dependent on allocation."
+                        type="select"
+                        required
+                      >
+                        <option hidden disabled>
+                          {' '}
+                        </option>
+                        {formState.execSystems.sort().map((exec_system_id) => (
+                          <option key={exec_system_id} value={exec_system_id}>
+                            {app.execSystems.find((e) => e.id == exec_system_id)
+                              ?.notes?.label ??
+                              getSystemName(
+                                getExecSystemFromId(app, exec_system_id)?.host
+                              )}
+                          </option>
+                        ))}
+                      </FormField>
+                    )}
+                  {app.definition.jobType === 'BATCH' && (
+                    <FormField
                       label="Queue"
                       name="execSystemLogicalQueue"
                       description="Select the queue this job will execute on."
                       type="select"
                       required
                     >
-                      {app.exec_sys.batchLogicalQueues
-                        /*
-                        Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
-                        while hideNodeCountAndCoresPerNode is true
-                      */
-                        .filter(
-                          (q) =>
-                            !app.definition.notes
-                              .hideNodeCountAndCoresPerNode ||
-                            (app.definition.jobAttributes.nodeCount >=
-                              q.minNodeCount &&
-                              app.definition.jobAttributes.nodeCount <=
-                                q.maxNodeCount)
-                        )
-                        .map((q) => q.name)
-                        .sort()
-                        .map((queueName) =>
-                          app.definition.notes.queueFilter ? (
-                            app.definition.notes.queueFilter.includes(
-                              queueName
-                            ) && (
-                              <option key={queueName} value={queueName}>
-                                {queueName}
-                              </option>
-                            )
-                          ) : (
-                            <option key={queueName} value={queueName}>
-                              {queueName}
-                            </option>
-                          )
-                        )
-                        .sort()}
+                      {formState.appQueueValues.map((queueName) => (
+                        <option key={queueName} value={queueName}>
+                          {queueName}
+                        </option>
+                      ))}
                     </FormField>
                   )}
                   <FormField
                     label="Maximum Job Runtime (minutes)"
                     description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
                       app,
+                      getExecSystemFromId(app, values.execSystemId),
                       values.execSystemLogicalQueue
                     )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
                     name="maxMinutes"
@@ -761,24 +886,6 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.definition.jobType === 'BATCH' && (
-                    <FormField
-                      label="Allocation"
-                      name="allocation"
-                      description="Select the project allocation you would like to use with this job submission."
-                      type="select"
-                      required
-                    >
-                      <option hidden disabled>
-                        {' '}
-                      </option>
-                      {allocations.sort().map((projectId) => (
-                        <option key={projectId} value={projectId}>
-                          {projectId}
-                        </option>
-                      ))}
-                    </FormField>
-                  )}
                 </div>
                 <div className="appSchema-section">
                   <div className="appSchema-header">

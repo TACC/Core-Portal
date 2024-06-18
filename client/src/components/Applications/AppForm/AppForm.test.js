@@ -8,6 +8,11 @@ import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
 import {
+  execSystemsFixture,
+  executionSystemNotesFixture,
+} from './fixtures/AppForm.executionsystems.fixture';
+
+import {
   jobsFixture,
   jobsSubmissionSuccessFixture,
 } from './fixtures/AppForm.jobs.fixture';
@@ -95,10 +100,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      exec_sys: {
-        ...helloWorldAppFixture.exec_sys,
-        host: 'login1.frontera.tacc.utexas.edu',
-      },
+      execSystems: [
+        {
+          ...helloWorldAppFixture.execSystems[0],
+          host: 'login1.frontera.tacc.utexas.edu',
+        },
+        ...helloWorldAppFixture.execSystems.slice(1),
+      ],
     });
     await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
@@ -111,13 +119,17 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
-      exec_sys: {
-        ...helloWorldAppFixture.exec_sys,
-        host: 'invalid_system.tacc.utexas.edu',
-      },
+      execSystems: [
+        {
+          ...helloWorldAppFixture.execSystems[0],
+          host: 'invalid_system.frontera.tacc.utexas.edu',
+        },
+        ...helloWorldAppFixture.execSystems.slice(1),
+      ],
     });
+    // If a host with no allocation is provided, it is dropped from the list of exec systems.
     await waitFor(() => {
-      expect(getByText(/Error/)).toBeDefined();
+      expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
 
@@ -275,6 +287,464 @@ describe('AppSchemaForm', () => {
     });
     await waitFor(() => {
       expect(getByText(/Activate your Application Name license/)).toBeDefined();
+    });
+  });
+
+  it('displays a selection of execution systems', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      execSystems: execSystemsFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('frontera');
+    const options = Array.from(execSystemDropDown.querySelectorAll('option'));
+    const actualValues = Array.from(options).map((option) => option.value);
+    const expectedValuesWithEmpty = [
+      '',
+      ...executionSystemNotesFixture['dynamicExecSystems'],
+    ];
+    expect(actualValues).toEqual(
+      expect.arrayContaining(expectedValuesWithEmpty)
+    );
+  });
+
+  it('displays only execution systems with allocations', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const updatedExecSystems = [...execSystemsFixture];
+    updatedExecSystems[0].host = 'maverick3.tacc.utexas.edu';
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      execSystems: execSystemsFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('frontera');
+    const options = Array.from(execSystemDropDown.querySelectorAll('option'));
+    const actualValues = Array.from(options).map((option) => option.value);
+    const expectedValues = Array.from(execSystemsFixture).map(
+      (system) => system.id
+    );
+    expect(actualValues).toEqual(
+      expect.arrayContaining(expectedValues.slice(1))
+    );
+  });
+
+  it('only one execution system has allocation', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const updatedExecSystems = execSystemsFixture.map((e) => {
+      // Leave ls6 intact and change the rest
+      if (e.id !== 'ls6') {
+        // maverick99 does not have allocation
+        return { ...e, host: 'maverick99.tacc.utexas.edu' };
+      }
+      return e;
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: updatedExecSystems,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('ls6');
+  });
+
+  it('does not display exec system when dynamic exec system is not enabled', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      execSystems: execSystemsFixture,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).toBeNull();
+  });
+
+  it('default exec system is not in allocation', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const updatedExecSystems = execSystemsFixture.map((e) => {
+      // Frontera is default and not in allocation list.
+      // Keep ls6, everything else set to maverick as allocation host.
+      if (e.id !== 'ls6') {
+        // maverick99 does not have allocation
+        return { ...e, host: 'maverick99.tacc.utexas.edu' };
+      }
+      return e;
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: updatedExecSystems,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).not.toBeNull();
+    expect(execSystemDropDown.value).toBe('ls6');
+    expect(execSystemDropDown).toHaveTextContent('Lonestar6');
+  });
+
+  it('displays error when there is no allocation available', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    // set all exec system mapped to maverick99 which does not have allocation
+    const updatedExecSystems = execSystemsFixture.map((e) => {
+      // maverick99 does not have allocation
+      return { ...e, host: 'maverick99.tacc.utexas.edu' };
+    });
+
+    const { getByText, container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      execSystems: updatedExecSystems,
+    });
+
+    console.log(container.innerHTML);
+    await waitFor(() => {
+      expect(
+        getByText(
+          /Error: You need an allocation to run this application. Please click/
+        )
+      ).toBeDefined();
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).toBeNull();
+  });
+
+  it('does not display exec system and allocation UI for FORK jobs', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobType: 'FORK',
+      },
+      execSystems: execSystemsFixture,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown).toBeNull();
+    const allocationDropDown = container.querySelector(
+      'select[name="allocation"]'
+    );
+    expect(allocationDropDown).toBeNull();
+  });
+
+  it('shows UI error when no exec systems match with no allocations', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    // set all exec system mapped to maverick99 which does not have allocation
+    const updatedExecSystems = execSystemsFixture.map((e) => {
+      // maverick99 does not have allocation
+      return { ...e, host: 'maverick99.tacc.utexas.edu' };
+    });
+
+    const { container } = renderAppSchemaFormComponent(store, {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: updatedExecSystems,
+    });
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.querySelector('option').textContent.trim()).toBe(
+      ''
+    );
+  });
+
+  it('displays all dependent field options after switching exec systems', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+    const { container } = renderAppSchemaFormComponent(store, appFixture);
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.value).toBe('frontera');
+
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+    expect(execSystemDropDown.value).toBe('ls6');
+
+    const queueDropDown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    expect(queueDropDown.value).toBe(
+      helloWorldAppFixture.definition.jobAttributes.execSystemLogicalQueue
+    );
+    const queueOptions = Array.from(queueDropDown.querySelectorAll('option'));
+    // normal and large do not fit into min node requirements, so count is 4.
+    expect(queueOptions).toHaveLength(4);
+  });
+
+  it('displays all dependent field options after switching exec systems without node count filtering', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    // Adjust fixture to set hideNodeCountAndCoresPerNode to false.
+    // This triggers logic to include all queues.
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+          hideNodeCountAndCoresPerNode: false,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+    const { container } = renderAppSchemaFormComponent(store, appFixture);
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.value).toBe('frontera');
+
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+    expect(execSystemDropDown.value).toBe('ls6');
+
+    const queueDropDown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    expect(queueDropDown.value).toBe(
+      helloWorldAppFixture.definition.jobAttributes.execSystemLogicalQueue
+    );
+    const queueOptions = Array.from(queueDropDown.querySelectorAll('option'));
+    expect(queueOptions).toHaveLength(6);
+    const actualQueueValues = Array.from(queueOptions).map(
+      (option) => option.value
+    );
+    const expectedQueueValues = Array.from(
+      execSystemsFixture.find((e) => e.id === 'ls6').batchLogicalQueues
+    ).map((q) => q.name);
+    expect(actualQueueValues).toEqual(
+      expect.arrayContaining(expectedQueueValues)
+    );
+  });
+
+  it('displays correctly with dynamic exec system and different queue limits', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    // Set to normal queue as default, which has different defaults
+    // and allows testing if limits related dependent fields have changed.
+    // Also, do not hide the node count and cores per node.
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        jobAttributes: {
+          ...helloWorldAppFixture.definition.jobAttributes,
+          execSystemLogicalQueue: 'normal',
+        },
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+          hideNodeCountAndCoresPerNode: false,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.value).toBe('frontera');
+    expect(
+      execSystemDropDown.options[execSystemDropDown.selectedIndex].textContent
+    ).toBe('Frontera');
+
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+    expect(execSystemDropDown.value).toBe('ls6');
+    expect(
+      execSystemDropDown.options[execSystemDropDown.selectedIndex].textContent
+    ).toBe('Lonestar6');
+
+    // Check limits for ls6 normal queue. 300 max minutes
+    await waitFor(() => {
+      expect(getByText(/Maximum possible is 3000 minutes/)).toBeDefined();
+    });
+    // min node count value
+    const nodeCount = container.querySelector('input[name="nodeCount"]');
+    // set fixture for value, the values are different for frontera vs ls6
+    expect(nodeCount.value).toEqual('4');
+    // cores per node value
+    const coresPerNodeCount = container.querySelector(
+      'input[name="coresPerNode"]'
+    );
+    expect(coresPerNodeCount.value).toEqual('2');
+  });
+
+  it('displays correctly when adjusting queue selection in new exec system', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    // Do not hide the node count and cores per node to help validate changes
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+          hideNodeCountAndCoresPerNode: false,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.value).toBe('frontera');
+
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+    expect(execSystemDropDown.value).toBe('ls6');
+    const queueDropDown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    // set to vm-small
+    fireEvent.change(queueDropDown, { target: { value: 'vm-small' } });
+
+    // Check limits for ls6 vm-small queue.
+    const nodeCount = container.querySelector('input[name="nodeCount"]');
+    expect(nodeCount.value).toEqual('1');
+    // cores per node value
+    const coresPerNodeCount = container.querySelector(
+      'input[name="coresPerNode"]'
+    );
+    expect(coresPerNodeCount.value).toEqual('1');
+  });
+
+  it('displays validation error when setting high value for node count', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    // Do not hide the node count and cores per node to help validate changes
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+          hideNodeCountAndCoresPerNode: false,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    expect(execSystemDropDown.value).toBe('frontera');
+
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+    expect(execSystemDropDown.value).toBe('ls6');
+    const queueDropDown = container.querySelector(
+      'select[name="execSystemLogicalQueue"]'
+    );
+    // set to vm-small
+    fireEvent.change(queueDropDown, { target: { value: 'vm-small' } });
+
+    // Check limits for ls6 vm-small queue.
+    const nodeCount = container.querySelector('input[name="nodeCount"]');
+    expect(nodeCount.value).toEqual('1');
+    fireEvent.change(nodeCount, { target: { value: '16' } });
+    // Check limits for ls6 normal queue. 300 max minutes
+    await waitFor(() => {
+      expect(
+        getByText(
+          /Node Count must be less than or equal to 1 for the vm-small queue./
+        )
+      ).toBeDefined();
     });
   });
 

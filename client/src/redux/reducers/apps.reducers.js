@@ -65,7 +65,7 @@ export const initialAppState = {
   loading: false,
   systemNeedsKeys: false,
   pushKeysSystem: {},
-  exec_sys: {},
+  execSystems: {},
   license: {},
   appListing: [],
 };
@@ -77,7 +77,7 @@ export function app(state = initialAppState, action) {
         definition: action.payload.definition,
         systemNeedsKeys: action.payload.systemNeedsKeys,
         pushKeysSystem: action.payload.pushKeysSystem,
-        exec_sys: action.payload.exec_sys,
+        execSystems: action.payload.execSystems,
         license: action.payload.license,
         appListing: action.payload.appListing,
         loading: false,
@@ -90,7 +90,7 @@ export function app(state = initialAppState, action) {
         definition: {},
         systemNeedsKeys: false,
         pushKeysSystem: {},
-        exec_sys: {},
+        execSystems: {},
         license: {},
         appListing: [],
       };
