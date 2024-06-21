@@ -42,7 +42,7 @@ _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_COMMUNITY_INDEX_SCHEDULE = {}
+_COMMUNITY_INDEX_SCHEDULE = {'hour': '*', 'minute': 45}
 
 ########################
 # DJANGO APP: WORKSPACE

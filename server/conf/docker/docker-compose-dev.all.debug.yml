@@ -129,7 +129,10 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
+    command: >
+      sh -c "celery -A portal beat -l info --pidfile= --schedule=/tmp/celerybeat-schedule & 
+             celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
+
     container_name: core_portal_workers
 
   docs:

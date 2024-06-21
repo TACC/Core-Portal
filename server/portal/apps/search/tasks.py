@@ -39,7 +39,7 @@ def tapis_indexer(self, systemId, access_token=None, filePath='/', recurse=True,
 
     if recurse:
         for child in folders:
-            self.delay(systemId, filePath=child.path, reindex=reindex)
+            self.delay(systemId, filePath=child.get('path'), reindex=reindex)
 
 
 @shared_task(bind=True, max_retries=3, queue='default')
