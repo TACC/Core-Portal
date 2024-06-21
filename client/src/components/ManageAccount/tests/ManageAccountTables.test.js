@@ -27,8 +27,6 @@ const dummyState = {
       lastName: 'Jamil',
       institution: 'University of Texas at Austin',
       institutionId: 1,
-      country: 'United States',
-      countryId: 230,
       citizenship: 'United States',
       citizenshipId: 230,
       phone: '512-919-9153',
@@ -69,7 +67,6 @@ describe('Profile Information Component', () => {
       'Full Name',
       'Email',
       'Institution',
-      'Country of Residence',
       'Country of Citizenship',
     ];
     headings.forEach((heading) => {
