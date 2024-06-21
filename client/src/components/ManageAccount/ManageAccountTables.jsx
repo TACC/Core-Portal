@@ -63,7 +63,6 @@ export const ProfileInformation = () => {
       },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Institution', accessor: 'institution' },
-      { Header: 'Country of Residence', accessor: 'country' },
       { Header: 'Country of Citizenship', accessor: 'citizenship' },
     ],
     []
