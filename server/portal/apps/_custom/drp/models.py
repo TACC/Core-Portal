@@ -80,13 +80,16 @@ class DrpSampleMetadata(DrpDatasetMetadata):
         "sandstone",
         "soil",
         "carbonate",
-        "greanite",
+        "granite",
         "beads",
         "fibrous_media",
         "coal", 
         "energy_storage",
         "other"
     ]
+
+    porous_media_other_description: Optional[str] = None
+
     source: Literal[
         "natural",
         "natural_extraterrestrial",
@@ -108,6 +111,7 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
     identifier: Optional[str] = None
+    location: Optional[str] = None
 
 
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):

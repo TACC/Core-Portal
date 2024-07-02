@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -65,7 +65,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const { projectId } = useSelector((state) => state.projects.metadata);
 
-  const { allowedFileActions } = useSelector((state) => state.workbench.config);
+  // defaults to return true if no custom permission check is provided
+  const [customPermissionCheck, setCustomPermissionCheck] = useState(() => () => true);
+  const { hasCustomDataFilesToolbarChecks } = useSelector((state) => state.workbench.config)
+  const { portalName } = useSelector((state) => state.workbench);
+
+  useEffect(() => {
+    // dynamically import custom permission check function if it exists
+    if (hasCustomDataFilesToolbarChecks && portalName) {
+      import(`../../_custom/${portalName}/utils/DataFilesToolbar/customFilePermissions.js`)
+        .then((module) => {
+          setCustomPermissionCheck(() => module.default);
+        })
+    }
+  }, [hasCustomDataFilesToolbarChecks, portalName])
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
@@ -103,15 +116,13 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
-  const showCopy =  allowedFileActions.includes('copy');  
+  const showMove = modifiableUserData;
 
-  const showMove = modifiableUserData && allowedFileActions.includes('move');
+  const showRename = modifiableUserData;
 
-  const showRename = modifiableUserData && allowedFileActions.includes('rename');
+  const showTrash = modifiableUserData
 
-  const showTrash = modifiableUserData && allowedFileActions.includes('trash');
-
-  const showDownload = api === 'tapis' && allowedFileActions.includes('download');
+  const showDownload = api === 'tapis'
 
   const showMakeLink = useSelector(
     (state) =>
@@ -119,14 +130,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench.config.makeLink &&
       api === 'tapis' &&
       (scheme === 'private' || scheme === 'projects')
-  ) && allowedFileActions.includes('link');
+  )
 
   const showCompress = !!useSelector(
-    (state) => state.workbench.config.extractApp && modifiableUserData && allowedFileActions.includes('compress')
+    (state) => state.workbench.config.extractApp && modifiableUserData
   );
 
   const showExtract = !!useSelector(
-    (state) => state.workbench.config.compressApp && modifiableUserData && allowedFileActions.includes('extract')
+    (state) => state.workbench.config.compressApp && modifiableUserData
   );
 
   const showMakePublic = useSelector(
@@ -202,7 +213,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme, api };
+  const permissionParams = { files: selectedFiles, scheme, api, customPermissionCheck };
   const canDownload = getFilePermissions('download', permissionParams);
   const areMultipleFilesOrFolderSelected = getFilePermissions(
     'areMultipleFilesOrFolderSelected',
@@ -253,14 +264,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
             disabled={!canMove}
           />
         )}
-        {showCopy && (
         <ToolbarButton
           text="Copy"
           onClick={toggleCopyModal}
           iconName="copy"
           disabled={!canCopy}
         />
-        )}
         {showDownload && (
           <ToolbarButton
             text="Download"

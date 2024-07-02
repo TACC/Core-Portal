@@ -10,7 +10,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 
 function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
-
+  // filter out empty values from the metadata
   const filteredValues = Object.fromEntries(
     Object.entries(values).filter(([key, value]) => value !== "" && value !== null)
   )
@@ -40,7 +40,8 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
   }
 
   if (reloadCallback) {
-    yield call(reloadCallback, path);
+    const reloadPath = isEdit && file.path === params.path ? file.path : path;
+    yield call(reloadCallback, reloadPath);
   }
 
   yield put({

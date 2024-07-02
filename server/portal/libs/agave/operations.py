@@ -14,6 +14,7 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,23 @@ def update_datafile_metadata(system, name, old_path, new_path, metadata):
 
     for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
         update_datafile_metadata(system=system, name=child.name, old_path=child.path.split('/', 1)[1], new_path=f"{new_path}/{child.name}", metadata=child.metadata)
+
+@transaction.atomic
+def create_datafile_metadata(system, path, name, metadata):
+
+    project_instance = ProjectsMetadata.objects.get(project_id=system)
+
+    validated_metadata = validate_datafile_metadata(metadata)
+
+    files_metadata = DataFilesMetadata(
+        name = name,
+        path = path,
+        metadata = validated_metadata,
+        project = project_instance
+    )
+
+    files_metadata.save()
+    print(f'File Metadata for path {path} saved successfully')
 
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
@@ -229,20 +247,7 @@ def mkdir(client, system, path, dir_name, metadata=None):
     path_input = str(Path(path) / Path(dir_name))
 
     if metadata is not None: 
-
-        project_instance = ProjectsMetadata.objects.get(project_id=system)
-
-        validated_metadata = validate_datafile_metadata(metadata)
-
-        files_metadata = DataFilesMetadata(
-            name = dir_name,
-            path = f'{system}/{path_input.strip("/")}',
-            metadata = validated_metadata,
-            project = project_instance
-        )
-
-        files_metadata.save()
-        print(f'File Metadata for path {path_input} saved successfully')
+        create_datafile_metadata(system, f'{system}/{path_input.strip("/")}', dir_name, metadata)
 
     client.files.mkdir(systemId=system, path=path_input)
 
@@ -332,8 +337,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
 
     return move_result
 
-
-def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
+@transaction.atomic
+def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None,
          *args, **kwargs):
     """Copies the current file to the provided destination path.
 
@@ -364,6 +369,9 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+
+    if metadata is not None: 
+        create_datafile_metadata(dest_system, f'{dest_system}/{dest_path_full.strip("/")}', file_name, metadata)
 
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
@@ -506,20 +514,7 @@ def upload(client, system, path, uploaded_file, metadata=None):
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
     if metadata is not None: 
-
-        project_instance = ProjectsMetadata.objects.get(project_id=system)
-
-        validated_metadata = validate_datafile_metadata(metadata)
-
-        files_metadata = DataFilesMetadata(
-            name = uploaded_file.name,
-            path = f'{system}/{dest_path.strip("/")}',
-            metadata = validated_metadata,
-            project = project_instance
-        )
-
-        files_metadata.save()
-        print(f'File Metadata for path {dest_path} saved successfully')
+        create_datafile_metadata(system, f'{system}/{dest_path.strip("/")}', uploaded_file.name, metadata)
 
     response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
