@@ -95,6 +95,11 @@ const ReviewProjectStructure = ({ projectTree }) => {
     }
   };
 
+  const formatDatatype = (data_type) => 
+    data_type.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
   const renderTree = (node) => (
     <>
       <Section
@@ -105,7 +110,14 @@ const ReviewProjectStructure = ({ projectTree }) => {
           <TreeItem
             key={node.id}
             nodeId={node.id}
-            label={node.name}
+            label={
+              <div className={styles['node-name-div']}>
+                  {node.name}
+                  <span className={styles['data-type-box']}>
+                    {formatDatatype(node.metadata.data_type)}
+                    </span>
+              </div>
+            }
             classes={{
               label: styles['tree-label'],
             }}
