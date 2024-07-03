@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def get_datafile_metadata(system, path):
     try: 
         datafile_metadata = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
-        return datafile_metadata.get_metadata()
+        return datafile_metadata.ordered_metadata
     except: 
         return None
 

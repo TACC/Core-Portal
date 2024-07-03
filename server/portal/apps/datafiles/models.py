@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.conf import settings
 from portal.apps import SCHEMA_MAPPING
+from collections import OrderedDict
 
 class Link(models.Model):
     tapis_uri = models.TextField(primary_key=True)
@@ -35,12 +36,12 @@ class DataFilesMetadata(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
 
-    def get_metadata(self):
-        """
-        Transforms the metadata in the order defined in the pydantic model
-        """
+    @property
+    def ordered_metadata(self):
+        """Return the metadata in the order defined in the pydantic model"""
+        
         portal_name = settings.PORTAL_NAMESPACE
-        schema = SCHEMA_MAPPING[portal_name][self.metadata.get('data_type')]    
+        schema = SCHEMA_MAPPING[portal_name][self.metadata.get('data_type')] 
 
         if not schema:
             return self.metadata
