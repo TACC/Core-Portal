@@ -14,15 +14,14 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
-import json
 
 logger = logging.getLogger(__name__)
 
 
 def get_datafile_metadata(system, path):
     try: 
-        metadata_record = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
-        return metadata_record.metadata
+        datafile_metadata = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
+        return datafile_metadata.get_metadata()
     except: 
         return None
 

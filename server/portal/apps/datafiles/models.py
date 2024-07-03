@@ -6,6 +6,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.conf import settings
+from portal.apps import SCHEMA_MAPPING
 
 class Link(models.Model):
     tapis_uri = models.TextField(primary_key=True)
@@ -32,6 +34,21 @@ class DataFilesMetadata(models.Model):
     project = models.ForeignKey('projects.ProjectsMetadata', on_delete=models.CASCADE, related_name='data_files')
     created_at = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
+
+    def get_metadata(self):
+        """
+        Transforms the metadata in the order defined in the pydantic model
+        """
+        portal_name = settings.PORTAL_NAMESPACE
+        schema = SCHEMA_MAPPING[portal_name][self.metadata.get('data_type')]    
+
+        if not schema:
+            return self.metadata
+        
+        model_keys = list(schema.model_fields.keys())
+        ordered_metadata = {k: self.metadata.get(k) for k in model_keys if k in self.metadata}
+
+        return ordered_metadata
 
     def __str__(self):
         return self.path

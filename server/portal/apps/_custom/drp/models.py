@@ -111,13 +111,19 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
     identifier: Optional[str] = None
-    location: Optional[str] = None
+    location: Optional[str] = None # TODO_DRP: Remove in new model
 
 
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Origin Dataset Metadata"""
 
     is_segmented: Literal["yes", "no"]
+    sample: int
+    imaging_center: Optional[str] = None
+    imaging_equipment_and_model: Optional[str] = None
+    image_format: Optional[str] = None
+    image_dimensions: Optional[str] = None
+    image_byte_order: Optional[str] = None
     voxel_x: Optional[float] = None
     voxel_y: Optional[float] = None
     voxel_z: Optional[float] = None
@@ -127,21 +133,13 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
         "millimeter",
         "other"
     ]] = None
-    sample: int
-    imaging_center: Optional[str] = None
-    imaging_equipment_and_model: Optional[str] = None
-    image_format: Optional[str] = None
-    image_dimensions: Optional[str] = None
-    image_byte_order: Optional[str] = None
     dimensionality: Optional[str] = None
-    external_uri: Optional[str] = None
+    external_uri: Optional[str] = None # TODO_DRP: Remove in new model
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Analysis Dataset Metadata"""
 
     is_segmented: Literal["yes", "no"]
-    sample: int
-    base_origin_data: Optional[int] = None
     dataset_type: Literal[
         "machine_learning",
         "simulation",
@@ -151,6 +149,8 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
         "other"
     ]
     external_uri: Optional[str] = None
+    sample: int
+    base_origin_data: Optional[int] = None
 
 class DrpFileMetadata(BaseModel):
     """Model for DRP File Metadata"""
