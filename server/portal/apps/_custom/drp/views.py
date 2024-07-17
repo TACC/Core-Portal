@@ -29,18 +29,18 @@ class DigitalRocksTreeView(BaseApiView):
 
     @staticmethod
     def construct_tree(records, parent_id=None):
-        tree = {}
+        tree = []
         for record in records:
-            if record['parent'] == parent_id:
+            if record.parent_id == parent_id:
                 node_dict = {
-                    "id": record['id'],  
-                    "name": record['name'],
-                    "path": record['path'],
-                    "metadata": record['metadata'],
-                    "children": DigitalRocksTreeView.construct_tree(records, record['id'])
+                    "id": record.id,
+                    "name": record.name,
+                    "path": record.path,
+                    "metadata": record.ordered_metadata,
+                    "children": DigitalRocksTreeView.construct_tree(records, record.id)
                 }
-                tree[record['id']] = node_dict
-        return [tree[node_id] for node_id in tree]
+                tree.append(node_dict)
+        return tree
     
     def get(self, request):
 
@@ -52,7 +52,7 @@ class DigitalRocksTreeView(BaseApiView):
         records = DataFilesMetadata.objects.filter(
                 project_id=full_project_id,
                 metadata__data_type__in=metadata_data_types
-            ).order_by('created_at').values('id', 'parent', 'name', 'path', 'metadata', 'created_at')
+            ).order_by('created_at')
 
         tree = self.construct_tree(records)
 

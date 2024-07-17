@@ -62,6 +62,23 @@
     padding-bottom: 5px;
   }
 
+  .node-name-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .data-type-box {
+    display: inline-block;
+    background-color: #808080; /* Light grey background */
+    color: #fff; /* Dark text color */
+    padding: 2px 8px; /* Small top/bottom padding, larger left/right padding */
+    border-radius: 12px; /* Rounded corners */
+    font-size: 0.875rem; /* Smaller font size */
+    margin: 8px 8px;
+    font-weight: bold;
+  }
+
   .citation-box {
     border: 1px solid var(--global-color-primary--light);
     padding: 10px;
