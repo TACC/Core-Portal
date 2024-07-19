@@ -72,12 +72,22 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   useEffect(() => {
     // dynamically import custom permission check function if it exists
-    if (hasCustomDataFilesToolbarChecks && portalName) {
-      import(`../../_custom/${portalName}/utils/DataFilesToolbar/customFilePermissions.js`)
-        .then((module) => {
-          setCustomPermissionCheck(() => module.default);
-        })
+
+    const loadCustomPermissions = async () => {
+      try {
+        const module = await import(
+          `../../_custom/${portalName.toLowerCase()}/utils/DataFilesToolbar/customFilePermissions.js`
+        );
+        setCustomPermissionCheck(() => module.default);
+      } catch (error) {
+        console.error('Error loading custom permission check:', error);
+      }
     }
+
+    if (hasCustomDataFilesToolbarChecks && portalName) {
+      loadCustomPermissions();
+    }
+
   }, [hasCustomDataFilesToolbarChecks, portalName])
 
   const authenticatedUser = useSelector(
