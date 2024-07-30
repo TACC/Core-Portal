@@ -374,7 +374,8 @@ export async function copyFileUtil(
   destApi,
   destSystem,
   destPath,
-  destPathName
+  destPathName,
+  metadata
 ) {
   let url, body;
   if (api === destApi) {
@@ -387,6 +388,7 @@ export async function copyFileUtil(
       file_name: filename,
       filetype,
       dest_path_name: destPathName,
+      metadata: metadata ?? null
     };
   } else {
     url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
@@ -437,6 +439,7 @@ export function* copyFile(src, dest, index) {
       dest.system,
       dest.path,
       dest.name,
+      src.metadata,
       index
     );
     yield put({
