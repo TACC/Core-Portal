@@ -14,7 +14,13 @@ const customFilePermissions = (operation, files) => {
         case 'extract':
         case 'compress':
         case 'areMultipleFilesOrFolderSelected':
-            return files.every((file) => !protectedDataTypes.includes(file.metadata['data_type']));
+            return files.every((file) => {
+                if (!file.metadata) {
+                    return true;
+                } 
+                
+                return !protectedDataTypes.includes(file.metadata['data_type'])
+            });
         default:
             return true;
     }
