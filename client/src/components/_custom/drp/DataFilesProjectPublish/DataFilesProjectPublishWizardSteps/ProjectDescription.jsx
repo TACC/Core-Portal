@@ -56,6 +56,8 @@ const ProjectDescription = ({ project }) => {
       })
 
       projectData['Related Publications'] = relatedPublicationCards
+    } else {
+      projectData['Related Publications'] = 'None'
     }
 
     if (project.related_datasets?.length > 0) {
@@ -80,6 +82,8 @@ const ProjectDescription = ({ project }) => {
       })
 
       projectData['Related Datasets'] = relatedDatasetCards
+    } else {
+      projectData['Related Datasets'] = 'None'
     }
 
     if (project.related_software?.length > 0) {
@@ -104,6 +108,8 @@ const ProjectDescription = ({ project }) => {
       })
 
       projectData['Related Software'] = relatedSoftwareCards
+    } else {
+      projectData['Related Software'] = 'None'
     }
 
     setData(projectData)
