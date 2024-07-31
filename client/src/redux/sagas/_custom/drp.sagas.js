@@ -40,7 +40,14 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
   }
 
   if (reloadCallback) {
-    const reloadPath = isEdit && file.path === params.path ? file.path : path;
+    let reloadPath = '';
+  
+    if (isEdit && file.path === params.path) {
+      reloadPath = (file.name !== values.name) ? file.path.replace(file.name, values.name) : file.path;
+    } else {
+      reloadPath = path;
+    }
+  
     yield call(reloadCallback, reloadPath);
   }
 
