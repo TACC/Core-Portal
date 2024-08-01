@@ -9,7 +9,7 @@ DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --ta
 
 .PHONY: build
 build:
-	docker-compose -f ./server/conf/docker/docker-compose.yml build
+	docker compose -f ./server/conf/docker/docker-compose.yml build
 
 .PHONY: build-full
 build-full:
@@ -28,12 +28,12 @@ publish-latest:
 
 .PHONY: start
 start:
-	docker-compose -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	docker-compose -f server/conf/docker/docker-compose-dev.all.debug.yml down
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: stop-full
 stop-v:
-	docker-compose -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml down -v

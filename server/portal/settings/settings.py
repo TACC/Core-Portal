@@ -725,6 +725,12 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
+SETTINGS: INTERNAL DOCS
+"""
+INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
+
+
+"""
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):

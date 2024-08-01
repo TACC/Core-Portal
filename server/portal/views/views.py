@@ -1,5 +1,9 @@
 import logging
-from django.http import HttpResponse, JsonResponse
+import os
+from django.views.static import serve
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse, Http404
 
 logger = logging.getLogger(__name__)
 
@@ -28,3 +32,17 @@ def project_version(request):
 def health_check(request):
     health_status = {'status': 'healthy'}
     return JsonResponse(health_status)
+
+
+@login_required
+def serve_docs(request, path):
+    file_path = os.path.join(settings.INTERNAL_DOCS_ROOT, path)
+    if os.path.isdir(file_path):
+        # For mkdocs directories, append index.html
+        index_file = os.path.join(file_path, 'index.html')
+        if os.path.isfile(index_file):
+            path = os.path.join(path, 'index.html')
+        else:
+            raise Http404("Directory index not found")
+    
+    return serve(request, path, document_root=settings.INTERNAL_DOCS_ROOT)
