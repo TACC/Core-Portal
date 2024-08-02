@@ -117,7 +117,8 @@ urlpatterns = [
     # health check
     path('core/health-check', health_check),
 
-    # internal docs
-    re_path(f'^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$', serve_docs),
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# internal docs
+if settings.INTERNAL_DOCS_URL and settings.INTERNAL_DOCS_ROOT:
+    urlpatterns.append(re_path(f"^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$", serve_docs))

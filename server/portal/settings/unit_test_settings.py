@@ -537,3 +537,4 @@ PORTAL_ELEVATED_ROLES = {
 }
 
 INTERNAL_DOCS_URL = 'core/internal-docs/'
+INTERNAL_DOCS_ROOT = ''
