@@ -44,5 +44,5 @@ def serve_docs(request, path):
             path = os.path.join(path, 'index.html')
         else:
             raise Http404("Directory index not found")
-    
+
     return serve(request, path, document_root=settings.INTERNAL_DOCS_ROOT)
