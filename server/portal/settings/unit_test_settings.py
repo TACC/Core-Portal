@@ -535,3 +535,5 @@ PORTAL_ELEVATED_ROLES = {
     "usernames": []
   }
 }
+
+INTERNAL_DOCS_URL = 'core/internal-docs/'
