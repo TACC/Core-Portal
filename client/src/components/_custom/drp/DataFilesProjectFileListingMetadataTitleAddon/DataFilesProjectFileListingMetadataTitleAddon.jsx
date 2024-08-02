@@ -14,6 +14,21 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
 
   const { loading } = useFileListing('FilesListing');
 
+  const { canEditDataset } = useSelector(
+    (state) =>
+      state.projects.metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser.user.username
+            : { access: null }
+        )
+        .map((currentUser) => {
+          return {
+            canEditDataset: currentUser.access === 'owner' || currentUser.access === 'edit',
+          }
+        })[0]
+  );
+
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName)
 
   const onEditData = (dataType) => {
@@ -65,12 +80,14 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
               <span className={styles['dataTypeBox']}>
                 {formatDatatype(folderMetadata.data_type)}
               </span>
-              <Button
-                type="link"
-                onClick={() => onEditData(folderMetadata.data_type)}
-              >
-                Edit Data
-              </Button>
+              {canEditDataset && (
+                <Button
+                  type="link"
+                  onClick={() => onEditData(folderMetadata.data_type)}
+                >
+                  Edit Data
+                </Button>
+              )}
             </>
           ) : (
             metadata.title

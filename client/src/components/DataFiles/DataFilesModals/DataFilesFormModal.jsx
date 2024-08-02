@@ -24,7 +24,7 @@ const DataFilesFormModal = () => {
     }
 
     const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
-    history.push(path);
+    history.replace(path);
   };
 
   const { form, selectedFile, formName, additionalData, useReloadCallback } = useSelector(
