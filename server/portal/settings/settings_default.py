@@ -257,3 +257,8 @@ _PORTAL_ELEVATED_ROLES = {
     "usernames": []
   }
 }
+
+##################################
+# PORTAL INTERNAL DOCS SETTINGS
+##################################
+_INTERNAL_DOCS_URL = 'core/internal-docs/'

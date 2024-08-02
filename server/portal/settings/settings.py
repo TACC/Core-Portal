@@ -728,6 +728,7 @@ PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 SETTINGS: INTERNAL DOCS
 """
 INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
+INTERNAL_DOCS_URL = getattr(settings_custom, '_INTERNAL_DOCS_URL', '')
 
 
 """

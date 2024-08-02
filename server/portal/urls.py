@@ -118,6 +118,6 @@ urlpatterns = [
     path('core/health-check', health_check),
 
     # internal docs
-    re_path('^core/internal-docs/(?P<path>.*)$', serve_docs)
+    re_path(f'^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$', serve_docs),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
