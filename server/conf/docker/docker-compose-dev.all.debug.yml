@@ -108,6 +108,7 @@ services:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
+      - ../../docs:/var/www/portal/internal-docs/
     dns:
       - 8.8.8.8
       - 8.8.4.4
