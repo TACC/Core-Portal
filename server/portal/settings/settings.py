@@ -725,9 +725,11 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
-SETTINGS: OPTIONAL FEATURES. Edit settings_custom
+SETTINGS: INTERNAL DOCS
 """
-ENABLE_OPTIMIZED_OAUTH_REFRESH = getattr(settings_custom, '_ENABLE_OPTIMIZED_OAUTH_REFRESH', False)
+INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
+INTERNAL_DOCS_URL = getattr(settings_custom, '_INTERNAL_DOCS_URL', '')
+
 
 """
 SETTINGS: LOCAL OVERRIDES
