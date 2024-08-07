@@ -1,0 +1,136 @@
+{
+    "sharedAppCtx": "wma_prtl",
+    "isPublic": true,
+    "sharedWithUsers": [],
+    "tenant": "portals",
+    "id": "hello-world",
+    "version": "0.0.1",
+    "description": "Sleeps for 3m. Then prints a configurable Hello World greeting to a target file.",
+    "owner": "wma_prtl",
+    "enabled": true,
+    "locked": false,
+    "runtime": "SINGULARITY",
+    "runtimeVersion": null,
+    "runtimeOptions": [
+        "SINGULARITY_RUN"
+    ],
+    "containerImage": "docker://taccaci/hello-world:latest",
+    "jobType": "BATCH",
+    "maxJobs": 2147483647,
+    "maxJobsPerUser": 2147483647,
+    "strictFileInputs": true,
+    "jobAttributes": {
+        "description": "Hello world from ${JobOwner}",
+        "dynamicExecSystem": false,
+        "execSystemConstraints": null,
+        "execSystemId": "frontera",
+        "execSystemExecDir": "${JobWorkingDir}",
+        "execSystemInputDir": "${JobWorkingDir}",
+        "execSystemOutputDir": "${JobWorkingDir}/output",
+        "execSystemLogicalQueue": "development",
+        "archiveSystemId": "cloud.data",
+        "archiveSystemDir": "HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}",
+        "archiveOnAppError": true,
+        "isMpi": false,
+        "mpiCmd": null,
+        "cmdPrefix": null,
+        "parameterSet": {
+            "appArgs": [
+                {
+                    "arg": "hello",
+                    "name": "Greeting",
+                    "description": "Choose a greeting to give to your target",
+                    "inputMode": "REQUIRED",
+                    "notes": {
+                        "enum_values": [
+                            {
+                                "hello": "Hello"
+                            },
+                            {
+                                "hola": "Hola"
+                            },
+                            {
+                                "wassup": "Wassup"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "arg": "world",
+                    "name": "Target",
+                    "description": "Whom to address your greeting",
+                    "inputMode": "REQUIRED",
+                    "notes": {}
+                },
+                {
+                    "arg": "30",
+                    "name": "Sleep Time",
+                    "description": "How long to sleep before app execution",
+                    "inputMode": "REQUIRED",
+                    "notes": {
+                        "fieldType": "number"
+                    }
+                }
+            ],
+            "containerArgs": [],
+            "schedulerOptions": [
+                {
+                    "arg": "--tapis-profile tacc-apptainer",
+                    "name": "TACC Scheduler Profile",
+                    "description": "Scheduler profile for HPC clusters at TACC",
+                    "inputMode": "FIXED",
+                    "notes": {}
+                },
+                {
+                    "arg": "--job-name ${JobName}",
+                    "name": "Slurm job name",
+                    "description": "Set the slurm job name to be identical to the Tapis job name.",
+                    "inputMode": "FIXED",
+                    "notes": {}
+                }
+            ],
+            "envVariables": [],
+            "archiveFilter": {
+                "includes": [],
+                "excludes": [],
+                "includeLaunchFiles": true
+            },
+            "logConfig": {
+                "stdoutFilename": "",
+                "stderrFilename": ""
+            }
+        },
+        "fileInputs": [
+            {
+                "name": "File to modify",
+                "description": "The full greeting will be appended to the target .txt file",
+                "inputMode": "OPTIONAL",
+                "autoMountLocal": true,
+                "notes": {},
+                "sourceUrl": null,
+                "targetPath": "in.txt"
+            }
+        ],
+        "fileInputArrays": [],
+        "nodeCount": 1,
+        "coresPerNode": 1,
+        "memoryMB": 100,
+        "maxMinutes": 10,
+        "subscriptions": [],
+        "tags": []
+    },
+    "tags": [
+        "portalName: CEP"
+    ],
+    "notes": {
+        "label": "Hello World (Sleep 3m)",
+        "helpUrl": "https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/",
+        "category": "Utilities",
+        "showTargetPath": true,
+        "hideNodeCountAndCoresPerNode": false
+    },
+    "uuid": "de2bce33-8dbc-479e-b8a2-6a9d27d583d1",
+    "deleted": false,
+    "created": "2022-12-12T23:40:16.158241Z",
+    "updated": "2023-11-15T16:14:47.993958Z"
+}

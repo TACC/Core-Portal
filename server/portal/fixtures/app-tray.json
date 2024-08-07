@@ -27,18 +27,13 @@
         "model": "workspace.apptrayentry",
         "pk": 14,
         "fields": {
-            "name": "namd-frontera",
             "label": "NAMD",
             "icon": "",
             "version": "2.1.3",
-            "revision": "2",
             "appId": "namd-frontera-2.1.3u2",
-            "lastRetrieved": "namd-frontera-2.1.3u2",
-            "appType": "agave",
+            "appType": "tapis",
             "html": "",
-            "htmlId": "",
             "available": true,
-            "shortDescription": "NAMD is a parallel molecular dynamics code designed for high-performance simulation of large biomolecular systems.",
             "category": 8
         }
     },
@@ -46,18 +41,13 @@
         "model": "workspace.apptrayentry",
         "pk": 15,
         "fields": {
-            "name": "matlab",
             "label": "MATLAB R2018b",
             "icon": "matlab",
             "version": "9.5",
-            "revision": "7",
             "appId": "matlab-9.5u7",
-            "lastRetrieved": "matlab-9.5u7",
-            "appType": "agave",
+            "appType": "tapis",
             "html": "",
-            "htmlId": "",
             "available": true,
-            "shortDescription": "Run an interactive MATLAB 2018b session on Stampede2. Submit a help ticket to get your license configured or approved.",
             "category": 9
         }
     },
@@ -65,18 +55,13 @@
         "model": "workspace.apptrayentry",
         "pk": 16,
         "fields": {
-            "name": "RStudio-S2",
             "label": "Rstudio",
             "icon": "",
             "version": "1.1.423",
-            "revision": "1",
             "appId": "RStudio-S2-1.1.423u1",
-            "lastRetrieved": "RStudio-S2-1.1.423u1",
-            "appType": "agave",
+            "appType": "tapis",
             "html": "",
-            "htmlId": "",
             "available": true,
-            "shortDescription": "Run an interactive RStudio session on Stampede2.",
             "category": 9
         }
     },
@@ -84,18 +69,13 @@
         "model": "workspace.apptrayentry",
         "pk": 17,
         "fields": {
-            "name": "frontera-hpc-jupyter",
             "label": "Frontera HPC Jupyter",
             "icon": "jupyter",
             "version": "1.0",
-            "revision": "11",
             "appId": "frontera-hpc-jupyter-1.0u11",
-            "lastRetrieved": "frontera-hpc-jupyter-1.0u11",
-            "appType": "agave",
+            "appType": "tapis",
             "html": "",
-            "htmlId": "",
             "available": true,
-            "shortDescription": "Frontera HPC Jupyter app",
             "category": 9
         }
     },
@@ -103,18 +83,13 @@
         "model": "workspace.apptrayentry",
         "pk": 18,
         "fields": {
-            "name": "",
             "label": "TACC Visualization Portal",
             "icon": "vis-portal",
             "version": "1.0",
-            "revision": "",
-            "appId": "",
-            "lastRetrieved": "",
+            "appId": "vis-portal",
             "appType": "html",
             "html": "<div class=\"jumbotron text-center\"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC's vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class=\"btn btn-lg btn-primary\" href=\"https://vis.tacc.utexas.edu/\" target=\"_blank\">Launch</a></p></div>",
-            "htmlId": "vis-portal",
             "available": true,
-            "shortDescription": "TACC Visualization Portal",
             "category": 10
         }
     }
