@@ -28,6 +28,7 @@ from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
 from impersonate import views as impersonate_views
 from portal.views.views import health_check
+from portal.views.views import serve_docs
 admin.autodiscover()
 
 urlpatterns = [
@@ -114,7 +115,10 @@ urlpatterns = [
     path('version/', portal_version),
 
     # health check
-    path('core/health-check', health_check)
-
+    path('core/health-check', health_check),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# internal docs
+if settings.INTERNAL_DOCS_URL and settings.INTERNAL_DOCS_ROOT:
+    urlpatterns.append(re_path(f"^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$", serve_docs))
