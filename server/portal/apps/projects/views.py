@@ -167,8 +167,9 @@ class ProjectInstanceApiView(BaseApiView):
         prj = get_project(request.user.tapis_oauth.client, project_id)
 
         try: 
-            project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            prj.update(project_metadata.metadata)
+            project = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
+            project.metadata = project.get_metadata()
+            prj.update(project.metadata)
         except: 
             pass
 

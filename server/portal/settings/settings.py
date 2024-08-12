@@ -110,6 +110,7 @@ INSTALLED_APPS = [
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
     'portal.apps.portal_messages',
+    'portal.apps.publications',
 ]
 
 MIDDLEWARE = [
@@ -735,3 +736,8 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
+
+"""
+SETTINGS: PUBLICATIONS
+"""
+PUBLICATION_REVIEWERS = getattr(settings_secret, '_PUBLICATION_REVIEWERS', [])

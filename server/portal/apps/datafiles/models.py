@@ -63,4 +63,4 @@ def set_or_udpate_parent(sender, instance, **kwargs):
             parent_folder = sender.objects.get(path=parent_path)
             instance.parent = parent_folder
         else: 
-            instance.parent = None  
+            instance.parent = None

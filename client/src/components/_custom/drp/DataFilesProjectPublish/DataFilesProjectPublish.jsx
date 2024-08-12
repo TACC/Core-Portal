@@ -67,9 +67,12 @@ const DataFilesProjectPublish = ({ system }) => {
   ];
 
   const formSubmit = (values) => {
-    // save ordered users to db. Add to project metadata?
-    console.log('DataFilesProjectPublish: formSubmit: ', values);
-    console.log('Ordered users', authors);
+    if (Object.keys(values).length > 0) {
+      dispatch({
+        type: 'PROJECTS_CREATE_PUBLICATION_REQUEST',
+        payload: data
+      });
+    }
   };
 
   return (

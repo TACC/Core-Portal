@@ -219,6 +219,36 @@ export default function projects(state = initialState, action) {
         ...state,
         operation: initialState.operation,
       };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: true,
+          error: null,
+          result: null,
+        },
+      };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_SUCCESS':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: false,
+          error: null,
+          result: action.payload,
+        },
+      };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: false,
+          error: action.payload,
+          result: null,
+        },
+      };
     default:
       return state;
   }

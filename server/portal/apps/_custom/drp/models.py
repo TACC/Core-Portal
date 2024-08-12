@@ -1,6 +1,9 @@
 from pydantic import BaseModel, ConfigDict, model_validator
 from typing import Optional, Literal
 
+"""
+Pydantic models for DRP Metadata
+"""
 
 class DrpProjectRelatedDatasets(BaseModel):
     """Model for DRP Project Related Datasets"""
@@ -55,6 +58,7 @@ class DrpProjectMetadata(BaseModel):
     related_software: list[DrpProjectRelatedSoftware] = []
     related_publications: list[DrpProjectRelatedPublications] = []
     publication_date: Optional[str] = None
+    authors: list[str] = []
 
 
 class DrpDatasetMetadata(BaseModel):
