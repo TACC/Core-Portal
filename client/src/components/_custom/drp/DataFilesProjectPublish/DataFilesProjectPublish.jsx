@@ -67,6 +67,11 @@ const DataFilesProjectPublish = ({ system }) => {
   ];
 
   const formSubmit = (values) => {
+    const data = {
+      ...metadata, 
+      authors: authors
+    }
+
     if (Object.keys(values).length > 0) {
       dispatch({
         type: 'PROJECTS_CREATE_PUBLICATION_REQUEST',
