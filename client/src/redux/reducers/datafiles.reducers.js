@@ -1,3 +1,5 @@
+import { dynamic } from "redux-saga-test-plan/providers";
+
 export const initialSystemState = {
   storage: {
     configuration: [],
@@ -112,6 +114,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
+    dynamicform: {},
   },
   loadingScroll: {
     FilesListing: false,

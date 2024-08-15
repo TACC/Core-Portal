@@ -10,55 +10,75 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 
 function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
+
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: { status: 'RUNNING', operation: 'dynamicform' },
+  });
+
   // filter out empty values from the metadata
   const filteredValues = Object.fromEntries(
     Object.entries(values).filter(([key, value]) => value !== "" && value !== null)
   )
 
-  if (file && isEdit) {
-    yield call(
-      updateMetadataUtil,
-      params.api,
-      params.scheme,
-      params.system,
-      '/' + file.path,
-      '/' + path,
-      file.name,
-      values.name,
-      filteredValues
-    );
-  } else {
-    yield call(
-      mkdirUtil,
-      params.api,
-      params.scheme,
-      params.system,
-      path,
-      values.name,
-      filteredValues
-    );
-  }
-
-  if (reloadCallback) {
-    let reloadPath = '';
-  
-    if (isEdit && file.path === params.path) {
-      reloadPath = (file.name !== values.name) ? file.path.replace(file.name, values.name) : file.path;
+  try {
+    if (file && isEdit) {
+      yield call(
+        updateMetadataUtil,
+        params.api,
+        params.scheme,
+        params.system,
+        '/' + file.path,
+        '/' + path,
+        file.name,
+        values.name || file.name,
+        filteredValues
+      );
     } else {
-      reloadPath = path;
+      yield call(
+        mkdirUtil,
+        params.api,
+        params.scheme,
+        params.system,
+        path,
+        values.name,
+        filteredValues
+      );
     }
   
-    yield call(reloadCallback, reloadPath);
+    if (reloadCallback) {
+  
+      const newPath = isEdit && file.path === params.path ? `${path}/${file.path.split('/').pop()}` : path;
+  
+      const reloadPath = (isEdit && file.name !== values.name) ? newPath.replace(file.name, values.name) : newPath;
+    
+      yield call(reloadCallback, reloadPath);
+    }
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'SUCCESS', operation: 'dynamicform' },
+    });
+  
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'dynamicform',
+        props: {},
+      },
+    });
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: {}, operation: 'dynamicform' },
+    });
+    
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'dynamicform' },
+    });
   }
-
-  yield put({
-    type: 'DATA_FILES_TOGGLE_MODAL',
-    payload: {
-      operation: 'dynamicform',
-      props: {},
-    },
-  });
-
 }
 
 function* handleSampleData(action, isEdit) {
