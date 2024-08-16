@@ -1,4 +1,3 @@
-
 export const initialSystemState = {
   storage: {
     configuration: [],
