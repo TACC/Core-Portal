@@ -29,7 +29,6 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
       }
     }, [status, dispatch]);
 
-
     const { params } = useFileListing('FilesListing');
 
     const { ...file } = useSelector(

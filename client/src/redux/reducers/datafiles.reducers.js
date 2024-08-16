@@ -1,4 +1,3 @@
-import { dynamic } from "redux-saga-test-plan/providers";
 
 export const initialSystemState = {
   storage: {
