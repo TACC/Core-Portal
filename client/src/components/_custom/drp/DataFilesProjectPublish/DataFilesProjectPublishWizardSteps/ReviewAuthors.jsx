@@ -13,6 +13,7 @@ import {
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
 import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersList';
+import { useSelector } from 'react-redux';
 
 const MLACitation = ({ project, authors }) => {
   let authorString;
@@ -41,8 +42,21 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
+
+  const canEdit = useSelector((state) => {
+    const { members } = state.projects.metadata;
+    const { username } = state.authenticatedUser.user;
+    const currentUser = members.find((member) => member.user?.username === username);
+  
+    if (!currentUser) {
+      return false;
+    }
+  
+    return currentUser.access === 'owner' || currentUser.access === 'edit';
+  });
+
   useEffect(() => {
-    const owners = project.members
+    const owners = project.authors ?? project.members
       .filter((user) => user.access === 'owner')
       .map((user) => ({ ...user.user, isOwner: true }));
 
@@ -85,12 +99,16 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
       {authors.length > 0 && project && (
         <Section contentLayoutName={'oneColumn'}>
           <MLACitation project={project} authors={authors} />
-          <ReorderUserList
-            users={authors}
-            onReorder={onReorder}
-            onRemoveAuthor={onRemoveCoAuthor}
-          />
-          <ProjectMembersList members={members} onAddCoAuthor={onAddAuthor} />
+          {canEdit && (
+            <>
+              <ReorderUserList
+              users={authors}
+              onReorder={onReorder}
+              onRemoveAuthor={onRemoveCoAuthor} />
+              <ProjectMembersList members={members} onAddCoAuthor={onAddAuthor} />
+            </>
+          )}
+
         </Section>
       )}
     </SectionTableWrapper>

@@ -14,21 +14,37 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName);
 
-  const { canEditDataset, canRequestPublication } = useSelector(
-    (state) =>
-      state.projects.metadata.members
-        .filter((member) =>
-          member.user
-            ? member.user.username === state.authenticatedUser.user.username
-            : { access: null }
-        )
-        .map((currentUser) => {
-          return {
-            canEditDataset: currentUser.access === 'owner' || currentUser.access === 'edit',
-            canRequestPublication: currentUser.access === 'owner'
-          }
-        })[0]
-  );
+  const { canEditDataset, canRequestPublication, canReviewPublication } = useSelector((state) => {
+    const { members } = state.projects.metadata;
+    const { username } = state.authenticatedUser.user;
+    const currentUser = members.find((member) => member.user?.username === username);
+  
+    if (!currentUser) {
+      return {
+        canEditDataset: false,
+        canRequestPublication: false,
+        canReviewPublication: false,
+      };
+    }
+  
+    const { access } = currentUser;
+    const { is_review_project, publication_requests } = state.projects.metadata;
+  
+    let canReviewPublication = false;
+  
+    if (is_review_project && publication_requests.length > 0) {
+      const pendingRequest = publication_requests.find((request) => request.status === 'PENDING');
+      if (pendingRequest) {
+        canReviewPublication = pendingRequest.reviewers.includes(username);
+      }
+    }
+  
+    return {
+      canEditDataset: access === 'owner' || access === 'edit',
+      canRequestPublication: access === 'owner',
+      canReviewPublication,
+    };
+  });
 
   return (
     <>
@@ -96,6 +112,15 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
           </Link>
         </>
       )}
+      {canReviewPublication && (
+        <>
+          <span className={styles.separator}>|</span>
+          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/review`}>
+              Review Publication Request
+          </Link>
+        </>
+      )}
+          
     </>
   );
 };

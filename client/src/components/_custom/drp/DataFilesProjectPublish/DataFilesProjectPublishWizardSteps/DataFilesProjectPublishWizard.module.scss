@@ -15,10 +15,6 @@
     font-size: 18px;
   }
 
-  .submit-button {
-    min-width: 200px;
-  }
-
   .controls {
     display: flex;
     align-items: flex-start;
@@ -99,4 +95,9 @@
     display: flex;
     justify-content: center;
     margin-top: 20px;
+  }
+
+  .submit-button {
+    min-width: 200px;
+    margin: 20px;
   }

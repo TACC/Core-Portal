@@ -46,7 +46,7 @@ const DataFilesSwitch = React.memo(() => {
 
   const portalName = useSelector((state) => state.workbench.portalName);
 
-  const { DataFilesProjectPublish } = useAddonComponents({ portalName });
+  const { DataFilesProjectPublish, DataFilesProjectReview } = useAddonComponents({ portalName });
 
   return (
     <Switch>
@@ -56,10 +56,22 @@ const DataFilesSwitch = React.memo(() => {
         render={({ match: { params } }) => {
             return (
               <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectPublish system={params.system} path={'/'} api={'tapis'} scheme={'projects'} />
+                <DataFilesProjectPublish system={params.system} />
               </SectionTableWrapper>
             )
-            
+          }}
+        />
+      }
+      {
+        DataFilesProjectReview &&
+        <Route
+        path={`${path}/tapis/projects/:system/review`}
+        render={({ match: { params } }) => {
+            return (
+              <SectionTableWrapper contentShouldScroll>
+                <DataFilesProjectReview system={params.system} />
+              </SectionTableWrapper>
+            )
           }}
         />
       } 

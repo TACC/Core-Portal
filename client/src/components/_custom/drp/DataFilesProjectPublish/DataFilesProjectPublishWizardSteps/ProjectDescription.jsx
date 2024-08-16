@@ -7,13 +7,25 @@ import {
   Expand,
 } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/timeFormat';
 import { formatDataKey } from 'utils/dataKeyFormat';
 
 const ProjectDescription = ({ project }) => {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
+
+  const canEdit = useSelector((state) => {
+    const { members } = state.projects.metadata;
+    const { username } = state.authenticatedUser.user;
+    const currentUser = members.find((member) => member.user?.username === username);
+  
+    if (!currentUser) {
+      return false;
+    }
+  
+    return currentUser.access === 'owner' || currentUser.access === 'edit';
+  });
 
   const onEdit = () => {
     dispatch({
@@ -120,13 +132,17 @@ const ProjectDescription = ({ project }) => {
     <SectionTableWrapper
       header={<div className={styles.title}>Proofread Project</div>}
       headerActions={
-        <div className={styles.controls}>
-          <>
-            <Button type="link" onClick={onEdit}>
-              Edit Project
-            </Button>
-          </>
-        </div>
+        <>
+          {canEdit && (
+            <div className={styles.controls}>
+              <>
+                <Button type="link" onClick={onEdit}>
+                  Edit Project
+                </Button>
+              </>
+            </div>
+          )}
+        </>
       }
     >
       <DescriptionList
