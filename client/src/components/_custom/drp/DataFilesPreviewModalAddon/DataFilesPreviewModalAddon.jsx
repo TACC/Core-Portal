@@ -15,9 +15,23 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
     const history = useHistory();
     const location = useLocation();
 
+    // regex from old digitalrocks portal
+    const standardImageType = /(\.|\/)(gif|jpe?g|png|tiff?)$/i;
+
+    const status = useSelector((state) => state.files.operationStatus.dynamicform);
+
+    useEffect(() => {
+      if (status === 'SUCCESS') {
+        dispatch({
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: { operation: 'preview', props: {} },
+        });
+      }
+    }, [status, dispatch]);
+
     const { params } = useFileListing('FilesListing');
 
-    const { useReloadCallback, ...file } = useSelector(
+    const { ...file } = useSelector(
         (state) => state.files.modalProps.preview
     );
 
@@ -42,16 +56,8 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
         return acc;
     }, {});
 
-    const reloadPage = (updatedPath = '') => {
-      // using regex to get the url up until the project name
-      let projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/).*/, '$1');
-      
-      if (projectUrl.endsWith('/')) {
-        projectUrl = projectUrl.slice(0, -1);
-      }
-  
-      const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
-      history.push(path);
+    const reloadPage = () => {
+      history.replace(location.pathname);
     };
 
     const handleSubmit = (values) => {
@@ -65,14 +71,14 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
           payload: {
             params,
             values,
-            reloadPage: useReloadCallback ? reloadPage : null,
+            reloadPage,
             selectedFile: file
           },
         });
       };
 
     return (
-        !isLoading && form &&
+        !isLoading && form && !standardImageType.test(file.name) &&
         <>
         <Expand
             detail={'Metadata'}

@@ -112,6 +112,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
+    dynamicform: {},
   },
   loadingScroll: {
     FilesListing: false,

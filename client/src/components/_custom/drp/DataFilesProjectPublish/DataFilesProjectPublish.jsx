@@ -33,17 +33,19 @@ const DataFilesProjectPublish = ({ system }) => {
   }));
 
   const fetchTree = useCallback(async () => {
-    try {
-      const response = await fetchUtil({
-        url: `api/${portalName.toLowerCase()}/tree`,
-        params: {
-          project_id: projectId,
-        },
-      });
-      setTree(response);
-    } catch (error) {
-      console.error('Error fetching tree data:', error);
-      setTree([]);
+    if (projectId) {
+      try {
+        const response = await fetchUtil({
+          url: `api/${portalName.toLowerCase()}/tree`,
+          params: {
+            project_id: projectId,
+          },
+        });
+        setTree(response);
+      } catch (error) {
+        console.error('Error fetching tree data:', error);
+        setTree([]);
+      }
     }
   }, [portalName, projectId]);
 
