@@ -56,7 +56,7 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   });
 
   useEffect(() => {
-    const owners = project.authors ?? project.members
+    const owners = project.authors?.length > 0 ? project.authors : project.members
       .filter((user) => user.access === 'owner')
       .map((user) => ({ ...user.user, isOwner: true }));
 
