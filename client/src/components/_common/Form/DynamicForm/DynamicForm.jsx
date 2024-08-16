@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import FormField from '../FormField';
-import { Button, Expand } from '_common';
+import { Button, Expand, InlineMessage } from '_common';
 import { useFormikContext } from 'formik';
 import { FormGroup, Input } from 'reactstrap';
 import { FieldArray } from 'formik';
 import styles from './DynamicForm.module.scss'
+import { useSelector } from 'react-redux';
 
 
 const DynamicForm = ({ initialFormFields, onChange }) => {
 
   const [formFields, setFormFields] = useState(initialFormFields);
   const { setFieldValue, values, handleChange, handleBlur } = useFormikContext();
+
+  const status = useSelector((state) => state.files.operationStatus.dynamicform);
 
   const handleFilterDependency = (field, values, setFieldValue, modifiedField) => {
     const { dependency } = field;
@@ -243,9 +246,14 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
         );
       case 'submit':
         return (
-          <Button type={'primary'} attr={'submit'} size={'long'}>
-            {field.label}
-          </Button>
+          <>
+            {status === 'ERROR' && (
+              <InlineMessage type="error">An error has occurred</InlineMessage>
+            )}
+            <Button type={'primary'} attr={'submit'} size={'long'} isLoading={status === 'RUNNING'}>
+              {field.label}
+            </Button>
+          </>
         );
     }
   };
