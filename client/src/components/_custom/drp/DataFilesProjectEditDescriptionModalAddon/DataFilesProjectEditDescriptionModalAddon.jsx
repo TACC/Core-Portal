@@ -3,13 +3,12 @@ import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { useSelector } from 'react-redux';
-import { useFormikContext } from 'formik'
+import { useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
 const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
-
   const { setFieldValue } = useFormikContext();
-  
+
   const { data: form, isLoading } = useQuery('form_EDIT_PROJECT', () =>
     fetchUtil({
       url: 'api/forms',
@@ -19,32 +18,34 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
     })
   );
 
-  const { metadata } = useSelector(state => state.projects)
+  const { metadata } = useSelector((state) => state.projects);
 
   useEffect(() => {
     if (!isLoading && form && metadata) {
-      form.form_fields.forEach(field => {
+      form.form_fields.forEach((field) => {
         if (metadata.hasOwnProperty(field.name)) {
           // If the field is an array, we need to set the value for each subfield using index to access the correct value
           if (field.type === 'array') {
             metadata[field.name].forEach((item, index) => {
-              field.fields.forEach(subField => {
-                setFieldValue(`${field.name}[${index}].${subField.name}`, item[subField.name])
+              field.fields.forEach((subField) => {
+                setFieldValue(
+                  `${field.name}[${index}].${subField.name}`,
+                  item[subField.name]
+                );
               });
-            })
+            });
           } else {
-            setFieldValue(field.name, metadata[field.name])
+            setFieldValue(field.name, metadata[field.name]);
           }
         }
       });
     }
-  }, [form])
+  }, [form]);
 
   const onFormChange = (formFields, values) => {
+    let schema = {};
 
-    let schema = {}
-
-    Object.keys(values).forEach(key => {
+    Object.keys(values).forEach((key) => {
       const field = formFields.find((f) => f.name === key);
 
       if (field) {
@@ -62,26 +63,27 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             )
           );
         } else {
-          schema[key] = Yup.string().required(
-            `${field.label} is required`
-          );
+          schema[key] = Yup.string().required(`${field.label} is required`);
         }
       }
-    })
+    });
 
     setValidationSchema((prevSchema) => {
       return Yup.object().shape({
         ...prevSchema?.fields,
-        ...schema
-      })
-    })
-  }
+        ...schema,
+      });
+    });
+  };
 
   return (
     <div>
-      {!isLoading && form &&
-        <DynamicForm initialFormFields={form?.form_fields ?? []} onChange={(formFields, values) => onFormChange(formFields, values)}/>
-      }
+      {!isLoading && form && (
+        <DynamicForm
+          initialFormFields={form?.form_fields ?? []}
+          onChange={(formFields, values) => onFormChange(formFields, values)}
+        />
+      )}
     </div>
   );
 };
