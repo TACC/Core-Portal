@@ -81,7 +81,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
               scheme: params.scheme,
               system: params.system,
               path: node.path.split('/').slice(1).join('/'),
-              name: node.metadata.name,
+              name: node.name,
               href: 'tapis://' + node.path,
               length: node.metadata.length,
               metadata: node.metadata,
