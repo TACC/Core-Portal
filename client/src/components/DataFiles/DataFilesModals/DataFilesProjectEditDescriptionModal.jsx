@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -64,16 +64,18 @@ const DataFilesProjectEditDescriptionModal = () => {
     [projectId, dispatch]
   );
 
-  const validationSchema = Yup.object().shape({
-    title: Yup.string()
-      .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
-      .required('Please enter a title.'),
-    description: Yup.string().max(
-      800,
-      'Description must be at most 800 characters'
-    ),
-  });
+  const [validationSchema, setValidationSchema] = useState(
+    Yup.object().shape({
+      title: Yup.string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(150, 'Title must be at most 150 characters')
+        .required('Please enter a title.'),
+      description: Yup.string().max(
+        800,
+        'Description must be at most 800 characters'
+      ),
+    })
+  );
 
   return (
     <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
@@ -114,7 +116,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 type="textarea"
                 className={styles['description-textarea']}
               />
-              {DataFilesProjectEditDescriptionModalAddon && <DataFilesProjectEditDescriptionModalAddon />}
+              {DataFilesProjectEditDescriptionModalAddon && <DataFilesProjectEditDescriptionModalAddon setValidationSchema={setValidationSchema} />}
             </ModalBody>
             <ModalFooter>
               <div className={styles['button-container']}>

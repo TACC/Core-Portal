@@ -4,9 +4,9 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { useSelector } from 'react-redux';
 import { useFormikContext } from 'formik'
+import * as Yup from 'yup';
 
-
-const DataFilesProjectEditDescriptionModalAddon = () => {
+const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
 
   const { setFieldValue } = useFormikContext();
   
@@ -40,10 +40,47 @@ const DataFilesProjectEditDescriptionModalAddon = () => {
     }
   }, [form])
 
+  const onFormChange = (formFields, values) => {
+
+    let schema = {}
+
+    Object.keys(values).forEach(key => {
+      const field = formFields.find((f) => f.name === key);
+
+      if (field) {
+        if (field.type === 'array') {
+          schema[key] = Yup.array().of(
+            Yup.object().shape(
+              field.fields.reduce((acc, subField) => {
+                if (subField.validation?.required) {
+                  acc[subField.name] = Yup.string().required(
+                    `${subField.label} is required`
+                  );
+                }
+                return acc;
+              }, {})
+            )
+          );
+        } else {
+          schema[key] = Yup.string().required(
+            `${field.label} is required`
+          );
+        }
+      }
+    })
+
+    setValidationSchema((prevSchema) => {
+      return Yup.object().shape({
+        ...prevSchema?.fields,
+        ...schema
+      })
+    })
+  }
+
   return (
     <div>
       {!isLoading && form &&
-        <DynamicForm initialFormFields={form?.form_fields ?? []} />
+        <DynamicForm initialFormFields={form?.form_fields ?? []} onChange={(formFields, values) => onFormChange(formFields, values)}/>
       }
     </div>
   );
