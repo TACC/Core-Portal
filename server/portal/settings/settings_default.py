@@ -61,7 +61,7 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'My Data (Work)',
-        'system': 'frontera',
+        'system': 'cloud.data',
         'scheme': 'private',
         'api': 'tapis',
         'homeDir': '/work/{tasdir}',
