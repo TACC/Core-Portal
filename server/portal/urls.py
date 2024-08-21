@@ -72,7 +72,7 @@ urlpatterns = [
 
     # auth.
     path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
-    re_path('login/$', login),
+    re_path('login/$', login, name='login'),
 
     # markup
     re_path('core/markup/nav', TemplateView.as_view(template_name='includes/nav_portal.raw.html'), name='portal_nav_markup'),
