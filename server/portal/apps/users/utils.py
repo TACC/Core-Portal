@@ -270,4 +270,3 @@ def check_user_groups(username, groups):
     except Exception as e:
         logger.error("Issue checking user groups for user:{} which failed with the following exception:{}".format(username, e))
         return False
-    
