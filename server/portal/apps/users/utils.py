@@ -262,7 +262,11 @@ def remove_user(project_id, user_id):
 
 
 def check_user_groups(username, groups):
-    return any(
-        user['username'] == str(username)
-        for group in groups for user in get_project_users_from_name(group)
-    )
+    try:
+        return any(
+            user['username'] == str(username)
+            for group in groups for user in get_project_users_from_name(group)
+        )
+    except:
+        logger.error("Issue checking user groups for user:{}".format(username))
+        return False
