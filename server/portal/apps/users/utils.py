@@ -267,6 +267,7 @@ def check_user_groups(username, groups):
             user['username'] == str(username)
             for group in groups for user in get_project_users_from_name(group)
         )
-    except:
-        logger.error("Issue checking user groups for user:{}".format(username))
+    except Exception as e:
+        logger.error("Issue checking user groups for user:{} which failed with the following exception:{}".format(username, e))
         return False
+    
