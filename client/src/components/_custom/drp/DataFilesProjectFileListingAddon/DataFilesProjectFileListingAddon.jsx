@@ -45,7 +45,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
     if (is_review_project && publication_requests.length > 0) {
       const pendingRequest = publication_requests.find((request) => request.status === 'PENDING');
       if (pendingRequest) {
-        canReviewPublication = pendingRequest.reviewers.includes(username);
+        canReviewPublication = pendingRequest.reviewers.some((reviewer) => reviewer.username === username);
       }
     }
   
