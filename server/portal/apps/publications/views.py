@@ -17,11 +17,26 @@ from django.db import transaction
 from portal.apps.projects.tasks import copy_files_and_metadata
 from portal.apps.notifications.models import Notification
 from django.http import HttpResponse
+from portal.apps.publications.models import PublicationRequest
 
 
 LOGGER = logging.getLogger(__name__)
 
 class PublicationRequestView(BaseApiView):
+         
+    def get(self, request):
+        project_id = request.GET.get('project_id')
+        
+        if project_id:
+            try:
+                project = ProjectsMetadata.objects.get(project_id=project_id)
+                publication_requests = PublicationRequest.objects.filter(source_project=project).values()
+            except ProjectsMetadata.DoesNotExist:
+                raise ApiException(f'Project {project_id} not found', status=404)
+            
+            return JsonResponse(list(publication_requests), safe=False)
+        
+        return JsonResponse([])
 
     @method_decorator(login_required, name='dispatch')
     def post(self, request):

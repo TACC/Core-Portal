@@ -10,9 +10,19 @@ import * as ROUTES from '../../../../constants/routes';
 const DataFilesProjectFileListingAddon = ({ system }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
+  const { metadata } = useSelector((state) => state.projects);
   const { selectedFiles } = useSelectedFiles();
 
+  const dispatch = useDispatch();
+
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName);
+
+  const createPublicationRequestModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'publicationRequest', props: { publicationRequests: metadata?.publication_requests }},
+    });
+  };
 
   const { canEditDataset, canRequestPublication, canReviewPublication } = useSelector((state) => {
     const { members } = state.projects.metadata;
@@ -120,7 +130,17 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
           </Link>
         </>
       )}
-          
+      {metadata?.publication_requests?.length > 0 && (
+        <>
+          <span className={styles.separator}>|</span>
+          <Button
+                type="link"
+                onClick={createPublicationRequestModal}
+              >
+                View Publication Requests
+          </Button>
+        </>
+      )}
     </>
   );
 };

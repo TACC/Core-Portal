@@ -7,6 +7,7 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.forms.models import model_to_dict
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -103,7 +104,14 @@ class ProjectsMetadata(models.Model):
                 'id': review.id,
                 'status': review.status,
                 'comments': review.comments,
-                'reviewers': [user.username for user in review.reviewers.all()],
+                'reviewers': [
+                    {
+                        'username': user.username,
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                    }
+                    for user in review.reviewers.all()],
                 'created_at': review.created_at,
                 'last_updated': review.last_updated
             }

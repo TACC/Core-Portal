@@ -8,6 +8,7 @@ from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
 from portal.libs.agave.utils import user_account, service_account
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -114,8 +115,11 @@ def post_file_transfer(self, user_access_token, source_workspace_id, review_work
             publication_request.save()
 
             for reviewer in publication_reviewers:
-                user = get_user_model().objects.get(username=reviewer)
-                publication_request.reviewers.add(user)
+                try:
+                    user = get_user_model().objects.get(username=reviewer)
+                    publication_request.reviewers.add(user)
+                except ObjectDoesNotExist:
+                    continue
             
             publication_request.save()
 
