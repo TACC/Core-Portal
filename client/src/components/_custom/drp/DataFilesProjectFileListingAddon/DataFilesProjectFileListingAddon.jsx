@@ -41,17 +41,20 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
     const { is_review_project, publication_requests } = state.projects.metadata;
   
     let canReviewPublication = false;
+    let canRequestPublication = access === 'owner';
   
-    if (is_review_project && publication_requests.length > 0) {
+    if (publication_requests.length > 0) {
       const pendingRequest = publication_requests.find((request) => request.status === 'PENDING');
+      
       if (pendingRequest) {
-        canReviewPublication = pendingRequest.reviewers.some((reviewer) => reviewer.username === username);
+        canRequestPublication = false; // Prevent requesting publication if there is a pending request
+        canReviewPublication = is_review_project && pendingRequest.reviewers.some((reviewer) => reviewer.username === username);
       }
     }
   
     return {
       canEditDataset: access === 'owner' || access === 'edit',
-      canRequestPublication: access === 'owner',
+      canRequestPublication,
       canReviewPublication,
     };
   });
