@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingSpinner, SectionTableWrapper } from '_common';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
 import styles from './DataFilesProjectPublish.module.scss';
@@ -14,8 +14,10 @@ import { SubmitPublicationRequestStep } from './DataFilesProjectPublishWizardSte
 
 const DataFilesProjectPublish = ({ system }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { projectId } = useSelector((state) => state.projects.metadata);
+  const { projectId, publication_requests } = useSelector((state) => state.projects.metadata);
   const [authors, setAuthors] = useState([]);
   const [tree, setTree] = useState([]);
 
@@ -48,6 +50,14 @@ const DataFilesProjectPublish = ({ system }) => {
       }
     }
   }, [portalName, projectId]);
+
+  useEffect(() => {
+    // Check if there is any PENDING publication request
+    if (publication_requests?.some((request) => request.status === 'PENDING')) {
+      // Navigate back to the previous location
+      history.replace(location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`);
+    }
+  }, [publication_requests, history]);
 
   useEffect(() => {
     // workaround to get updated data after modal closes
