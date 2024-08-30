@@ -43,7 +43,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
     let canReviewPublication = false;
     let canRequestPublication = access === 'owner';
   
-    if (publication_requests.length > 0) {
+    if (publication_requests?.length > 0) {
       const pendingRequest = publication_requests.find((request) => request.status === 'PENDING');
       
       if (pendingRequest) {
