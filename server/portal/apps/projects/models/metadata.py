@@ -7,7 +7,6 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.forms.models import model_to_dict
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
