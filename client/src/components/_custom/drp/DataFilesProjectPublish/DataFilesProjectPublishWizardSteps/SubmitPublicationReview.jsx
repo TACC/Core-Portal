@@ -11,7 +11,7 @@ const validationSchema = Yup.object({
   reviewRelatedPublications: Yup.boolean().oneOf([true], 'Must be checked'),
 });
 
-const SubmitPublicationRequest = () => {
+const SubmitPublicationReview = () => {
   const { handleChange, handleBlur, values, submitForm } = useFormikContext();
 
   const [submitDisabled, setSubmitDisabled] = useState(true);
@@ -37,40 +37,8 @@ const SubmitPublicationRequest = () => {
 
   return (
     <SectionTableWrapper
-      header={<div className={styles.title}>Submit Publication Request</div>}
+      header={<div className={styles.title}>Confirm Publication Review</div>}
     >
-      <FormGroup check>
-        <Input
-          id="reviewInfo"
-          name="reviewInfo"
-          type="checkbox"
-          value={values.reviewInfo}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          checked={values.reviewInfo}
-        />
-        <span>
-          {' '}
-          I have reviewed the information and confirm that it is correct.
-          <span className={styles['required-text']}>*</span>
-        </span>
-      </FormGroup>
-      <FormGroup check>
-        <Input
-          id="reviewRelatedPublications"
-          name="reviewRelatedPublications"
-          type="checkbox"
-          value={values.reviewRelatedPublications}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          checked={values.reviewRelatedPublications}
-        />
-        <span>
-          {' '}
-          I have reviewed related publications/ I do not have any related
-          publications.<span className={styles['required-text']}>*</span>
-        </span>
-      </FormGroup>
       <Section contentLayoutName={'oneColumn'}>
         <div>
           If you have any doubts about the process please contact the data
@@ -78,7 +46,10 @@ const SubmitPublicationRequest = () => {
         </div>
         <div className={styles['submit-div']}>
           <Button type="primary" className={styles['submit-button']} disabled={submitDisabled} isLoading={loading} onClick={submitForm}>
-            Submit Publication Request
+            Approve and Publish
+          </Button>
+          <Button type="secondary"  className={styles['submit-button']} disabled={submitDisabled} isLoading={loading} onClick={submitForm}>
+            Reject
           </Button>
         </div>
       </Section>
@@ -86,13 +57,10 @@ const SubmitPublicationRequest = () => {
   );
 };
 
-export const SubmitPublicationRequestStep = () => ({
-  id: 'submit_publication_request',
-  name: 'Submit Publication Request',
-  render: <SubmitPublicationRequest />,
-  initialValues: {
-    reviewInfo: false,
-    reviewRelatedPublications: false,
-  },
+export const SubmitPublicationReviewStep = () => ({
+  id: 'submit_publication_review',
+  name: 'Submit Publication Review',
+  render: <SubmitPublicationReview />,
+  initialValues: {},
   validationSchema,
 });

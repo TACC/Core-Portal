@@ -10,25 +10,54 @@ import * as ROUTES from '../../../../constants/routes';
 const DataFilesProjectFileListingAddon = ({ system }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
+  const { metadata } = useSelector((state) => state.projects);
   const { selectedFiles } = useSelectedFiles();
+
+  const dispatch = useDispatch();
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } = useDrpDatasetModals(projectId, portalName);
 
-  const { canEditDataset, canRequestPublication } = useSelector(
-    (state) =>
-      state.projects.metadata.members
-        .filter((member) =>
-          member.user
-            ? member.user.username === state.authenticatedUser.user.username
-            : { access: null }
-        )
-        .map((currentUser) => {
-          return {
-            canEditDataset: currentUser.access === 'owner' || currentUser.access === 'edit',
-            canRequestPublication: currentUser.access === 'owner'
-          }
-        })[0]
-  );
+  const createPublicationRequestModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'publicationRequest', props: { publicationRequests: metadata?.publication_requests }},
+    });
+  };
+
+  const { canEditDataset, canRequestPublication, canReviewPublication } = useSelector((state) => {
+    const { members } = state.projects.metadata;
+    const { username } = state.authenticatedUser.user;
+    const currentUser = members.find((member) => member.user?.username === username);
+  
+    if (!currentUser) {
+      return {
+        canEditDataset: false,
+        canRequestPublication: false,
+        canReviewPublication: false,
+      };
+    }
+  
+    const { access } = currentUser;
+    const { is_review_project, publication_requests } = state.projects.metadata;
+  
+    let canReviewPublication = false;
+    let canRequestPublication = access === 'owner';
+  
+    if (publication_requests.length > 0) {
+      const pendingRequest = publication_requests.find((request) => request.status === 'PENDING');
+      
+      if (pendingRequest) {
+        canRequestPublication = false; // Prevent requesting publication if there is a pending request
+        canReviewPublication = is_review_project && pendingRequest.reviewers.some((reviewer) => reviewer.username === username);
+      }
+    }
+  
+    return {
+      canEditDataset: access === 'owner' || access === 'edit',
+      canRequestPublication,
+      canReviewPublication,
+    };
+  });
 
   return (
     <>
@@ -94,6 +123,25 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
           <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/publish`}>
               Request Publication
           </Link>
+        </>
+      )}
+      {canReviewPublication && (
+        <>
+          <span className={styles.separator}>|</span>
+          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/review`}>
+              Review Publication Request
+          </Link>
+        </>
+      )}
+      {metadata?.publication_requests?.length > 0 && (
+        <>
+          <span className={styles.separator}>|</span>
+          <Button
+                type="link"
+                onClick={createPublicationRequestModal}
+              >
+                View Publication Requests
+          </Button>
         </>
       )}
     </>

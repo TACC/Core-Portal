@@ -1,10 +1,10 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from tapipy.tapis import Tapis
+from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
-# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
-
+from portal.apps.projects.models.metadata import ProjectsMetadata
 
 import logging
 logger = logging.getLogger(__name__)
@@ -338,3 +338,39 @@ def get_workspace_role(client, workspace_id, username):
         return 'GUEST'
 
     return None
+
+@transaction.atomic
+def create_publication_review_shared_workspace(client, source_workspace_id: str, source_system_id: str, review_workspace_id: str, 
+                                               review_system_id: str, title: str, description=""):
+    
+    portal_admin_username = settings.PORTAL_ADMIN_USERNAME
+    service_client = service_account()
+
+    # add admin to the source workspace to allow for file copying
+    resp = add_user_to_workspace(client, source_workspace_id, portal_admin_username)
+
+    source_project = ProjectsMetadata.objects.get(project_id=source_system_id)
+
+    # Create new Project entry for the review system
+    review_project = ProjectsMetadata(
+        project_id = review_system_id,
+        metadata = {
+            **source_project.metadata,
+            "is_review_project": True,
+        } 
+    )
+
+    review_project.save()
+    
+    create_workspace_dir(review_workspace_id)
+        
+    set_workspace_acls(service_client,
+                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       review_workspace_id,
+                       portal_admin_username,
+                       "add",
+                       "writer")
+    
+    system_id = create_workspace_system(service_client, review_workspace_id, title, description)
+    
+    return system_id

@@ -176,7 +176,7 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
-    "makeLink": True,
+    "makeLink": False,
     "viewPath": True,
     "compressApp": 'compress',
     "extractApp": 'extract',
@@ -193,7 +193,7 @@ _WORKBENCH_SETTINGS = {
     "hasCustomDataFilesToolbarChecks": True,
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 
                'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 
-               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish'],
+               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish', 'DataFilesProjectReview'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",

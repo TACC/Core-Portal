@@ -164,6 +164,7 @@ export const initialFilesState = {
     makePublic: false,
     downloadMessage: false,
     dynamicform: false,
+    publicationRequest: false,
   },
   modalProps: {
     preview: {},
@@ -178,6 +179,7 @@ export const initialFilesState = {
     makePublic: {},
     downloadMessage: {},
     dynamicform: {},
+    publicationRequest: {},
   },
   refs: {},
   preview: {

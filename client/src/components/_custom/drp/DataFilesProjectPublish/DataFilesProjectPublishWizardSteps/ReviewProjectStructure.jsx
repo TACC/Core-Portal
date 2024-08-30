@@ -36,6 +36,18 @@ const ReviewProjectStructure = ({ projectTree }) => {
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
     useDrpDatasetModals(projectId, portalName, false);
 
+  const canEdit = useSelector((state) => {
+    const { members } = state.projects.metadata;
+    const { username } = state.authenticatedUser.user;
+    const currentUser = members.find((member) => member.user?.username === username);
+  
+    if (!currentUser) {
+      return false;
+    }
+  
+    return currentUser.access === 'owner' || currentUser.access === 'edit';
+  });
+
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -125,13 +137,15 @@ const ReviewProjectStructure = ({ projectTree }) => {
           >
             {expandedNodes.includes(node.id) && (
               <div className={styles['metadata-description-div']}>
-                <Button
-                  className={styles['edit-button']}
-                  type="link"
-                  onClick={() => onEditData(node)}
-                >
-                  {node.metadata.data_type === 'file' ? 'View' : 'Edit'}
-                </Button>
+                {(canEdit || node.metadata.data_type === 'file') && (
+                  <Button
+                    className={styles['edit-button']}
+                    type="link"
+                    onClick={() => onEditData(node)}
+                  >
+                    {canEdit && node.metadata.data_type !== 'file' ? 'Edit' : 'View'}
+                  </Button>
+                )}
                 <div className={styles['description']}>
                   <ShowMore>{node.metadata.description}</ShowMore>
                   <DataDisplay
@@ -173,13 +187,17 @@ const ReviewProjectStructure = ({ projectTree }) => {
         </div>
       }
       headerActions={
-        <div className={styles.controls}>
-          <>
-            <Button type="link" onClick={onEdit}>
-              Edit Project
-            </Button>
-          </>
-        </div>
+        <>
+          {canEdit && (
+            <div className={styles.controls}>
+              <>
+                <Button type="link" onClick={onEdit}>
+                  Edit Project
+                </Button>
+              </>
+            </div>
+          )}
+        </>
       }
     >
       <Section

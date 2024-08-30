@@ -92,3 +92,34 @@ class ProjectsMetadata(models.Model):
 
     def __str__(self):
         return self.project_id
+    
+    def get_metadata(self):
+        reviews_as_review_project = self.publication_reviews.all()
+        reviews_as_source_project = self.source_publication_reviews.all()
+
+        # Format the reviews into a list of dictionaries
+        reviews_data = [
+            {
+                'id': review.id,
+                'status': review.status,
+                'comments': review.comments,
+                'reviewers': [
+                    {
+                        'username': user.username,
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                    }
+                    for user in review.reviewers.all()],
+                'created_at': review.created_at,
+                'last_updated': review.last_updated
+            }
+            for review in (reviews_as_review_project | reviews_as_source_project)
+        ]
+
+        # Add the reviews data to the metadata
+        updated_metadata = self.metadata.copy() if self.metadata else {}
+        if reviews_data:
+            updated_metadata['publication_requests'] = reviews_data
+        
+        return updated_metadata

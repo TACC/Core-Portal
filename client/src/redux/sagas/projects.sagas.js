@@ -185,6 +185,36 @@ export function* setTitleDescription(action) {
   }
 }
 
+export async function createPublicationRequestUtil(data) {
+  const result = await fetchUtil({
+    url: `/api/publications/publication-request/`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return result.response;
+}
+
+export function* createPublicationRequest(action) {
+  yield put({
+    type: 'PROJECTS_CREATE_PUBLICATION_REQUEST_STARTED',
+  });
+  try {
+    const result = yield call(createPublicationRequestUtil, action.payload);
+    yield put({
+      type: 'PROJECTS_CREATE_PUBLICATION_REQUEST_SUCCESS',
+      payload: result,
+    });
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_CREATE_PUBLICATION_REQUEST_FAILED',
+      payload: error,
+    });
+  }
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
@@ -192,4 +222,5 @@ export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_METADATA', getMetadata);
   yield takeLatest('PROJECTS_SET_MEMBER', setMember);
   yield takeLatest('PROJECTS_SET_TITLE_DESCRIPTION', setTitleDescription);
+  yield takeLatest('PROJECTS_CREATE_PUBLICATION_REQUEST', createPublicationRequest);
 }
