@@ -268,7 +268,11 @@ export const AppSchemaForm = ({ app }) => {
         defaultHost?.endsWith(s)
       );
     return {
-      allocations: getAllocationList(app, state.allocations),
+      allocations: getAllocationList(
+        app,
+        state.allocations,
+        allocationToExecSysMap
+      ),
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
       hasDefaultAllocation:
@@ -312,7 +316,7 @@ export const AppSchemaForm = ({ app }) => {
       },
     });
   };
-
+  const isFirstRender = React.useRef(true);
   const appFields = FormSchema(app);
   const initialAllocation = getDefaultAllocation(allocations, portalAlloc);
   // This additional form state setup is needed for exec system and queue system
@@ -386,10 +390,10 @@ export const AppSchemaForm = ({ app }) => {
     } else if (!allocations.length) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: isAppUsingDynamicExecSystem
+        message: isAppUsingDynamicExecSystem(app)
           ? `You need an allocation to run this application.`
           : `You need an allocation on ${getSystemName(
-              app.exec_sys.host
+              app.execSystems[0].host
             )} to run this application.`,
       };
       missingAllocation = true;
@@ -503,7 +507,7 @@ export const AppSchemaForm = ({ app }) => {
         </>
       )}
       <Formik
-        validateOnMount
+        validateOnMount={isFirstRender.current}
         initialValues={initialValues}
         initialTouched={initialValues}
         validationSchema={(props) => {
@@ -521,7 +525,7 @@ export const AppSchemaForm = ({ app }) => {
               values.execSystemLogicalQueue
             );
             const currentExecSystems = formState.execSystems;
-            const schema = Yup.object({
+            return Yup.object({
               parameterSet: Yup.object({
                 ...Object.assign(
                   {},
@@ -536,14 +540,16 @@ export const AppSchemaForm = ({ app }) => {
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
-                .required('Required'),
-              execSystemId: getExecSystemIdValidation(
-                app,
-                initialValues.allocation
-              ),
+                .required('Required1'),
+              execSystemId:
+                isJobTypeBATCH(app) && isAppUsingDynamicExecSystem(app)
+                  ? Yup.string()
+                      .required(`A system is required to run this application.`)
+                      .oneOf(app.execSystems?.map((e) => e.id) ?? [])
+                  : Yup.string().notRequired(),
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
-                    .required('Required.')
+                    .required('Required2.')
                     .oneOf(
                       exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
                     )
@@ -565,15 +571,14 @@ export const AppSchemaForm = ({ app }) => {
                     'You need an allocation with access to at least one system to run this application.',
                     function (value) {
                       const isValidExecSystems =
-                        !isAppUsingDynamicExecSystem ||
-                        (isAppUsingDynamicExecSystem &&
+                        !isAppUsingDynamicExecSystem(app) ||
+                        (isAppUsingDynamicExecSystem(app) &&
                           currentExecSystems.length > 0);
                       return isValidExecSystems;
                     }
                   )
                 : Yup.string().notRequired(),
             });
-            return schema;
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -703,6 +708,7 @@ export const AppSchemaForm = ({ app }) => {
           handleReset,
           resetForm,
           setSubmitting,
+          touched,
         }) => {
           if (
             jobSubmission.response &&
@@ -720,6 +726,9 @@ export const AppSchemaForm = ({ app }) => {
             !hasStorageSystems ||
             jobSubmission.submitting ||
             (app.definition.jobType === 'BATCH' && missingAllocation);
+          React.useEffect(() => {
+            isFirstRender.current = false;
+          }, []);
           return (
             <Form>
               <HandleDependentFieldChanges
