@@ -541,12 +541,7 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              execSystemId:
-                isJobTypeBATCH(app) && isAppUsingDynamicExecSystem(app)
-                  ? Yup.string()
-                      .required(`A system is required to run this application.`)
-                      .oneOf(app.execSystems?.map((e) => e.id) ?? [])
-                  : Yup.string().notRequired(),
+              execSystemId: getExecSystemIdValidation(app),
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
                     .required('Required.')
@@ -708,7 +703,6 @@ export const AppSchemaForm = ({ app }) => {
           handleReset,
           resetForm,
           setSubmitting,
-          touched,
         }) => {
           if (
             jobSubmission.response &&
