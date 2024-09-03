@@ -540,7 +540,7 @@ export const AppSchemaForm = ({ app }) => {
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
-                .required('Required1'),
+                .required('Required'),
               execSystemId:
                 isJobTypeBATCH(app) && isAppUsingDynamicExecSystem(app)
                   ? Yup.string()
@@ -549,7 +549,7 @@ export const AppSchemaForm = ({ app }) => {
                   : Yup.string().notRequired(),
               execSystemLogicalQueue: isJobTypeBATCH(app)
                 ? Yup.string()
-                    .required('Required2.')
+                    .required('Required.')
                     .oneOf(
                       exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
                     )
