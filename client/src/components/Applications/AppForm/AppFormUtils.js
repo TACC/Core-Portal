@@ -399,16 +399,20 @@ export const isJobTypeBATCH = (app) => {
 };
 
 /**
- * Build list of all allocation if using dynamic exec syste,
- * Otherwise, only provides allocation list matching
+ * If using dynamic exec system,
+ *   build list of all allocations with available hosts.
+ * Otherwise, only provide allocation list matching
  * the execution host.
  * @param {*} app
  * @param {*} allocations
+ * @param {Map(any, any))} map of allocation name to list of exec systems.
  * @returns List of type String
  */
-export const getAllocationList = (app, allocations) => {
+export const getAllocationList = (app, allocations, allocationToExecSysMap) => {
   if (isAppUsingDynamicExecSystem(app)) {
-    return allocations.active.map((alloc) => alloc['projectName']);
+    return [...allocationToExecSysMap.keys()].filter(
+      (alloc) => allocationToExecSysMap.get(alloc).length > 0
+    );
   }
 
   const matchingExecutionHost = Object.keys(allocations.hosts).find(
