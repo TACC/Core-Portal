@@ -51,8 +51,8 @@ def tapis_listing_indexer(self, listing):
 def index_community_data(self, reindex=False):
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
         if sys['api'] == 'tapis' and sys['scheme'] in ['community', 'public']:
-            logger.info('INDEXING {} SYSTEM'.format(sys['name']))
-            tapis_indexer.apply_async(args=[sys['system']], kwargs={'reindex': reindex})
+            logger.info('INDEXING {} SYSTEM with file path {}'.format(sys['name'], sys.get("homeDir", "/")))
+            tapis_indexer.apply_async(args=[sys['system']], kwargs={'filePath': sys.get("homeDir", "/"), 'reindex': reindex})
 
 
 @shared_task(bind=True, max_retries=3, queue='api')

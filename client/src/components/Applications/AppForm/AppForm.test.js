@@ -447,6 +447,13 @@ describe('AppSchemaForm', () => {
     const { getByText, container } = renderAppSchemaFormComponent(store, {
       ...helloWorldAppFixture,
       execSystems: updatedExecSystems,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          dynamicExecSystems: ['maverick99'],
+        },
+      },
     });
 
     console.log(container.innerHTML);
@@ -460,7 +467,10 @@ describe('AppSchemaForm', () => {
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );
-    expect(execSystemDropDown).toBeNull();
+    const options = execSystemDropDown.querySelectorAll(
+      'option:not([disabled]):not([hidden])'
+    );
+    expect(options.length).toBe(0);
   });
 
   it('does not display exec system and allocation UI for FORK jobs', async () => {
