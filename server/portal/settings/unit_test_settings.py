@@ -197,6 +197,7 @@ ALLOCATION_SYSTEMS = []
 
 PORTAL_NAMESPACE = 'test'
 PORTAL_ALLOCATION = 'test'
+PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 
 
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'

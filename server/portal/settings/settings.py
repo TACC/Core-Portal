@@ -596,6 +596,8 @@ WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
+PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', False)
+
 """
 SETTINGS: ELASTICSEARCH
 """
