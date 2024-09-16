@@ -250,7 +250,7 @@ def test_projects_post_setfacl_job(
             'appArgs': [],
             'schedulerOptions': [],
             'envVariables': [
-                {'key': 'username', 'value': 'username'},
+                {'key': 'usernames', 'value': 'username'},
                 {'key': 'directory', 'value': '/path/to/root/test.project-2'},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
@@ -455,7 +455,7 @@ def test_project_change_system_role_setfacl_job(
             'appArgs': [],
             'schedulerOptions': [],
             'envVariables': [
-                {'key': 'username', 'value': 'test_user'},
+                {'key': 'usernames', 'value': 'test_user'},
                 {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
@@ -608,7 +608,7 @@ def test_members_view_add_setfacl_job(
             'appArgs': [],
             'schedulerOptions': [],
             'envVariables': [
-                {'key': 'username', 'value': 'test_user'},
+                {'key': 'usernames', 'value': 'test_user'},
                 {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
@@ -723,7 +723,7 @@ def test_members_view_remove_setfacl_job(
             'appArgs': [],
             'schedulerOptions': [],
             'envVariables': [
-                {'key': 'username', 'value': 'test_user'},
+                {'key': 'usernames', 'value': 'test_user'},
                 {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
                 {'key': 'action', 'value': 'remove'},
                 {'key': 'role', 'value': 'none'},

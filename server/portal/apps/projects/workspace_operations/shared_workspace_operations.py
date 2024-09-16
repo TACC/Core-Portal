@@ -93,7 +93,7 @@ def submit_workspace_acls_job(
             "appArgs": [],
             "schedulerOptions": [],
             "envVariables": [
-                {"key": "username", "value": username},
+                {"key": "usernames", "value": username},
                 {
                     "key": "directory",
                     "value": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{project_name}",
