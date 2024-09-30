@@ -71,72 +71,78 @@ def post_file_transfer(self, user_access_token, source_workspace_id, review_work
 
     logger.info(f'Starting post transfer task for transfer id {transfer_task_id} for system {source_system_id} to system {review_system_id}')
 
-    user_client = user_account(user_access_token)
-    service_client = service_account()
-    portal_admin_username = settings.PORTAL_ADMIN_USERNAME
-    publication_reviewers = settings.PUBLICATION_REVIEWERS
+    try:
+        user_client = user_account(user_access_token)
+        service_client = service_account()
+        portal_admin_username = settings.PORTAL_ADMIN_USERNAME
+        publication_reviewers = settings.PUBLICATION_REVIEWERS
 
-    transfer_complete = False
-    transfer_status = 'PENDING'
-
-    while not transfer_complete:
-        # check the status of the transfer task
+        # Check the transfer status
         transfer_details = service_client.files.getTransferTask(transferTaskId=transfer_task_id)
         transfer_status = transfer_details.status
 
-        if transfer_status in ['COMPLETED', 'FAILED']:
-            transfer_complete = True
-        else:
-            # Schedule this task to run again after 30 seconds if the transfer is still pending
-            self.apply_async(kwargs={
-                    'user_access_token': user_access_token, 
+        # Check if the transfer is still pending
+        if transfer_status in ['PENDING', 'IN_PROGRESS']:
+            # Reschedule the task to check again after 30 seconds
+            logger.info(f'Transfer {transfer_task_id} is still pending, retrying in 30 seconds.')
+            self.apply_async(
+                kwargs={
+                    'user_access_token': user_access_token,
                     'source_workspace_id': source_workspace_id,
                     'review_workspace_id': review_workspace_id,
-                    'source_system_id': source_system_id, 
+                    'source_system_id': source_system_id,
                     'review_system_id': review_system_id,
                     'transfer_task_id': transfer_task_id
-                }, countdown=30)
-            
-            return
-        
-    if transfer_status == 'COMPLETED':
-        from portal.apps.projects.workspace_operations.shared_workspace_operations import add_user_to_workspace
-
-        with transaction.atomic():
-            # create a publication review object
-            review_project = ProjectsMetadata.objects.get(project_id=review_system_id)
-            source_project = ProjectsMetadata.objects.get(project_id=source_system_id)
-
-            publication_request = PublicationRequest(
-                review_project = review_project,
-                source_project = source_project,
+                }, 
+                countdown=30
             )
+            return
+        elif transfer_status == 'COMPLETED':
+            logger.info(f'Transfer {transfer_task_id} completed successfully for system {source_system_id} to system {review_system_id}')
+            from portal.apps.projects.workspace_operations.shared_workspace_operations import add_user_to_workspace
 
-            publication_request.save()
+            with transaction.atomic():
+                # create a publication review object
+                review_project = ProjectsMetadata.objects.get(project_id=review_system_id)
+                source_project = ProjectsMetadata.objects.get(project_id=source_system_id)
 
-            for reviewer in publication_reviewers:
-                try:
-                    user = get_user_model().objects.get(username=reviewer)
-                    publication_request.reviewers.add(user)
-                except ObjectDoesNotExist:
-                    continue
-            
-            publication_request.save()
+                publication_request = PublicationRequest(
+                    review_project = review_project,
+                    source_project = source_project,
+                )
 
-            logger.info(f'Created publication review for system {review_system_id}')
+                publication_request.save()
 
-            # remove the service account from the source workspace
-            user_client.systems.unShareSystem(systemId=source_system_id, users=[portal_admin_username])
-            user_client.systems.revokeUserPerms(systemId=source_system_id,
-                                        userName=portal_admin_username,
-                                        permissions=["READ", "MODIFY", "EXECUTE"])
-            user_client.files.deletePermissions(systemId=source_system_id,
-                                        username=portal_admin_username,
-                                        path="/")
-            logger.info(f'Removed service account from workspace {source_workspace_id}')
+                for reviewer in publication_reviewers:
+                    try:
+                        user = get_user_model().objects.get(username=reviewer)
+                        publication_request.reviewers.add(user)
+                    except ObjectDoesNotExist:
+                        continue
+                
+                publication_request.save()
 
-            # add the reviewers to the review workspace
-            for reviewer in publication_reviewers:
-                add_user_to_workspace(service_client, review_workspace_id, reviewer, "reader")
-                logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
+                logger.info(f'Created publication review for system {review_system_id}')
+
+                # remove the service account from the source workspace
+                user_client.systems.unShareSystem(systemId=source_system_id, users=[portal_admin_username])
+                user_client.systems.revokeUserPerms(systemId=source_system_id,
+                                            userName=portal_admin_username,
+                                            permissions=["READ", "MODIFY", "EXECUTE"])
+                user_client.files.deletePermissions(systemId=source_system_id,
+                                            username=portal_admin_username,
+                                            path="/")
+                logger.info(f'Removed service account from workspace {source_workspace_id}')
+
+                # add the reviewers to the review workspace
+                for reviewer in publication_reviewers:
+                    add_user_to_workspace(service_client, review_workspace_id, reviewer, "reader")
+                    logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
+        else: 
+            logger.error(f'Error processing transfer {transfer_task_id} for system {source_system_id} to system {review_system_id}: Transfer status is {transfer_status}')
+            raise Exception(f'Transfer {transfer_task_id} failed with status {transfer_status}')
+        
+    except Exception as e:
+        logger.error(f'Error processing transfer {transfer_task_id} for system {source_system_id} to system {review_system_id}: {e}')
+        self.retry(exc=e, countdown=30)
 
