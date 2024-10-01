@@ -43,8 +43,8 @@
     "prettier:check": "prettier --check src",
     "prettier:fix": "prettier --write src",
     "build": "vite build",
-    "test": "TZ=America/Chicago jest",
-    "test:watch": "npm run test -- --watch",
+    "test": "TZ=America/Chicago vitest run",
+    "test:watch": "TZ=America/Chicago vitest watch",
     "staging": "vite preview",
     "dev": "vite"
   },
