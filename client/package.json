@@ -43,7 +43,7 @@
     "prettier:check": "prettier --check src",
     "prettier:fix": "prettier --write src",
     "build": "vite build",
-    "test": "TZ=America/Chicago vitest run",
+    "test": "TZ=America/Chicago vitest run --coverage",
     "test:watch": "TZ=America/Chicago vitest watch",
     "staging": "vite preview",
     "dev": "vite"
@@ -78,6 +78,7 @@
     "@types/react-redux": "^7.1.18",
     "@typescript-eslint/parser": "^5.1.0",
     "@vitejs/plugin-react": "^4.3.2",
+    "@vitest/coverage-v8": "^2.1.1",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^27.3.0",
     "babel-preset-react-app": "^9.1.2",
