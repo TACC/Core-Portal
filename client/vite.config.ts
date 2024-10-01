@@ -23,14 +23,16 @@ export default defineConfig({
   },
 
   server: {
-    host: "cep.test",
+    origin: "cep.test",
     port: 3000,
-    https: {
-      key: fs.readFileSync('../server/conf/nginx/certificates/cep.test.key'),
-      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.test.crt')
-    },
     hmr: {
+      protocol: 'ws',
+      host: "localhost",
       port: 3000,
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom'
+  }
 });
