@@ -263,9 +263,10 @@ describe('DataFilesListing - Section Name Determination', () => {
   });
 
   it('sets sectionName to systemDisplayName when path is homeDir', () => {
-    vi
-      .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
-      .mockImplementationOnce(() => 'Mock System Name');
+    vi.spyOn(
+      DataFilesModalListingTable,
+      'getCurrentDirectory'
+    ).mockImplementationOnce(() => 'Mock System Name');
 
     const { getByPlaceholderText } = render(
       <Provider store={store}>
@@ -285,9 +286,10 @@ describe('DataFilesListing - Section Name Determination', () => {
 
   it('sets sectionName to current directory name when path is not homeDir', () => {
     const currentDirName = 'Current Directory Name';
-    vi
-      .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
-      .mockImplementationOnce(() => currentDirName);
+    vi.spyOn(
+      DataFilesModalListingTable,
+      'getCurrentDirectory'
+    ).mockImplementationOnce(() => currentDirName);
 
     const { getByPlaceholderText } = render(
       <Provider store={store}>

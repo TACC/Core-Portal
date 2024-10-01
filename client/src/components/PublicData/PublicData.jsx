@@ -18,7 +18,7 @@ import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPa
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import styles from './PublicData.module.css';
-import'../../styles/components/dropdown-menu.css';
+import '../../styles/components/dropdown-menu.css';
 import CombinedBreadcrumbs from '../DataFiles/CombinedBreadcrumbs/CombinedBreadcrumbs';
 
 const PublicData = () => {

@@ -9,7 +9,10 @@ export default defineConfig({
   base: '/core/static/',
   css: { preprocessorOptions: { scss: { charset: false } } },
   plugins: [
-    {...eslint({include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false}), enforce: 'pre', },
+    {
+      ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false }),
+      enforce: 'pre',
+    },
     react(),
   ],
 
@@ -23,16 +26,16 @@ export default defineConfig({
   },
 
   server: {
-    origin: "cep.test",
+    origin: 'cep.test',
     port: 3000,
     hmr: {
       protocol: 'ws',
-      host: "localhost",
+      host: 'localhost',
       port: 3000,
     },
   },
   test: {
     globals: true,
-    environment: 'jsdom'
-  }
+    environment: 'jsdom',
+  },
 });

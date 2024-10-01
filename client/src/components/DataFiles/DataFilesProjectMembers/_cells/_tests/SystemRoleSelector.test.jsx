@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import SystemRoleSelector from '../SystemRoleSelector';
 import { waitFor, screen } from '@testing-library/react';
-import systemsFixture from '../../../../DataFiles/fixtures/DataFiles.systems.fixture'
+import systemsFixture from '../../../../DataFiles/fixtures/DataFiles.systems.fixture';
 
 import fetch from 'cross-fetch';
 vi.mock('cross-fetch');

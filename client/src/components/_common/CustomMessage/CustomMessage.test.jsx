@@ -31,9 +31,9 @@ describe('CustomMessage', () => {
           <CustomMessage messageComponentName="TEST"></CustomMessage>
         </Provider>
       );
-      debug()
-      expect(getByLabelText("Warning")).toBeTruthy();
-      expect(getByLabelText("Close")).toBeTruthy();
+      debug();
+      expect(getByLabelText('Warning')).toBeTruthy();
+      expect(getByLabelText('Close')).toBeTruthy();
       expect(getByText('Test Message')).not.toEqual(null);
     });
   });

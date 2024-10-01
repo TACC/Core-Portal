@@ -16,11 +16,11 @@ describe('fetchUtil', () => {
       json: () => Promise.resolve({ hello: 'world' }),
     });
 
-    const req = new URL('/api/test', "http://localhost:3000");
+    const req = new URL('/api/test', 'http://localhost:3000');
     req.searchParams.append('search', 'params');
 
     const json = await fetchUtil({
-      url: "http://localhost:3000/api/test",
+      url: 'http://localhost:3000/api/test',
       params: { search: 'params' },
       method: 'POST',
       body: JSON.stringify({}),
