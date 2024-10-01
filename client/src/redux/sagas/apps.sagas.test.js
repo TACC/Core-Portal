@@ -6,8 +6,9 @@ import {
 import { apps as appsReducer } from '../reducers/apps.reducers';
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { vi } from 'vitest';
 
-jest.mock('cross-fetch');
+vi.mock('cross-fetch');
 
 describe('getAppTray', () => {
   it('runs saga', async () => {

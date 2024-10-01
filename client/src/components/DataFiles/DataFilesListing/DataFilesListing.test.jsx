@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
@@ -258,11 +259,11 @@ describe('DataFilesListing - Section Name Determination', () => {
 
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('sets sectionName to systemDisplayName when path is homeDir', () => {
-    jest
+    vi
       .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
       .mockImplementationOnce(() => 'Mock System Name');
 
@@ -284,7 +285,7 @@ describe('DataFilesListing - Section Name Determination', () => {
 
   it('sets sectionName to current directory name when path is not homeDir', () => {
     const currentDirName = 'Current Directory Name';
-    jest
+    vi
       .spyOn(DataFilesModalListingTable, 'getCurrentDirectory')
       .mockImplementationOnce(() => currentDirName);
 
