@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { default as TicketModal, TicketHistory } from './TicketModal';
 import { Provider } from 'react-redux';
@@ -89,7 +90,7 @@ function renderTicketsHistoryComponent(store) {
   );
 }
 // mock as we use scrollIntoView in TicketModal
-window.HTMLElement.prototype.scrollIntoView = jest.fn();
+window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
 describe('TicketModal', () => {
   it('render modal', () => {

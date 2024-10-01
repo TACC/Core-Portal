@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
@@ -7,15 +8,18 @@ import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    projectId: 1234,
-  }),
-  useLocation: () => ({
-    pathname: '/allocations/approved',
-  }),
-}));
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useParams: () => ({
+      projectId: 1234,
+    }),
+    useLocation: () => ({
+      pathname: '/allocations/approved',
+    }),
+  };
+});
 
 describe('View Team Modal', () => {
   const testProps = {
