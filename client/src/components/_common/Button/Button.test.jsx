@@ -2,6 +2,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import Button, * as BTN from './Button';
+import { vi } from 'vitest';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -21,7 +22,7 @@ function testClassnamesByType(type, size, getByRole, getByTestId) {
 }
 
 function muteTypeNotLinkNoSizeLog(type, size) {
-  if (type !== 'link' && !size) console.debug = jest.fn();
+  if (type !== 'link' && !size) console.debug = vi.fn();
 }
 
 function isPropertyLimitation(type, size) {
@@ -123,7 +124,7 @@ describe('Button', () => {
 
   describe('property limitation', () => {
     test('type is "link" & ANY size`', () => {
-      console.warn = jest.fn();
+      console.warn = vi.fn();
       const { getByRole, getByTestId } = render(
         <Button type="link" size={TEST_SIZE}>
           {TEST_TEXT}
@@ -136,7 +137,7 @@ describe('Button', () => {
       expect(console.warn).toHaveBeenCalled();
     });
     test('type is "primary" & size is "small"', () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       const { getByRole, getByTestId } = render(
         <Button type="primary" size="small">
           {TEST_TEXT}
@@ -149,7 +150,7 @@ describe('Button', () => {
       expect(console.error).toHaveBeenCalled();
     });
     test('type is not "link" & NO size`', () => {
-      console.debug = jest.fn();
+      console.debug = vi.fn();
       const { getByRole, getByTestId } = render(
         <Button type="primary">{TEST_TEXT}</Button>
       );
