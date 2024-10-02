@@ -11,3 +11,7 @@
 .nav-item a:hover {
   text-decoration: none;
 }
+
+.nav-link {
+  transition: none;
+}
