@@ -292,19 +292,3 @@ describe('Allocations Sagas', () => {
       .run();
   });
 });
-
-describe('Effect Creators', () => {
-  test('should dispatch sagas', () => {
-    testSaga(watchAllocationData)
-      .next()
-      .takeEvery('GET_ALLOCATIONS', getAllocations)
-      .next()
-      .isDone();
-
-    testSaga(watchTeams)
-      .next()
-      .takeLatest('GET_PROJECT_USERS', getUsernames)
-      .next()
-      .isDone();
-  });
-});

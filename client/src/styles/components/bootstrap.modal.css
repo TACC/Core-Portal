@@ -72,3 +72,13 @@ Styleguide Components.Bootstrap.Modal
 .modal-header.has-MuiTabs .close {
   transform: translate(-25%, 25%);
 }
+
+.MuiTab-root {
+  font-size: 19px;
+  text-align: center;
+  opacity: 1;
+  display: inline-block;
+  position: absolute;
+  width: 25%;
+  height: 60.5px;
+}

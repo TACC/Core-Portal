@@ -17,9 +17,9 @@ const DataFilesSelectedStatusCell = ({ row, operation }) => {
     case 'RUNNING':
       return <LoadingSpinner placement="inline" />;
     case 'SUCCESS':
-      return <span className="badge badge-success">SUCCESS</span>;
+      return <span className="badge bg-success">SUCCESS</span>;
     case 'ERROR':
-      return <span className="badge badge-danger">ERROR</span>;
+      return <span className="badge bg-danger">ERROR</span>;
     default:
       return <></>;
   }
