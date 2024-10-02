@@ -124,12 +124,7 @@ Styleguide Components.Button
 }
 
 .c-button--primary.c-button--is-busy,
-.c-button--primary:not(
-    .c-button:hover,
-    .c-button:focus,
-    .c-button:active,
-    .c-button:disabled
-  ) {
+.c-button--primary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-accent--normal);
@@ -163,12 +158,7 @@ Styleguide Components.Button
 }
 
 .c-button--secondary.c-button--is-busy,
-.c-button--secondary:not(
-    .c-button:hover,
-    .c-button:focus,
-    .c-button:active,
-    .c-button:disabled
-  ) {
+.c-button--secondary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--x-light);
   border-color: var(--global-color-primary--xx-dark);
@@ -206,12 +196,7 @@ Styleguide Components.Button
 }
 
 .c-button--tertiary.c-button--is-busy,
-.c-button--tertiary:not(
-    .c-button:hover,
-    .c-button:focus,
-    .c-button:active,
-    .c-button:disabled
-  ) {
+.c-button--tertiary:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--xx-light);
   border-color: var(--global-color-primary--xx-dark);
@@ -245,12 +230,7 @@ Styleguide Components.Button
 }
 
 .c-button--is-active.c-button--is-busy,
-.c-button--is-active:not(
-    .c-button:hover,
-    .c-button:focus,
-    .c-button:active,
-    .c-button:disabled
-  ) {
+.c-button--is-active:not(.c-button:hover, .c-button:focus, .c-button:active, .c-button:disabled) {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-accent--x-light);
   border-color: var(--global-color-primary--xx-dark);
