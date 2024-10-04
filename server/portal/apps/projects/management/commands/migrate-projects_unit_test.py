@@ -1,5 +1,5 @@
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from django.core import management
 from django.db.models import signals
 import pytest
@@ -10,12 +10,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture(autouse=True)
 def disconnect_signal():
-    yield signals.post_save.disconnect(sender=ProjectMetadata, dispatch_uid="index_project")
+    yield signals.post_save.disconnect(sender=LegacyProjectMetadata, dispatch_uid="index_project")
 
 
 @pytest.fixture
 def ownerless_project(django_db_reset_sequences):
-    meta = ProjectMetadata.objects.create(
+    meta = LegacyProjectMetadata.objects.create(
         title="project",
         project_id="CEP-1",
         description=None,
@@ -56,7 +56,7 @@ def test_migrate_projects(regular_user, mock_project_metadata, mock_project_stor
         'username': 'ADMIN'
     }
     management.call_command("migrate-projects")
-    assert ProjectMetadata.objects.all()[0].pi.username == regular_user.username
+    assert LegacyProjectMetadata.objects.all()[0].pi.username == regular_user.username
     assert mock_index_project.apply_async.called
 
 
@@ -68,4 +68,4 @@ def test_migrate_projects_wrong_admins(regular_user, mock_project_metadata, mock
         'username2': 'ADMIN'
     }
     management.call_command("migrate-projects")
-    assert ProjectMetadata.objects.all()[0].pi is None
+    assert LegacyProjectMetadata.objects.all()[0].pi is None

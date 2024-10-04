@@ -215,6 +215,41 @@ export function* createPublicationRequest(action) {
   }
 }
 
+export async function createEntityUtil(entityType, projectId, path, data) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/entities/create`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: entityType,
+      value: data, 
+      path: path
+    }),
+  });
+
+  return result.response;
+}
+
+export async function patchEntityUtil(entityType, projectId, path, data, entityUuid) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/entities/create`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: entityType,
+      value: data,
+      uuid: entityUuid ?? null,
+      path: path
+    }),
+  });
+
+  return result.response;
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);

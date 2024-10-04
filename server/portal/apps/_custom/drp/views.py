@@ -3,6 +3,8 @@ from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from portal.apps.datafiles.models import DataFilesMetadata
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps._custom.drp import constants
 
 class DigitalRocksSampleView(BaseApiView):
 
@@ -12,11 +14,16 @@ class DigitalRocksSampleView(BaseApiView):
 
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        samples = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='sample').values('id', 'name', 'path', 'metadata')
+        # samples = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='sample').values('id', 'name', 'path', 'metadata')
+
+        samples = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.SAMPLE).values('uuid', 'name', 'value')
+
         origin_data = []
         
         if get_origin_data == 'true':
-            origin_data = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='origin_data').values('id', 'name', 'path', 'metadata')
+            # origin_data = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='origin_data').values('id', 'name', 'path', 'metadata')
+
+            origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.ORIGIN_DATA).values('uuid', 'name', 'value')
 
         response_data = {
             'samples': list(samples),

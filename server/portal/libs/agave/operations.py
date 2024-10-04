@@ -14,6 +14,7 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
+from portal.apps.projects.workspace_operations.project_meta_operations import get_entity
 
 logger = logging.getLogger(__name__)
 
@@ -85,32 +86,55 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          offset=int(offset),
                                          limit=int(limit))
     
+    print(f"Listing for {system}/{path} returned {(raw_listing)}")
     
-    folder_metadata = get_datafile_metadata(system=system, path=path)
+    folder_metadata = get_entity(system, path)
 
     try:
         # Convert file objects to dicts for serialization.
-        listing = list(map(lambda f: {
-            'system': system,
-            'type': 'dir' if f.type == 'dir' else 'file',
-            'format': 'folder' if f.type == 'dir' else 'raw',
-            'mimeType': f.mimeType,
-            'path': f.path,
-            'name': f.name,
-            'length': f.size,
-            'lastModified': f.lastModified,
-            '_links': {
-                'self': {'href': f.url}
-            },
-            'metadata': get_datafile_metadata(system=system, path=f.path)
-        }, raw_listing))
+
+        listing = []
+
+        for f in raw_listing: 
+            entity = get_entity(system, f.path)
+
+            listing.append({
+                'uuid': entity.to_dict().get('uuid') if entity else None,
+                'system': system,
+                'type': 'dir' if f.type == 'dir' else 'file',
+                'format': 'folder' if f.type == 'dir' else 'raw',
+                'mimeType': f.mimeType,
+                'path': f.path,
+                'name': f.name,
+                'length': f.size,
+                'lastModified': f.lastModified,
+                '_links': {
+                    'self': {'href': f.url}
+                },
+                'metadata': entity.ordered_metadata if entity else None
+            })
+
+        # listing = list(map(lambda f: {
+        #     'system': system,
+        #     'type': 'dir' if f.type == 'dir' else 'file',
+        #     'format': 'folder' if f.type == 'dir' else 'raw',
+        #     'mimeType': f.mimeType,
+        #     'path': f.path,
+        #     'name': f.name,
+        #     'length': f.size,
+        #     'lastModified': f.lastModified,
+        #     '_links': {
+        #         'self': {'href': f.url}
+        #     },
+        #     'metadata': get_entity_metadata(system, f.path)
+        # }, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata.ordered_metadata if folder_metadata else None}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -369,7 +393,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
-    if metadata is not None: 
+    if metadata is not None:
         create_datafile_metadata(dest_system, f'{dest_system}/{dest_path_full.strip("/")}', file_name, metadata)
 
     if src_system == dest_system:

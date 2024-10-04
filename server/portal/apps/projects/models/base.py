@@ -23,7 +23,7 @@ from portal.libs.agave.utils import service_account
 # from portal.libs.agave.models.systems.storage import StorageSystem
 # from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.projects import utils as ProjectsUtils
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.accounts.models import SSHKeys
 
@@ -156,7 +156,7 @@ class Project(object):
         while creating a metadata record.
         """
         try:
-            meta = ProjectMetadata.objects.get(project_id=self.project_id)
+            meta = LegacyProjectMetadata.objects.get(project_id=self.project_id)
         except ObjectDoesNotExist:
             meta = self._create_metadata(self.title, self.project_id)
 
@@ -248,7 +248,7 @@ class Project(object):
         if owner:
             defaults['owner'] = owner
 
-        (meta, created) = ProjectMetadata.objects.get_or_create(
+        (meta, created) = LegacyProjectMetadata.objects.get_or_create(
             project_id=project_id,
             defaults=defaults
         )

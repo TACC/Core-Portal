@@ -1,9 +1,26 @@
 from pydantic import BaseModel, ConfigDict, model_validator
 from typing import Optional, Literal
+from pydantic.alias_generators import to_camel
+from functools import partial
 
 """
 Pydantic models for DRP Metadata
 """
+
+class DrpMetadataModel(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+        extra="forbid",
+        coerce_numbers_to_str=True,
+    )
+
+    def model_dump(self, *args, **kwargs):
+        # default by_alias to true for camelCase serialization
+        return partial(super().model_dump, by_alias=True, exclude_none=True)(
+            *args, **kwargs
+        )
 
 class DrpProjectRelatedDatasets(BaseModel):
     """Model for DRP Project Related Datasets"""
@@ -42,13 +59,14 @@ class DrpProjectRelatedPublications(BaseModel):
     publication_link: Optional[str] = None
 
 
-class DrpProjectMetadata(BaseModel):
+class DrpProjectMetadata(DrpMetadataModel):
     """Model for DRP Project Metadata"""
 
     model_config = ConfigDict(
         extra="forbid",
     )
 
+    project_id: str
     title: str
     description: str = ""
     license: Optional[str] = None
@@ -122,7 +140,7 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Origin Dataset Metadata"""
 
     is_segmented: Literal["yes", "no"]
-    sample: int
+    sample: str
     imaging_center: Optional[str] = None
     imaging_equipment_and_model: Optional[str] = None
     image_format: Optional[str] = None
@@ -153,8 +171,8 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
         "other"
     ]
     external_uri: Optional[str] = None
-    sample: int
-    base_origin_data: Optional[int] = None
+    sample: str
+    base_origin_data: Optional[str] = None
 
 class DrpFileMetadata(BaseModel):
     """Model for DRP File Metadata"""

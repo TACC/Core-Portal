@@ -1,13 +1,11 @@
 
 from portal.apps._custom.drp.models import DrpProjectMetadata, DrpSampleMetadata, DrpOriginDatasetMetadata, DrpAnalysisDatasetMetadata, DrpFileMetadata
-
+from portal.apps._custom.drp import constants
 
 SCHEMA_MAPPING = {
-    'DRP': {
-        'project': DrpProjectMetadata,
-        'sample': DrpSampleMetadata,
-        'origin_data': DrpOriginDatasetMetadata,
-        'analysis_data': DrpAnalysisDatasetMetadata,
-        'file': DrpFileMetadata
-    }
+    constants.PROJECT: DrpProjectMetadata,
+    constants.SAMPLE: DrpSampleMetadata,
+    constants.ORIGIN_DATA: DrpOriginDatasetMetadata,
+    constants.ANALYSIS_DATA: DrpAnalysisDatasetMetadata,
+    constants.FILE: DrpFileMetadata
 }

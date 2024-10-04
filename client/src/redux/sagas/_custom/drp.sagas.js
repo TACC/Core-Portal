@@ -7,6 +7,7 @@ import {
   mkdirUtil,updateMetadataUtil,
 } from '../datafiles.sagas';
 import { useHistory, useLocation } from 'react-router-dom';
+import { createEntityUtil, patchEntityUtil } from '../projects.sagas';
 
 
 function* executeOperation(isEdit, params, values, reloadCallback, file = null, path = '') {
@@ -24,26 +25,42 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
   try {
     if (file && isEdit) {
       yield call(
-        updateMetadataUtil,
-        params.api,
-        params.scheme,
+        patchEntityUtil,
+        filteredValues.data_type,
         params.system,
-        '/' + file.path,
-        '/' + path,
-        file.name,
-        values.name || file.name,
-        filteredValues
-      );
-    } else {
+        file.path,
+        filteredValues,
+        file.uuid
+      )
+      // yield call(
+      //   updateMetadataUtil,
+      //   params.api,
+      //   params.scheme,
+      //   params.system,
+      //   '/' + file.path,
+      //   '/' + path,
+      //   file.name,
+      //   values.name || file.name,
+      //   filteredValues
+      // );
+    } else {  
       yield call(
-        mkdirUtil,
-        params.api,
-        params.scheme,
+        createEntityUtil, 
+        filteredValues.data_type,
         params.system,
-        path,
-        values.name,
+        path || "/",
         filteredValues
-      );
+      )
+
+      // yield call(
+      //   mkdirUtil,
+      //   params.api,
+      //   params.scheme,
+      //   params.system,
+      //   path,
+      //   values.name,
+      //   filteredValues
+      // );
     }
   
     if (reloadCallback) {
@@ -98,17 +115,19 @@ function* handleOriginData(action, isEdit) {
   const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: { samples } } = action.payload;
 
   const sample = samples.find(
-    (sample) => sample.id === parseInt(values.sample)
+    (sample) => sample.uuid === values.sample
   );
 
   const metadata = {
     ...values,
     data_type: 'origin_data',
-    sample: sample.id,
+    sample: sample.uuid,
   }
 
   // get the path without system name
-  const path = sample.path.split('/').slice(1).join('/');
+  // const path = sample.value.path.split('/').slice(1).join('/');
+  const path = sample.value.name; // PROBLEM
+
   yield call(
     executeOperation, isEdit, params, metadata, reloadCallback, selectedFile, path
   )
@@ -118,21 +137,20 @@ function* handleAnalysisData(action, isEdit) {
   const { params, values, reloadPage: reloadCallback, selectedFile, additionalData: { samples, originDatasets } } = action.payload;
 
   const sample = samples.find(
-    (sample) => sample.id === parseInt(values.sample)
+    (sample) => sample.uuid === values.sample
   );
 
   const originData = originDatasets.find(
-    (originData) => originData.id === parseInt(values.base_origin_data)
+    (originData) => originData.uuid === values.base_origin_data
   );
 
-  let path = originData ? originData.path : sample.path;
-  path = path.split('/').slice(1).join('/')
+  let path = originData ? `${sample.value.name}/${originData.value.name}` : sample.value.name;
 
   const metadata = {
     ...values, 
     data_type: 'analysis_data',
-    sample: sample.id, 
-    base_origin_data: originData ? originData.id : ''
+    sample: sample.uuid, 
+    base_origin_data: originData ? originData.uuid : ''
   }
 
   yield call(
