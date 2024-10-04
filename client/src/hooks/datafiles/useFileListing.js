@@ -10,7 +10,7 @@ function useFileListing(section = 'FilesListing') {
   const { data, loading, error, params, loadingScroll, reachedEnd } =
     useSelector((state) => {
       // Pinpoints currently selected file once before map iteration
-      const selectedFiles = state.files.selected.FilesListing;
+      const selectedFiles = state.files.selected?.FilesListing || [];
       const selectedFileIndex =
         selectedFiles.length === 1 ? selectedFiles[0] : -1;
       // Conditional logic for returning a RUNNING status
