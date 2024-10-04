@@ -41,7 +41,11 @@ const DataFilesRenameModal = () => {
   });
 
   const onClosed = () => {
-    setStatus(null);
+    /* 
+    This was setting the status as null right when the rename modal closed
+    changing the state that was sent via dispatch
+    */
+    //setStatus(null);
   };
 
   const rename = ({ newName }) => {
