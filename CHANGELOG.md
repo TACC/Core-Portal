@@ -1097,13 +1097,13 @@ WP-306: Fix target path regression (#871)
 v1.0.0 Production release as of Feb 28, 2020.
 
 [unreleased]: https://github.com/TACC/Core-Portal/compare/v3.8.2...HEAD
-[3.8.2]: https://github.com/TACC/Core-Portal/compare/v3.8.2
-[3.8.1]: https://github.com/TACC/Core-Portal/compare/v3.8.1
-[3.8.0]: https://github.com/TACC/Core-Portal/compare/v3.8.0
-[3.7.0]: https://github.com/TACC/Core-Portal/compare/v3.7.0
-[3.6.1]: https://github.com/TACC/Core-Portal/compare/v3.6.1
-[3.6.0]: https://github.com/TACC/Core-Portal/compare/v3.6.0
-[3.5.0]: https://github.com/TACC/Core-Portal/compare/v3.5.0
+[3.8.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.2
+[3.8.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.1
+[3.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.0
+[3.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.7.0
+[3.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.6.1
+[3.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.6.0
+[3.5.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.5.0
 [3.4.3]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.3
 [3.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.2
 [3.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.4.1
