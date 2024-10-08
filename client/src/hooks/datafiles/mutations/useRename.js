@@ -3,10 +3,9 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 function useRename() {
   const dispatch = useDispatch();
   const status = useSelector(
-    (state) => state.files.operationStatus.move,
+    (state) => state.files.operationStatus.rename,
     shallowEqual
   );
-
   const setStatus = (newStatus) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -15,6 +14,7 @@ function useRename() {
   };
 
   const rename = ({ selectedFile, newName, api, scheme, callback }) => {
+    setStatus('RUNNING');
     dispatch({
       type: 'DATA_FILES_RENAME',
       payload: {

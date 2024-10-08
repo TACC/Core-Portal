@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { useRename } from './mutations';
 import { parse } from 'query-string';
 
 function useFileListing(section = 'FilesListing') {
   const dispatch = useDispatch();
   const { query_string: queryString, filter } = parse(useLocation().search);
-
+  const { status: renameStatus } = useRename();
   const { data, loading, error, params, loadingScroll, reachedEnd } =
     useSelector((state) => {
       // Pinpoints currently selected file once before map iteration
@@ -14,7 +15,7 @@ function useFileListing(section = 'FilesListing') {
       const selectedFileIndex =
         selectedFiles.length === 1 ? selectedFiles[0] : -1;
       // Conditional logic for returning a RUNNING status
-      const isRenameRunning = state.files.operationStatus.rename === 'RUNNING';
+      const isRenameRunning = renameStatus === 'RUNNING';
       return {
         data: state?.files?.listing?.[section]?.map((file, index) => {
           const isTrashRunning =
