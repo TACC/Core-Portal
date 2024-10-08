@@ -14,7 +14,6 @@ function useRename() {
   };
 
   const rename = ({ selectedFile, newName, api, scheme, callback }) => {
-    setStatus('RUNNING');
     dispatch({
       type: 'DATA_FILES_RENAME',
       payload: {
