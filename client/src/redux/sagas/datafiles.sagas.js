@@ -725,7 +725,7 @@ export async function downloadUtil(api, scheme, system, path) {
 
   const requestJson = await request.json();
   const postitUrl = requestJson.data;
-
+  
   const link = document.createElement('a');
   link.style.display = 'none';
   link.setAttribute('href', postitUrl);

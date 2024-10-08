@@ -8,6 +8,7 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import { fireEvent } from '@testing-library/react';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -232,5 +233,30 @@ describe('DataFilesToolbar', () => {
       createMemoryHistory()
     );
     expect(getByText(/Empty/).closest('button')).toBeDisabled();
+  });
+
+  // Test to prevent large file download through TAPIS
+  it('prevents downloads of large files through TAPIS directly', () => {
+    // Mock the alert function
+    global.alert = jest.fn();
+    // Create a test file whose size is greater than 2 GB
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: 3000000000
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      mockStore({
+        files: {
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [testFile] }
+        }
+      }),
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('download'));
+    // Test for the alert message
+    expect(global.alert).toHaveBeenCalledWith("The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).");
   });
 });

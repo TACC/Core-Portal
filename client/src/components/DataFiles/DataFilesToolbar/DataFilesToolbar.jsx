@@ -151,10 +151,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
   const download = () => {
     if (canDownload) {
-      dispatch({
-        type: 'DATA_FILES_DOWNLOAD',
-        payload: { file: selectedFiles[0] },
-      });
+      // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
+      if (selectedFiles[0].length < 2000000000) {
+        dispatch({
+          type: 'DATA_FILES_DOWNLOAD',
+          payload: { file: selectedFiles[0] },
+        })
+      }
+      else {
+        alert("The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).");
+      }
     } else {
       toggle({
         operation: 'downloadMessage',
