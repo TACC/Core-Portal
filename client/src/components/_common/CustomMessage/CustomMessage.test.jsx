@@ -26,15 +26,13 @@ const store = mockStore({
 describe('CustomMessage', () => {
   describe('elements', () => {
     it('renders message text, message type, and dismissability correctly', () => {
-      const { container, getByText } = render(
+      const { container, getByText, getByLabelText, debug } = render(
         <Provider store={store}>
           <CustomMessage messageComponentName="TEST"></CustomMessage>
         </Provider>
       );
-      expect(container.getElementsByClassName('is-warn').length).toEqual(1);
-      expect(container.getElementsByClassName('close-button').length).toEqual(
-        1
-      );
+      expect(getByLabelText('Warning')).toBeTruthy();
+      expect(getByLabelText('Close')).toBeTruthy();
       expect(getByText('Test Message')).not.toEqual(null);
     });
   });

@@ -1,5 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { vi } from 'vitest';
 import {
   getProjectsListing,
   fetchProjectsListing,
@@ -18,7 +19,7 @@ import {
   projectsListingFixture,
 } from './fixtures/projects.fixture';
 
-jest.mock('cross-fetch');
+vi.mock('cross-fetch');
 
 describe('Projects Sagas', () => {
   it('should get a listing of projects', () => {

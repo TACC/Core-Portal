@@ -1,9 +1,0 @@
-plugins:
-
-  postcss-preset-env:
-    stage: false # to only allow features explicitely
-    features:
-      custom-media-queries: true
-      media-query-ranges: true
-
-  postcss-extend-rule: {}
