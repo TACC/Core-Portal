@@ -10,13 +10,6 @@ import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-// import workbench from 'redux/reducers/workbench.reducers';
-// import { extract } from 'query-string';
-// import authenticatedUser from 'redux/reducers/authenticated_user.reducer';
-// import { vitest } from 'vitest';
-// import { jest } from '@testing-library/jest-dom/jest-globals';
-// import { jest } from '@testing-library/jest-dom';
-// import { describe, it, expect } from '@jest-globals';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
