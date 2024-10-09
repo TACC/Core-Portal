@@ -5,7 +5,7 @@ import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import Searchbar from './Searchbar';
-import systemsFixture from 'components/DataFiles/fixtures/DataFiles.systems.fixture';
+import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 

@@ -3,6 +3,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { vi } from 'vitest';
 import {
   getAllocationsUtil,
   getProjectUsersUtil,
@@ -30,7 +31,7 @@ import {
 } from '../fixtures/allocations.fixtures';
 import { select } from '@redux-saga/core/effects';
 
-jest.mock('utils/fetchUtil');
+vi.mock('utils/fetchUtil');
 
 describe('Utils', () => {
   test('fetchUtil wrapper functions', () => {

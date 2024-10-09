@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import DataFilesManageProjectModal from '../DataFilesManageProjectModal';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -7,7 +8,8 @@ import {
   projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
-jest.mock('cross-fetch');
+
+vi.mock('cross-fetch');
 const mockStore = configureStore();
 
 const initialMockState = {
