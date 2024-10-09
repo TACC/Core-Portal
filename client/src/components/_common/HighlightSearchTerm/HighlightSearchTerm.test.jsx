@@ -38,7 +38,7 @@ describe('HighlightSearchTerm Component', () => {
       />
     );
     const highlightedText = getByText('ipsum');
-    expect(highlightedText).toHaveClass('highlight');
+    expect(highlightedText.className).toContain('highlight');
   });
 
   it('renders content with multiple searchTerm occurrences highlighted', () => {
@@ -51,7 +51,7 @@ describe('HighlightSearchTerm Component', () => {
     const highlightedText = getAllByText('ipsum');
     expect(highlightedText.length).toBe(5);
     highlightedText.forEach((element) => {
-      expect(element).toHaveClass('highlight');
+      expect(element.className).toContain('highlight');
     });
   });
 });

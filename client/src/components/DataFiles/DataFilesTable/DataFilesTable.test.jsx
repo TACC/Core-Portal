@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { render, fireEvent, waitFor } from '@testing-library/react';
@@ -17,7 +18,7 @@ const initialMockState = {
     refs: {
       FileSelector: {
         props: {
-          toggle: jest.fn(),
+          toggle: vi.fn(),
         },
       },
     },
@@ -62,7 +63,7 @@ const columns = [
 ];
 
 describe('DataFilesTable', () => {
-  const mockCallback = jest.fn();
+  const mockCallback = vi.fn();
   const store = mockStore(initialMockState);
 
   let getByText, rerender;

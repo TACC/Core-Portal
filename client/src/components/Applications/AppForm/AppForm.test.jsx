@@ -968,7 +968,7 @@ describe('AppDetail', () => {
       allocations: { loading: false },
       app: {
         ...initialAppState,
-        definition: { ...appTrayFixture.html_definitions['vis-portal'] },
+        definition: { ...appTrayFixture.htmlDefinitions['vis-portal'] },
       },
       apps: { ...appTrayExpectedFixture },
     });

@@ -1,5 +1,10 @@
 module.exports = {
-  ignoreFiles: ['build/**/*', 'dist/**/*', 'coverage/**/*', '**/icon.fonts.css'],
+  ignoreFiles: [
+    'build/**/*',
+    'dist/**/*',
+    'coverage/**/*',
+    '**/icon.fonts.css',
+  ],
 
   // `stylelint-config-recommended` turns on all the "possible errors" rules
   // SEE: Rules: https://stylelint.io/user-guide/rules/list#possible-errors
@@ -22,9 +27,12 @@ module.exports = {
     // Disallow duplicate font family names.
     // 'font-family-no-duplicate-names': null,
     // Disallow missing generic families in lists of font family names.
-    'font-family-no-missing-generic-family-keyword': [ true, {
-      ignoreFontFamilies: ['Cortal-Icons']
-    }],
+    'font-family-no-missing-generic-family-keyword': [
+      true,
+      {
+        ignoreFontFamilies: ['Cortal-Icons'],
+      },
+    ],
 
     // FUNCTION
     // Disallow an invalid expression within calc functions.
@@ -44,15 +52,18 @@ module.exports = {
 
     // PROPERTY
     // Disallow unknown properties.
-    'property-no-unknown': [ true, {
-      ignoreProperties: [
-        'composes',
-        // HACK: Silence stylelint (because Core-Portal#816) until it is updated
-        // TODO: Update stylelint package, then (hopefully) remove these
-        'container-name',
-        'container-type',
-      ]
-    }],
+    'property-no-unknown': [
+      true,
+      {
+        ignoreProperties: [
+          'composes',
+          // HACK: Silence stylelint (because Core-Portal#816) until it is updated
+          // TODO: Update stylelint package, then (hopefully) remove these
+          'container-name',
+          'container-type',
+        ],
+      },
+    ],
 
     // KEYFRAME DECLARATION
     // Disallow !important within keyframe declarations.
@@ -70,9 +81,11 @@ module.exports = {
 
     // SELECTOR
     // Disallow unknown pseudo-class selectors.
-    'selector-pseudo-class-no-unknown': [ true, {
-        ignorePseudoClasses: ['global']
-      }
+    'selector-pseudo-class-no-unknown': [
+      true,
+      {
+        ignorePseudoClasses: ['global'],
+      },
     ],
     // Disallow unknown pseudo-element selectors.
     // 'selector-pseudo-element-no-unknown': null,
@@ -85,7 +98,9 @@ module.exports = {
 
     // AT-RULE
     // Disallow unknown at-rules.
-    'at-rule-no-unknown': [ true, {
+    'at-rule-no-unknown': [
+      true,
+      {
         ignoreAtRules: [
           // HACK: Silence stylelint (because Core-Portal#816) until it is updated
           // TODO: Update stylelint package, then (hopefully) remove these
@@ -106,8 +121,9 @@ module.exports = {
           'each',
           'for',
           'while',
-        ]
-    } ],
+        ],
+      },
+    ],
 
     // COMMENT
     // Disallow empty comments.
@@ -115,14 +131,17 @@ module.exports = {
 
     // GENERAL / SHEET
     // Disallow selectors of lower specificity from coming after overriding selectors of higher specificity.
-    'no-descending-specificity':  [ true, {
-      ignore: ['selectors-within-list']
-    } ],
+    'no-descending-specificity': [
+      true,
+      {
+        ignore: ['selectors-within-list'],
+      },
+    ],
     // Disallow duplicate @import rules within a stylesheet.
     // 'no-duplicate-at-import-rules': null,
     // Disallow duplicate selectors within a stylesheet.
     'no-duplicate-selectors': null, // TODO: Uncomment to enable this after CSS Modules is heavily used
-                                    //       (duplicate selectors can help separate contexts)
+    //       (duplicate selectors can help separate contexts)
     // Disallow empty sources.
     // 'no-empty-source': null,
     // Disallow extra semicolons (Autofixable).
@@ -298,7 +317,7 @@ module.exports = {
 
     // Specify lowercase or uppercase for hex colors (Autofixable).
     'color-hex-case': null, // TODO: Uncomment later, to reduce scope of changes
-                            //       (defaults to 2, because of extended ruleset)
+    //       (defaults to 2, because of extended ruleset)
     // Specify short or long notation for hex colors (Autofixable).
     'color-hex-length': 'long',
 
@@ -486,13 +505,14 @@ module.exports = {
 
     // AT-RULE
     // Require or disallow an empty line before at-rules (Autofixable).
-    'at-rule-empty-line-before': [ 'always', {
-      except: ["blockless-after-same-name-blockless", "first-nested"],
-      ignore: ["after-comment"],
-      ignoreAtRules: [
-        'media'
-      ]
-    } ],
+    'at-rule-empty-line-before': [
+      'always',
+      {
+        except: ['blockless-after-same-name-blockless', 'first-nested'],
+        ignore: ['after-comment'],
+        ignoreAtRules: ['media'],
+      },
+    ],
     // Specify lowercase or uppercase for at-rules names (Autofixable).
     // 'at-rule-name-case': 'lower',
     // Require a newline after at-rule names.
@@ -513,7 +533,7 @@ module.exports = {
     // GENERAL / SHEET
     // Specify indentation (Autofixable).
     indentation: null, // TODO: Uncomment later, to reduce scope of changes
-                       //       (defaults to 2, because of extended ruleset)
+    //       (defaults to 2, because of extended ruleset)
     // Specify unix or windows linebreaks (Autofixable).
     // linebreaks: null,
     // Limit the number of adjacent empty lines (Autofixable).
@@ -528,5 +548,5 @@ module.exports = {
     // 'no-empty-first-line': true,
     // Require or disallow Unicode BOM.
     // 'unicode-bom': null
-  }
+  },
 };

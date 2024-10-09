@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
@@ -14,20 +15,20 @@ const { ResizeObserver } = window;
 
 beforeEach(() => {
   delete window.ResizeObserver;
-  window.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+  window.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
   }));
 });
 
 afterEach(() => {
   window.ResizeObserver = ResizeObserver;
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 // Mock Resize Detector
-jest.mock('react-resize-detector', () => ({
+vi.mock('react-resize-detector', () => ({
   useResizeDetector: () => {
     return {
       height: 10,
