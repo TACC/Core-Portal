@@ -245,18 +245,18 @@ describe('DataFilesToolbar', () => {
       name: 'test.txt',
       type: 'file',
       length: 3000000000,
-      path: '/test.txt'
+      path: '/test.txt',
     };
     // Create the store
     const { getByText } = renderComponent(
-      <DataFilesToolbar scheme='private' api='tapis'/>,
+      <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
         workbench: {
           config: {
             extract: '',
             compress: '',
-            trashPath: '.Trash'
-          }
+            trashPath: '.Trash',
+          },
         },
         files: {
           params: {
@@ -268,11 +268,11 @@ describe('DataFilesToolbar', () => {
           },
           listing: { FilesListing: [testFile] },
           selected: { FilesListing: [0] },
-          operationStatus: { trash: false }
+          operationStatus: { trash: false },
         },
         systems: systemsFixture,
         projects: { metadata: [] },
-        authenticatedUser: { user: { username: 'testuser' } }
+        authenticatedUser: { user: { username: 'testuser' } },
       })
     );
     // Click on the download button to try and download the file
