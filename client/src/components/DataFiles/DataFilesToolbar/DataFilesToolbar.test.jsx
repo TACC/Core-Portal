@@ -9,6 +9,14 @@ import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
+// import workbench from 'redux/reducers/workbench.reducers';
+// import { extract } from 'query-string';
+// import authenticatedUser from 'redux/reducers/authenticated_user.reducer';
+// import { vitest } from 'vitest';
+// import { jest } from '@testing-library/jest-dom/jest-globals';
+// import { jest } from '@testing-library/jest-dom';
+// import { describe, it, expect } from '@jest-globals';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -238,24 +246,44 @@ describe('DataFilesToolbar', () => {
   // Test to prevent large file download through TAPIS
   it('prevents downloads of large files through TAPIS directly', () => {
     // Mock the alert function
-    global.alert = jest.fn();
+    global.alert = vi.fn();
     // Create a test file whose size is greater than 2 GB
     const testFile = {
       name: 'test.txt',
       type: 'file',
       length: 3000000000,
+      path: '/test.txt'
     };
     // Create the store
     const { getByText } = renderComponent(
+      <DataFilesToolbar scheme='private' api='tapis'/>,
       mockStore({
-        files: {
-          listing: { FilesListing: [testFile] },
-          selected: { FilesListing: [testFile] },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash'
+          }
         },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false }
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } }
       })
     );
     // Click on the download button to try and download the file
-    fireEvent.click(getByText('download'));
+    fireEvent.click(getByText('Download'));
     // Test for the alert message
     expect(global.alert).toHaveBeenCalledWith(
       'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
