@@ -52,7 +52,9 @@ const Sidebar = ({
 }) => {
   return (
     <Nav
-      className={`${styles['root']} ${isMain ? styles['main'] : ''}`}
+      className={`nav-sidebar ${styles['root']} ${
+        isMain ? styles['main'] : ''
+      }`}
       vertical
     >
       {!loading && addItemsBefore

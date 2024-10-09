@@ -7,3 +7,4 @@ icon.fonts.css
 coverage
 build
 dist
+**/*.css

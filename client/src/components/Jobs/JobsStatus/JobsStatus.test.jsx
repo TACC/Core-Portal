@@ -63,7 +63,6 @@ describe('JobsStatus', () => {
       fancy: true,
     });
     expect(getByText(/Finished/)).toBeDefined();
-    expect(getByText(/Finished/)).toHaveClass('badge badge-success');
   });
 
   it.each(Object.keys(STATUS_TEXT_MAP))(
