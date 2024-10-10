@@ -97,7 +97,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             </>
           ) : null}
           <Button type="link" onClick={onManage}>
-            {readOnlyTeam ? 'View' : 'Manage'} Team
+            {`${readOnlyTeam ? 'View' : 'Manage'} Team`}
           </Button>
         </div>
       }
