@@ -49,92 +49,80 @@ def mock_tapis_client():
 # TODO: Convert this to become a mocker patch of the Metadata object, similar to mock_create_project
 # List of Metadata per project
 @pytest.fixture()
-def mock_metadata():
-    metadata = MagicMock()
-
-    def mock_init(title):
-        metadata.defaults = {"title": title}
-
-    metadata.side_effect = mock_init
-    return metadata
-
-
-# Potentially holds a list of projects by the user
-@pytest.fixture()
-def mock_storage_system(mocker):
-    mock = mocker.MagicMock()
-    mock.description = "All Project Storage"
-
-    def mock_init(client, project_id):
-        mock.client = client
-        mock.project = project_id
-        mock.last_modified = "10-09-2024"
-        return mock
-
-    mock.side_effect = mock_init
-    return mock
-
-
-@pytest.fixture()
-def mock_create_project(mocker):
+def mock_metadata(mocker):
     mock = mocker.patch(
-        "portal.apps.projects.models.Project.storage",
+        "portal.apps.projects.models.Project._create_metadata",
         autospec=True,
     )
 
-    def mock_init(mock_storage_system, client, project_id, metadata=None, storage=None):
-        mock.client = client
-        mock.project_id = project_id
-        if storage is None:
-            mock.storage = mock_storage_system(client, mock.project_id)
-        return mock
+    def mock_init(title, project_id, owner=None):
+        mock_metadata = mocker.Mock()
+        mock_metadata.defaults = {
+            "title": title,
+            "project_id": project_id,
+            "owner": owner,
+        }
+        return mock_metadata
 
     mock.side_effect = mock_init
     return mock
 
 
-def test_project_init(
-    mock_tapis_client, mock_storage_system, mock_metadata, mock_create_project
-):
+@pytest.fixture()
+def mock_shared_systems(mocker):
+    mock = mocker.Mock()
+    mock.return_value = mocker.Mock(
+        description="All Project Storage",
+        storage=[],
+    )
+    return mock
+
+
+@pytest.fixture()
+def mock_create_project(mocker, mock_shared_systems, mock_metadata):
+    mock = mocker.patch(
+        "portal.apps.projects.models.Project.create",
+        autospec=True,
+    )
+
+    def mock_init(client, title, project_id, owner):
+        formatted_project_id = "{prefix}.{project_id}".format(
+            prefix=Project.metadata_name, project_id="PRJ-123"
+        )
+        mock_project = mocker.Mock(
+            client=client,
+            project_id=project_id,
+            shared_systems=mock_shared_systems(client, id=formatted_project_id),
+        )
+        metadata_instance = mock_metadata(title, formatted_project_id, owner)
+        mock_project.shared_systems.storage.append(metadata_instance)
+        return mock_project
+
+    mock.side_effect = mock_init
+    return mock
+
+
+def test_project_init(mock_tapis_client, mock_shared_systems, mock_create_project):
     "Test project model init."
-    # Mock a project creation
-    assert mock_storage_system.description == "All Project Storage"
+    mock_shared_systems_instance = mock_shared_systems.return_value
 
-    """
-    # Test with no initial storage or metadata
-    prj = mock_create_project(mock_tapis_client, "PRJ-123")
-    mock_create_project.assert_called_with(mock_tapis_client, "PRJ-123")
-    assert prj.project_id == "PRJ-123"
-
-    prj2 = mock_create_project(
-        mock_tapis_client, "PRJ-124", mock_metadata, mock_storage_system
-    )
-    mock_create_project.assert_called_with(
-        mock_tapis_client, "PRJ-124", mock_metadata, mock_storage_system
-    )
-    assert prj2.storage.last_modified == "10-09-2024"
-    assert prj2.storage.description == "my test description"
-    """
-
-    id = "{prefix}.{project_id}".format(
-        prefix=Project.metadata_name, project_id="PRJ-123"
-    )
+    assert mock_shared_systems_instance.description == "All Project Storage"
 
     prj = mock_create_project(
         client=mock_tapis_client,
-        project_id=id,
-        mock_storage_system=mock_storage_system,
+        title="My Project",
+        project_id="PRJ-123",
+        owner=mock_owner,
     )
-    assert prj.project_id == id
-
-    # With Storage Systems
-    # In order to assert this, this needs to be called in a create project, then storage data would have to be made
-    mock_storage_system.assert_called_with(mock_tapis_client, id)
-    # Without Storage Systems (not possible, code is commented out to be depreicated see models/base.py)
-
-    # TODO: Uncomment out and test that metadata shows and passses these tests
-    # assert ProjectMetadata.objects.all().count() == 1
-    # assert ProjectMetadata.objects.get(project_id="PRJ-123", title="my title")
+    assert prj.project_id == "PRJ-123"
+    mock_shared_systems.assert_called_with(
+        mock_tapis_client,
+        id="{prefix}.{project_id}".format(
+            prefix=Project.metadata_name, project_id="PRJ-123"
+        ),
+    )
+    assert len(mock_shared_systems_instance.storage) == 1
+    assert mock_shared_systems_instance.storage[0].defaults["title"] == "My Project"
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
