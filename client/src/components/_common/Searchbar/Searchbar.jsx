@@ -143,10 +143,13 @@ const Searchbar = ({
       )}
       {((hasQuery && !siteSearch) ||
         (filterType && filterType !== allFilterTypesValue && filterTypes)) && (
-        <Button attr="reset" type="link" onClick={onClear}>
-          <span data-testid="clear-button">
-            Back to All {dataType ? dataType : 'Results'}
-          </span>
+        <Button
+          attr="reset"
+          type="link"
+          onClick={onClear}
+          dataTestid="clear-button"
+        >
+          {`Back to All ${dataType ? dataType : 'Results'}`}
         </Button>
       )}
     </form>

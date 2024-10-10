@@ -171,7 +171,7 @@ describe('Searchbar', () => {
 
     const element = getByTestId('clear-button');
 
-    expect(element.innerHTML).toBe('Back to All Files');
+    expect(element.textContent).toBe('Back to All Files');
   });
 
   it('shows correct label when no dataType is sent', async () => {
@@ -203,7 +203,7 @@ describe('Searchbar', () => {
 
     const element = getByTestId('clear-button');
 
-    expect(element.innerHTML).toBe('Back to All Results');
+    expect(element.textContent).toBe('Back to All Results');
   });
 
   it('has expected elements', () => {
