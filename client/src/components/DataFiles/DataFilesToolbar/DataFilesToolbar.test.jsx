@@ -10,6 +10,7 @@ import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
+import { useDispatch } from 'react-redux';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -281,5 +282,59 @@ describe('DataFilesToolbar', () => {
     expect(global.alert).toHaveBeenCalledWith(
       'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
     );
+  });
+
+  // Test that allows downloads of files less than 2 GB
+  it('allows direct file downloads when the file size is below 2 GB', () => {
+    // Mock the dispatch action
+    const mockDispatch = vi.fn();
+    // vi.mock('react-redux', () => ({
+    //   useDispatch: vi.fn(),
+    // }));
+    // useDispatch.mockReturnValue(mockDispatch);
+    // Create a test file whose size is less than 2 GB
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: 1000000000,
+      path: '/test.txt',
+    };
+    // Create a spy that watches for the dispatch call
+    vi.spyOn(DataFilesToolbar, 'dispatch').mockImplementationOnce(() => mockDispatch);
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Test for the dispatch call
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'DATA_FILES_DOWNLOAD',
+      payload: { FilesListing: [0] },
+    })
   });
 });
