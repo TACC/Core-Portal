@@ -10,7 +10,6 @@ import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { useDispatch } from 'react-redux';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -30,6 +29,11 @@ describe('ToolbarButton', () => {
 });
 
 describe('DataFilesToolbar', () => {
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
   it('renders necessary buttons', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
@@ -288,19 +292,18 @@ describe('DataFilesToolbar', () => {
   it('allows direct file downloads when the file size is below 2 GB', () => {
     // Mock the dispatch action
     const mockDispatch = vi.fn();
-    // vi.mock('react-redux', () => ({
-    //   useDispatch: vi.fn(),
-    // }));
-    // useDispatch.mockReturnValue(mockDispatch);
     // Create a test file whose size is less than 2 GB
     const testFile = {
       name: 'test.txt',
       type: 'file',
       length: 1000000000,
       path: '/test.txt',
+      id: 123,
     };
     // Create a spy that watches for the dispatch call
-    vi.spyOn(DataFilesToolbar, 'dispatch').mockImplementationOnce(() => mockDispatch);
+    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      mockDispatch
+    );
     // Create the store
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
@@ -334,7 +337,15 @@ describe('DataFilesToolbar', () => {
     // Test for the dispatch call
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'DATA_FILES_DOWNLOAD',
-      payload: { FilesListing: [0] },
-    })
+      payload: {
+        file: {
+          id: 'undefined//test.txt',
+          length: 1000000000,
+          name: 'test.txt',
+          path: '/test.txt',
+          type: 'file',
+        },
+      },
+    });
   });
 });
