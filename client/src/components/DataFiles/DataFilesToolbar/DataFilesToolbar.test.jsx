@@ -246,10 +246,11 @@ describe('DataFilesToolbar', () => {
     // Mock the alert function
     global.alert = vi.fn();
     // Create a test file whose size is greater than 2 GB
+    const tooBigFileSize = 3 * 1024 * 1024 * 1024;
     const testFile = {
       name: 'test.txt',
       type: 'file',
-      length: 3000000000,
+      length: tooBigFileSize,
       path: '/test.txt',
     };
     // Create the store
@@ -293,10 +294,11 @@ describe('DataFilesToolbar', () => {
     // Mock the dispatch action
     const mockDispatch = vi.fn();
     // Create a test file whose size is less than 2 GB
+    const testFileSize = 1 * 1024 * 1024 * 1024;
     const testFile = {
       name: 'test.txt',
       type: 'file',
-      length: 1000000000,
+      length: testFileSize,
       path: '/test.txt',
       id: 123,
     };
@@ -340,7 +342,7 @@ describe('DataFilesToolbar', () => {
       payload: {
         file: {
           id: 'undefined//test.txt',
-          length: 1000000000,
+          length: testFileSize,
           name: 'test.txt',
           path: '/test.txt',
           type: 'file',
