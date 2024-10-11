@@ -22,6 +22,7 @@ const initialMockState = {
   replying: false,
   replyingError: false,
   replyingErrorMessage: '',
+  attachments: [],
 };
 
 const ticketAttachmentSettings = {
@@ -41,6 +42,8 @@ const exampleTicketHistory = [
     IsCreator: true,
     Creator: 'Max Munstermann',
     Created: 'Fri Mar 22 09:17:27 2019',
+    Attachments: [[1315069, 'untitled (0b)']],
+    Ticket: '1',
   },
   {
     id: '2',
@@ -49,6 +52,8 @@ const exampleTicketHistory = [
     IsCreator: false,
     Creator: 'Ad Min',
     Created: 'Fri Mar 23 10:17:00 2019',
+    Attachments: [[1315069, 'untitled (0b)']],
+    Ticket: '2',
   },
 ];
 const exampleTicketHistoryCard = [
@@ -63,6 +68,7 @@ const exampleTicketHistoryCard = [
       [1315070, 'untitled (50b)'],
       [1315071, 'Screen Shot 2021-09-27 at 12.45.03 PM.png (46.2k)'],
     ],
+    Ticket: '2077239',
   },
 ];
 function renderTicketsModelComponent(store) {
