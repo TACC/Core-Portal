@@ -5,10 +5,7 @@ import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import OnboardingAdmin from './OnboardingAdmin';
-import {
-  onboardingAdminState,
-  onboardingTestState,
-} from '../../redux/sagas/fixtures/onboarding.fixture';
+import { onboardingAdminState } from '../../redux/sagas/fixtures/onboarding.fixture';
 
 const mockStore = configureStore();
 
