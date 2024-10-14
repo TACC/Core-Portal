@@ -5,7 +5,7 @@ import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import Searchbar from './Searchbar';
-import systemsFixture from 'components/DataFiles/fixtures/DataFiles.systems.fixture';
+import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 
@@ -171,7 +171,7 @@ describe('Searchbar', () => {
 
     const element = getByTestId('clear-button');
 
-    expect(element.innerHTML).toBe('Back to All Files');
+    expect(element.textContent).toBe('Back to All Files');
   });
 
   it('shows correct label when no dataType is sent', async () => {
@@ -203,7 +203,7 @@ describe('Searchbar', () => {
 
     const element = getByTestId('clear-button');
 
-    expect(element.innerHTML).toBe('Back to All Results');
+    expect(element.textContent).toBe('Back to All Results');
   });
 
   it('has expected elements', () => {

@@ -1,6 +1,7 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from tapipy.tapis import Tapis
+from typing import Literal
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -58,11 +59,53 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
          "none": f"d:u:{username},u:{username}"
     }
 
+    if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
+        logger.info(f"Using setfacl job to submit ACL change for project: {path}, username: {username}, operation: {operation}, role: {role}")
+        job_res = submit_workspace_acls_job(username, path, role, operation)
+        logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
+        return
+
     client.files.setFacl(systemId=system_id,
                          path=path,
                          operation=operation_map[operation],
                          recursionMethod="PHYSICAL",
                          aclString=acl_string_map[role])
+
+
+def submit_workspace_acls_job(
+    username, project_name, role, action=Literal["add", "remove"]
+):
+    """
+    Submit a job to set ACLs on a project for a specific user. This should be used if
+    we are setting ACLs on an existing project, since there might be too many files for
+    the synchronous Tapis endpoint to be performant.
+    """
+    client = service_account()
+    portal_name = settings.PORTAL_NAMESPACE
+
+    job_body = {
+        "name": f"setfacl-project-{project_name}-{username}-{action}-{role}",
+        "appId": "setfacl-corral-wmaprtl",
+        "appVersion": "0.0.1",
+        "description": "Add/Remove ACLs on a directory",
+        "fileInputs": [],
+        "parameterSet": {
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {"key": "usernames", "value": username},
+                {
+                    "key": "directory",
+                    "value": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{project_name}",
+                },
+                {"key": "action", "value": action},
+                {"key": "role", "value": role},
+            ],
+        },
+        "tags": [f"portalName:{portal_name}"],
+    }
+    res = client.jobs.submitJob(**job_body)
+    return res
 
 
 def create_workspace_dir(workspace_id: str) -> str:

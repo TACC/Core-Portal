@@ -17,6 +17,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseTapisResultSerializer
+
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
@@ -30,7 +31,7 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
 def _app_license_type(app_def):
-    app_lic_type = getattr(app_def.notes, 'licenseType', None)
+    app_lic_type = getattr(app_def.notes, "licenseType", None)
     lic_type = app_lic_type if app_lic_type in LICENSE_TYPES else None
     return lic_type
 
@@ -44,16 +45,31 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
+def _get_exec_systems(user, systems):
+    """List of all enabled execution systems available for the user."""
+    tapis = user.tapis_oauth.client
+    search_string = "(canExec.eq.true)~(enabled.eq.true)"
+    if systems != ["All"]:
+        system_id_search = ','.join(systems)
+        search_string = f"(id.in.{system_id_search})~{search_string}"
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
+
+
 def _get_app(app_id, app_version, user):
     tapis = user.tapis_oauth.client
     if app_version:
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
+
     data = {'definition': app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data['exec_sys'] = tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
+    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', [])
+    if len(exec_systems) > 0:
+        data['execSystems'] = _get_exec_systems(user, exec_systems)
+    else:
+        # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
+        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
     data['license'] = {

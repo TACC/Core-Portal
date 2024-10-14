@@ -1,8 +1,9 @@
 import { fetchUtil, FetchError } from './fetchUtil';
 import Cookies from 'js-cookie';
+import { vi } from 'vitest';
 
-global.fetch = jest.fn();
-Cookies.get = jest.fn().mockImplementation(() => 'test-cookie');
+global.fetch = vi.fn();
+Cookies.get = vi.fn().mockImplementation(() => 'test-cookie');
 
 describe('fetchUtil', () => {
   afterEach(() => {
@@ -15,10 +16,11 @@ describe('fetchUtil', () => {
       json: () => Promise.resolve({ hello: 'world' }),
     });
 
-    const req = new URL('/api/test', global.location.origin);
+    const req = new URL('/api/test', 'http://localhost:3000');
     req.searchParams.append('search', 'params');
 
     const json = await fetchUtil({
+      url: 'http://localhost:3000/api/test',
       params: { search: 'params' },
       method: 'POST',
       body: JSON.stringify({}),

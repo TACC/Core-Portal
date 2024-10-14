@@ -1,6 +1,7 @@
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { vi } from 'vitest';
 import {
   jobs as jobsReducer,
   // TODOv3: dropV2Jobs
@@ -43,7 +44,7 @@ import {
 } from './fixtures/jobsList.fixture';
 import { notificationsListFixture } from './fixtures/notificationsList.fixture';
 
-jest.mock('cross-fetch');
+vi.mock('cross-fetch');
 
 const initialJobDetail = {
   app: null,

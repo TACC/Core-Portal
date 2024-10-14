@@ -121,6 +121,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
@@ -602,6 +603,8 @@ WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
+PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', False)
+
 """
 SETTINGS: ELASTICSEARCH
 """
@@ -730,6 +733,13 @@ RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
 RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
+
+"""
+SETTINGS: INTERNAL DOCS
+"""
+INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
+INTERNAL_DOCS_URL = getattr(settings_custom, '_INTERNAL_DOCS_URL', '')
+
 
 """
 SETTINGS: LOCAL OVERRIDES

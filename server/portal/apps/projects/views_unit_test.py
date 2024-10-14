@@ -6,6 +6,7 @@ from mock import MagicMock
 import json
 from tapipy.tapis import TapisResult
 from django.conf import settings
+from django.test import override_settings
 
 
 @pytest.fixture
@@ -180,6 +181,7 @@ def test_projects_search_result_not_in_tapis(
 def test_projects_post(
     authenticated_user, client, mock_service_account, mock_tapis_client
 ):
+
     response = client.post(
         "/api/projects/",
         {
@@ -206,6 +208,55 @@ def test_projects_post(
         operation="ADD",
         recursionMethod="PHYSICAL",
         aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+    )
+    mock_tapis_client.systems.createSystem.assert_called()
+    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
+        "test.project.test.project-2"
+    )
+
+
+@override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
+def test_projects_post_setfacl_job(
+    authenticated_user, client, mock_service_account, mock_tapis_client
+):
+    response = client.post(
+        "/api/projects/",
+        {
+            "title": "Test Title",
+            "members": [{"username": authenticated_user.username, "access": "owner"}],
+        },
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": 200,
+        "response": {"id": "test.project.test.project-2"},
+    }
+    # 1. service account creates dir client.files.mkdir
+    # 2. service account client sets client.files.setFacl
+    # 3. standard client creates workspace client.systems.createSystem
+    mock_service_account().files.mkdir.assert_called_with(
+        systemId="projects.system.name", path="test.project-2"
+    )
+    mock_service_account().files.setFacl.assert_not_called()
+    mock_service_account().jobs.submitJob.assert_called_with(
+        name='setfacl-project-test.project-2-username-add-writer',
+        appId='setfacl-corral-wmaprtl',
+        appVersion='0.0.1',
+        description='Add/Remove ACLs on a directory',
+        fileInputs=[],
+        parameterSet={
+            'appArgs': [],
+            'schedulerOptions': [],
+            'envVariables': [
+                {'key': 'usernames', 'value': 'username'},
+                {'key': 'directory', 'value': '/path/to/root/test.project-2'},
+                {'key': 'action', 'value': 'add'},
+                {'key': 'role', 'value': 'writer'},
+            ],
+        },
+        tags=['portalName:test'],
     )
     mock_tapis_client.systems.createSystem.assert_called()
     assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
@@ -378,6 +429,54 @@ def test_project_change_system_role(
     )
 
 
+@override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
+def test_project_change_system_role_setfacl_job(
+    authenticated_user, client, mock_service_account, mock_tapis_client
+):
+    # USER translates to writer role
+    patch_body = {
+        "action": "change_system_role",
+        "username": "test_user",
+        "newRole": "USER",
+    }
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+    assert response.status_code == 200
+    assert response.json() == {"status": 200, "response": "OK"}
+    # System Id used in setFacl is project root system name
+    mock_service_account().files.setFacl.assert_not_called()
+    mock_service_account().jobs.submitJob.assert_called_with(
+        name='setfacl-project-PRJ-123-test_user-add-writer',
+        appId='setfacl-corral-wmaprtl',
+        appVersion='0.0.1',
+        description='Add/Remove ACLs on a directory',
+        fileInputs=[],
+        parameterSet={
+            'appArgs': [],
+            'schedulerOptions': [],
+            'envVariables': [
+                {'key': 'usernames', 'value': 'test_user'},
+                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'action', 'value': 'add'},
+                {'key': 'role', 'value': 'writer'},
+            ],
+        },
+        tags=['portalName:test'],
+    )
+    # Grant request are on the specific project system id
+    mock_tapis_client.systems.grantUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "EXECUTE"],
+    )
+    mock_tapis_client.files.grantPermissions.assert_called_with(
+        systemId="test.project.PRJ-123",
+        path="/",
+        username="test_user",
+        permission="MODIFY",
+    )
+
+
 def test_members_view_add(
     authenticated_user, client, mock_service_account, mock_tapis_client, project_list
 ):
@@ -449,6 +548,90 @@ def test_members_view_add(
     )
 
 
+@override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
+def test_members_view_add_setfacl_job(
+    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
+        **{"users": [authenticated_user.username, "test_user"]}
+    )
+    mock_tapis_client.files.getPermissions.return_value = TapisResult(
+        **{"permission": "MODIFY"}
+    )
+
+    patch_body = {"action": "add_member", "username": "test_user"}
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+
+    # All new members now have co_pi status since we no longer have distinctions
+    # between members and co_pis, and an individual may not become a pi
+    # until they have "edit" access (co_pi status)
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": 200,
+        "response": {
+            "created": project_list["tapis_response"][0].created,
+            "description": project_list["api_response"][0]["description"],
+            "projectId": "PRJ-123",
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                },
+                {
+                    "user": {
+                        "username": "test_user",
+                        "first_name": "",
+                        "last_name": "",
+                        "email": "",
+                    },
+                    "access": "edit",
+                },
+            ],
+            "title": project_list["api_response"][0]["title"],
+        },
+    }
+    mock_service_account().files.setFacl.assert_not_called()
+    mock_service_account().jobs.submitJob.assert_called_with(
+        name='setfacl-project-PRJ-123-test_user-add-writer',
+        appId='setfacl-corral-wmaprtl',
+        appVersion='0.0.1',
+        description='Add/Remove ACLs on a directory',
+        fileInputs=[],
+        parameterSet={
+            'appArgs': [],
+            'schedulerOptions': [],
+            'envVariables': [
+                {'key': 'usernames', 'value': 'test_user'},
+                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'action', 'value': 'add'},
+                {'key': 'role', 'value': 'writer'},
+            ],
+        },
+        tags=['portalName:test'],
+    )
+    mock_tapis_client.systems.shareSystem.assert_called_with(
+        systemId="test.project.PRJ-123", users=["test_user"]
+    )
+    mock_tapis_client.systems.grantUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "EXECUTE"],
+    )
+    mock_tapis_client.files.grantPermissions.assert_called_with(
+        systemId="test.project.PRJ-123",
+        path="/",
+        username="test_user",
+        permission="MODIFY",
+    )
+
+
 def test_members_view_remove(
     authenticated_user, client, mock_service_account, mock_tapis_client, project_list
 ):
@@ -483,6 +666,70 @@ def test_members_view_remove(
         operation="REMOVE",
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user,u:test_user",
+    )
+    mock_tapis_client.systems.removeUserCredential.assert_called_with(
+        systemId="test.project.PRJ-123", userName="test_user"
+    )
+    mock_tapis_client.systems.unShareSystem.assert_called_with(
+        systemId="test.project.PRJ-123", users=["test_user"]
+    )
+    mock_tapis_client.systems.revokeUserPerms.assert_called_with(
+        systemId="test.project.PRJ-123",
+        userName="test_user",
+        permissions=["READ", "MODIFY", "EXECUTE"],
+    )
+    mock_tapis_client.files.deletePermissions.assert_called_with(
+        systemId="test.project.PRJ-123", path="/", username="test_user"
+    )
+
+
+@override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
+def test_members_view_remove_setfacl_job(
+    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+):
+    mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    patch_body = {"action": "remove_member", "username": "test_user"}
+
+    response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": 200,
+        "response": {
+            "created": project_list["tapis_response"][0].created,
+            "description": project_list["api_response"][0]["description"],
+            "projectId": "PRJ-123",
+            "title": project_list["api_response"][0]["title"],
+            "members": [
+                {
+                    "user": {
+                        "username": "username",
+                        "first_name": "Firstname",
+                        "last_name": "Lastname",
+                        "email": "user@user.com",
+                    },
+                    "access": "owner",
+                }
+            ],
+        },
+    }
+    mock_service_account().files.setFacl.assert_not_called()
+    mock_service_account().jobs.submitJob.assert_called_with(
+        name='setfacl-project-PRJ-123-test_user-remove-none',
+        appId='setfacl-corral-wmaprtl',
+        appVersion='0.0.1',
+        description='Add/Remove ACLs on a directory',
+        fileInputs=[],
+        parameterSet={
+            'appArgs': [],
+            'schedulerOptions': [],
+            'envVariables': [
+                {'key': 'usernames', 'value': 'test_user'},
+                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'action', 'value': 'remove'},
+                {'key': 'role', 'value': 'none'},
+            ],
+        },
+        tags=['portalName:test'],
     )
     mock_tapis_client.systems.removeUserCredential.assert_called_with(
         systemId="test.project.PRJ-123", userName="test_user"

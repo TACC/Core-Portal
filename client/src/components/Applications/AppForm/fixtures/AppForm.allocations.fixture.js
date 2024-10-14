@@ -8,6 +8,23 @@ const allocationsFixture = {
     'frontera.tacc.utexas.edu': ['TACC-ACI'],
   },
   portal_alloc: 'TACC-ACI',
+  active: [
+    {
+      title: 'TACC-ACI',
+      projectId: 9192,
+      projectName: 'TACC-ACI',
+      systems: [
+        {
+          name: 'ls6',
+          host: 'ls6.tacc.utexas.edu',
+        },
+        {
+          name: 'frontera',
+          host: 'frontera.tacc.utexas.edu',
+        },
+      ],
+    },
+  ],
 };
 
 export default allocationsFixture;
