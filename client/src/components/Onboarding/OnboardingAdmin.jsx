@@ -131,14 +131,16 @@ const OnboardingAdminListUser = ({ user, index, viewLogCallback }) => {
             {step.displayName}
           </td>
           <td
-            className={`${styles.status} ${step.state === 'staffwait' ? styles.staffwait : ''
-              }`}
+            className={`${styles.status} ${
+              step.state === 'staffwait' ? styles.staffwait : ''
+            }`}
           >
             <OnboardingStatus step={step} />
           </td>
           <td
-            className={`${styles['has-wrappable-content']} ${step.state === 'staffwait' ? styles.staffwait : ''
-              }`}
+            className={`${styles['has-wrappable-content']} ${
+              step.state === 'staffwait' ? styles.staffwait : ''
+            }`}
           >
             {step.state === 'staffwait' && (
               <OnboardingApproveActions
@@ -152,7 +154,7 @@ const OnboardingAdminListUser = ({ user, index, viewLogCallback }) => {
                 action={
                   // If this user and step currently is running an admin action, pass down the action
                   adminAction.username === user.username &&
-                    adminAction.step === step.step
+                  adminAction.step === step.step
                     ? adminAction.action
                     : null
                 }
@@ -168,7 +170,7 @@ const OnboardingAdminListUser = ({ user, index, viewLogCallback }) => {
               disableSkip={step.state === 'completed'}
               sentAction={
                 adminAction.username === user.username &&
-                  adminAction.step === step.step
+                adminAction.step === step.step
                   ? adminAction.action
                   : null
               }

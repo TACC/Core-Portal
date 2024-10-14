@@ -5,7 +5,10 @@ import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import OnboardingAdmin from './OnboardingAdmin';
-import { onboardingAdminState, onboardingTestState } from '../../redux/sagas/fixtures/onboarding.fixture';
+import {
+  onboardingAdminState,
+  onboardingTestState,
+} from '../../redux/sagas/fixtures/onboarding.fixture';
 
 const mockStore = configureStore();
 
@@ -44,10 +47,10 @@ describe('Onboarding Admin View', () => {
           // Data based off users payload output, 3 generated users that have more than 2 steps
           users: [
             {
-              email: "User1@example.com",
-              firstName: "First1",
+              email: 'User1@example.com',
+              firstName: 'First1',
               isStaff: false,
-              lastName: "Last1",
+              lastName: 'Last1',
               setupComplete: false,
               steps: [
                 {
@@ -61,7 +64,8 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.test_steps.MockStep',
                   displayName: 'Checking Project Membership',
-                  description: 'Checking project membership to specific project',
+                  description:
+                    'Checking project membership to specific project',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'staffwait',
@@ -69,19 +73,20 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
                   displayName: 'System Access',
-                  description: 'Setting up access to TACC storage and execution systems. No action required.',
+                  description:
+                    'Setting up access to TACC storage and execution systems. No action required.',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'pending',
                 },
               ],
-              username: "User1",
+              username: 'User1',
             },
             {
-              email: "User2@example.com",
-              firstName: "First2",
+              email: 'User2@example.com',
+              firstName: 'First2',
               isStaff: false,
-              lastName: "Last2",
+              lastName: 'Last2',
               setupComplete: false,
               steps: [
                 {
@@ -95,7 +100,8 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.test_steps.MockStep',
                   displayName: 'Checking Project Membership',
-                  description: 'Checking project membership to specific project',
+                  description:
+                    'Checking project membership to specific project',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'staffwait',
@@ -103,19 +109,20 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
                   displayName: 'System Access',
-                  description: 'Setting up access to TACC storage and execution systems. No action required.',
+                  description:
+                    'Setting up access to TACC storage and execution systems. No action required.',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'pending',
                 },
               ],
-              username: "User2",
+              username: 'User2',
             },
             {
-              email: "User3@example.com",
-              firstName: "First3",
+              email: 'User3@example.com',
+              firstName: 'First3',
               isStaff: false,
-              lastName: "Last3",
+              lastName: 'Last3',
               setupComplete: false,
               steps: [
                 {
@@ -129,7 +136,8 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.test_steps.MockStep',
                   displayName: 'Checking Project Membership',
-                  description: 'Checking project membership to specific project',
+                  description:
+                    'Checking project membership to specific project',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'staffwait',
@@ -137,13 +145,14 @@ describe('Onboarding Admin View', () => {
                 {
                   step: 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
                   displayName: 'System Access',
-                  description: 'Setting up access to TACC storage and execution systems. No action required.',
+                  description:
+                    'Setting up access to TACC storage and execution systems. No action required.',
                   userConfirm: 'Confirm',
                   staffApprove: 'Approve',
                   state: 'pending',
                 },
               ],
-              username: "User3",
+              username: 'User3',
             },
           ],
           offset: 0,
@@ -158,7 +167,7 @@ describe('Onboarding Admin View', () => {
 
     const { getByText, container } = renderOnboardingAdminComponent(store);
     const userElements = container.querySelectorAll('.user-row');
-    // Check style for user elements  
+    // Check style for user elements
     userElements.forEach((element, index) => {
       if (index % 2 === 0) {
         expect(element).toHaveClass('even-row');
@@ -172,4 +181,3 @@ describe('Onboarding Admin View', () => {
     expect(getByText(/First3 Last3/)).toBeDefined();
   });
 });
-
