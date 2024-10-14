@@ -28,6 +28,7 @@ from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
 from impersonate import views as impersonate_views
 from portal.views.views import health_check
+from portal.views.views import serve_docs
 admin.autodiscover()
 
 urlpatterns = [
@@ -71,7 +72,7 @@ urlpatterns = [
 
     # auth.
     path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
-    re_path('login/$', login),
+    re_path('login/$', login, name='login'),
 
     # markup
     re_path('core/markup/nav', TemplateView.as_view(template_name='includes/nav_portal.raw.html'), name='portal_nav_markup'),
@@ -116,8 +117,7 @@ urlpatterns = [
     path('version/', portal_version),
 
     # health check
-    path('core/health-check', health_check)
-
+    path('core/health-check', health_check),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
@@ -129,3 +129,6 @@ if settings.WORKBENCH_SETTINGS.get('hasCustomEndpoints'):
             include(f'portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.urls', namespace='custom')
         )
     )
+# internal docs
+if settings.INTERNAL_DOCS_URL and settings.INTERNAL_DOCS_ROOT:
+    urlpatterns.append(re_path(f"^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$", serve_docs))

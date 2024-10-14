@@ -58,7 +58,7 @@ describe('System Status Page Layout', () => {
     });
 
     fetchMock.mock(
-      'http://localhost/api/system-monitor/frontera.tacc.utexas.edu',
+      'http://localhost:3000/api/system-monitor/frontera.tacc.utexas.edu',
       {
         status: 200,
         body: queues,
@@ -89,7 +89,7 @@ describe('System Status Page Layout', () => {
     });
 
     fetchMock.mock(
-      'http://localhost/api/system-monitor/frontera.tacc.utexas.edu',
+      'http://localhost:3000/api/system-monitor/frontera.tacc.utexas.edu',
       {
         status: 200,
         body: [],

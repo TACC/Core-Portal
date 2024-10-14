@@ -26,7 +26,10 @@ describe('TicketCreateForm', () => {
       workbench,
     });
 
-    const { getAllByText } = renderComponent(<TicketCreateForm />, store);
+    const { getAllByText } = renderComponent(
+      <TicketCreateForm provideDashBoardLinkOnSuccess={true} />,
+      store
+    );
     expect(getAllByText(/Explain your steps/)).toBeDefined();
   });
 
@@ -39,7 +42,10 @@ describe('TicketCreateForm', () => {
     });
 
     const { getAllByText, getByDisplayValue } = renderComponent(
-      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      <TicketCreateForm
+        authenticatedUser={exampleAuthenticatedUser}
+        provideDashBoardLinkOnSuccess={true}
+      />,
       store
     );
     expect(getByDisplayValue(/Max/)).toBeInTheDocument();
@@ -58,7 +64,10 @@ describe('TicketCreateForm', () => {
     });
 
     const { getByTestId } = renderComponent(
-      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      <TicketCreateForm
+        authenticatedUser={exampleAuthenticatedUser}
+        provideDashBoardLinkOnSuccess={true}
+      />,
       store
     );
     expect(getByTestId('loading-spinner'));
@@ -75,7 +84,10 @@ describe('TicketCreateForm', () => {
     });
 
     const { getByText } = renderComponent(
-      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      <TicketCreateForm
+        authenticatedUser={exampleAuthenticatedUser}
+        provideDashBoardLinkOnSuccess={true}
+      />,
       store
     );
     expect(getByText(/1234/)).toBeDefined();
@@ -92,7 +104,10 @@ describe('TicketCreateForm', () => {
     });
 
     const { getByText } = renderComponent(
-      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      <TicketCreateForm
+        authenticatedUser={exampleAuthenticatedUser}
+        provideDashBoardLinkOnSuccess={true}
+      />,
       store
     );
     expect(getByText(/Mock error/)).toBeDefined();
