@@ -286,7 +286,7 @@ const DataFilesProjectMembers = ({
 };
 
 DataFilesProjectMembers.propTypes = {
-  projectId: PropTypes.string.isRequired,
+  projectId: PropTypes.string,
   members: PropTypes.arrayOf(
     PropTypes.shape({
       username: PropTypes.string,
