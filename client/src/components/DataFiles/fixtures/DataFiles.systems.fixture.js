@@ -1,5 +1,29 @@
 /* TODOv3 update this fixture https://jira.tacc.utexas.edu/browse/WP-68*/
+// Updated fixture changes from endpoint https://cep.test/api/datafiles/systems/list/
+/*
+[
+  "name",
+  "system",
+  "scheme",
+  "api",
+  "homeDir",
+  "icon",
+  "default",
+  "siteSearchPriority",
+  "readOnly",
+  "hideSearchBar",
+  "integration"
+]
+  */
+// Removed: Hidden, keyservice
+// Removed
+/*
+    error: false,
+    errorMessage: null,
+    loading: false,
 
+Removed: definitions array
+*/
 const systemsFixture = {
   storage: {
     configuration: [
@@ -9,10 +33,8 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
-        hidden: true,
         homeDir: '/home/username',
         default: true,
-        keyservice: true,
       },
       {
         name: 'My Data (Frontera)',
@@ -65,34 +87,8 @@ const systemsFixture = {
         integration: 'portal.apps.googledrive_integration',
       },
     ],
-    error: false,
-    errorMessage: null,
-    loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
     defaultSystem: 'frontera',
-  },
-  definitions: {
-    list: [
-      {
-        id: 'frontera.home.username',
-        storage: {
-          host: 'frontera.tacc.utexas.edu',
-          rootDir: '/home1/012345/username',
-        },
-        effectiveUserId: 'username',
-      },
-      {
-        id: 'longhorn.home.username',
-        storage: {
-          host: 'longhorn.tacc.utexas.edu',
-          rootDir: '/home/012345/username',
-        },
-        effectiveUserId: 'username',
-      },
-    ],
-    error: false,
-    errorMessage: null,
-    loading: false,
   },
 };
 
