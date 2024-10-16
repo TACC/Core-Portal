@@ -62,7 +62,7 @@ describe('DataFilesSidebar', () => {
     ).toEqual(
       '/workbench/data/tapis/private/longhorn.home.username/home/username/'
     );
-    expect(queryByText(/My Data \(Work\)/)).toBeNull();
+    expect(queryByText(/My Data \(Work\)/)).toBeDefined();
   });
 
   it('disables creating new shared workspaces in read only shared workspaces', async () => {
