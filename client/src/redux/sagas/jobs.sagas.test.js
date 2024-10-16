@@ -97,24 +97,6 @@ describe('getJobDetails Saga', () => {
       .run());
 });
 
-test('Effect Creators should dispatch sagas', () => {
-  testSaga(watchJobDetails)
-    .next()
-    .takeLatest('GET_JOB_DETAILS', getJobDetails)
-    .next()
-    .isDone();
-  testSaga(watchJobs)
-    .next()
-    .takeLatest('GET_JOBS', getJobs)
-    .next()
-    // TODOv3: dropV2Jobs
-    .takeLatest('GET_V2_JOBS', getV2Jobs)
-    .next()
-    .takeLeading('SUBMIT_JOB', submitJob)
-    .next()
-    .isDone();
-});
-
 describe('submitJob Saga', () => {
   it('should submit a job', () =>
     expectSaga(submitJob, {

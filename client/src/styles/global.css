@@ -26,6 +26,8 @@
 /* NOTE: For the most part, allow React components to explicitely import as needed */
 @import url('./components/bootstrap.form.css');
 @import url('./components/bootstrap.modal.css');
+@import url('./components/bootstrap.nav.css');
+@import url('./components/bootstrap.utils.css');
 @import url('./components/bootstrap.button.css');
 @import url('./components/mui.tabs.css');
 

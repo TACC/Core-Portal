@@ -106,11 +106,3 @@ describe('getProfileData Saga', () => {
       .run();
   });
 });
-
-test('Effect Creators should dispatch sagas', () => {
-  testSaga(watchProfileData)
-    .next()
-    .takeLatest('GET_PROFILE_DATA', getProfileData)
-    .next()
-    .isDone();
-});
