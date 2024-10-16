@@ -12,9 +12,9 @@ describe('pushSystemKeys', () => {
     () => {
       // Create a mock form for the fetchUtil call
       const mockForm = {
-        password: '',
-        token: '',
-        hostname: '',
+        password: 'mockPassword',
+        token: 'mockToken',
+        hostname: 'mockHostname',
       };
       expectSaga(pushSystemKeys, {})
         // Sends the call to update the systems modal
@@ -39,7 +39,7 @@ describe('pushSystemKeys', () => {
             props: {},
           },
         });
-      // Check for errors
-      expect(pushSystemKeys).not.toThrowError();
+      // Check for action.payload.onSuccess
+      expect(action.payload).toBe(onSuccess);
     };
 });
