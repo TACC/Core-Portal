@@ -53,39 +53,48 @@ const DataFilesDownloadMessageModal = () => {
 
   const compressCallback = () => {
     const { filenameDisplay, compressionType } = formRef.current.values;
+    // Establish a boolean that checks for a folder among selectedFiles
+    let containsFolder = false;
     // Check the total size of all selected files to be compressed
     let totalFileSize = 0;
-    for (let i = 0; i < selectedFiles.length; i++) {
-      totalFileSize = totalFileSize + selectedFiles[i].length;
-    }
     // Set the maximum file size limit for compressing files
     const maxFileSize = 2 * 1024 * 1024 * 1024;
-    // Run the dispatch call if and only if the total file size is below the threshold
-    if (totalFileSize < maxFileSize) {
-      dispatch({
-        type: 'DATA_FILES_COMPRESS',
-        payload: {
-          filename: filenameDisplay,
-          files: selected,
-          scheme: params.scheme,
-          compressionType,
-          onSuccess: {
-            type: 'DATA_FILES_TOGGLE_MODAL',
-            payload: { operation: 'downloadMessage', props: {} },
+    // Add up the file sizes of all files and shows if the user selected a folder
+    for (let i = 0; i < selectedFiles.length; i++) {
+      totalFileSize = totalFileSize + selectedFiles[i].length;
+      if (selectedFiles[i].format == 'folder') {
+        containsFolder = true;
+      }
+    }
+    // Run the dispatch if the user does not select any folders
+    if ((containsFolder = false)) {
+      // Run the dispatch call if and only if the total file size is below the threshold
+      if (totalFileSize < maxFileSize) {
+        dispatch({
+          type: 'DATA_FILES_COMPRESS',
+          payload: {
+            filename: filenameDisplay,
+            files: selected,
+            scheme: params.scheme,
+            compressionType,
+            onSuccess: {
+              type: 'DATA_FILES_TOGGLE_MODAL',
+              payload: { operation: 'downloadMessage', props: {} },
+            },
           },
-        },
-      });
-      // Prevent the compression process and redirect the user to Globus otherwise
+        });
+        // Prevent the compression process and redirect the user to Globus otherwise
+      } else {
+        alert(
+          'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
+        );
+      }
+      // Prevents compression of folders if a folder is among the selected files
     } else {
       alert(
-        'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
+        'Folders can no longer be compressed. Please individually select which files you would like to download.'
       );
     }
-    // if/else statement to be used as a last resort if I'm unable to console.log() a folder's contents, which prevents folder compression altogether
-    // if (selectedFiles[0].format != 'folder') {
-    // } else {
-    //   alert ('Folders cannot be compressed at this time. Please individually select which files you would like to download.');
-    // }
   };
 
   const initialValues = {
