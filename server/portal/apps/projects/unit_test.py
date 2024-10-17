@@ -5,124 +5,91 @@
 """
 
 import logging
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest  # pyright: ignore
+from django.conf import settings
+from tapipy.tapis import Tapis  # pyright: ignore
 
 from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.workspace_operations import \
+    shared_workspace_operations as ws_o
 
 LOGGER = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def mock_service_account(mocker):
-    yield mocker.patch(
-        "portal.apps.projects.models.base.service_account", autospec=True
-    )
+# @pytest.fixture
+# def mock_service_account(mocker):
+#     yield mocker.patch(
+#         "portal.apps.projects.models.base.service_account", autospec=True
+#     )
 
 
-@pytest.fixture()
-def mock_signal(mocker):
-    yield mocker.patch("portal.apps.signals.receivers.index_project")
+# @pytest.fixture()
+# def mock_signal(mocker):
+#     yield mocker.patch("portal.apps.signals.receivers.index_project")
 
 
-@pytest.fixture()
-def mock_owner(django_user_model):
-    return django_user_model.objects.create_user(
-        username="username", password="password"
-    )
-
-
-# Start my fixtures
+# @pytest.fixture()
+# def mock_owner(django_user_model):
+#     return django_user_model.objects.create_user(
+#         username="username", password="password"
+#     )
 
 
 # Mock creation of a project
+
+# Minimal mocks, only do behavior based testing instead of implementation based testing
+
+
 @pytest.fixture()
 def mock_tapis_client():
-    return MagicMock()
+    with patch("tapipy.tapis.Tapis") as MockTapis:
+        mock_client = MockTapis.return_value
+        yield mock_client
 
 
-# TODO: Convert this to become a mocker patch of the Metadata object, similar to mock_create_project
-# List of Metadata per project
-@pytest.fixture()
-def mock_metadata(mocker):
-    mock = mocker.patch(
-        "portal.apps.projects.models.Project._create_metadata",
-        autospec=True,
-    )
-
-    def mock_init(title, project_id, owner=None):
-        mock_metadata = mocker.Mock()
-        mock_metadata.defaults = {
-            "title": title,
-            "project_id": project_id,
-            "owner": owner,
-        }
-        return mock_metadata
-
-    mock.side_effect = mock_init
-    return mock
-
-
-@pytest.fixture()
-def mock_shared_systems(mocker):
-    mock = mocker.Mock()
-    mock.return_value = mocker.Mock(
-        description="All Project Storage",
-        storage=[],
-    )
-    return mock
-
-
-@pytest.fixture()
-def mock_create_project(mocker, mock_shared_systems, mock_metadata):
-    mock = mocker.patch(
-        "portal.apps.projects.models.Project.create",
-        autospec=True,
-    )
-
-    def mock_init(client, title, project_id, owner):
-        formatted_project_id = "{prefix}.{project_id}".format(
-            prefix=Project.metadata_name, project_id="PRJ-123"
-        )
-        mock_project = mocker.Mock(
-            client=client,
-            project_id=project_id,
-            shared_systems=mock_shared_systems(client, id=formatted_project_id),
-        )
-        metadata_instance = mock_metadata(title, formatted_project_id, owner)
-        mock_project.shared_systems.storage.append(metadata_instance)
-        return mock_project
-
-    mock.side_effect = mock_init
-    return mock
-
-
-def test_project_init(mock_tapis_client, mock_shared_systems, mock_create_project):
+def test_project_init(mock_tapis_client):
+    assert 1 == 1
     "Test project model init."
-    mock_shared_systems_instance = mock_shared_systems.return_value
-
-    assert mock_shared_systems_instance.description == "All Project Storage"
-
-    prj = mock_create_project(
-        client=mock_tapis_client,
-        title="My Project",
-        project_id="PRJ-123",
-        owner=mock_owner,
+    client = mock_tapis_client
+    # Create the shared workspace
+    project = ws_o.create_workspace_system(
+        client,
+        workspace_id="PRJ-123",
+        title="My New Workspace",
+        description="This is a test description",
+        owner=None,
     )
-    assert prj.project_id == "PRJ-123"
-    mock_shared_systems.assert_called_with(
-        mock_tapis_client,
-        id="{prefix}.{project_id}".format(
-            prefix=Project.metadata_name, project_id="PRJ-123"
-        ),
-    )
-    assert len(mock_shared_systems_instance.storage) == 1
-    assert mock_shared_systems_instance.storage[0].defaults["title"] == "My Project"
+
+    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+    assert project == system_id
+
+    # Do the following below but with workspace operation functions
+
+    # mock_shared_systems_instance = mock_shared_systems.return_value
+
+    # assert mock_shared_systems_instance.description == "All Project Storage"
+
+    # prj = mock_create_project(
+    #     client=mock_tapis_client,
+    #     title="My Project",
+    #     project_id="PRJ-123",
+    #     owner=mock_owner,
+    # )
+    # assert prj.project_id == "PRJ-123"
+    # mock_shared_systems.assert_called_with(
+    #     mock_tapis_client,
+    #     id="{prefix}.{project_id}".format(
+    #         prefix=Project.metadata_name, project_id="PRJ-123"
+    #     ),
+    # )
+    # assert len(mock_shared_systems_instance.storage) == 1
+    # assert mock_shared_systems_instance.storage[0].defaults["title"] == "My Project"
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
