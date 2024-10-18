@@ -50,46 +50,76 @@ pytestmark = pytest.mark.django_db
 def mock_tapis_client():
     with patch("tapipy.tapis.Tapis") as MockTapis:
         mock_client = MockTapis.return_value
+        # Tapis server actions to Mock
+        # create_workspace_system calls
+        mock_client.systems.createSystem = MagicMock()
+        # get_project calls
+        mock_client.systems.getShareInfo = MagicMock()
+        mock_client.systems.getSystem = MagicMock()
+        mock_client.files.getPermissions = MagicMock()
         yield mock_client
 
 
 def test_project_init(mock_tapis_client):
-    assert 1 == 1
     "Test project model init."
+
+    # Assert Defs
+    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+    result_title = "My New Workspace"
+    result_description = "This is a test description"
+    result_created = "2024-10-18T00:00:00Z"
+
+    # Mock Tapis Client
     client = mock_tapis_client
+
+    # Mock shares return
+    mock_shares = MagicMock()
+    mock_shares.users = ["owner", "user"]
+    client.systems.getShareInfo.return_value = mock_shares
+
+    # Mock system return
+    mock_system = MagicMock()
+    mock_system.owner = "owner"
+    mock_system.notes.title = result_title
+    mock_system.notes.description = result_description
+    mock_system.created = result_created
+    client.systems.getSystem.return_value = mock_system
+
+    # Mock permission return
+    mock_permissions = MagicMock()
+    mock_permissions.permissions = "MODIFY"
+    client.files.getPermissions.return_value = mock_permissions
+    # Mocked get permissions based on username
+    def mock_get_permissions(systemId, path, username):
+        if username == "user":
+            return MagicMock(permission="MODIFY")
+        return MagicMock(permission="NONE")
+    client.files.getPermissions.side_effect = mock_get_permissions
+
     # Create the shared workspace
-    project = ws_o.create_workspace_system(
+    # Does a Tapis call for client.systems.createSystem(**system_args) and stores it in the system
+    project_id = ws_o.create_workspace_system(
         client,
         workspace_id="PRJ-123",
-        title="My New Workspace",
-        description="This is a test description",
+        title=result_title,
+        description=result_description,
         owner=None,
     )
 
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
-    assert project == system_id
+    "Assert the results"
 
-    # Do the following below but with workspace operation functions
-
-    # mock_shared_systems_instance = mock_shared_systems.return_value
-
-    # assert mock_shared_systems_instance.description == "All Project Storage"
-
-    # prj = mock_create_project(
-    #     client=mock_tapis_client,
-    #     title="My Project",
-    #     project_id="PRJ-123",
-    #     owner=mock_owner,
-    # )
-    # assert prj.project_id == "PRJ-123"
-    # mock_shared_systems.assert_called_with(
-    #     mock_tapis_client,
-    #     id="{prefix}.{project_id}".format(
-    #         prefix=Project.metadata_name, project_id="PRJ-123"
-    #     ),
-    # )
-    # assert len(mock_shared_systems_instance.storage) == 1
-    # assert mock_shared_systems_instance.storage[0].defaults["title"] == "My Project"
+    # Assert Defs
+    assert project_id == result_system_id
+    project = ws_o.get_project(client, project_id)
+    assert project["title"] == result_title
+    assert project["description"] == result_description
+    assert project["created"] == result_created
+    assert project["projectId"] == result_system_id
+    assert len(project["members"]) == 2
+    assert project["members"][0]["user"]["username"] == "owner"
+    assert project["members"][0]["access"] == "owner"
+    assert project["members"][1]["user"]["username"] == "user"
+    assert project["members"][1]["access"] == "edit"
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
