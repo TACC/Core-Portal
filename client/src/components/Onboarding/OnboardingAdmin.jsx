@@ -96,7 +96,7 @@ OnboardingResetLinks.defaultProps = {
   action: null,
 };
 
-const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
+const OnboardingAdminListUser = ({ user, index, viewLogCallback }) => {
   const dispatch = useDispatch();
   const actionCallback = useCallback(
     (step, username, action) => {
@@ -113,11 +113,13 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   );
   const adminAction = useSelector((state) => state.onboarding.action);
   const stepCount = user.steps.length;
+  const rowClass =
+    index % 2 === 0 ? styles['user-row-white'] : styles['user-row-grey'];
 
   return (
     <>
       {user.steps.map((step, index) => (
-        <tr className={styles.user} key={uuidv4()}>
+        <tr className={`${styles.user} ${rowClass}`} key={uuidv4()}>
           {index === 0 && (
             <td rowSpan={stepCount} className={styles.name}>
               {`${user.firstName} ${user.lastName}`}
@@ -214,10 +216,11 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
         </tr>
       </thead>
       <tbody>
-        {users.map((user) => (
+        {users.map((user, index) => (
           <OnboardingAdminListUser
             user={user}
             key={user.username}
+            index={index}
             viewLogCallback={viewLogCallback}
           />
         ))}
