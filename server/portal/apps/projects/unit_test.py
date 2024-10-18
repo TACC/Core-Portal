@@ -3,121 +3,226 @@
 .. :module:: portal.apps.projects.unit_test
    :synopsis: Projects app unit tests.
 """
-from mock import MagicMock
+
+import logging
+from unittest.mock import MagicMock, patch
+
+import pytest
+from django.conf import settings
+
+from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata
-from portal.apps.projects.exceptions import NotAuthorizedError
-import pytest
-import logging
+from portal.apps.projects.workspace_operations import \
+    shared_workspace_operations as ws_o
 
 LOGGER = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def mock_service_account(mocker):
-    yield mocker.patch('portal.apps.projects.models.base.service_account', autospec=True)
+# @pytest.fixture
+# def mock_service_account(mocker):
+#     yield mocker.patch(
+#         "portal.apps.projects.models.base.service_account", autospec=True
+#     )
+
+
+# @pytest.fixture()
+# def mock_signal(mocker):
+#     yield mocker.patch("portal.apps.signals.receivers.index_project")
+
+
+# @pytest.fixture()
+# def mock_owner(django_user_model):
+#     return django_user_model.objects.create_user(
+#         username="username", password="password"
+#     )
+
+
+# Mock creation of a project
+
+# Minimal mocks, only do behavior based testing instead of implementation based testing
 
 
 @pytest.fixture()
-def mock_signal(mocker):
-    yield mocker.patch('portal.apps.signals.receivers.index_project')
+def mock_tapis_client():
+    with patch("tapipy.tapis.Tapis") as MockTapis:
+        mock_client = MockTapis.return_value
+        # Tapis server actions to Mock
+        # create_workspace_system calls
+        mock_client.systems.createSystem = MagicMock()
+        # get_project calls
+        mock_client.systems.getShareInfo = MagicMock()
+        mock_client.systems.getSystem = MagicMock()
+        mock_client.files.getPermissions = MagicMock()
+        yield mock_client
 
 
-@pytest.fixture()
-def mock_owner(django_user_model):
-    return django_user_model.objects.create_user(username='username',
-                                                 password='password')
+def test_project_init(mock_tapis_client):
+    "Test project model init."
 
+    # Assert Defs
+    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+    result_title = "My New Workspace"
+    result_description = "This is a test description"
+    result_created = "2024-10-18T00:00:00Z"
 
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_project_init(mock_tapis_client, mock_storage_system, project_model, mock_signal):
-    'Test project model init.'
-    mock_storage_system.return_value.description = 'my title'
+    # Mock Tapis Client
+    client = mock_tapis_client
 
-    prj = project_model(mock_tapis_client, 'PRJ-123')
-    assert prj.project_id == 'PRJ-123'
+    # Mock shares return
+    mock_shares = MagicMock()
+    mock_shares.users = ["owner", "user"]
+    client.systems.getShareInfo.return_value = mock_shares
 
-    mock_storage_system.assert_called_with(
-        mock_tapis_client,
-        id='{prefix}.{project_id}'.format(
-            prefix=Project.metadata_name,
-            project_id='PRJ-123'
-        )
+    # Mock system return
+    mock_system = MagicMock()
+    mock_system.owner = "owner"
+    mock_system.notes.title = result_title
+    mock_system.notes.description = result_description
+    mock_system.created = result_created
+    client.systems.getSystem.return_value = mock_system
+
+    # Mock permission return
+    mock_permissions = MagicMock()
+    mock_permissions.permissions = "MODIFY"
+    client.files.getPermissions.return_value = mock_permissions
+
+    # Mocked get permissions based on username
+    def mock_get_permissions(systemId, path, username):
+        if username == "user":
+            return MagicMock(permission="MODIFY")
+        return MagicMock(permission="NONE")
+
+    client.files.getPermissions.side_effect = mock_get_permissions
+
+    # Create the shared workspace
+    # Does a Tapis call for client.systems.createSystem(**system_args) and stores it in the system
+    project_id = ws_o.create_workspace_system(
+        client,
+        workspace_id="PRJ-123",
+        title=result_title,
+        description=result_description,
+        owner=None,
     )
 
-    assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.get(project_id='PRJ-123', title='my title')
+    "Assert the results"
+
+    # Assert Defs
+    assert project_id == result_system_id
+    project = ws_o.get_project(client, project_id)
+    assert project["title"] == result_title
+    assert project["description"] == result_description
+    assert project["created"] == result_created
+    assert project["projectId"] == result_system_id
+    assert len(project["members"]) == 2
+    assert project["members"][0]["user"]["username"] == "owner"
+    assert project["members"][0]["access"] == "owner"
+    assert project["members"][1]["user"]["username"] == "user"
+    assert project["members"][1]["access"] == "edit"
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_project_create(mock_owner, mock_tapis_client, service_account, mock_storage_system, project_model, mock_signal):
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    project_model._create_dir.assert_called_with('PRJ-123')
-    mock_storage_system.assert_called_with(client=service_account(),
-                                           id='test.project.PRJ-123',
-                                           name='PRJ-123',
-                                           description='Test Title',
-                                           site='test')
+def test_project_create(
+    mock_owner,
+    mock_tapis_client,
+    service_account,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+):
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    project_model._create_dir.assert_called_with("PRJ-123")
+    mock_storage_system.assert_called_with(
+        client=service_account(),
+        id="test.project.PRJ-123",
+        name="PRJ-123",
+        description="Test Title",
+        site="test",
+    )
     assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.get(project_id='PRJ-123', title='Test Title')
+    assert ProjectMetadata.objects.get(project_id="PRJ-123", title="Test Title")
 
     assert prj._ac == mock_tapis_client
     assert prj.storage.storage.port == 22
 
-    assert prj.storage.storage.auth.username == 'wma_prtl'
-    assert prj.storage.storage.auth.private_key == ('-----BEGIN RSA PRIVATE KEY-----'
-                                                    'change this'
-                                                    '-----END RSA PRIVATE KEY-----')
+    assert prj.storage.storage.auth.username == "wma_prtl"
+    assert prj.storage.storage.auth.private_key == (
+        "-----BEGIN RSA PRIVATE KEY-----" "change this" "-----END RSA PRIVATE KEY-----"
+    )
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_listing(mock_storage_system, mock_tapis_client, mock_signal, mock_projects_storage_systems):
-    'Test projects listing.'
+def test_listing(
+    mock_storage_system, mock_tapis_client, mock_signal, mock_projects_storage_systems
+):
+    "Test projects listing."
     mock_storage_system.search.return_value = mock_projects_storage_systems
 
     lst = list(Project.listing(mock_tapis_client))
 
     mock_storage_system.search.assert_called_with(
         mock_tapis_client,
-        query={'id.like': '{}*'.format(Project.metadata_name),
-               'type.eq': mock_storage_system.TYPES.STORAGE},
+        query={
+            "id.like": "{}*".format(Project.metadata_name),
+            "type.eq": mock_storage_system.TYPES.STORAGE,
+        },
         offset=0,
-        limit=100
+        limit=100,
     )
     assert len(lst) == 2
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_member(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
-    'Test add member.'
+def test_add_member(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
+    "Test add member."
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="ADMIN", ADMIN="ADMIN")
     assert prj._can_edit_member(mock_owner)
 
-    mock_team_member = django_user_model.objects.create_user(username='teamMember', password='password')
+    mock_team_member = django_user_model.objects.create_user(
+        username="teamMember", password="password"
+    )
     prj.add_member(mock_team_member)
 
-    prj.storage.roles.add.assert_called_with('teamMember', 'USER')
+    prj.storage.roles.add.assert_called_with("teamMember", "USER")
     assert prj.storage.roles.save.call_count == 1
-    assert prj.metadata.team_members.get(username='teamMember')
+    assert prj.metadata.team_members.get(username="teamMember")
 
     prj.remove_member(mock_team_member)
     with pytest.raises(django_user_model.DoesNotExist):
-        prj.metadata.team_members.get(username='teamMember')
+        prj.metadata.team_members.get(username="teamMember")
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_member_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
-    'Test add member.'
+def test_add_member_unauthorized(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
+    "Test add member."
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='USER', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="USER", ADMIN="ADMIN")
     assert not prj._can_edit_member(mock_owner)
 
-    mock_team_member = django_user_model.objects.create_user(username='teamMember', password='password')
+    mock_team_member = django_user_model.objects.create_user(
+        username="teamMember", password="password"
+    )
 
     with pytest.raises(NotAuthorizedError):
         prj.add_member(mock_team_member)
@@ -128,33 +233,53 @@ def test_add_member_unauthorized(mock_owner, django_user_model, mock_tapis_clien
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_copi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
+def test_add_copi(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="ADMIN", ADMIN="ADMIN")
     assert prj._can_edit_member(mock_owner)
 
-    mock_copi = django_user_model.objects.create_user(username='coPi', password='password')
+    mock_copi = django_user_model.objects.create_user(
+        username="coPi", password="password"
+    )
     prj.add_co_pi(mock_copi)
 
-    prj.storage.roles.add.assert_called_with('coPi', 'ADMIN')
+    prj.storage.roles.add.assert_called_with("coPi", "ADMIN")
     assert prj.storage.roles.save.call_count == 1
-    assert prj.metadata.co_pis.get(username='coPi')
+    assert prj.metadata.co_pis.get(username="coPi")
 
     prj.remove_co_pi(mock_copi)
     with pytest.raises(django_user_model.DoesNotExist):
-        prj.metadata.team_members.get(username='teamMember')
+        prj.metadata.team_members.get(username="teamMember")
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_copi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
-    'Test add member.'
+def test_add_copi_unauthorized(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
+    "Test add member."
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='USER', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="USER", ADMIN="ADMIN")
     assert not prj._can_edit_member(mock_owner)
 
-    mock_copi = django_user_model.objects.create_user(username='coPi', password='password')
+    mock_copi = django_user_model.objects.create_user(
+        username="coPi", password="password"
+    )
 
     with pytest.raises(NotAuthorizedError):
         prj.add_co_pi(mock_copi)
@@ -165,32 +290,48 @@ def test_add_copi_unauthorized(mock_owner, django_user_model, mock_tapis_client,
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_pi(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
+def test_add_pi(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="ADMIN", ADMIN="ADMIN")
     assert prj._can_edit_member(mock_owner)
 
-    mock_pi = django_user_model.objects.create_user(username='pi', password='password')
+    mock_pi = django_user_model.objects.create_user(username="pi", password="password")
     prj.add_pi(mock_pi)
 
-    prj.storage.roles.add.assert_called_with('pi', 'OWNER')
+    prj.storage.roles.add.assert_called_with("pi", "OWNER")
     assert prj.storage.roles.save.call_count == 1
-    assert prj.metadata.pi.username == 'pi'
+    assert prj.metadata.pi.username == "pi"
 
     prj.remove_pi(mock_pi)
     assert not prj.metadata.pi
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_pi_unauthorized(mock_owner, django_user_model, mock_tapis_client, mock_storage_system, project_model, mock_signal, mock_service_account):
-    'Test add member.'
+def test_add_pi_unauthorized(
+    mock_owner,
+    django_user_model,
+    mock_tapis_client,
+    mock_storage_system,
+    project_model,
+    mock_signal,
+    mock_service_account,
+):
+    "Test add member."
 
-    prj = project_model.create(mock_tapis_client, 'Test Title', 'PRJ-123', mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role='USER', ADMIN='ADMIN')
+    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
+    prj.storage.roles.for_user.return_value = MagicMock(role="USER", ADMIN="ADMIN")
     assert not prj._can_edit_member(mock_owner)
 
-    mock_pi = django_user_model.objects.create_user(username='pi', password='password')
+    mock_pi = django_user_model.objects.create_user(username="pi", password="password")
 
     with pytest.raises(NotAuthorizedError):
         prj.add_pi(mock_pi)
@@ -201,7 +342,9 @@ def test_add_pi_unauthorized(mock_owner, django_user_model, mock_tapis_client, m
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_create_metadata(mock_owner, mock_tapis_client, mock_storage_system, project_model, mock_signal):
+def test_create_metadata(
+    mock_owner, mock_tapis_client, mock_storage_system, project_model, mock_signal
+):
     # Test creating metadata with no owner
     project_model._create_metadata("Project Title", "PRJ-123")
     assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
