@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import networkx as nx
 from django.db import transaction
 import uuid
@@ -85,10 +86,10 @@ def traverse_graph(project_graph, root_node, path_components):
                 found = True
                 break
         if not found:
-            raise Exception(f"Component '{component}' not found under node '{project_graph.nodes[current_node]['label']}'.")
+            return None
     return {"id": current_node, **project_graph.nodes[current_node]}
 
-def get_node_from_path(project_id: str, path: str) -> str:
+def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
     """Return the node ID for the parent of a node with the given path."""
 
     graph_model = ProjectMetadata.objects.get(
@@ -103,12 +104,34 @@ def get_node_from_path(project_id: str, path: str) -> str:
     
     node = traverse_graph(project_graph, "NODE_ROOT", path_parts)
 
-    print('returned node', node)
+    return node
+
+def get_root_node(project_id: str) -> Dict[str, Any]:
+    """Return the root node for a project graph."""
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+    return {"id": "NODE_ROOT", **project_graph.nodes["NODE_ROOT"]}
+
+def get_file_association_from_path(project_id: str, path: str) -> Dict[str, Any]:
+    """Return the node ID for the parent of a node with the given path."""
+
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+
+    path_parts = path.strip("/").split("/")
+
+    if len(path_parts) == 0 or path_parts[0] == "":
+        return {"id": "NODE_ROOT"}
+    
+    node = traverse_graph(project_graph, "NODE_ROOT", path_parts)
 
     return node
-    raise nx.exception.NodeNotFound
 
-def update_node_in_project(project_id: str, node_id: str, value: dict):
+def update_node_in_project(project_id: str, node_id: str, new_parent: str = None, new_name: str = None):
     """Update the database entry for a project graph to update a node."""
     with transaction.atomic():
         graph_model = ProjectMetadata.objects.select_for_update().get(
@@ -119,7 +142,19 @@ def update_node_in_project(project_id: str, node_id: str, value: dict):
         if not project_graph.has_node(node_id):
             raise nx.exception.NodeNotFound
 
-        project_graph.nodes[node_id]["value"] = value
+        if new_parent:
+            # Remove the node from the graph and re-add it under the new parent.
+            parent_node = new_parent
+            if not project_graph.has_node(parent_node):
+                raise nx.exception.NodeNotFound
+            project_graph.remove_edge(
+                next(project_graph.predecessors(node_id)), node_id
+            )
+            project_graph.add_edge(parent_node, node_id)
+
+        if new_name:
+            project_graph.nodes[node_id]["label"] = new_name
+
         graph_model.value = nx.node_link_data(project_graph)
         graph_model.save()
 

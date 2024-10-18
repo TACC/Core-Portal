@@ -155,6 +155,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
                       'data_type',
                       'sample',
                       'base_origin_data',
+                      'file_objs',
                     ]}
                   />
                 </div>

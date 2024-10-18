@@ -24,11 +24,13 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
 
   try {
     if (file && isEdit) {
+
       yield call(
         patchEntityUtil,
         filteredValues.data_type,
         params.system,
-        file.path,
+        '/' + file.path,
+        '/' + path,
         filteredValues,
         file.uuid
       )

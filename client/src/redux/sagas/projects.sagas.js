@@ -232,7 +232,7 @@ export async function createEntityUtil(entityType, projectId, path, data) {
   return result.response;
 }
 
-export async function patchEntityUtil(entityType, projectId, path, data, entityUuid) {
+export async function patchEntityUtil(entityType, projectId, path, updatedPath, data, entityUuid) {
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/entities/create`,
     method: 'PATCH',
@@ -243,7 +243,8 @@ export async function patchEntityUtil(entityType, projectId, path, data, entityU
       name: entityType,
       value: data,
       uuid: entityUuid ?? null,
-      path: path
+      path: path,
+      updatedPath: updatedPath
     }),
   });
 

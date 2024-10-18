@@ -22,7 +22,26 @@ class DrpMetadataModel(BaseModel):
             *args, **kwargs
         )
 
-class DrpProjectRelatedDatasets(BaseModel):
+class FileObj(DrpMetadataModel):
+    """Model for associated files"""
+
+    system: str
+    name: str
+    path: str
+    type: Literal["file", "dir"]
+    length: Optional[int] = None
+    last_modified: Optional[str] = None
+    uuid: Optional[str] = None
+
+class PartialEntityWithFiles(DrpMetadataModel):
+    """Model for representing an entity with associated files."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    # file_tags: list[FileTag] = []
+    file_objs: list[FileObj] = []
+
+class DrpProjectRelatedDatasets(DrpMetadataModel):
     """Model for DRP Project Related Datasets"""
 
     model_config = ConfigDict(
@@ -33,7 +52,7 @@ class DrpProjectRelatedDatasets(BaseModel):
     dataset_description: str = ""
     dataset_link: str = ""
 
-class DrpProjectRelatedSoftware(BaseModel):
+class DrpProjectRelatedSoftware(DrpMetadataModel):
     """Model for DRP Project Related Software"""
 
     model_config = ConfigDict(
@@ -44,7 +63,7 @@ class DrpProjectRelatedSoftware(BaseModel):
     software_description: str = ""
     software_link: str = ""
 
-class DrpProjectRelatedPublications(BaseModel):
+class DrpProjectRelatedPublications(DrpMetadataModel):
     """Model for DRP Project Related Publications"""
 
     model_config = ConfigDict(
@@ -77,9 +96,9 @@ class DrpProjectMetadata(DrpMetadataModel):
     related_publications: list[DrpProjectRelatedPublications] = []
     publication_date: Optional[str] = None
     authors: list[str] = []
+    file_objs: list[FileObj] = []
 
-
-class DrpDatasetMetadata(BaseModel):
+class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""
 
     model_config = ConfigDict(
@@ -94,6 +113,7 @@ class DrpDatasetMetadata(BaseModel):
         "analysis_data",
         "file"
     ]
+    file_objs: list[FileObj] = []
 
 class DrpSampleMetadata(DrpDatasetMetadata):
     """Model for DRP Sample Metadata"""
@@ -135,7 +155,6 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     identifier: Optional[str] = None
     location: Optional[str] = None # TODO_DRP: Remove in new model
 
-
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Origin Dataset Metadata"""
 
@@ -174,7 +193,7 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     sample: str
     base_origin_data: Optional[str] = None
 
-class DrpFileMetadata(BaseModel):
+class DrpFileMetadata(DrpMetadataModel):
     """Model for DRP File Metadata"""
 
     model_config = ConfigDict(

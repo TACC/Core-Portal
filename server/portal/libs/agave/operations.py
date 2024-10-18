@@ -10,11 +10,16 @@ from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
+from portal.apps._custom.drp.models import FileObj
 from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
-from portal.apps.projects.workspace_operations.project_meta_operations import get_entity
+from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, get_entity, 
+                                                                               get_file_association_entity, patch_file_association)
+from portal.apps._custom.drp import constants
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path
+
 
 logger = logging.getLogger(__name__)
 
@@ -85,9 +90,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          path=path,
                                          offset=int(offset),
                                          limit=int(limit))
-    
-    print(f"Listing for {system}/{path} returned {(raw_listing)}")
-    
+        
     folder_metadata = get_entity(system, path)
 
     try:
@@ -96,7 +99,8 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         listing = []
 
         for f in raw_listing: 
-            entity = get_entity(system, f.path)
+
+            entity = get_entity(system, f.path) if f.type == 'dir' else get_file_association_entity(system, f.path)
 
             listing.append({
                 'uuid': entity.to_dict().get('uuid') if entity else None,
@@ -111,7 +115,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                 '_links': {
                     'self': {'href': f.url}
                 },
-                'metadata': entity.ordered_metadata if entity else None
+                'metadata': entity.ordered_value if entity else None
             })
 
         # listing = list(map(lambda f: {
@@ -134,7 +138,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata.ordered_metadata if folder_metadata else None}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata.ordered_value if folder_metadata else None}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -270,7 +274,10 @@ def mkdir(client, system, path, dir_name, metadata=None):
     path_input = str(Path(path) / Path(dir_name))
 
     if metadata is not None: 
-        create_datafile_metadata(system, f'{system}/{path_input.strip("/")}', dir_name, metadata)
+        new_meta = create_entity_metadata(system, 'drp.project.trash', {
+            **metadata,
+        })
+        add_node_to_project(system, 'NODE_ROOT', new_meta.uuid, new_meta.name, dir_name)
 
     client.files.mkdir(systemId=system, path=path_input)
 
@@ -324,7 +331,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
     if metadata is not None:
-        update_datafile_metadata(system=dest_system, name=file_name, old_path=src_path.strip("/"), new_path=dest_path_full.strip("/"), metadata=metadata)
+        if (metadata.get('data_type') == 'file'):
+            patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'move')
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -394,7 +402,8 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
     if metadata is not None:
-        create_datafile_metadata(dest_system, f'{dest_system}/{dest_path_full.strip("/")}', file_name, metadata)
+        if (metadata.get('data_type') == 'file'):
+            patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'copy')
 
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
@@ -513,7 +522,7 @@ def trash(client, system, path, homeDir, metadata=None):
 
     return resp
 
-
+@transaction.atomic
 def upload(client, system, path, uploaded_file, metadata=None):
     """Upload a file.
     Params
@@ -536,8 +545,29 @@ def upload(client, system, path, uploaded_file, metadata=None):
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
-    if metadata is not None: 
-        create_datafile_metadata(system, f'{system}/{dest_path.strip("/")}', uploaded_file.name, metadata)
+    if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
+        
+        new_meta = create_entity_metadata(system, getattr(constants, metadata.get('data_type').upper()), {
+            **metadata,
+        })
+
+        parent_node = get_node_from_path(system, path)
+
+        file_obj = FileObj(
+            system=system,
+            name=uploaded_file.name,
+            path=dest_path,
+            type='file',
+            length=uploaded_file.size,
+            uuid=new_meta.uuid
+        )
+
+        if parent_node and parent_node['id'] != 'NODE_ROOT':
+            add_file_associations(parent_node['uuid'], [file_obj])
+        else: 
+            # Add file association to root node if no parent node/entity exists
+            root_node = get_root_node(system)
+            add_file_associations(root_node['uuid'], [file_obj])
 
     response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,

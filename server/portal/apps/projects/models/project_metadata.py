@@ -10,9 +10,13 @@ from django.dispatch import receiver
 from portal.apps._custom.drp import constants
 from portal.apps import SCHEMA_MAPPING
 from django.db.models.signals import pre_save
+from typing import get_args, List
 
 user_model = get_user_model()
 
+def snake_to_camel(snake_str):
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 def uuid_pk():
     """Generate a string UUID for use as a primary key."""
@@ -75,15 +79,43 @@ class ProjectMetadata(models.Model):
         )
     
     @property
-    def ordered_metadata(self):
-        """Return the metadata in the order defined in the pydantic model"""
-        schema = SCHEMA_MAPPING[self.name] 
+    def ordered_value(self):
+        """
+        Return the metadata in the order defined in the Pydantic model.
+        Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be updated to use camelCase.
+        """
+        schema = SCHEMA_MAPPING.get(self.name)
 
         if not schema:
-            return self.value
-        
-        model_keys = list(schema.model_fields.keys())
-        ordered_metadata = {k: self.value.get(k) for k in model_keys if k in self.value}
+            return self.value  # Return the field value directly if no schema is found
+
+        ordered_metadata = {}
+
+        # Iterate through the model fields to preserve the order
+        for field in schema.model_fields.keys():
+            camel_field = snake_to_camel(field)
+            field_value = self.value.get(camel_field)
+
+            # Skip the field if there is no value (None or not present)
+            if field_value is None:
+                continue
+
+            # if the fiels is a list, then we need to get the model of the list and process it
+            if isinstance(field_value, list):
+                field_annotation = schema.model_fields[field].annotation
+                item_type = get_args(field_annotation)[0] if get_args(field_annotation) else None # returns the model class of the list
+
+                # Check if the item type is a Pydantic model
+                if item_type and hasattr(item_type, "model_fields"):
+                    # Re-order each item in the list if it's a list of Pydantic models
+                    ordered_metadata[field] = [
+                        {k: item.get(snake_to_camel(k)) for k in item_type.model_fields.keys()}
+                        for item in field_value
+                    ]
+                else:
+                    ordered_metadata[field] = field_value
+            else:
+                ordered_metadata[field] = field_value
 
         return ordered_metadata
 

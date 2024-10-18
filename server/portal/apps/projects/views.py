@@ -26,18 +26,17 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
 from portal.apps import SCHEMA_MAPPING
 from django.db import models
-from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata, create_project_metdata, patch_metadata
+from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata, create_project_metdata, patch_file_obj_entity, patch_entity, patch_project_entity
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path, update_node_in_project
-import networkx as nx
 
 LOGGER = logging.getLogger(__name__)
 
 def validate_project_metadata(metadata):
     portal_name = settings.PORTAL_NAMESPACE
-    schema = SCHEMA_MAPPING[portal_name]['project']
+    schema = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema.model_validate(metadata)
     return validated_model.model_dump(exclude_none=True)
 
@@ -177,19 +176,9 @@ class ProjectInstanceApiView(BaseApiView):
 
         prj = get_project(request.user.tapis_oauth.client, project_id)
 
-        print(f"PRJ {prj}")
-
         try: 
-
-            print("HERE")
-
             project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
-
-            # print(f"Test Project: {test_project}")
-
-            # project = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            # project.metadata = project.get_metadata()
-            prj.update(project.value)
+            prj.update(project.ordered_value)
             prj["projectId"] = project_id
         except: 
             pass
@@ -236,15 +225,12 @@ class ProjectInstanceApiView(BaseApiView):
         """
         data = json.loads(request.body)
         metadata = data['metadata']
-
-        if metadata is not None: 
-            project_metadata = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
-            project_metadata.value = validate_project_metadata(metadata)
-            # project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            # project_metadata.metadata = validate_project_metadata(metadata)
-            project_metadata.save()
-
+        project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         client = request.user.tapis_oauth.client
+
+        if metadata is not None:
+            patch_project_entity(project_id_full, metadata)
+
         workspace_def = update_project(client, project_id, data['title'], data['description'])
 
         if metadata is not None: 
@@ -256,7 +242,6 @@ class ProjectInstanceApiView(BaseApiView):
                 'response': workspace_def
             }
         )
-
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -399,16 +384,18 @@ class ProjectEntityView(BaseApiView):
         value = req_body.get("value", {})
         entity_uuid = req_body.get("uuid", "")
         path = req_body.get("path", "")
-        # path = str(Path(value['path'].rstrip('/'))) if value.get('path') else ''
+        updated_path = req_body.get("updatedPath", "")
 
-        print(f'VALUE {value}')
-        print(f'PATH {path}')
-        print(f'ENTITY UUID {entity_uuid}')
-
-        try:
-            patch_metadata(client, project_id, value, entity_uuid, path)
-        except Exception as exc:
-            raise ApiException("Error updating entity metadata", status=500) from exc
+        if value['data_type'] == 'file':
+            try: 
+                patch_file_obj_entity(client, project_id, value, path)
+            except Exception as exc:
+                raise ApiException("Error updating file metadata", status=500) from exc
+        else:
+            try:
+                patch_entity(client, project_id, value, entity_uuid, path, updated_path)
+            except Exception as exc:
+                raise ApiException("Error updating entity metadata", status=500) from exc
 
         return JsonResponse({"result": "OK"})
 
@@ -420,8 +407,6 @@ class ProjectEntityView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
     
-        print(f'project ID {project_id}')
-
         try:
             project: ProjectMetadata = ProjectMetadata.objects.get(
                 models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
@@ -431,26 +416,22 @@ class ProjectEntityView(BaseApiView):
                 "User does not have access to the requested project", status=403
             ) from exc
 
-        portal = settings.PORTAL_NAMESPACE.lower()
         req_body = json.loads(request.body)
         value = req_body.get("value", {})
         name = req_body.get("name", "")
         path = req_body.get("path", "")
 
-        new_meta = create_entity_metadata(project.project_id, getattr(constants, name.upper()), {
+        new_meta = create_entity_metadata(project_id, getattr(constants, name.upper()), {
             **value,
-            # "path": str(Path(value['path'].rstrip('/')) / Path(value['name'])) if value.get('path') else ''
         })
 
-        parent_node = get_node_from_path(project.project_id, path)
+        # FOR CREATING GRAPH
+        parent_node = get_node_from_path(project_id, path)
+        add_node_to_project(project_id, parent_node['id'], new_meta.uuid, new_meta.name, value['name'])
 
-        add_node_to_project(project_id, parent_node['id'], new_meta.uuid, name, value['name'])
-
+        # FOR CREATING DATA FILE FOLDER
         if (value and path):
             mkdir(client, project_id, path, value['name'])
 
-        # FOR CREATING GRAPH
-        # if name in ALLOWED_RELATIONS[constants.PROJECT]:
-        # add_node_to_project(project_id, "NODE_ROOT", new_meta.uuid, name)
         return JsonResponse({"result": "OK"})
     
