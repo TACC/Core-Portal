@@ -7,9 +7,8 @@
 import logging
 from unittest.mock import MagicMock, patch
 
-import pytest  # pyright: ignore
+import pytest
 from django.conf import settings
-from tapipy.tapis import Tapis  # pyright: ignore
 
 from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.projects.models.base import Project
@@ -89,11 +88,13 @@ def test_project_init(mock_tapis_client):
     mock_permissions = MagicMock()
     mock_permissions.permissions = "MODIFY"
     client.files.getPermissions.return_value = mock_permissions
+
     # Mocked get permissions based on username
     def mock_get_permissions(systemId, path, username):
         if username == "user":
             return MagicMock(permission="MODIFY")
         return MagicMock(permission="NONE")
+
     client.files.getPermissions.side_effect = mock_get_permissions
 
     # Create the shared workspace
