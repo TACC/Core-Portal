@@ -236,7 +236,6 @@ class TransferFilesView(BaseApiView):
                 transfer_folder(src_client, dest_client, **body)
             else:
                 transfer(src_client, dest_client, **body)
-                
             return JsonResponse({'success': True})
         except Exception as exc:
             logger.info(exc)
