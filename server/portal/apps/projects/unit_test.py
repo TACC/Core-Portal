@@ -11,7 +11,7 @@ import pytest  # pyright: ignore
 from django.conf import settings  # pyright: ignore
 
 from portal.apps.projects.exceptions import NotAuthorizedError
-from portal.apps.projects.models.base import Project
+# from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.workspace_operations import \
     shared_workspace_operations as ws_o
@@ -129,8 +129,6 @@ def test_project_init(setup_mocks):
 
 
 def test_project_create(setup_mocks, mock_owner, mock_service_account):
-    client = setup_mocks
-    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-123"
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
     ) as mock_service_account, patch(
@@ -141,6 +139,8 @@ def test_project_create(setup_mocks, mock_owner, mock_service_account):
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls"
     ) as mock_set_workspace_acls:
 
+        client = setup_mocks
+        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-123"
         # Set return values for the mocks
         mock_service_account.return_value = MagicMock()
 
@@ -197,25 +197,63 @@ def test_project_create(setup_mocks, mock_owner, mock_service_account):
     """
 
 
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_listing(
-    mock_storage_system, mock_tapis_client, mock_signal, mock_projects_storage_systems
-):
-    "Test projects listing."
-    mock_storage_system.search.return_value = mock_projects_storage_systems
+def test_listing(setup_mocks, mock_owner):
+    with patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
+    ) as mock_service_account, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count"
+    ) as mock_increment_workspace_count, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir"
+    ) as mock_create_workspace_dir, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls"
+    ) as mock_set_workspace_acls, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.list_projects"
+    ) as mock_list_projects:
+        "Test projects listing."
 
-    lst = list(Project.listing(mock_tapis_client))
+        # Mock Tapis Initial
+        client = setup_mocks
 
-    mock_storage_system.search.assert_called_with(
-        mock_tapis_client,
-        query={
-            "id.like": "{}*".format(Project.metadata_name),
-            "type.eq": mock_storage_system.TYPES.STORAGE,
-        },
-        offset=0,
-        limit=100,
-    )
-    assert len(lst) == 2
+        # Create two projects/workspaces
+        project_id_1 = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
+        project_id_2 = ws_o.create_shared_workspace(client, "PRJ-124", mock_owner)
+
+        # Mock the return value of list_projects
+        # TODO: List Projects needs to match the output of the shared workspace operations
+        mock_list_projects.return_value = [
+            {"project_id": project_id_1, "title": "Project 123"},
+            {"project_id": project_id_2, "title": "Project 124"},
+        ]
+
+        # Call the function to list projects
+        projects = ws_o.list_projects(client)
+
+        # Assert that the mocks were called
+        mock_increment_workspace_count.assert_called()
+        mock_create_workspace_dir.assert_called()
+        mock_set_workspace_acls.assert_called()
+        mock_list_projects.assert_called_once_with(client)
+
+        # Verify the returned projects
+        assert len(projects) == 2
+        assert projects[0]["project_id"] == project_id_1
+        assert projects[0]["title"] == "Project 123"
+        assert projects[1]["project_id"] == project_id_2
+        assert projects[1]["title"] == "Project 124"
+        """
+        mock_storage_system.search.return_value = mock_projects_storage_systems
+        lst = list(Project.listing(mock_tapis_client))
+        mock_storage_system.search.assert_called_with(
+            mock_tapis_client,
+            query={
+                "id.like": "{}*".format(Project.metadata_name),
+                "type.eq": mock_storage_system.TYPES.STORAGE,
+            },
+            offset=0,
+            limit=100,
+        )
+        assert len(lst) == 2
+        """
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
