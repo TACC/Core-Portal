@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
@@ -20,6 +21,7 @@ const DataFilesRenameModal = () => {
 
   const toggle = () => toggleModal({ operation: 'rename', props: {} });
 
+  const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
   const reloadPage = (name, newPath) => {
@@ -41,7 +43,7 @@ const DataFilesRenameModal = () => {
   });
 
   const onClosed = () => {
-    setStatus(null);
+    dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
   };
 
   const rename = ({ newName }) => {
