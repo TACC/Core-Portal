@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseForbidden
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
-
+import networkx as nx
 class DigitalRocksSampleView(BaseApiView):
 
     def get(self, request):
@@ -48,6 +48,10 @@ class DigitalRocksTreeView(BaseApiView):
                 }
                 tree.append(node_dict)
         return tree
+        
+    @staticmethod
+    def _get_entity(uuid):
+        return ProjectMetadata.objects.get(uuid=uuid)
     
     def get(self, request):
 
@@ -56,11 +60,36 @@ class DigitalRocksTreeView(BaseApiView):
         project_id = request.GET.get('project_id')
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        records = DataFilesMetadata.objects.filter(
-                project_id=full_project_id,
-                metadata__data_type__in=metadata_data_types
-            ).order_by('created_at')
+        graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
+        )
 
-        tree = self.construct_tree(records)
+        graph = nx.node_link_graph(graph_model.value)
 
-        return JsonResponse(tree, safe=False)
+        for node in graph.nodes:
+            node_uuid = graph.nodes[node].get("uuid")
+
+            entity = self._get_entity(node_uuid)
+            metadata = entity.ordered_value
+
+            file_objs = entity.value.get('fileObjs', [])
+
+            file_objs_dict = []
+
+            for file_obj in file_objs:
+                file_obj_entity = self._get_entity(file_obj.get('uuid'))
+                file_obj_metadata = file_obj_entity.ordered_value
+
+                file_objs_dict.append({
+                    **file_obj,
+                    'metadata': file_obj_metadata
+            })
+                
+            graph.nodes[node]['metadata'] = metadata
+            graph.nodes[node]['fileObjs'] = file_objs_dict
+
+        tree = nx.tree_data(graph, "NODE_ROOT")
+
+        return JsonResponse([tree], safe=False)
+    
+

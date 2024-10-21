@@ -86,7 +86,7 @@ def patch_entity(client, project_id, value, uuid=None, path=None, updated_path=N
     so that only fields in the payload are overwritten."""
 
     node = get_node_from_path(project_id, path) if path else get_root_node(project_id)
-    entity = ProjectMetadata.objects.get(uuid=node['uuid'])
+    entity = ProjectMetadata.objects.get(uuid=uuid if uuid else node['uuid'])
 
     current_name = entity.value.get('name')
     current_path_full = path
