@@ -213,6 +213,8 @@ def test_listing(setup_mocks, mock_owner):
 
         # Mock Tapis Initial
         client = setup_mocks
+        # TODO: Remove
+        _ = mock_service_account
 
         # Create two projects/workspaces
         project_id_1 = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
