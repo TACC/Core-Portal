@@ -61,7 +61,9 @@ Styleguide Components.Button
   border-style: solid;
 
   font-weight: 500;
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  /* WP-50: Font-size below was overwriting previous font-size establishments. This should now be rectified. */
+  /* font-size: 0.75rem; 12px (10px design * 1.2 design-to-app ratio) */
+  font-size: 1rem;
 
   /* When possible: @extend %x-truncate--one-line; */
   /* SEE: https://github.com/tacc-wbomar/Core-Styles/blob/20e4cb7/source/_imports/tools/x-truncate.css#L36-L41 */
