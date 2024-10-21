@@ -3,8 +3,10 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 // import { filenameDisplay, compressionType } from '../DataFilesCompressModal';
+import { vi } from 'vitest';
+// import { watchCompress } from 'redux/sagas/datafiles.sagas';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -38,6 +40,12 @@ const testFolder = {
 }
 
 describe('DataFilesDownloadMessageModal', () => {
+  
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
   it('renders the data files download message modal', () => {
     const store = mockStore(initialMockState);
     const { getAllByText } = renderComponent(
@@ -85,8 +93,50 @@ describe('DataFilesDownloadMessageModal', () => {
         authenticatedUser: { user: { username: 'testuser' } },
       })
     );
-    // Click on the download button to try and download the file
+    // Click on the Compress button to try and download the folder
     fireEvent.click(getByText('Compress'));
+    // await waitFor (() => {
+      // expect(formRef.current.values).toBeDefined();
+    // });
+    // expect(formRef.current.values).toBeDefined();
     expect(containsFolder).toBeTruthy;
+  });
+
+  it('prevents the compression of multiple files that total more than 2 GB in size', () => {
+    // Mock the alert function
+    global.alert = vi.fn();
+    // Create a spy that watches for the dispatch call
+    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      global.alert
+    );
+    const { getByText } = renderComponent(
+      <DataFilesDownloadMessageModal />,
+      mockStore({
+        files: {
+          modals: {
+            downloadMessage: true,
+          },
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile1, testFile2, testFolder] },
+          selected: { FilesListing: [0, 1] },
+          operationStatus: { 
+            compress: true
+          },
+        },
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the Compress button to try and download the file
+    fireEvent.click(getByText('Compress'));
+    expect(global.alert).toHaveBeenCalledWith(
+      'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
+    );
   });
 });
