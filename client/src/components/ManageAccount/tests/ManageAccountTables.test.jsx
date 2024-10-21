@@ -155,6 +155,33 @@ describe('Third Party Apps', () => {
     expect(queryByText('Setup Google Drive')).toBeNull();
     expect(getByText('No integrations available.')).toBeInTheDocument();
   });
+  it('Shows potential 3rd party connections other than Google Drive', () => {
+    const testStore = mockStore({
+      profile: {
+        ...dummyState,
+        data: {
+          ...dummyState.data,
+          integrations: [
+            {
+              label: '3rd Party Service',
+              description: '3rd Party Service description',
+              activated: true,
+            },
+          ],
+        },
+      },
+    });
+    const { getByText, queryByText } = render(
+      <Provider store={testStore}>
+        <Integrations />
+      </Provider>
+    );
+    expect(getByText(/3rd Party Apps/)).toBeInTheDocument();
+    // Check that Google Drive is not rendered
+    expect(queryByText('Google Drive')).toBeNull();
+    // Check that other integrations are rendered
+    expect(getByText('3rd Party Service')).toBeInTheDocument();
+  });
 });
 
 describe('License Cell', () => {

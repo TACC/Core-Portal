@@ -37,12 +37,9 @@ const BreadcrumbsDropdown = ({
       url = `${basePath}/${api}/projects/${projectId}/`;
     } else if (scheme === 'projects' && !targetPath) {
       url = `${basePath}/${api}/projects/`;
-    }
-    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
-    // else if (api === 'googledrive' && !targetPath) {
-    //   url = `${basePath}/${api}/${scheme}/${system}/`;
-    // }
-    else if (api === 'tapis' && scheme !== 'projects' && !targetPath) {
+    } else if (api === 'googledrive' && !targetPath) {
+      url = `${basePath}/${api}/${scheme}/${system}/`;
+    } else if (api === 'tapis' && scheme !== 'projects' && !targetPath) {
       url = `${basePath}/${api}/${scheme}/${system}/`;
     } else {
       url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
