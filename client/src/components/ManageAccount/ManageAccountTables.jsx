@@ -204,7 +204,7 @@ export const IntegrationCell = ({ cell: { value } }) => {
       ) : (
         <div>
           <Button type="link" onClick={toggle}>
-            Setup {label}
+            {'Setup ' + label}
           </Button>
         </div>
       )}
