@@ -7,8 +7,8 @@
 import logging
 from unittest.mock import MagicMock, patch
 
-import pytest
-from django.conf import settings
+import pytest  # pyright: ignore
+from django.conf import settings  # pyright: ignore
 
 from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.projects.models.base import Project
@@ -21,11 +21,11 @@ LOGGER = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
-# @pytest.fixture
-# def mock_service_account(mocker):
-#     yield mocker.patch(
-#         "portal.apps.projects.models.base.service_account", autospec=True
-#     )
+@pytest.fixture
+def mock_service_account(mocker):
+    yield mocker.patch(
+        "portal.apps.projects.models.base.service_account", autospec=True
+    )
 
 
 # @pytest.fixture()
@@ -33,11 +33,11 @@ pytestmark = pytest.mark.django_db
 #     yield mocker.patch("portal.apps.signals.receivers.index_project")
 
 
-# @pytest.fixture()
-# def mock_owner(django_user_model):
-#     return django_user_model.objects.create_user(
-#         username="username", password="password"
-#     )
+@pytest.fixture()
+def mock_owner(django_user_model):
+    return django_user_model.objects.create_user(
+        username="username", password="password"
+    )
 
 
 # Mock creation of a project
@@ -59,11 +59,9 @@ def mock_tapis_client():
         yield mock_client
 
 
-def test_project_init(mock_tapis_client):
-    "Test project model init."
-
-    # Assert Defs
-    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+# Initial setup of mocks
+@pytest.fixture()
+def setup_mocks(mock_tapis_client):
     result_title = "My New Workspace"
     result_description = "This is a test description"
     result_created = "2024-10-18T00:00:00Z"
@@ -85,11 +83,6 @@ def test_project_init(mock_tapis_client):
     client.systems.getSystem.return_value = mock_system
 
     # Mock permission return
-    mock_permissions = MagicMock()
-    mock_permissions.permissions = "MODIFY"
-    client.files.getPermissions.return_value = mock_permissions
-
-    # Mocked get permissions based on username
     def mock_get_permissions(systemId, path, username):
         if username == "user":
             return MagicMock(permission="MODIFY")
@@ -97,8 +90,22 @@ def test_project_init(mock_tapis_client):
 
     client.files.getPermissions.side_effect = mock_get_permissions
 
+    return client
+
+
+def test_project_init(setup_mocks):
+    "Test project model init."
+
+    # Assert Defs
+    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+    result_title = "My New Workspace"
+    result_description = "This is a test description"
+    result_created = "2024-10-18T00:00:00Z"
+
+    # Mock Tapis Client
+    client = setup_mocks
+
     # Create the shared workspace
-    # Does a Tapis call for client.systems.createSystem(**system_args) and stores it in the system
     project_id = ws_o.create_workspace_system(
         client,
         workspace_id="PRJ-123",
@@ -107,9 +114,7 @@ def test_project_init(mock_tapis_client):
         owner=None,
     )
 
-    "Assert the results"
-
-    # Assert Defs
+    # Assert the results
     assert project_id == result_system_id
     project = ws_o.get_project(client, project_id)
     assert project["title"] == result_title
@@ -123,15 +128,52 @@ def test_project_init(mock_tapis_client):
     assert project["members"][1]["access"] == "edit"
 
 
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_project_create(
-    mock_owner,
-    mock_tapis_client,
-    service_account,
-    mock_storage_system,
-    project_model,
-    mock_signal,
-):
+def test_project_create(setup_mocks, mock_owner, mock_service_account):
+    client = setup_mocks
+    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-123"
+    with patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
+    ) as mock_service_account, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count"
+    ) as mock_increment_workspace_count, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir"
+    ) as mock_create_workspace_dir, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls"
+    ) as mock_set_workspace_acls:
+
+        # Set return values for the mocks
+        mock_service_account.return_value = MagicMock()
+
+        # Mock of increment_workspace_count
+        workspace_count = 122  # Example starting workspace
+
+        def increment_workspace():
+            nonlocal workspace_count
+            workspace_count += 1
+            return workspace_count
+
+        mock_increment_workspace_count.side_effect = increment_workspace
+
+        # Create shared workspace test
+        project_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
+        assert project_id == result_system_id
+        # Assert that the mocks were called
+        mock_service_account.assert_called_once()
+        mock_increment_workspace_count.assert_called_once()
+        mock_create_workspace_dir.assert_called_once_with(
+            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-123"
+        )
+
+        mock_set_workspace_acls.assert_called_once_with(
+            mock_service_account.return_value,
+            settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+            f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}-123",
+            mock_owner,
+            "add",
+            "writer",
+        )
+        # TODO: Mocking the storage found at line 187 for storage and auth
+    """ Original Tests
     prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
     project_model._create_dir.assert_called_with("PRJ-123")
     mock_storage_system.assert_called_with(
@@ -151,6 +193,8 @@ def test_project_create(
     assert prj.storage.storage.auth.private_key == (
         "-----BEGIN RSA PRIVATE KEY-----" "change this" "-----END RSA PRIVATE KEY-----"
     )
+
+    """
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
