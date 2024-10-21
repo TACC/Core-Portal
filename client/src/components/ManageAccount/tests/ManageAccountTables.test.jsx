@@ -124,8 +124,9 @@ describe('Third Party Apps', () => {
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Setup Google Drive')).toBeDefined();
+    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
+    // expect(getByText('Google Drive')).toBeDefined();
+    // expect(getByText('Setup Google Drive')).toBeDefined();
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({
@@ -149,8 +150,9 @@ describe('Third Party Apps', () => {
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Disconnect')).toBeDefined();
+    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
+    //expect(getByText('Google Drive')).toBeDefined();
+    //expect(getByText('Disconnect')).toBeDefined();
   });
 });
 

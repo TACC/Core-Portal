@@ -56,14 +56,15 @@ const systemsFixture = {
         readOnly: false,
         hideSearchBar: false,
       },
-      {
-        name: 'Google Drive',
-        system: 'googledrive',
-        scheme: 'private',
-        api: 'googledrive',
-        icon: null,
-        integration: 'portal.apps.googledrive_integration',
-      },
+      // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
+      // {
+      //   name: 'Google Drive',
+      //   system: 'googledrive',
+      //   scheme: 'private',
+      //   api: 'googledrive',
+      //   icon: null,
+      //   integration: 'portal.apps.googledrive_integration',
+      // },
     ],
     error: false,
     errorMessage: null,
