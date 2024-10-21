@@ -3,7 +3,8 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-// import store from 'redux/store';
+import { fireEvent } from '@testing-library/react';
+// import { filenameDisplay, compressionType } from '../DataFilesCompressModal';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -53,18 +54,16 @@ describe('DataFilesDownloadMessageModal', () => {
 
   // Test to prevent folder downloads
   it('checks for a folder among the selected files', () => {
+    // Render the Download Message Modal
+    // const formRef = React.useRef();
+    // const { filenameDisplay, compressionType } = formRef.current.values;
     const { getByText } = renderComponent(
       <DataFilesDownloadMessageModal />,
-      // store,
       mockStore({
-        workbench: {
-          config: {
-            extract: '',
-            compress: '',
-            trashPath: '.Trash',
-          },
-        },
         files: {
+          modals: {
+            downloadMessage: true,
+          },
           params: {
             FilesListing: {
               system: 'frontera.home.username',
@@ -74,9 +73,14 @@ describe('DataFilesDownloadMessageModal', () => {
           },
           listing: { FilesListing: [testFile1, testFile2, testFolder] },
           selected: { FilesListing: [2] },
-          operationStatus: { trash: false },
+          operationStatus: { 
+            compress: true, 
+            // props: {
+            //   filenameDisplay: formRef.current.values,
+            //   compressionType: formRef.current.values
+            // }
+          },
         },
-        // systems: systemsFixture,
         projects: { metadata: [] },
         authenticatedUser: { user: { username: 'testuser' } },
       })
