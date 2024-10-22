@@ -236,7 +236,7 @@ def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
     expected_list = [
         {
             "label": app.notes.label,
-            "version": app.version,
+            "versionEnabled": app.versionEnabled,
             "type": "tapis",
             "appId": app.id,
         }
