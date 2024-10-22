@@ -34,11 +34,10 @@ const testFolder = {
   name: 'testFolder',
   type: 'folder',
   path: '/testFolder',
-  id: 789
-}
+  id: 789,
+};
 
 describe('DataFilesDownloadMessageModal', () => {
-  
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks();
@@ -77,8 +76,8 @@ describe('DataFilesDownloadMessageModal', () => {
           },
           listing: { FilesListing: [testFile1, testFile2, testFolder] },
           selected: { FilesListing: [2] },
-          operationStatus: { 
-            compress: true
+          operationStatus: {
+            compress: true,
           },
         },
         projects: { metadata: [] },
@@ -115,8 +114,8 @@ describe('DataFilesDownloadMessageModal', () => {
           },
           listing: { FilesListing: [testFile1, testFile2, testFolder] },
           selected: { FilesListing: [0, 1] },
-          operationStatus: { 
-            compress: true
+          operationStatus: {
+            compress: true,
           },
         },
         projects: { metadata: [] },
