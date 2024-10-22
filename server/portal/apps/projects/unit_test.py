@@ -115,6 +115,7 @@ def test_project_init(setup_mocks):
     )
 
     # Assert the results
+    # create_workspace_system main return assertion
     assert project_id == result_system_id
     project = ws_o.get_project(client, project_id)
     assert project["title"] == result_title
@@ -155,7 +156,9 @@ def test_project_create(setup_mocks, mock_owner, mock_service_account):
         mock_increment_workspace_count.side_effect = increment_workspace
 
         # Create shared workspace test
+        # create_shared_workspace main return assertion
         project_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
+
         assert project_id == result_system_id
         # Assert that the mocks were called
         mock_service_account.assert_called_once()
@@ -221,7 +224,8 @@ def test_listing(setup_mocks, mock_owner):
         project_id_2 = ws_o.create_shared_workspace(client, "PRJ-124", mock_owner)
 
         # Mock the return value of list_projects
-        # TODO: List Projects needs to match the output of the shared workspace operations
+
+        # TODO: List Projects needs to match the output of the list of serialized listing shared workspace operations
         mock_list_projects.return_value = [
             {"project_id": project_id_1, "title": "Project 123"},
             {"project_id": project_id_2, "title": "Project 124"},
