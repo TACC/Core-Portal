@@ -35,6 +35,11 @@
   composes: c-button--as-link from '../../../styles/components/c-button--new.css';
 }
 
+/* WP-50: Sets size of text to 1rem (16px) */
+.root.as-link {
+  font-size: 1rem;
+}
+
 .icon--before {
   composes: c-button__icon--before from '../../../styles/components/c-button--new.css';
 }
