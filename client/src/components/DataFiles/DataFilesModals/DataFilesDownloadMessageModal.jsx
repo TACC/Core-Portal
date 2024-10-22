@@ -52,9 +52,9 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   const compressCallback = () => {
+    const { filenameDisplay, compressionType } = formRef.current.values;
     // Establish a boolean that checks for a folder among selectedFiles
     let containsFolder = false;
-    const { filenameDisplay, compressionType } = formRef.current.values;
     // Check the total size of all selected files to be compressed
     let totalFileSize = 0;
     // Set the maximum file size limit for compressing files
@@ -66,9 +66,9 @@ const DataFilesDownloadMessageModal = () => {
         containsFolder = true;
       }
     }
-    // Run the dispatch if the user does not select any folders
+    // Run the dispatch if the user does not select any folders...
     if ((containsFolder = false)) {
-      // Run the dispatch call if and only if the total file size is below the threshold
+      // ...and if the total file size is below 2 GB
       if (totalFileSize < maxFileSize) {
         dispatch({
           type: 'DATA_FILES_COMPRESS',

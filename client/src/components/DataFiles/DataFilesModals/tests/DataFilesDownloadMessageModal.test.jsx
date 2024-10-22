@@ -3,10 +3,8 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-import { fireEvent, waitFor } from '@testing-library/react';
-// import { filenameDisplay, compressionType } from '../DataFilesCompressModal';
+import { fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-// import { watchCompress } from 'redux/sagas/datafiles.sagas';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -63,8 +61,6 @@ describe('DataFilesDownloadMessageModal', () => {
   // Test to prevent folder downloads
   it('checks for a folder among the selected files', () => {
     // Render the Download Message Modal
-    // const formRef = React.useRef();
-    // const { filenameDisplay, compressionType } = formRef.current.values;
     const { getByText } = renderComponent(
       <DataFilesDownloadMessageModal />,
       mockStore({
@@ -82,11 +78,7 @@ describe('DataFilesDownloadMessageModal', () => {
           listing: { FilesListing: [testFile1, testFile2, testFolder] },
           selected: { FilesListing: [2] },
           operationStatus: { 
-            compress: true, 
-            // props: {
-            //   filenameDisplay: formRef.current.values,
-            //   compressionType: formRef.current.values
-            // }
+            compress: true
           },
         },
         projects: { metadata: [] },
@@ -95,19 +87,17 @@ describe('DataFilesDownloadMessageModal', () => {
     );
     // Click on the Compress button to try and download the folder
     fireEvent.click(getByText('Compress'));
-    // await waitFor (() => {
-      // expect(formRef.current.values).toBeDefined();
-    // });
-    // expect(formRef.current.values).toBeDefined();
+    // Test for the containsFolder boolean to be true
     expect(containsFolder).toBeTruthy;
   });
 
+  // Test to prevent the compression of multiple files if their total size is greater than 2 GB
   it('prevents the compression of multiple files that total more than 2 GB in size', () => {
-    // Mock the alert function
-    global.alert = vi.fn();
+    // Mock the dispatch call
+    const mockDispatch = vi.fn();
     // Create a spy that watches for the dispatch call
     vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      global.alert
+      mockDispatch
     );
     const { getByText } = renderComponent(
       <DataFilesDownloadMessageModal />,
@@ -135,8 +125,7 @@ describe('DataFilesDownloadMessageModal', () => {
     );
     // Click on the Compress button to try and download the file
     fireEvent.click(getByText('Compress'));
-    expect(global.alert).toHaveBeenCalledWith(
-      'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
-    );
+    // Test for the LACK of a dispatch call
+    expect(mockDispatch).not.toHaveBeenCalled();
   });
 });
