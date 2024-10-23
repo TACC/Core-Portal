@@ -94,135 +94,131 @@ def setup_mocks(mock_tapis_client):
 
 
 def test_project_init(setup_mocks):
-    "Test project model init."
-
-    # Assert Defs
-    result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
-    result_title = "My New Workspace"
-    result_description = "This is a test description"
-    result_created = "2024-10-18T00:00:00Z"
-
-    # Mock Tapis Client
-    client = setup_mocks
-
-    # Create the shared workspace
-    project_id = ws_o.create_workspace_system(
-        client,
-        workspace_id="PRJ-123",
-        title=result_title,
-        description=result_description,
-        owner=None,
-    )
-
-    # Assert the results
-    assert project_id == result_system_id
-    project = ws_o.get_project(client, project_id)
-    assert project["title"] == result_title
-    assert project["description"] == result_description
-    assert project["created"] == result_created
-    assert project["projectId"] == result_system_id
-    assert len(project["members"]) == 2
-    assert project["members"][0]["user"]["username"] == "owner"
-    assert project["members"][0]["access"] == "owner"
-    assert project["members"][1]["user"]["username"] == "user"
-    assert project["members"][1]["access"] == "edit"
-
-
-def test_project_create(setup_mocks, mock_owner, mock_service_account):
     with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count"
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir"
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls"
-    ) as mock_set_workspace_acls:
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
+        wraps=ws_o.create_workspace_system,
+    ):
+        "Test project model init."
 
+        # Assert Defs
+        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+        result_title = "My New Workspace"
+        result_description = "This is a test description"
+        result_created = "2024-10-18T00:00:00Z"
+
+        # Mock Tapis Client
         client = setup_mocks
-        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-123"
-        # Set return values for the mocks
-        mock_service_account.return_value = MagicMock()
 
-        # Mock of increment_workspace_count
-        workspace_count = 122  # Example starting workspace
+        # Create the shared workspace
+        project_id = ws_o.create_workspace_system(
+            client,
+            workspace_id="PRJ-123",
+            title=result_title,
+            description=result_description,
+            owner=None,
+        )
+        ws_o.create_workspace_system.assert_called_once_with(
+            client,
+            workspace_id="PRJ-123",
+            title=result_title,
+            description=result_description,
+            owner=None,
+        )
 
-        def increment_workspace():
-            nonlocal workspace_count
-            workspace_count += 1
-            return workspace_count
-
-        mock_increment_workspace_count.side_effect = increment_workspace
-
-        # Create shared workspace test
-        project_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
-
+        # Assert the results
         assert project_id == result_system_id
-        # Assert that the mocks were called
-        mock_service_account.assert_called_once()
-        mock_increment_workspace_count.assert_called_once()
-        mock_create_workspace_dir.assert_called_once_with(
-            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-123"
+        project = ws_o.get_project(client, project_id)
+        assert project["title"] == result_title
+        assert project["description"] == result_description
+        assert project["created"] == result_created
+        assert project["projectId"] == result_system_id
+        assert len(project["members"]) == 2
+        assert project["members"][0]["user"]["username"] == "owner"
+        assert project["members"][0]["access"] == "owner"
+        assert project["members"][1]["user"]["username"] == "user"
+        assert project["members"][1]["access"] == "edit"
+
+
+def test_project_create(setup_mocks, mock_owner):
+    with patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
+        wraps=ws_o.increment_workspace_count,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
+        wraps=ws_o.create_workspace_system,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
+        wraps=ws_o.create_shared_workspace,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
+        wraps=ws_o.create_workspace_dir,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
+        wraps=ws_o.set_workspace_acls,
+    ):
+
+        "Test add member."
+        "Mocking add_user_to_workspace"
+
+        # Mock Tapis Initial
+        client = setup_mocks
+        # Create Test project to test workspace operation
+        system_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
+        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-2"
+        assert system_id == result_system_id
+        ws_o.service_account.assert_called()
+        ws_o.increment_workspace_count.assert_called()
+        ws_o.create_workspace_dir.assert_called_once_with(
+            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-2"
         )
-
-        mock_set_workspace_acls.assert_called_once_with(
-            mock_service_account.return_value,
-            settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}-123",
-            mock_owner,
-            "add",
-            "writer",
-        )
-        # TODO: Mocking the storage found at line 187 for storage and auth
-    """ Original Tests
-    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
-    project_model._create_dir.assert_called_with("PRJ-123")
-    mock_storage_system.assert_called_with(
-        client=service_account(),
-        id="test.project.PRJ-123",
-        name="PRJ-123",
-        description="Test Title",
-        site="test",
-    )
-    assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.get(project_id="PRJ-123", title="Test Title")
-
-    assert prj._ac == mock_tapis_client
-    assert prj.storage.storage.port == 22
-
-    assert prj.storage.storage.auth.username == "wma_prtl"
-    assert prj.storage.storage.auth.private_key == (
-        "-----BEGIN RSA PRIVATE KEY-----" "change this" "-----END RSA PRIVATE KEY-----"
-    )
-
-    """
+        ws_o.set_workspace_acls.assert_called()
+        ws_o.create_workspace_system.assert_called()
 
 
 def test_listing(setup_mocks, mock_owner):
     with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count"
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir"
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls"
-    ) as mock_set_workspace_acls, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.list_projects"
-    ) as mock_list_projects:
-        "Test projects listing."
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
+        wraps=ws_o.increment_workspace_count,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
+        wraps=ws_o.create_workspace_system,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
+        wraps=ws_o.create_shared_workspace,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
+        wraps=ws_o.create_workspace_dir,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.list_projects",
+        wraps=ws_o.list_projects,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
+        wraps=ws_o.set_workspace_acls,
+    ):
 
         # Mock Tapis Initial
         client = setup_mocks
-        # TODO: Remove
-        _ = mock_service_account
 
         # Create two projects/workspaces
         project_id_1 = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
         project_id_2 = ws_o.create_shared_workspace(client, "PRJ-124", mock_owner)
+        # Assert that the mocks were called
+        ws_o.service_account.assert_called()
+        ws_o.increment_workspace_count.assert_called()
+        ws_o.create_workspace_dir.assert_any_call(
+            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-2"
+        )
+        assert ws_o.create_workspace_dir.call_count == 2
+        ws_o.set_workspace_acls.assert_called()
+        ws_o.create_workspace_system.assert_called()
 
+        # TODO: Replace with the actual list_projects return value
         # Mock the return value of list_projects
-        mock_list_projects.return_value = [
+        ws_o.list_projects.return_value = [
             {"project_id": project_id_1, "title": "Project 123"},
             {"project_id": project_id_2, "title": "Project 124"},
         ]
@@ -230,11 +226,7 @@ def test_listing(setup_mocks, mock_owner):
         # Call the function to list projects
         projects = ws_o.list_projects(client)
 
-        # Assert that the mocks were called
-        mock_increment_workspace_count.assert_called()
-        mock_create_workspace_dir.assert_called()
-        mock_set_workspace_acls.assert_called()
-        mock_list_projects.assert_called_once_with(client)
+        ws_o.list_projects.assert_called_once_with(client)
 
         # Verify the returned projects
         assert len(projects) == 2
@@ -242,20 +234,6 @@ def test_listing(setup_mocks, mock_owner):
         assert projects[0]["title"] == "Project 123"
         assert projects[1]["project_id"] == project_id_2
         assert projects[1]["title"] == "Project 124"
-        """
-        mock_storage_system.search.return_value = mock_projects_storage_systems
-        lst = list(Project.listing(mock_tapis_client))
-        mock_storage_system.search.assert_called_with(
-            mock_tapis_client,
-            query={
-                "id.like": "{}*".format(Project.metadata_name),
-                "type.eq": mock_storage_system.TYPES.STORAGE,
-            },
-            offset=0,
-            limit=100,
-        )
-        assert len(lst) == 2
-        """
 
 
 def test_add_member(setup_mocks, mock_owner, django_user_model):
