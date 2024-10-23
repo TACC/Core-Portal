@@ -168,7 +168,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     path
   ) {
     if (isAtHomeDir) {
-      // For WP-420 search placeholder needs to change when going into a new project, was "Root" before. Needs to show current folder instead
       return systemDisplayName;
     }
     return getCurrentDirectory(path);
