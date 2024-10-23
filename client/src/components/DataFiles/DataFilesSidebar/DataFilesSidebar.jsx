@@ -107,8 +107,12 @@ const DataFilesAddButton = ({ readOnly }) => {
 };
 
 const DataFilesSidebar = ({ readOnly }) => {
+  // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
   const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    (state) =>
+      state.systems.storage.configuration.filter(
+        (s) => !s.hidden && s.name != 'Google Drive'
+      ),
     shallowEqual
   );
 

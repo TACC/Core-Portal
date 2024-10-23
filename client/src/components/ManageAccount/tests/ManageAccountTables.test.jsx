@@ -120,14 +120,15 @@ describe('Third Party Apps', () => {
     const testStore = mockStore({
       profile: dummyState,
     });
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Provider store={testStore}>
         <Integrations />
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Setup Google Drive')).toBeDefined();
+    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
+    expect(queryByText('Google Drive')).toBeNull();
+    expect(queryByText('Setup Google Drive')).toBeNull();
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({
@@ -147,14 +148,43 @@ describe('Third Party Apps', () => {
         },
       },
     });
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Provider store={testStore}>
         <Integrations />
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Disconnect')).toBeDefined();
+    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
+    expect(queryByText('Google Drive')).toBeNull();
+    expect(queryByText('Setup Google Drive')).toBeNull();
+    expect(getByText('No integrations available.')).toBeInTheDocument();
+  });
+  it('Shows potential 3rd party connections other than Google Drive', () => {
+    const testStore = mockStore({
+      profile: {
+        ...dummyState,
+        data: {
+          ...dummyState.data,
+          integrations: [
+            {
+              label: '3rd Party Service',
+              description: '3rd Party Service description',
+              activated: true,
+            },
+          ],
+        },
+      },
+    });
+    const { getByText, queryByText } = render(
+      <Provider store={testStore}>
+        <Integrations />
+      </Provider>
+    );
+    expect(getByText(/3rd Party Apps/)).toBeInTheDocument();
+    // Check that Google Drive is not rendered
+    expect(queryByText('Google Drive')).toBeNull();
+    // Check that other integrations are rendered
+    expect(getByText('3rd Party Service')).toBeInTheDocument();
   });
 });
 
