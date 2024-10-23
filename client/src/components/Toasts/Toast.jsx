@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
-import Snackbar from '@material-ui/core/Snackbar';
-import Slide from '@material-ui/core/Slide';
+import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
 import { Icon } from '_common';
 import './Toast.scss';
 import { STATUS_TEXT_MAP } from '../Jobs/JobsStatus';
