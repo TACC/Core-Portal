@@ -119,11 +119,12 @@
 .user > td:not(.has-wrappable-content):not(.status) {
   @include truncate-with-ellipsis;
 }
-.user:nth-child(4n),
-.user:nth-child(4n-1) > td:not(.staffwait) {
+.user-row-white {
+  background-color: #ffffff;
+}
+.user-row-grey {
   background-color: #f4f4f4;
 }
-
 .username {
   display: inline-block; /* needed to make margin-top work with span */
   margin-top: 5px; /* adjust value as needed to create more space between fullname and username */
