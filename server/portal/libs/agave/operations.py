@@ -15,8 +15,8 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
-from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, get_entity, 
-                                                                               get_file_association_entity, patch_file_association)
+from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, 
+                                                                               patch_file_association)
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path
 
@@ -91,19 +91,24 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          offset=int(offset),
                                          limit=int(limit))
         
-    folder_metadata = get_entity(system, path)
+    folder_entity_value = get_value(system, path)
 
     try:
         # Convert file objects to dicts for serialization.
-
         listing = []
 
         for f in raw_listing: 
-
-            entity = get_entity(system, f.path) if f.type == 'dir' else get_file_association_entity(system, f.path)
+            if f.type == 'dir':
+                value = get_value(system,f.path)
+                entity = get_entity(system, f.path)
+                uuid = entity.to_dict().get('uuid') if entity else None
+            else: 
+                file_obj = get_file_obj(system, f.path)
+                value = get_ordered_value(constants.FILE, file_obj.get('value')) if file_obj else None
+                uuid = file_obj.get('uuid') if file_obj else None
 
             listing.append({
-                'uuid': entity.to_dict().get('uuid') if entity else None,
+                'uuid': uuid,
                 'system': system,
                 'type': 'dir' if f.type == 'dir' else 'file',
                 'format': 'folder' if f.type == 'dir' else 'raw',
@@ -115,30 +120,15 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                 '_links': {
                     'self': {'href': f.url}
                 },
-                'metadata': entity.ordered_value if entity else None
+                'metadata': value if value else None
             })
-
-        # listing = list(map(lambda f: {
-        #     'system': system,
-        #     'type': 'dir' if f.type == 'dir' else 'file',
-        #     'format': 'folder' if f.type == 'dir' else 'raw',
-        #     'mimeType': f.mimeType,
-        #     'path': f.path,
-        #     'name': f.name,
-        #     'length': f.size,
-        #     'lastModified': f.lastModified,
-        #     '_links': {
-        #         'self': {'href': f.url}
-        #     },
-        #     'metadata': get_entity_metadata(system, f.path)
-        # }, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata.ordered_value if folder_metadata else None}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_entity_value}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -547,20 +537,9 @@ def upload(client, system, path, uploaded_file, metadata=None):
 
     if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
         
-        new_meta = create_entity_metadata(system, getattr(constants, metadata.get('data_type').upper()), {
-            **metadata,
-        })
-
         parent_node = get_node_from_path(system, path)
 
-        file_obj = FileObj(
-            system=system,
-            name=uploaded_file.name,
-            path=dest_path,
-            type='file',
-            length=uploaded_file.size,
-            uuid=new_meta.uuid
-        )
+        file_obj = create_file_obj(system, uploaded_file.name, uploaded_file.size, dest_path, metadata)
 
         if parent_node and parent_node['id'] != 'NODE_ROOT':
             add_file_associations(parent_node['uuid'], [file_obj])

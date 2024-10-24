@@ -114,23 +114,6 @@ def get_root_node(project_id: str) -> Dict[str, Any]:
     project_graph = nx.node_link_graph(graph_model.value)
     return {"id": "NODE_ROOT", **project_graph.nodes["NODE_ROOT"]}
 
-def get_file_association_from_path(project_id: str, path: str) -> Dict[str, Any]:
-    """Return the node ID for the parent of a node with the given path."""
-
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
-    project_graph = nx.node_link_graph(graph_model.value)
-
-    path_parts = path.strip("/").split("/")
-
-    if len(path_parts) == 0 or path_parts[0] == "":
-        return {"id": "NODE_ROOT"}
-    
-    node = traverse_graph(project_graph, "NODE_ROOT", path_parts)
-
-    return node
-
 def update_node_in_project(project_id: str, node_id: str, new_parent: str = None, new_name: str = None):
     """Update the database entry for a project graph to update a node."""
     with transaction.atomic():

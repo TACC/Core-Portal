@@ -1,4 +1,5 @@
 import operator
+import uuid
 from django.db import models, transaction
 from portal.apps import SCHEMA_MAPPING
 from portal.apps._custom.drp import constants
@@ -7,10 +8,16 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp.models import PartialEntityWithFiles, FileObj
 from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_root_node, update_node_in_project
 from pathlib import Path
+from typing import get_args, List
+
 
 portal = settings.PORTAL_NAMESPACE.lower()
 
-def create_project_metdata(value):
+def snake_to_camel(snake_str):
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
+
+def create_project_metadata(value):
     """Create a project metadata object in the database."""
     schema_model = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema_model.model_validate(value)
@@ -33,31 +40,107 @@ def create_entity_metadata(project_id, name, value):
     entity_db_model.save()
     return entity_db_model
 
-def get_entity(project_id, path):
+def create_file_obj(project_id, name, size, path, value):
+    """Create a file object metadata associated with an existing project."""
+    schema_model = SCHEMA_MAPPING[constants.FILE]
+    validated_model = schema_model.model_validate(value)
+
+    file_obj = FileObj(
+        system=project_id,
+        name=name,
+        path=path,
+        type='file',
+        length=size,
+        value=validated_model.model_dump(exclude_none=True),
+        uuid=str(uuid.uuid4())
+    )
+
+    return file_obj
+
+def get_value(project_id, path):
     """Retrieve metadata for a specific entity."""
     try:
         node = get_node_from_path(project_id, path)
 
         if not node or node['id'] == 'NODE_ROOT':
             return None
+        
+        if node.get('value'):
+            return get_ordered_value(node['name'], node['value'])
+
         entity = ProjectMetadata.objects.get(uuid=node['uuid'])
-        # entity = ProjectMetadata.get_entity_by_project_id_and_path(project_id, path)
-        return entity
+        return get_ordered_value(entity.name, entity.value)
     except ProjectMetadata.DoesNotExist:
         return None
 
-def get_file_association_entity(project_id, path):
-    try: 
+def get_entity(project_id, path):
+    """Retrieve an entity by its path."""
+    try:
+        node = get_node_from_path(project_id, path)
+
+        if not node or node['id'] == 'NODE_ROOT':
+            return None
+
+        return ProjectMetadata.objects.get(uuid=node['uuid'])
+    except ProjectMetadata.DoesNotExist:
+        return None
+
+def get_ordered_value(name, value):
+    """
+        Return the metadata in the order defined in the Pydantic model.
+        Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be updated to use camelCase.
+        """
+    schema = SCHEMA_MAPPING.get(name)
+
+    if not schema:
+        return value  # Return the field value directly if no schema is found
+
+    ordered_value = {}
+
+    # Iterate through the model fields to preserve the order
+    for field in schema.model_fields.keys():
+        camel_field = snake_to_camel(field)
+        field_value = value.get(camel_field)
+
+        # Skip the field if there is no value (None or not present)
+        if field_value is None:
+            continue
+
+        # if the fiels is a list, then we need to get the model of the list and process it
+        if isinstance(field_value, list):
+            field_annotation = schema.model_fields[field].annotation
+            item_type = get_args(field_annotation)[0] if get_args(field_annotation) else None # returns the model class of the list
+
+            # Check if the item type is a Pydantic model
+            if item_type and hasattr(item_type, "model_fields"):
+                # Re-order each item in the list if it's a list of Pydantic models
+                ordered_value[field] = [
+                    {k: item.get(snake_to_camel(k)) for k in item_type.model_fields.keys()}
+                    for item in field_value
+                ]
+            else:
+                ordered_value[field] = field_value
+        else:
+            ordered_value[field] = field_value
+
+    return ordered_value
+
+def get_file_obj( project_id, path):
+    """Retrieve a file object by its path."""
+    try:
         parent_path = str(Path(path).parent)
 
         parent_node = _get_valid_node(project_id, parent_path)
 
-        parent_entity = ProjectMetadata.objects.get(uuid=parent_node['uuid'])
-        file_objs = parent_entity.value.get('fileObjs', [])
+        if (parent_node.get('value')):
+            file_objs = parent_node['value'].get('fileObjs', [])
+        else:
+            parent_entity = ProjectMetadata.objects.get(uuid=parent_node['uuid'])
+            file_objs = parent_entity.value.get('fileObjs', [])
+
         file_obj = next((f for f in file_objs if f['path'] == path), None)
         if file_obj:
-            entity = ProjectMetadata.objects.get(uuid=file_obj['uuid'])
-            return entity
+            return file_obj
         else:
             return None
     except:
@@ -123,23 +206,23 @@ def patch_file_obj_entity(client, project_id, value, path):
 
     parent_node = _get_valid_node(project_id, parent_path)
 
-    parent_entity = ProjectMetadata.objects.get(uuid=parent_node['uuid'])
-    file_objs = parent_entity.value.get('fileObjs', [])
+    entity = ProjectMetadata.objects.get(uuid=parent_node['uuid'])
+    file_objs = entity.value.get('fileObjs', [])
     file_obj = next((f for f in file_objs if f['path'] == path.strip('/')), None)
 
     if not file_obj:
         return None
 
-    entity = ProjectMetadata.objects.get(uuid=file_obj['uuid'])
+    schema = SCHEMA_MAPPING[constants.FILE]
+    validated_model = schema.model_validate(value)
+    file_obj['value'] = validated_model.model_dump(exclude_none=True)
 
-    schema_model = SCHEMA_MAPPING[entity.name]
+    entity_file_model = PartialEntityWithFiles.model_validate(entity.value)
+    merged_file_objs = _merge_file_objs(entity_file_model.file_objs, [FileObj(**file_obj)])
+    entity.value["fileObjs"] = [f.model_dump() for f in merged_file_objs]
 
-    patched_metadata = {**value}
-
-    validated_model = schema_model.model_validate(patched_metadata)
-    entity.value = validated_model.model_dump(exclude_none=True)
     entity.save()
-
+    
     return entity
 
 def delete_entity(uuid: str):
@@ -271,14 +354,12 @@ def patch_file_association(project_id, value, source_path_full, dest_path_full, 
     if not file_obj_dict:
         return
 
-    file_obj_dict['name'] = new_name
-    file_obj_dict['path'] = dest_path_full.strip('/')
-    file_obj = FileObj(**file_obj_dict)
-
     if operation == 'move':
+        file_obj_dict['name'] = new_name
+        file_obj_dict['path'] = dest_path_full.strip('/')
+        file_obj = FileObj(**file_obj_dict)
         remove_file_associations(source_entity.uuid, [source_path_full])
         add_file_associations(dest_entity.uuid, [file_obj])
     elif operation == 'copy':
-        new_meta = create_entity_metadata(project_id, getattr(constants, value.get('data_type').upper()), {**value})
-        file_obj.uuid = new_meta.uuid
+        file_obj = create_file_obj(project_id, new_name, file_obj_dict['length'], dest_path_full.strip('/'), file_obj_dict['value'])
         add_file_associations(dest_entity.uuid, [file_obj])

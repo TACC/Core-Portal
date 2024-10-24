@@ -21,6 +21,26 @@ class DrpMetadataModel(BaseModel):
         return partial(super().model_dump, by_alias=True, exclude_none=True)(
             *args, **kwargs
         )
+    
+class DrpFileMetadata(DrpMetadataModel):
+    """Model for DRP File Metadata"""
+
+    model_config = ConfigDict(
+        extra="forbid",
+    ) 
+
+    data_type: Literal['file']
+    name: Optional[str] = None
+    image_type: Optional[Literal[
+        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real', 
+        '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
+    ]] = None
+    height: Optional[int] = None
+    width: Optional[int] = None
+    number_of_images: Optional[int] = None
+    offset_to_first_image: Optional[int] = None
+    gap_between_images: Optional[int] = None
+    byte_order: Optional[Literal['big_endian', 'little_endian']] = None
 
 class FileObj(DrpMetadataModel):
     """Model for associated files"""
@@ -32,6 +52,7 @@ class FileObj(DrpMetadataModel):
     length: Optional[int] = None
     last_modified: Optional[str] = None
     uuid: Optional[str] = None
+    value: Optional[DrpFileMetadata] = None
 
 class PartialEntityWithFiles(DrpMetadataModel):
     """Model for representing an entity with associated files."""
@@ -40,7 +61,6 @@ class PartialEntityWithFiles(DrpMetadataModel):
 
     # file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
-
 class DrpProjectRelatedDatasets(DrpMetadataModel):
     """Model for DRP Project Related Datasets"""
 
@@ -77,7 +97,6 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
     publication_description: Optional[str] = None
     publication_link: Optional[str] = None
 
-
 class DrpProjectMetadata(DrpMetadataModel):
     """Model for DRP Project Metadata"""
 
@@ -95,8 +114,9 @@ class DrpProjectMetadata(DrpMetadataModel):
     related_software: list[DrpProjectRelatedSoftware] = []
     related_publications: list[DrpProjectRelatedPublications] = []
     publication_date: Optional[str] = None
-    authors: list[str] = []
+    authors: list[dict] = []
     file_objs: list[FileObj] = []
+    is_review_project : Optional[bool] = None
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""
@@ -192,23 +212,3 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     external_uri: Optional[str] = None
     sample: str
     base_origin_data: Optional[str] = None
-
-class DrpFileMetadata(DrpMetadataModel):
-    """Model for DRP File Metadata"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    ) 
-
-    data_type: Literal['file']
-    name: Optional[str] = None
-    image_type: Optional[Literal[
-        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real', 
-        '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
-    ]] = None
-    height: Optional[int] = None
-    width: Optional[int] = None
-    number_of_images: Optional[int] = None
-    offset_to_first_image: Optional[int] = None
-    gap_between_images: Optional[int] = None
-    byte_order: Optional[Literal['big_endian', 'little_endian']] = None

@@ -28,6 +28,12 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       type: 'PROJECTS_GET_METADATA',
       payload: system,
     });
+
+    dispatch({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS',
+      payload: system,
+    })
+
   }, [system]);
 
   useEffect(() => {

@@ -30,7 +30,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
 
   useEffect(() => {
     if (projectTree && projectTree.length > 0) {
-      setExpandedNodes([projectTree[0].uuid]);
+      setExpandedNodes([projectTree[0].id]);
     }
   }, [projectTree]);
 
@@ -65,7 +65,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
     const dataType = node.metadata.data_type;
     // reconstruct editFile to mimic SelectedFile object
     const editFile = {
-      id: node.uuid,
+      id: node.id,
       uuid: node.uuid,
       metadata: node.metadata,
       name: node.metadata.name,
@@ -122,8 +122,8 @@ const ReviewProjectStructure = ({ projectTree }) => {
       >
         <div>
           <TreeItem
-            key={node.uuid}
-            nodeId={node.uuid}
+            key={node.id}
+            nodeId={node.id}
             label={
               <div className={styles['node-name-div']}>
                   {node.label ?? node.name}
@@ -139,7 +139,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
             }}
             onLabelClick={() => handleNodeToggle}
           >
-            {expandedNodes.includes(node.uuid) && node.id !== 'NODE_ROOT' && (
+            {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
               <div className={styles['metadata-description-div']}>
                 {(canEdit || node.metadata.data_type === 'file') && (
                   <Button

@@ -26,7 +26,7 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
 from portal.apps import SCHEMA_MAPPING
 from django.db import models
-from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata, create_project_metdata, patch_file_obj_entity, patch_entity, patch_project_entity
+from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata, create_project_metadata, get_ordered_value, patch_file_obj_entity, patch_entity, patch_project_entity
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
@@ -131,7 +131,7 @@ class ProjectsApiView(BaseApiView):
 
         if metadata is not None: 
             metadata["projectId"] = workspace_id
-            project_meta = create_project_metdata(metadata)
+            project_meta = create_project_metadata(metadata)
             initialize_project_graph(project_meta.project_id)
             # project_metadata = ProjectsMetadata(
             #     project_id = workspace_id,
@@ -178,7 +178,7 @@ class ProjectInstanceApiView(BaseApiView):
 
         try: 
             project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
-            prj.update(project.ordered_value)
+            prj.update(get_ordered_value(project.name, project.value))
             prj["projectId"] = project_id
         except: 
             pass

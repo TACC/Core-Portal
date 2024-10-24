@@ -27,18 +27,20 @@ const DataFilesProjectReview = ({ system }) => {
     const { metadata } = useSelector((state) => state.projects);
 
     const fetchTree = useCallback(async () => {
+    if (projectId) {
         try {
-          const response = await fetchUtil({
-            url: `api/${portalName.toLowerCase()}/tree`,
-            params: {
-              project_id: projectId,
-            },
-          });
-          setTree(response);
+            const response = await fetchUtil({
+                url: `api/${portalName.toLowerCase()}/tree`,
+                params: {
+                    project_id: projectId,
+                },
+            });
+            setTree(response);
         } catch (error) {
-          console.error('Error fetching tree data:', error);
-          setTree([]);
+            console.error('Error fetching tree data:', error);
+            setTree([]);
         }
+    }
     }, [portalName, projectId]);
 
     useEffect(() => {

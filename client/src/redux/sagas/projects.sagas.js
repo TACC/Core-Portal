@@ -215,6 +215,32 @@ export function* createPublicationRequest(action) {
   }
 }
 
+export async function fetchPublicationRequestsUtil(system) {
+  const result = await fetchUtil({
+    url: `/api/publications/publication-request/${system}`,
+  });
+  return result.response;
+}
+
+export function* getPublicationRequests(action) {
+
+  yield put({
+    type: 'PROJECTS_GET_PUBLICATION_REQUESTS_STARTED',
+  });
+  try {
+    const publicationRequests = yield call(fetchPublicationRequestsUtil, action.payload);
+    yield put({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS',
+      payload: publicationRequests,
+    });
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS_FAILED',
+      payload: error,
+    });
+  }
+}
+
 export async function createEntityUtil(entityType, projectId, path, data) {
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/entities/create`,
@@ -259,4 +285,5 @@ export function* watchProjects() {
   yield takeLatest('PROJECTS_SET_MEMBER', setMember);
   yield takeLatest('PROJECTS_SET_TITLE_DESCRIPTION', setTitleDescription);
   yield takeLatest('PROJECTS_CREATE_PUBLICATION_REQUEST', createPublicationRequest);
+  yield takeLatest('PROJECTS_GET_PUBLICATION_REQUESTS', getPublicationRequests);
 }

@@ -6,6 +6,7 @@ from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
 import networkx as nx
+from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value
 class DigitalRocksSampleView(BaseApiView):
 
     def get(self, request):
@@ -55,8 +56,6 @@ class DigitalRocksTreeView(BaseApiView):
     
     def get(self, request):
 
-        metadata_data_types = ['sample', 'origin_data', 'analysis_data', 'file']
-
         project_id = request.GET.get('project_id')
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
@@ -66,27 +65,31 @@ class DigitalRocksTreeView(BaseApiView):
 
         graph = nx.node_link_graph(graph_model.value)
 
-        for node in graph.nodes:
-            node_uuid = graph.nodes[node].get("uuid")
+        for node_id in graph.nodes:
 
-            entity = self._get_entity(node_uuid)
-            metadata = entity.ordered_value
+            node = graph.nodes[node_id]
 
-            file_objs = entity.value.get('fileObjs', [])
+            if node.get('value'):
+                metadata = get_ordered_value(node['name'], node['value'])
+                file_objs = node['value'].get('fileObjs', [])
+            else:
+                node_uuid = node.get("uuid")
+                entity = self._get_entity(node_uuid)
+                metadata = get_ordered_value(entity.name, entity.value)
+                file_objs = entity.value.get('fileObjs', [])
 
             file_objs_dict = []
 
             for file_obj in file_objs:
-                file_obj_entity = self._get_entity(file_obj.get('uuid'))
-                file_obj_metadata = file_obj_entity.ordered_value
 
                 file_objs_dict.append({
                     **file_obj,
-                    'metadata': file_obj_metadata
-            })
-                
-            graph.nodes[node]['metadata'] = metadata
-            graph.nodes[node]['fileObjs'] = file_objs_dict
+                    'id': file_obj.get('uuid'),
+                    'metadata': get_ordered_value(constants.FILE, file_obj.get('value'))
+                })
+
+            node['metadata'] = metadata
+            node['fileObjs'] = file_objs_dict
 
         tree = nx.tree_data(graph, "NODE_ROOT")
 
