@@ -46,7 +46,6 @@ def mock_owner(django_user_model):
 @pytest.fixture()
 def mock_tapis_client():
     with patch("tapipy.tapis.Tapis") as mock_client:
-
         mock_listing = []
 
         class DictObj:
@@ -243,6 +242,7 @@ def increment_counter():
     return counter, side_effect
 
 
+# Testing if there are two projects Tapis
 def test_listing(mock_tapis_client, mock_owner, increment_counter):
     counter, side_effect = increment_counter
     with patch(
@@ -324,8 +324,7 @@ def test_listing(mock_tapis_client, mock_owner, increment_counter):
         assert len(list) == 2
 
 
-@pytest.mark.skip(reason="Needs to be updated with new Mocked Tapis Storage")
-def test_add_member(setup_mocks, mock_owner, django_user_model):
+def test_add_member(mock_tapis_client, mock_owner, django_user_model):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
     ), patch(
@@ -350,64 +349,44 @@ def test_add_member(setup_mocks, mock_owner, django_user_model):
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_permissions",
         wraps=ws_o.set_workspace_permissions,
     ):
-
         "Test add member."
         "Mocking add_user_to_workspace"
-
-        # Mock Tapis Initial
-        client = setup_mocks
-        # Create Test project to test workspace operation
-        system_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
-        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-2"
-        assert system_id == result_system_id
-        ws_o.service_account.assert_called()
-        ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_called_once_with("test.project-2")
-        ws_o.set_workspace_acls.assert_called()
-        ws_o.create_workspace_system.assert_called()
-
-        # Start test of add user
-        # Assert that the mocks were called
-        project = ws_o.add_user_to_workspace(
-            client, system_id, "teamMember", role="writer"
+        # Assert Defs
+        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
+        result_title = "My New Workspace"
+        result_description = "This is a test description"
+        # result_created = "2024-10-18T00:00:00Z"
+        # mock_get_project_user.return_value = {"username": "mock_user"}
+        # Mock Tapis Client
+        client = mock_tapis_client
+        # Create the shared workspace
+        project_id = ws_o.create_workspace_system(
+            client,
+            workspace_id="PRJ-123",
+            title=result_title,
+            description=result_description,
+            owner=mock_owner,
+        )
+        ws_o.create_workspace_system.assert_called_once_with(
+            client,
+            workspace_id="PRJ-123",
+            title=result_title,
+            description=result_description,
+            owner=mock_owner,
+        )
+        ws_o.add_user_to_workspace(
+            client, "PRJ-123", username="new_username", role="writer"
         )
         ws_o.service_account.assert_called()
         ws_o.set_workspace_acls.assert_called()
-        # TODO: Fix why this is a test within a test project
-        client.systems.shareSystem.assert_called_once_with(
-            systemId="test.project.test.project.test.project-2", users=["teamMember"]
-        )
-        ws_o.set_workspace_permissions.assert_called_once_with(
-            client, "teamMember", "test.project." + system_id, "writer"
-        )
-        mock_users = [
-            {
-                "user": {
-                    "username": "owner",
-                    "email": "",
-                    "first_name": "",
-                    "last_name": "",
-                },
-                "access": "owner",
-            },
-            {
-                "user": {
-                    "username": "user",
-                    "email": "",
-                    "first_name": "",
-                    "last_name": "",
-                },
-                "access": "edit",
-            },
-        ]
-        expected_project = {
-            "title": "My New Workspace",
-            "description": "This is a test description",
-            "created": "2024-10-18T00:00:00Z",
-            "projectId": system_id,
-            "members": mock_users,
-        }
-        assert project == expected_project
+        # TODO: User is added here, needs to be called with args, next step in TODO
+        ws_o.set_workspace_permissions.assert_called()
+        # Assertions
+        project = client.get_project(workspace_id=result_system_id)
+        # Check return payload data format
+
+        assert project_id == result_system_id
+        assert project["port"] == 22
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
