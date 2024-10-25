@@ -55,11 +55,6 @@ export const FileNavCell = React.memo(
     const previewCallback = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
-      // if (api === 'googledrive') {
-      //   window.open(href, '_blank');
-      //   return;
-      // }
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
