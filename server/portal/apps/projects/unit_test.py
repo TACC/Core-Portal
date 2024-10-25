@@ -53,9 +53,7 @@ def mock_tapis_client():
             def __init__(self, **entries):
                 # Recursive conversion of nested dictionaries into object for attribute reference
                 # This is needed because of the behavior of shared_workspace_operations.py and its usage of objects from JSON
-                # print("Start the DICT")
                 for key, value in entries.items():
-                    # print(f"Init key {key} with value {value}")
                     if isinstance(value, dict):
                         self.__dict__[key] = DictObj(**value)
                     else:
@@ -66,6 +64,7 @@ def mock_tapis_client():
             def get(self, key):
                 if key in self.__dict__:
                     id = self.__dict__["id"]
+                    port = self.__dict__["port"]
                     created = self.__dict__["created"]
                     users = {"username": "mock_user"}
                     for value in self.__dict__.values():
@@ -77,21 +76,27 @@ def mock_tapis_client():
                             ):  # Then it is known it is the notes converted Dict
                                 title = value.__dict__["title"]
                                 description = value.__dict__["description"]
-                                data = {
-                                    "title": title,
-                                    "description": description,
-                                    "created": created,
-                                    "projectId": id,
-                                    "members": users,
-                                }
-                                return data
+                            else:
+                                private_key = value.__dict__["privateKey"]
+                    data = {
+                        "title": title,
+                        "description": description,
+                        "created": created,
+                        "projectId": id,
+                        "port": port,
+                        "members": users,
+                        "privateKey": private_key,
+                    }
+                    return data
 
         # Mock createSystem with the side effect
         def create_system_side_effect(**system_args):
             system_created = "2024-10-18T00:00:00Z"
             system_args["created"] = system_created
+            system_args["updated"] = system_created
+            if "owner" not in system_args:
+                system_args["owner"] = None
             system_obj = DictObj(**system_args)
-            # print(system_obj)
             mock_listing.append(system_obj)
 
         def get_system_side_effect(systemId):
@@ -100,8 +105,11 @@ def mock_tapis_client():
 
         def get_project_side_effect(workspace_id):
             for project in mock_listing:
-                # print(project.get("id"))
                 return project.get("id")
+
+        def get_systems_side_effect(*args, **kwargs):
+            mock_get_Systems_return = mock_listing
+            return mock_get_Systems_return
 
         mock_client.systems.createSystem = MagicMock(
             side_effect=create_system_side_effect
@@ -109,14 +117,13 @@ def mock_tapis_client():
         mock_client.systems.getShareInfo = MagicMock()
         mock_client.systems.getSystem = MagicMock(side_effect=get_system_side_effect)
         mock_client.files.getPermissions = MagicMock()
-        # TODO: Enable this for the list systems test
-        # mock_client.systems.getSystems = MagicMock(return_value=mock_listing)
-        mock_client.systems.getSystems = MagicMock()
+        mock_client.systems.getSystems = MagicMock(side_effect=get_systems_side_effect)
         mock_client.get_project = MagicMock(side_effect=get_project_side_effect)
 
         yield mock_client
 
 
+# Test for creating a project without the shared workspace component
 def test_project_init(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
@@ -165,6 +172,7 @@ def test_project_init(mock_tapis_client, mock_owner):
         assert project["members"][0]["access"] == "owner"
 
 
+# Test for creating a shared workspace and if it creates a new project
 def test_project_create(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
@@ -184,9 +192,6 @@ def test_project_create(mock_tapis_client, mock_owner):
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
         wraps=ws_o.create_workspace_system,
     ):
-
-        "Test add member."
-        "Mocking add_user_to_workspace"
         # Intial assertions
         title = "PRJ-123"
         description = ""
@@ -212,73 +217,111 @@ def test_project_create(mock_tapis_client, mock_owner):
         project = client.get_project(workspace_id=system_id)
 
         # Check return payload data format
+        assert project["port"] == 22
+        assert project["privateKey"] == (
+            "-----BEGIN RSA PRIVATE KEY-----"
+            "change this"
+            "-----END RSA PRIVATE KEY-----"
+        )
         assert project["title"] == title
         assert project["description"] == description
         assert project["created"] == created
         assert project["projectId"] == system_id
         assert len(project["members"]) == 1
-        print(f'Assert: {project["members"]["username"]}')
         assert project["members"]["username"] == "mock_user"
 
 
-@pytest.mark.skip(reason="Needs to be updated with new Mocked Tapis Storage")
-def test_listing(setup_mocks, mock_owner):
+# Mock of counter for increment_workspace_count
+@pytest.fixture
+def increment_counter():
+    counter = {"count": 0}
+
+    def side_effect():
+        counter["count"] += 1
+        return f"{counter['count']}"
+
+    return counter, side_effect
+
+
+def test_listing(mock_tapis_client, mock_owner, increment_counter):
+    counter, side_effect = increment_counter
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
     ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
         wraps=ws_o.create_shared_workspace,
     ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
+        side_effect=side_effect,
+    ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
         wraps=ws_o.create_workspace_dir,
     ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.list_projects",
-        wraps=ws_o.list_projects,
-    ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
+        wraps=ws_o.create_workspace_system,
     ):
 
+        # Intial assertions
         # Mock Tapis Initial
-        client = setup_mocks
+        client = mock_tapis_client
 
-        # Create two projects/workspaces
-        project_id_1 = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
-        project_id_2 = ws_o.create_shared_workspace(client, "PRJ-124", mock_owner)
-        # Assert that the mocks were called
+        # First Project
+        title = "PRJ-123"
+        description = ""
+        created = "2024-10-18T00:00:00Z"
+
+        # Create Test project to test workspace operation, this is testing for no given description and it making a workspace system call
+        workspace_id = "test.project-1"
+        system_id = ws_o.create_shared_workspace(client, title, mock_owner)
+
+        # Calls and Mock calls in create_shared_workspace
         ws_o.service_account.assert_called()
         ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_any_call(
-            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-2"
+        ws_o.create_workspace_dir.assert_called_with(workspace_id)
+        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission,might need to be mocked
+        ws_o.create_workspace_system.assert_called_with(
+            client,
+            workspace_id,
+            title,
         )
-        assert ws_o.create_workspace_dir.call_count == 2
-        ws_o.set_workspace_acls.assert_called()
-        ws_o.create_workspace_system.assert_called()
+        project = client.get_project(workspace_id=system_id)
+        assert project["description"] == description
+        assert project["created"] == created
 
-        # TODO: Replace with the actual list_projects return value
-        # Mock the return value of list_projects
-        # ws_o.list_projects.return_value = [
-        #     {"project_id": project_id_1, "title": "Project 123"},
-        #     {"project_id": project_id_2, "title": "Project 124"},
-        # ]
+        # Second Project
+        title2 = "PRJ-456"
+        description2 = ""
+        created2 = "2024-10-18T00:00:00Z"
 
-        # Call the function to list projects
-        projects = ws_o.list_projects(client)
+        # Create Test project to test workspace operation, this is testing for a given description and it making a workspace system call
+        workspace_id2 = "test.project-2"
+        system_id2 = ws_o.create_shared_workspace(client, title2, mock_owner)
 
-        ws_o.list_projects.assert_called_once_with(client)
+        # Calls and Mock calls in create_shared_workspace
+        ws_o.service_account.assert_called()
+        ws_o.increment_workspace_count.assert_called()
+        ws_o.create_workspace_dir.assert_called_with(workspace_id2)
+        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission, might need to be mocked
+        ws_o.create_workspace_system.assert_called_with(
+            client,
+            workspace_id2,
+            title2,
+        )
+        project2 = client.get_project(workspace_id=system_id2)
+        assert project2["description"] == description2
+        assert project2["created"] == created2
 
-        # Verify the returned projects
-        assert len(projects) == 2
-        assert projects[0]["project_id"] == project_id_1
-        assert projects[0]["title"] == "Project 123"
-        assert projects[1]["project_id"] == project_id_2
-        assert projects[1]["title"] == "Project 124"
+        # Test the listing of list_projects
+        list = ws_o.list_projects(client)
+        fields = "id,host,description,notes,updated,owner,rootDir"
+        query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
+        client.systems.getSystems.assert_called_with(
+            listType="ALL", search=query, select=fields, limit=-1
+        )
+        assert len(list) == 2
 
 
 @pytest.mark.skip(reason="Needs to be updated with new Mocked Tapis Storage")
