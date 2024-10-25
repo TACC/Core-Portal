@@ -1,15 +1,16 @@
 import operator
+import os
 import uuid
 from django.db import models, transaction
+from django.conf import settings
+from pathlib import Path
+from typing import get_args
+import networkx as nx
 from portal.apps import SCHEMA_MAPPING
 from portal.apps._custom.drp import constants
-from django.conf import settings
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp.models import PartialEntityWithFiles, FileObj
 from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_root_node, update_node_in_project
-from pathlib import Path
-from typing import get_args, List
-
 
 portal = settings.PORTAL_NAMESPACE.lower()
 
@@ -40,23 +41,6 @@ def create_entity_metadata(project_id, name, value):
     entity_db_model.save()
     return entity_db_model
 
-def create_file_obj(project_id, name, size, path, value):
-    """Create a file object metadata associated with an existing project."""
-    schema_model = SCHEMA_MAPPING[constants.FILE]
-    validated_model = schema_model.model_validate(value)
-
-    file_obj = FileObj(
-        system=project_id,
-        name=name,
-        path=path,
-        type='file',
-        length=size,
-        value=validated_model.model_dump(exclude_none=True),
-        uuid=str(uuid.uuid4())
-    )
-
-    return file_obj
-
 def get_value(project_id, path):
     """Retrieve metadata for a specific entity."""
     try:
@@ -70,18 +54,6 @@ def get_value(project_id, path):
 
         entity = ProjectMetadata.objects.get(uuid=node['uuid'])
         return get_ordered_value(entity.name, entity.value)
-    except ProjectMetadata.DoesNotExist:
-        return None
-
-def get_entity(project_id, path):
-    """Retrieve an entity by its path."""
-    try:
-        node = get_node_from_path(project_id, path)
-
-        if not node or node['id'] == 'NODE_ROOT':
-            return None
-
-        return ProjectMetadata.objects.get(uuid=node['uuid'])
     except ProjectMetadata.DoesNotExist:
         return None
 
@@ -125,6 +97,35 @@ def get_ordered_value(name, value):
 
     return ordered_value
 
+def get_entity(project_id, path):
+    """Retrieve an entity by its path."""
+    try:
+        node = get_node_from_path(project_id, path)
+
+        if not node or node['id'] == 'NODE_ROOT':
+            return None
+
+        return ProjectMetadata.objects.get(uuid=node['uuid'])
+    except ProjectMetadata.DoesNotExist:
+        return None
+    
+def create_file_obj(project_id, name, size, path, value):
+    """Create a file object metadata associated with an existing project."""
+    schema_model = SCHEMA_MAPPING[constants.FILE]
+    validated_model = schema_model.model_validate(value)
+
+    file_obj = FileObj(
+        system=project_id,
+        name=name,
+        path=path,
+        type='file',
+        length=size,
+        value=validated_model.model_dump(exclude_none=True),
+        uuid=str(uuid.uuid4())
+    )
+
+    return file_obj
+
 def get_file_obj( project_id, path):
     """Retrieve a file object by its path."""
     try:
@@ -164,41 +165,6 @@ def patch_project_entity(project_id, value):
     return entity
 
 @transaction.atomic
-def patch_entity(client, project_id, value, uuid=None, path=None, updated_path=None):
-    """Update an entity's `value` attribute. This method patches the metadata
-    so that only fields in the payload are overwritten."""
-
-    node = get_node_from_path(project_id, path) if path else get_root_node(project_id)
-    entity = ProjectMetadata.objects.get(uuid=uuid if uuid else node['uuid'])
-
-    current_name = entity.value.get('name')
-    current_path_full = path
-    
-    new_name = value.get('name')
-    new_path = updated_path
-
-
-    if all([current_name, new_name, new_path, current_path_full]) and (
-        current_name != new_name or updated_path != str(Path(current_path_full).parent)
-    ):
-        new_name = _move_entity(client, project_id, current_path_full, new_path, new_name, value)
-
-        if new_path:
-            parent_node = get_node_from_path(project_id, new_path)
-            update_node_in_project(project_id, node['id'], parent_node['id'], new_name)
-        else:
-            update_node_in_project(project_id, node['id'], None, new_name)
-        
-    schema_model = SCHEMA_MAPPING[entity.name]
-
-    patched_metadata = {**value, 'fileObjs': entity.value.get('fileObjs', [])}
-    validated_model = schema_model.model_validate(patched_metadata)
-    entity.value = validated_model.model_dump(exclude_none=True)
-    entity.save()
-
-    return entity
-
-@transaction.atomic
 def patch_file_obj_entity(client, project_id, value, path):
     """Update an entity's `value` attribute"""
 
@@ -225,6 +191,65 @@ def patch_file_obj_entity(client, project_id, value, path):
     
     return entity
 
+@transaction.atomic
+def patch_entity_and_node(project_id, value, path, new_path, new_name):
+    """Perform an operation on an entity."""
+
+    new_path_full = os.path.join(new_path.strip('/'), new_name)
+
+    source_node = get_node_from_path(project_id, path)
+    entity = ProjectMetadata.objects.get(uuid=source_node['uuid'])
+
+    new_parent_node = get_node_from_path(project_id, new_path)
+
+    update_node_in_project(project_id, source_node['id'], new_parent_node['id'], new_name)
+
+    schema_model = SCHEMA_MAPPING[entity.name]
+
+    file_objs = entity.value.get('fileObjs', [])
+
+    updated_file_objs = update_file_paths(file_objs, path, new_path_full)
+    
+    if value.get('file_objs') is not None:
+        value.pop('file_objs')
+
+    patched_metadata = {**value, 'fileObjs': updated_file_objs}
+    validated_model = schema_model.model_validate(patched_metadata)
+    entity.value = validated_model.model_dump(exclude_none=True)
+    entity.save()
+
+    update_children_file_paths(project_id, source_node['id'], path, new_path_full)
+
+    return entity
+
+@transaction.atomic
+def patch_file_association(project_id, value, source_path_full, dest_path_full, new_name, operation):
+    
+    source_parent_path = str(Path(source_path_full).parent)
+    dest_parent_path = str(Path(dest_path_full).parent)
+    source_node = _get_valid_node(project_id, source_parent_path)
+    dest_node = _get_valid_node(project_id, dest_parent_path)
+
+    source_entity = ProjectMetadata.objects.get(uuid=source_node['uuid'])
+    dest_entity = ProjectMetadata.objects.get(uuid=dest_node['uuid'])
+
+    file_obj_dict = next(
+        (f for f in source_entity.value.get('fileObjs', []) if f['path'] == source_path_full.strip('/')), None
+    )
+
+    if not file_obj_dict:
+        return
+
+    if operation == 'move':
+        file_obj_dict['name'] = new_name
+        file_obj_dict['path'] = dest_path_full.strip('/')
+        file_obj = FileObj(**file_obj_dict)
+        remove_file_associations(source_entity.uuid, [source_path_full])
+        add_file_associations(dest_entity.uuid, [file_obj])
+    elif operation == 'copy':
+        file_obj = create_file_obj(project_id, new_name, file_obj_dict['length'], dest_path_full.strip('/'), file_obj_dict['value'])
+        add_file_associations(dest_entity.uuid, [file_obj])
+
 def delete_entity(uuid: str):
     """Delete a non-root entity."""
     entity = ProjectMetadata.objects.get(uuid=uuid)
@@ -234,15 +259,28 @@ def delete_entity(uuid: str):
 
     return "OK"
 
-def _move_entity(client, project_id, current_path, new_path, new_name, value):
+def move_entity(client, project_id, current_path, new_path, value, uuid=None):
     """Handle moving an entity to a new location if the name or path changes."""
     from portal.libs.agave.operations import move
 
-    move_result = move(client, project_id, current_path, project_id, new_path, new_name)
-    move_message = move_result['message'].split('DestinationPath: ', 1)[1]
-    new_name = ('/' + move_message).rsplit('/', 1)[1]
+    node = get_node_from_path(project_id, current_path) if current_path else get_root_node(project_id)
 
-    value['name'] = new_name
+    entity = ProjectMetadata.objects.get(uuid=uuid if uuid else node['uuid'])
+
+    current_name = entity.value.get('name')
+    current_path_full = current_path
+    
+    new_name = value.get('name')
+    new_path = new_path
+
+
+    if all([current_name, new_name, new_path, current_path_full]) and (
+        current_name != new_name or new_path != str(Path(current_path_full).parent)
+    ):
+        move_result = move(client, project_id, current_path, project_id, new_path, new_name)
+        move_message = move_result['message'].split('DestinationPath: ', 1)[1]
+        new_name = ('/' + move_message).rsplit('/', 1)[1]
+
     return new_name
 
 def clear_entities(project_id):
@@ -336,30 +374,39 @@ def _get_valid_node(project_id, path):
     node = get_node_from_path(project_id, path)
     return node if node and node['id'] != 'NODE_ROOT' else get_root_node(project_id)
 
-@transaction.atomic
-def patch_file_association(project_id, value, source_path_full, dest_path_full, new_name, operation):
-    
-    source_parent_path = str(Path(source_path_full).parent)
-    dest_parent_path = str(Path(dest_path_full).parent)
-    source_node = _get_valid_node(project_id, source_parent_path)
-    dest_node = _get_valid_node(project_id, dest_parent_path)
+def update_file_paths(file_objs, old_path, new_path):
+    """Update paths for a list of file objects."""
+    updated_file_objs = []
+    for file_obj in file_objs:
+        file_obj['path'] = _update_file_obj_path(file_obj, old_path, new_path)
+        updated_file_objs.append(file_obj)
+    return updated_file_objs
 
-    source_entity = ProjectMetadata.objects.get(uuid=source_node['uuid'])
-    dest_entity = ProjectMetadata.objects.get(uuid=dest_node['uuid'])
+def _update_file_obj_path(file_obj, old_path, new_path):
 
-    file_obj_dict = next(
-        (f for f in source_entity.value.get('fileObjs', []) if f['path'] == source_path_full.strip('/')), None
+    new_file_obj_path = file_obj['path'].replace(old_path.strip('/'), new_path.strip('/'), 1)
+
+    return new_file_obj_path
+
+def update_children_file_paths(project_id, source_node_id, old_path, new_path):
+    """Update paths for all descendant file objects."""
+    graph = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
     )
 
-    if not file_obj_dict:
-        return
+    graph_value = nx.node_link_graph(graph.value)
 
-    if operation == 'move':
-        file_obj_dict['name'] = new_name
-        file_obj_dict['path'] = dest_path_full.strip('/')
-        file_obj = FileObj(**file_obj_dict)
-        remove_file_associations(source_entity.uuid, [source_path_full])
-        add_file_associations(dest_entity.uuid, [file_obj])
-    elif operation == 'copy':
-        file_obj = create_file_obj(project_id, new_name, file_obj_dict['length'], dest_path_full.strip('/'), file_obj_dict['value'])
-        add_file_associations(dest_entity.uuid, [file_obj])
+    children = list(nx.descendants(graph_value, source_node_id))
+
+    for child in children: 
+        child_uuid = graph_value.nodes[child]['uuid']
+        child_enity = ProjectMetadata.objects.get(uuid=child_uuid)
+
+        child_file_objs = child_enity.value.get('fileObjs', [])
+
+        updated_child_file_objs = update_file_paths(child_file_objs, old_path, new_path)
+        
+        child_enity.value['fileObjs'] = updated_child_file_objs
+        child_enity.save()
+
+    return "OK"

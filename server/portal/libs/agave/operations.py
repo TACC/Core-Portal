@@ -15,10 +15,10 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
-from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, 
+from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node, 
                                                                                patch_file_association)
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path, update_node_in_project
 
 
 logger = logging.getLogger(__name__)
@@ -323,6 +323,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
     if metadata is not None:
         if (metadata.get('data_type') == 'file'):
             patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'move')
+        else: 
+            patch_entity_and_node(src_system, metadata, src_path, dest_path, file_name)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -505,7 +507,8 @@ def trash(client, system, path, homeDir, metadata=None):
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME, metadata={} if metadata is not None else None)
+        add_node_to_project(system, 'NODE_ROOT', None, settings.TAPIS_DEFAULT_TRASH_NAME, settings.TAPIS_DEFAULT_TRASH_NAME)
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     resp = move(client, system, path, system,
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)

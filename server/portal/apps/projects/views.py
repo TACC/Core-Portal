@@ -26,11 +26,13 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
 from portal.apps import SCHEMA_MAPPING
 from django.db import models
-from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata, create_project_metadata, get_ordered_value, patch_file_obj_entity, patch_entity, patch_project_entity
+from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata,  \
+        create_project_metadata, get_ordered_value, move_entity, patch_entity_and_node, \
+        patch_file_obj_entity, patch_project_entity
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path, update_node_in_project
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
 
 LOGGER = logging.getLogger(__name__)
 
@@ -393,7 +395,8 @@ class ProjectEntityView(BaseApiView):
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
             try:
-                patch_entity(client, project_id, value, entity_uuid, path, updated_path)
+                new_name = move_entity(client, project_id, path, updated_path, value)
+                patch_entity_and_node(project_id, value, path, updated_path, new_name)
             except Exception as exc:
                 raise ApiException("Error updating entity metadata", status=500) from exc
 
