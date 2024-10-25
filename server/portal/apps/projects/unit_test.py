@@ -53,22 +53,55 @@ def mock_tapis_client():
             def __init__(self, **entries):
                 # Recursive conversion of nested dictionaries into object for attribute reference
                 # This is needed because of the behavior of shared_workspace_operations.py and its usage of objects from JSON
+                # print("Start the DICT")
                 for key, value in entries.items():
+                    # print(f"Init key {key} with value {value}")
                     if isinstance(value, dict):
                         self.__dict__[key] = DictObj(**value)
                     else:
                         self.__dict__[key] = value
+
+            # TODO: This could be the get project instead of just sending in a key of "id" send in the
+            # key value of the id to return the payload
+            def get(self, key):
+                if key in self.__dict__:
+                    id = self.__dict__["id"]
+                    created = self.__dict__["created"]
+                    users = {"username": "mock_user"}
+                    for value in self.__dict__.values():
+                        # If this is a dictionary object inside of the dictionary object
+                        if isinstance(value, DictObj):
+                            first_key = next(iter(value.__dict__), None)
+                            if (
+                                first_key == "title"
+                            ):  # Then it is known it is the notes converted Dict
+                                title = value.__dict__["title"]
+                                description = value.__dict__["description"]
+                                data = {
+                                    "title": title,
+                                    "description": description,
+                                    "created": created,
+                                    "projectId": id,
+                                    "members": users,
+                                }
+                                return data
 
         # Mock createSystem with the side effect
         def create_system_side_effect(**system_args):
             system_created = "2024-10-18T00:00:00Z"
             system_args["created"] = system_created
             system_obj = DictObj(**system_args)
+            # print(system_obj)
             mock_listing.append(system_obj)
 
         def get_system_side_effect(systemId):
             # TODO: Change for multiple systems, tests only one system for now
             return mock_listing[0]
+
+        def get_project_side_effect(workspace_id):
+            for project in mock_listing:
+                # print(project.get("id"))
+                return project.get("id")
 
         mock_client.systems.createSystem = MagicMock(
             side_effect=create_system_side_effect
@@ -79,6 +112,7 @@ def mock_tapis_client():
         # TODO: Enable this for the list systems test
         # mock_client.systems.getSystems = MagicMock(return_value=mock_listing)
         mock_client.systems.getSystems = MagicMock()
+        mock_client.get_project = MagicMock(side_effect=get_project_side_effect)
 
         yield mock_client
 
@@ -131,43 +165,60 @@ def test_project_init(mock_tapis_client, mock_owner):
         assert project["members"][0]["access"] == "owner"
 
 
-@pytest.mark.skip(reason="Needs to be updated with new Mocked Tapis Storage")
-def test_project_create(setup_mocks, mock_owner):
+def test_project_create(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
     ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
-    ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
         wraps=ws_o.create_shared_workspace,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
+        wraps=ws_o.increment_workspace_count,
     ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
         wraps=ws_o.create_workspace_dir,
     ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
+    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
+        wraps=ws_o.create_workspace_system,
     ):
 
         "Test add member."
         "Mocking add_user_to_workspace"
-
+        # Intial assertions
+        title = "PRJ-123"
+        description = ""
+        created = "2024-10-18T00:00:00Z"
         # Mock Tapis Initial
-        client = setup_mocks
-        # Create Test project to test workspace operation
-        system_id = ws_o.create_shared_workspace(client, "PRJ-123", mock_owner)
-        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.test.project-2"
-        assert system_id == result_system_id
+        client = mock_tapis_client
+        # Create Test project to test workspace operation, this is testing for no given description and it making a workspace system call
+        workspace_id = "test.project-2"
+        system_id = ws_o.create_shared_workspace(client, title, mock_owner)
+
+        # Calls and Mock calls in create_shared_workspace
         ws_o.service_account.assert_called()
         ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_called_once_with(
-            f"{settings.PORTAL_PROJECTS_ID_PREFIX}-2"
+        ws_o.create_workspace_dir.assert_called_with(workspace_id)
+        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission,might need to be mocked
+        ws_o.create_workspace_system.assert_called_once_with(
+            client,
+            workspace_id,
+            title,
         )
-        ws_o.set_workspace_acls.assert_called()
-        ws_o.create_workspace_system.assert_called()
+
+        # Mocking the ws_o.get_project, using the mocked version I made in the Tapis mock
+        project = client.get_project(workspace_id=system_id)
+
+        # Check return payload data format
+        assert project["title"] == title
+        assert project["description"] == description
+        assert project["created"] == created
+        assert project["projectId"] == system_id
+        assert len(project["members"]) == 1
+        print(f'Assert: {project["members"]["username"]}')
+        assert project["members"]["username"] == "mock_user"
 
 
 @pytest.mark.skip(reason="Needs to be updated with new Mocked Tapis Storage")
