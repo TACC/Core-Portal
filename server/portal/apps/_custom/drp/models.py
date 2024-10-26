@@ -130,6 +130,7 @@ class DrpDatasetMetadata(DrpMetadataModel):
     data_type: Literal[
         "sample", 
         "origin_data",
+        "digital_dataset",
         "analysis_data",
         "file"
     ]
@@ -211,4 +212,5 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     ]
     external_uri: Optional[str] = None
     sample: str
-    base_origin_data: Optional[str] = None
+    # base_origin_data: Optional[str] = None
+    digital_dataset: Optional[str] = None

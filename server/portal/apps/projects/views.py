@@ -395,8 +395,8 @@ class ProjectEntityView(BaseApiView):
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
             try:
-                new_name = move_entity(client, project_id, path, updated_path, value)
-                patch_entity_and_node(project_id, value, path, updated_path, new_name)
+                new_name = move_entity(client, project_id, path, updated_path, value, entity_uuid)
+                patch_entity_and_node(project_id, value, path, updated_path, new_name, entity_uuid)
             except Exception as exc:
                 raise ApiException("Error updating entity metadata", status=500) from exc
 

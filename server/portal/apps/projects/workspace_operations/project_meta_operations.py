@@ -10,7 +10,7 @@ from portal.apps import SCHEMA_MAPPING
 from portal.apps._custom.drp import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp.models import PartialEntityWithFiles, FileObj
-from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_root_node, update_node_in_project
+from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_node_from_uuid, get_root_node, update_node_in_project
 
 portal = settings.PORTAL_NAMESPACE.lower()
 
@@ -192,13 +192,19 @@ def patch_file_obj_entity(client, project_id, value, path):
     return entity
 
 @transaction.atomic
-def patch_entity_and_node(project_id, value, path, new_path, new_name):
+def patch_entity_and_node(project_id, value, path, new_path, new_name, uuid=None):
     """Perform an operation on an entity."""
 
     new_path_full = os.path.join(new_path.strip('/'), new_name)
 
-    source_node = get_node_from_path(project_id, path)
-    entity = ProjectMetadata.objects.get(uuid=source_node['uuid'])
+    if (path):
+        source_node = get_node_from_path(project_id, path)
+    elif (not path and uuid):
+        source_node = get_node_from_uuid(project_id, uuid)
+    else: 
+        raise ValueError("Invalid parameters: path or uuid must be provided.")
+    
+    entity = ProjectMetadata.objects.get(uuid=uuid if uuid else source_node['uuid'])
 
     new_parent_node = get_node_from_path(project_id, new_path)
 

@@ -6,6 +6,7 @@ from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
 import networkx as nx
+from networkx import shortest_path
 from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value
 class DigitalRocksSampleView(BaseApiView):
 
@@ -24,7 +25,7 @@ class DigitalRocksSampleView(BaseApiView):
         if get_origin_data == 'true':
             # origin_data = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='origin_data').values('id', 'name', 'path', 'metadata')
 
-            origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.ORIGIN_DATA).values('uuid', 'name', 'value')
+            origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.DIGITAL_DATASET).values('uuid', 'name', 'value')
 
         response_data = {
             'samples': list(samples),
@@ -65,6 +66,8 @@ class DigitalRocksTreeView(BaseApiView):
 
         graph = nx.node_link_graph(graph_model.value)
 
+        trash_node_id = None  
+
         for node_id in graph.nodes:
             trash_node = graph.nodes[node_id].get('name') == settings.TAPIS_DEFAULT_TRASH_NAME
             if trash_node:
@@ -79,6 +82,13 @@ class DigitalRocksTreeView(BaseApiView):
         for node_id in graph.nodes:
 
             node = graph.nodes[node_id]
+
+            # Get the path from NODE_ROOT to the current node
+            if nx.has_path(graph, 'NODE_ROOT', node_id):
+                path_nodes = shortest_path(graph, 'NODE_ROOT', node_id)[1:]
+                node['path'] = '/'.join(graph.nodes[parent]['label'] for parent in path_nodes if 'label' in graph.nodes[parent])
+            else:
+                node['path'] = ""
 
             if node.get('value'):
                 metadata = get_ordered_value(node['name'], node['value'])

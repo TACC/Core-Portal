@@ -3,7 +3,7 @@ const customFilePermissions = (operation, files) => {
 
     const protectedDataTypes = [
         'sample',
-        'origin_data',
+        'digital_dataset',
         'analysis_data'
     ]
 

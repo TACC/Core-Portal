@@ -125,7 +125,7 @@ def update_node_in_project(project_id: str, node_id: str, new_parent: str = None
         if not project_graph.has_node(node_id):
             raise nx.exception.NodeNotFound
 
-        if new_parent:
+        if new_parent and new_parent != node_id:
             # Remove the node from the graph and re-add it under the new parent.
             parent_node = new_parent
             if not project_graph.has_node(parent_node):
@@ -157,3 +157,15 @@ def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name:
         graph_model.value = nx.node_link_data(updated_graph)
         graph_model.save()
     return new_node_id
+
+def get_node_from_uuid(project_id: str, uuid: str):
+    """Get a node from the project graph using its UUID."""
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+
+    for node_id in project_graph.nodes:
+        if project_graph.nodes[node_id]["uuid"] == uuid:
+            return {"id": node_id, **project_graph.nodes[node_id]}
+    return None

@@ -52,7 +52,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({ folderMetadata, metadat
       case 'sample':
         createSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
-      case 'origin_data':
+      case 'digital_dataset':
         createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':

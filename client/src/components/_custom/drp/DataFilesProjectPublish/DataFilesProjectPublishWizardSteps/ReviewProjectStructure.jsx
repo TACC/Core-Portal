@@ -32,7 +32,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
     if (projectTree && projectTree.length > 0) {
       setExpandedNodes([projectTree[0].id]);
     }
-  }, [projectTree]);
+  }, []);
 
   const handleNodeToggle = (event, nodeIds) => {
     // Update the list of expanded nodes
@@ -71,13 +71,13 @@ const ReviewProjectStructure = ({ projectTree }) => {
       name: node.metadata.name,
       system: params.system,
       type: 'dir',
-
+      path: node.path,
     };
     switch (dataType) {
       case 'sample':
         createSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
-      case 'origin_data':
+      case 'digital_dataset':
         createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':
@@ -113,8 +113,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
-  const renderTree = (node) => {
-    return (
+  const renderTree = (node) => (
     <>
       <Section
         className={styles['section-project-structure']}
@@ -158,7 +157,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
                       'description',
                       'data_type',
                       'sample',
-                      'base_origin_data',
+                      'digital_dataset',
                       'file_objs',
                     ]}
                   />
@@ -173,8 +172,8 @@ const ReviewProjectStructure = ({ projectTree }) => {
         </div>
       </Section>
     </>
-  )};
-
+  );
+  
   return (
     <SectionTableWrapper
       header={

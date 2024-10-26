@@ -79,21 +79,21 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
             )}
           <span className={styles.separator}>|</span>
           {selectedFiles.length == 1 && selectedFiles[0]?.metadata &&
-            selectedFiles[0].metadata['data_type'] === 'origin_data' ? (
+            selectedFiles[0].metadata['data_type'] === 'digital_dataset' ? (
               <Button
                 type="link"
                 onClick={() =>
                   createOriginDataModal('EDIT_ORIGIN_DATASET', selectedFiles[0])
                 }
               >
-                Edit Origin Dataset
+                Edit Digital Dataset
               </Button>
             ) : (
               <Button
                 type="link"
                 onClick={() => createOriginDataModal('ADD_ORIGIN_DATASET')}
               >
-                Add Origin Dataset
+                Add Digital Dataset
               </Button>
           )}
           <span className={styles.separator}>|</span>

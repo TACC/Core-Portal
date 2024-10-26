@@ -24,12 +24,11 @@ function* executeOperation(isEdit, params, values, reloadCallback, file = null, 
 
   try {
     if (file && isEdit) {
-
       yield call(
         patchEntityUtil,
         filteredValues.data_type,
         params.system,
-        '/' + file.path,
+        file.path ? '/' + file.path : '',
         '/' + path,
         filteredValues,
         file.uuid
@@ -122,7 +121,7 @@ function* handleOriginData(action, isEdit) {
 
   const metadata = {
     ...values,
-    data_type: 'origin_data',
+    data_type: 'digital_dataset',
     sample: sample.uuid,
   }
 
@@ -152,7 +151,7 @@ function* handleAnalysisData(action, isEdit) {
     ...values, 
     data_type: 'analysis_data',
     sample: sample.uuid, 
-    base_origin_data: originData ? originData.uuid : ''
+    // base_origin_data: originData ? originData.uuid : ''
   }
 
   yield call(

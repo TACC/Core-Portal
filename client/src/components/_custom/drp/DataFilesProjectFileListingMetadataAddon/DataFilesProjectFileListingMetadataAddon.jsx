@@ -5,7 +5,7 @@ import { useFileListing } from 'hooks/datafiles';
 import DataDisplay from '../utils/DataDisplay/DataDisplay';
 import { formatDate } from 'utils/timeFormat';
 
-const excludeKeys = ['name', 'description', 'data_type', 'sample', 'base_origin_data', 'file_objs'];
+const excludeKeys = ['name', 'description', 'data_type', 'sample', 'digital_dataset', 'file_objs'];
 
 const DataFilesProjectFileListingMetadataAddon = ({ folderMetadata, metadata, path }) => {
 
