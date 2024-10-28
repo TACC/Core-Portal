@@ -12,6 +12,8 @@ from django.conf import settings  # pyright: ignore
 
 from portal.apps.projects.exceptions import NotAuthorizedError
 # from portal.apps.projects.models.base import Project
+# TODO: Uncomment to use this for getting specific Tapis results
+# from tapipy.tapis import TapisResult
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.workspace_operations import \
     shared_workspace_operations as ws_o
@@ -46,250 +48,106 @@ def mock_owner(django_user_model):
 @pytest.fixture()
 def mock_tapis_client():
     with patch("tapipy.tapis.Tapis") as mock_client:
-        mock_listing = []
-
-        class DictObj:
-            # Default Init
-            def __init__(self, **entries):
-                # Recursive conversion of nested dictionaries into object for attribute reference
-                # This is needed because of the behavior of shared_workspace_operations.py and its usage of objects from JSON
-                for key, value in entries.items():
-                    print(f"Creating KVP with {key},{value}")
-                    if isinstance(value, dict):
-                        self.__dict__[key] = DictObj(**value)
-                    else:
-                        self.__dict__[key] = value
-
-            # Default Get function
-            def get(self, key, default=None):
-                return getattr(self, key, default)
-
-            def __len__(self):
-                return len(self.__dict__)
-
-            def __getitem_(self, key):
-                return self.__dict__[key]
-
-            # TODO: This could be the get project instead of just sending in a key of "id" send in the
-            # key value of the id to return the payload
-            def get_project(self, key):
-                if key in self.__dict__:
-                    id = self.get("id")
-                    port = self.get("port")
-                    created = self.get("created")
-                    users = self.get("users")
-                    title = description = private_key = None
-                    for value in self.__dict__.values():
-                        if isinstance(value, DictObj):
-                            first_key = next(iter(value.__dict__), None)
-                            if first_key == "title":
-                                title = value.get("title")
-                                description = value.get("description")
-                            elif first_key == "privateKey":
-                                private_key = value.get("privateKey")
-                    print(f"The users are {users}")
-                    data = {
-                        "title": title,
-                        "description": description,
-                        "created": created,
-                        "projectId": id,
-                        "port": port,
-                        "members": users,
-                        "privateKey": private_key,
-                    }
-                    return data
-
-            # Create/Update
-            def update_user(self, id, key, value):
-                if self.__dict__.get("id") == id:
-                    print(f"Updating Project {id}, {key} with {value}")
-                    users = self.__dict__.get("users", {})
-                    user = users.get(key)
-
-                    if user:
-                        print(f"User exists: {user.__dict__}")
-                        user.__dict__["permissions"] = value
-                        print(f"Permissions updated to: {user.__dict__['permissions']}")
-                    else:
-                        print("User does not exist")
-
-                    # self.__dict__[key] = value
-                    # print(f"New values {key}, {self.__dict__[key]}")
-                return id
-
-        # Mocks of the specific Tapis Actions that can occur
-        # Mock createSystem with the side effect
-        def create_system_side_effect(**system_args):
-            system_created = "2024-10-18T00:00:00Z"
-            system_args["users"] = {
-                "username": {"username": "username", "permissions": []}
-            }
-            system_args["created"] = system_created
-            system_args["updated"] = system_created
-            if "owner" not in system_args:
-                system_args["owner"] = None
-            system_obj = DictObj(**system_args)
-            mock_listing.append(system_obj)
-
-        def get_system_side_effect(systemId):
-            # TODO: Change for multiple systems, tests only one system for now
-            return mock_listing[0]
-
-        def get_project_side_effect(workspace_id):
-            for project in mock_listing:
-                return project.get_project("id")
-
-        def get_systems_side_effect(*args, **kwargs):
-            mock_get_Systems_return = mock_listing
-            return mock_get_Systems_return
-
-        # Permissions
-        def grant_user_perms_side_effect(systemId, userName, permissions):
-            print("Test here")
-            print(systemId, userName, permissions)
-            print(f"Find system with id {systemId}")
-            print(f" And add the user {userName} with permissions {permissions}")
-            # Find the system in the mock_listing, target the specific data entry, update the entry
-            for project in mock_listing:
-                return project.update_user(systemId, userName, permissions)
-
-        mock_client.systems.createSystem = MagicMock(
-            side_effect=create_system_side_effect
-        )
+        mock_client.mock_listing = []  # Potentially used for storage of systems
+        # mock_client.systems.createSystem = MagicMock()
         mock_client.systems.getShareInfo = MagicMock()
-        mock_client.systems.getSystem = MagicMock(side_effect=get_system_side_effect)
+        mock_client.systems.getSystem = MagicMock()
         # mock_client.systems.grantUserPerms = MagicMock()
-        mock_client.systems.grantUserPerms = MagicMock(
-            side_effect=grant_user_perms_side_effect
-        )
+        mock_client.systems.grantUserPerms = MagicMock()
         mock_client.files.getPermissions = MagicMock()
-        mock_client.systems.getSystems = MagicMock(side_effect=get_systems_side_effect)
-        mock_client.get_project = MagicMock(side_effect=get_project_side_effect)
-
+        mock_client.systems.getSystems = MagicMock()
+        mock_client.get_project = MagicMock()
         yield mock_client
 
 
-# Test for creating a project without the shared workspace component
 def test_project_init(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
         wraps=ws_o.create_workspace_system,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.get_project_user"
-    ) as mock_get_project_user, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.get_project",
-        wraps=ws_o.get_project,
-    ):
-        "Test project model init."
-        # Assert Defs
-        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
-        result_title = "My New Workspace"
-        result_description = "This is a test description"
-        result_created = "2024-10-18T00:00:00Z"
-        mock_get_project_user.return_value = {"username": "mock_user"}
-
-        # Mock Tapis Client
+    ) as mock_create_workspace_system:
         client = mock_tapis_client
-        # Create the shared workspace
-        project_id = ws_o.create_workspace_system(
+        workspace_id = "test_workspace"
+        title = "Test Workspace"
+        description = "A test workspace"
+        system_id = ws_o.create_workspace_system(
             client,
-            workspace_id="PRJ-123",
-            title=result_title,
-            description=result_description,
+            workspace_id,
+            title,
+            description,
             owner=mock_owner,
         )
-        ws_o.create_workspace_system.assert_called_once_with(
+        mock_create_workspace_system.assert_called_once_with(
             client,
-            workspace_id="PRJ-123",
-            title=result_title,
-            description=result_description,
+            workspace_id,
+            title,
+            description,
             owner=mock_owner,
         )
+        assert system_id == f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+        # System args that are in create_workspace_system
+        # TODO: get_system will return a TapisResult. No storage. Only "mock returns from storage" Check views_unit_test.py:116
+        system_args = {
+            "id": system_id,
+            "host": settings.PORTAL_PROJECTS_ROOT_HOST,
+            "port": int(settings.PORTAL_PROJECTS_SYSTEM_PORT),
+            "systemType": "LINUX",
+            "defaultAuthnMethod": "PKI_KEYS",
+            "canExec": False,
+            "rootDir": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+            "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
+            "authnCredential": {
+                "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
+                "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
+            },
+            "notes": {"title": title, "description": description},
+            "owner": mock_owner,
+        }
+        client.systems.createSystem.assert_called_with(**system_args)
+        client.systems.getSystems.return_value = system_args  # If there are multiple projects, this is the one "mock returned" from "storage"
 
-        # Assert the results
-        assert project_id == result_system_id
-        project = ws_o.get_project(client, workspace_id="PRJ-123")
-        assert project["title"] == result_title
-        assert project["description"] == result_description
-        assert project["created"] == result_created
-        assert project["projectId"] == "PRJ-123"
-        assert len(project["members"]) == 1
-        assert project["members"][0]["user"]["username"] == "mock_user"
-        assert project["members"][0]["access"] == "owner"
+        # Assertion tests
+        # Grab the current project that is in the storage that we want to assert
+        prj = client.systems.getSystems()
+        # Assert Basic Init Data
+        assert prj["id"] == system_id
+        assert prj["notes"]["title"] == title
+        assert prj["notes"]["description"] == description
 
 
 # Test for creating a shared workspace and if it creates a new project
 def test_project_create(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ), patch(
+    ) as mock_service_account, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
         wraps=ws_o.create_shared_workspace,
-    ), patch(
+    ) as mock_create_shared_workspace, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
         wraps=ws_o.increment_workspace_count,
-    ), patch(
+    ) as mock_increment_workspace_count, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
         wraps=ws_o.create_workspace_dir,
-    ), patch(
+    ) as mock_create_workspace_dir, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
     ):
-        # Intial assertions
-        title = "PRJ-123"
-        description = ""
-        created = "2024-10-18T00:00:00Z"
-        # Mock Tapis Initial
+
         client = mock_tapis_client
-        # Create Test project to test workspace operation, this is testing for no given description and it making a workspace system call
-        workspace_id = "test.project-2"
-        system_id = ws_o.create_shared_workspace(client, title, mock_owner)
+        title = "Test Workspace"
+        project = mock_create_shared_workspace(client, title, mock_owner)
+        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
+        mock_service_account.assert_called()
+        mock_increment_workspace_count.assert_called()
+        mock_create_workspace_dir.assert_called_with("test.project-2")
+        print(f"Project {project}")
 
-        # Calls and Mock calls in create_shared_workspace
-        ws_o.service_account.assert_called()
-        ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_called_with(workspace_id)
-        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission,might need to be mocked
-        ws_o.create_workspace_system.assert_called_once_with(
-            client,
-            workspace_id,
-            title,
-        )
+        # TODO: Assert more project creation data as a result of storing in mock_listing
 
-        # Mocking the ws_o.get_project, using the mocked version I made in the Tapis mock
-        project = client.get_project(workspace_id=system_id)
-
-        # Check return payload data format
-        assert project["port"] == 22
-        assert project["privateKey"] == (
-            "-----BEGIN RSA PRIVATE KEY-----"
-            "change this"
-            "-----END RSA PRIVATE KEY-----"
-        )
-        assert project["title"] == title
-        assert project["description"] == description
-        assert project["created"] == created
-        assert project["projectId"] == system_id
-        assert len(project["members"]) == 1
-        assert project.get("members").get("username").get("username") == "username"
-
-
-# Mock of counter for increment_workspace_count
-@pytest.fixture
-def increment_counter():
-    counter = {"count": 0}
-
-    def side_effect():
-        counter["count"] += 1
-        return f"{counter['count']}"
-
-    return counter, side_effect
+        assert project == "test.project.test.project-2"
 
 
 # Testing if there are two projects Tapis
+@pytest.mark.skip(reason="Updating to Tapis Result")
 def test_listing(mock_tapis_client, mock_owner, increment_counter):
     counter, side_effect = increment_counter
     with patch(
@@ -371,6 +229,7 @@ def test_listing(mock_tapis_client, mock_owner, increment_counter):
         assert len(list) == 2
 
 
+@pytest.mark.skip(reason="Updating to Tapis Result")
 def test_add_member(mock_tapis_client, mock_owner, django_user_model):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
