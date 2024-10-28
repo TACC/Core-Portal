@@ -12,6 +12,10 @@
   text-decoration: none;
 }
 
+.apps-grid-item a:hover {
+  text-decoration: none;
+}
+
 .nav-link {
   transition: none;
 }
