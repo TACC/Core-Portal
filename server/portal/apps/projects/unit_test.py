@@ -49,34 +49,45 @@ def mock_tapis_client():
         mock_listing = []
 
         class DictObj:
+            # Default Init
             def __init__(self, **entries):
                 # Recursive conversion of nested dictionaries into object for attribute reference
                 # This is needed because of the behavior of shared_workspace_operations.py and its usage of objects from JSON
                 for key, value in entries.items():
+                    print(f"Creating KVP with {key},{value}")
                     if isinstance(value, dict):
                         self.__dict__[key] = DictObj(**value)
                     else:
                         self.__dict__[key] = value
 
+            # Default Get function
+            def get(self, key, default=None):
+                return getattr(self, key, default)
+
+            def __len__(self):
+                return len(self.__dict__)
+
+            def __getitem_(self, key):
+                return self.__dict__[key]
+
             # TODO: This could be the get project instead of just sending in a key of "id" send in the
             # key value of the id to return the payload
-            def get(self, key):
+            def get_project(self, key):
                 if key in self.__dict__:
-                    id = self.__dict__["id"]
-                    port = self.__dict__["port"]
-                    created = self.__dict__["created"]
-                    users = {"username": "mock_user"}
+                    id = self.get("id")
+                    port = self.get("port")
+                    created = self.get("created")
+                    users = self.get("users")
+                    title = description = private_key = None
                     for value in self.__dict__.values():
-                        # If this is a dictionary object inside of the dictionary object
                         if isinstance(value, DictObj):
                             first_key = next(iter(value.__dict__), None)
-                            if (
-                                first_key == "title"
-                            ):  # Then it is known it is the notes converted Dict
-                                title = value.__dict__["title"]
-                                description = value.__dict__["description"]
-                            else:
-                                private_key = value.__dict__["privateKey"]
+                            if first_key == "title":
+                                title = value.get("title")
+                                description = value.get("description")
+                            elif first_key == "privateKey":
+                                private_key = value.get("privateKey")
+                    print(f"The users are {users}")
                     data = {
                         "title": title,
                         "description": description,
@@ -88,9 +99,31 @@ def mock_tapis_client():
                     }
                     return data
 
+            # Create/Update
+            def update_user(self, id, key, value):
+                if self.__dict__.get("id") == id:
+                    print(f"Updating Project {id}, {key} with {value}")
+                    users = self.__dict__.get("users", {})
+                    user = users.get(key)
+
+                    if user:
+                        print(f"User exists: {user.__dict__}")
+                        user.__dict__["permissions"] = value
+                        print(f"Permissions updated to: {user.__dict__['permissions']}")
+                    else:
+                        print("User does not exist")
+
+                    # self.__dict__[key] = value
+                    # print(f"New values {key}, {self.__dict__[key]}")
+                return id
+
+        # Mocks of the specific Tapis Actions that can occur
         # Mock createSystem with the side effect
         def create_system_side_effect(**system_args):
             system_created = "2024-10-18T00:00:00Z"
+            system_args["users"] = {
+                "username": {"username": "username", "permissions": []}
+            }
             system_args["created"] = system_created
             system_args["updated"] = system_created
             if "owner" not in system_args:
@@ -104,17 +137,31 @@ def mock_tapis_client():
 
         def get_project_side_effect(workspace_id):
             for project in mock_listing:
-                return project.get("id")
+                return project.get_project("id")
 
         def get_systems_side_effect(*args, **kwargs):
             mock_get_Systems_return = mock_listing
             return mock_get_Systems_return
+
+        # Permissions
+        def grant_user_perms_side_effect(systemId, userName, permissions):
+            print("Test here")
+            print(systemId, userName, permissions)
+            print(f"Find system with id {systemId}")
+            print(f" And add the user {userName} with permissions {permissions}")
+            # Find the system in the mock_listing, target the specific data entry, update the entry
+            for project in mock_listing:
+                return project.update_user(systemId, userName, permissions)
 
         mock_client.systems.createSystem = MagicMock(
             side_effect=create_system_side_effect
         )
         mock_client.systems.getShareInfo = MagicMock()
         mock_client.systems.getSystem = MagicMock(side_effect=get_system_side_effect)
+        # mock_client.systems.grantUserPerms = MagicMock()
+        mock_client.systems.grantUserPerms = MagicMock(
+            side_effect=grant_user_perms_side_effect
+        )
         mock_client.files.getPermissions = MagicMock()
         mock_client.systems.getSystems = MagicMock(side_effect=get_systems_side_effect)
         mock_client.get_project = MagicMock(side_effect=get_project_side_effect)
@@ -227,7 +274,7 @@ def test_project_create(mock_tapis_client, mock_owner):
         assert project["created"] == created
         assert project["projectId"] == system_id
         assert len(project["members"]) == 1
-        assert project["members"]["username"] == "mock_user"
+        assert project.get("members").get("username").get("username") == "username"
 
 
 # Mock of counter for increment_workspace_count
@@ -360,7 +407,11 @@ def test_add_member(mock_tapis_client, mock_owner, django_user_model):
         # Mock Tapis Client
         client = mock_tapis_client
         # Create the shared workspace
-        project_id = ws_o.create_workspace_system(
+        workspace_id = "PRJ-123"
+        # TODO: This must work for a new member, default is username currently, must work for another name
+        username = "username"
+        role = "writer"
+        system_id = ws_o.create_workspace_system(
             client,
             workspace_id="PRJ-123",
             title=result_title,
@@ -374,18 +425,19 @@ def test_add_member(mock_tapis_client, mock_owner, django_user_model):
             description=result_description,
             owner=mock_owner,
         )
-        ws_o.add_user_to_workspace(
-            client, "PRJ-123", username="new_username", role="writer"
-        )
+        assert result_system_id == system_id
+        ws_o.add_user_to_workspace(client, workspace_id, username, role)
         ws_o.service_account.assert_called()
         ws_o.set_workspace_acls.assert_called()
-        # TODO: User is added here, needs to be called with args, next step in TODO
-        ws_o.set_workspace_permissions.assert_called()
+        ws_o.set_workspace_permissions.assert_called_with(
+            client, username, system_id, role
+        )
         # Assertions
         project = client.get_project(workspace_id=result_system_id)
         # Check return payload data format
-
-        assert project_id == result_system_id
+        print("What is the new member list permissions")
+        # Right here the name is the member is username
+        print(project.get("members").get("username").get("permissions"))
         assert project["port"] == 22
 
 
