@@ -56,6 +56,7 @@ def mock_tapis_client():
         mock_client.systems.getSystems = MagicMock()
         mock_client.get_project = MagicMock()
         mock_client.systems.patchSystem = MagicMock()
+        mock_client.get_project = MagicMock()
 
         # Tracking System Count
         mock_client.notes = {"count": 1}
@@ -149,7 +150,6 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
         project = ws_o.create_shared_workspace(client, title, mock_owner)
-        print("The project", project)
         assert project == "test.project.test.project-2"
 
         # Start assertions
@@ -362,75 +362,112 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
 
 
-@pytest.mark.skip(reason="Updating to Tapis Result")
-def test_add_member(mock_tapis_client, mock_owner, django_user_model):
+# Test adding a member to a project
+def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
     with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
-    ), patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
+    ) as mock_service_account, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
         wraps=ws_o.create_shared_workspace,
-    ), patch(
+    ) as mock_create_shared_workspace, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
+        wraps=ws_o.increment_workspace_count,
+    ) as mock_increment_workspace_count, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
         wraps=ws_o.create_workspace_dir,
-    ), patch(
+    ) as mock_create_workspace_dir, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
     ), patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.add_user_to_workspace",
         wraps=ws_o.add_user_to_workspace,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_permissions",
-        wraps=ws_o.set_workspace_permissions,
-    ):
-        "Test add member."
-        "Mocking add_user_to_workspace"
-        # Assert Defs
-        result_system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123"
-        result_title = "My New Workspace"
-        result_description = "This is a test description"
-        # result_created = "2024-10-18T00:00:00Z"
-        # mock_get_project_user.return_value = {"username": "mock_user"}
-        # Mock Tapis Client
+    ) as mock_add_user_to_workspace, patch(
+        "portal.apps.projects.workspace_operations.shared_workspace_operations.get_project",
+    ) as mock_get_project:
+        # Initial Project Creation Setup
         client = mock_tapis_client
-        # Create the shared workspace
-        workspace_id = "PRJ-123"
-        # TODO: This must work for a new member, default is username currently, must work for another name
-        username = "username"
-        role = "writer"
-        system_id = ws_o.create_workspace_system(
-            client,
-            workspace_id="PRJ-123",
-            title=result_title,
-            description=result_description,
-            owner=mock_owner,
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace"
+        project = ws_o.create_shared_workspace(client, title, mock_owner)
+        assert project == "test.project.test.project-2"
+
+        mock_tapis_client.systems.getSystem.return_value = TapisResult(
+            id="test.project.test.project-2",
+            host="cloud.data.tacc.utexas.edu",
+            description="Test Workspace 1 description",
+            notes={
+                "title": title,
+                "description": "Description of Test Workspace 1",
+            },
+            updated="2023-03-07T19:31:17.292220Z",
+            owner="owner_username",
+            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
         )
-        ws_o.create_workspace_system.assert_called_once_with(
-            client,
-            workspace_id="PRJ-123",
-            title=result_title,
-            description=result_description,
-            owner=mock_owner,
+        # Start assertions
+        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
+
+        # Tapis instance with an admin account
+        mock_service_account.return_value = client
+        mock_service_account.assert_called()
+
+        # Increment the workspace
+        mock_increment_workspace_count.assert_called()
+        mock_service_account.assert_called()
+        client.systems.getSystem.assert_called_once_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
         )
-        assert result_system_id == system_id
-        ws_o.add_user_to_workspace(client, workspace_id, username, role)
-        ws_o.service_account.assert_called()
-        ws_o.set_workspace_acls.assert_called()
-        ws_o.set_workspace_permissions.assert_called_with(
-            client, username, system_id, role
+        client.systems.patchSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+            notes={"count": 2},
         )
-        # Assertions
-        project = client.get_project(workspace_id=result_system_id)
-        # Check return payload data format
-        print("What is the new member list permissions")
-        # Right here the name is the member is username
-        print(project.get("members").get("username").get("permissions"))
-        assert project["port"] == 22
+
+        # Create Workspace Dir
+        mock_create_workspace_dir.assert_called()
+        mock_service_account.assert_called()
+        mock_service_account().files.mkdir.assert_called_with(
+            systemId="projects.system.name", path="test.project-2"
+        )
+
+        # Set Workspace ACLS
+        # Authenticated_user is whoever the mock_owner or creator of the project is
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+        )
+        workspace_id = "test.project-2"
+        mock_create_workspace_dir.assert_called_with(workspace_id)
+
+        # Mock add_user_to_workspace
+
+        # TODO: Ensure this is the right Tapis Result when finding the project
+        mock_get_project.return_value = TapisResult(
+            id="test.project.test.project-2",
+            host="cloud.data.tacc.utexas.edu",
+            description="Test Workspace 1 description",
+            notes={
+                "title": title,
+                "description": "Description of Test Workspace 1",
+            },
+            updated="2023-03-07T19:31:17.292220Z",
+            owner="username",
+            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+        )
+        mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+        mock_get_project.assert_called_once_with(client, workspace_id)
+
+        mock_service_account.assert_called()
+        # TODO: Make new user a variable
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString="d:u:new_user:rwX,u:new_user:rwX",
+        )
+        # TODO: Ensure that the right authorization permissions are cheked only owners can add members
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
