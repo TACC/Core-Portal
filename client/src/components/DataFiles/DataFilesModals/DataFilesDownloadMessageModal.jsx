@@ -13,6 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import styles from './DataFilesCompressModal.module.scss';
+import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
 
 const DataFilesDownloadMessageModal = () => {
   const history = useHistory();
@@ -51,6 +52,16 @@ const DataFilesDownloadMessageModal = () => {
     }
   };
 
+  const toggleDataFilesLargeDownloadModal = () => {
+    dispatch({ 
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { 
+        operation: 'largeDownload',
+        props: {}
+      } 
+    });
+  };
+
   const compressCallback = () => {
     const { filenameDisplay, compressionType } = formRef.current.values;
     // Establish a boolean that checks for a folder among selectedFiles
@@ -67,7 +78,7 @@ const DataFilesDownloadMessageModal = () => {
       }
     }
     // Run the dispatch if the user does not select any folders...
-    if ((containsFolder = false)) {
+    if (containsFolder === false) {
       // ...and if the total file size is below 2 GB
       if (totalFileSize < maxFileSize) {
         dispatch({
@@ -85,9 +96,7 @@ const DataFilesDownloadMessageModal = () => {
         });
         // Prevent the compression process and redirect the user to Globus otherwise
       } else {
-        alert(
-          'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
-        );
+        toggleDataFilesLargeDownloadModal();
       }
       // Prevents compression of folders if a folder is among the selected files
     } else {

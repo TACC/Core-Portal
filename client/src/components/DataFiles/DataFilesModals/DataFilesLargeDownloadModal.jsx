@@ -27,7 +27,7 @@ const DataFilesLargeDownloadModal = () => {
         props: {}
       } 
     });
-    setStatus({});
+    // setStatus({});
   };
 
   // Opens a new tab in current browser to Globus
@@ -38,7 +38,7 @@ const DataFilesLargeDownloadModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onClosed={onClosed}
+      // onClosed={onClosed}
       toggle={toggle}
       className='dataFilesModal'
     >
