@@ -27,13 +27,12 @@ const DataFilesLargeDownloadModal = () => {
     });
   };
   
+  // This dispatch is not getting called. Why?
   const onClosed = () => {
-    console.log('Click me');
-    debugger;
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     // setStatus({});
     // history.push(location.pathname);
-    console.log('something');
+    console.log('Closed the Modal');
   };
 
   // Opens a new tab in current browser to Globus
