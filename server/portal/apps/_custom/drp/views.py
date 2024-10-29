@@ -16,15 +16,11 @@ class DigitalRocksSampleView(BaseApiView):
 
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        # samples = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='sample').values('id', 'name', 'path', 'metadata')
-
         samples = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.SAMPLE).values('uuid', 'name', 'value')
 
         origin_data = []
         
         if get_origin_data == 'true':
-            # origin_data = DataFilesMetadata.objects.filter(project_id=full_project_id, metadata__data_type='origin_data').values('id', 'name', 'path', 'metadata')
-
             origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.DIGITAL_DATASET).values('uuid', 'name', 'value')
 
         response_data = {
@@ -35,21 +31,6 @@ class DigitalRocksSampleView(BaseApiView):
         return JsonResponse(response_data)
     
 class DigitalRocksTreeView(BaseApiView):
-
-    @staticmethod
-    def construct_tree(records, parent_id=None):
-        tree = []
-        for record in records:
-            if record.parent_id == parent_id:
-                node_dict = {
-                    "id": record.id,
-                    "name": record.name,
-                    "path": record.path,
-                    "metadata": record.ordered_metadata,
-                    "children": DigitalRocksTreeView.construct_tree(records, record.id)
-                }
-                tree.append(node_dict)
-        return tree
         
     @staticmethod
     def _get_entity(uuid):
@@ -83,7 +64,7 @@ class DigitalRocksTreeView(BaseApiView):
 
             node = graph.nodes[node_id]
 
-            # Get the path from NODE_ROOT to the current node
+            # Get the path from NODE_ROOT to the current node excluding the root
             if nx.has_path(graph, 'NODE_ROOT', node_id):
                 path_nodes = shortest_path(graph, 'NODE_ROOT', node_id)[1:]
                 node['path'] = '/'.join(graph.nodes[parent]['label'] for parent in path_nodes if 'label' in graph.nodes[parent])

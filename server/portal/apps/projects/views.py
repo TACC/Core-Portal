@@ -135,13 +135,7 @@ class ProjectsApiView(BaseApiView):
             metadata["projectId"] = workspace_id
             project_meta = create_project_metadata(metadata)
             initialize_project_graph(project_meta.project_id)
-            # project_metadata = ProjectsMetadata(
-            #     project_id = workspace_id,
-            #     metadata = validate_project_metadata(metadata)
-            # )
 
-            # project_metadata.save()
-        
         client = request.user.tapis_oauth.client
         system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number)
 

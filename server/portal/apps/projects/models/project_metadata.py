@@ -77,47 +77,6 @@ class ProjectMetadata(models.Model):
         return self.__class__.objects.get(
             name=constants.PROJECT_GRAPH, base_project=self.base_project
         )
-    
-    @property
-    def ordered_value(self):
-        """
-        Return the metadata in the order defined in the Pydantic model.
-        Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be updated to use camelCase.
-        """
-        schema = SCHEMA_MAPPING.get(self.name)
-
-        if not schema:
-            return self.value  # Return the field value directly if no schema is found
-
-        ordered_metadata = {}
-
-        # Iterate through the model fields to preserve the order
-        for field in schema.model_fields.keys():
-            camel_field = snake_to_camel(field)
-            field_value = self.value.get(camel_field)
-
-            # Skip the field if there is no value (None or not present)
-            if field_value is None:
-                continue
-
-            # if the fiels is a list, then we need to get the model of the list and process it
-            if isinstance(field_value, list):
-                field_annotation = schema.model_fields[field].annotation
-                item_type = get_args(field_annotation)[0] if get_args(field_annotation) else None # returns the model class of the list
-
-                # Check if the item type is a Pydantic model
-                if item_type and hasattr(item_type, "model_fields"):
-                    # Re-order each item in the list if it's a list of Pydantic models
-                    ordered_metadata[field] = [
-                        {k: item.get(snake_to_camel(k)) for k in item_type.model_fields.keys()}
-                        for item in field_value
-                    ]
-                else:
-                    ordered_metadata[field] = field_value
-            else:
-                ordered_metadata[field] = field_value
-
-        return ordered_metadata
 
     @classmethod
     def get_project_by_id(cls, project_id: str):
@@ -187,30 +146,3 @@ class ProjectMetadata(models.Model):
                 name="base_projectId_not_null",
             ),
         ]
-
-# @receiver(pre_save, sender=ProjectMetadata)
-# def set_or_update_parent_uuid(sender, instance, **kwargs):
-#     # Assuming 'folder_path' is stored in instance.value
-#     current_path = instance.value.get('path')
-
-#     # If new record or the 'folder_path' has changed
-#     if not instance.pk or current_path != sender.objects.get(pk=instance.pk).value.get('path'):
-#         parent_path = current_path.rstrip('/').rsplit('/', 1)[0] + '/'  # Extract the parent path
-
-#         if len(parent_path.split('/')) > 1:
-#             # Attempt to find the parent entity
-#             parent_entity = sender.objects.get(value__folder_path=parent_path)
-#             parent_uuid = parent_entity.uuid
-#         else:
-#             parent_uuid = None
-
-
-#         # Update 'parent_uuid' in the instance's 'value' field
-#         instance.value['parent_uuid'] = parent_uuid
-
-
-# @receiver(models.signals.post_save, sender=ProjectMetadata)
-# def handle_save(instance: ProjectMetadata, **_):
-#     """After saving a project, update the associated users so that listings can
-#     be performed."""
-#     instance.sync_users()
