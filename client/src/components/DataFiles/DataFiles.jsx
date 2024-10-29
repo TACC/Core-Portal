@@ -11,7 +11,11 @@ import {
   SectionMessage,
   LoadingSpinner,
 } from '_common';
-import { useFileListing, useSystems, useAddonComponents } from 'hooks/datafiles';
+import {
+  useFileListing,
+  useSystems,
+  useAddonComponents,
+} from 'hooks/datafiles';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -30,7 +34,7 @@ const DefaultSystemRedirect = () => {
   useEffect(() => {
     if (systems.length === 0) return;
     const defaultSystem = systems[0];
-    
+
     let path = `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}`;
 
     if (defaultSystem.scheme === 'projects') {
@@ -49,44 +53,46 @@ const DataFilesSwitch = React.memo(() => {
 
   const portalName = useSelector((state) => state.workbench.portalName);
 
-  const { DataFilesProjectPublish, DataFilesProjectReview } = useAddonComponents({ portalName });
+  const { DataFilesProjectPublish, DataFilesProjectReview } =
+    useAddonComponents({ portalName });
 
   return (
     <Switch>
-      {DataFilesProjectPublish &&
+      {DataFilesProjectPublish && (
         <Route
-        path={`${path}/tapis/projects/:root_system/:system/publish`}
-        render={({ match: { params } }) => {
+          path={`${path}/tapis/projects/:root_system/:system/publish`}
+          render={({ match: { params } }) => {
             return (
               <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectPublish system={params.system} rootSystem={params.root_system} />
+                <DataFilesProjectPublish
+                  system={params.system}
+                  rootSystem={params.root_system}
+                />
               </SectionTableWrapper>
-            )
+            );
           }}
         />
-      }
-      {
-        DataFilesProjectReview &&
+      )}
+      {DataFilesProjectReview && (
         <Route
-        path={`${path}/tapis/projects/:root_system/:system/review`}
-        render={({ match: { params } }) => {
+          path={`${path}/tapis/projects/:root_system/:system/review`}
+          render={({ match: { params } }) => {
             return (
               <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectReview system={params.system} rootSystem={params.root_system} />
+                <DataFilesProjectReview
+                  system={params.system}
+                  rootSystem={params.root_system}
+                />
               </SectionTableWrapper>
-            )
+            );
           }}
         />
-      } 
-      <Route 
+      )}
+      <Route
         exact
         path={`${path}/tapis/projects/:system`}
         render={({ match: { params } }) => {
-          return (
-            <DataFilesProjectsList 
-              rootSystem={params.system}
-            />
-          );
+          return <DataFilesProjectsList rootSystem={params.system} />;
         }}
       />
       <Route
@@ -115,7 +121,7 @@ const DataFilesSwitch = React.memo(() => {
             </SectionTableWrapper>
           );
         }}
-      />      
+      />
       <Route path={`${path}`}>
         <DefaultSystemRedirect />
       </Route>

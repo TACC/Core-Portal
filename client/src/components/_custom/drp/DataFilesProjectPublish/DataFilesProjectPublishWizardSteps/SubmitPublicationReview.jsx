@@ -45,10 +45,22 @@ const SubmitPublicationReview = () => {
           curator Maria Esteva before submitting the data for publication.
         </div>
         <div className={styles['submit-div']}>
-          <Button type="primary" className={styles['submit-button']} disabled={submitDisabled} isLoading={loading} onClick={submitForm}>
+          <Button
+            type="primary"
+            className={styles['submit-button']}
+            disabled={submitDisabled}
+            isLoading={loading}
+            onClick={submitForm}
+          >
             Approve and Publish
           </Button>
-          <Button type="secondary"  className={styles['submit-button']} disabled={submitDisabled} isLoading={loading} onClick={submitForm}>
+          <Button
+            type="secondary"
+            className={styles['submit-button']}
+            disabled={submitDisabled}
+            isLoading={loading}
+            onClick={submitForm}
+          >
             Reject
           </Button>
         </div>

@@ -2,7 +2,11 @@ import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUtil } from 'utils/fetchUtil';
 
-const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) => {
+const useDrpDatasetModals = (
+  projectId,
+  portalName,
+  useReloadCallback = true
+) => {
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
       url: 'api/forms',
@@ -65,7 +69,13 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'dynamicform',
-          props: { selectedFile, form, formName, additionalData: { samples }, useReloadCallback },
+          props: {
+            selectedFile,
+            form,
+            formName,
+            additionalData: { samples },
+            useReloadCallback,
+          },
         },
       });
     }
@@ -112,7 +122,7 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
             form,
             formName,
             additionalData: { samples, originDatasets },
-            useReloadCallback
+            useReloadCallback,
           },
         },
       });

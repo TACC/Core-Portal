@@ -68,7 +68,9 @@ const BreadcrumbsDropdown = ({
     shallowEqual
   );
 
-  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
+  const sharedWorkspacesDisplayName = systems.find(
+    (e) => e.scheme === 'projects'
+  )?.name;
 
   let currentPath = startingPath;
   pathComponents.slice(overlapIndex).forEach((component) => {

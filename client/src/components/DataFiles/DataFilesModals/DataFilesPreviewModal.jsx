@@ -38,7 +38,7 @@ const DataFilesPreviewModal = () => {
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesPreviewModalAddon } = useAddonComponents({portalName})
+  const { DataFilesPreviewModalAddon } = useAddonComponents({ portalName });
 
   useEffect(() => {
     if (previewUsingBrainmap) setIsFrameLoading(false);
@@ -89,7 +89,9 @@ const DataFilesPreviewModal = () => {
         File Preview: {params.name}
       </ModalHeader>
       <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
-        {DataFilesPreviewModalAddon && !isLoading && <DataFilesPreviewModalAddon metadata={params.metadata} />}
+        {DataFilesPreviewModalAddon && !isLoading && (
+          <DataFilesPreviewModalAddon metadata={params.metadata} />
+        )}
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
           <div className={styles['loading-style']}>
             <LoadingSpinner />
@@ -117,7 +119,11 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <div className={`${styles.error} ${DataFilesPreviewModalAddon ? styles['error-condensed'] : ''}`}>
+          <div
+            className={`${styles.error} ${
+              DataFilesPreviewModalAddon ? styles['error-condensed'] : ''
+            }`}
+          >
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>

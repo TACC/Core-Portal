@@ -32,7 +32,8 @@ const DataFilesProjectsList = ({ modal, rootSystem }) => {
     selectedSystem = systems.find((s) => s.scheme === 'projects');
   }
 
-  const sharedWorkspacesDisplayName = selectedSystem?.name || 'Shared Workspaces';
+  const sharedWorkspacesDisplayName =
+    selectedSystem?.name || 'Shared Workspaces';
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();

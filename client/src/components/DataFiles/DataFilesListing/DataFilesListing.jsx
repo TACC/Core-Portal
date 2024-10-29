@@ -38,7 +38,14 @@ const fileTypes = [
   '3D Visualization',
 ];
 
-const DataFilesListing = ({ api, scheme, system, path, isPublic, rootSystem }) => {
+const DataFilesListing = ({
+  api,
+  scheme,
+  system,
+  path,
+  isPublic,
+  rootSystem,
+}) => {
   // Redux hooks
   const location = useLocation();
   const systems = useSelector(
@@ -149,10 +156,11 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic, rootSystem }) =
         width: 0.1,
         Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
       });
-    }    
-    
+    }
+
     if (showDataFileType) {
-      cells.splice(3, 0, {  // Inserting at index 3 after 'Name'
+      cells.splice(3, 0, {
+        // Inserting at index 3 after 'Name'
         Header: 'Data Type',
         Cell: (el) => <DataTypeCell file={el.row.original} />,
         width: 0.2,

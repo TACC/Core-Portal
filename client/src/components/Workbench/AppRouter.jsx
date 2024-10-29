@@ -16,7 +16,9 @@ function AppRouter() {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
-  const hasCustomSagas = useSelector((state) => state.workbench.config.hasCustomSagas);
+  const hasCustomSagas = useSelector(
+    (state) => state.workbench.config.hasCustomSagas
+  );
 
   useEffect(() => {
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });

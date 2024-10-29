@@ -20,7 +20,7 @@ const DataFilesAddProjectModal = () => {
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesAddProjectModalAddon } = useAddonComponents({portalName})
+  const { DataFilesAddProjectModalAddon } = useAddonComponents({ portalName });
 
   useEffect(() => {
     setMembers([
@@ -45,17 +45,18 @@ const DataFilesAddProjectModal = () => {
       state.projects.operation.error
     );
   });
-  
+
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
 
-  const system = systems.find((s) => s.scheme === 'projects' && s.defaultProject == true);
+  const system = systems.find(
+    (s) => s.scheme === 'projects' && s.defaultProject == true
+  );
 
   const sharedWorkspacesDisplayName = system?.name;
   const rootSystem = system?.system;
-
 
   const toggle = () => {
     dispatch({
@@ -132,7 +133,9 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
-              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
+              {DataFilesAddProjectModalAddon && (
+                <DataFilesAddProjectModalAddon />
+              )}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}

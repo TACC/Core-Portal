@@ -17,8 +17,11 @@ const DataFilesFormModal = () => {
 
   const reloadPage = (updatedPath = '') => {
     // Updated regex to capture the URL up until the last project segment
-    let projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/[^/]+)\/?.*/, '$1');
-    
+    let projectUrl = location.pathname.replace(
+      /(\/projects\/[^/]+\/[^/]+)\/?.*/,
+      '$1'
+    );
+
     if (projectUrl.endsWith('/')) {
       projectUrl = projectUrl.slice(0, -1);
     }
@@ -27,9 +30,8 @@ const DataFilesFormModal = () => {
     history.replace(path);
   };
 
-  const { form, selectedFile, formName, additionalData, useReloadCallback } = useSelector(
-    (state) => state.files.modalProps.dynamicform
-  );
+  const { form, selectedFile, formName, additionalData, useReloadCallback } =
+    useSelector((state) => state.files.modalProps.dynamicform);
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
   const { params } = useFileListing('FilesListing');
 
@@ -55,9 +57,9 @@ const DataFilesFormModal = () => {
   }, []);
 
   const handleSubmit = (values) => {
-
-    Object.keys(values).forEach(key => {
-      values[key] = typeof(values[key]) === 'string' ? values[key].trim() : values[key];
+    Object.keys(values).forEach((key) => {
+      values[key] =
+        typeof values[key] === 'string' ? values[key].trim() : values[key];
     });
 
     dispatch({

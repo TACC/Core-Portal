@@ -32,8 +32,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
     dispatch({
       type: 'PROJECTS_GET_PUBLICATION_REQUESTS',
       payload: system,
-    })
-
+    });
   }, [system]);
 
   useEffect(() => {
@@ -98,25 +97,24 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
       </div>
     );
   }
-  
+
   return (
     <SectionTableWrapper
       className={styles.root}
       header={
         <div className={styles.title}>
-          {
-            DataFilesProjectFileListingMetadataTitleAddon ? 
-              <DataFilesProjectFileListingMetadataTitleAddon 
-                  folderMetadata={folderMetadata}
-                  metadata={metadata} 
-                  system={system}
-                  path={path}/>
-                           
-            : metadata.title
-          }
+          {DataFilesProjectFileListingMetadataTitleAddon ? (
+            <DataFilesProjectFileListingMetadataTitleAddon
+              folderMetadata={folderMetadata}
+              metadata={metadata}
+              system={system}
+              path={path}
+            />
+          ) : (
+            metadata.title
+          )}
         </div>
       }
-
       headerActions={
         <div className={styles.controls}>
           {canEditSystem ? (
@@ -131,7 +129,10 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
           {DataFilesProjectFileListingAddon && (
-            <DataFilesProjectFileListingAddon rootSystem={rootSystem} system={system} />
+            <DataFilesProjectFileListingAddon
+              rootSystem={rootSystem}
+              system={system}
+            />
           )}
         </div>
       }
@@ -144,19 +145,19 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-      <>
-          {DataFilesProjectFileListingMetadataAddon ? 
-            <ShowMore key={`${system}-${path}`}>  
-              <DataFilesProjectFileListingMetadataAddon 
+        <>
+          {DataFilesProjectFileListingMetadataAddon ? (
+            <ShowMore key={`${system}-${path}`}>
+              <DataFilesProjectFileListingMetadataAddon
                 folderMetadata={folderMetadata}
                 metadata={metadata}
                 path={path}
               />
-            </ShowMore> 
-              
-          : <ShowMore>{metadata.description}</ShowMore>
-          }
-      </>
+            </ShowMore>
+          ) : (
+            <ShowMore>{metadata.description}</ShowMore>
+          )}
+        </>
       </div>
       <DataFilesListing
         api="tapis"

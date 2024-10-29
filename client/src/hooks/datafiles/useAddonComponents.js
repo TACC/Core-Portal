@@ -11,9 +11,9 @@ const useAddonComponents = ({ portalName }) => {
           const module = await import(
             `../../components/_custom/${portalName.toLowerCase()}/${addonName}/${addonName}.jsx`
           );
-          setAddonComponents(prevComponents => ({
+          setAddonComponents((prevComponents) => ({
             ...prevComponents,
-            [addonName]: module.default 
+            [addonName]: module.default,
           }));
         }
       } catch (error) {
@@ -26,6 +26,6 @@ const useAddonComponents = ({ portalName }) => {
     }
   }, []);
   return addonComponents;
-}
+};
 
 export default useAddonComponents;

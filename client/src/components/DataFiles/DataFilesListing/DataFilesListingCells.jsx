@@ -50,7 +50,19 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic, length, metadata, rootSystem }) => {
+  ({
+    system,
+    path,
+    name,
+    format,
+    api,
+    scheme,
+    href,
+    isPublic,
+    length,
+    metadata,
+    rootSystem,
+  }) => {
     const dispatch = useDispatch();
     const previewCallback = (e) => {
       e.stopPropagation();
@@ -75,7 +87,9 @@ export const FileNavCell = React.memo(
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`${basePath}/${api}/${scheme}${rootSystem ? '/' + rootSystem : ''}/${system}/${path}/`.replace(
+            to={`${basePath}/${api}/${scheme}${
+              rootSystem ? '/' + rootSystem : ''
+            }/${system}/${path}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}
@@ -183,20 +197,18 @@ ViewPathCell.propTypes = {
 };
 
 export const DataTypeCell = ({ file }) => {
-
   const dataType = file.metadata ? file.metadata.data_type : file.type;
-  
-  const formatDatatype = (data_type) => 
-    data_type.split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+
+  const formatDatatype = (data_type) =>
+    data_type
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
   return dataType ? (
-    <span className="dataTypeBox">
-      {formatDatatype(dataType)}
-    </span>
+    <span className="dataTypeBox">{formatDatatype(dataType)}</span>
   ) : null;
-}
+};
 
 DataTypeCell.propTypes = {
   file: PropTypes.shape({}).isRequired,

@@ -77,7 +77,13 @@ const SubmitPublicationRequest = () => {
           curator Maria Esteva before submitting the data for publication.
         </div>
         <div className={styles['submit-div']}>
-          <Button type="primary" className={styles['submit-button']} disabled={submitDisabled} isLoading={loading} onClick={submitForm}>
+          <Button
+            type="primary"
+            className={styles['submit-button']}
+            disabled={submitDisabled}
+            isLoading={loading}
+            onClick={submitForm}
+          >
             Submit Publication Request
           </Button>
         </div>

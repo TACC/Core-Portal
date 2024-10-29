@@ -226,12 +226,14 @@ export async function fetchPublicationRequestsUtil(system) {
 }
 
 export function* getPublicationRequests(action) {
-
   yield put({
     type: 'PROJECTS_GET_PUBLICATION_REQUESTS_STARTED',
   });
   try {
-    const publicationRequests = yield call(fetchPublicationRequestsUtil, action.payload);
+    const publicationRequests = yield call(
+      fetchPublicationRequestsUtil,
+      action.payload
+    );
     yield put({
       type: 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS',
       payload: publicationRequests,
@@ -253,15 +255,22 @@ export async function createEntityUtil(entityType, projectId, path, data) {
     },
     body: JSON.stringify({
       name: entityType,
-      value: data, 
-      path: path
+      value: data,
+      path: path,
     }),
   });
 
   return result.response;
 }
 
-export async function patchEntityUtil(entityType, projectId, path, updatedPath, data, entityUuid) {
+export async function patchEntityUtil(
+  entityType,
+  projectId,
+  path,
+  updatedPath,
+  data,
+  entityUuid
+) {
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/entities/create`,
     method: 'PATCH',
@@ -273,7 +282,7 @@ export async function patchEntityUtil(entityType, projectId, path, updatedPath, 
       value: data,
       uuid: entityUuid ?? null,
       path: path,
-      updatedPath: updatedPath
+      updatedPath: updatedPath,
     }),
   });
 
@@ -287,6 +296,9 @@ export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_METADATA', getMetadata);
   yield takeLatest('PROJECTS_SET_MEMBER', setMember);
   yield takeLatest('PROJECTS_SET_TITLE_DESCRIPTION', setTitleDescription);
-  yield takeLatest('PROJECTS_CREATE_PUBLICATION_REQUEST', createPublicationRequest);
+  yield takeLatest(
+    'PROJECTS_CREATE_PUBLICATION_REQUEST',
+    createPublicationRequest
+  );
   yield takeLatest('PROJECTS_GET_PUBLICATION_REQUESTS', getPublicationRequests);
 }

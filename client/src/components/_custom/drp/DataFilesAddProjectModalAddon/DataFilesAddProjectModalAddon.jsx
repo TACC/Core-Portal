@@ -4,7 +4,6 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 
 const DataFilesAddProjectModalAddon = () => {
-  
   const { data: form, isLoading } = useQuery('form_ADD_PROJECT', () =>
     fetchUtil({
       url: 'api/forms',

@@ -45,12 +45,14 @@ const ReviewProjectStructure = ({ projectTree }) => {
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
     const { username } = state.authenticatedUser.user;
-    const currentUser = members.find((member) => member.user?.username === username);
-  
+    const currentUser = members.find(
+      (member) => member.user?.username === username
+    );
+
     if (!currentUser) {
       return false;
     }
-  
+
     return currentUser.access === 'owner' || currentUser.access === 'edit';
   });
 
@@ -108,9 +110,10 @@ const ReviewProjectStructure = ({ projectTree }) => {
     }
   };
 
-  const formatDatatype = (data_type) => 
-    data_type.split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  const formatDatatype = (data_type) =>
+    data_type
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
   const renderTree = (node) => (
@@ -125,12 +128,12 @@ const ReviewProjectStructure = ({ projectTree }) => {
             nodeId={node.id}
             label={
               <div className={styles['node-name-div']}>
-                  {node.label ?? node.name}
-                  {node.metadata.data_type && (
-                    <span className={styles['data-type-box']}>
-                      {formatDatatype(node.metadata.data_type)}
-                    </span>
-                  )}
+                {node.label ?? node.name}
+                {node.metadata.data_type && (
+                  <span className={styles['data-type-box']}>
+                    {formatDatatype(node.metadata.data_type)}
+                  </span>
+                )}
               </div>
             }
             classes={{
@@ -146,7 +149,9 @@ const ReviewProjectStructure = ({ projectTree }) => {
                     type="link"
                     onClick={() => onEditData(node)}
                   >
-                    {canEdit && node.metadata.data_type !== 'file' ? 'Edit' : 'View'}
+                    {canEdit && node.metadata.data_type !== 'file'
+                      ? 'Edit'
+                      : 'View'}
                   </Button>
                 )}
                 <div className={styles['description']}>
@@ -164,7 +169,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
                 </div>
               </div>
             )}
-            {Array.isArray(node.fileObjs) && 
+            {Array.isArray(node.fileObjs) &&
               node.fileObjs.map((fileObj) => renderTree(fileObj))}
             {Array.isArray(node.children) &&
               node.children.map((child) => renderTree(child))}
@@ -173,7 +178,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
       </Section>
     </>
   );
-  
+
   return (
     <SectionTableWrapper
       header={

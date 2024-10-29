@@ -263,7 +263,7 @@ export default function projects(state = initialState, action) {
       };
     case 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS':
       return {
-        ...state, 
+        ...state,
         metadata: {
           ...state.metadata,
           publication_requests: action.payload,
@@ -274,7 +274,7 @@ export default function projects(state = initialState, action) {
           error: null,
           result: action.payload,
         },
-      }
+      };
     case 'PROJECTS_GET_PUBLICATION_REQUESTS_FAILED':
       return {
         ...state,

@@ -53,21 +53,23 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   // A project system has different fields than a regular system
-  const selectedSystem = systemList.find(
-    (sys) => {
-      if (params.scheme === 'projects') {
-        return params.api === sys.api && sys.scheme === params.scheme;
-      } else {
-        return sys.system === params.system && sys.scheme === params.scheme
-      }
+  const selectedSystem = systemList.find((sys) => {
+    if (params.scheme === 'projects') {
+      return params.api === sys.api && sys.scheme === params.scheme;
+    } else {
+      return sys.system === params.system && sys.scheme === params.scheme;
     }
-  );
+  });
 
   const { projectId } = useSelector((state) => state.projects.metadata);
 
   // defaults to return true if no custom permission check is provided
-  const [customPermissionCheck, setCustomPermissionCheck] = useState(() => () => true);
-  const { hasCustomDataFilesToolbarChecks } = useSelector((state) => state.workbench.config)
+  const [customPermissionCheck, setCustomPermissionCheck] = useState(
+    () => () => true
+  );
+  const { hasCustomDataFilesToolbarChecks } = useSelector(
+    (state) => state.workbench.config
+  );
   const { portalName } = useSelector((state) => state.workbench);
 
   useEffect(() => {
@@ -82,13 +84,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
       } catch (error) {
         console.error('Error loading custom permission check:', error);
       }
-    }
+    };
 
     if (hasCustomDataFilesToolbarChecks && portalName) {
       loadCustomPermissions();
     }
-
-  }, [hasCustomDataFilesToolbarChecks, portalName])
+  }, [hasCustomDataFilesToolbarChecks, portalName]);
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
@@ -110,7 +111,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       // remove leading slash from homeDir value
       const homeDir = selectedSystem?.homeDir?.slice(1);
       if (!homeDir) return false;
-  
+
       return state.files.params.FilesListing.path.startsWith(
         `${homeDir}/${state.workbench.config.trashPath}`
       );
@@ -130,9 +131,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const showRename = modifiableUserData;
 
-  const showTrash = modifiableUserData
+  const showTrash = modifiableUserData;
 
-  const showDownload = api === 'tapis'
+  const showDownload = api === 'tapis';
 
   const showMakeLink = useSelector(
     (state) =>
@@ -140,7 +141,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench.config.makeLink &&
       api === 'tapis' &&
       (scheme === 'private' || scheme === 'projects')
-  )
+  );
 
   const showCompress = !!useSelector(
     (state) => state.workbench.config.extractApp && modifiableUserData
@@ -223,7 +224,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme, api, customPermissionCheck };
+  const permissionParams = {
+    files: selectedFiles,
+    scheme,
+    api,
+    customPermissionCheck,
+  };
   const canDownload = getFilePermissions('download', permissionParams);
   const areMultipleFilesOrFolderSelected = getFilePermissions(
     'areMultipleFilesOrFolderSelected',

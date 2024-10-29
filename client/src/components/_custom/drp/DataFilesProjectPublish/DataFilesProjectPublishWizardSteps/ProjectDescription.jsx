@@ -18,12 +18,14 @@ const ProjectDescription = ({ project }) => {
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
     const { username } = state.authenticatedUser.user;
-    const currentUser = members.find((member) => member.user?.username === username);
-  
+    const currentUser = members.find(
+      (member) => member.user?.username === username
+    );
+
     if (!currentUser) {
       return false;
     }
-  
+
     return currentUser.access === 'owner' || currentUser.access === 'edit';
   });
 
@@ -40,36 +42,37 @@ const ProjectDescription = ({ project }) => {
       Created: formatDate(new Date(project.created)),
       Abstract: <ShowMore> {project.description} </ShowMore>,
       License: project.license ?? 'None',
-    }
+    };
 
     if (project.keywords) {
-      projectData['Keywords'] = project.keywords
+      projectData['Keywords'] = project.keywords;
     }
 
     if (project.related_publications?.length > 0) {
-      const relatedPublicationCards = project.related_publications.map((publication) => {
-        return (
-          <Expand
-            className={styles['project-expand-card']}
-            detail={publication.publication_title}
-            message={
-              <DescriptionList
-                data={Object.keys(publication).reduce((acc, key) => {
-                  acc[formatDataKey(key)] = publication[key];
-                  return acc;
-                }, {})
-                }
-                direction={'vertical'}
-                density={'compact'}
-              />
-            }
-          />
-        )
-      })
+      const relatedPublicationCards = project.related_publications.map(
+        (publication) => {
+          return (
+            <Expand
+              className={styles['project-expand-card']}
+              detail={publication.publication_title}
+              message={
+                <DescriptionList
+                  data={Object.keys(publication).reduce((acc, key) => {
+                    acc[formatDataKey(key)] = publication[key];
+                    return acc;
+                  }, {})}
+                  direction={'vertical'}
+                  density={'compact'}
+                />
+              }
+            />
+          );
+        }
+      );
 
-      projectData['Related Publications'] = relatedPublicationCards
+      projectData['Related Publications'] = relatedPublicationCards;
     } else {
-      projectData['Related Publications'] = 'None'
+      projectData['Related Publications'] = 'None';
     }
 
     if (project.related_datasets?.length > 0) {
@@ -83,19 +86,18 @@ const ProjectDescription = ({ project }) => {
                 data={Object.keys(dataset).reduce((acc, key) => {
                   acc[formatDataKey(key)] = dataset[key];
                   return acc;
-                }, {})
-                }
+                }, {})}
                 direction={'vertical'}
                 density={'compact'}
               />
             }
           />
-        )
-      })
+        );
+      });
 
-      projectData['Related Datasets'] = relatedDatasetCards
+      projectData['Related Datasets'] = relatedDatasetCards;
     } else {
-      projectData['Related Datasets'] = 'None'
+      projectData['Related Datasets'] = 'None';
     }
 
     if (project.related_software?.length > 0) {
@@ -109,24 +111,22 @@ const ProjectDescription = ({ project }) => {
                 data={Object.keys(software).reduce((acc, key) => {
                   acc[formatDataKey(key)] = software[key];
                   return acc;
-                }, {})
-                }
+                }, {})}
                 direction={'vertical'}
                 density={'compact'}
               />
             }
           />
-        )
-      })
+        );
+      });
 
-      projectData['Related Software'] = relatedSoftwareCards
+      projectData['Related Software'] = relatedSoftwareCards;
     } else {
-      projectData['Related Software'] = 'None'
+      projectData['Related Software'] = 'None';
     }
 
-    setData(projectData)
-
-  }, [project])
+    setData(projectData);
+  }, [project]);
 
   return (
     <SectionTableWrapper
@@ -145,10 +145,7 @@ const ProjectDescription = ({ project }) => {
         </>
       }
     >
-      <DescriptionList
-        data={data}
-        direction={'vertical'}
-      />
+      <DescriptionList data={data} direction={'vertical'} />
     </SectionTableWrapper>
   );
 };

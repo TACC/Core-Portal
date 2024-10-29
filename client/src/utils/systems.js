@@ -91,7 +91,9 @@ export function findSystemOrProjectDisplayName(
     case 'projects':
       let project = findProjectTitle(projectsList, system, projectTitle);
       if (!project) {
-        const projectSystem = systemList.find(system => system.scheme === 'projects')
+        const projectSystem = systemList.find(
+          (system) => system.scheme === 'projects'
+        );
         return projectSystem ? projectSystem.name : '';
       } else {
         return project;

@@ -17,7 +17,9 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
   const history = useHistory();
   const location = useLocation();
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { projectId, publication_requests } = useSelector((state) => state.projects.metadata);
+  const { projectId, publication_requests } = useSelector(
+    (state) => state.projects.metadata
+  );
   const [authors, setAuthors] = useState([]);
   const [tree, setTree] = useState([]);
 
@@ -55,7 +57,9 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
     // Check if there is any PENDING publication request
     if (publication_requests?.some((request) => request.status === 'PENDING')) {
       // Navigate back to the previous location
-      history.replace(location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`);
+      history.replace(
+        location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`
+      );
     }
   }, [publication_requests, history]);
 
@@ -68,26 +72,29 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
 
   const handleAuthorsUpdate = (authors) => {
     setAuthors(authors);
-  }
+  };
 
   const wizardSteps = [
     PublicationInstructionsStep(),
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
-    ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: handleAuthorsUpdate}),
+    ReviewAuthorsStep({
+      project: metadata,
+      onAuthorsUpdate: handleAuthorsUpdate,
+    }),
     SubmitPublicationRequestStep(),
   ];
 
   const formSubmit = (values) => {
     const data = {
-      ...metadata, 
-      authors: authors
-    }
+      ...metadata,
+      authors: authors,
+    };
 
     if (Object.keys(values).length > 0) {
       dispatch({
         type: 'PROJECTS_CREATE_PUBLICATION_REQUEST',
-        payload: data
+        payload: data,
       });
     }
   };

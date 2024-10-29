@@ -32,7 +32,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesUploadModalAddon } = useAddonComponents({portalName})
+  const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
 
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');

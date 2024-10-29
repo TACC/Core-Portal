@@ -223,7 +223,14 @@ export function* scrollFiles(action) {
   }
 }
 
-export async function renameFileUtil(api, scheme, system, path, newName, metadata) {
+export async function renameFileUtil(
+  api,
+  scheme,
+  system,
+  path,
+  newName,
+  metadata
+) {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
@@ -287,7 +294,7 @@ export async function moveFileUtil(
   system,
   path,
   destSystem,
-  destPath, 
+  destPath,
   index,
   metadata
 ) {
@@ -296,7 +303,11 @@ export async function moveFileUtil(
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath, metadata: metadata ?? null }),
+    body: JSON.stringify({
+      dest_system: destSystem,
+      dest_path: destPath,
+      metadata: metadata ?? null,
+    }),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -388,7 +399,7 @@ export async function copyFileUtil(
       file_name: filename,
       filetype,
       dest_path_name: destPathName,
-      metadata: metadata ?? null
+      metadata: metadata ?? null,
     };
   } else {
     url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
@@ -481,14 +492,24 @@ export function* copyFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export async function uploadFileUtil(api, scheme, system, path, file, metadata) {
+export async function uploadFileUtil(
+  api,
+  scheme,
+  system,
+  path,
+  file,
+  metadata
+) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
-  formData.append('metadata', metadata ? JSON.stringify({data_type: 'file', ...metadata}) : null);
+  formData.append(
+    'metadata',
+    metadata ? JSON.stringify({ data_type: 'file', ...metadata }) : null
+  );
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
@@ -769,7 +790,7 @@ export async function trashUtil(api, scheme, system, path, homeDir, metadata) {
     credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
-      metadata: metadata ?? null
+      metadata: metadata ?? null,
     }),
   });
 
@@ -785,7 +806,13 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path, action.payload.homeDir, file.metadata);
+    return call(
+      trashFile,
+      file.system,
+      file.path,
+      action.payload.homeDir,
+      file.metadata
+    );
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -1179,13 +1206,27 @@ export function* watchMakePublic() {
   yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
 }
 
-export async function updateMetadataUtil(api, scheme, system, path, newPath, oldName, newName, metadata) {
+export async function updateMetadataUtil(
+  api,
+  scheme,
+  system,
+  path,
+  newPath,
+  oldName,
+  newName,
+  metadata
+) {
   const url = `/api/datafiles/${api}/update_metadata/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ new_path: newPath, old_name: oldName, new_name: newName, metadata: metadata ?? null }),
+    body: JSON.stringify({
+      new_path: newPath,
+      old_name: oldName,
+      new_name: newName,
+      metadata: metadata ?? null,
+    }),
   });
   if (!response.ok) {
     throw new Error(response.status);

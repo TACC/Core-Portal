@@ -12,82 +12,80 @@ import { ReviewAuthorsStep } from '../DataFilesProjectPublish/DataFilesProjectPu
 import { SubmitPublicationReviewStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/SubmitPublicationReview';
 
 const DataFilesProjectReview = ({ rootSystem, system }) => {
-    const dispatch = useDispatch();
-    const portalName = useSelector((state) => state.workbench.portalName);
-    const { projectId } = useSelector((state) => state.projects.metadata);
-    const [tree, setTree] = useState([]);
+  const dispatch = useDispatch();
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { projectId } = useSelector((state) => state.projects.metadata);
+  const [tree, setTree] = useState([]);
 
-    useEffect(() => {
-        dispatch({
-            type: 'PROJECTS_GET_METADATA',
-            payload: system,
-        });
-    }, [system]);
+  useEffect(() => {
+    dispatch({
+      type: 'PROJECTS_GET_METADATA',
+      payload: system,
+    });
+  }, [system]);
 
-    const { metadata } = useSelector((state) => state.projects);
+  const { metadata } = useSelector((state) => state.projects);
 
-    const fetchTree = useCallback(async () => {
+  const fetchTree = useCallback(async () => {
     if (projectId) {
-        try {
-            const response = await fetchUtil({
-                url: `api/${portalName.toLowerCase()}/tree`,
-                params: {
-                    project_id: projectId,
-                },
-            });
-            setTree(response);
-        } catch (error) {
-            console.error('Error fetching tree data:', error);
-            setTree([]);
-        }
+      try {
+        const response = await fetchUtil({
+          url: `api/${portalName.toLowerCase()}/tree`,
+          params: {
+            project_id: projectId,
+          },
+        });
+        setTree(response);
+      } catch (error) {
+        console.error('Error fetching tree data:', error);
+        setTree([]);
+      }
     }
-    }, [portalName, projectId]);
+  }, [portalName, projectId]);
 
-    useEffect(() => {
-        fetchTree();
-    }, [portalName, projectId, fetchTree]);
+  useEffect(() => {
+    fetchTree();
+  }, [portalName, projectId, fetchTree]);
 
-    const wizardSteps = [
-        ProjectDescriptionStep({ project: metadata }),
-        ReviewProjectStructureStep({ projectTree: tree }),
-        ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {}}),
-        SubmitPublicationReviewStep(),
-    ]
+  const wizardSteps = [
+    ProjectDescriptionStep({ project: metadata }),
+    ReviewProjectStructureStep({ projectTree: tree }),
+    ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {} }),
+    SubmitPublicationReviewStep(),
+  ];
 
-    const formSubmit = (values) => {
-        
-    }
+  const formSubmit = (values) => {};
 
-    return (
-        <>
-            {metadata.loading ? (
-                <LoadingSpinner />
-            ) : (
-                <SectionTableWrapper
-                className={styles.root}
-                header={
-                    <div className={styles.title}>
-                    Review Publication Request | {metadata.title}
-                    </div>
-                }
-                headerActions={
-                    <div className={styles.controls}>
-                    <>
-                        <Link
-                        className="wb-link"
-                        to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
-                        >
-                        Back to Project
-                        </Link>
-                    </>
-                    </div>
-                }
+  return (
+    <>
+      {metadata.loading ? (
+        <LoadingSpinner />
+      ) : (
+        <SectionTableWrapper
+          className={styles.root}
+          header={
+            <div className={styles.title}>
+              Review Publication Request | {metadata.title}
+            </div>
+          }
+          headerActions={
+            <div className={styles.controls}>
+              <>
+                <Link
+                  className="wb-link"
+                  to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                 >
-                    <Wizard steps={wizardSteps} formSubmit={formSubmit} />
-                </SectionTableWrapper>
-            )}
-        </>
-    )
-}
+                  Back to Project
+                </Link>
+              </>
+            </div>
+          }
+        >
+          <Wizard steps={wizardSteps} formSubmit={formSubmit} />
+        </SectionTableWrapper>
+      )}
+    </>
+  );
+};
 
 export default DataFilesProjectReview;

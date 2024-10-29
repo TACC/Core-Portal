@@ -42,23 +42,27 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
-
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
     const { username } = state.authenticatedUser.user;
-    const currentUser = members.find((member) => member.user?.username === username);
-  
+    const currentUser = members.find(
+      (member) => member.user?.username === username
+    );
+
     if (!currentUser) {
       return false;
     }
-  
+
     return currentUser.access === 'owner' || currentUser.access === 'edit';
   });
 
   useEffect(() => {
-    const owners = project.authors?.length > 0 ? project.authors : project.members
-      .filter((user) => user.access === 'owner')
-      .map((user) => ({ ...user.user, isOwner: true }));
+    const owners =
+      project.authors?.length > 0
+        ? project.authors
+        : project.members
+            .filter((user) => user.access === 'owner')
+            .map((user) => ({ ...user.user, isOwner: true }));
 
     const members = project.members
       .filter(
@@ -102,13 +106,16 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
           {canEdit && (
             <>
               <ReorderUserList
-              users={authors}
-              onReorder={onReorder}
-              onRemoveAuthor={onRemoveCoAuthor} />
-              <ProjectMembersList members={members} onAddCoAuthor={onAddAuthor} />
+                users={authors}
+                onReorder={onReorder}
+                onRemoveAuthor={onRemoveCoAuthor}
+              />
+              <ProjectMembersList
+                members={members}
+                onAddCoAuthor={onAddAuthor}
+              />
             </>
           )}
-
         </Section>
       )}
     </SectionTableWrapper>

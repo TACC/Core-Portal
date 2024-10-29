@@ -30,7 +30,9 @@ const DataFilesProjectEditDescriptionModal = () => {
   });
 
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({ portalName })
+  const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
+    portalName,
+  });
 
   const initialValues = useMemo(
     () => ({
@@ -56,7 +58,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            metadata: DataFilesProjectEditDescriptionModalAddon ? values : null
+            metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
         },
       });
@@ -90,7 +92,7 @@ const DataFilesProjectEditDescriptionModal = () => {
               Edit Project
             </ModalHeader>
             <ModalBody className={styles['modal-body']}>
-            <FormField
+              <FormField
                 name="title"
                 aria-label="title"
                 label={
@@ -116,7 +118,11 @@ const DataFilesProjectEditDescriptionModal = () => {
                 type="textarea"
                 className={styles['description-textarea']}
               />
-              {DataFilesProjectEditDescriptionModalAddon && <DataFilesProjectEditDescriptionModalAddon setValidationSchema={setValidationSchema} />}
+              {DataFilesProjectEditDescriptionModalAddon && (
+                <DataFilesProjectEditDescriptionModalAddon
+                  setValidationSchema={setValidationSchema}
+                />
+              )}
             </ModalBody>
             <ModalFooter>
               <div className={styles['button-container']}>
@@ -139,7 +145,7 @@ const DataFilesProjectEditDescriptionModal = () => {
             </ModalFooter>
           </Form>
         )}
-        </Formik>
+      </Formik>
     </Modal>
   );
 };

@@ -15,9 +15,8 @@ function useRename() {
   };
 
   const rename = ({ selectedFile, newName, api, scheme, callback }) => {
-
     if (selectedFile.metadata) {
-      selectedFile.metadata = {...selectedFile.metadata, name: newName}
+      selectedFile.metadata = { ...selectedFile.metadata, name: newName };
     }
 
     dispatch({
