@@ -5,7 +5,7 @@
 """
 from mock import MagicMock
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.projects.exceptions import NotAuthorizedError
 import pytest
 import logging
@@ -47,8 +47,8 @@ def test_project_init(mock_tapis_client, mock_storage_system, project_model, moc
         )
     )
 
-    assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.get(project_id='PRJ-123', title='my title')
+    assert LegacyProjectMetadata.objects.all().count() == 1
+    assert LegacyProjectMetadata.objects.get(project_id='PRJ-123', title='my title')
 
 
 @pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
@@ -60,8 +60,8 @@ def test_project_create(mock_owner, mock_tapis_client, service_account, mock_sto
                                            name='PRJ-123',
                                            description='Test Title',
                                            site='test')
-    assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.get(project_id='PRJ-123', title='Test Title')
+    assert LegacyProjectMetadata.objects.all().count() == 1
+    assert LegacyProjectMetadata.objects.get(project_id='PRJ-123', title='Test Title')
 
     assert prj._ac == mock_tapis_client
     assert prj.storage.storage.port == 22
@@ -204,7 +204,7 @@ def test_add_pi_unauthorized(mock_owner, django_user_model, mock_tapis_client, m
 def test_create_metadata(mock_owner, mock_tapis_client, mock_storage_system, project_model, mock_signal):
     # Test creating metadata with no owner
     project_model._create_metadata("Project Title", "PRJ-123")
-    assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
+    assert LegacyProjectMetadata.objects.get(project_id="PRJ-123").owner is None
 
     project_model._create_metadata("Project Title 2", "PRJ-124", mock_owner)
-    assert ProjectMetadata.objects.get(project_id="PRJ-124").owner == mock_owner
+    assert LegacyProjectMetadata.objects.get(project_id="PRJ-124").owner == mock_owner

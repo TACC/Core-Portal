@@ -60,13 +60,69 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
+        'name': 'My Data (Work)',
+        'system': 'cloud.data',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/work/{tasdir}',
+        'icon': None,
+        'default': True
+    },
+    {
+        'name': 'My Data (Scratch)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/scratch1/{tasdir}',
+        'icon': None
+    },
+    {
+        'name': 'My Data (Frontera)',
+        'system': 'frontera',
+        'scheme': 'private',
+        'api': 'tapis',
+        'homeDir': '/home1/{tasdir}',
+        'icon': None,
+    },
+    {
+        'name': 'Community Data',
+        'system': 'cloud.data',
+        'scheme': 'community',
+        'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/community',
+        'icon': None,
+        'siteSearchPriority': 1
+    },
+    {
+        'name': 'Public Data',
+        'system': 'cloud.data',
+        'scheme': 'public',
+        'api': 'tapis',
+        'homeDir': '/corral/tacc/aci/CEP/public',
+        'icon': 'publications',
+        'siteSearchPriority': 0
+    },
+    {
         'name': 'Project',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': False,
-        'hideSearchBar': False
+        'hideSearchBar': False,
+        'defaultProject': True,
+        'system': 'cep.project.root',
+        'rootDir': '/corral-repl/tacc/aci/CEP/projects',
     },
+    {
+        'name': 'Review Projects',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.project.review.test',
+        'rootDir': '/corral-repl/utexas/pge-nsf/data_pprd/test',
+    }
 ]
 
 ########################
@@ -143,7 +199,11 @@ _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
-_PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+_PORTAL_PROJECTS_USE_SET_FACL_JOB = False
+
+_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = 'cep.project.review' 
+_PORTAL_PROJECTS_REVIEW_ROOT_DIR = '/corral-repl/utexas/pge-nsf/data_pprd/test'
+_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = 'drp.project.review.test'
 
 ########################
 # Custom Portal Template Assets

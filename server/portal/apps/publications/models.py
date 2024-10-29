@@ -7,6 +7,7 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from portal.apps.projects.models.project_metadata import ProjectMetadata
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -20,8 +21,8 @@ class PublicationRequest(models.Model):
         APPROVED = 'APPROVED'
         REJECTED = 'REJECTED'
 
-    review_project = models.ForeignKey('projects.ProjectsMetadata', related_name='publication_reviews', on_delete=models.SET_NULL, null=True)
-    source_project = models.ForeignKey('projects.ProjectsMetadata', related_name='source_publication_reviews', on_delete=models.CASCADE)
+    review_project = models.ForeignKey(ProjectMetadata, related_name='publication_reviews', on_delete=models.SET_NULL, null=True)
+    source_project = models.ForeignKey(ProjectMetadata, related_name='source_publication_reviews', on_delete=models.CASCADE)
     reviewers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='publication_reviewers')
     status = models.CharField(max_length=255, choices=Status.choices, default=Status.PENDING)
     comments = models.TextField(blank=True, null=True)
@@ -29,4 +30,4 @@ class PublicationRequest(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'Review for {self.project.project_id}'
+        return f'Review for {self.review_project.project_id}'

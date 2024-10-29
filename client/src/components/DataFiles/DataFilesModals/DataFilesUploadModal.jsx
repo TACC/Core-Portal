@@ -145,7 +145,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
             />
           </div>
         )}
-        {DataFilesUploadModalAddon && (
+        {DataFilesUploadModalAddon && params.scheme === 'projects' && (
           <DataFilesUploadModalAddon
             uploadedFiles={uploadedFiles}
             setUploadedFiles={setUploadedFiles}

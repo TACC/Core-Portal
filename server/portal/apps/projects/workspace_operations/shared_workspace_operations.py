@@ -1,11 +1,14 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
+from portal.apps.projects.models.project_metadata import ProjectMetadata
 from tapipy.tapis import Tapis
 from typing import Literal
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.apps.projects.models.metadata import ProjectsMetadata
+from django.db import models
+from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata
 
 import logging
 logger = logging.getLogger(__name__)
@@ -108,16 +111,17 @@ def submit_workspace_acls_job(
     return res
 
 
-def create_workspace_dir(workspace_id: str) -> str:
+def create_workspace_dir(workspace_id: str, system_id=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME) -> str:
     client = service_account()
-    system_id = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
     path = f"{workspace_id}"
     client.files.mkdir(systemId=system_id, path=path)
     return path
 
 
-def create_workspace_system(client, workspace_id: str, title: str, description="", owner=None) -> str:
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+def create_workspace_system(client, workspace_id: str, title: str, description="", owner=None, system_id=None, root_dir=None) -> str:
+    system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    root_dir = root_dir or f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}"
+
     system_args = {
         "id": system_id,
         "host": settings.PORTAL_PROJECTS_ROOT_HOST,
@@ -125,7 +129,7 @@ def create_workspace_system(client, workspace_id: str, title: str, description="
         "systemType": "LINUX",
         "defaultAuthnMethod": "PKI_KEYS",
         "canExec": False,
-        "rootDir": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+        "rootDir": root_dir,
         "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
         "authnCredential": {
             "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
@@ -196,14 +200,18 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, description="
 def add_user_to_workspace(client: Tapis,
                           workspace_id: str,
                           username: str,
-                          role="writer"):
+                          role="writer",
+                          system_id=None,
+                          system_name=None):
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
     service_client = service_account()
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
+
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       system_name,
                        workspace_id,
                        username,
                        "add",
@@ -221,7 +229,7 @@ def add_user_to_workspace(client: Tapis,
     client.systems.shareSystem(systemId=system_id, users=[username])
     set_workspace_permissions(client, username, system_id, role)
 
-    return get_project(client, workspace_id)
+    return get_project(client, workspace_id, system_id)
 
 
 def change_user_role(client, workspace_id: str, username: str, new_role):
@@ -311,13 +319,23 @@ def get_project_user(username):
     }
 
 
-def list_projects(client):
+def list_projects(client, root_system_id=None):
     """
     List all workspace systems accessible to the user's client.
     """
 
     fields = "id,host,description,notes,updated,owner,rootDir"
-    query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
+    query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
+
+    if root_system_id:
+        root_system = next(
+            (system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['system'] == root_system_id),
+            None
+        )
+        if root_system:
+            query += f"~(rootDir.like.{root_system['rootDir']}*)"
+
+
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
     listing = client.systems.getSystems(listType='ALL',
@@ -338,8 +356,8 @@ def list_projects(client):
     return list(serialized_listing)
 
 
-def get_project(client, workspace_id):
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+def get_project(client, workspace_id, system_id=None):
+    system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     shares = client.systems.getShareInfo(systemId=system_id)
     system = client.systems.getSystem(systemId=system_id)
 
@@ -392,28 +410,23 @@ def create_publication_review_shared_workspace(client, source_workspace_id: str,
     # add admin to the source workspace to allow for file copying
     resp = add_user_to_workspace(client, source_workspace_id, portal_admin_username)
 
-    source_project = ProjectsMetadata.objects.get(project_id=source_system_id)
+    source_project = ProjectMetadata.get_project_by_id(source_system_id)
 
-    # Create new Project entry for the review system
-    review_project = ProjectsMetadata(
-        project_id = review_system_id,
-        metadata = {
-            **source_project.metadata,
-            "is_review_project": True,
-        } 
-    )
+    review_project = create_project_metadata({**source_project.value, "projectId": review_system_id, "is_review_project": True})
 
     review_project.save()
     
-    create_workspace_dir(review_workspace_id)
+    create_workspace_dir(review_workspace_id, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME)
         
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
                        review_workspace_id,
                        portal_admin_username,
                        "add",
                        "writer")
     
-    system_id = create_workspace_system(service_client, review_workspace_id, title, description)
+    system_id = create_workspace_system(service_client, review_workspace_id, title, description, None, 
+                                        f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}",
+                                        f"{settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR}/{review_workspace_id}")
     
     return system_id

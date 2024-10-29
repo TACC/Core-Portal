@@ -2,10 +2,11 @@ import { put, takeLatest, call } from 'redux-saga/effects';
 import queryStringParser from 'query-string';
 import { fetchUtil } from 'utils/fetchUtil';
 
-export async function fetchProjectsListing(queryString) {
+export async function fetchProjectsListing(queryString, rootSystem) {
   const q = queryStringParser.stringify({ query_string: queryString });
+  const url = rootSystem ? `api/projects/${rootSystem}` : `/api/projects/`;
   const result = await fetchUtil({
-    url: queryString ? `/api/projects/?${q}` : `/api/projects/`,
+    url: queryString ? `${url}?${q}` : `${url}`,
   });
   return result.response;
 }
@@ -22,7 +23,8 @@ export function* getProjectsListing(action) {
   try {
     const projects = yield call(
       fetchProjectsListing,
-      action.payload.queryString
+      action.payload.queryString,
+      action.payload.rootSystem
     );
 
     yield put({
@@ -47,6 +49,7 @@ export function* showSharedWorkspaces(action) {
     type: 'PROJECTS_GET_LISTING',
     payload: {
       queryString: action.payload.queryString,
+      rootSystem: action.payload.rootSystem,
     },
   });
 }
@@ -215,6 +218,68 @@ export function* createPublicationRequest(action) {
   }
 }
 
+export async function fetchPublicationRequestsUtil(system) {
+  const result = await fetchUtil({
+    url: `/api/publications/publication-request/${system}`,
+  });
+  return result.response;
+}
+
+export function* getPublicationRequests(action) {
+
+  yield put({
+    type: 'PROJECTS_GET_PUBLICATION_REQUESTS_STARTED',
+  });
+  try {
+    const publicationRequests = yield call(fetchPublicationRequestsUtil, action.payload);
+    yield put({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS',
+      payload: publicationRequests,
+    });
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS_FAILED',
+      payload: error,
+    });
+  }
+}
+
+export async function createEntityUtil(entityType, projectId, path, data) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/entities/create`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: entityType,
+      value: data, 
+      path: path
+    }),
+  });
+
+  return result.response;
+}
+
+export async function patchEntityUtil(entityType, projectId, path, updatedPath, data, entityUuid) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/entities/create`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: entityType,
+      value: data,
+      uuid: entityUuid ?? null,
+      path: path,
+      updatedPath: updatedPath
+    }),
+  });
+
+  return result.response;
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
@@ -223,4 +288,5 @@ export function* watchProjects() {
   yield takeLatest('PROJECTS_SET_MEMBER', setMember);
   yield takeLatest('PROJECTS_SET_TITLE_DESCRIPTION', setTitleDescription);
   yield takeLatest('PROJECTS_CREATE_PUBLICATION_REQUEST', createPublicationRequest);
+  yield takeLatest('PROJECTS_GET_PUBLICATION_REQUESTS', getPublicationRequests);
 }

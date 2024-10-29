@@ -5,6 +5,7 @@
 """
 import json
 import logging
+from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
@@ -21,14 +22,23 @@ from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
 from portal.apps.projects.models.metadata import ProjectsMetadata
+from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
 from portal.apps import SCHEMA_MAPPING
+from django.db import models
+from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata,  \
+        create_project_metadata, get_ordered_value, move_entity, patch_entity_and_node, \
+        patch_file_obj_entity, patch_project_entity
+from portal.libs.agave.operations import mkdir
+from pathlib import Path
+from portal.apps._custom.drp import constants
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
 
 LOGGER = logging.getLogger(__name__)
 
 def validate_project_metadata(metadata):
     portal_name = settings.PORTAL_NAMESPACE
-    schema = SCHEMA_MAPPING[portal_name]['project']
+    schema = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema.model_validate(metadata)
     return validated_model.model_dump(exclude_none=True)
 
@@ -43,7 +53,7 @@ class ProjectsApiView(BaseApiView):
     of the projects.
     """
 
-    def get(self, request):
+    def get(self, request, root_system=None):
         """GET handler.
 
         If no 'query_string' is present this view will return a list of every
@@ -99,12 +109,12 @@ class ProjectsApiView(BaseApiView):
             # Filter search results to projects specific to user
             if hits:
                 client = request.user.tapis_oauth.client
-                listing = list_projects(client)
+                listing = list_projects(client, root_system)
                 filtered_list = filter(lambda prj: prj['id'] in hits, listing)
                 listing = list(filtered_list)
         else:
             client = request.user.tapis_oauth.client
-            listing = list_projects(client)
+            listing = list_projects(client, root_system)
 
         tapis_project_listing_indexer.delay(listing)
 
@@ -122,14 +132,10 @@ class ProjectsApiView(BaseApiView):
         workspace_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
         if metadata is not None: 
+            metadata["projectId"] = workspace_id
+            project_meta = create_project_metadata(metadata)
+            initialize_project_graph(project_meta.project_id)
 
-            project_metadata = ProjectsMetadata(
-                project_id = workspace_id,
-                metadata = validate_project_metadata(metadata)
-            )
-
-            project_metadata.save()
-        
         client = request.user.tapis_oauth.client
         system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number)
 
@@ -167,9 +173,9 @@ class ProjectInstanceApiView(BaseApiView):
         prj = get_project(request.user.tapis_oauth.client, project_id)
 
         try: 
-            project = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            project.metadata = project.get_metadata()
-            prj.update(project.metadata)
+            project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
+            prj.update(get_ordered_value(project.name, project.value))
+            prj["projectId"] = project_id
         except: 
             pass
 
@@ -215,13 +221,12 @@ class ProjectInstanceApiView(BaseApiView):
         """
         data = json.loads(request.body)
         metadata = data['metadata']
-
-        if metadata is not None: 
-            project_metadata = ProjectsMetadata.objects.get(project_id=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-            project_metadata.metadata = validate_project_metadata(metadata)
-            project_metadata.save()
-
+        project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         client = request.user.tapis_oauth.client
+
+        if metadata is not None:
+            patch_project_entity(project_id_full, metadata)
+
         workspace_def = update_project(client, project_id, data['title'], data['description'])
 
         if metadata is not None: 
@@ -233,7 +238,6 @@ class ProjectInstanceApiView(BaseApiView):
                 'response': workspace_def
             }
         )
-
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -362,3 +366,69 @@ def get_system_role(request, project_id, username):
     role = get_workspace_role(client, project_id, username)
 
     return JsonResponse({'username': username, 'role': role})
+
+class ProjectEntityView(BaseApiView):
+
+    def patch(self, request: HttpRequest, project_id: str):
+        
+        client = request.user.tapis_oauth.client
+
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+        
+        req_body = json.loads(request.body)
+        value = req_body.get("value", {})
+        entity_uuid = req_body.get("uuid", "")
+        path = req_body.get("path", "")
+        updated_path = req_body.get("updatedPath", "")
+
+        if value['data_type'] == 'file':
+            try: 
+                patch_file_obj_entity(client, project_id, value, path)
+            except Exception as exc:
+                raise ApiException("Error updating file metadata", status=500) from exc
+        else:
+            try:
+                new_name = move_entity(client, project_id, path, updated_path, value, entity_uuid)
+                patch_entity_and_node(project_id, value, path, updated_path, new_name, entity_uuid)
+            except Exception as exc:
+                raise ApiException("Error updating entity metadata", status=500) from exc
+
+        return JsonResponse({"result": "OK"})
+
+
+    def post(self, request: HttpRequest, project_id: str):
+        """Add a new entity to a project"""
+
+        client = request.user.tapis_oauth.client
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+    
+        try:
+            project: ProjectMetadata = ProjectMetadata.objects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        req_body = json.loads(request.body)
+        value = req_body.get("value", {})
+        name = req_body.get("name", "")
+        path = req_body.get("path", "")
+
+        new_meta = create_entity_metadata(project_id, getattr(constants, name.upper()), {
+            **value,
+        })
+
+        # FOR CREATING GRAPH
+        parent_node = get_node_from_path(project_id, path)
+        add_node_to_project(project_id, parent_node['id'], new_meta.uuid, new_meta.name, value['name'])
+
+        # FOR CREATING DATA FILE FOLDER
+        if (value and path):
+            mkdir(client, project_id, path, value['name'])
+
+        return JsonResponse({"result": "OK"})
+    

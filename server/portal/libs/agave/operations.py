@@ -10,10 +10,16 @@ from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
+from portal.apps._custom.drp.models import FileObj
 from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
+from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node, 
+                                                                               patch_file_association)
+from portal.apps._custom.drp import constants
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path, update_node_in_project
+
 
 logger = logging.getLogger(__name__)
 
@@ -84,33 +90,45 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          path=path,
                                          offset=int(offset),
                                          limit=int(limit))
-    
-    
-    folder_metadata = get_datafile_metadata(system=system, path=path)
+        
+    folder_entity_value = get_value(system, path)
 
     try:
         # Convert file objects to dicts for serialization.
-        listing = list(map(lambda f: {
-            'system': system,
-            'type': 'dir' if f.type == 'dir' else 'file',
-            'format': 'folder' if f.type == 'dir' else 'raw',
-            'mimeType': f.mimeType,
-            'path': f.path,
-            'name': f.name,
-            'length': f.size,
-            'lastModified': f.lastModified,
-            '_links': {
-                'self': {'href': f.url}
-            },
-            'metadata': get_datafile_metadata(system=system, path=f.path)
-        }, raw_listing))
+        listing = []
+
+        for f in raw_listing: 
+            if f.type == 'dir':
+                value = get_value(system,f.path)
+                entity = get_entity(system, f.path)
+                uuid = entity.to_dict().get('uuid') if entity else None
+            else: 
+                file_obj = get_file_obj(system, f.path)
+                value = get_ordered_value(constants.FILE, file_obj.get('value')) if file_obj else None
+                uuid = file_obj.get('uuid') if file_obj else None
+
+            listing.append({
+                'uuid': uuid,
+                'system': system,
+                'type': 'dir' if f.type == 'dir' else 'file',
+                'format': 'folder' if f.type == 'dir' else 'raw',
+                'mimeType': f.mimeType,
+                'path': f.path,
+                'name': f.name,
+                'length': f.size,
+                'lastModified': f.lastModified,
+                '_links': {
+                    'self': {'href': f.url}
+                },
+                'metadata': value if value else None
+            })
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
 
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
-    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_metadata}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_entity_value}
 
 
 def iterate_listing(client, system, path, limit=100):
@@ -246,7 +264,10 @@ def mkdir(client, system, path, dir_name, metadata=None):
     path_input = str(Path(path) / Path(dir_name))
 
     if metadata is not None: 
-        create_datafile_metadata(system, f'{system}/{path_input.strip("/")}', dir_name, metadata)
+        new_meta = create_entity_metadata(system, 'drp.project.trash', {
+            **metadata,
+        })
+        add_node_to_project(system, 'NODE_ROOT', new_meta.uuid, new_meta.name, dir_name)
 
     client.files.mkdir(systemId=system, path=path_input)
 
@@ -300,7 +321,10 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
     if metadata is not None:
-        update_datafile_metadata(system=dest_system, name=file_name, old_path=src_path.strip("/"), new_path=dest_path_full.strip("/"), metadata=metadata)
+        if (metadata.get('data_type') == 'file'):
+            patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'move')
+        else: 
+            patch_entity_and_node(src_system, metadata, src_path, dest_path, file_name)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,
@@ -369,8 +393,9 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
 
     dest_path_full = os.path.join(dest_path.strip('/'), file_name)
 
-    if metadata is not None: 
-        create_datafile_metadata(dest_system, f'{dest_system}/{dest_path_full.strip("/")}', file_name, metadata)
+    if metadata is not None:
+        if (metadata.get('data_type') == 'file'):
+            patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'copy')
 
     if src_system == dest_system:
         copy_result = client.files.moveCopy(systemId=src_system,
@@ -482,14 +507,15 @@ def trash(client, system, path, homeDir, metadata=None):
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME, metadata={} if metadata is not None else None)
+        add_node_to_project(system, 'NODE_ROOT', None, settings.TAPIS_DEFAULT_TRASH_NAME, settings.TAPIS_DEFAULT_TRASH_NAME)
+        mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     resp = move(client, system, path, system,
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)
 
     return resp
 
-
+@transaction.atomic
 def upload(client, system, path, uploaded_file, metadata=None):
     """Upload a file.
     Params
@@ -512,8 +538,18 @@ def upload(client, system, path, uploaded_file, metadata=None):
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
-    if metadata is not None: 
-        create_datafile_metadata(system, f'{system}/{dest_path.strip("/")}', uploaded_file.name, metadata)
+    if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
+        
+        parent_node = get_node_from_path(system, path)
+
+        file_obj = create_file_obj(system, uploaded_file.name, uploaded_file.size, dest_path, metadata)
+
+        if parent_node and parent_node['id'] != 'NODE_ROOT':
+            add_file_associations(parent_node['uuid'], [file_obj])
+        else: 
+            # Add file association to root node if no parent node/entity exists
+            root_node = get_root_node(system)
+            add_file_associations(root_node['uuid'], [file_obj])
 
     response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,

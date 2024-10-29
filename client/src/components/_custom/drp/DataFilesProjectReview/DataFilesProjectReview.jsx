@@ -11,7 +11,7 @@ import { ReviewProjectStructureStep } from '../DataFilesProjectPublish/DataFiles
 import { ReviewAuthorsStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import { SubmitPublicationReviewStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/SubmitPublicationReview';
 
-const DataFilesProjectReview = ({ system }) => {
+const DataFilesProjectReview = ({ rootSystem, system }) => {
     const dispatch = useDispatch();
     const portalName = useSelector((state) => state.workbench.portalName);
     const { projectId } = useSelector((state) => state.projects.metadata);
@@ -27,18 +27,20 @@ const DataFilesProjectReview = ({ system }) => {
     const { metadata } = useSelector((state) => state.projects);
 
     const fetchTree = useCallback(async () => {
+    if (projectId) {
         try {
-          const response = await fetchUtil({
-            url: `api/${portalName.toLowerCase()}/tree`,
-            params: {
-              project_id: projectId,
-            },
-          });
-          setTree(response);
+            const response = await fetchUtil({
+                url: `api/${portalName.toLowerCase()}/tree`,
+                params: {
+                    project_id: projectId,
+                },
+            });
+            setTree(response);
         } catch (error) {
-          console.error('Error fetching tree data:', error);
-          setTree([]);
+            console.error('Error fetching tree data:', error);
+            setTree([]);
         }
+    }
     }, [portalName, projectId]);
 
     useEffect(() => {
@@ -73,7 +75,7 @@ const DataFilesProjectReview = ({ system }) => {
                     <>
                         <Link
                         className="wb-link"
-                        to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}`}
+                        to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                         >
                         Back to Project
                         </Link>

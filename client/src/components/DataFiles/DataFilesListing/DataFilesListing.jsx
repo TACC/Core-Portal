@@ -38,7 +38,7 @@ const fileTypes = [
   '3D Visualization',
 ];
 
-const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
+const DataFilesListing = ({ api, scheme, system, path, isPublic, rootSystem }) => {
   // Redux hooks
   const location = useLocation();
   const systems = useSelector(
@@ -85,6 +85,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     ({ row }) => {
       return (
         <FileNavCell
+          rootSystem={rootSystem}
           system={row.original.system}
           path={row.original.path}
           name={row.original.name}

@@ -52,9 +52,9 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
           field.options.push(
             ...samples.map((sample) => {
               return {
-                ...sample.metadata,
-                value: parseInt(sample.id),
-                label: sample.name,
+                ...sample.value,
+                value: sample.uuid,
+                label: sample.value.name,
               };
             })
           );
@@ -85,8 +85,8 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
           field.options.push(
             ...samples.map((sample) => {
               return {
-                value: parseInt(sample.id),
-                label: sample.name,
+                value: sample.uuid,
+                label: sample.value.name,
               };
             })
           );
@@ -94,9 +94,9 @@ const useDrpDatasetModals = (projectId, portalName, useReloadCallback = true) =>
           field.options.push(
             ...originDatasets.map((originData) => {
               return {
-                value: parseInt(originData.id),
-                label: originData.name,
-                dependentId: parseInt(originData.metadata.sample),
+                value: originData.uuid,
+                label: originData.value.name,
+                dependentId: originData.value.sample,
               };
             })
           );

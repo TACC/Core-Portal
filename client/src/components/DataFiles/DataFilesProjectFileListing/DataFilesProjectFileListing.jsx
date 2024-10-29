@@ -12,7 +12,7 @@ import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
-const DataFilesProjectFileListing = ({ system, path }) => {
+const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
 
@@ -28,6 +28,12 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       type: 'PROJECTS_GET_METADATA',
       payload: system,
     });
+
+    dispatch({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS',
+      payload: system,
+    })
+
   }, [system]);
 
   useEffect(() => {
@@ -125,7 +131,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             {readOnlyTeam ? 'View' : 'Manage'} Team
           </Button>
           {DataFilesProjectFileListingAddon && (
-            <DataFilesProjectFileListingAddon system={system} />
+            <DataFilesProjectFileListingAddon rootSystem={rootSystem} system={system} />
           )}
         </div>
       }
@@ -157,6 +163,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         scheme="projects"
         system={system}
         path={path || '/'}
+        rootSystem={rootSystem}
       />
     </SectionTableWrapper>
   );

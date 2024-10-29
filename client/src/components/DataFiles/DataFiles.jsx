@@ -30,13 +30,16 @@ const DefaultSystemRedirect = () => {
   useEffect(() => {
     if (systems.length === 0) return;
     const defaultSystem = systems[0];
-    history.push(
-      `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}/${
-        defaultSystem.scheme === 'projects'
-          ? ''
-          : `${defaultSystem.system}${defaultSystem.homeDir || ''}/`
-      }`
-    );
+    
+    let path = `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}`;
+
+    if (defaultSystem.scheme === 'projects') {
+      path += defaultSystem.system ? `/${defaultSystem.system}` : '/';
+    } else {
+      path += `/${defaultSystem.system}${defaultSystem.homeDir || ''}/`;
+    }
+
+    history.push(path);
   }, [systems]);
   return <></>;
 };
@@ -52,11 +55,11 @@ const DataFilesSwitch = React.memo(() => {
     <Switch>
       {DataFilesProjectPublish &&
         <Route
-        path={`${path}/tapis/projects/:system/publish`}
+        path={`${path}/tapis/projects/:root_system/:system/publish`}
         render={({ match: { params } }) => {
             return (
               <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectPublish system={params.system} />
+                <DataFilesProjectPublish system={params.system} rootSystem={params.root_system} />
               </SectionTableWrapper>
             )
           }}
@@ -65,21 +68,33 @@ const DataFilesSwitch = React.memo(() => {
       {
         DataFilesProjectReview &&
         <Route
-        path={`${path}/tapis/projects/:system/review`}
+        path={`${path}/tapis/projects/:root_system/:system/review`}
         render={({ match: { params } }) => {
             return (
               <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectReview system={params.system} />
+                <DataFilesProjectReview system={params.system} rootSystem={params.root_system} />
               </SectionTableWrapper>
             )
           }}
         />
       } 
+      <Route 
+        exact
+        path={`${path}/tapis/projects/:system`}
+        render={({ match: { params } }) => {
+          return (
+            <DataFilesProjectsList 
+              rootSystem={params.system}
+            />
+          );
+        }}
+      />
       <Route
-        path={`${path}/tapis/projects/:system/:path*`}
+        path={`${path}/tapis/projects/:root_system/:system/:path*`}
         render={({ match: { params } }) => {
           return (
             <DataFilesProjectFileListing
+              rootSystem={params.root_system}
               system={params.system}
               path={params.path || '/'}
             />
@@ -100,10 +115,7 @@ const DataFilesSwitch = React.memo(() => {
             </SectionTableWrapper>
           );
         }}
-      />
-      <Route path={`${path}/tapis/projects`}>
-        <DataFilesProjectsList />
-      </Route>
+      />      
       <Route path={`${path}`}>
         <DefaultSystemRedirect />
       </Route>

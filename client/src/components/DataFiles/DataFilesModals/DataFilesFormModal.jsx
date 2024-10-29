@@ -16,8 +16,8 @@ const DataFilesFormModal = () => {
   const location = useLocation();
 
   const reloadPage = (updatedPath = '') => {
-    // using regex to get the url up until the project name
-    let projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/).*/, '$1');
+    // Updated regex to capture the URL up until the last project segment
+    let projectUrl = location.pathname.replace(/(\/projects\/[^/]+\/[^/]+)\/?.*/, '$1');
     
     if (projectUrl.endsWith('/')) {
       projectUrl = projectUrl.slice(0, -1);

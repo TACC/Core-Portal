@@ -76,7 +76,7 @@ class AbstractProjectMetadata(models.Model):
         )
 
 
-class ProjectMetadata(AbstractProjectMetadata):
+class LegacyProjectMetadata(AbstractProjectMetadata):
     """Project Metadata"""
 
     def to_dict(self):

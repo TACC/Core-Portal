@@ -41,7 +41,7 @@ class DataFilesMetadata(models.Model):
         """Return the metadata in the order defined in the pydantic model"""
         
         portal_name = settings.PORTAL_NAMESPACE
-        schema = SCHEMA_MAPPING[portal_name][self.metadata.get('data_type')] 
+        schema = SCHEMA_MAPPING[self.metadata.get('data_type')] 
 
         if not schema:
             return self.metadata

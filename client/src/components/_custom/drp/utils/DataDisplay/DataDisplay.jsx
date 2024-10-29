@@ -8,7 +8,7 @@ import { useFileListing } from 'hooks/datafiles';
 const processSampleAndOriginData = (data, path) => {
   // use the path to get sample and origin data names
   const sample = data.sample ? path.split('/')[0] : null;
-  const origin_data = data.base_origin_data ? path.split('/')[1] : null;
+  const origin_data = data.digital_dataset ? path.split('/')[1] : null;
 
   // remove trailing / from pathname
   const locationPathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname;
@@ -19,7 +19,7 @@ const processSampleAndOriginData = (data, path) => {
 
   // construct urls for sample and origin data and add to processed data
   if (sample) {
-    const sampleUrl = locationPathnameParts.slice(0, data.base_origin_data ? -2 : -1).join('/')
+    const sampleUrl = locationPathnameParts.slice(0, data.digital_dataset ? -2 : -1).join('/')
     sampleAndOriginMetadata.push({ label: 'Sample', value: <Link className={`${styles['dataset-link']}`} to={sampleUrl}>{sample}</Link> });   
   }
 

@@ -37,6 +37,7 @@ export default function projects(state = initialState, action) {
         ...state,
         listing: {
           ...state.listing,
+          projects: [],
           error: null,
           loading: true,
         },
@@ -119,6 +120,7 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
+          ...state.metadata,
           ...action.payload,
           loading: false,
           error: null,
@@ -244,6 +246,40 @@ export default function projects(state = initialState, action) {
         ...state,
         operation: {
           name: 'publicationRequest',
+          loading: false,
+          error: action.payload,
+          result: null,
+        },
+      };
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'getPublicationRequests',
+          loading: true,
+          error: null,
+          result: null,
+        },
+      };
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS':
+      return {
+        ...state, 
+        metadata: {
+          ...state.metadata,
+          publication_requests: action.payload,
+        },
+        operation: {
+          name: 'getPublicationRequests',
+          loading: false,
+          error: null,
+          result: action.payload,
+        },
+      }
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'getPublicationRequests',
           loading: false,
           error: action.payload,
           result: null,

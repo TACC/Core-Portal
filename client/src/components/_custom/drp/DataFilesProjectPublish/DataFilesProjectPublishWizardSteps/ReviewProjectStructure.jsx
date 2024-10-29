@@ -28,6 +28,12 @@ const ReviewProjectStructure = ({ projectTree }) => {
 
   const { params } = useFileListing('FilesListing');
 
+  useEffect(() => {
+    if (projectTree && projectTree.length > 0) {
+      setExpandedNodes([projectTree[0].id]);
+    }
+  }, []);
+
   const handleNodeToggle = (event, nodeIds) => {
     // Update the list of expanded nodes
     setExpandedNodes(nodeIds);
@@ -59,24 +65,19 @@ const ReviewProjectStructure = ({ projectTree }) => {
     const dataType = node.metadata.data_type;
     // reconstruct editFile to mimic SelectedFile object
     const editFile = {
-      format: 'folder',
-      id: node.path,
+      id: node.id,
+      uuid: node.uuid,
       metadata: node.metadata,
       name: node.metadata.name,
       system: params.system,
-      path: node.path.split('/').slice(1).join('/'),
       type: 'dir',
-      _links: {
-        self: {
-          href: 'tapis://' + node.path,
-        },
-      },
+      path: node.path,
     };
     switch (dataType) {
       case 'sample':
         createSampleModal('EDIT_SAMPLE_DATA', editFile);
         break;
-      case 'origin_data':
+      case 'digital_dataset':
         createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
         break;
       case 'analysis_data':
@@ -92,10 +93,10 @@ const ReviewProjectStructure = ({ projectTree }) => {
               api: params.api,
               scheme: params.scheme,
               system: params.system,
-              path: node.path.split('/').slice(1).join('/'),
+              path: node.path,
               name: node.name,
-              href: 'tapis://' + node.path,
-              length: node.metadata.length,
+              href: `tapis://${params.system}/${node.path}`,
+              length: node.length,
               metadata: node.metadata,
               useReloadCallback: false,
             },
@@ -124,10 +125,12 @@ const ReviewProjectStructure = ({ projectTree }) => {
             nodeId={node.id}
             label={
               <div className={styles['node-name-div']}>
-                  {node.name}
-                  <span className={styles['data-type-box']}>
-                    {formatDatatype(node.metadata.data_type)}
+                  {node.label ?? node.name}
+                  {node.metadata.data_type && (
+                    <span className={styles['data-type-box']}>
+                      {formatDatatype(node.metadata.data_type)}
                     </span>
+                  )}
               </div>
             }
             classes={{
@@ -135,7 +138,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
             }}
             onLabelClick={() => handleNodeToggle}
           >
-            {expandedNodes.includes(node.id) && (
+            {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
               <div className={styles['metadata-description-div']}>
                 {(canEdit || node.metadata.data_type === 'file') && (
                   <Button
@@ -154,12 +157,15 @@ const ReviewProjectStructure = ({ projectTree }) => {
                       'description',
                       'data_type',
                       'sample',
-                      'base_origin_data',
+                      'digital_dataset',
+                      'file_objs',
                     ]}
                   />
                 </div>
               </div>
             )}
+            {Array.isArray(node.fileObjs) && 
+              node.fileObjs.map((fileObj) => renderTree(fileObj))}
             {Array.isArray(node.children) &&
               node.children.map((child) => renderTree(child))}
           </TreeItem>
@@ -167,18 +173,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
       </Section>
     </>
   );
-
-  const getAllNodeIds = (nodes) => {
-    const ids = [];
-    nodes.forEach((node) => {
-      ids.push(node.id);
-      if (Array.isArray(node.children)) {
-        ids.push(...getAllNodeIds(node.children));
-      }
-    });
-    return ids;
-  };
-
+  
   return (
     <SectionTableWrapper
       header={
@@ -227,7 +222,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
           <TreeView
             defaultCollapseIcon={<Icon name={'contract'} />}
             defaultExpandIcon={<Icon name={'expand'} />}
-            // expanded={getAllNodeIds(tree)}
+            expanded={expandedNodes}
             onNodeToggle={handleNodeToggle}
           >
             {projectTree.map((node) => renderTree(node))}
