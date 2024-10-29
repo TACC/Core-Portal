@@ -37,7 +37,7 @@ def mock_service_account(mocker):
 
 @pytest.fixture()
 def mock_owner(django_user_model):
-    return "owner"
+    return "username"
 
 
 # Mock creation of a project
@@ -49,14 +49,14 @@ def mock_owner(django_user_model):
 def mock_tapis_client():
     with patch("tapipy.tapis.Tapis") as mock_client:
         mock_client.mock_listing = []  # Potentially used for storage of systems
-        # mock_client.systems.createSystem = MagicMock()
+        mock_client.systems = MagicMock()
         mock_client.systems.getShareInfo = MagicMock()
         mock_client.systems.getSystem = MagicMock()
-        # mock_client.systems.grantUserPerms = MagicMock()
         mock_client.systems.grantUserPerms = MagicMock()
         mock_client.files.getPermissions = MagicMock()
         mock_client.systems.getSystems = MagicMock()
         mock_client.get_project = MagicMock()
+        mock_client.systems.patchSystem = MagicMock()
         yield mock_client
 
 
@@ -115,7 +115,7 @@ def test_project_init(mock_tapis_client, mock_owner):
 
 
 # Test for creating a shared workspace and if it creates a new project
-def test_project_create(mock_tapis_client, mock_owner):
+def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
     ) as mock_service_account, patch(
@@ -131,19 +131,61 @@ def test_project_create(mock_tapis_client, mock_owner):
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
     ):
-
+        # Initial Creation
         client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
-        project = mock_create_shared_workspace(client, title, mock_owner)
-        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
-        mock_service_account.assert_called()
-        mock_increment_workspace_count.assert_called()
-        mock_create_workspace_dir.assert_called_with("test.project-2")
-        print(f"Project {project}")
-
-        # TODO: Assert more project creation data as a result of storing in mock_listing
-
+        project = ws_o.create_shared_workspace(client, title, mock_owner)
+        print("The project", project)
         assert project == "test.project.test.project-2"
+
+        # Start assertions
+        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
+
+        # Tapis instance with an admin account
+        mock_service_account.return_value = client
+        mock_service_account.assert_called()
+
+        # Increment the workspace
+        mock_increment_workspace_count.assert_called()
+        mock_service_account.assert_called()
+        client.systems.getSystem.assert_called_once_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        )
+        client.systems.patchSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+            notes={"count": 2},
+        )
+
+        # Create Workspace Dir
+        mock_create_workspace_dir.assert_called()
+        mock_service_account.assert_called()
+        mock_service_account().files.mkdir.assert_called_with(
+            systemId="projects.system.name", path="test.project-2"
+        )
+
+        # Set Workspace ACLS
+        # Authenticated_user is whoever the mock_owner or creator of the project is
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+        )
+        workspace_id = "test.project-2"
+        mock_create_workspace_dir.assert_called_with(workspace_id)
+        client.systems.createSystem.assert_called()
+        assert client.systems.createSystem.call_args_list[0].contains(
+            "test.project.test.project-2"
+        )
+        created_project = client.systems.createSystem.call_args[1]
+        assert created_project["id"] == "test.project.test.project-2"
+        assert created_project["notes"]["title"] == title
+        assert created_project["notes"]["description"] == ""
+        assert created_project["effectiveUserId"] == 'wma_prtl'
+        assert created_project["port"] == 22
+        assert created_project["authnCredential"]["privateKey"] == settings.PORTAL_PROJECTS_PRIVATE_KEY
 
 
 # Testing if there are two projects Tapis
