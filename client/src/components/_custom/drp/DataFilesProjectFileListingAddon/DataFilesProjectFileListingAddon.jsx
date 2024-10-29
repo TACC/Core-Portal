@@ -7,7 +7,7 @@ import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
 
-const DataFilesProjectFileListingAddon = ({ system }) => {
+const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { metadata } = useSelector((state) => state.projects);
@@ -120,7 +120,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
       {canRequestPublication && (
         <>
           <span className={styles.separator}>|</span>
-          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/publish`}>
+          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}/publish`}>
               Request Publication
           </Link>
         </>
@@ -128,7 +128,7 @@ const DataFilesProjectFileListingAddon = ({ system }) => {
       {canReviewPublication && (
         <>
           <span className={styles.separator}>|</span>
-          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}/review`}>
+          <Link className={`wb-link ${styles['link']}`} to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}/review`}>
               Review Publication Request
           </Link>
         </>

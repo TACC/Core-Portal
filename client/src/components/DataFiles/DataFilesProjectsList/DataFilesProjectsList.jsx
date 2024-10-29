@@ -12,7 +12,7 @@ import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 import Searchbar from '_common/Searchbar';
 
-const DataFilesProjectsList = ({ modal }) => {
+const DataFilesProjectsList = ({ modal, rootSystem }) => {
   const { error, loading, projects } = useSelector(
     (state) => state.projects.listing
   );
@@ -24,7 +24,15 @@ const DataFilesProjectsList = ({ modal }) => {
     shallowEqual
   );
 
-  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
+  let selectedSystem;
+
+  if (rootSystem) {
+    selectedSystem = systems.find((s) => s.system === rootSystem);
+  } else {
+    selectedSystem = systems.find((s) => s.scheme === 'projects');
+  }
+
+  const sharedWorkspacesDisplayName = selectedSystem?.name || 'Shared Workspaces';
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
@@ -37,10 +45,11 @@ const DataFilesProjectsList = ({ modal }) => {
       type: actionType,
       payload: {
         queryString: modal ? null : query.query_string,
+        rootSystem: selectedSystem.system,
         modal,
       },
     });
-  }, [dispatch, query.query_string]);
+  }, [dispatch, query.query_string, rootSystem]);
 
   const listingCallback = (e, el) => {
     if (!modal) return;
@@ -72,7 +81,7 @@ const DataFilesProjectsList = ({ modal }) => {
       Cell: (el) => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/tapis/projects/${el.row.original.id}`}
+          to={`/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`}
           onClick={(e) => listingCallback(e, el)}
         >
           {el.value}

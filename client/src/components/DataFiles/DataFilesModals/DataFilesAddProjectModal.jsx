@@ -51,7 +51,11 @@ const DataFilesAddProjectModal = () => {
     shallowEqual
   );
 
-  const sharedWorkspacesDisplayName = systems.find((e) => e.scheme === 'projects')?.name;
+  const system = systems.find((s) => s.scheme === 'projects' && s.defaultProject == true);
+
+  const sharedWorkspacesDisplayName = system?.name;
+  const rootSystem = system?.system;
+
 
   const toggle = () => {
     dispatch({
@@ -62,7 +66,7 @@ const DataFilesAddProjectModal = () => {
 
   const onCreate = (system) => {
     toggle();
-    history.push(`${match.path}/tapis/projects/${system}`);
+    history.push(`${match.path}/tapis/projects/${rootSystem}/${system}`);
   };
 
   const addproject = (values) => {

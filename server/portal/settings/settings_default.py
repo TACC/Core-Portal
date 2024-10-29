@@ -108,8 +108,21 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': False,
-        'hideSearchBar': False
+        'hideSearchBar': False,
+        'defaultProject': True,
+        'system': 'cep.project.root',
+        'rootDir': '/corral-repl/tacc/aci/CEP/projects',
     },
+    {
+        'name': 'Review Projects',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.project.review.test',
+        'rootDir': '/corral-repl/utexas/pge-nsf/data_pprd/test',
+    }
 ]
 
 ########################

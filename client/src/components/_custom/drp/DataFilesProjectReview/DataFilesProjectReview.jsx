@@ -11,7 +11,7 @@ import { ReviewProjectStructureStep } from '../DataFilesProjectPublish/DataFiles
 import { ReviewAuthorsStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import { SubmitPublicationReviewStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/SubmitPublicationReview';
 
-const DataFilesProjectReview = ({ system }) => {
+const DataFilesProjectReview = ({ rootSystem, system }) => {
     const dispatch = useDispatch();
     const portalName = useSelector((state) => state.workbench.portalName);
     const { projectId } = useSelector((state) => state.projects.metadata);
@@ -75,7 +75,7 @@ const DataFilesProjectReview = ({ system }) => {
                     <>
                         <Link
                         className="wb-link"
-                        to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}`}
+                        to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                         >
                         Back to Project
                         </Link>

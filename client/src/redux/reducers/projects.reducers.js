@@ -37,6 +37,7 @@ export default function projects(state = initialState, action) {
         ...state,
         listing: {
           ...state.listing,
+          projects: [],
           error: null,
           loading: true,
         },

@@ -53,7 +53,7 @@ class ProjectsApiView(BaseApiView):
     of the projects.
     """
 
-    def get(self, request):
+    def get(self, request, root_system=None):
         """GET handler.
 
         If no 'query_string' is present this view will return a list of every
@@ -109,12 +109,12 @@ class ProjectsApiView(BaseApiView):
             # Filter search results to projects specific to user
             if hits:
                 client = request.user.tapis_oauth.client
-                listing = list_projects(client)
+                listing = list_projects(client, root_system)
                 filtered_list = filter(lambda prj: prj['id'] in hits, listing)
                 listing = list(filtered_list)
         else:
             client = request.user.tapis_oauth.client
-            listing = list_projects(client)
+            listing = list_projects(client, root_system)
 
         tapis_project_listing_indexer.delay(listing)
 

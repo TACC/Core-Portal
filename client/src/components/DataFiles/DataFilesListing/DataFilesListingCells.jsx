@@ -50,7 +50,7 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic, length, metadata }) => {
+  ({ system, path, name, format, api, scheme, href, isPublic, length, metadata, rootSystem }) => {
     const dispatch = useDispatch();
     const previewCallback = (e) => {
       e.stopPropagation();
@@ -75,7 +75,7 @@ export const FileNavCell = React.memo(
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
+            to={`${basePath}/${api}/${scheme}${rootSystem ? '/' + rootSystem : ''}/${system}/${path}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}

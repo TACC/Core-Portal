@@ -2,10 +2,11 @@ import { put, takeLatest, call } from 'redux-saga/effects';
 import queryStringParser from 'query-string';
 import { fetchUtil } from 'utils/fetchUtil';
 
-export async function fetchProjectsListing(queryString) {
+export async function fetchProjectsListing(queryString, rootSystem) {
   const q = queryStringParser.stringify({ query_string: queryString });
+  const url = rootSystem ? `api/projects/${rootSystem}` : `/api/projects/`;
   const result = await fetchUtil({
-    url: queryString ? `/api/projects/?${q}` : `/api/projects/`,
+    url: queryString ? `${url}?${q}` : `${url}`,
   });
   return result.response;
 }
@@ -22,7 +23,8 @@ export function* getProjectsListing(action) {
   try {
     const projects = yield call(
       fetchProjectsListing,
-      action.payload.queryString
+      action.payload.queryString,
+      action.payload.rootSystem
     );
 
     yield put({
@@ -47,6 +49,7 @@ export function* showSharedWorkspaces(action) {
     type: 'PROJECTS_GET_LISTING',
     payload: {
       queryString: action.payload.queryString,
+      rootSystem: action.payload.rootSystem,
     },
   });
 }

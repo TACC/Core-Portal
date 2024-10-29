@@ -12,7 +12,7 @@ import { ReviewProjectStructureStep } from './DataFilesProjectPublishWizardSteps
 import { ReviewAuthorsStep } from './DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import { SubmitPublicationRequestStep } from './DataFilesProjectPublishWizardSteps/SubmitPublicationRequest';
 
-const DataFilesProjectPublish = ({ system }) => {
+const DataFilesProjectPublish = ({ rootSystem, system }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -109,7 +109,7 @@ const DataFilesProjectPublish = ({ system }) => {
               <>
                 <Link
                   className="wb-link"
-                  to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${system}`}
+                  to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                 >
                   Back to Project
                 </Link>

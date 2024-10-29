@@ -319,13 +319,23 @@ def get_project_user(username):
     }
 
 
-def list_projects(client):
+def list_projects(client, root_system_id=None):
     """
     List all workspace systems accessible to the user's client.
     """
 
     fields = "id,host,description,notes,updated,owner,rootDir"
-    query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
+    query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
+
+    if root_system_id:
+        root_system = next(
+            (system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['system'] == root_system_id),
+            None
+        )
+        if root_system:
+            query += f"~(rootDir.like.{root_system['rootDir']}*)"
+
+
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
     listing = client.systems.getSystems(listType='ALL',
