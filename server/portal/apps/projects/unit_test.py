@@ -9,11 +9,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest  # pyright: ignore
 from django.conf import settings  # pyright: ignore
+# from portal.apps.projects.models.base import Project
+from tapipy.tapis import TapisResult
 
 from portal.apps.projects.exceptions import NotAuthorizedError
-# from portal.apps.projects.models.base import Project
-# TODO: Uncomment to use this for getting specific Tapis results
-# from tapipy.tapis import TapisResult
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.workspace_operations import \
     shared_workspace_operations as ws_o
@@ -175,17 +174,28 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         )
         workspace_id = "test.project-2"
         mock_create_workspace_dir.assert_called_with(workspace_id)
-        client.systems.createSystem.assert_called()
-        assert client.systems.createSystem.call_args_list[0].contains(
-            "test.project.test.project-2"
+
+        # Expected TapisResult return
+        expected_result = TapisResult(
+            id="test.project.test.project-2",
+            notes={"title": title, "description": ""},
+            effectiveUserId="wma_prtl",
+            port=22,
+            authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
         )
+        # Validate createSystem call arguments
         created_project = client.systems.createSystem.call_args[1]
-        assert created_project["id"] == "test.project.test.project-2"
-        assert created_project["notes"]["title"] == title
-        assert created_project["notes"]["description"] == ""
-        assert created_project["effectiveUserId"] == 'wma_prtl'
-        assert created_project["port"] == 22
-        assert created_project["authnCredential"]["privateKey"] == settings.PORTAL_PROJECTS_PRIVATE_KEY
+        assert created_project["id"] == expected_result.id
+        assert created_project["notes"]["title"] == expected_result.notes.title
+        assert (
+            created_project["notes"]["description"] == expected_result.notes.description
+        )
+        assert created_project["effectiveUserId"] == expected_result.effectiveUserId
+        assert created_project["port"] == expected_result.port
+        assert (
+            created_project["authnCredential"]["privateKey"]
+            == expected_result.authnCredential.privateKey
+        )
 
 
 # Testing if there are two projects Tapis
