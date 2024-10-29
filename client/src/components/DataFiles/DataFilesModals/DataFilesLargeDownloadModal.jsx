@@ -7,32 +7,27 @@ import {
   ModalFooter
 } from 'reactstrap';
 import { Button } from '_common';
-// import { useHistory, useLocation } from 'react-router-dom';
 import { useModal } from 'hooks/datafiles';
 import styles from './DataFilesLargeDownloadModal.module.scss'
 
 const DataFilesLargeDownloadModal = () => {
-  // const history = useHistory();
-  // const location = useLocation();
+  // Assigns React-Redux dispatch calls
   const dispatch = useDispatch();
-
+  // Creates the modal
   const { getStatus: getModalStatus } = useModal();
-
+  // Determine if modal is open or closed
   const isOpen = getModalStatus('largeDownload');
 
+  // Toggles the modal on or off
   const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_LARGE_DOWNLOAD',
-      payload: { operation: 'largeDownload', props: {} },
+    dispatch({ 
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { 
+        operation: 'largeDownload',
+        props: {}
+      } 
     });
-  };
-  
-  // This dispatch is not getting called. Why?
-  const onClosed = () => {
-    dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    // setStatus({});
-    // history.push(location.pathname);
-    console.log('Closed the Modal');
+    setStatus({});
   };
 
   // Opens a new tab in current browser to Globus
@@ -52,7 +47,7 @@ const DataFilesLargeDownloadModal = () => {
       </ModalHeader>
       <ModalBody>
         <p 
-          // className='container is-warn is-scope-section'
+          // className='container is-scope-section is-warn'
           className={styles['firstParagraph']} 
           role='status' 
           aria-label='message'
@@ -66,7 +61,6 @@ const DataFilesLargeDownloadModal = () => {
       <ModalFooter>
         <Button 
           type="primary"
-          // size={'long'}
           attr="submit"
           onClick={openTabToGlobus}
           className={styles['linkButton']}

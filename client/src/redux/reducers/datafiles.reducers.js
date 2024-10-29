@@ -112,6 +112,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
+    largeDownload: {}
   },
   loadingScroll: {
     FilesListing: false,
@@ -161,6 +162,7 @@ export const initialFilesState = {
     editproject: false,
     makePublic: false,
     downloadMessage: false,
+    largeDownload: false
   },
   modalProps: {
     preview: {},
