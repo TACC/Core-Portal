@@ -56,9 +56,24 @@ def mock_tapis_client():
         mock_client.systems.getSystems = MagicMock()
         mock_client.get_project = MagicMock()
         mock_client.systems.patchSystem = MagicMock()
+
+        # Tracking System Count
+        mock_client.notes = {"count": 1}
+
+        def patch_system(systemId, notes):
+            mock_client.notes["count"] = notes["count"]
+
+        mock_client.systems.patchSystem.side_effect = patch_system
+
+        def get_system(systemId):
+            return TapisResult(notes={"count": mock_client.notes["count"]})
+
+        mock_client.systems.getSystem.side_effect = get_system
+
         yield mock_client
 
 
+# Test initial project creation, not shared workspace creation
 def test_project_init(mock_tapis_client, mock_owner):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
@@ -84,7 +99,6 @@ def test_project_init(mock_tapis_client, mock_owner):
         )
         assert system_id == f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
         # System args that are in create_workspace_system
-        # TODO: get_system will return a TapisResult. No storage. Only "mock returns from storage" Check views_unit_test.py:116
         system_args = {
             "id": system_id,
             "host": settings.PORTAL_PROJECTS_ROOT_HOST,
@@ -199,86 +213,153 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
 
 
 # Testing if there are two projects Tapis
-@pytest.mark.skip(reason="Updating to Tapis Result")
-def test_listing(mock_tapis_client, mock_owner, increment_counter):
-    counter, side_effect = increment_counter
+def test_listing(mock_tapis_client, mock_owner, authenticated_user):
     with patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ), patch(
+    ) as mock_service_account, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
         wraps=ws_o.create_shared_workspace,
-    ), patch(
+    ) as mock_create_shared_workspace, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        side_effect=side_effect,
-    ), patch(
+        wraps=ws_o.increment_workspace_count,
+    ) as mock_increment_workspace_count, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
         wraps=ws_o.create_workspace_dir,
-    ), patch(
+    ) as mock_create_workspace_dir, patch(
         "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
         wraps=ws_o.set_workspace_acls,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
     ):
-
-        # Intial assertions
-        # Mock Tapis Initial
         client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title1 = "Test Workspace 1"
+        title2 = "Test Workspace 2"
 
-        # First Project
-        title = "PRJ-123"
-        description = ""
-        created = "2024-10-18T00:00:00Z"
+        # Mock return of getSystems based on views_unit_test.py
+        mock_tapis_client.systems.getSystems.return_value = [
+            TapisResult(
+                id="test.project.test.project-2",
+                host="cloud.data.tacc.utexas.edu",
+                description="Test Workspace 1 description",
+                notes={
+                    "title": title1,
+                    "description": "Description of Test Workspace 1",
+                },
+                updated="2023-03-07T19:31:17.292220Z",
+                owner="owner_username",
+                rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+            ),
+            TapisResult(
+                id="test.project.test.project-3",
+                host="cloud.data.tacc.utexas.edu",
+                description="Test Workspace 2 description",
+                notes={
+                    "title": title2,
+                    "description": "Description of Test Workspace 2",
+                },
+                updated="2023-03-08T19:31:17.292220Z",
+                owner="owner_username",
+                rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-3",
+            ),
+        ]
 
-        # Create Test project to test workspace operation, this is testing for no given description and it making a workspace system call
-        workspace_id = "test.project-1"
-        system_id = ws_o.create_shared_workspace(client, title, mock_owner)
+        # Create first project
+        project1 = ws_o.create_shared_workspace(client, title1, mock_owner)
+        mock_create_shared_workspace.assert_called_with(client, title1, mock_owner)
+        assert project1 == "test.project.test.project-2"
 
-        # Calls and Mock calls in create_shared_workspace
-        ws_o.service_account.assert_called()
-        ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_called_with(workspace_id)
-        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission,might need to be mocked
-        ws_o.create_workspace_system.assert_called_with(
-            client,
-            workspace_id,
-            title,
+        client.systems.getSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
         )
-        project = client.get_project(workspace_id=system_id)
-        assert project["description"] == description
-        assert project["created"] == created
-
-        # Second Project
-        title2 = "PRJ-456"
-        description2 = ""
-        created2 = "2024-10-18T00:00:00Z"
-
-        # Create Test project to test workspace operation, this is testing for a given description and it making a workspace system call
-        workspace_id2 = "test.project-2"
-        system_id2 = ws_o.create_shared_workspace(client, title2, mock_owner)
-
-        # Calls and Mock calls in create_shared_workspace
-        ws_o.service_account.assert_called()
-        ws_o.increment_workspace_count.assert_called()
-        ws_o.create_workspace_dir.assert_called_with(workspace_id2)
-        ws_o.set_workspace_acls.assert_called()  # TODO: Calls to make a workspace permission, might need to be mocked
-        ws_o.create_workspace_system.assert_called_with(
-            client,
-            workspace_id2,
-            title2,
+        client.systems.patchSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+            notes={"count": 2},
         )
-        project2 = client.get_project(workspace_id=system_id2)
-        assert project2["description"] == description2
-        assert project2["created"] == created2
+        # Tapis instance with an admin account
+        mock_service_account.return_value = client
+        mock_service_account.assert_called()
 
-        # Test the listing of list_projects
-        list = ws_o.list_projects(client)
-        fields = "id,host,description,notes,updated,owner,rootDir"
-        query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
-        client.systems.getSystems.assert_called_with(
-            listType="ALL", search=query, select=fields, limit=-1
+        # Increment the workspace
+        mock_increment_workspace_count.assert_called()
+        mock_service_account.assert_called()
+
+        # Create Workspace Dir
+        mock_create_workspace_dir.assert_called()
+        mock_service_account.assert_called()
+        mock_service_account().files.mkdir.assert_called_with(
+            systemId="projects.system.name", path="test.project-2"
         )
-        assert len(list) == 2
+        # Set Workspace ACLS
+        # Authenticated_user is whoever the mock_owner or creator of the project is
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+        )
+        workspace_id = "test.project-2"
+        mock_create_workspace_dir.assert_called_with(workspace_id)
+
+        # Create second project
+        project2 = ws_o.create_shared_workspace(client, title2, mock_owner)
+        mock_create_shared_workspace.assert_called_with(client, title2, mock_owner)
+        assert project2 == "test.project.test.project-3"
+
+        # Check the state after creating the second project
+        client.systems.getSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        )
+        client.systems.patchSystem.assert_called_with(
+            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+            notes={"count": 3},
+        )
+        # Tapis instance with an admin account
+        mock_service_account.return_value = client
+        mock_service_account.assert_called()
+
+        # Increment the workspace
+        mock_increment_workspace_count.assert_called()
+        mock_service_account.assert_called()
+
+        # Create Workspace Dir
+        mock_create_workspace_dir.assert_called()
+        mock_service_account.assert_called()
+        mock_service_account().files.mkdir.assert_called_with(
+            systemId="projects.system.name", path="test.project-3"
+        )
+        # Set Workspace ACLS
+        # Authenticated_user is whoever the mock_owner or creator of the project is
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-3",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+        )
+        # Get the projects from the client
+        projects = ws_o.list_projects(client)
+
+        # Assertions
+        assert len(projects) == 2
+        assert projects[0]["id"] == "test.project.test.project-2"
+        assert projects[0]["title"] == "Test Workspace 1"
+        assert projects[0]["description"] == "Description of Test Workspace 1"
+        assert projects[0]["owner"]["username"] == "owner_username"
+        assert (
+            projects[0]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-2"
+        )
+        assert projects[0]["host"] == "cloud.data.tacc.utexas.edu"
+        assert projects[0]["updated"] == "2023-03-07T19:31:17.292220Z"
+
+        assert projects[1]["id"] == "test.project.test.project-3"
+        assert projects[1]["title"] == "Test Workspace 2"
+        assert projects[1]["description"] == "Description of Test Workspace 2"
+        assert projects[1]["owner"]["username"] == "owner_username"
+        assert (
+            projects[1]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-3"
+        )
+        assert projects[1]["host"] == "cloud.data.tacc.utexas.edu"
+        assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
 
 
 @pytest.mark.skip(reason="Updating to Tapis Result")
