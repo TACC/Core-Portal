@@ -68,11 +68,6 @@ def mock_tapis_client():
 
         mock_client.systems.patchSystem.side_effect = patch_system
 
-        def get_system(systemId):
-            return TapisResult(notes={"count": mock_client.notes["count"]})
-
-        mock_client.systems.getSystem.side_effect = get_system
-
         yield mock_client
 
 
@@ -89,6 +84,7 @@ def patch_workspace_operations():
         patch(f"{dir}.set_workspace_acls", wraps=ws_o.set_workspace_acls),
         patch(f"{dir}.add_user_to_workspace", wraps=ws_o.add_user_to_workspace),
         patch(f"{dir}.get_project", wraps=ws_o.get_project),
+        patch(f"{dir}.get_workspace_role", wraps=ws_o.get_workspace_role),
     ]
 
     # Start all patches
@@ -115,10 +111,22 @@ def create_shared_workspace(
     workspace_num,
 ):
     # Create project
-    project = ws_o.create_shared_workspace(client, title, mock_owner)
+    project = mock_create_shared_workspace(client, title, mock_owner)
     mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
     assert project == f"test.project.test.project-{workspace_num}"
-
+    client.systems.getSystem.return_value = TapisResult(
+        id=f"test.project.test.project-{workspace_num}",
+        host="cloud.data.tacc.utexas.edu",
+        description="Test Workspace description",
+        notes={
+            "title": title,
+            "description": "Description of Test Workspace",
+            "count": workspace_num,
+        },
+        updated="2023-03-07T19:31:17.292220Z",
+        owner=mock_owner,
+        rootDir=f"/corral-repl/tacc/aci/CEP/projects/test.project-{workspace_num}",
+    )
     client.systems.getSystem.assert_called_with(
         systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
     )
@@ -253,6 +261,8 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
 
 
 # Testing if there are two projects Tapis
+
+
 def test_listing(mock_tapis_client, mock_owner, authenticated_user):
     with patch_workspace_operations() as mocks:
         mock_service_account = mocks[0]
@@ -272,7 +282,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 description="Test Workspace 1 description",
                 notes={
                     "title": title1,
-                    "description": "Description of Test Workspace 1",
+                    "description": "Description of Test Workspace",
                 },
                 updated="2023-03-07T19:31:17.292220Z",
                 owner="owner_username",
@@ -284,7 +294,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 description="Test Workspace 2 description",
                 notes={
                     "title": title2,
-                    "description": "Description of Test Workspace 2",
+                    "description": "Description of Test Workspace",
                 },
                 updated="2023-03-08T19:31:17.292220Z",
                 owner="owner_username",
@@ -322,7 +332,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         assert len(projects) == 2
         assert projects[0]["id"] == "test.project.test.project-2"
         assert projects[0]["title"] == "Test Workspace 1"
-        assert projects[0]["description"] == "Description of Test Workspace 1"
+        assert projects[0]["description"] == "Description of Test Workspace"
         assert projects[0]["owner"]["username"] == "owner_username"
         assert (
             projects[0]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-2"
@@ -332,7 +342,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
 
         assert projects[1]["id"] == "test.project.test.project-3"
         assert projects[1]["title"] == "Test Workspace 2"
-        assert projects[1]["description"] == "Description of Test Workspace 2"
+        assert projects[1]["description"] == "Description of Test Workspace"
         assert projects[1]["owner"]["username"] == "owner_username"
         assert (
             projects[1]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-3"
@@ -558,9 +568,157 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
 
 # TODO:Testing new shared workspace operations don't involve specific co pi creation functions or project metadata functions
 # Tests now reflect remaining functions that were not covered in the tests above
-@pytest.mark.skip(reason="TODO V3 Operation")
 def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
-    return 0
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        mock_get_workspace_role = mocks[8]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace 1"
+        description = ""
+        # Create first project
+        workspace_number = 2
+        create_shared_workspace(
+            client,
+            title,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=workspace_number,
+        )
+        workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
+        # Get workspace role of the owner
+        # System args that are in create_workspace_system
+
+        # NOTE: The owner is not expected in these system args
+        # set_workspace_acls adds the owner to the project and is checked
+        # already in the create_shared_workspace helper function
+        system_args = {
+            "id": "test.project.test.project-2",
+            "host": settings.PORTAL_PROJECTS_ROOT_HOST,
+            "port": int(settings.PORTAL_PROJECTS_SYSTEM_PORT),
+            "systemType": "LINUX",
+            "defaultAuthnMethod": "PKI_KEYS",
+            "canExec": False,
+            "rootDir": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+            "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
+            "authnCredential": {
+                "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
+                "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
+            },
+            "notes": {"title": title, "description": description},
+        }
+        # Asserting roles for Owner, User, Guest, and Unknown
+        client.systems.createSystem.assert_called_with(**system_args)
+        client.systems.getSystems.return_value = system_args
+        role = mock_get_workspace_role(mock_tapis_client, workspace_id, "username")
+        assert role == "OWNER"
+        role = mock_get_workspace_role(mock_tapis_client, workspace_id, "unknown_user")
+        assert role is None
+        mock_system_result = TapisResult(
+            id="test.project.test.project-2",
+            host="cloud.data.tacc.utexas.edu",
+            description="Test Workspace 1 description",
+            notes={
+                "title": title,
+                "description": "Description of Test Workspace",
+            },
+            updated="2023-03-07T19:31:17.292220Z",
+            owner="username",
+            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+        )
+
+        # Add new user
+        # Before Addition Verification
+        mock_get_project.return_value = {
+            "title": mock_system_result.notes.title,
+            "description": getattr(mock_system_result.notes, "description", None),
+            "created": mock_system_result.updated,
+            "projectId": "test.project-2",
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "owner"},
+            ],
+        }
+        updated_project = ws_o.get_project(client, workspace_id)
+        assert updated_project["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+        ]
+        # Add user action
+        mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString="d:u:new_user:rwX,u:new_user:rwX",
+        )
+
+        # After addition verification
+        mock_get_project.return_value = {
+            "title": mock_system_result.notes.title,
+            "description": getattr(mock_system_result.notes, "description", None),
+            "created": mock_system_result.updated,
+            "projectId": workspace_id,
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "owner"},
+                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            ],
+        }
+        updated_project = ws_o.get_project(client, workspace_id)
+        assert updated_project["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        ]
+        # TODO: Verify this return value structure
+        client.files.getPermissions.return_value = TapisResult(
+            id="new_user", permission="MODIFY"
+        )
+        role = mock_get_workspace_role(mock_tapis_client, workspace_id, "new_user")
+        assert role == "USER"
+
+        # Read Only User Addition
+        # Add user action
+        mock_add_user_to_workspace(client, workspace_id, "GuestAccount", "reader")
+        mock_service_account().files.setFacl.assert_called_with(
+            systemId="projects.system.name",
+            path="test.project-2",
+            operation="ADD",
+            recursionMethod="PHYSICAL",
+            aclString="d:u:GuestAccount:rX,u:GuestAccount:rX",
+        )
+
+        # After addition verification
+        mock_get_project.return_value = {
+            "title": mock_system_result.notes.title,
+            "description": getattr(mock_system_result.notes, "description", None),
+            "created": mock_system_result.updated,
+            "projectId": workspace_id,
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "owner"},
+                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                {"user": ws_o.get_project_user("GuestAccount"), "access": "reader"},
+            ],
+        }
+        updated_project = ws_o.get_project(client, workspace_id)
+        assert updated_project["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user("GuestAccount"), "access": "reader"},
+        ]
+        # TODO: Verify this return value structure
+        client.files.getPermissions.return_value = TapisResult(
+            id="GuestAccount", permission="READ"
+        )
+        role = mock_get_workspace_role(mock_tapis_client, workspace_id, "GuestAccount")
+        assert role == "GUEST"
 
 
 @pytest.mark.skip(reason="TODO V3 Operation")
