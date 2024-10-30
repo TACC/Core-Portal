@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Button } from '_common';
+import { Button, SectionMessage } from '_common';
 import { useModal } from 'hooks/datafiles';
 import styles from './DataFilesLargeDownloadModal.module.scss';
 
@@ -35,14 +35,10 @@ const DataFilesLargeDownloadModal = () => {
         Large Download
       </ModalHeader>
       <ModalBody>
-        <p
-          className={styles['firstParagraph']}
-          role="status"
-          aria-label="message"
-        >
+        <SectionMessage type="warn">
           Your download is larger than 2 gigabytes.
-        </p>
-        <p className={styles['lastParagraph']}>
+        </SectionMessage>
+        <p className={styles['info']}>
           Use Globus to quickly transfer large volumes of data.
         </p>
       </ModalBody>

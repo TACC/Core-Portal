@@ -10,7 +10,6 @@ import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import DataFilesLargeDownloadModal from '../DataFilesModals/DataFilesLargeDownloadModal';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });

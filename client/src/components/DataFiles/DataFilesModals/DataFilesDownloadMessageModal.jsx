@@ -13,7 +13,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import styles from './DataFilesCompressModal.module.scss';
-// import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
 
 const DataFilesDownloadMessageModal = () => {
   const history = useHistory();

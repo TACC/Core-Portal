@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useModal } from 'hooks/datafiles';
+import { SectionMessage } from '_common';
 import styles from './DataFilesNoFoldersModal.module.scss';
 
 const DataFilesNoFoldersModal = () => {
@@ -29,14 +30,10 @@ const DataFilesNoFoldersModal = () => {
         No Folders
       </ModalHeader>
       <ModalBody>
-        <p
-          className={styles['firstParagraph']}
-          role="status"
-          aria-label="message"
-        >
+        <SectionMessage type="warn">
           Folders can no longer be compressed.
-        </p>
-        <p className={styles['lastParagraph']}>
+        </SectionMessage>
+        <p className={styles['info']}>
           Please individually select which files you would like to download.
         </p>
       </ModalBody>
