@@ -36,6 +36,7 @@ def mock_service_account(mocker):
 def mock_owner(django_user_model):
     return "username"
 
+
 @pytest.fixture()
 def mock_tapis_client():
     with patch("tapipy.tapis.Tapis") as mock_client:
@@ -76,6 +77,7 @@ def mock_tapis_client():
         mock_client.systems.getSystem.side_effect = get_system
 
         yield mock_client
+
 
 # Test initial project creation, not shared workspace creation
 def test_project_init(mock_tapis_client, mock_owner):
@@ -363,6 +365,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         )
         assert projects[1]["host"] == "cloud.data.tacc.utexas.edu"
         assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
+
 
 # TODO: These need to utilize get_workspace_role
 # Test adding a member to a project
@@ -657,21 +660,30 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
                 {"user": ws_o.get_project_user("new_user"), "access": "writer"},
             ]
+
+
 # TODO:Testing new shared workspace operations don't involve specific co pi creation functions or project metadata functions
 # Tests now reflect remaining functions that were not covered in the tests above
 @pytest.mark.skip(reason="TODO V3 Operation")
 def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
     return 0
+
+
 @pytest.mark.skip(reason="TODO V3 Operation")
 def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
     return 0
+
+
 @pytest.mark.skip(reason="TODO V3 Operation")
 def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
     return 0
+
+
 @pytest.mark.skip(reason="TODO V3 Operation")
 def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
     return 0
+
+
 @pytest.mark.skip(reason="TODO V3 Operation")
 def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
     return 0
-
