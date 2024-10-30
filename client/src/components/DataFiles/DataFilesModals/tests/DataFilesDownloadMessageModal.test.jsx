@@ -226,4 +226,32 @@ describe('DataFilesDownloadMessageModal', () => {
         },
       });
     };
+
+  // Test to toggle modals correctly
+  it('toggles modals correctly'),
+    () => {
+      // Mock the dispatch action
+      const mockDispatch = vi.fn();
+      // Create a spy that watches for the dispatch call
+      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+        mockDispatch
+      );
+      const toggleDataFilesNoFoldersModal = () => {
+        dispatch({
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: {
+            operation: 'noFolders',
+            props: {},
+          },
+        });
+      };
+      toggleDataFilesNoFoldersModal();
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'noFolders',
+          props: {},
+        },
+      });
+    };
 });
