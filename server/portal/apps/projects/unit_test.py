@@ -162,6 +162,118 @@ def create_shared_workspace(
     return workspace_id
 
 
+# Helper function for asserting the creation of a shared workspce with two users
+def create_shared_workspace_2_user(
+    client,
+    title,
+    description,
+    mock_service_account,
+    mock_owner,
+    mock_create_shared_workspace,
+    mock_increment_workspace_count,
+    mock_create_workspace_dir,
+    mock_add_user_to_workspace,
+    mock_get_project,
+    mock_get_workspace_role,
+    authenticated_user,
+    workspace_num,
+):
+    create_shared_workspace(
+        client,
+        title,
+        mock_service_account,
+        mock_owner,
+        mock_create_shared_workspace,
+        mock_increment_workspace_count,
+        mock_create_workspace_dir,
+        authenticated_user,
+        workspace_num=workspace_num,
+    )
+    workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_num}"
+    # Get workspace role of the owner
+    # System args that are in create_workspace_system
+
+    # NOTE: The owner is not expected in these system args
+    # set_workspace_acls adds the owner to the project and is checked
+    # already in the create_shared_workspace helper function
+    system_args = {
+        "id": "test.project.test.project-2",
+        "host": settings.PORTAL_PROJECTS_ROOT_HOST,
+        "port": int(settings.PORTAL_PROJECTS_SYSTEM_PORT),
+        "systemType": "LINUX",
+        "defaultAuthnMethod": "PKI_KEYS",
+        "canExec": False,
+        "rootDir": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+        "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
+        "authnCredential": {
+            "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
+            "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
+        },
+        "notes": {"title": title, "description": description},
+    }
+    # Asserting roles for Owner, User, Guest, and Unknown
+    client.systems.createSystem.assert_called_with(**system_args)
+    client.systems.getSystems.return_value = system_args
+    role = mock_get_workspace_role(client, workspace_id, "username")
+    assert role == "OWNER"
+    role = mock_get_workspace_role(client, workspace_id, "unknown_user")
+    assert role is None
+    mock_system_result = TapisResult(
+        id="test.project.test.project-2",
+        host="cloud.data.tacc.utexas.edu",
+        description="Test Workspace 1 description",
+        notes={
+            "title": title,
+            "description": "Description of Test Workspace",
+        },
+        updated="2023-03-07T19:31:17.292220Z",
+        owner="username",
+        rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+    )
+
+    # Add new user
+    # Before Addition Verification
+    mock_get_project.return_value = {
+        "title": mock_system_result.notes.title,
+        "description": getattr(mock_system_result.notes, "description", None),
+        "created": mock_system_result.updated,
+        "projectId": "test.project-2",
+        "members": [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+        ],
+    }
+    updated_project = ws_o.get_project(client, workspace_id)
+    assert updated_project["members"] == [
+        {"user": ws_o.get_project_user("username"), "access": "owner"},
+    ]
+    # Add user action
+    mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path="test.project-2",
+        operation="ADD",
+        recursionMethod="PHYSICAL",
+        aclString="d:u:new_user:rwX,u:new_user:rwX",
+    )
+
+    # After addition verification
+    mock_get_project.return_value = {
+        "title": mock_system_result.notes.title,
+        "description": getattr(mock_system_result.notes, "description", None),
+        "created": mock_system_result.updated,
+        "projectId": workspace_id,
+        "members": [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        ],
+    }
+    updated_project = ws_o.get_project(client, workspace_id)
+    assert updated_project["members"] == [
+        {"user": ws_o.get_project_user("username"), "access": "owner"},
+        {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+    ]
+
+
 # Tests
 # Test initial project creation, not shared workspace creation
 def test_project_init(mock_tapis_client, mock_owner):
@@ -351,7 +463,6 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
 
 
-# TODO: These need to utilize get_workspace_role
 # Test adding a member to a project
 def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
     with patch_workspace_operations() as mocks:
@@ -566,7 +677,6 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
             ]
 
 
-# TODO:Testing new shared workspace operations don't involve specific co pi creation functions or project metadata functions
 # Tests now reflect remaining functions that were not covered in the tests above
 def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
     with patch_workspace_operations() as mocks:
@@ -583,6 +693,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         description = ""
         # Create first project
         workspace_number = 2
+        # TODO: Use the helper function instead
         create_shared_workspace(
             client,
             title,
@@ -721,9 +832,39 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         assert role == "GUEST"
 
 
-@pytest.mark.skip(reason="TODO V3 Operation")
 def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
-    return 0
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        mock_get_workspace_role = mocks[8]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace 1"
+        description = ""
+        # Create first project
+        workspace_number = 2
+
+        # Creates an initial shared workspace with two users already defined
+        create_shared_workspace_2_user(
+            client,
+            title,
+            description,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            mock_add_user_to_workspace,
+            mock_get_project,
+            mock_get_workspace_role,
+            authenticated_user,
+            workspace_num=workspace_number,
+        )
+        # TODO: Change the second user role in the client system to a new role value
 
 
 @pytest.mark.skip(reason="TODO V3 Operation")
