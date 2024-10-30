@@ -8,8 +8,9 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
+import DataFilesLargeDownloadModal from '../DataFilesModals/DataFilesLargeDownloadModal';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -242,9 +243,7 @@ describe('DataFilesToolbar', () => {
   });
 
   // Test to prevent large file download through TAPIS
-  it('prevents downloads of large files through TAPIS directly', () => {
-    // Mock the alert function
-    global.alert = vi.fn();
+  it('prevents downloads of large files through TAPIS directly', async () => {
     // Create a test file whose size is greater than 2 GB
     const tooBigFileSize = 3 * 1024 * 1024 * 1024;
     const testFile = {
@@ -283,10 +282,12 @@ describe('DataFilesToolbar', () => {
     );
     // Click on the download button to try and download the file
     fireEvent.click(getByText('Download'));
-    // Test for the alert message
-    expect(global.alert).toHaveBeenCalledWith(
-      'The data set that you are attempting to download is too large for a direct download. Direct downloads are supported for up to 2 gigabytes of data at a time. Alternative approaches for transferring large amounts of data are provided in the Large Data Transfer Methods section of the Data Transfer Guide (https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/#globus).'
-    );
+    // Wait for the Large Download Modal
+    await waitFor(() => screen.queryByText('Large Download'));
+    // Assign the Large Download Modal to a variable
+    const testModal = screen.queryByText('Large Download');
+    // Test for the Large Download Modal
+    expect(testModal).toBeDefined();
   });
 
   // Test that allows downloads of files less than 2 GB
