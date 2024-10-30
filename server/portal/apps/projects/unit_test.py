@@ -5,6 +5,7 @@
 """
 
 import logging
+from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 
 import pytest  # pyright: ignore
@@ -20,16 +21,12 @@ LOGGER = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
+# Fixtures
 @pytest.fixture
 def mock_service_account(mocker):
     yield mocker.patch(
         "portal.apps.projects.models.base.service_account", autospec=True
     )
-
-
-# @pytest.fixture()
-# def mock_signal(mocker):
-#     yield mocker.patch("portal.apps.signals.receivers.index_project")
 
 
 @pytest.fixture()
@@ -79,12 +76,89 @@ def mock_tapis_client():
         yield mock_client
 
 
+# Helper function to handle patching
+@contextmanager
+def patch_workspace_operations():
+    dir = "portal.apps.projects.workspace_operations.shared_workspace_operations"
+    patches = [
+        patch(f"{dir}.service_account"),
+        patch(f"{dir}.create_workspace_system", wraps=ws_o.create_workspace_system),
+        patch(f"{dir}.create_shared_workspace", wraps=ws_o.create_shared_workspace),
+        patch(f"{dir}.increment_workspace_count", wraps=ws_o.increment_workspace_count),
+        patch(f"{dir}.create_workspace_dir", wraps=ws_o.create_workspace_dir),
+        patch(f"{dir}.set_workspace_acls", wraps=ws_o.set_workspace_acls),
+        patch(f"{dir}.add_user_to_workspace", wraps=ws_o.add_user_to_workspace),
+        patch(f"{dir}.get_project", wraps=ws_o.get_project),
+    ]
+
+    # Start all patches
+    mocks = [p.start() for p in patches]
+    try:
+        # Yield the mocks to the with block
+        yield mocks
+    finally:
+        # Stop all patches
+        for p in patches:
+            p.stop()
+
+
+# Helper function for asserting the creation of one shared_workspace
+def create_shared_workspace(
+    client,
+    title,
+    mock_service_account,
+    mock_owner,
+    mock_create_shared_workspace,
+    mock_increment_workspace_count,
+    mock_create_workspace_dir,
+    authenticated_user,
+    workspace_num,
+):
+    # Create project
+    project = ws_o.create_shared_workspace(client, title, mock_owner)
+    mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
+    assert project == f"test.project.test.project-{workspace_num}"
+
+    client.systems.getSystem.assert_called_with(
+        systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+    )
+    client.systems.patchSystem.assert_called_with(
+        systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+        notes={"count": workspace_num},
+    )
+    # Tapis instance with an admin account
+    mock_service_account.return_value = client
+    mock_service_account.assert_called()
+
+    # Increment the workspace
+    mock_increment_workspace_count.assert_called()
+    mock_service_account.assert_called()
+
+    # Create Workspace Dir
+    mock_create_workspace_dir.assert_called()
+    mock_service_account.assert_called()
+    mock_service_account().files.mkdir.assert_called_with(
+        systemId="projects.system.name", path=f"test.project-{workspace_num}"
+    )
+    # Set Workspace ACLS
+    # Authenticated_user is whoever the mock_owner or creator of the project is
+    mock_service_account().files.setFacl.assert_called_with(
+        systemId="projects.system.name",
+        path=f"test.project-{workspace_num}",
+        operation="ADD",
+        recursionMethod="PHYSICAL",
+        aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
+    )
+    workspace_id = f"test.project-{workspace_num}"
+    mock_create_workspace_dir.assert_called_with(workspace_id)
+    return workspace_id
+
+
+# Tests
 # Test initial project creation, not shared workspace creation
 def test_project_init(mock_tapis_client, mock_owner):
-    with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_system",
-        wraps=ws_o.create_workspace_system,
-    ) as mock_create_workspace_system:
+    with patch_workspace_operations() as mocks:
+        mock_create_workspace_system = mocks[1]
         client = mock_tapis_client
         workspace_id = "test_workspace"
         title = "Test Workspace"
@@ -135,65 +209,26 @@ def test_project_init(mock_tapis_client, mock_owner):
 
 # Test for creating a shared workspace and if it creates a new project
 def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
-    with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
-        wraps=ws_o.create_shared_workspace,
-    ) as mock_create_shared_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
-        wraps=ws_o.create_workspace_dir,
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
-        wraps=ws_o.set_workspace_acls,
-    ):
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
         # Initial Creation
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
-        project = ws_o.create_shared_workspace(client, title, mock_owner)
-        assert project == "test.project.test.project-2"
-
-        # Start assertions
-        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
-
-        # Tapis instance with an admin account
-        mock_service_account.return_value = client
-        mock_service_account.assert_called()
-
-        # Increment the workspace
-        mock_increment_workspace_count.assert_called()
-        mock_service_account.assert_called()
-        client.systems.getSystem.assert_called_once_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        create_shared_workspace(
+            client,
+            title,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=2,
         )
-        client.systems.patchSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            notes={"count": 2},
-        )
-
-        # Create Workspace Dir
-        mock_create_workspace_dir.assert_called()
-        mock_service_account.assert_called()
-        mock_service_account().files.mkdir.assert_called_with(
-            systemId="projects.system.name", path="test.project-2"
-        )
-
-        # Set Workspace ACLS
-        # Authenticated_user is whoever the mock_owner or creator of the project is
-        mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
-            operation="ADD",
-            recursionMethod="PHYSICAL",
-            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
-        )
-        workspace_id = "test.project-2"
-        mock_create_workspace_dir.assert_called_with(workspace_id)
-
         # Expected TapisResult return
         expected_result = TapisResult(
             id="test.project.test.project-2",
@@ -219,21 +254,11 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
 
 # Testing if there are two projects Tapis
 def test_listing(mock_tapis_client, mock_owner, authenticated_user):
-    with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
-        wraps=ws_o.create_shared_workspace,
-    ) as mock_create_shared_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
-        wraps=ws_o.create_workspace_dir,
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
-        wraps=ws_o.set_workspace_acls,
-    ):
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title1 = "Test Workspace 1"
@@ -268,80 +293,29 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         ]
 
         # Create first project
-        project1 = ws_o.create_shared_workspace(client, title1, mock_owner)
-        mock_create_shared_workspace.assert_called_with(client, title1, mock_owner)
-        assert project1 == "test.project.test.project-2"
-
-        client.systems.getSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        create_shared_workspace(
+            client,
+            title1,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=2,
         )
-        client.systems.patchSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            notes={"count": 2},
-        )
-        # Tapis instance with an admin account
-        mock_service_account.return_value = client
-        mock_service_account.assert_called()
-
-        # Increment the workspace
-        mock_increment_workspace_count.assert_called()
-        mock_service_account.assert_called()
-
-        # Create Workspace Dir
-        mock_create_workspace_dir.assert_called()
-        mock_service_account.assert_called()
-        mock_service_account().files.mkdir.assert_called_with(
-            systemId="projects.system.name", path="test.project-2"
-        )
-        # Set Workspace ACLS
-        # Authenticated_user is whoever the mock_owner or creator of the project is
-        mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
-            operation="ADD",
-            recursionMethod="PHYSICAL",
-            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
-        )
-        workspace_id = "test.project-2"
-        mock_create_workspace_dir.assert_called_with(workspace_id)
-
         # Create second project
-        project2 = ws_o.create_shared_workspace(client, title2, mock_owner)
-        mock_create_shared_workspace.assert_called_with(client, title2, mock_owner)
-        assert project2 == "test.project.test.project-3"
-
-        # Check the state after creating the second project
-        client.systems.getSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        create_shared_workspace(
+            client,
+            title2,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=3,
         )
-        client.systems.patchSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            notes={"count": 3},
-        )
-        # Tapis instance with an admin account
-        mock_service_account.return_value = client
-        mock_service_account.assert_called()
-
-        # Increment the workspace
-        mock_increment_workspace_count.assert_called()
-        mock_service_account.assert_called()
-
-        # Create Workspace Dir
-        mock_create_workspace_dir.assert_called()
-        mock_service_account.assert_called()
-        mock_service_account().files.mkdir.assert_called_with(
-            systemId="projects.system.name", path="test.project-3"
-        )
-        # Set Workspace ACLS
-        # Authenticated_user is whoever the mock_owner or creator of the project is
-        mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-3",
-            operation="ADD",
-            recursionMethod="PHYSICAL",
-            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
-        )
-        # Get the projects from the client
         projects = ws_o.list_projects(client)
 
         # Assertions
@@ -370,27 +344,15 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
 # TODO: These need to utilize get_workspace_role
 # Test adding a member to a project
 def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
-    with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
-        wraps=ws_o.create_shared_workspace,
-    ) as mock_create_shared_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
-        wraps=ws_o.create_workspace_dir,
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
-        wraps=ws_o.set_workspace_acls,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.add_user_to_workspace",
-        wraps=ws_o.add_user_to_workspace,
-    ) as mock_add_user_to_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.get_project",
-        wraps=ws_o.get_project,
-    ) as mock_get_project:
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
         # Initial Project Creation Setup
         client = mock_tapis_client
         # The service account usually has admin rights, but we need to override this to test unauthorized access later
@@ -402,45 +364,17 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = client
 
         title = "Test Workspace"
-        project = ws_o.create_shared_workspace(client, title, mock_owner)
-        assert project == "test.project.test.project-2"
-        mock_service_account.return_value = mock_tapis_client
-        # Start assertions
-        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
-
-        # Tapis instance with an admin account
-        mock_service_account.return_value = client
-        mock_service_account.assert_called()
-
-        # Increment the workspace
-        mock_increment_workspace_count.assert_called()
-        mock_service_account.assert_called()
-        client.systems.getSystem.assert_called_once_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        workspace_id = create_shared_workspace(
+            client,
+            title,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=2,
         )
-        client.systems.patchSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            notes={"count": 2},
-        )
-
-        # Create Workspace Dir
-        mock_create_workspace_dir.assert_called()
-        mock_service_account.assert_called()
-        mock_service_account().files.mkdir.assert_called_with(
-            systemId="projects.system.name", path="test.project-2"
-        )
-
-        # Set Workspace ACLS
-        # Authenticated_user is whoever the mock_owner or creator of the project is
-        mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
-            operation="ADD",
-            recursionMethod="PHYSICAL",
-            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
-        )
-        workspace_id = "test.project-2"
-        mock_create_workspace_dir.assert_called_with(workspace_id)
 
         # Not sure if this needs to go into client.systems.getSystem
         # Or just doing the following and mocking get_project
@@ -461,7 +395,7 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
             "created": mock_system_result.updated,
-            "projectId": workspace_id,
+            "projectId": "test.project-2",
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
             ],
@@ -517,77 +451,37 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
 
 # Test adding a member but the user is unauthorized to
 def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_user):
-    with patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account",
-    ) as mock_service_account, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_shared_workspace",
-        wraps=ws_o.create_shared_workspace,
-    ) as mock_create_shared_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.increment_workspace_count",
-        wraps=ws_o.increment_workspace_count,
-    ) as mock_increment_workspace_count, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.create_workspace_dir",
-        wraps=ws_o.create_workspace_dir,
-    ) as mock_create_workspace_dir, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.set_workspace_acls",
-        wraps=ws_o.set_workspace_acls,
-    ), patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.add_user_to_workspace",
-        wraps=ws_o.add_user_to_workspace,
-    ) as mock_add_user_to_workspace, patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.get_project",
-        wraps=ws_o.get_project,
-    ) as mock_get_project:
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
         # Initial Project Creation Setup
         client = mock_tapis_client
         # The service account usually has admin rights, but we need to override this to test unauthorized access later
 
         # NOTE: Test difference is here
         # username is the owner of the project
-        client.set_user("randomuser781")
+        client.set_user("unauthorized_user")
 
         mock_service_account.return_value = client
 
         title = "Test Workspace"
-        project = ws_o.create_shared_workspace(client, title, mock_owner)
-        assert project == "test.project.test.project-2"
-        mock_service_account.return_value = mock_tapis_client
-        # Start assertions
-        mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
-
-        # Tapis instance with an admin account
-        mock_service_account.return_value = client
-        mock_service_account.assert_called()
-
-        # Increment the workspace
-        mock_increment_workspace_count.assert_called()
-        mock_service_account.assert_called()
-        client.systems.getSystem.assert_called_once_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        workspace_id = create_shared_workspace(
+            client,
+            title,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=2,
         )
-        client.systems.patchSystem.assert_called_with(
-            systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            notes={"count": 2},
-        )
-
-        # Create Workspace Dir
-        mock_create_workspace_dir.assert_called()
-        mock_service_account.assert_called()
-        mock_service_account().files.mkdir.assert_called_with(
-            systemId="projects.system.name", path="test.project-2"
-        )
-
-        # Set Workspace ACLS
-        # Authenticated_user is whoever the mock_owner or creator of the project is
-        mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
-            operation="ADD",
-            recursionMethod="PHYSICAL",
-            aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
-        )
-        workspace_id = "test.project-2"
-        mock_create_workspace_dir.assert_called_with(workspace_id)
 
         # Not sure if this needs to go into client.systems.getSystem
         # Or just doing the following and mocking get_project
@@ -608,7 +502,7 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
             "created": mock_system_result.updated,
-            "projectId": workspace_id,
+            "projectId": "test.project-2",
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
             ],
