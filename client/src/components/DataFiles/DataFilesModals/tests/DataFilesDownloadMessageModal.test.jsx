@@ -67,6 +67,12 @@ describe('DataFilesDownloadMessageModal', () => {
 
   // Test to prevent folder downloads
   it('checks for a folder among the selected files', async () => {
+    // Mock the dispatch call
+    const mockDispatch = vi.fn();
+    // Create a spy that watches for the dispatch call
+    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      mockDispatch
+    );
     // Render the Download Message Modal
     const { getByText } = renderComponent(
       <DataFilesDownloadMessageModal />,
@@ -105,6 +111,14 @@ describe('DataFilesDownloadMessageModal', () => {
     expect(containsFolder).toBeTruthy;
     // Test for the Large Download Modal
     expect(testModal).toBeDefined();
+    // Test for the dispatch call
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'largeDownload',
+        props: {},
+      },
+    });
   });
 
   // Test to prevent the compression of multiple files if their total size is greater than 2 GB
@@ -200,7 +214,7 @@ describe('DataFilesDownloadMessageModal', () => {
       fireEvent.click(getByText('Compress'));
       // Test for the dispatch call
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'DATA_FILES_DOWNLOAD',
+        type: 'DATA_FILES_COMPRESS',
         payload: {
           file: {
             name: 'tests.txt',
