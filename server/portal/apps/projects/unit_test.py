@@ -9,11 +9,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest  # pyright: ignore
 from django.conf import settings  # pyright: ignore
-# from portal.apps.projects.models.base import Project
 from tapipy.tapis import TapisResult
 
 from portal.apps.projects.exceptions import NotAuthorizedError
-from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.workspace_operations import \
     shared_workspace_operations as ws_o
 
@@ -37,12 +35,6 @@ def mock_service_account(mocker):
 @pytest.fixture()
 def mock_owner(django_user_model):
     return "username"
-
-
-# Mock creation of a project
-
-# Minimal mocks, only do behavior based testing instead of implementation based testing
-
 
 @pytest.fixture()
 def mock_tapis_client():
@@ -84,7 +76,6 @@ def mock_tapis_client():
         mock_client.systems.getSystem.side_effect = get_system
 
         yield mock_client
-
 
 # Test initial project creation, not shared workspace creation
 def test_project_init(mock_tapis_client, mock_owner):
@@ -373,7 +364,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         assert projects[1]["host"] == "cloud.data.tacc.utexas.edu"
         assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
 
-
+# TODO: These need to utilize get_workspace_role
 # Test adding a member to a project
 def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
     with patch(
@@ -666,124 +657,21 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
                 {"user": ws_o.get_project_user("new_user"), "access": "writer"},
             ]
+# TODO:Testing new shared workspace operations don't involve specific co pi creation functions or project metadata functions
+# Tests now reflect remaining functions that were not covered in the tests above
+@pytest.mark.skip(reason="TODO V3 Operation")
+def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
+    return 0
+@pytest.mark.skip(reason="TODO V3 Operation")
+def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
+    return 0
+@pytest.mark.skip(reason="TODO V3 Operation")
+def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
+    return 0
+@pytest.mark.skip(reason="TODO V3 Operation")
+def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
+    return 0
+@pytest.mark.skip(reason="TODO V3 Operation")
+def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
+    return 0
 
-
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_copi(
-    mock_owner,
-    django_user_model,
-    mock_tapis_client,
-    mock_storage_system,
-    project_model,
-    mock_signal,
-    mock_service_account,
-):
-
-    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role="ADMIN", ADMIN="ADMIN")
-    assert prj._can_edit_member(mock_owner)
-
-    mock_copi = django_user_model.objects.create_user(
-        username="coPi", password="password"
-    )
-    prj.add_co_pi(mock_copi)
-
-    prj.storage.roles.add.assert_called_with("coPi", "ADMIN")
-    assert prj.storage.roles.save.call_count == 1
-    assert prj.metadata.co_pis.get(username="coPi")
-
-    prj.remove_co_pi(mock_copi)
-    with pytest.raises(django_user_model.DoesNotExist):
-        prj.metadata.team_members.get(username="teamMember")
-
-
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_copi_unauthorized(
-    mock_owner,
-    django_user_model,
-    mock_tapis_client,
-    mock_storage_system,
-    project_model,
-    mock_signal,
-    mock_service_account,
-):
-    "Test add member."
-
-    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role="USER", ADMIN="ADMIN")
-    assert not prj._can_edit_member(mock_owner)
-
-    mock_copi = django_user_model.objects.create_user(
-        username="coPi", password="password"
-    )
-
-    with pytest.raises(NotAuthorizedError):
-        prj.add_co_pi(mock_copi)
-
-    assert prj.storage.roles.add.call_count == 0
-    assert prj.storage.roles.save.call_count == 0
-    assert prj.metadata.co_pis.all().count() == 0
-
-
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_pi(
-    mock_owner,
-    django_user_model,
-    mock_tapis_client,
-    mock_storage_system,
-    project_model,
-    mock_signal,
-    mock_service_account,
-):
-
-    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role="ADMIN", ADMIN="ADMIN")
-    assert prj._can_edit_member(mock_owner)
-
-    mock_pi = django_user_model.objects.create_user(username="pi", password="password")
-    prj.add_pi(mock_pi)
-
-    prj.storage.roles.add.assert_called_with("pi", "OWNER")
-    assert prj.storage.roles.save.call_count == 1
-    assert prj.metadata.pi.username == "pi"
-
-    prj.remove_pi(mock_pi)
-    assert not prj.metadata.pi
-
-
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_add_pi_unauthorized(
-    mock_owner,
-    django_user_model,
-    mock_tapis_client,
-    mock_storage_system,
-    project_model,
-    mock_signal,
-    mock_service_account,
-):
-    "Test add member."
-
-    prj = project_model.create(mock_tapis_client, "Test Title", "PRJ-123", mock_owner)
-    prj.storage.roles.for_user.return_value = MagicMock(role="USER", ADMIN="ADMIN")
-    assert not prj._can_edit_member(mock_owner)
-
-    mock_pi = django_user_model.objects.create_user(username="pi", password="password")
-
-    with pytest.raises(NotAuthorizedError):
-        prj.add_pi(mock_pi)
-
-    assert prj.storage.roles.add.call_count == 0
-    assert prj.storage.roles.save.call_count == 0
-    assert not prj.metadata.pi
-
-
-@pytest.mark.skip(reason="TODOv3: update with new Shared Workspaces operations")
-def test_create_metadata(
-    mock_owner, mock_tapis_client, mock_storage_system, project_model, mock_signal
-):
-    # Test creating metadata with no owner
-    project_model._create_metadata("Project Title", "PRJ-123")
-    assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
-
-    project_model._create_metadata("Project Title 2", "PRJ-124", mock_owner)
-    assert ProjectMetadata.objects.get(project_id="PRJ-124").owner == mock_owner
