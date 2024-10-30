@@ -13,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import styles from './DataFilesCompressModal.module.scss';
-import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
+// import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
 
 const DataFilesDownloadMessageModal = () => {
   const history = useHistory();
@@ -52,13 +52,25 @@ const DataFilesDownloadMessageModal = () => {
     }
   };
 
+  // Toggles the Large Download Modal when a user selects files to download totaling more than 2 GB
   const toggleDataFilesLargeDownloadModal = () => {
-    dispatch({ 
+    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { 
+      payload: {
         operation: 'largeDownload',
-        props: {}
-      } 
+        props: {},
+      },
+    });
+  };
+
+  // Toggles the No Folders Modal when a user selects 1 or more folders to download
+  const toggleDataFilesNoFoldersModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'noFolders',
+        props: {},
+      },
     });
   };
 
@@ -100,9 +112,7 @@ const DataFilesDownloadMessageModal = () => {
       }
       // Prevents compression of folders if a folder is among the selected files
     } else {
-      alert(
-        'Folders can no longer be compressed. Please individually select which files you would like to download.'
-      );
+      toggleDataFilesNoFoldersModal();
     }
   };
 

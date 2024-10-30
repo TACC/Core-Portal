@@ -1,14 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
 import { useModal } from 'hooks/datafiles';
-import styles from './DataFilesLargeDownloadModal.module.scss'
+import styles from './DataFilesLargeDownloadModal.module.scss';
 
 const DataFilesLargeDownloadModal = () => {
   // Assigns React-Redux dispatch calls
@@ -20,14 +15,13 @@ const DataFilesLargeDownloadModal = () => {
 
   // Toggles the modal on or off
   const toggle = () => {
-    dispatch({ 
+    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { 
+      payload: {
         operation: 'largeDownload',
-        props: {}
-      } 
+        props: {},
+      },
     });
-    // setStatus({});
   };
 
   // Opens a new tab in current browser to Globus
@@ -36,21 +30,15 @@ const DataFilesLargeDownloadModal = () => {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      // onClosed={onClosed}
-      toggle={toggle}
-      className='dataFilesModal'
-    >
+    <Modal isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         Large Download
       </ModalHeader>
       <ModalBody>
-        <p 
-          // className='container is-scope-section is-warn'
-          className={styles['firstParagraph']} 
-          role='status' 
-          aria-label='message'
+        <p
+          className={styles['firstParagraph']}
+          role="status"
+          aria-label="message"
         >
           Your download is larger than 2 gigabytes.
         </p>
@@ -59,7 +47,7 @@ const DataFilesLargeDownloadModal = () => {
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button 
+        <Button
           type="primary"
           attr="submit"
           onClick={openTabToGlobus}
