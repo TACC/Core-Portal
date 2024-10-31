@@ -272,6 +272,7 @@ def create_shared_workspace_2_user(
         {"user": ws_o.get_project_user("username"), "access": "owner"},
         {"user": ws_o.get_project_user("new_user"), "access": "writer"},
     ]
+    return workspace_id
 
 
 # Tests
@@ -832,6 +833,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         assert role == "GUEST"
 
 
+# Change the user role
 def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
     with patch_workspace_operations() as mocks:
         mock_service_account = mocks[0]
@@ -849,7 +851,7 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
         workspace_number = 2
 
         # Creates an initial shared workspace with two users already defined
-        create_shared_workspace_2_user(
+        workspace_id = create_shared_workspace_2_user(
             client,
             title,
             description,
@@ -864,19 +866,228 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
             authenticated_user,
             workspace_num=workspace_number,
         )
-        # TODO: Change the second user role in the client system to a new role value
+        # This change_user_role never returns a get project, only uses Tapis calls
+        # Mocking what the contents of the project would be like after action
+        project_pre_update = mock_get_project(client, workspace_id)
+        assert project_pre_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        ]
+        ws_o.change_user_role(client, workspace_id, "new_user", "reader")
+        # TODO: Fix the assertions and potential return value
+        mock_service_account.assert_called
+        # mock_service_account.files.setFacl.assert_called_with(
+        #     systemId="projects.system.name",
+        #     path="test.project-2",
+        #     operation="ADD",
+        #     recursionMethod="PHYSICAL",
+        #     aclString="d:u:GuestAccount:rX,u:GuestAccount:rX",
+        # )
+        mock_get_project.return_value = {
+            "title": "Test Workspace 1",
+            "description": "Description of Test Workspace",
+            "created": "2023-03-07T19:31:17.292220Z",
+            "projectId": "test.project-2",
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "owner"},
+                {"user": ws_o.get_project_user("new_user"), "access": "reader"},
+            ],
+        }
+        project_post_update = mock_get_project(client, workspace_id)
+        assert project_post_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "reader"},
+        ]
 
 
-@pytest.mark.skip(reason="TODO V3 Operation")
+# Remove a user from a project
 def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
-    return 0
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        mock_get_workspace_role = mocks[8]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace 1"
+        description = ""
+        # Create first project
+        workspace_number = 2
+
+        # Creates an initial shared workspace with two users already defined
+        workspace_id = create_shared_workspace_2_user(
+            client,
+            title,
+            description,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            mock_add_user_to_workspace,
+            mock_get_project,
+            mock_get_workspace_role,
+            authenticated_user,
+            workspace_num=workspace_number,
+        )
+        # This change_user_role never returns a get project, only uses Tapis calls
+        # Mocking what the contents of the project would be like after action
+        project_pre_update = mock_get_project(client, workspace_id)
+        assert project_pre_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        ]
+        ws_o.remove_user(client, workspace_id, "new_user")
+        # TODO: Fix the assertions and potential return value
+        mock_service_account.assert_called
+        mock_get_project.return_value = {
+            "title": "Test Workspace 1",
+            "description": "Description of Test Workspace",
+            "created": "2023-03-07T19:31:17.292220Z",
+            "projectId": "test.project-2",
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "owner"},
+            ],
+        }
+        project_post_update = mock_get_project(client, workspace_id)
+        assert project_post_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+        ]
 
 
-@pytest.mark.skip(reason="TODO V3 Operation")
+# Change owner from one user to another
 def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
-    return 0
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        mock_add_user_to_workspace = mocks[6]
+        mock_get_project = mocks[7]
+        mock_get_workspace_role = mocks[8]
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace 1"
+        description = ""
+        # Create first project
+        workspace_number = 2
+
+        # Creates an initial shared workspace with two users already defined
+        workspace_id = create_shared_workspace_2_user(
+            client,
+            title,
+            description,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            mock_add_user_to_workspace,
+            mock_get_project,
+            mock_get_workspace_role,
+            authenticated_user,
+            workspace_num=workspace_number,
+        )
+        # This change_user_role never returns a get project, only uses Tapis calls
+        # Mocking what the contents of the project would be like after action
+        project_pre_update = mock_get_project(client, workspace_id)
+        assert project_pre_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "owner"},
+            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        ]
+        ws_o.transfer_ownership(client, workspace_id, "new_user", "username")
+        # TODO: Fix the assertions and potential return value
+        mock_service_account.assert_called
+        # mock_service_account.files.setFacl.assert_called_with(
+        #     systemId="projects.system.name",
+        #     path="test.project-2",
+        #     operation="ADD",
+        #     recursionMethod="PHYSICAL",
+        #     aclString="d:u:GuestAccount:rX,u:GuestAccount:rX",
+        # )
+        mock_get_project.return_value = {
+            "title": "Test Workspace 1",
+            "description": "Description of Test Workspace",
+            "created": "2023-03-07T19:31:17.292220Z",
+            "projectId": "test.project-2",
+            "members": [
+                {"user": ws_o.get_project_user("username"), "access": "writer"},
+                {"user": ws_o.get_project_user("new_user"), "access": "owner"},
+            ],
+        }
+        project_post_update = mock_get_project(client, workspace_id)
+        assert project_post_update["members"] == [
+            {"user": ws_o.get_project_user("username"), "access": "writer"},
+            {"user": ws_o.get_project_user("new_user"), "access": "owner"},
+        ]
 
 
-@pytest.mark.skip(reason="TODO V3 Operation")
+# Update project title and description
 def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
-    return 0
+    with patch_workspace_operations() as mocks:
+        mock_service_account = mocks[0]
+        mock_create_shared_workspace = mocks[2]
+        mock_increment_workspace_count = mocks[3]
+        mock_create_workspace_dir = mocks[4]
+        # Initial Creation
+        client = mock_tapis_client
+        mock_service_account.return_value = mock_tapis_client
+        title = "Test Workspace"
+        create_shared_workspace(
+            client,
+            title,
+            mock_service_account,
+            mock_owner,
+            mock_create_shared_workspace,
+            mock_increment_workspace_count,
+            mock_create_workspace_dir,
+            authenticated_user,
+            workspace_num=2,
+        )
+        # Expected TapisResult return
+        expected_result = TapisResult(
+            id="test.project.test.project-2",
+            notes={"title": title, "description": ""},
+            effectiveUserId="wma_prtl",
+            port=22,
+            authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
+        )
+        # Validate createSystem call arguments
+        created_project = client.systems.createSystem.call_args[1]
+        assert created_project["id"] == expected_result.id
+        assert created_project["notes"]["title"] == expected_result.notes.title
+        assert (
+            created_project["notes"]["description"] == expected_result.notes.description
+        )
+        assert created_project["effectiveUserId"] == expected_result.effectiveUserId
+        assert created_project["port"] == expected_result.port
+        assert (
+            created_project["authnCredential"]["privateKey"]
+            == expected_result.authnCredential.privateKey
+        )
+
+        # Change the title and description
+        # Change the title and description
+        new_title = "Updated Test Workspace"
+        new_description = "Updated Description"
+        client.systems.updateSystem.return_value = TapisResult(
+            id="test.project.test.project-2",
+            notes={"title": new_title, "description": new_description},
+            effectiveUserId="wma_prtl",
+            port=22,
+            authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
+        )
+        client.systems.updateSystem(
+            systemId="test.project.test.project-2",
+            notes={"title": new_title, "description": new_description},
+        )
+
+        # Validate updateSystem call arguments
+        updated_project = client.systems.updateSystem.call_args[1]
+        assert updated_project["systemId"] == "test.project.test.project-2"
+        assert updated_project["notes"]["title"] == new_title
+        assert updated_project["notes"]["description"] == new_description
+        # TODO: Potentially validate this with get_project
