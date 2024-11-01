@@ -429,7 +429,6 @@ class JobHistoryView(BaseApiView):
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
-        # Updated to search only for the enabled version of any given app
         apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
