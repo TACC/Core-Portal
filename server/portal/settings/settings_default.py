@@ -113,6 +113,17 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.project.root',
         'rootDir': '/corral-repl/tacc/aci/CEP/projects',
     },
+        {
+        'name': 'Published',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.project.published.test',
+        'rootDir': '/corral-repl/utexas/pge-nsf/data_pprd/published',
+        'publicationProject': True,
+    },
     {
         'name': 'Review Projects',
         'scheme': 'projects',
@@ -204,6 +215,10 @@ _PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 _PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = 'cep.project.review' 
 _PORTAL_PROJECTS_REVIEW_ROOT_DIR = '/corral-repl/utexas/pge-nsf/data_pprd/test'
 _PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = 'drp.project.review.test'
+
+_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'cep.project.published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = '/corral-repl/utexas/pge-nsf/data_pprd/published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.project.published.test'
 
 ########################
 # Custom Portal Template Assets

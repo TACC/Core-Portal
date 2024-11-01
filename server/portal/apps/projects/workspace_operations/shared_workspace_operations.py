@@ -1,6 +1,7 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps._custom.drp import constants
 from tapipy.tapis import Tapis
 from typing import Literal
 from django.db import transaction
@@ -8,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import models
-from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata
+from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
 
 import logging
 logger = logging.getLogger(__name__)
@@ -335,7 +336,6 @@ def list_projects(client, root_system_id=None):
         if root_system:
             query += f"~(rootDir.like.{root_system['rootDir']}*)"
 
-
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
     listing = client.systems.getSystems(listType='ALL',
@@ -428,5 +428,45 @@ def create_publication_review_shared_workspace(client, source_workspace_id: str,
     system_id = create_workspace_system(service_client, review_workspace_id, title, description, None, 
                                         f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}",
                                         f"{settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR}/{review_workspace_id}")
+    
+    return system_id
+
+@transaction.atomic
+def create_publication_system(workspace_id: str, published_workspace_id: str, title: str, description=""):
+
+    client = service_account()
+    
+    review_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{workspace_id}"
+    published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
+    published_system_name = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    published_system_root_dir = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_DIR
+
+    portal_admin_username = settings.PORTAL_ADMIN_USERNAME
+    service_client = service_account()
+
+    source_project = ProjectMetadata.get_project_by_id(review_system_id)
+    source_project_value = get_ordered_value(constants.PROJECT, source_project.value)
+
+    project_data = {
+        **source_project_value,
+        "project_id": published_system_id,
+        "is_published_project": True,
+        "is_review_project": False
+    }
+
+    new_project = create_project_metadata(project_data)
+    new_project.save()
+    
+    create_workspace_dir(published_workspace_id, published_system_name)
+        
+    set_workspace_acls(service_client,
+                       published_system_name,
+                       published_workspace_id,
+                       portal_admin_username,
+                       "add", 
+                       "writer")
+    
+    system_id = create_workspace_system(service_client, published_workspace_id, title, description, None, 
+                                        published_system_id, f"{published_system_root_dir}/{published_workspace_id}")
     
     return system_id

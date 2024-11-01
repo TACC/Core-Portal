@@ -54,7 +54,23 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
     SubmitPublicationReviewStep(),
   ];
 
-  const formSubmit = (values) => {};
+  const formSubmit = (values) => {
+    const data = {
+      ...metadata,
+    };
+
+    if (values && values.publicationApproved) {
+      dispatch({
+        type: 'PUBLICATIONS_APPROVE_PUBLICATION',
+        payload: data,
+      });
+    } else if (values && values.publicationRejected) {
+      dispatch({
+        type: 'PUBLICATIONS_REJECT_PUBLICATION',
+        payload: data,
+      });
+    }
+  };
 
   return (
     <>

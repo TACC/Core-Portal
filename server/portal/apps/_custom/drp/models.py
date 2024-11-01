@@ -116,7 +116,8 @@ class DrpProjectMetadata(DrpMetadataModel):
     publication_date: Optional[str] = None
     authors: list[dict] = []
     file_objs: list[FileObj] = []
-    is_review_project : Optional[bool] = None
+    is_review_project: Optional[bool] = None
+    is_published_project: Optional[bool] = None
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""

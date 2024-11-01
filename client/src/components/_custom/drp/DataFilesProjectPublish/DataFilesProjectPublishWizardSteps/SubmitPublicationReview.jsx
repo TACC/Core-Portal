@@ -1,39 +1,55 @@
 import React, { useEffect, useState } from 'react';
-import { FormGroup, Input } from 'reactstrap';
 import { useFormikContext } from 'formik';
 import { SectionTableWrapper, Section, Button } from '_common';
 import * as Yup from 'yup';
 import styles from './DataFilesProjectPublishWizard.module.scss';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import * as ROUTES from '../../../../../constants/routes';
 
-const validationSchema = Yup.object({
-  reviewInfo: Yup.boolean().oneOf([true], 'Must be checked'),
-  reviewRelatedPublications: Yup.boolean().oneOf([true], 'Must be checked'),
-});
+const validationSchema = Yup.object({});
 
 const SubmitPublicationReview = () => {
-  const { handleChange, handleBlur, values, submitForm } = useFormikContext();
+  const { submitForm, setFieldValue, resetForm } = useFormikContext();
 
-  const [submitDisabled, setSubmitDisabled] = useState(true);
+  const history = useHistory();
 
-  const { loading, error } = useSelector((state) => {
-    if (
-      state.projects.operation &&
-      state.projects.operation.name === 'publicationRequest'
-    ) {
-      return state.projects.operation;
-    }
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
+  const {
+    isApproveLoading,
+    isRejectLoading,
+    isApproveSuccess,
+    isRejectSuccess,
+  } = useSelector((state) => {
+    const { name, loading, error, result } = state.publications.operation;
     return {
-      loading: false,
-      error: false,
+      isApproveLoading: name === 'approve' && loading,
+      isRejectLoading: name === 'reject' && loading,
+      isApproveSuccess: name === 'approve' && !loading && !error && result,
+      isRejectSuccess: name === 'reject' && !loading && !error && result,
     };
   });
 
   useEffect(() => {
-    validationSchema.isValid(values).then((valid) => {
-      setSubmitDisabled(!valid);
-    });
-  }, [values]);
+    if (isApproveSuccess || isRejectSuccess) {
+      setSubmitDisabled(false);
+      resetForm();
+      history.replace(`${ROUTES.WORKBENCH}${ROUTES.DATA}`);
+    }
+  }, [isApproveSuccess, isRejectSuccess]);
+
+  const handleApproveAndPublish = () => {
+    setFieldValue('publicationApproved', true);
+    setSubmitDisabled(true);
+    submitForm();
+  };
+
+  const handleReject = () => {
+    setFieldValue('publicationRejected', true);
+    setSubmitDisabled(true);
+    submitForm();
+  };
 
   return (
     <SectionTableWrapper
@@ -49,8 +65,8 @@ const SubmitPublicationReview = () => {
             type="primary"
             className={styles['submit-button']}
             disabled={submitDisabled}
-            isLoading={loading}
-            onClick={submitForm}
+            isLoading={isApproveLoading}
+            onClick={handleApproveAndPublish}
           >
             Approve and Publish
           </Button>
@@ -58,8 +74,8 @@ const SubmitPublicationReview = () => {
             type="secondary"
             className={styles['submit-button']}
             disabled={submitDisabled}
-            isLoading={loading}
-            onClick={submitForm}
+            isLoading={isRejectLoading}
+            onClick={handleReject}
           >
             Reject
           </Button>
