@@ -61,7 +61,8 @@ describe('DataFiles', () => {
           compress: '',
         },
       },
-      systems: { // TODO: Remove rest of unused variables
+      systems: {
+        // TODO: Remove rest of unused variables
         storage: {
           configuration: [
             {
