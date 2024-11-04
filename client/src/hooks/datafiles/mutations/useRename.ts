@@ -1,7 +1,7 @@
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
-import Cookies from 'js-cookie';
 import truncateMiddle from 'utils/truncateMiddle';
+import { apiClient } from 'utils/apiClient';
 
 export async function renameFileUtil({
   api,
@@ -17,22 +17,12 @@ export async function renameFileUtil({
   newName: string;
 }): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') ?? '' },
-    credentials: 'same-origin',
-    body: JSON.stringify({ new_name: newName }),
+
+  const response = await apiClient.put<{ name: string; path: string }>(url, {
+    new_name: newName,
   });
-  if (!response.ok) {
-    throw new Error(response.status.toString());
-  }
 
-  const responseJson = await response.json();
-  return responseJson.data;
-}
-
-function useRenameMutation() {
-  return useMutation({ mutationFn: renameFileUtil });
+  return response.data;
 }
 
 function useRename() {
@@ -48,7 +38,7 @@ function useRename() {
     });
   };
 
-  const { mutate } = useRenameMutation();
+  const { mutate } = useMutation({ mutationFn: renameFileUtil });
 
   const rename = ({
     selectedFile,
