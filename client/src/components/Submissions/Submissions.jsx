@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '_common';
 import { FileInputDropZone, Section, LoadingSpinner } from '_common';
@@ -131,7 +131,10 @@ const Submissions = () => {
   };
 
   const useSubmitterRole = () => {
-    const query = useQuery('submitter-role', getSubmitterRole);
+    const query = useQuery({
+      queryKey: 'submitter-role',
+      queryFn: getSubmitterRole,
+    });
     return query;
   };
 
