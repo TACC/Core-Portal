@@ -12,6 +12,15 @@ import * as DataFilesModalListingTable from '../DataFilesModals/DataFilesModalTa
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -236,18 +245,20 @@ describe('DataFilesListing', () => {
     });
 
     const { queryByText } = render(
-      <Provider store={store}>
-        <BrowserRouter history={history}>
-          <DataFilesListing
-            api="tapis"
-            scheme="projects"
-            system="test.system"
-            resultCount={0}
-            path="/"
-            isPublic={false}
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter history={history}>
+            <DataFilesListing
+              api="tapis"
+              scheme="projects"
+              system="test.system"
+              resultCount={0}
+              path="/"
+              isPublic={false}
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(queryByText(/Search/)).toBeNull();
   });
@@ -269,16 +280,18 @@ describe('DataFilesListing - Section Name Determination', () => {
     ).mockImplementationOnce(() => 'Mock System Name');
 
     const { getByPlaceholderText } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <DataFilesListing
-            api="tapis"
-            scheme="private"
-            system="test.system"
-            path="/home/user" // Same as homeDir
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <DataFilesListing
+              api="tapis"
+              scheme="private"
+              system="test.system"
+              path="/home/user" // Same as homeDir
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
 
     expect(getByPlaceholderText('Search Mock System Name')).toBeInTheDocument();
@@ -292,16 +305,18 @@ describe('DataFilesListing - Section Name Determination', () => {
     ).mockImplementationOnce(() => currentDirName);
 
     const { getByPlaceholderText } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <DataFilesListing
-            api="tapis"
-            scheme="private"
-            system="test.system"
-            path="/home/user/some/other/dir" // Different from homeDir
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <DataFilesListing
+              api="tapis"
+              scheme="private"
+              system="test.system"
+              path="/home/user/some/other/dir" // Different from homeDir
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
 
     expect(
