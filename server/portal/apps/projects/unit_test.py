@@ -247,13 +247,15 @@ def create_shared_workspace_2_user(
         {"user": ws_o.get_project_user("username"), "access": "owner"},
     ]
     # Add user action
-    mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+
+    new_username = "new_user"
+    mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
     mock_service_account().files.setFacl.assert_called_with(
         systemId="projects.system.name",
         path="test.project-2",
         operation="ADD",
         recursionMethod="PHYSICAL",
-        aclString="d:u:new_user:rwX,u:new_user:rwX",
+        aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
     )
 
     # After addition verification
@@ -264,13 +266,13 @@ def create_shared_workspace_2_user(
         "projectId": workspace_id,
         "members": [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ],
     }
     updated_project = ws_o.get_project(client, workspace_id)
     assert updated_project["members"] == [
         {"user": ws_o.get_project_user("username"), "access": "owner"},
-        {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+        {"user": ws_o.get_project_user(new_username), "access": "writer"},
     ]
     return workspace_id
 
@@ -540,17 +542,17 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
             ]
         else:
-            mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+            new_username = "new_user"
+            mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
             mock_get_project.assert_called_once_with(client, workspace_id)
             mock_service_account.assert_called()
 
-            # TODO: Make new user a variable
             mock_service_account().files.setFacl.assert_called_with(
                 systemId="projects.system.name",
                 path="test.project-2",
                 operation="ADD",
                 recursionMethod="PHYSICAL",
-                aclString="d:u:new_user:rwX,u:new_user:rwX",
+                aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
             )
 
             # Mock Project After Adding
@@ -561,13 +563,13 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
                 "projectId": workspace_id,
                 "members": [
                     {"user": ws_o.get_project_user("username"), "access": "owner"},
-                    {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                    {"user": ws_o.get_project_user(new_username), "access": "writer"},
                 ],
             }
             updated_project = ws_o.get_project(client, workspace_id)
             assert updated_project["members"] == [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
-                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                {"user": ws_o.get_project_user(new_username), "access": "writer"},
             ]
 
 
@@ -647,17 +649,17 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
             ]
         else:
-            mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+            new_username = "new_user"
+            mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
             mock_get_project.assert_called_once_with(client, workspace_id)
             mock_service_account.assert_called()
 
-            # TODO: Make new user a variable
             mock_service_account().files.setFacl.assert_called_with(
                 systemId="projects.system.name",
                 path="test.project-2",
                 operation="ADD",
                 recursionMethod="PHYSICAL",
-                aclString="d:u:new_user:rwX,u:new_user:rwX",
+                aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
             )
 
             # Mock Project After Adding
@@ -668,13 +670,13 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
                 "projectId": workspace_id,
                 "members": [
                     {"user": ws_o.get_project_user("username"), "access": "owner"},
-                    {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                    {"user": ws_o.get_project_user(new_username), "access": "writer"},
                 ],
             }
             updated_project = ws_o.get_project(client, workspace_id)
             assert updated_project["members"] == [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
-                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                {"user": ws_o.get_project_user(new_username), "access": "writer"},
             ]
 
 
@@ -694,7 +696,6 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         description = ""
         # Create first project
         workspace_number = 2
-        # TODO: Use the helper function instead
         create_shared_workspace(
             client,
             title,
@@ -764,13 +765,14 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             {"user": ws_o.get_project_user("username"), "access": "owner"},
         ]
         # Add user action
-        mock_add_user_to_workspace(client, workspace_id, "new_user", "writer")
+        new_username = "new_user"
+        mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
         mock_service_account().files.setFacl.assert_called_with(
             systemId="projects.system.name",
             path="test.project-2",
             operation="ADD",
             recursionMethod="PHYSICAL",
-            aclString="d:u:new_user:rwX,u:new_user:rwX",
+            aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
         )
 
         # After addition verification
@@ -781,19 +783,18 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             "projectId": workspace_id,
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
-                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                {"user": ws_o.get_project_user(new_username), "access": "writer"},
             ],
         }
         updated_project = ws_o.get_project(client, workspace_id)
         assert updated_project["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ]
-        # TODO: Verify this return value structure
         client.files.getPermissions.return_value = TapisResult(
-            id="new_user", permission="MODIFY"
+            id=new_username, permission="MODIFY"
         )
-        role = mock_get_workspace_role(mock_tapis_client, workspace_id, "new_user")
+        role = mock_get_workspace_role(mock_tapis_client, workspace_id, new_username)
         assert role == "USER"
 
         # Read Only User Addition
@@ -815,17 +816,16 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             "projectId": workspace_id,
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
-                {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+                {"user": ws_o.get_project_user(new_username), "access": "writer"},
                 {"user": ws_o.get_project_user("GuestAccount"), "access": "reader"},
             ],
         }
         updated_project = ws_o.get_project(client, workspace_id)
         assert updated_project["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
             {"user": ws_o.get_project_user("GuestAccount"), "access": "reader"},
         ]
-        # TODO: Verify this return value structure
         client.files.getPermissions.return_value = TapisResult(
             id="GuestAccount", permission="READ"
         )
@@ -869,11 +869,12 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
         # This change_user_role never returns a get project, only uses Tapis calls
         # Mocking what the contents of the project would be like after action
         project_pre_update = mock_get_project(client, workspace_id)
+        new_username = "new_user"
         assert project_pre_update["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ]
-        ws_o.change_user_role(client, workspace_id, "new_user", "reader")
+        ws_o.change_user_role(client, workspace_id, new_username, "reader")
         # TODO: Fix the assertions and potential return value
         mock_service_account.assert_called
         # mock_service_account.files.setFacl.assert_called_with(
@@ -890,13 +891,13 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
             "projectId": "test.project-2",
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
-                {"user": ws_o.get_project_user("new_user"), "access": "reader"},
+                {"user": ws_o.get_project_user(new_username), "access": "reader"},
             ],
         }
         project_post_update = mock_get_project(client, workspace_id)
         assert project_post_update["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "reader"},
+            {"user": ws_o.get_project_user(new_username), "access": "reader"},
         ]
 
 
@@ -936,11 +937,12 @@ def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
         # This change_user_role never returns a get project, only uses Tapis calls
         # Mocking what the contents of the project would be like after action
         project_pre_update = mock_get_project(client, workspace_id)
+        new_username = "new_user"
         assert project_pre_update["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ]
-        ws_o.remove_user(client, workspace_id, "new_user")
+        ws_o.remove_user(client, workspace_id, new_username)
         # TODO: Fix the assertions and potential return value
         mock_service_account.assert_called
         mock_get_project.return_value = {
@@ -994,11 +996,12 @@ def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
         # This change_user_role never returns a get project, only uses Tapis calls
         # Mocking what the contents of the project would be like after action
         project_pre_update = mock_get_project(client, workspace_id)
+        new_username = "new_user"
         assert project_pre_update["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "owner"},
-            {"user": ws_o.get_project_user("new_user"), "access": "writer"},
+            {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ]
-        ws_o.transfer_ownership(client, workspace_id, "new_user", "username")
+        ws_o.transfer_ownership(client, workspace_id, new_username, "username")
         # TODO: Fix the assertions and potential return value
         mock_service_account.assert_called
         # mock_service_account.files.setFacl.assert_called_with(
@@ -1015,13 +1018,13 @@ def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
             "projectId": "test.project-2",
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "writer"},
-                {"user": ws_o.get_project_user("new_user"), "access": "owner"},
+                {"user": ws_o.get_project_user(new_username), "access": "owner"},
             ],
         }
         project_post_update = mock_get_project(client, workspace_id)
         assert project_post_update["members"] == [
             {"user": ws_o.get_project_user("username"), "access": "writer"},
-            {"user": ws_o.get_project_user("new_user"), "access": "owner"},
+            {"user": ws_o.get_project_user(new_username), "access": "owner"},
         ]
 
 
@@ -1090,4 +1093,3 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         assert updated_project["systemId"] == "test.project.test.project-2"
         assert updated_project["notes"]["title"] == new_title
         assert updated_project["notes"]["description"] == new_description
-        # TODO: Potentially validate this with get_project
