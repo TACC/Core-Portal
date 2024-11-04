@@ -140,7 +140,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   ];
 
   return (
-    <div className={`data-files-sidebar ${styles['root']}`}>
+    <div className={`nav-sidebar data-files-sidebar ${styles['root']}`}>
       <Sidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
     </div>
   );

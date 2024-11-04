@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
@@ -35,14 +35,17 @@ const setProjectRole = async (projectId, username, oldRole, newRole) => {
 
 const useProjectRole = (projectId, username) => {
   const queryClient = useQueryClient();
-  const query = useQuery(['project-role', projectId, username], () =>
-    getProjectRole(projectId, username)
-  );
-  const mutation = useMutation(async ({ oldRole, newRole }) => {
-    await setProjectRole(projectId, username, oldRole, newRole);
-    query.refetch();
-    // Invalidate the system role query to keep it up to date.
-    queryClient.invalidateQueries(['system-role', projectId, username]);
+  const query = useQuery({
+    queryKey: ['project-role', projectId, username],
+    queryFn: () => getProjectRole(projectId, username),
+  });
+  const mutation = useMutation({
+    mutationFn: async ({ oldRole, newRole }) => {
+      await setProjectRole(projectId, username, oldRole, newRole);
+      query.refetch();
+      // Invalidate the system role query to keep it up to date.
+      queryClient.invalidateQueries(['system-role', projectId, username]);
+    },
   });
   return { query, mutation };
 };
