@@ -76,7 +76,6 @@ class PublicationRequestView(BaseApiView):
         print(f'request_body: {request_body}')
         print(f'full_project_id: {full_project_id}')
 
-        return JsonResponse({'response': 'OK'})
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
 
