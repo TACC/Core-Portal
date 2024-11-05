@@ -14,7 +14,7 @@ export async function mkdirUtil({
   system: string;
   path: string;
   dirname: string;
-}): Promise<{name: string; path:string}> {
+}): Promise<{ name: string; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
