@@ -1,7 +1,9 @@
 .data-files-nav-link {
+  text-decoration: none;
   color: var(--global-color-accent--normal);
 }
 .data-files-nav-link:hover {
+  text-decoration: underline;
   color: var(--global-color-accent--normal);
 }
 

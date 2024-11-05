@@ -16,11 +16,14 @@ export const SystemStatusQueueTable = ({ system }) => {
   const [systemQueues, setSystemQueues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(async () => {
-    setIsLoading(true);
-    const details = system ? await useSystemQueue(system.hostname) : [];
-    setSystemQueues(details);
-    setIsLoading(false);
+  useEffect(() => {
+    const fetchStatus = async () => {
+      setIsLoading(true);
+      const details = system ? await useSystemQueue(system.hostname) : [];
+      setSystemQueues(details);
+      setIsLoading(false);
+    };
+    fetchStatus();
   }, [system]);
 
   const columns = useMemo(

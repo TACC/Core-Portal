@@ -175,6 +175,6 @@ describe('License Cell', () => {
 
   it('should show the table header', () => {
     expect(getByText(/Licenses/)).toBeInTheDocument();
-    expect(getByRole(/table/)).toBeDefined();
+    expect(getByRole('table')).toBeDefined();
   });
 });
