@@ -5,11 +5,11 @@ import Cookies from 'js-cookie';
 
 export async function trashUtil({
   // Per TypeScript, declare variables...
-  api, 
-  scheme, 
-  system, 
-  path, 
-  homeDir
+  api,
+  scheme,
+  system,
+  path,
+  homeDir,
 }: {
   // ...and their types for use in this function
   api: string;
@@ -21,8 +21,8 @@ export async function trashUtil({
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await apiClient.put<{ name: string; path: string }>(url, {
     method: 'PUT',
-    headers: { 
-      'X-CSRFToken': Cookies.get('csrftoken') 
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
     },
     credentials: 'same-origin',
     body: JSON.stringify({
@@ -49,10 +49,10 @@ function useTrash() {
   // Establish mutate using trashUtil as its mutation function
   const { mutate } = useMutation({ mutationFn: trashUtil });
 
-  const trash = ({ 
+  const trash = ({
     // Per TypeScript, declare variables...
-    selection, 
-    callback 
+    selection,
+    callback,
   }: {
     // ...and their types for use in this function
     selection: any;
@@ -69,11 +69,11 @@ function useTrash() {
     // Establish the parameters of mutate
     mutate(
       {
-        api: selection.api, 
-        scheme: selection.scheme, 
+        api: selection.api,
+        scheme: selection.scheme,
         system: selection.system,
         path: '/' + selection.path,
-        homeDir: selection.homeDir
+        homeDir: selection.homeDir,
       },
       {
         // Sends the file to the Trash if successful
@@ -86,7 +86,7 @@ function useTrash() {
           dispatch({
             type: 'ADD_TOAST',
             payload: {
-              message: `${selection} moved to Trash`
+              message: `${selection} moved to Trash`,
             },
           });
         },
@@ -96,12 +96,12 @@ function useTrash() {
             type: 'DATA_FILES_SET_OPERATION_STATUS',
             payload: { status: 'ERROR', operation: 'trash' },
           });
-        }
+        },
       }
     );
   };
-  
+
   return { trash, status, setStatus };
-};
+}
 
 export default useTrash;
