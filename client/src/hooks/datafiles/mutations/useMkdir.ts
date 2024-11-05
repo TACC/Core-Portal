@@ -83,7 +83,7 @@ function useMkdir() {
         onSuccess: () => {
           dispatch({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'SUCCESS', operation: 'rename' },
+            payload: { status: 'SUCCESS', operation: 'mkdir' },
           });
           dispatch({
             type: 'DATA_FILES_TOGGLE_MODAL',
@@ -97,7 +97,7 @@ function useMkdir() {
         onError: () => {
           dispatch({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'ERROR', operation: 'rename' },
+            payload: { status: 'ERROR', operation: 'mkdir' },
           });
         },
       }
