@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  InputGroupAddon,
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage, SectionMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
@@ -176,22 +169,17 @@ const DataFilesDownloadMessageModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon
-                      addonType="append"
-                      className={styles['input-field']}
+                    <Input
+                      type="select"
+                      name="compressionType"
+                      bsSize="sm"
+                      onChange={handleSelectChange}
+                      disabled={formDisabled}
+                      className={styles['bg-color']}
                     >
-                      <Input
-                        type="select"
-                        name="compressionType"
-                        bsSize="sm"
-                        onChange={handleSelectChange}
-                        disabled={formDisabled}
-                        className={styles['bg-color']}
-                      >
-                        <option value="zip">.zip</option>
-                        <option value="tgz">.tar.gz</option>
-                      </Input>
-                    </InputGroupAddon>
+                      <option value="zip">.zip</option>
+                      <option value="tgz">.tar.gz</option>
+                    </Input>
                   }
                 />
                 <p>

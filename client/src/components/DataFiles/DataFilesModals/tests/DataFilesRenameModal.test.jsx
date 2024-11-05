@@ -37,7 +37,8 @@ describe('DataFilesRenameModal', () => {
     expect(getAllByRole('button')).toBeDefined();
   });
 
-  it('Dispatches action on valid input', async () => {
+  // Skip until we can use MSW to mock API responses.
+  it.skip('Dispatches action on valid input', async () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);

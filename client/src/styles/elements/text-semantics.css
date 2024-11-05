@@ -18,3 +18,11 @@ kbd {
   background-color: unset;
   border-radius: unset;
 }
+
+/* Bootstrap 5 tweak: do not underline links unless hovered over */
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
