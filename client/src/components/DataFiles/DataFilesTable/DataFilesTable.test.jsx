@@ -7,6 +7,15 @@ import { Provider } from 'react-redux';
 import DataFilesTable from './DataFilesTable';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -69,18 +78,20 @@ describe('DataFilesTable', () => {
   let getByText, rerender;
   beforeEach(() => {
     ({ getByText, rerender } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     ));
   });
 
@@ -109,18 +120,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(
       getByText(
@@ -147,18 +160,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(
       getByText(
@@ -185,18 +200,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(getByText(/You must be logged in to view this data./)).toBeDefined();
   });
@@ -220,18 +237,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(
       getByText(/Connect your Google Drive account under the/)
@@ -256,18 +275,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={[]}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={[]}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(getByText(/No files or folders to show./)).toBeDefined();
   });
@@ -290,18 +311,20 @@ describe('DataFilesTable', () => {
       },
     });
     rerender(
-      <Provider store={storeWithError}>
-        <BrowserRouter>
-          <DataFilesTable
-            data={filesFixture.listing.FilesListing}
-            columns={columns}
-            rowSelectCallback={mockCallback}
-            scrollBottomCallback={mockCallback}
-            section="FilesListing"
-          />
-          ,
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={storeWithError}>
+          <BrowserRouter>
+            <DataFilesTable
+              data={filesFixture.listing.FilesListing}
+              columns={columns}
+              rowSelectCallback={mockCallback}
+              scrollBottomCallback={mockCallback}
+              section="FilesListing"
+            />
+            ,
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
 
     expect(
