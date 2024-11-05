@@ -5,11 +5,10 @@ import * as Yup from 'yup';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import * as ROUTES from '../../../../../constants/routes';
 
 const validationSchema = Yup.object({});
 
-const SubmitPublicationReview = () => {
+const SubmitPublicationReview = ({ callbackUrl }) => {
   const { submitForm, setFieldValue, resetForm } = useFormikContext();
 
   const history = useHistory();
@@ -35,7 +34,7 @@ const SubmitPublicationReview = () => {
     if (isApproveSuccess || isRejectSuccess) {
       setSubmitDisabled(false);
       resetForm();
-      history.replace(`${ROUTES.WORKBENCH}${ROUTES.DATA}`);
+      history.replace(callbackUrl);
     }
   }, [isApproveSuccess, isRejectSuccess]);
 
@@ -85,10 +84,10 @@ const SubmitPublicationReview = () => {
   );
 };
 
-export const SubmitPublicationReviewStep = () => ({
+export const SubmitPublicationReviewStep = ({ callbackUrl }) => ({
   id: 'submit_publication_review',
   name: 'Submit Publication Review',
-  render: <SubmitPublicationReview />,
+  render: <SubmitPublicationReview callbackUrl={callbackUrl} />,
   initialValues: {},
   validationSchema,
 });

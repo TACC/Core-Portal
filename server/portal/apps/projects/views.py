@@ -224,13 +224,12 @@ class ProjectInstanceApiView(BaseApiView):
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         client = request.user.tapis_oauth.client
 
-        if metadata is not None:
-            patch_project_entity(project_id_full, metadata)
-
         workspace_def = update_project(client, project_id, data['title'], data['description'])
 
-        if metadata is not None: 
-            workspace_def.update(metadata)
+        if metadata is not None:
+            entity = patch_project_entity(project_id_full, metadata) 
+            workspace_def.update(get_ordered_value(entity.name, entity.value))
+            workspace_def["projectId"] = project_id
 
         return JsonResponse(
             {

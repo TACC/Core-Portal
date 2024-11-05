@@ -220,6 +220,8 @@ _PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'cep.project.published'
 _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = '/corral-repl/utexas/pge-nsf/data_pprd/published'
 _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.project.published.test'
 
+_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWERS'
+
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.

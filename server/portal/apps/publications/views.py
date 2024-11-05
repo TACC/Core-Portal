@@ -11,18 +11,19 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
-from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_review_shared_workspace, create_publication_system
-from portal.apps.projects.workspace_operations.project_publish_operations import publish_project, update_and_cleanup_review_project
+from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
+from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import transaction
-from portal.apps.projects.tasks import copy_graph_and_files
 from portal.apps.notifications.models import Notification
 from django.http import HttpResponse
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class PublicationRequestView(BaseApiView):
          
@@ -66,27 +67,66 @@ class PublicationRequestView(BaseApiView):
     @method_decorator(login_required, name='dispatch')
     def post(self, request):
         
-        data = json.loads(request.body)
+        request_body = json.loads(request.body)
 
         client = request.user.tapis_oauth.client
         
-        source_workspace_id = data['projectId']
+        full_project_id = request_body.get('project_id')
+
+        print(f'request_body: {request_body}')
+        print(f'full_project_id: {full_project_id}')
+
+        return JsonResponse({'response': 'OK'})
+        if not full_project_id:
+            raise ApiException("Missing project ID", status=400)
+
+        source_workspace_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
         review_workspace_id = f"{source_workspace_id}"
         source_system_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{source_workspace_id}'
         review_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}"
 
         with transaction.atomic():
-            # Update authors for the source project 
-            source_project = ProjectMetadata.get_project_by_id(source_system_id)
+            # Update authors for the source project
             # TODO: use pydantic to validate data
-            source_project.value['authors'] = data['authors']
+            source_project = ProjectMetadata.get_project_by_id(source_system_id)
+            source_project.value['authors'] = request_body.get('authors')
             source_project.save()
 
-        system_id = create_publication_review_shared_workspace(client, source_workspace_id, source_system_id, review_workspace_id, 
-                                                   review_system_id, data['title'], data['description'])
+        # create new system or undelete existing system
+        query = f"(id.eq.{review_system_id})"
+        listing = client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
+                                            showDeleted=True, limit=-1)
+        
+        if listing and listing[0].deleted:
+            logger.info(f'Undeleting system {review_system_id}')
+            client.systems.undeleteSystem(systemId=review_system_id)
+        else:
+            create_publication_workspace(client, source_workspace_id, source_system_id, review_workspace_id, 
+                                         review_system_id, request_body.get('title'), request_body.get('description'), True)
+
+        # Create publication request
+        review_project = ProjectMetadata.get_project_by_id(review_system_id)
+        source_project = ProjectMetadata.get_project_by_id(source_system_id)
+        publication_reviewers = get_user_model().objects.filter(groups__name=settings.PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME)
+
+        publication_request = PublicationRequest(
+            review_project=review_project,
+            source_project=source_project,
+        )
+
+        publication_request.save()
+
+        for reviewer in publication_reviewers:
+            try:
+                publication_request.reviewers.add(reviewer)
+            except ObjectDoesNotExist:
+                continue
+
+        publication_request.save()
+        logger.info(f'Created publication review for system {review_system_id}')
 
         # Start task to copy files and metadata
-        copy_graph_and_files.apply_async(kwargs={
+        copy_graph_and_files_for_review_system.apply_async(kwargs={
             'user_access_token': client.access_token.access_token, 
             'source_workspace_id': source_workspace_id,
             'review_workspace_id': review_workspace_id,
@@ -105,7 +145,7 @@ class PublicationRequestView(BaseApiView):
         with transaction.atomic():
                 Notification.objects.create(**event_data)
 
-        return HttpResponse('OK')
+        return JsonResponse({'response': 'OK'})
 
 class PublicationListingView(BaseApiView):
 
@@ -147,9 +187,12 @@ class PublicationPublishView(BaseApiView):
         else: 
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
+        source_system_id = f'{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}'
         published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
+        published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
 
-        create_publication_system(project_id, published_workspace_id, request_body.get('title'), request_body.get('description'))
+        create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id, 
+                                     request_body.get('title'), request_body.get('description'), False)
         
         publish_project.apply_async(kwargs={
             'project_id': project_id,

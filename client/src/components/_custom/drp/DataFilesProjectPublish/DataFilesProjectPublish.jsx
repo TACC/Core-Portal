@@ -82,7 +82,7 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
       project: metadata,
       onAuthorsUpdate: handleAuthorsUpdate,
     }),
-    SubmitPublicationRequestStep(),
+    SubmitPublicationRequestStep({callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}),
   ];
 
   const formSubmit = (values) => {

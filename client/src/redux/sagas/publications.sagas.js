@@ -78,7 +78,6 @@ export function* approvePublication(action) {
   });
   try {
     const result = yield call(approvePublicationUtil, action.payload);
-    console.log('here', result);
     yield put({
       type: 'PUBLICATIONS_APPROVE_PUBLICATION_SUCCESS',
       payload: result,
@@ -89,7 +88,6 @@ export function* approvePublication(action) {
       payload: error,
     });
   } finally {
-    console.log('resetting state');
     yield put({ type: 'PUBLICATIONS_OPERATION_RESET' });
   }
 }
@@ -122,7 +120,6 @@ export function* rejectPublication(action) {
       payload: error,
     });
   } finally {
-    console.log('resetting state');
     yield put({ type: 'PUBLICATIONS_OPERATION_RESET' });
   }
 }

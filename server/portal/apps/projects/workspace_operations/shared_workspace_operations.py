@@ -401,72 +401,47 @@ def get_workspace_role(client, workspace_id, username):
     return None
 
 @transaction.atomic
-def create_publication_review_shared_workspace(client, source_workspace_id: str, source_system_id: str, review_workspace_id: str, 
-                                               review_system_id: str, title: str, description=""):
+def create_publication_workspace(client, source_workspace_id: str, source_system_id: str, target_workspace_id: str, 
+                                 target_system_id: str, title: str, description="", is_review=False):
     
     portal_admin_username = settings.PORTAL_ADMIN_USERNAME
     service_client = service_account()
 
-    # add admin to the source workspace to allow for file copying
-    resp = add_user_to_workspace(client, source_workspace_id, portal_admin_username)
+    # Determine workspace and system-specific settings based on the project type
+    system_prefix = settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX if is_review else settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
+    root_system_name = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME if is_review else settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    root_dir = settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR if is_review else settings.PORTAL_PROJECTS_PUBLISHED_ROOT_DIR
 
+    if is_review:
+        # Add admin to the source workspace to allow for file copying
+        add_user_to_workspace(client, source_workspace_id, portal_admin_username)
+
+    # Retrieve the source project and adjust project data based on review/published status
     source_project = ProjectMetadata.get_project_by_id(source_system_id)
-
-    review_project = create_project_metadata({**source_project.value, "projectId": review_system_id, "is_review_project": True})
-
-    review_project.save()
-    
-    create_workspace_dir(review_workspace_id, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME)
-        
-    set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
-                       review_workspace_id,
-                       portal_admin_username,
-                       "add",
-                       "writer")
-    
-    system_id = create_workspace_system(service_client, review_workspace_id, title, description, None, 
-                                        f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}",
-                                        f"{settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR}/{review_workspace_id}")
-    
-    return system_id
-
-@transaction.atomic
-def create_publication_system(workspace_id: str, published_workspace_id: str, title: str, description=""):
-
-    client = service_account()
-    
-    review_system_id = f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{workspace_id}"
-    published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
-    published_system_name = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
-    published_system_root_dir = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_DIR
-
-    portal_admin_username = settings.PORTAL_ADMIN_USERNAME
-    service_client = service_account()
-
-    source_project = ProjectMetadata.get_project_by_id(review_system_id)
-    source_project_value = get_ordered_value(constants.PROJECT, source_project.value)
+    project_value = get_ordered_value(constants.PROJECT, source_project.value)
 
     project_data = {
-        **source_project_value,
-        "project_id": published_system_id,
-        "is_published_project": True,
-        "is_review_project": False
+        **project_value,
+        "project_id": target_system_id,
+        "is_review_project": is_review,
+        "is_published_project": not is_review
     }
 
+    # Create and save the new project metadata
     new_project = create_project_metadata(project_data)
     new_project.save()
-    
-    create_workspace_dir(published_workspace_id, published_system_name)
-        
-    set_workspace_acls(service_client,
-                       published_system_name,
-                       published_workspace_id,
-                       portal_admin_username,
-                       "add", 
-                       "writer")
-    
-    system_id = create_workspace_system(service_client, published_workspace_id, title, description, None, 
-                                        published_system_id, f"{published_system_root_dir}/{published_workspace_id}")
+
+    # Set up the target workspace directory
+    create_workspace_dir(target_workspace_id, root_system_name)
+
+    # Configure workspace ACLs
+    set_workspace_acls(service_client, root_system_name, target_workspace_id, portal_admin_username, "add", "writer")
+
+    # Create the target workspace system
+    system_id = create_workspace_system(
+        service_client, target_workspace_id, title, description, None,
+        f"{system_prefix}.{target_workspace_id}",
+        f"{root_dir}/{target_workspace_id}"
+    )
     
     return system_id
