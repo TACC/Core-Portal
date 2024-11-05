@@ -11,23 +11,23 @@ export async function moveFileUtil({
   system,
   path,
   destSystem,
-  destPath
+  destPath,
 }: {
-  api: string,
-  scheme: string,
-  system: string,
-  path: string,
-  destSystem: string,
-  destPath: string
-}): Promise<{ name: string; path: string }>  {
+  api: string;
+  scheme: string;
+  system: string;
+  path: string;
+  destSystem: string;
+  destPath: string;
+}): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await apiClient.put<{ name: string; path: string }>(url, {
     method: 'PUT',
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken')
+      'X-CSRFToken': Cookies.get('csrftoken'),
     },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath })
+    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
   });
   return request.data;
 }
@@ -46,20 +46,22 @@ function useMove() {
       payload: { operation: 'move', status: newStatus },
     });
 
-  // Establish mutate using moveFileUtil as its mutation function  
+  // Establish mutate using moveFileUtil as its mutation function
   const { mutate } = useMutation({ mutationFn: moveFileUtil });
 
-  const move = ({ 
+  const move = ({
     // Establish variables and their types per TypeScript
-    destSystem, 
-    destPath, 
-    callback 
+    destSystem,
+    destPath,
+    callback,
   }: {
     destSystem: any;
     destPath: any;
     callback: (name: string, path: string) => any;
   }) => {
-    const filteredSelected = selected.filter((f: any) => status[f.id] !== 'SUCCESS');
+    const filteredSelected = selected.filter(
+      (f: any) => status[f.id] !== 'SUCCESS'
+    );
     dispatch({
       type: 'DATA_FILES_MOVE',
       payload: {
