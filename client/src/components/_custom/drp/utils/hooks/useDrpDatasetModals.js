@@ -129,7 +129,25 @@ const useDrpDatasetModals = (
     }
   );
 
-  return { createSampleModal, createOriginDataModal, createAnalysisDataModal };
+  const createTreeModal = useCallback(
+    async ({ readOnly = false }) => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'projectTree',
+          props: { readOnly },
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  return {
+    createSampleModal,
+    createOriginDataModal,
+    createAnalysisDataModal,
+    createTreeModal,
+  };
 };
 
 export default useDrpDatasetModals;
