@@ -51,7 +51,9 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
     ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {} }),
-    SubmitPublicationReviewStep({callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}`}),
+    SubmitPublicationReviewStep({
+      callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}`,
+    }),
   ];
 
   const formSubmit = (values) => {

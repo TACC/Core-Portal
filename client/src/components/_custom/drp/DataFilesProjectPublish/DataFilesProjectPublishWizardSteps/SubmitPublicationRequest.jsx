@@ -13,7 +13,8 @@ const validationSchema = Yup.object({
 });
 
 const SubmitPublicationRequest = ({ callbackUrl }) => {
-  const { handleChange, handleBlur, values, submitForm, resetForm } = useFormikContext();
+  const { handleChange, handleBlur, values, submitForm, resetForm } =
+    useFormikContext();
   const history = useHistory();
 
   const [submitDisabled, setSubmitDisabled] = useState(true);

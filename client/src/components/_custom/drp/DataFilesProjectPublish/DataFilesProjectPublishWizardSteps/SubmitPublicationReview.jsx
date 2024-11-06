@@ -29,7 +29,6 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
       isRejectLoading: name === 'reject' && loading,
       isApproveSuccess: name === 'approve' && !loading && !error && result,
       isRejectSuccess: name === 'reject' && !loading && !error && result,
-      
     };
   });
 
@@ -57,7 +56,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
     setFieldValue('versionApproved', true);
     setSubmitDisabled(true);
     submitForm();
-  }
+  };
 
   return (
     <SectionTableWrapper
@@ -79,7 +78,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
             >
               Publish New Version
             </Button>
-          ) :
+          ) : (
             <Button
               type="primary"
               className={styles['submit-button']}
@@ -89,7 +88,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
             >
               Approve and Publish
             </Button>
-          }
+          )}
           <Button
             type="secondary"
             className={styles['submit-button']}
