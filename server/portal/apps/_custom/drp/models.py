@@ -54,6 +54,10 @@ class FileObj(DrpMetadataModel):
     uuid: Optional[str] = None
     value: Optional[DrpFileMetadata] = None
 
+class PartialTrashEntity(DrpMetadataModel):
+    """Model for representing a trash entity."""
+
+    model_config = ConfigDict(extra="ignore")
 class PartialEntityWithFiles(DrpMetadataModel):
     """Model for representing an entity with associated files."""
 

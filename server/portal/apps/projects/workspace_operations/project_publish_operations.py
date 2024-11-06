@@ -5,11 +5,11 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 import networkx as nx
 from celery import shared_task
-
 from portal.apps._custom.drp import constants
 from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
 from django.db import transaction
+from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from tapipy.errors import NotFoundError, BaseTapyException
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,12 +22,15 @@ def _transfer_files(client, source_system_id, dest_system_id):
 
     source_system_files = client.files.listFiles(systemId=source_system_id, path='/')
 
+    # Filter out the trash folder
+    filtered_files = [file for file in source_system_files if file.name != settings.TAPIS_DEFAULT_TRASH_NAME]
+
     transfer_elements = [
         {
             'sourceURI': file.url,
             'destinationURI': f'tapis://{dest_system_id}/{file.path}'
         }
-        for file in source_system_files
+        for file in filtered_files
     ]
 
     transfer = service_client.files.createTransferTask(elements=transfer_elements)
@@ -44,6 +47,9 @@ def _add_values_to_tree(project_id):
     entity_map = {entity.uuid: entity for entity in prj_entities}
 
     publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
+
+    publication_tree = remove_trash_nodes(publication_tree)
+
     for node_id in publication_tree:
         uuid = publication_tree.nodes[node_id]["uuid"]
         if uuid is not None:
