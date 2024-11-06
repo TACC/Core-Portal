@@ -155,7 +155,11 @@ def patch_project_entity(project_id, value):
     entity = ProjectMetadata.get_project_by_id(project_id)
     schema_model = SCHEMA_MAPPING[entity.name]
 
-    patched_metadata = {**value, 'projectId': project_id, 'fileObjs': entity.value.get('fileObjs', [])}
+    patched_metadata = {**value, 
+                        'projectId': project_id, 
+                        'fileObjs': entity.value.get('fileObjs', []),
+                        'doi': entity.value.get('doi', None)
+                        }
 
     update_node_in_project(project_id, 'NODE_ROOT', None, value.get('title'))
 

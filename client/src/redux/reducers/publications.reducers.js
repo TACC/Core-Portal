@@ -102,6 +102,36 @@ export default function publications(state = initialState, action) {
           result: null,
         },
       };
+    case 'PUBLICATIONS_APPROVE_VERSION_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'approve',
+          loading: true,
+          error: null,
+          result: null,
+        },
+      };
+    case 'PUBLICATIONS_APPROVE_VERSION_SUCCESS':
+      return {
+        ...state,
+        operation: {
+          name: 'approve',
+          loading: false,
+          error: null,
+          result: action.payload,
+        },
+      };
+    case 'PUBLICATIONS_APPROVE_VERSION_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'approve',
+          loading: false,
+          error: action.payload,
+          result: null,
+        },
+      };
     case 'PUBLICATIONS_OPERATION_RESET':
       return {
         ...state,

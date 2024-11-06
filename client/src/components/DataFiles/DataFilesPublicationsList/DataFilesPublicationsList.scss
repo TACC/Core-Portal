@@ -1,22 +1,22 @@
-.projects-listing {
+.publications-listing {
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
     width: 40%;
   }
-  /* owner */
+  /* authors */
   th:nth-child(2),
   td:nth-child(2) {
     width: 20%;
   }
-  /* id */
+  /* keywords */
   th:nth-child(3),
   td:nth-child(3) {
     width: 25%;
   }
-
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 15%;
-  }
+  // /* date */
+  // th:nth-child(4),
+  // td:nth-child(4) {
+  //   width: 15%;
+  // }
 }

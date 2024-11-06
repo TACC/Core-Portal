@@ -69,6 +69,11 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
         type: 'PUBLICATIONS_REJECT_PUBLICATION',
         payload: data,
       });
+    } else if (values && values.versionApproved) {
+      dispatch({
+        type: 'PUBLICATIONS_APPROVE_VERSION',
+        payload: data,
+      });
     }
   };
 

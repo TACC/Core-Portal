@@ -210,6 +210,8 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
 
     client = service_account()
 
+    workspace_id = review_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
+
     # update the publication request 
     review_project = ProjectMetadata.get_project_by_id(review_project_id)
     pub_request = PublicationRequest.objects.get(review_project=review_project, status=PublicationRequest.Status.PENDING)
@@ -223,8 +225,10 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
 
     for reviewer in reviewers:
         try:
-            remove_user(client, review_project_id, reviewer.username)
+            remove_user(client, workspace_id, reviewer.username, review_project_id, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME)
+            logger.info(f'Removed reviewer {reviewer.username} from review system {review_project_id}')
         except: 
+            logger.error(f'Error removing reviewer {reviewer.username} from review system {review_project_id}')
             continue
 
     client.files.delete(systemId=review_project_id, path='/')

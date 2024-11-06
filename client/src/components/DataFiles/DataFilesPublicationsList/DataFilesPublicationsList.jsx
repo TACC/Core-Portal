@@ -47,6 +47,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       accessor: 'title',
       Cell: (el) => (
         <Link
+          className="data-files-nav-link"
           to={`/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`}
         >
           {el.value}
@@ -54,7 +55,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       ),
     },
     {
-      Header: 'Authors',
+      Header: 'Principal Investigator',
       accessor: 'authors',
       Cell: (el) => (
         <span>
@@ -111,7 +112,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
           onInfiniteScroll={infiniteScrollCallback}
           isLoading={loading}
           noDataText={noDataText}
-          className="projects-listing"
+          className="publications-listing"
         />
       </div>
     </SectionTableWrapper>

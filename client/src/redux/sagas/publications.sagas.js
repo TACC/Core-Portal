@@ -154,12 +154,43 @@ export function* getPublications(action) {
   }
 }
 
+export async function versionPublicationUtil(data) {
+  const result = await fetchUtil({
+    url: `/api/publications/version/`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return result.response;
+}
+
+export function* versionPublication(action) {
+  yield put({
+    type: 'PUBLICATIONS_APPROVE_VERSION_STARTED',
+  });
+  try {
+    const result = yield call(versionPublicationUtil, action.payload);
+    yield put({
+      type: 'PUBLICATIONS_APPROVE_VERSION_SUCCESS',
+      payload: result,
+    });
+  } catch (error) {
+    yield put({
+      type: 'PUBLICATIONS_APPROVE_VERSION_FAILED',
+      payload: error,
+    });
+  } finally {
+    yield put({ type: 'PUBLICATIONS_OPERATION_RESET' });
+  }
+}
+
 export function* watchPublications() {
   yield takeLatest('PUBLICATIONS_GET_PUBLICATIONS', getPublications);
   yield takeLatest('PUBLICATIONS_APPROVE_PUBLICATION', approvePublication);
-
   yield takeLatest('PUBLICATIONS_REJECT_PUBLICATION', rejectPublication);
-
+  yield takeLatest('PUBLICATIONS_APPROVE_VERSION', versionPublication);
   yield takeLatest(
     'PUBLICATIONS_CREATE_PUBLICATION_REQUEST',
     createPublicationRequest

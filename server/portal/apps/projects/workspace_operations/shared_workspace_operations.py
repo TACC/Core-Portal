@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import models
 from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 import logging
 logger = logging.getLogger(__name__)
@@ -249,15 +250,17 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     set_workspace_permissions(client, username, system_id, new_role)
 
 
-def remove_user(client, workspace_id: str, username: str):
+def remove_user(client, workspace_id: str, username: str, system_id=None, system_name=None):
     """
     Unshare the system and remove all permissions and credentials.
     """
 
     service_client = service_account()
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
+
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       system_name,
                        workspace_id,
                        username,
                        "remove",
@@ -271,7 +274,7 @@ def remove_user(client, workspace_id: str, username: str):
                                    username=username,
                                    path="/")
 
-    return get_project(client, workspace_id)
+    return get_project(client, workspace_id, system_id)
 
 
 def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str):
@@ -437,11 +440,19 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
     # Configure workspace ACLs
     set_workspace_acls(service_client, root_system_name, target_workspace_id, portal_admin_username, "add", "writer")
 
-    # Create the target workspace system
-    system_id = create_workspace_system(
-        service_client, target_workspace_id, title, description, None,
-        f"{system_prefix}.{target_workspace_id}",
-        f"{root_dir}/{target_workspace_id}"
-    )
+    query = f"(id.eq.{target_system_id})"
+    listing = service_client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
+                                            showDeleted=True, limit=-1)
     
-    return system_id
+    if listing and listing[0].deleted:
+        service_client.systems.undeleteSystem(systemId=target_system_id)
+        # Add back system credentials since the system was previously deleted
+        create_system_credentials(service_client, portal_admin_username, settings.PORTAL_PROJECTS_PUBLIC_KEY, 
+                                  settings.PORTAL_PROJECTS_PRIVATE_KEY, target_system_id)
+    else:
+    # Create the target workspace system
+        create_workspace_system(
+            service_client, target_workspace_id, title, description, None,
+            f"{system_prefix}.{target_workspace_id}",
+            f"{root_dir}/{target_workspace_id}"
+        )

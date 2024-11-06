@@ -22,6 +22,7 @@ from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
+from portal.libs.agave.utils import service_account
 
 logger = logging.getLogger(__name__)
 
@@ -70,11 +71,9 @@ class PublicationRequestView(BaseApiView):
         request_body = json.loads(request.body)
 
         client = request.user.tapis_oauth.client
+        service_client = service_account()
         
         full_project_id = request_body.get('project_id')
-
-        print(f'request_body: {request_body}')
-        print(f'full_project_id: {full_project_id}')
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
@@ -91,17 +90,8 @@ class PublicationRequestView(BaseApiView):
             source_project.value['authors'] = request_body.get('authors')
             source_project.save()
 
-        # create new system or undelete existing system
-        query = f"(id.eq.{review_system_id})"
-        listing = client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
-                                            showDeleted=True, limit=-1)
-        
-        if listing and listing[0].deleted:
-            logger.info(f'Undeleting system {review_system_id}')
-            client.systems.undeleteSystem(systemId=review_system_id)
-        else:
-            create_publication_workspace(client, source_workspace_id, source_system_id, review_workspace_id, 
-                                         review_system_id, request_body.get('title'), request_body.get('description'), True)
+        create_publication_workspace(client, source_workspace_id, source_system_id, review_workspace_id, 
+                                        review_system_id, request_body.get('title'), request_body.get('description'), True)
 
         # Create publication request
         review_project = ProjectMetadata.get_project_by_id(review_system_id)
@@ -176,7 +166,6 @@ class PublicationPublishView(BaseApiView):
 
         full_project_id = request_body.get('project_id')
         is_review = request_body.get('is_review_project', False)
-        version = request_body.get('version', 1)
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
@@ -187,8 +176,62 @@ class PublicationPublishView(BaseApiView):
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
         source_system_id = f'{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}'
+        published_workspace_id = f"{project_id}"
+        published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
+
+        create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id, 
+                                     request_body.get('title'), request_body.get('description'), False)
+        
+        publish_project.apply_async(kwargs={
+            'project_id': project_id,
+            'version': 1
+        })
+
+        # Create notification 
+        event_data = {
+                Notification.EVENT_TYPE: 'default',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{project_id} submitted for publication',
+            }
+        
+        with transaction.atomic():
+                Notification.objects.create(**event_data)
+
+        return JsonResponse({'response': 'OK'})
+
+
+class PublicationVersionView(BaseApiView):
+
+    def post(self, request):
+        """view for publishing a project"""
+
+        client = request.user.tapis_oauth.client
+        request_body = json.loads(request.body)
+
+        full_project_id = request_body.get('project_id')
+        is_review = request_body.get('is_review_project', False)
+        
+        if not full_project_id:
+            raise ApiException("Missing project ID", status=400)
+        
+        if is_review:
+            project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
+        else: 
+            project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+
+        print('project_id:', project_id)
+
+        publication = Publication.objects.get(project_id=project_id)
+        version = publication.version + 1
+
+        print(f"Version: {version}")
+
+        source_system_id = f'{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}'
         published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
         published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
+
+        print(f"Published Workspace ID: {published_workspace_id}")
 
         create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id, 
                                      request_body.get('title'), request_body.get('description'), False)
@@ -210,7 +253,7 @@ class PublicationPublishView(BaseApiView):
                 Notification.objects.create(**event_data)
 
         return JsonResponse({'response': 'OK'})
-     
+
 class PublicationRejectView(BaseApiView):
 
     def post(self, request):
