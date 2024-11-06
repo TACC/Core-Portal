@@ -42,7 +42,6 @@ function useMkdir() {
     });
   };
 
-  // TODO: Converted to mutation
   const { mutate } = useMutation({ mutationFn: mkdirUtil });
 
   const mkdir = ({
@@ -82,10 +81,6 @@ function useMkdir() {
       {
         onSuccess: () => {
           dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'SUCCESS', operation: 'mkdir' },
-          });
-          dispatch({
             type: 'DATA_FILES_TOGGLE_MODAL',
             payload: {
               operation: 'mkdir',
@@ -94,12 +89,7 @@ function useMkdir() {
           });
           reloadCallback;
         },
-        onError: () => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'ERROR', operation: 'mkdir' },
-          });
-        },
+        onError: () => {},
       }
     );
   };
