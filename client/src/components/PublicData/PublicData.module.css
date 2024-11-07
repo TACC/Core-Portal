@@ -1,7 +1,7 @@
 .content {
   /* As a flex child */
   flex-grow: 1;
-
+  /* WP-419 */
   /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
   padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
   /* There is no sidebar, so there is no need for space to the left */
