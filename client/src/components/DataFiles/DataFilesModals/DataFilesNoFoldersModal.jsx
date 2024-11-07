@@ -10,7 +10,6 @@ const DataFilesNoFoldersModal = () => {
   const { getStatus: getModalStatus } = useModal();
   const isOpen = getModalStatus('noFolders');
 
-  // Toggles the modal on or off
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
