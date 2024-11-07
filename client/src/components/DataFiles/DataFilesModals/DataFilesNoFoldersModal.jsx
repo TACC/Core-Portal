@@ -6,7 +6,6 @@ import { SectionMessage } from '_common';
 import styles from './DataFilesNoFoldersModal.module.scss';
 
 const DataFilesNoFoldersModal = () => {
-  // Assigns React-Redux dispatch calls
   const dispatch = useDispatch();
   // Creates the modal
   const { getStatus: getModalStatus } = useModal();
