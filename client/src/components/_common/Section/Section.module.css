@@ -1,13 +1,3 @@
-/* Block */
-
-.root {
-  display: flex;
-  flex-direction: column;
-
-  margin-top: var(--global-space--section-top);
-  margin-bottom: var(--global-space--section-bottom);
-}
-
 /* Elements */
 
 .messages,
@@ -25,7 +15,7 @@
   margin-right: var(--global-space--section-right);
 }
 
-/* Align Public Data Listing Header with Public Data Listing Contents*/
+/* Align Public Data Listing Header with Public Data Listing Contents */
 ._header_1f30w_15 {
   margin-left: 0;
 }
