@@ -93,7 +93,6 @@ function useUpload() {
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: { status: 'SUCCESS', key: index, operation: 'upload' },
             });
-            dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
           },
           onError: (error) => {
             console.log('The Error is', error);
