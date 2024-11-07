@@ -17,7 +17,20 @@ class DigitalRocksSampleView(BaseApiView):
 
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        samples = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.SAMPLE).values('uuid', 'name', 'value')
+        graph_model = ProjectMetadata.objects.get(
+            name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
+        )
+
+        project_graph = nx.node_link_graph(graph_model.value)
+
+        sample_uuids = []
+
+        for node_id in list(project_graph.successors('NODE_ROOT')):
+            node = project_graph.nodes[node_id]
+            if (node.get('name') == constants.SAMPLE):
+                sample_uuids.append(node.get('uuid'))
+            
+        samples = ProjectMetadata.objects.filter(uuid__in=sample_uuids).values('uuid', 'name', 'value')
 
         origin_data = []
         
