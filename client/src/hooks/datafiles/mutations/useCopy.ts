@@ -77,7 +77,9 @@ function useCopy() {
     shallowEqual
   );
 
-  const {scheme} = useSelector((state :any) => state.files.params.FilesListing);
+  const { scheme } = useSelector(
+    (state: any) => state.files.params.FilesListing
+  );
   const setStatus = (newStatus: string) =>
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -109,7 +111,7 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      
+
       mutate(
         {
           api: file.api,
