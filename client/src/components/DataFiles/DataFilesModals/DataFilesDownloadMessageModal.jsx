@@ -68,7 +68,6 @@ const DataFilesDownloadMessageModal = () => {
 
   const compressCallback = () => {
     const { filenameDisplay, compressionType } = formRef.current.values;
-    // Establish a boolean that checks for a folder among selectedFiles
     let containsFolder = false;
     // Check the total size of all selected files to be compressed
     let totalFileSize = 0;
