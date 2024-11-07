@@ -69,7 +69,6 @@ const DataFilesDownloadMessageModal = () => {
   const compressCallback = () => {
     const { filenameDisplay, compressionType } = formRef.current.values;
     let containsFolder = false;
-    // Check the total size of all selected files to be compressed
     let totalFileSize = 0;
     // Set the maximum file size limit for compressing files
     const maxFileSize = 2 * 1024 * 1024 * 1024;
