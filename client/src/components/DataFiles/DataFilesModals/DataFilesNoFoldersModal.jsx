@@ -7,7 +7,6 @@ import styles from './DataFilesNoFoldersModal.module.scss';
 
 const DataFilesNoFoldersModal = () => {
   const dispatch = useDispatch();
-  // Creates the modal
   const { getStatus: getModalStatus } = useModal();
   // Determine if modal is open or closed
   const isOpen = getModalStatus('noFolders');
