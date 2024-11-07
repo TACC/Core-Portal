@@ -5,7 +5,6 @@ import { apiClient } from 'utils/apiClient';
 import Cookies from 'js-cookie';
 
 export async function moveFileUtil({
-  // Establish variables and their types per TypeScript
   api,
   scheme,
   system,
@@ -50,7 +49,6 @@ function useMove() {
   const { mutate } = useMutation({ mutationFn: moveFileUtil });
 
   const move = ({
-    // Establish variables and their types per TypeScript
     destSystem,
     destPath,
     callback,
