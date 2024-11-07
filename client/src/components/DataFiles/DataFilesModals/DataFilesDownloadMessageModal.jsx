@@ -70,7 +70,6 @@ const DataFilesDownloadMessageModal = () => {
     const { filenameDisplay, compressionType } = formRef.current.values;
     let containsFolder = false;
     let totalFileSize = 0;
-    // Set the maximum file size limit for compressing files
     const maxFileSize = 2 * 1024 * 1024 * 1024;
     // Add up the file sizes of all files and shows if the user selected a folder
     for (let i = 0; i < selectedFiles.length; i++) {
