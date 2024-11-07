@@ -4,14 +4,12 @@ import { apiClient } from 'utils/apiClient';
 import Cookies from 'js-cookie';
 
 export async function trashUtil({
-  // Per TypeScript, declare variables...
   api,
   scheme,
   system,
   path,
   homeDir,
 }: {
-  // ...and their types for use in this function
   api: string;
   scheme: string;
   system: string;
@@ -50,11 +48,9 @@ function useTrash() {
   const { mutate } = useMutation({ mutationFn: trashUtil });
 
   const trash = ({
-    // Per TypeScript, declare variables...
     selection,
     callback,
   }: {
-    // ...and their types for use in this function
     selection: any;
     callback: (name: string, path: string) => any;
   }) => {
