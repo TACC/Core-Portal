@@ -54,14 +54,17 @@ export async function copyFileUtil({
     };
   }
 
-  const request = await apiClient.put(url, body, {
+  const request = await fetch(url, {
+    method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
-    withCredentials: true,
+    credentials: 'same-origin',
+    body: JSON.stringify(body),
   });
-  if (request.status < 200 || request.status >= 300) {
+  if (!request.ok) {
     throw new Error(request.status.toString());
   }
-  return request.data;
+  const responseData = await request.json();
+  return responseData;
 }
 
 function useCopy() {
@@ -74,6 +77,7 @@ function useCopy() {
     shallowEqual
   );
 
+  const {scheme} = useSelector((state :any) => state.files.params.FilesListing);
   const setStatus = (newStatus: string) =>
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -105,10 +109,11 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
+      
       mutate(
         {
           api: file.api,
-          scheme: file.scheme,
+          scheme: scheme,
           system: file.system,
           path: file.path,
           filename: file.name,
