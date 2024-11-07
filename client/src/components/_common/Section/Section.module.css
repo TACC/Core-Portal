@@ -25,6 +25,10 @@
   margin-right: var(--global-space--section-right);
 }
 
+/* Align Public Data Listing Header with Public Data Listing Contents*/
+._header_1f30w_15 {
+  margin-left: 0;
+}
 /* Elements: Sub-Components */
 
 /* CAVEAT: These are only applied to automatically-built sub-components */
