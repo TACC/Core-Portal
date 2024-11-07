@@ -429,6 +429,7 @@ class JobHistoryView(BaseApiView):
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
+        # Only shows enabled versions of apps
         apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
@@ -441,7 +442,7 @@ class AppsTrayView(BaseApiView):
 
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
-        # Updated to search only for the enabled version of any given app
+        # Only shows enabled versions of apps
         apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
         html_definitions = {}
