@@ -48,6 +48,10 @@ const ProjectDescription = ({ project }) => {
       projectData['Keywords'] = project.keywords;
     }
 
+    if (project.doi) {
+      projectData['DOI'] = project.doi;
+    }
+
     if (project.related_publications?.length > 0) {
       const relatedPublicationCards = project.related_publications.map(
         (publication) => {

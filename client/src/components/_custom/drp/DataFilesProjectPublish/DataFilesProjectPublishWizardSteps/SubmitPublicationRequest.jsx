@@ -5,18 +5,21 @@ import { SectionTableWrapper, Section, Button } from '_common';
 import * as Yup from 'yup';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 const validationSchema = Yup.object({
   reviewInfo: Yup.boolean().oneOf([true], 'Must be checked'),
   reviewRelatedPublications: Yup.boolean().oneOf([true], 'Must be checked'),
 });
 
-const SubmitPublicationRequest = () => {
-  const { handleChange, handleBlur, values, submitForm } = useFormikContext();
+const SubmitPublicationRequest = ({ callbackUrl }) => {
+  const { handleChange, handleBlur, values, submitForm, resetForm } =
+    useFormikContext();
+  const history = useHistory();
 
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
-  const { loading, error } = useSelector((state) => {
+  const { loading, error, result } = useSelector((state) => {
     if (
       state.projects.operation &&
       state.projects.operation.name === 'publicationRequest'
@@ -28,6 +31,14 @@ const SubmitPublicationRequest = () => {
       error: false,
     };
   });
+
+  useEffect(() => {
+    if (result && !error && !loading) {
+      setSubmitDisabled(false);
+      resetForm();
+      history.replace(callbackUrl);
+    }
+  }, [result, error, loading]);
 
   useEffect(() => {
     validationSchema.isValid(values).then((valid) => {
@@ -92,10 +103,10 @@ const SubmitPublicationRequest = () => {
   );
 };
 
-export const SubmitPublicationRequestStep = () => ({
+export const SubmitPublicationRequestStep = ({ callbackUrl }) => ({
   id: 'submit_publication_request',
   name: 'Submit Publication Request',
-  render: <SubmitPublicationRequest />,
+  render: <SubmitPublicationRequest callbackUrl={callbackUrl} />,
   initialValues: {
     reviewInfo: false,
     reviewRelatedPublications: false,

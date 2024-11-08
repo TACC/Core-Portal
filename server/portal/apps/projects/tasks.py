@@ -16,6 +16,8 @@ from portal.apps.projects.workspace_operations.graph_operations import initializ
 import networkx as nx
 import uuid
 
+# TODO: Cleanup this file
+
 logger = logging.getLogger(__name__)
 
 def _transfer_files(user_access_token, source_system_id, review_system_id):

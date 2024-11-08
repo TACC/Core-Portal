@@ -51,10 +51,33 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
     ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {} }),
-    SubmitPublicationReviewStep(),
+    SubmitPublicationReviewStep({
+      callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}`,
+    }),
   ];
 
-  const formSubmit = (values) => {};
+  const formSubmit = (values) => {
+    const data = {
+      ...metadata,
+    };
+
+    if (values && values.publicationApproved) {
+      dispatch({
+        type: 'PUBLICATIONS_APPROVE_PUBLICATION',
+        payload: data,
+      });
+    } else if (values && values.publicationRejected) {
+      dispatch({
+        type: 'PUBLICATIONS_REJECT_PUBLICATION',
+        payload: data,
+      });
+    } else if (values && values.versionApproved) {
+      dispatch({
+        type: 'PUBLICATIONS_APPROVE_VERSION',
+        payload: data,
+      });
+    }
+  };
 
   return (
     <>
