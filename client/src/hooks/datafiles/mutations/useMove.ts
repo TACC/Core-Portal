@@ -1,7 +1,6 @@
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSelectedFiles } from 'hooks/datafiles';
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from 'utils/apiClient';
 import Cookies from 'js-cookie';
 
 export async function moveFileUtil({
@@ -18,17 +17,16 @@ export async function moveFileUtil({
   path: string;
   destSystem: string;
   destPath: string;
-}): Promise<{ name: string; path: string }> {
+}): Promise<{ name: string, path: string }> {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
-  const request = await apiClient.put<{ name: string; path: string }>(url, {
+  const request = await fetch(url, {
     method: 'PUT',
-    headers: {
-      'X-CSRFToken': Cookies.get('csrftoken'),
-    },
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
     credentials: 'same-origin',
     body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
   });
-  return request.data;
+  const responseData = await request.json();
+  return responseData;
 }
 
 function useMove() {
@@ -39,13 +37,14 @@ function useMove() {
     shallowEqual
   );
 
-  const setStatus = (newStatus: any) =>
+  const { api, scheme } = useSelector((state: any) => state.files.params.FilesListing);
+  const setStatus = (newStatus: any) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'move', status: newStatus },
     });
+  };
 
-  // Establish mutate using moveFileUtil as its mutation function
   const { mutate } = useMutation({ mutationFn: moveFileUtil });
 
   const move = ({
@@ -53,56 +52,52 @@ function useMove() {
     destPath,
     callback,
   }: {
-    destSystem: any;
-    destPath: any;
+    destSystem: string;
+    destPath: string;
     callback: (name: string, path: string) => any;
   }) => {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
     );
     dispatch({
-      type: 'DATA_FILES_MOVE',
-      payload: {
-        dest: { system: destSystem, path: destPath },
-        src: filteredSelected,
-        reloadCallback: callback,
-      },
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'RUNNING', key: (index: string) => index, operation: 'move' },
     });
 
-    // Establish the parameters of mutate
-    mutate(
-      {
-        api: filteredSelected.api,
-        scheme: filteredSelected.scheme,
-        system: filteredSelected.system,
-        path: filteredSelected.path,
-        destSystem,
-        destPath,
-      },
-      {
-        // Moves the file to a new location if successful
-        onSuccess: (response: any) => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'SUCCESS', operation: 'move' },
-          });
-          callback(response.name, response.path);
-          dispatch({
-            type: 'ADD_TOAST',
-            payload: {
-              message: `File moved to ${destPath}`,
-            },
-          });
+    filteredSelected.forEach((file: any) => {
+      mutate(
+        {
+          api: api,
+          scheme: scheme,
+          system: file.system,
+          path: file.path,
+          destSystem: destSystem,
+          destPath: destPath,
         },
-        // Sends an error message if it's not successful
-        onError: () => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'ERROR', operation: 'move' },
-          });
-        },
-      }
-    );
+        {
+          onSuccess: (response: any) => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: { status: 'SUCCESS', key: (index: string) => index, operation: 'move' },
+            });
+            callback(response.name, response.path);
+            dispatch({
+              type: 'ADD_TOAST',
+              payload: {
+                message: `File moved to ${destPath}`,
+              },
+            });
+          },
+          onError: () => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: { status: 'ERROR', key: (index: string) => index, operation: 'move' },
+            });
+            console.log(file);
+          },
+        }
+      );
+    });
   };
 
   return { move, status, setStatus };
