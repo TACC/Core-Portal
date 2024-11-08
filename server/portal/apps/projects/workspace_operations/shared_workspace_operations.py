@@ -1,6 +1,7 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps._custom.drp import constants
 from tapipy.tapis import Tapis
 from typing import Literal
 from django.db import transaction
@@ -8,7 +9,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import models
-from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata
+from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 import logging
 logger = logging.getLogger(__name__)
@@ -248,15 +250,17 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     set_workspace_permissions(client, username, system_id, new_role)
 
 
-def remove_user(client, workspace_id: str, username: str):
+def remove_user(client, workspace_id: str, username: str, system_id=None, system_name=None):
     """
     Unshare the system and remove all permissions and credentials.
     """
 
     service_client = service_account()
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+    system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
+
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       system_name,
                        workspace_id,
                        username,
                        "remove",
@@ -270,7 +274,7 @@ def remove_user(client, workspace_id: str, username: str):
                                    username=username,
                                    path="/")
 
-    return get_project(client, workspace_id)
+    return get_project(client, workspace_id, system_id)
 
 
 def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str):
@@ -334,7 +338,6 @@ def list_projects(client, root_system_id=None):
         )
         if root_system:
             query += f"~(rootDir.like.{root_system['rootDir']}*)"
-
 
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
@@ -401,32 +404,55 @@ def get_workspace_role(client, workspace_id, username):
     return None
 
 @transaction.atomic
-def create_publication_review_shared_workspace(client, source_workspace_id: str, source_system_id: str, review_workspace_id: str, 
-                                               review_system_id: str, title: str, description=""):
+def create_publication_workspace(client, source_workspace_id: str, source_system_id: str, target_workspace_id: str, 
+                                 target_system_id: str, title: str, description="", is_review=False):
     
     portal_admin_username = settings.PORTAL_ADMIN_USERNAME
     service_client = service_account()
 
-    # add admin to the source workspace to allow for file copying
-    resp = add_user_to_workspace(client, source_workspace_id, portal_admin_username)
+    # Determine workspace and system-specific settings based on the project type
+    system_prefix = settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX if is_review else settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
+    root_system_name = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME if is_review else settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    root_dir = settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR if is_review else settings.PORTAL_PROJECTS_PUBLISHED_ROOT_DIR
 
+    if is_review:
+        # Add admin to the source workspace to allow for file copying
+        add_user_to_workspace(client, source_workspace_id, portal_admin_username)
+
+    # Retrieve the source project and adjust project data based on review/published status
     source_project = ProjectMetadata.get_project_by_id(source_system_id)
+    project_value = get_ordered_value(constants.PROJECT, source_project.value)
 
-    review_project = create_project_metadata({**source_project.value, "projectId": review_system_id, "is_review_project": True})
+    project_data = {
+        **project_value,
+        "project_id": target_system_id,
+        "is_review_project": is_review,
+        "is_published_project": not is_review
+    }
 
-    review_project.save()
+    # Create and save the new project metadata
+    new_project = create_project_metadata(project_data)
+    new_project.save()
+
+    # Set up the target workspace directory
+    create_workspace_dir(target_workspace_id, root_system_name)
+
+    # Configure workspace ACLs
+    set_workspace_acls(service_client, root_system_name, target_workspace_id, portal_admin_username, "add", "writer")
+
+    query = f"(id.eq.{target_system_id})"
+    listing = service_client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
+                                            showDeleted=True, limit=-1)
     
-    create_workspace_dir(review_workspace_id, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME)
-        
-    set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
-                       review_workspace_id,
-                       portal_admin_username,
-                       "add",
-                       "writer")
-    
-    system_id = create_workspace_system(service_client, review_workspace_id, title, description, None, 
-                                        f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}",
-                                        f"{settings.PORTAL_PROJECTS_REVIEW_ROOT_DIR}/{review_workspace_id}")
-    
-    return system_id
+    if listing and listing[0].deleted:
+        service_client.systems.undeleteSystem(systemId=target_system_id)
+        # Add back system credentials since the system was previously deleted
+        create_system_credentials(service_client, portal_admin_username, settings.PORTAL_PROJECTS_PUBLIC_KEY, 
+                                  settings.PORTAL_PROJECTS_PRIVATE_KEY, target_system_id)
+    else:
+    # Create the target workspace system
+        create_workspace_system(
+            service_client, target_workspace_id, title, description, None,
+            f"{system_prefix}.{target_workspace_id}",
+            f"{root_dir}/{target_workspace_id}"
+        )

@@ -10,3 +10,5 @@ ANALYSIS_DATA = "drp.project.analysis_dataset"
 ORIGIN_DATA = "drp.project.origin_data"
 
 FILE = "drp.project.file"
+
+TRASH = "drp.project.trash"

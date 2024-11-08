@@ -24,6 +24,7 @@ import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelector';
+import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -55,6 +56,11 @@ const DataFilesSwitch = React.memo(() => {
 
   const { DataFilesProjectPublish, DataFilesProjectReview } =
     useAddonComponents({ portalName });
+
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
 
   return (
     <Switch>
@@ -92,6 +98,12 @@ const DataFilesSwitch = React.memo(() => {
         exact
         path={`${path}/tapis/projects/:system`}
         render={({ match: { params } }) => {
+          const system = systems.find((s) => s.system === params.system);
+
+          if (system.publicationProject) {
+            return <DataFilesPublicationsList rootSystem={params.system} />;
+          }
+
           return <DataFilesProjectsList rootSystem={params.system} />;
         }}
       />
