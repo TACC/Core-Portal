@@ -17,7 +17,7 @@ export async function moveFileUtil({
   path: string;
   destSystem: string;
   destPath: string;
-}): Promise<{ name: string, path: string }> {
+}): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
@@ -37,7 +37,9 @@ function useMove() {
     shallowEqual
   );
 
-  const { api, scheme } = useSelector((state: any) => state.files.params.FilesListing);
+  const { api, scheme } = useSelector(
+    (state: any) => state.files.params.FilesListing
+  );
   const setStatus = (newStatus: any) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -61,7 +63,11 @@ function useMove() {
     );
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'RUNNING', key: (index: string) => index, operation: 'move' },
+      payload: {
+        status: 'RUNNING',
+        key: (index: string) => index,
+        operation: 'move',
+      },
     });
 
     filteredSelected.forEach((file: any) => {
@@ -78,7 +84,11 @@ function useMove() {
           onSuccess: (response: any) => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'SUCCESS', key: (index: string) => index, operation: 'move' },
+              payload: {
+                status: 'SUCCESS',
+                key: (index: string) => index,
+                operation: 'move',
+              },
             });
             callback(response.name, response.path);
             dispatch({
@@ -91,7 +101,11 @@ function useMove() {
           onError: () => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'ERROR', key: (index: string) => index, operation: 'move' },
+              payload: {
+                status: 'ERROR',
+                key: (index: string) => index,
+                operation: 'move',
+              },
             });
             console.log(file);
           },
