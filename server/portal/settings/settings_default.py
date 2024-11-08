@@ -226,6 +226,7 @@ _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWER'
 # Datacite
 _PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
 _PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/drp.project.published.test"
+_DATACITE_URL = "https://api.test.datacite.org/"
 
 ########################
 # Custom Portal Template Assets
