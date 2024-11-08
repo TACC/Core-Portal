@@ -16,7 +16,7 @@ export async function uploadUtil({
   system: string;
   path: string;
   file: FormData;
-}): Promise<{ file: FormData; path: string }> {
+}): Promise<{ file: any; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
@@ -27,16 +27,13 @@ export async function uploadUtil({
   formData.append('uploaded_file', fileField);
   let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
   url.replace(/\/{2,}/g, '/');
-  const request = await fetch(url, {
-    method: 'POST',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
-    credentials: 'same-origin',
-    body: formData,
+  const response = await apiClient.post(url, formData, {
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken') || '',
+    },
+    withCredentials: true,
   });
-  if (!request.ok) {
-    throw new Error(request.status.toString());
-  }
-  return { file, path: apiPath };
+  return response.data;
 }
 
 function useUpload() {
