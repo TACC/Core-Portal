@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import styles from './DataFilesPublicationRequestModal.module.scss';
+import styles from './DataFilesProjectTreeModal.module.scss';
 import { ProjectTreeView } from '_custom/drp/DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ProjectTreeView';
 
 const DataFilesProjectTreeModal = () => {
@@ -30,7 +30,7 @@ const DataFilesProjectTreeModal = () => {
         <ModalHeader toggle={toggle} charCode="&#xe912;">
           Project Tree
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={styles['modal-body']}>
           {' '}
           <ProjectTreeView
             projectId={projectId}
