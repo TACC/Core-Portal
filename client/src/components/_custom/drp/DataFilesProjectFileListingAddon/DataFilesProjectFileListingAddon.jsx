@@ -15,8 +15,12 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
 
   const dispatch = useDispatch();
 
-  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
-    useDrpDatasetModals(projectId, portalName);
+  const {
+    createSampleModal,
+    createOriginDataModal,
+    createAnalysisDataModal,
+    createTreeModal,
+  } = useDrpDatasetModals(projectId, portalName);
 
   const createPublicationRequestModal = () => {
     dispatch({
@@ -142,6 +146,15 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
           )}
         </>
       )}
+      <>
+        <span className={styles.separator}>|</span>
+        <Button
+          type="link"
+          onClick={() => createTreeModal({ readOnly: !canEditDataset })}
+        >
+          View Project Tree
+        </Button>
+      </>
       {canRequestPublication && (
         <>
           <span className={styles.separator}>|</span>
