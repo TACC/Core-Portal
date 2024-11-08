@@ -223,6 +223,10 @@ _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.project.published.test'
 
 _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWER'
 
+# Datacite
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/drp.project.published.test"
+
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.
