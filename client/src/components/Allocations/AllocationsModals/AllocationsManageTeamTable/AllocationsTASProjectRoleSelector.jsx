@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import DropdownSelector from '_common/DropdownSelector';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -26,12 +26,14 @@ const setProjectRole = async (projectId, userId, role) => {
 
 const useProjectRole = (projectId, userId) => {
   const dispatch = useDispatch();
-  const mutation = useMutation(async (role) => {
-    await setProjectRole(projectId, userId, role);
-    dispatch({
-      type: 'GET_PROJECT_USERS',
-      payload: { projectId },
-    });
+  const mutation = useMutation({
+    mutationFn: async (role) => {
+      await setProjectRole(projectId, userId, role);
+      dispatch({
+        type: 'GET_PROJECT_USERS',
+        payload: { projectId },
+      });
+    },
   });
   return { mutation };
 };
