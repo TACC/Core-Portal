@@ -25,6 +25,7 @@ import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelector';
 import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
+import DataFilesReviewProjectList from './DataFilesReviewProjectsList/DataFilesReviewProjectList';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -102,6 +103,8 @@ const DataFilesSwitch = React.memo(() => {
 
           if (system.publicationProject) {
             return <DataFilesPublicationsList rootSystem={params.system} />;
+          } else if (system.reviewProject) {
+            return <DataFilesReviewProjectList rootSystem={params.system} />;
           }
 
           return <DataFilesProjectsList rootSystem={params.system} />;
