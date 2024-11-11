@@ -1,7 +1,8 @@
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from 'utils/apiClient';
+import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
+import { apiClient } from 'utils/apiClient';
 
 export async function trashUtil({
   api,
@@ -17,12 +18,11 @@ export async function trashUtil({
   homeDir: string;
 }): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
-  const request = await apiClient.put<{ name: string; path: string }>(url, {
-    method: 'PUT',
+  const request = await apiClient.put(url, {
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken'),
+      'X-CSRFToken': Cookies.get('csrftoken') || '',
     },
-    credentials: 'same-origin',
+    withCredentials: true,
     body: JSON.stringify({
       homeDir: homeDir,
     }),
@@ -33,18 +33,22 @@ export async function trashUtil({
 
 function useTrash() {
   const dispatch = useDispatch();
+  const { selectedFiles: selected } = useSelectedFiles();
   const status = useSelector(
     (state: any) => state.files.operationStatus.trash,
     shallowEqual
   );
 
+  const { api, scheme } = useSelector(
+    (state: any) => state.files.params.FilesListing
+  );
   const setStatus = (newStatus: any) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: newStatus, operation: 'trash' },
     });
   };
-  // Establish mutate using trashUtil as its mutation function
+
   const { mutate } = useMutation({ mutationFn: trashUtil });
 
   const trash = ({
@@ -54,47 +58,58 @@ function useTrash() {
     selection: any;
     callback: (name: string, path: string) => any;
   }) => {
+    const filteredSelected = selected.filter(
+      (f: any) => status[f.id] !== 'SUCCESS'
+    );
     dispatch({
-      type: 'DATA_FILES_TRASH',
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: {
-        src: selection,
-        reloadCallback: callback,
+        status: 'RUNNING',
+        key: (index: string) => index,
+        operation: 'trash',
       },
     });
 
-    // Establish the parameters of mutate
-    mutate(
-      {
-        api: selection.api,
-        scheme: selection.scheme,
-        system: selection.system,
-        path: '/' + selection.path,
-        homeDir: selection.homeDir,
-      },
-      {
-        // Sends the file to the Trash if successful
-        onSuccess: (response) => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'SUCCESS', operation: 'trash' },
-          });
-          callback(response.name, response.path);
-          dispatch({
-            type: 'ADD_TOAST',
-            payload: {
-              message: `${selection} moved to Trash`,
-            },
-          });
+    filteredSelected.forEach(() => {
+      mutate(
+        {
+          api: api,
+          scheme: scheme,
+          system: selection.system,
+          path: selection.path,
+          homeDir: selection.homeDir,
         },
-        // Sends an error message if it's not successful
-        onError: () => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: { status: 'ERROR', operation: 'trash' },
-          });
-        },
-      }
-    );
+        {
+          onSuccess: (response: any) => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: {
+                status: 'SUCCESS',
+                key: (index: string) => index,
+                operation: 'trash',
+              },
+            });
+            callback(response.name, response.path);
+            dispatch({
+              type: 'ADD_TOAST',
+              payload: {
+                message: `${selection} moved to Trash`,
+              },
+            });
+          },
+          onError: () => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: {
+                status: 'ERROR',
+                key: (index: string) => index,
+                operation: 'trash',
+              },
+            });
+          },
+        }
+      );
+    });
   };
 
   return { trash, status, setStatus };
