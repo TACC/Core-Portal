@@ -2,6 +2,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSelectedFiles } from 'hooks/datafiles';
 import { useMutation } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
+import { apiClient } from 'utils/apiClient';
 
 export async function moveFileUtil({
   api,
@@ -19,14 +20,12 @@ export async function moveFileUtil({
   destPath: string;
 }): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
+  const request = await apiClient.put(url, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
-    credentials: 'same-origin',
+    withCredentials: true,
     body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
   });
-  const responseData = await request.json();
-  return responseData;
+  return request.data;
 }
 
 function useMove() {
@@ -107,7 +106,6 @@ function useMove() {
                 operation: 'move',
               },
             });
-            console.log(file);
           },
         }
       );
