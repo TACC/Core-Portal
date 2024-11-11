@@ -20,6 +20,7 @@ import './DataFilesModals.scss';
 import DataFilesFormModal from './DataFilesFormModal';
 import DataFilesPublicationRequestModal from './DataFilesPublicationRequestModal';
 import DataFilesProjectTreeModal from './DataFilesProjectTreeModal';
+import DataFilesProjectDescriptionModal from './DataFilesProjectDescriptionModal';
 
 export default function DataFilesModals() {
   return (
@@ -42,8 +43,9 @@ export default function DataFilesModals() {
       <DataFilesMakePublicModal />
       <DataFilesDownloadMessageModal />
       <DataFilesFormModal />
-      <DataFilesProjectTreeModal/>
+      <DataFilesProjectTreeModal />
       <DataFilesPublicationRequestModal />
+      <DataFilesProjectDescriptionModal />
     </>
   );
 }
