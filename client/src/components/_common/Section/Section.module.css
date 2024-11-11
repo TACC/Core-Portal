@@ -1,3 +1,12 @@
+/* Block */
+
+.root {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: var(--global-space--section-top);
+  margin-bottom: var(--global-space--section-bottom);
+}
 /* Elements */
 
 .messages,
