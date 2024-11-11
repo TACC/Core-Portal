@@ -109,6 +109,14 @@ function useMove() {
         }
       );
     });
+    dispatch({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { operation: 'move', status: {} },
+    });
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'move', props: {} },
+    });
   };
 
   return { move, status, setStatus };
