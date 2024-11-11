@@ -55,6 +55,10 @@ export const FileNavCell = React.memo(
     const previewCallback = (e) => {
       e.stopPropagation();
       e.preventDefault();
+      if (api === 'googledrive') {
+        window.open(href, '_blank');
+        return;
+      }
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {

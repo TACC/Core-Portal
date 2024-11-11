@@ -239,25 +239,13 @@ export const Integrations = () => {
       })),
     []
   );
-  // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
-  const data = useMemo(
-    () =>
-      integrations.filter(
-        (integration) => integration.label !== 'Google Drive'
-      ),
-    [integrations]
-  );
-  const data_size = data.length;
+  const data = useMemo(() => integrations, [integrations]);
   return (
     <SectionTableWrapper
       manualHeader={<SectionHeader isForList>3rd Party Apps</SectionHeader>}
       manualContent
     >
-      {data_size !== 0 ? (
-        <TableTemplate attributes={{ columns, data }} />
-      ) : (
-        <div>No integrations available.</div>
-      )}
+      <TableTemplate attributes={{ columns, data }} />
     </SectionTableWrapper>
   );
 };
