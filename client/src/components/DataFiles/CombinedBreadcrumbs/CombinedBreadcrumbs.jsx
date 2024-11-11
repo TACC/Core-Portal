@@ -6,13 +6,7 @@ import styles from './CombinedBreadcrumbs.module.scss';
 
 const CombinedBreadcrumbs = (props) => {
   return (
-    <div
-      className={
-        props.isPublic
-          ? styles['combined-breadcrumbs-public-data']
-          : styles['combined-breadcrumbs']
-      }
-    >
+    <div className={styles['combined-breadcrumbs']}>
       <BreadcrumbsDropdown {...props} />
       <DataFilesBreadcrumbs {...props} />
     </div>
