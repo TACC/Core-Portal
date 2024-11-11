@@ -8,6 +8,8 @@ import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass, toBeDisabled });
@@ -27,6 +29,11 @@ describe('ToolbarButton', () => {
 });
 
 describe('DataFilesToolbar', () => {
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
   it('renders necessary buttons', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
@@ -232,5 +239,115 @@ describe('DataFilesToolbar', () => {
       createMemoryHistory()
     );
     expect(getByText(/Empty/).closest('button')).toBeDisabled();
+  });
+
+  // Test to prevent large file download through TAPIS
+  it('prevents downloads of large files through TAPIS directly', async () => {
+    // Create a test file whose size is greater than 2 GB
+    const tooBigFileSize = 3 * 1024 * 1024 * 1024;
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: tooBigFileSize,
+      path: '/test.txt',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the Large Download Modal
+    await waitFor(() => screen.queryByText('Large Download'));
+    // Assign the Large Download Modal to a variable
+    const testModal = screen.queryByText('Large Download');
+    // Test for the Large Download Modal
+    expect(testModal).toBeDefined();
+  });
+
+  // Test that allows downloads of files less than 2 GB
+  it('allows direct file downloads when the file size is below 2 GB', () => {
+    // Mock the dispatch action
+    const mockDispatch = vi.fn();
+    // Create a test file whose size is less than 2 GB
+    const testFileSize = 1 * 1024 * 1024 * 1024;
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: testFileSize,
+      path: '/test.txt',
+      id: 123,
+    };
+    // Create a spy that watches for the dispatch call
+    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      mockDispatch
+    );
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Test for the dispatch call
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'DATA_FILES_DOWNLOAD',
+      payload: {
+        file: {
+          id: 'undefined//test.txt',
+          length: testFileSize,
+          name: 'test.txt',
+          path: '/test.txt',
+          type: 'file',
+        },
+      },
+    });
   });
 });
