@@ -19,8 +19,8 @@ export async function moveFileUtil({
   destPath: string;
 }): Promise<{ name: string; path: string }> {
   const body = {
-    dest_system: destSystem, 
-    dest_path: destPath 
+    dest_system: destSystem,
+    dest_path: destPath,
   };
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await apiClient.put(url, body);
