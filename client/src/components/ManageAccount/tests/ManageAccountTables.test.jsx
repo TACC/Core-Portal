@@ -126,9 +126,8 @@ describe('Third Party Apps', () => {
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
-    expect(queryByText('Google Drive')).toBeNull();
-    expect(queryByText('Setup Google Drive')).toBeNull();
+    expect(queryByText('Google Drive')).toBeDefined();
+    expect(queryByText('Setup Google Drive')).toBeDefined();
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({
@@ -148,16 +147,13 @@ describe('Third Party Apps', () => {
         },
       },
     });
-    const { getByText, queryByText } = render(
+    const { getByText } = render(
       <Provider store={testStore}>
         <Integrations />
       </Provider>
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
-    // Temporary Integrations Filtering and conditional rendering of Google Drive: WP-24
-    expect(queryByText('Google Drive')).toBeNull();
-    expect(queryByText('Setup Google Drive')).toBeNull();
-    expect(getByText('No integrations available.')).toBeInTheDocument();
+    expect(getByText('Google Drive')).toBeDefined();
   });
   it('Shows potential 3rd party connections other than Google Drive', () => {
     const testStore = mockStore({
