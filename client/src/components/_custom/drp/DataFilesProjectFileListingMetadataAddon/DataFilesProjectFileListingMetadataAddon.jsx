@@ -36,6 +36,10 @@ const DataFilesProjectFileListingMetadataAddon = ({
       formattedMetadata.doi = metadata.doi;
     }
 
+    if (metadata.keywords) {
+      formattedMetadata.keywords = metadata.keywords;
+    }
+
     return formattedMetadata;
   };
 
