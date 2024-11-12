@@ -46,7 +46,9 @@ function useMove() {
     });
   };
 
-  const { mutate, isIdle, isSuccess, failureCount } = useMutation({ mutationFn: moveFileUtil });
+  const { mutate, isIdle, isSuccess, failureCount } = useMutation({
+    mutationFn: moveFileUtil,
+  });
 
   const move = ({
     destSystem,
@@ -111,7 +113,9 @@ function useMove() {
         type: 'ADD_TOAST',
         payload: {
           message: `${
-            filteredSelected.length > 1 ? `${filteredSelected.length} files` : 'File'
+            filteredSelected.length > 1
+              ? `${filteredSelected.length} files`
+              : 'File'
           } moved to ${truncateMiddle(destPath, 20) || '/'}`,
         },
       });
@@ -124,7 +128,7 @@ function useMove() {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { operation: 'move', status: 'FAILURE' },
       });
-    };
+    }
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'move', props: {} },
