@@ -166,6 +166,24 @@ const DataFilesListing = ({
         width: 0.2,
       });
     }
+
+    if (scheme === 'projects' && rootSystem) {
+      const projectSystem = systems.find(
+        (s) => s.scheme === 'projects' && s.system === rootSystem
+      );
+
+      if (projectSystem && projectSystem.publicationProject) {
+        const index = cells.findIndex(
+          (cell) => cell.Header === 'Last Modified'
+        );
+        cells.splice(index, 1);
+        ['Name', 'Size'].forEach((header) => {
+          const column = cells.find((col) => col.Header === header);
+          column.width += 0.1;
+        });
+      }
+    }
+
     return cells;
   }, [api, showViewPath, fileNavCellCallback]);
 

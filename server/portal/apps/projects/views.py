@@ -116,6 +116,14 @@ class ProjectsApiView(BaseApiView):
             client = request.user.tapis_oauth.client
             listing = list_projects(client, root_system)
 
+        for project in listing:
+            try:
+                project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=project['id']))
+                project.update(get_ordered_value(project_meta.name, project_meta.value))
+                project["projectId"] = project['id']
+            except ProjectMetadata.DoesNotExist:
+                pass
+
         tapis_project_listing_indexer.delay(listing)
 
         return JsonResponse({"status": 200, "response": listing})

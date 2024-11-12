@@ -1,46 +1,38 @@
 import React, { useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { Link, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import queryStringParser from 'query-string';
 import {
   Button,
   InfiniteScrollTable,
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import styles from './DataFilesPublicationsList.module.scss';
-import './DataFilesPublicationsList.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useLocation } from 'react-router-dom';
 import Searchbar from '_common/Searchbar';
-import { formatDate, formatDateTimeFromValue } from 'utils/timeFormat';
+import './DataFilesReviewProjectList.scss';
+import styles from './DataFilesReviewProjectList.module.scss';
+import queryStringParser from 'query-string';
+import { formatDate } from 'utils/timeFormat';
 
-const DataFilesPublicationsList = ({ rootSystem }) => {
-  const { error, loading, publications } = useSelector(
-    (state) => state.publications.listing
+const DataFilesReviewProjectList = ({ rootSystem }) => {
+  const { error, loading, projects } = useSelector(
+    (state) => state.projects.listing
   );
 
   const query = queryStringParser.parse(useLocation().search);
-
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
-
-  const selectedSystem = systems.find(
-    (s) => s.scheme === 'projects' && s.publicationProject === true
-  );
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const actionType = 'PROJECTS_SHOW_SHARED_WORKSPACES';
     dispatch({
-      type: 'PUBLICATIONS_GET_PUBLICATIONS',
+      type: actionType,
       payload: {
         queryString: query.query_string,
+        rootSystem: rootSystem,
       },
     });
-  }, [dispatch, query.query_string]);
+  }, [dispatch, query.query_string, rootSystem]);
 
   const createProjectDescriptionModal = (title, description) => {
     dispatch({
@@ -54,7 +46,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
 
   const columns = [
     {
-      Header: 'Publication Title',
+      Header: `Request Title`,
       accessor: 'title',
       Cell: (el) => (
         <Link
@@ -66,8 +58,8 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       ),
     },
     {
-      Header: 'Publication Date',
-      accessor: 'publication_date',
+      Header: 'Requested Date',
+      accessor: 'updated',
       Cell: (el) => (
         <span>{el.value ? formatDate(new Date(el.value)) : ''}</span>
       ),
@@ -77,7 +69,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       accessor: 'authors',
       Cell: (el) => (
         <span>
-          {el.value.length > 0
+          {el.value?.length > 0
             ? `${el.value[0].first_name} ${el.value[0].last_name}`
             : ''}
         </span>
@@ -106,14 +98,14 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
   ];
 
   const noDataText = query.query_string
-    ? `No Publications match your search term.`
-    : `No Publications available.`;
+    ? `No Projects match your search term.`
+    : `You don't have any requests to review`;
 
   if (error) {
     return (
       <div className={styles['root-placeholder']}>
         <SectionMessage type="error">
-          There was a problem retrieving Publications.
+          There was a problem retrieving your {sharedWorkspacesDisplayName}.
         </SectionMessage>
       </div>
     );
@@ -128,22 +120,22 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       <Searchbar
         api="tapis"
         scheme="projects"
-        sectionName="Publications"
-        resultCount={publications.length}
+        sectionName="Projects"
+        resultCount={projects.length}
         infiniteScroll
       />
       <div className="o-flex-item-table-wrap">
         <InfiniteScrollTable
           tableColumns={columns}
-          tableData={publications}
+          tableData={projects}
           onInfiniteScroll={infiniteScrollCallback}
           isLoading={loading}
           noDataText={noDataText}
-          className="publications-listing"
+          className="review-projects-listing"
         />
       </div>
     </SectionTableWrapper>
   );
 };
 
-export default DataFilesPublicationsList;
+export default DataFilesReviewProjectList;
