@@ -1,9 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-// import { apiClient } from 'utils/apiClient';
 import { fetchUtil } from 'utils/fetchUtil';
-// import axios, { AxiosError } from 'axios';
 
 // Sets up the parameters for the compression job
 export function getCompressParams({
@@ -75,19 +73,30 @@ export function getCompressParams({
 };
 
 // Sends out the call to the TAPIS app
-export function compressFiles(action: any) {
-  // yield put({
-  //   type: 'DATA_FILES_SET_OPERATION_STATUS',
-  //   payload: { status: { type: 'RUNNING' }, operation: 'compress' },
-  // });
+export function compressFiles({
+  action,
+  compressApp,
+  defaultAllocation,
+  latestCompress,
+  systems,
+  params,
+  res
+}: {
+  action: any;
+  compressApp: (useSelector: any) => any;
+  defaultAllocation: (useSelector: any) => void;
+  latestCompress: (useCallback: any) => void;
+  systems: (useSelector: any) => any;
+  params: (getCompressParams: any) => any;
+  res: (useCallback: any) => any;
+}) {
 
-  // Re-establish variables as functions in TypeScript
   const compressAppSelector = (state: any) => state.workbench.config.compressApp;
-  const compressApp = () => useSelector(compressAppSelector);
+  compressApp(useSelector(compressAppSelector));
 
   const defaultAllocationSelector = (state: any) => 
     state.allocations.portal_alloc || state.allocations.active[0].projectName;
-  const defaultAllocation = () => useSelector(defaultAllocationSelector);
+  defaultAllocation(useSelector(defaultAllocationSelector));
 
   async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
     const params = { appId, appVersion };
@@ -100,11 +109,16 @@ export function compressFiles(action: any) {
     });
     return result.response;
   };
-  // Error
-  // const latestCompress = () => useCallback(fetchAppDefinitionUtil, compressApp);
+  latestCompress(
+    useCallback(
+      fetchAppDefinitionUtil, compressApp(
+        useSelector(compressAppSelector)
+      )
+    )
+  );
 
   const systemsSelector = (state: any) => state.systems.storage.configuration;
-  const systems = () => useSelector(systemsSelector);
+  systems(useSelector(systemsSelector));
   
   // type TSystem = {
   //   find: string;
@@ -132,7 +146,6 @@ export function compressFiles(action: any) {
     action.payload.scheme !== 'projects'
   ) {
     defaultPrivateSystem = (systems: any) => systems.find((s: any) => s.default);
-    // defaultPrivateSystem = () => TResponse;
 
     if (!defaultPrivateSystem) {
       throw new Error('Folder downloads are unavailable in this portal', {
@@ -141,14 +154,16 @@ export function compressFiles(action: any) {
     }
   }
 
-  const params = (getCompressParams: any) => getCompressParams(
-    action.payload.files,
-    action.payload.filename,
-    action.payload.compressionType,
-    defaultPrivateSystem,
-    // latestCompress,
-    defaultAllocation
-  );
+  // params(getCompressParams(action));
+  // Original Code:
+  // const params = (getCompressParams: any) => getCompressParams(
+  //   action.payload.files,
+  //   action.payload.filename,
+  //   action.payload.compressionType,
+  //   defaultPrivateSystem,
+  //   latestCompress,
+  //   defaultAllocation
+  // );
 
   // const res {
   //   execSys,
@@ -160,39 +175,45 @@ export function compressFiles(action: any) {
   //   callJobHelper: any;
   // }
 
-  // const res = () => useCallback(jobHelper, params);
-  // // If the execution system requires pushing keys, then
-  // // bring up the modal and retry the compress action
-  // if (res.execSys) {
-  //   yield put({
-  //     type: 'SYSTEMS_TOGGLE_MODAL',
-  //     payload: {
-  //       operation: 'pushKeys',
-  //       props: {
-  //         onSuccess: action,
-  //         system: res.execSys,
-  //         onCancel: compressErrorAction('An error has occurred'),
-  //       },
-  //     },
-  //   });
-  // } else if (res.status === 'PENDING') {
-  //   yield put({
-  //     type: 'DATA_FILES_SET_OPERATION_STATUS',
-  //     payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
-  //   });
-  // } else {
-  //   throw new Error('Unable to compress files', { cause: 'compressError' });
-  // }
-  // if (action.payload.onSuccess) {
-  //   yield put(action.payload.onSuccess);
-  // }
-  // try {
-  // } catch (error: any) {
-  //   const errorMessage =
-  //     error.cause === 'compressError' ? error.message : 'An error has occurred';
+  res(
+    useCallback(
+      jobHelper, params(
+        getCompressParams(action)
+      )
+    )
+  );
+  // If the execution system requires pushing keys, then
+  // bring up the modal and retry the compress action
+  if (res.execSys) {
+    yield put({
+      type: 'SYSTEMS_TOGGLE_MODAL',
+      payload: {
+        operation: 'pushKeys',
+        props: {
+          onSuccess: action,
+          system: res.execSys,
+          onCancel: compressErrorAction('An error has occurred'),
+        },
+      },
+    });
+  } else if (res.status === 'PENDING') {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
+    });
+  } else {
+    throw new Error('Unable to compress files', { cause: 'compressError' });
+  }
+  if (action.payload.onSuccess) {
+    yield put(action.payload.onSuccess);
+  }
+  try {
+  } catch (error: any) {
+    const errorMessage =
+      error.cause === 'compressError' ? error.message : 'An error has occurred';
 
-  //   yield put(compressErrorAction(errorMessage));
-  // }
+    yield put(compressErrorAction(errorMessage));
+  }
 };
 
 // Assigns the job to the supercomputer and returns the actual compressed file?
