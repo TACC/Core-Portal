@@ -16,20 +16,19 @@ const DataFilesFormModal = () => {
   const location = useLocation();
 
   const reloadPage = (updatedPath = '') => {
-    // Updated regex to capture the URL up until the last project segment
     let projectUrl = location.pathname.replace(
-      /(\/projects\/[^/]+\/[^/]+)\/?.*/,
+      /(\/projects\/[^/]+\/[^/]+\/?.*)/,
       '$1'
     );
-
+ 
     if (projectUrl.endsWith('/')) {
       projectUrl = projectUrl.slice(0, -1);
     }
-
-    const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
+ 
+    const path = updatedPath ? `${projectUrl}/${updatedPath}` : projectUrl;
     history.replace(path);
   };
-
+ 
   const { form, selectedFile, formName, additionalData, useReloadCallback } =
     useSelector((state) => state.files.modalProps.dynamicform);
   const isOpen = useSelector((state) => state.files.modals.dynamicform);

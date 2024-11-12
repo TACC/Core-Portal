@@ -49,12 +49,13 @@ function* executeOperation(
         isEdit && file.path === params.path
           ? `${path}/${file.path.split('/').pop()}`
           : path;
-
+   
+      // Check if the file name has changed. If not, keep the same path.
       const reloadPath =
         isEdit && file.name !== values.name
-          ? newPath.replace(file.name, values.name)
+          ? newPath.replace(`/${file.name}`, `/${values.name}`)
           : newPath;
-
+   
       yield call(reloadCallback, reloadPath);
     }
 
