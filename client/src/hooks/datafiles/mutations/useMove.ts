@@ -38,10 +38,10 @@ function useMove() {
   const { api, scheme } = useSelector(
     (state: any) => state.files.params.FilesListing
   );
-  const setStatus = (newStatus: any) => {
+  const setStatus = () => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: newStatus },
+      payload: { operation: 'move', status: 'RUNNING' },
     });
   };
 
@@ -59,13 +59,15 @@ function useMove() {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
     );
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: {
-        status: 'RUNNING',
-        key: (index: string) => index,
-        operation: 'move',
-      },
+    filteredSelected.forEach((file: any) => {
+      dispatch({
+        type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+        payload: {
+          status: 'RUNNING',
+          key: file.id,
+          operation: 'move',
+        },
+      });
     });
 
     filteredSelected.forEach((file: any) => {
