@@ -119,7 +119,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           disabled={!canDownload}
         />
       }
-      contentLayoutName="multiColumn"
+      contentLayoutName="oneColumn"
     >
       <SectionTableWrapper className={styles.content} manualContent>
         <DataFilesListing
