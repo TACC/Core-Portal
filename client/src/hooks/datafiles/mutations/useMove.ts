@@ -2,6 +2,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSelectedFiles } from 'hooks/datafiles';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from 'utils/apiClient';
+import truncateMiddle from 'utils/truncateMiddle';
 
 export async function moveFileUtil({
   api,
@@ -45,7 +46,7 @@ function useMove() {
     });
   };
 
-  const { mutate } = useMutation({ mutationFn: moveFileUtil });
+  const { mutate, isIdle, isSuccess, failureCount } = useMutation({ mutationFn: moveFileUtil });
 
   const move = ({
     destSystem,
@@ -54,7 +55,7 @@ function useMove() {
   }: {
     destSystem: string;
     destPath: string;
-    callback: (name: string, path: string) => any;
+    callback: () => void;
   }) => {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
@@ -81,20 +82,13 @@ function useMove() {
           destPath: destPath,
         },
         {
-          onSuccess: (response: any) => {
+          onSuccess: () => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: {
                 status: 'SUCCESS',
                 key: (index: string) => index,
                 operation: 'move',
-              },
-            });
-            callback(response.name, response.path);
-            dispatch({
-              type: 'ADD_TOAST',
-              payload: {
-                message: `File moved to ${destPath}`,
               },
             });
           },
@@ -111,18 +105,26 @@ function useMove() {
         }
       );
     });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: {} },
-    });
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} },
-    });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: {} },
-    });
+    if (!isIdle && isSuccess && failureCount === 0) {
+      callback();
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          message: `${
+            filteredSelected.length > 1 ? `${filteredSelected.length} files` : 'File'
+          } moved to ${truncateMiddle(destPath, 20) || '/'}`,
+        },
+      });
+      dispatch({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { operation: 'move', status: {} },
+      });
+    } else {
+      dispatch({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { operation: 'move', status: 'FAILURE' },
+      });
+    };
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'move', props: {} },
