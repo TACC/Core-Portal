@@ -1,9 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Section, SectionContent, LoadingSpinner } from '_common';
+import { Section, SectionContent, LoadingSpinner, Button } from '_common';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './DataDisplay.module.scss';
 import { useFileListing } from 'hooks/datafiles';
+import { useDispatch } from 'react-redux';
+
+// Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
+const formatLabel = (key) =>
+  key
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 const processSampleAndOriginData = (data, path) => {
   // use the path to get sample and origin data names
@@ -49,26 +57,46 @@ const processSampleAndOriginData = (data, path) => {
   return sampleAndOriginMetadata;
 };
 
-const DataDisplay = ({ data, path, excludeKeys }) => {
+const processModalViewableData = (data) => {
+  const createViewDataModal = (key, value) => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'viewData',
+        props: { key, value },
+      },
+    });
+  };
+
+  const dispatch = useDispatch();
+
+  return Object.entries(data).map(([key, value]) => ({
+    label: formatLabel(key),
+    value: (
+      <Button type="link" onClick={() => createViewDataModal(key, value)}>
+        View
+      </Button>
+    ),
+  }));
+};
+
+const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
   const location = useLocation();
 
-  // Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
-  const formatLabel = (key) =>
-    key
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
   //filter out empty values and unwanted keys
-  const processedData = Object.entries(data)
+  let processedData = Object.entries(data)
     .filter(([key, value]) => value !== '' && !excludeKeys.includes(key))
     .map(([key, value]) => ({
       label: formatLabel(key),
-      value: typeof value === 'string' ? formatLabel(value) : value,
+      value: typeof value === 'string' ? value : value,
     }));
 
   if (path) {
     processedData.unshift(...processSampleAndOriginData(data, path));
+  }
+
+  if (modalData) {
+    processedData.push(...processModalViewableData(modalData));
   }
 
   // Divide processed data into chunks for two-column layout display
