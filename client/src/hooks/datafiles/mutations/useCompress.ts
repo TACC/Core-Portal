@@ -1,128 +1,201 @@
 import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { fetchUtil } from 'utils/fetchUtil';
 // import { apiClient } from 'utils/apiClient';
+import { fetchUtil } from 'utils/fetchUtil';
 // import axios, { AxiosError } from 'axios';
 
-// export function* compressFiles(action: any) {
-//   const compressErrorAction = (errorMessage: string) => {
-//     return {
-//       type: 'DATA_FILES_SET_OPERATION_STATUS',
-//       payload: {
-//         status: { type: 'ERROR', message: errorMessage },
-//         operation: 'compress',
-//       },
-//     };
-//   };
+// Sets up the parameters for the compression job
+export function getCompressParams({
+  files,
+  archiveFileName,
+  compressionType,
+  defaultPrivateSystem,
+  latestCompress,
+  defaultAllocation
+}: {
+  files: any[];
+  archiveFileName: string;
+  compressionType: string;
+  defaultPrivateSystem: any;
+  latestCompress: any;
+  defaultAllocation: string;
+}): string {
+  const fileInputs = files.map((file: any) => ({
+    sourceUrl: `tapis://${file.system}/${file.path}`,
+  }));
 
-//   try {
-//     yield put({
-//       type: 'DATA_FILES_SET_OPERATION_STATUS',
-//       payload: { status: { type: 'RUNNING' }, operation: 'compress' },
-//     });
+  let archivePath, archiveSystem;
 
-//     // Re-establish variables as functions in TypeScript
-//     const compressAppSelector = (state: any) => state.workbench.config.compressApp;
-//     const compressApp = () => useSelector(compressAppSelector);
+  if (defaultPrivateSystem) {
+    archivePath = defaultPrivateSystem.homeDir;
+    archiveSystem = defaultPrivateSystem.system;
+  } else {
+    archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
+    archiveSystem = files[0].system;
+  }
 
-//     const defaultAllocationSelector = (state: any) => 
-//       state.allocations.portal_alloc || state.allocations.active[0].projectName;
-//     const defaultAllocation = () => useSelector(defaultAllocationSelector);
+  const result = JSON.stringify({
+    job: {
+      fileInputs: fileInputs,
+      name: `${latestCompress.definition.id}-${
+        latestCompress.definition.version
+      }_${new Date().toISOString().split('.')[0]}`,
+      archiveSystemId: archiveSystem,
+      archiveSystemDir: archivePath,
+      archiveOnAppError: false,
+      appId: latestCompress.definition.id,
+      appVersion: latestCompress.definition.version,
+      parameterSet: {
+        appArgs: [
+          {
+            name: 'Archive File Name',
+            arg: archiveFileName,
+          },
+          {
+            name: 'Compression Type',
+            arg: compressionType,
+          },
+        ],
+        schedulerOptions: [
+          {
+            name: 'TACC Allocation',
+            description:
+              'The TACC allocation associated with this job execution',
+            include: true,
+            arg: `-A ${defaultAllocation}`,
+          },
+        ],
+      },
+      execSystemId: latestCompress.definition.jobAttributes.execSystemId,
+    },
+  });
 
-//     const latestCompress = () => yield call(fetchAppDefinitionUtil, compressApp);
+  return result;
+};
 
-//     const systemsSelector = (state: any) => state.systems.storage.configuration;
-//     const systems = () => useSelector(systemsSelector);
-    
-//     type TSystem = {
-//       find: string;
-//     }
-//     type TResponse = {
-//       systems: TSystem[];
-//     }
-    
-//     // interface systemsEntry {
-//     //   id: string;
-//     // }
-    
-//     // const systems: any {
-//     //   find,
-//     //   selectSystem,
-//     // }: {
-//     //   find: any;
-//     //   selectSystem: any;
-//     // }
+// Sends out the call to the TAPIS app
+export function compressFiles(action: any) {
+  // yield put({
+  //   type: 'DATA_FILES_SET_OPERATION_STATUS',
+  //   payload: { status: { type: 'RUNNING' }, operation: 'compress' },
+  // });
 
-//     let defaultPrivateSystem: any;
+  // Re-establish variables as functions in TypeScript
+  const compressAppSelector = (state: any) => state.workbench.config.compressApp;
+  const compressApp = () => useSelector(compressAppSelector);
 
-//     if (
-//       action.payload.scheme !== 'private' &&
-//       action.payload.scheme !== 'projects'
-//     ) {
-//       defaultPrivateSystem = () => systems.find(((s: any)) => s.default);
-//       // defaultPrivateSystem = () => TResponse;
+  const defaultAllocationSelector = (state: any) => 
+    state.allocations.portal_alloc || state.allocations.active[0].projectName;
+  const defaultAllocation = () => useSelector(defaultAllocationSelector);
 
-//       if (!defaultPrivateSystem) {
-//         throw new Error('Folder downloads are unavailable in this portal', {
-//           cause: 'compressError',
-//         });
-//       }
-//     }
+  async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
+    const params = { appId, appVersion };
+    if (appVersion) {
+      params.appVersion = appVersion;
+    }
+    const result = await fetchUtil({
+      url: '/api/workspace/apps',
+      params,
+    });
+    return result.response;
+  };
+  // Error
+  // const latestCompress = () => useCallback(fetchAppDefinitionUtil, compressApp);
 
-//     const params = (getCompressParams: any) => getCompressParams(
-//       action.payload.files,
-//       action.payload.filename,
-//       action.payload.compressionType,
-//       defaultPrivateSystem,
-//       latestCompress,
-//       defaultAllocation
-//     );
+  const systemsSelector = (state: any) => state.systems.storage.configuration;
+  const systems = () => useSelector(systemsSelector);
+  
+  // type TSystem = {
+  //   find: string;
+  // }
+  // type TResponse = {
+  //   systems: TSystem[];
+  // }
+  
+  // interface systemsEntry {
+  //   id: string;
+  // }
+  
+  // const systems: any {
+  //   find,
+  //   selectSystem,
+  // }: {
+  //   find: any;
+  //   selectSystem: any;
+  // }
 
-//     // const res {
-//     //   execSys,
-//     //   status,
-//     //   callJobHelper,
-//     // }: {
-//     //   execSys: any;
-//     //   status: any;
-//     //   callJobHelper: any;
-//     // }
+  let defaultPrivateSystem: any;
 
-//     const res = () => yield call(jobHelper, params);
-//     // If the execution system requires pushing keys, then
-//     // bring up the modal and retry the compress action
-//     if (res.execSys) {
-//       yield put({
-//         type: 'SYSTEMS_TOGGLE_MODAL',
-//         payload: {
-//           operation: 'pushKeys',
-//           props: {
-//             onSuccess: action,
-//             system: res.execSys,
-//             onCancel: compressErrorAction('An error has occurred'),
-//           },
-//         },
-//       });
-//     } else if (res.status === 'PENDING') {
-//       yield put({
-//         type: 'DATA_FILES_SET_OPERATION_STATUS',
-//         payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
-//       });
-//     } else {
-//       throw new Error('Unable to compress files', { cause: 'compressError' });
-//     }
-//     if (action.payload.onSuccess) {
-//       yield put(action.payload.onSuccess);
-//     }
-//   } catch (error: any) {
-//     const errorMessage =
-//       error.cause === 'compressError' ? error.message : 'An error has occurred';
+  if (
+    action.payload.scheme !== 'private' &&
+    action.payload.scheme !== 'projects'
+  ) {
+    defaultPrivateSystem = (systems: any) => systems.find((s: any) => s.default);
+    // defaultPrivateSystem = () => TResponse;
 
-//     yield put(compressErrorAction(errorMessage));
-//   }
-// }
+    if (!defaultPrivateSystem) {
+      throw new Error('Folder downloads are unavailable in this portal', {
+        cause: 'compressError',
+      });
+    }
+  }
 
+  const params = (getCompressParams: any) => getCompressParams(
+    action.payload.files,
+    action.payload.filename,
+    action.payload.compressionType,
+    defaultPrivateSystem,
+    // latestCompress,
+    defaultAllocation
+  );
+
+  // const res {
+  //   execSys,
+  //   status,
+  //   callJobHelper,
+  // }: {
+  //   execSys: any;
+  //   status: any;
+  //   callJobHelper: any;
+  // }
+
+  // const res = () => useCallback(jobHelper, params);
+  // // If the execution system requires pushing keys, then
+  // // bring up the modal and retry the compress action
+  // if (res.execSys) {
+  //   yield put({
+  //     type: 'SYSTEMS_TOGGLE_MODAL',
+  //     payload: {
+  //       operation: 'pushKeys',
+  //       props: {
+  //         onSuccess: action,
+  //         system: res.execSys,
+  //         onCancel: compressErrorAction('An error has occurred'),
+  //       },
+  //     },
+  //   });
+  // } else if (res.status === 'PENDING') {
+  //   yield put({
+  //     type: 'DATA_FILES_SET_OPERATION_STATUS',
+  //     payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
+  //   });
+  // } else {
+  //   throw new Error('Unable to compress files', { cause: 'compressError' });
+  // }
+  // if (action.payload.onSuccess) {
+  //   yield put(action.payload.onSuccess);
+  // }
+  // try {
+  // } catch (error: any) {
+  //   const errorMessage =
+  //     error.cause === 'compressError' ? error.message : 'An error has occurred';
+
+  //   yield put(compressErrorAction(errorMessage));
+  // }
+};
+
+// Assigns the job to the supercomputer and returns the actual compressed file?
 export async function jobHelper(body: any) {
   const url = '/api/workspace/jobs';
   const res = await fetchUtil({ url, method: 'POST', params: body });
@@ -143,19 +216,10 @@ function useCompress() {
     });
   };
   
+  // Maybe this was right all along?
   const { mutate } = useMutation({ mutationFn: jobHelper });
   
   const compress = (payload: any) => {
-    const compressErrorAction = (errorMessage: string) => {
-      return {
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: {
-          status: { type: 'ERROR', message: errorMessage },
-          operation: 'compress',
-        },
-      };
-    };
-    
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: { type: 'RUNNING' }, operation: 'compress' },
@@ -271,9 +335,9 @@ function useCompress() {
 
     mutate(
       // params type may need to be changed from string
-      {params},
+      ({params}),
       {
-        onSuccess: (response) => {
+        onSuccess: (response: any) => {
           dispatch({
             type: 'SYSTEMS_TOGGLE_MODAL',
             payload: {
@@ -281,7 +345,7 @@ function useCompress() {
               props: {
                 onSuccess: payload,
                 system: response.execSys,
-                onCancel: compressErrorAction('An error has occurred'),
+                onCancel: 'An error has occurred',
               },
             },
           });
@@ -292,16 +356,17 @@ function useCompress() {
             });
           }
         },
-        onError: () => {
-          compressErrorAction;
-        } 
+        // onError: (errorMessage: string) => {
+        //   dispatch({
+        //     type: 'DATA_FILES_SET_OPERATION_STATUS',
+        //     payload: {
+        //       status: { type: 'ERROR', message: errorMessage },
+        //       operation: 'compress',
+        //     }
+        //   });
+        // }
       }
     );
-
-    // dispatch({
-    //   type: 'DATA_FILES_COMPRESS',
-    //   payload,
-    // });
   };
 
   return { compress, status, setStatus };
