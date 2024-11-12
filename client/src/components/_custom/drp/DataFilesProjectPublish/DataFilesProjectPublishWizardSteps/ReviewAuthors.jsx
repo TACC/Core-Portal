@@ -16,13 +16,22 @@ import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersLis
 import { useSelector } from 'react-redux';
 
 const ACMCitation = ({ project, authors }) => {
-  const authorString = authors.map(a => `${a.first_name} ${a.last_name}`).join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId.split('-').pop()}`;
-  const createdDate = new Date(project.created).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const authorString = authors
+    .map((a) => `${a.first_name} ${a.last_name}`)
+    .join(', ');
+  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
+    .split('-')
+    .pop()}`;
+  const createdDate = new Date(project.created).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
 
   return (
     <div>
-  {`${authorString}. ${project.title}. `} <em>Digital Rocks Portal</em> {` (${createdDate}). ${projectUrl}`} </div>
+      {`${authorString}. ${project.title}. `} <em>Digital Rocks Portal</em>{' '}
+      {` (${createdDate}). ${projectUrl}`}{' '}
+    </div>
   );
 };
 
@@ -32,8 +41,15 @@ const APACitation = ({ project, authors }) => {
     .join(', ');
   const projectUrl = `https://www.digitalrocksportal.org`;
   const createdDateObj = new Date(project.created);
-  const createdDate = `${createdDateObj.getFullYear()}, ${createdDateObj.toLocaleString('en-US', { month: 'long' })} ${createdDateObj.getDate()}`;
-  const accessDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const createdDate = `${createdDateObj.getFullYear()}, ${createdDateObj.toLocaleString(
+    'en-US',
+    { month: 'long' }
+  )} ${createdDateObj.getDate()}`;
+  const accessDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div>{`${authorString} (${createdDate}). ${project.title}. Retrieved ${accessDate}, from ${projectUrl}`}</div>
@@ -41,8 +57,12 @@ const APACitation = ({ project, authors }) => {
 };
 
 const BibTeXCitation = ({ project, authors }) => {
-  const authorString = authors.map(a => `${a.last_name}, ${a.first_name}`).join(' and ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId.split('-').pop()}`;
+  const authorString = authors
+    .map((a) => `${a.last_name}, ${a.first_name}`)
+    .join(' and ');
+  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
+    .split('-')
+    .pop()}`;
   const year = new Date(project.created).getFullYear();
 
   return (
@@ -57,38 +77,60 @@ const BibTeXCitation = ({ project, authors }) => {
   );
 };
 
-const MLACitation = ({ project, authors }) => {
-  const authorString = authors.map(a => `${a.last_name}, ${a.first_name}`).join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId.split('-').pop()}`;
-  const createdDate = new Date(project.created).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-  const accessDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
- 
+export const MLACitation = ({ project, authors }) => {
+  const authorString = authors
+    .map((a) => `${a.last_name}, ${a.first_name}`)
+    .join(', ');
+  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
+    .split('-')
+    .pop()}`;
+  const createdDate = new Date(project.created).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const accessDate = new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 
   return (
-    <div>{`${authorString}. "${project.title}."`} <em>Digital Rocks Portal,</em> {` Digital Rocks Portal, ${createdDate}, ${projectUrl} Accessed ${accessDate}.`}</div>
+    <div>
+      {`${authorString}. "${project.title}."`} <em>Digital Rocks Portal,</em>{' '}
+      {` Digital Rocks Portal, ${createdDate}, ${projectUrl} Accessed ${accessDate}.`}
+    </div>
   );
 };
 
 const IEEECitation = ({ project, authors }) => {
-  const authorString = authors.map(a => `${a.first_name[0]}. ${a.last_name}`).join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId.split('-').pop()}`;
+  const authorString = authors
+    .map((a) => `${a.first_name[0]}. ${a.last_name}`)
+    .join(', ');
+  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
+    .split('-')
+    .pop()}`;
   const date = new Date(project.created);
   const year = date.getFullYear();
   const day = date.getDate();
   const month = date.toLocaleString('en-GB', { month: 'short' });
 
   return (
-    <div>{`[1] ${authorString}, "${project.title}",`} <em>Digital Rocks Portal,</em> {` ${year}. [Online]. Available: ${projectUrl}. [Accessed: ${day}-${month}-${year}]`}</div>
+    <div>
+      {`[1] ${authorString}, "${project.title}",`}{' '}
+      <em>Digital Rocks Portal,</em>{' '}
+      {` ${year}. [Online]. Available: ${projectUrl}. [Accessed: ${day}-${month}-${year}]`}
+    </div>
   );
 };
 
-const Citations = ({ project, authors }) => (
+export const Citations = ({ project, authors }) => (
   <div>
     <h3>ACM ref</h3>
     <div className={styles['citation-box']}>
       <ACMCitation project={project} authors={authors} />
     </div>
-    
+
     <h3>APA</h3>
     <div className={styles['citation-box']}>
       <APACitation project={project} authors={authors} />
@@ -110,8 +152,6 @@ const Citations = ({ project, authors }) => (
     </div>
   </div>
 );
-
-
 
 const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   const [authors, setAuthors] = useState([]);

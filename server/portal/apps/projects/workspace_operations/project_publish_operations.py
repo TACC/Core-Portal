@@ -122,12 +122,14 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
         source_project = ProjectMetadata.get_project_by_id(source_project_id)
         source_project.value['doi'] = doi
+        source_project.value['publication_date'] = published_project.created
         source_project.save()
 
         pub_tree = nx.node_link_graph(published_project.project_graph.value)
         pub_tree.nodes["NODE_ROOT"]["version"] = version
         published_project.project_graph.value = nx.node_link_data(pub_tree)
         published_project.value['doi'] = doi
+        published_project.value['publication_date'] = published_project.created
         published_project.save()
 
 

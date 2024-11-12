@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -15,6 +15,11 @@ import styles from './DataFilesProjectFileListing.module.scss';
 const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+  const [isPublicationSystem, setIsPublicationSystem] = useState(false);
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
@@ -38,6 +43,11 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   useEffect(() => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
+
+  useEffect(() => {
+    const system = systems.find((s) => s.system === rootSystem);
+    setIsPublicationSystem(system?.publicationProject);
+  }, [systems, rootSystem]);
 
   const metadata = useSelector((state) => state.projects.metadata);
   const folderMetadata = useSelector(
@@ -152,6 +162,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
                 folderMetadata={folderMetadata}
                 metadata={metadata}
                 path={path}
+                showCitation={isPublicationSystem}
               />
             </ShowMore>
           ) : (
