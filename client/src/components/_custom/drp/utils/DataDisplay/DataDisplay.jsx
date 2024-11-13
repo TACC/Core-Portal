@@ -88,7 +88,7 @@ const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
     .filter(([key, value]) => value !== '' && !excludeKeys.includes(key))
     .map(([key, value]) => ({
       label: formatLabel(key),
-      value: typeof value === 'string' ? value : value,
+      value: typeof value === 'string' ? formatLabel(value) : value,
     }));
 
   if (path) {
