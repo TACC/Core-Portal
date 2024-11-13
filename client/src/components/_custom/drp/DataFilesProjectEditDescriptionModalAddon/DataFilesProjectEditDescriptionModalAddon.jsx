@@ -43,30 +43,44 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   }, [form]);
 
   const onFormChange = (formFields, values) => {
-    let schema = {};
-
-    Object.keys(values).forEach((key) => {
-      const field = formFields.find((f) => f.name === key);
-
-      if (field) {
-        if (field.type === 'array') {
-          schema[key] = Yup.array().of(
-            Yup.object().shape(
-              field.fields.reduce((acc, subField) => {
-                if (subField.validation?.required) {
-                  acc[subField.name] = Yup.string().required(
-                    `${subField.label} is required`
+    const schema = formFields.reduce((acc, field) => {
+      if (field.type === 'array') {
+        acc[field.name] = Yup.array().of(
+          Yup.object().shape(
+            field.fields.reduce((subAcc, subField) => {
+              if (subField.type === 'link') {
+                subAcc[subField.name] = (subAcc[subField.name] || Yup.string())
+                  .url(`${subField.label} must be a valid URL`)
+                  .matches(
+                    /^https:\/\//,
+                    `${subField.label} must start with https://`
                   );
-                }
-                return acc;
-              }, {})
-            )
+              }
+              if (subField.validation?.required) {
+                subAcc[subField.name] = (
+                  subAcc[subField.name] || Yup.string()
+                ).required(`${subField.label} is required`);
+              }
+
+              return subAcc;
+            }, {})
+          )
+        );
+      } else {
+        if (field.validation?.required) {
+          acc[field.name] = (acc[field.name] || Yup.string()).required(
+            `${field.label} is required`
           );
-        } else {
-          schema[key] = Yup.string().required(`${field.label} is required`);
+        }
+        if (field.type === 'link') {
+          acc[field.name] = (acc[field.name] || Yup.string())
+            .required(`${field.label} is required`)
+            .url(`${field.label} must be a valid URL`)
+            .matches(/^https:\/\//, `${field.label} must start with https://`);
         }
       }
-    });
+      return acc;
+    }, {});
 
     setValidationSchema((prevSchema) => {
       return Yup.object().shape({
