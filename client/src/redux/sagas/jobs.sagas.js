@@ -41,7 +41,7 @@ export function* getJobs(action) {
   }
 
   yield put({ type: 'JOBS_LIST_START' });
-
+  //console.log('Fetch the job list starting');
   try {
     const jobs = yield call(
       fetchJobs,
@@ -49,9 +49,15 @@ export function* getJobs(action) {
       action.params.limit || LIMIT,
       action.params.queryString || ''
     );
+    // console.log('Jobs are', jobs);
+    // let mockList = [];
+    // for (let i = 0; i < 20; i++) {
+    //   mockList = mockList.concat(jobs);
+    // }
+    // console.log('Start list', mockList);
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
+      payload: { list: mockList, reachedEnd: mockList.length < LIMIT },
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
@@ -65,6 +71,7 @@ export function* getJobs(action) {
 
 // TODOv3: dropV2Jobs
 export function* getV2Jobs(action) {
+  console.log('V2 Job Action fetch request');
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_V2_LIST_INIT' });
   } else {

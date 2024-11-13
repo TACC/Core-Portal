@@ -73,10 +73,14 @@ function JobsView({
     });
   }, [dispatch, query.query_string]);
 
+  // const expandedJobs = [...jobs,...jobs,...jobs]
+  // const doubleExpanded = [...expandedJobs, ...expandedJobs, ...expandedJobs]
+  // const moreExpandedJobs = [...doubleExpanded, ...doubleExpanded, ...doubleExpanded]
+  // console.log(moreExpandedJobs)
+
   const infiniteScrollCallback = useCallback(() => {
     // TODOv3: dropV2Jobs
     const dispatchType = version === 'v3' ? 'GET_JOBS' : 'GET_V2_JOBS';
-
     if (!isJobLoading) {
       dispatch({
         type: dispatchType,
@@ -191,7 +195,6 @@ function JobsView({
         // TODOv3: dropV2Jobs
         if (el.row.original.uuid) {
           const outputLocation = getOutputPath(el.row.original);
-
           return outputLocation && !hideDataFiles ? (
             <Link
               to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputLocation}`}
