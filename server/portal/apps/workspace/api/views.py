@@ -157,7 +157,6 @@ class HistoricJobsView(BaseApiView):
 class JobsView(BaseApiView):
 
     def get(self, request, operation=None):
-
         allowed_actions = ['listing', 'search', 'select']
 
         tapis = request.user.tapis_oauth.client
@@ -187,8 +186,9 @@ class JobsView(BaseApiView):
         data = client.jobs.getJob(jobUuid=job_uuid)
 
         return data
-
+    # Here is the tapis call
     def listing(self, client, request):
+        # Default is 10, but 50 is passed in
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE

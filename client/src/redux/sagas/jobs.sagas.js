@@ -5,13 +5,41 @@ import { fetchAppDefinitionUtil } from './apps.sagas';
 
 export const LIMIT = 50;
 
+// Cached MockList for additional fetches
+let cachedMockList = null;
+
 export async function fetchJobs(offset, limit, queryString) {
   const operation = queryString ? 'search' : 'listing';
+  console.log('Fetch with offset of ', offset);
+  /*
+  On additional fetches, it should return the remaining 50 or less jobs that are in the history,
+  this just mocks that another 50 are returned by the fetch request.
+  */
   const result = await fetchUtil({
     url: `/api/workspace/jobs/${operation}`,
     params: { offset, limit, query_string: queryString },
   });
-  return result.response;
+  // For some reason fetchJobs calls twice on call
+  if (cachedMockList) {
+    console.log('Returning cached mock list');
+    if (offset != 0) {
+      cachedMockList = cachedMockList.concat(result.response);
+      return cachedMockList;
+    }
+    return result.response;
+  }
+  // Mock for 50 job history results
+  let jobs = result.response;
+  let mockList = [];
+  for (let i = 0; i < 12; i++) {
+    mockList = mockList.concat(jobs);
+  }
+  mockList = mockList.concat(jobs[0]);
+  mockList = mockList.concat(jobs[1]);
+  console.log('Start list', mockList);
+  console.log('Result response of', result.response);
+  cachedMockList = mockList;
+  return mockList;
 }
 
 // TODOv3: dropV2Jobs
@@ -41,7 +69,7 @@ export function* getJobs(action) {
   }
 
   yield put({ type: 'JOBS_LIST_START' });
-  //console.log('Fetch the job list starting');
+  console.log('Fetch the job list starting');
   try {
     const jobs = yield call(
       fetchJobs,
@@ -49,15 +77,13 @@ export function* getJobs(action) {
       action.params.limit || LIMIT,
       action.params.queryString || ''
     );
-    // console.log('Jobs are', jobs);
-    // let mockList = [];
-    // for (let i = 0; i < 20; i++) {
-    //   mockList = mockList.concat(jobs);
-    // }
-    // console.log('Start list', mockList);
+    console.log('PUT Request with payload', {
+      list: jobs,
+      reachedEnd: jobs.length < LIMIT,
+    });
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: mockList, reachedEnd: mockList.length < LIMIT },
+      payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
 
