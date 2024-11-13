@@ -23,6 +23,8 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
+from portal.libs.elasticsearch.docs.base import IndexedPublication
+from elasticsearch_dsl import Q
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +142,55 @@ class PublicationListingView(BaseApiView):
 
     def get(self, request):
         
-        publications = Publication.objects.all()
+        query_string = request.GET.get('query_string')
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+    
+        if query_string:
+            query = IndexedPublication.search()
+
+            qs_query = Q(
+                "query_string",
+                # Elasticsearch can't parse query strings with unescaped slashes
+                query=query_string.replace("/", "\\/"),
+                default_operator="AND",
+                type="cross_fields",
+                fields=[
+                    "nodes.value.doi",
+                    "nodes.value.description",
+                    "nodes.value.keywords",
+                    "nodes.value.title",
+                    "nodes.value.projectId",
+                    "nodes.value.authors",
+                    "nodes.value.authors.first_name",
+                    "nodes.value.authors.last_name",
+                    "nodes.value.authors.username",
+                ],
+            )
+            term_query = Q(
+                {
+                    "term": {
+                        "nodes.value.projectId.keyword": query_string.replace("/", "\\/")
+                    }
+                }
+            )
+
+            query = query.filter(qs_query | term_query)
+            query = query.extra(from_=int(offset), size=int(limit))
+
+            res = query.execute()
+            hits = [hit.meta.id for hit in res if hasattr(hit.meta, 'id') and hit.meta.id is not None]
+
+            if hits: 
+                publications = (
+                     Publication.objects.filter(project_id__in=hits, is_published=True)
+                    .defer("tree")
+                    .order_by("-created")
+                )
+            else:
+                publications = Publication.objects.none()
+        else:
+            publications = Publication.objects.filter(is_published=True).order_by("-created")
         
         publications_data = [
             {
