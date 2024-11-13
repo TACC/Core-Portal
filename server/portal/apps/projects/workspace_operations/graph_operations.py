@@ -183,3 +183,16 @@ def remove_trash_nodes(graph: nx.DiGraph):
         nodes_to_remove = {trash_node_id} | trash_descendants
         graph.remove_nodes_from(nodes_to_remove)
     return graph
+
+def get_path_uuid_mapping(project_id: str):
+    """Return a mapping of node paths to UUIDs for a project graph."""
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+    path_uuid_mapping = {}
+    for node_id in project_graph.nodes:
+        path_nodes = nx.shortest_path(project_graph, 'NODE_ROOT', node_id)[1:]
+        path =  '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
+        path_uuid_mapping[path] = project_graph.nodes[node_id]["uuid"]
+    return path_uuid_mapping
