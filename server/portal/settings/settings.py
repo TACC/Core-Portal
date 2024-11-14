@@ -756,6 +756,16 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
+SETTINGS: EMAIL
+"""
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getattr(settings_custom, '_SMTP_HOST', 'localhost')
+EMAIL_PORT = getattr(settings_custom, '_SMTP_PORT', 25)
+EMAIL_HOST_USER = getattr(settings_custom, '_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = getattr(settings_custom, '_SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = getattr(settings_custom, '_DEFAULT_FROM_EMAIL', '')
+
+"""
 SETTINGS: INTERNAL DOCS
 """
 INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
