@@ -1,10 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
-import { useCallback } from 'react';
+// import { useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { fetchCreateProject } from 'redux/sagas/projects.sagas';
+// import { fetchCreateProject } from 'redux/sagas/projects.sagas';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
-import { TTapisSystem, TAppFileInput, TTapisJob, TJobArgSpecs, TJobKeyValuePair, TTapisFile } from 'utils/types';
+import { 
+  TTapisSystem, 
+  TAppFileInput, 
+  TTapisJob, 
+  TJobArgSpecs, 
+  TJobKeyValuePair, 
+  TTapisFile 
+} from 'utils/types';
 
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
@@ -46,10 +53,12 @@ export type TJobBody = {
   job?: TJobSubmit;
   licenseType?: string;
   isInteractive?: boolean;
+  appVersion: string;
 };
 
 interface IJobPostResponse extends TTapisJob {
   execSys?: TTapisSystem;
+  appVersion: string;
 }
 
 type TJobPostResponse = {
@@ -100,6 +109,15 @@ function useCompress() {
       state.allocations.portal_alloc || state.allocations.active[0].projectName
   );
 
+  // const getAppDefinition = async function fetchAppDefinitionUtil(appId: string, appVersion: string, fetchUtil: any) {
+  //   const params = { appId, appVersion };
+  //   const result = await fetchUtil({
+  //     url: '/api/workspace/apps',
+  //     params,
+  //   });
+  //   return result.response;
+  // }
+
   const systems = useSelector((state: any) => state.systems.storage.configuration);
 
   dispatch({
@@ -109,7 +127,17 @@ function useCompress() {
 
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
 
-  const compress = ({scheme, files, filename, compressionType}: {scheme: string; files: TTapisFile[]; filename: string; compressionType: string;}) => {
+  const compress = ({
+    scheme, 
+    files, 
+    filename, 
+    compressionType
+  }: {
+    scheme: string; 
+    files: TTapisFile[]; 
+    filename: string; 
+    compressionType: string;
+  }) => {
     // dispatch({
     //   type: 'DATA_FILES_SET_OPERATION_STATUS',
     //   payload: { status: { type: 'RUNNING' }, operation: 'compress' },
@@ -131,6 +159,8 @@ function useCompress() {
 
     console.log('Default Private System:', defaultPrivateSystem); // Displays a template literal; not working correctly
 
+    // const jobAppVersion = TTapisJob.IJobPostResponse.appVersion;  
+
     // const params = compressFilesUtil(payload);
     const params = getCompressParams(
       // Doesn't work yet
@@ -139,32 +169,33 @@ function useCompress() {
       compressionType,
       defaultPrivateSystem,
       compressAppId,
-      defaultAllocation
+      defaultAllocation,
     );
 
     mutate(
       {
-        operation: 'submitJob';
-        job: params;
+        operation: 'submitJob',
+        job: submitJobUtil.arguments.TJobBody.job,
+        appVersion: submitJobUtil.arguments.TJobBody.appVersion
       },
       {
         onSuccess: (response: any) => {
           // If the execution system requires pushing keys, then
           // bring up the modal and retry the compress action
-          if (res.execSys) {
-            yield put({
+          if (response.execSys) {
+            dispatch({
               type: 'SYSTEMS_TOGGLE_MODAL',
               payload: {
                 operation: 'pushKeys',
                 props: {
-                  onSuccess: action,
-                  system: res.execSys,
+                  // onSuccess: action,
+                  system: response.execSys,
                   onCancel: compressErrorAction('An error has occurred'),
                 },
               },
             });
-          } else if (res.status === 'PENDING') {
-            yield put({
+          } else if (response.status === 'PENDING') {
+            dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
             });
