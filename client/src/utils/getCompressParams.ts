@@ -4,9 +4,9 @@ export const getCompressParams = (
   files: TTapisFile[],
   archiveFileName: string,
   compressionType: string,
-  defaultPrivateSystem: TPortalSystem,
-  compressAppId: string,
-  defaultAllocation: string
+  compressApp: { id: string; version: string },
+  defaultAllocation: string,
+  defaultPrivateSystem?: TPortalSystem
 ) => {
   const fileInputs = files.map((file) => ({
     sourceUrl: `tapis://${file.system}/${file.path}`,
@@ -24,12 +24,14 @@ export const getCompressParams = (
 
   return {
     fileInputs: fileInputs,
-    name: `${compressAppId}
-      }_${new Date().toISOString().split('.')[0]}`,
+    name: `${compressApp.id}-${compressApp.version}_${
+      new Date().toISOString().split('.')[0]
+    }`,
     archiveSystemId: archiveSystem,
     archiveSystemDir: archivePath,
     archiveOnAppError: false,
-    appId: compressAppId,
+    appId: compressApp.id,
+    appVersion: compressApp.version,
     parameterSet: {
       appArgs: [
         {

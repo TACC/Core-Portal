@@ -1031,9 +1031,9 @@ export function* compressFiles(action) {
       action.payload.files,
       action.payload.filename,
       action.payload.compressionType,
-      defaultPrivateSystem,
       latestCompress,
-      defaultAllocation
+      defaultAllocation,
+      defaultPrivateSystem
     );
 
     const res = yield call(jobHelper, params);

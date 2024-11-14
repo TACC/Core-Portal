@@ -4,23 +4,23 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 // import { fetchCreateProject } from 'redux/sagas/projects.sagas';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
-import { 
-  TTapisSystem, 
-  TAppFileInput, 
-  TTapisJob, 
-  TJobArgSpecs, 
-  TJobKeyValuePair, 
-  TTapisFile 
+import {
+  TTapisSystem,
+  TAppFileInput,
+  TTapisJob,
+  TJobArgSpecs,
+  TJobKeyValuePair,
+  TTapisFile,
+  TPortalSystem,
 } from 'utils/types';
-
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
 export type TParameterSetSubmit = {
-  appArgs: TJobArgSpecs;
-  containerArgs: TJobArgSpecs;
-  schedulerOptions: TJobArgSpecs;
-  envVariables: TJobKeyValuePair[];
+  appArgs?: TJobArgSpecs;
+  containerArgs?: TJobArgSpecs;
+  schedulerOptions?: TJobArgSpecs;
+  envVariables?: TJobKeyValuePair[];
 };
 
 export type TConfigurationValues = {
@@ -118,37 +118,32 @@ function useCompress() {
   //   return result.response;
   // }
 
-  const systems = useSelector((state: any) => state.systems.storage.configuration);
-
-  dispatch({
-    type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: 'RUNNING', operation: 'compress' },
-  });
-
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
 
   const compress = ({
-    scheme, 
-    files, 
-    filename, 
-    compressionType
+    scheme,
+    files,
+    filename,
+    compressionType,
   }: {
-    scheme: string; 
-    files: TTapisFile[]; 
-    filename: string; 
+    scheme: string;
+    files: TTapisFile[];
+    filename: string;
     compressionType: string;
   }) => {
-    // dispatch({
-    //   type: 'DATA_FILES_SET_OPERATION_STATUS',
-    //   payload: { status: { type: 'RUNNING' }, operation: 'compress' },
-    // });
-    setStatus({ type: 'RUNNING' });
+    dispatch({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'compress' },
+    });
 
-    let defaultPrivateSystem: any;
+    const systems = useSelector(
+      (state: any) => state.systems.storage.configuration
+    );
+
+    let defaultPrivateSystem: TPortalSystem | undefined;
 
     if (scheme !== 'private' && scheme !== 'projects') {
-      defaultPrivateSystem = (systems: any) =>
-        systems.find((s: any) => s.default);
+      defaultPrivateSystem = systems.find((s: any) => s.default);
 
       if (!defaultPrivateSystem) {
         throw new Error('Folder downloads are unavailable in this portal', {
@@ -156,27 +151,25 @@ function useCompress() {
         });
       }
     }
+    const compressApp = useSelector(
+      (state: any) => state.workbench.config.compressApp
+    );
 
-    console.log('Default Private System:', defaultPrivateSystem); // Displays a template literal; not working correctly
-
-    // const jobAppVersion = TTapisJob.IJobPostResponse.appVersion;  
-
-    // const params = compressFilesUtil(payload);
     const params = getCompressParams(
       // Doesn't work yet
       files,
       filename,
       compressionType,
-      defaultPrivateSystem,
-      compressAppId,
+      compressApp,
       defaultAllocation,
+      defaultPrivateSystem
     );
 
     mutate(
       {
         operation: 'submitJob',
-        job: submitJobUtil.arguments.TJobBody.job,
-        appVersion: submitJobUtil.arguments.TJobBody.appVersion
+        job: params,
+        appVersion: '1.0.0',
       },
       {
         onSuccess: (response: any) => {
@@ -200,7 +193,9 @@ function useCompress() {
               payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
             });
           } else {
-            throw new Error('Unable to compress files', { cause: 'compressError' });
+            throw new Error('Unable to compress files', {
+              cause: 'compressError',
+            });
           }
           console.log('It worked!');
           if (response.status === 'PENDING') {
