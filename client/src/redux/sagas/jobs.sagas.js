@@ -15,31 +15,33 @@ export async function fetchJobs(offset, limit, queryString) {
   On additional fetches, it should return the remaining 50 or less jobs that are in the history,
   this just mocks that another 50 are returned by the fetch request.
   */
+  // For some reason fetchJobs calls twice on call
+  if (offset == 0) {
+    const result = await fetchUtil({
+      url: `/api/workspace/jobs/${operation}`,
+      params: { offset, limit, query_string: queryString },
+    });
+    let jobs = result.response;
+    cachedMockList = [];
+    // Mock for 50 job history results
+    for (let i = 0; i < 12; i++) {
+      cachedMockList = cachedMockList.concat(jobs);
+    }
+    cachedMockList = cachedMockList.concat(jobs[0]);
+    cachedMockList = cachedMockList.concat(jobs[1]);
+    return cachedMockList;
+  } else if (offset == 50) {
+    // Mock for remaining 12 results
+    for (let i = 0; i < 12; i++) {
+      cachedMockList = cachedMockList.concat(cachedMockList[0]);
+    }
+    return cachedMockList;
+  }
   const result = await fetchUtil({
     url: `/api/workspace/jobs/${operation}`,
     params: { offset, limit, query_string: queryString },
   });
-  // For some reason fetchJobs calls twice on call
-  if (cachedMockList) {
-    console.log('Returning cached mock list');
-    if (offset != 0) {
-      cachedMockList = cachedMockList.concat(result.response);
-      return cachedMockList;
-    }
-    return result.response;
-  }
-  // Mock for 50 job history results
-  let jobs = result.response;
-  let mockList = [];
-  for (let i = 0; i < 12; i++) {
-    mockList = mockList.concat(jobs);
-  }
-  mockList = mockList.concat(jobs[0]);
-  mockList = mockList.concat(jobs[1]);
-  console.log('Start list', mockList);
-  console.log('Result response of', result.response);
-  cachedMockList = mockList;
-  return mockList;
+  return result.response;
 }
 
 // TODOv3: dropV2Jobs
