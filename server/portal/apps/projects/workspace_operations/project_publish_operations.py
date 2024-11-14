@@ -10,6 +10,7 @@ from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
 from django.db import transaction
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.search.tasks import index_publication
 from tapipy.errors import NotFoundError, BaseTapyException
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -137,6 +138,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             project_id=project_id,
             defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
         )
+
+        index_publication(project_id)
 
         # transfer files 
         client = service_account()
