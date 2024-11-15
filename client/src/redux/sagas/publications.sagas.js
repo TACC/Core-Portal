@@ -135,6 +135,15 @@ export async function fetchPublicationsUtil(queryString) {
 
 export function* getPublications(action) {
   yield put({
+    type: 'DATA_FILES_CLEAR_PROJECT_SELECTION',
+    payload: {
+      system: action.payload.system,
+    }
+  });
+  yield put({
+    type: 'PROJECTS_CLEAR_METADATA',
+  })
+  yield put({
     type: 'PUBLICATIONS_GET_PUBLICATIONS_STARTED',
   });
   try {
