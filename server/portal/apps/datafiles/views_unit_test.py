@@ -241,6 +241,21 @@ def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authent
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_put_is_unauthorized(mock_indexer, client):
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
+        response = client.put(
+            "/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+            content_type="application/json",
+            data=body,
+        )
+        assert response.status_code == 403
+        assert response.content == b"This data requires authentication to view."
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
 def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authenticated_user, mock_tapis_client,
                                                     logging_metric_mock,
                                                     tapis_file_mock, requests_mock, text_file_fixture):
