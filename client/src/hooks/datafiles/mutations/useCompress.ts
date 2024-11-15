@@ -51,14 +51,11 @@ export type TJobBody = {
   job: TJobSubmit;
   licenseType?: string;
   isInteractive?: boolean;
-  // appVersion: string;
   execSystemId?: string;
-  // withCredentials: true;
 };
 
 interface IJobPostResponse extends TTapisJob {
   execSys?: TTapisSystem;
-  // appVersion: string;
 }
 
 type TJobPostResponse = {
@@ -98,30 +95,14 @@ function useCompress() {
     };
   };
 
-  // Set the state
-  // const compressAppId = useSelector(
-  //   (state: any) => state.workbench.config.compressApp
-  // );
-
-  // Set the state
   const compressApp = useSelector(
     (state: any) => state.workbench.config.compressApp
   );
 
-  // Set the allocation
   const defaultAllocation = useSelector(
     (state: any) =>
       state.allocations.portal_alloc || state.allocations.active[0].projectName
   );
-
-  // const getAppDefinition = async function fetchAppDefinitionUtil(appId: string, appVersion: string, fetchUtil: any) {
-  //   const params = { appId, appVersion };
-  //   const result = await fetchUtil({
-  //     url: '/api/workspace/apps',
-  //     params,
-  //   });
-  //   return result.response;
-  // }
 
   const systems = useSelector(
     (state: any) => state.systems.storage.configuration
@@ -167,15 +148,11 @@ function useCompress() {
       defaultAllocation,
       defaultPrivateSystem,
     );
-    // console.log('Params: ',params);
 
     mutate(
       {
-        // operation: 'submitJob',
         job: params,
-        // appVersion: '0.0.3',
         execSystemId: setExecSystemId,
-        // withCredentials: true
       },
       {
         onSuccess: (response: any, action: any) => {
@@ -232,6 +209,7 @@ function useCompress() {
       }
     );
   };
+  
 
   return { compress, status, setStatus };
 }
