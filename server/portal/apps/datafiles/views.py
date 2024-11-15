@@ -86,8 +86,6 @@ class SystemDefinitionView(BaseApiView):
 class TapisFilesView(BaseApiView):
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
-            logger.info(request)
-            logger.info(request.user.tapis_oauth.client)
             client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems

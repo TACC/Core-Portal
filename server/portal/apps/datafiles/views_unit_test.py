@@ -1,13 +1,14 @@
-import pytest
 import json
 import logging
 import os
-from mock import patch, MagicMock
-from tapipy.errors import InternalServerError
-from portal.apps.datafiles.models import Link
+
+import pytest
 from django.conf import settings
+from mock import MagicMock, patch
+from tapipy.errors import InternalServerError
 from tapipy.tapis import TapisResult
 
+from portal.apps.datafiles.models import Link
 pytestmark = pytest.mark.django_db
 
 
@@ -204,8 +205,7 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
             authenticated_user.username))
 
 
-@patch("portal.libs.agave.operations.tapis_listing_indexer")
-# @patch('portal.libs.agave.utils.service_account')
+@patch('portal.libs.agave.operations.tapis_indexer')
 @patch(
     "django.conf.settings.PORTAL_DATAFILES_STORAGE_SYSTEMS",
     [{"scheme": "public", "system": "public.system", "homeDir": "/public/home/"}],
@@ -213,43 +213,14 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
 def test_tapis_file_view_get_unauthorized(
     mock_indexer,
     client,
-    authenticated_user,
-    mock_tapis_client,
-    tapis_file_listing_mock,
-    logging_metric_mock,
 ):
-    tapis_listing_result = [TapisResult(**f) for f in tapis_file_listing_mock]
-    mock_tapis_client.files.listFiles.return_value = tapis_listing_result
-    response = client.get(
-        "/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234"
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "data": {
-            "listing": [
-                {
-                    "system": "frontera.home.username",
-                    "type": "dir" if f.type == "dir" else "file",
-                    "format": "folder" if f.type == "dir" else "raw",
-                    "mimeType": f.mimeType,
-                    "path": f.path,
-                    "name": f.name,
-                    "length": f.size,
-                    "lastModified": f.lastModified,
-                    "_links": {"self": {"href": f.url}},
-                }
-                for f in tapis_listing_result
-            ],
-            "reachedEnd": True,
-        }
-    }
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
 
-    # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_called_with(
-        "user:{} op:listing api:tapis scheme:private system:frontera.home.username path:test.txt filesize:1234".format(
-            authenticated_user.username
-        )
-    )
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234")
+        assert response.status_code == 403
+        assert response.json() == {'message': 'This data requires authentication to view.'}
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
