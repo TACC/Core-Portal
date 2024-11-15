@@ -1,7 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-// import { useCallback } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-// import { fetchCreateProject } from 'redux/sagas/projects.sagas';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
 import {
@@ -42,23 +40,25 @@ export type TOutputValues = {
 export interface TJobSubmit extends TConfigurationValues, TOutputValues {
   archiveOnAppError?: boolean;
   appId: string;
-  appVersion: string;
+  // appVersion: string;
   fileInputs?: TAppFileInput[];
   parameterSet?: TParameterSetSubmit;
 }
 
 export type TJobBody = {
-  operation: TJobPostOperations;
+  operation?: TJobPostOperations;
   uuid?: string;
-  job?: TJobSubmit;
+  job: TJobSubmit;
   licenseType?: string;
   isInteractive?: boolean;
-  appVersion: string;
+  // appVersion: string;
+  execSystemId?: string;
+  // withCredentials: true;
 };
 
 interface IJobPostResponse extends TTapisJob {
   execSys?: TTapisSystem;
-  appVersion: string;
+  // appVersion: string;
 }
 
 type TJobPostResponse = {
@@ -69,7 +69,7 @@ type TJobPostResponse = {
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
     `/api/workspace/jobs`,
-    body
+    body,
   );
   return res.data.response;
 }
@@ -99,7 +99,12 @@ function useCompress() {
   };
 
   // Set the state
-  const compressAppId = useSelector(
+  // const compressAppId = useSelector(
+  //   (state: any) => state.workbench.config.compressApp
+  // );
+
+  // Set the state
+  const compressApp = useSelector(
     (state: any) => state.workbench.config.compressApp
   );
 
@@ -117,6 +122,10 @@ function useCompress() {
   //   });
   //   return result.response;
   // }
+
+  const systems = useSelector(
+    (state: any) => state.systems.storage.configuration
+  );
 
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
 
@@ -136,10 +145,6 @@ function useCompress() {
       payload: { status: 'RUNNING', operation: 'compress' },
     });
 
-    const systems = useSelector(
-      (state: any) => state.systems.storage.configuration
-    );
-
     let defaultPrivateSystem: TPortalSystem | undefined;
 
     if (scheme !== 'private' && scheme !== 'projects') {
@@ -151,28 +156,29 @@ function useCompress() {
         });
       }
     }
-    const compressApp = useSelector(
-      (state: any) => state.workbench.config.compressApp
-    );
+
+    const setExecSystemId = 'frontera';
 
     const params = getCompressParams(
-      // Doesn't work yet
       files,
       filename,
       compressionType,
       compressApp,
       defaultAllocation,
-      defaultPrivateSystem
+      defaultPrivateSystem,
     );
+    // console.log('Params: ',params);
 
     mutate(
       {
-        operation: 'submitJob',
+        // operation: 'submitJob',
         job: params,
-        appVersion: '1.0.0',
+        // appVersion: '0.0.3',
+        execSystemId: setExecSystemId,
+        // withCredentials: true
       },
       {
-        onSuccess: (response: any) => {
+        onSuccess: (response: any, action: any) => {
           // If the execution system requires pushing keys, then
           // bring up the modal and retry the compress action
           if (response.execSys) {
@@ -181,7 +187,7 @@ function useCompress() {
               payload: {
                 operation: 'pushKeys',
                 props: {
-                  // onSuccess: action,
+                  onSuccess: action,
                   system: response.execSys,
                   onCancel: compressErrorAction('An error has occurred'),
                 },
@@ -206,13 +212,21 @@ function useCompress() {
             console.log('It REALLY worked!');
           }
         },
-        onError: () => {
+        onError: (response) => {
+          const errorMessage = response.cause === 'compressError' 
+            ? response.message 
+            : 'An error has occurred.'
           dispatch({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
             payload: {
-              status: { type: 'ERROR', operation: 'compress' },
+              status: { type: 'ERROR', message: errorMessage },
+              operation: 'compress'
             },
           });
+          console.log('Error Message: ', errorMessage);
+          console.log(response.cause);
+          console.log(response.message);
+          console.log(response);
           console.log('Nope');
         },
       }
