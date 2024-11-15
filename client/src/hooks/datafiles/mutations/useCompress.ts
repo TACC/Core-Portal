@@ -65,7 +65,7 @@ type TJobPostResponse = {
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
     `/api/workspace/jobs`,
-    body,
+    body
   );
   return res.data.response;
 }
@@ -143,7 +143,7 @@ function useCompress() {
       compressionType,
       compressApp,
       defaultAllocation,
-      defaultPrivateSystem,
+      defaultPrivateSystem
     );
 
     mutate(
@@ -173,7 +173,7 @@ function useCompress() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
-                message: 'Compressed ZIP file in Root directory shortly'
+                message: 'Compressed ZIP file in Root directory shortly',
               },
             });
             dispatch({
@@ -184,17 +184,18 @@ function useCompress() {
               type: 'DATA_FILES_TOGGLE_MODAL',
               payload: { operation: 'compress', props: {} },
             });
-          };
+          }
         },
         onError: (response) => {
-          const errorMessage = response.cause === 'compressError' 
-            ? response.message 
-            : 'An error has occurred.'
+          const errorMessage =
+            response.cause === 'compressError'
+              ? response.message
+              : 'An error has occurred.';
           dispatch({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
             payload: {
               status: { type: 'ERROR', message: errorMessage },
-              operation: 'compress'
+              operation: 'compress',
             },
           });
         },

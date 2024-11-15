@@ -985,7 +985,6 @@ export function* watchExtract() {
   yield takeLeading('DATA_FILES_EXTRACT', extractFiles);
 }
 
-
 export const compressAppSelector = (state) =>
   state.workbench.config.compressApp;
 
