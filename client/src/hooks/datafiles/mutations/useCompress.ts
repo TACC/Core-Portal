@@ -40,7 +40,6 @@ export type TOutputValues = {
 export interface TJobSubmit extends TConfigurationValues, TOutputValues {
   archiveOnAppError?: boolean;
   appId: string;
-  // appVersion: string;
   fileInputs?: TAppFileInput[];
   parameterSet?: TParameterSetSubmit;
 }
@@ -138,8 +137,6 @@ function useCompress() {
       }
     }
 
-    const setExecSystemId = 'frontera';
-
     const params = getCompressParams(
       files,
       filename,
@@ -152,10 +149,9 @@ function useCompress() {
     mutate(
       {
         job: params,
-        execSystemId: setExecSystemId,
       },
       {
-        onSuccess: (response: any, action: any) => {
+        onSuccess: (response: any) => {
           // If the execution system requires pushing keys, then
           // bring up the modal and retry the compress action
           if (response.execSys) {
@@ -164,7 +160,6 @@ function useCompress() {
               payload: {
                 operation: 'pushKeys',
                 props: {
-                  onSuccess: action,
                   system: response.execSys,
                   onCancel: compressErrorAction('An error has occurred'),
                 },
@@ -175,19 +170,21 @@ function useCompress() {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
             });
-          } else {
-            throw new Error('Unable to compress files', {
-              cause: 'compressError',
+            dispatch({
+              type: 'ADD_TOAST',
+              payload: {
+                message: 'Compressed ZIP file in Root directory shortly'
+              },
             });
-          }
-          console.log('It worked!');
-          if (response.status === 'PENDING') {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
+              payload: { operation: 'compress', status: {} },
             });
-            console.log('It REALLY worked!');
-          }
+            dispatch({
+              type: 'DATA_FILES_TOGGLE_MODAL',
+              payload: { operation: 'compress', props: {} },
+            });
+          };
         },
         onError: (response) => {
           const errorMessage = response.cause === 'compressError' 
@@ -200,16 +197,10 @@ function useCompress() {
               operation: 'compress'
             },
           });
-          console.log('Error Message: ', errorMessage);
-          console.log(response.cause);
-          console.log(response.message);
-          console.log(response);
-          console.log('Nope');
         },
       }
     );
   };
-  
 
   return { compress, status, setStatus };
 }
