@@ -298,9 +298,11 @@ class JobsView(BaseApiView):
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             execSystemId = job_post.get("execSystemId")
+            print('Marker 1: ',execSystemId)
             if not execSystemId:
                 app = _get_app(job_post["appId"], job_post["appVersion"], request.user)
                 execSystemId = app["definition"].jobAttributes.execSystemId
+                print('Marker 2: ',execSystemId)
 
             # Check for and set license environment variable if app requires one
             lic_type = body.get('licenseType')

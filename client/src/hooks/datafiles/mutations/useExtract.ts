@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { getCompressParams } from 'utils/getCompressParams';
+// import { getCompressParams } from 'utils/getCompressParams';
 import { getExtractParams } from 'utils/getExtractParams';
 import { apiClient } from 'utils/apiClient';
+import { fetchUtil } from 'utils/fetchUtil';
 import {
   TTapisSystem,
   TAppFileInput,
@@ -10,11 +11,9 @@ import {
   TJobArgSpecs,
   TJobKeyValuePair,
   TTapisFile,
-  TPortalSystem,
 } from 'utils/types';
-// import { useCallback } from 'react';
-import { fetchAppDefinitionUtil } from 'redux/sagas/apps.sagas';
-import { string } from 'prop-types';
+import { fetchAppDefinitionUtil } from '../../../redux/sagas/apps.sagas';
+import { parseAst } from 'vite';
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
@@ -93,17 +92,25 @@ function useExtract() {
   );
 
   const defaultAllocation = useSelector(
-    (state: any) => state.allocation.portal_alloc || state.allocation.active[0].projectName
+    (state: any) => state.allocations.portal_alloc || state.allocations.active[0].projectName
   );
-
-  const latestExtract = fetchAppDefinitionUtil(extractApp);
+  
+  const getAppUtil = async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
+    const params = { appId, appVersion };
+    const result = await fetchUtil({
+      url: '/api/workspace/apps',
+      params,
+    });
+    return result.response;
+  }
+  const latestExtract = getAppUtil(extractApp.id, extractApp.version);
 
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
 
   const extract = ({
     file,
   }: {
-    file: TTapisFile
+    file: TTapisFile;
   }) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -112,9 +119,11 @@ function useExtract() {
 
     const params = getExtractParams(
       file,
+      extractApp,
       latestExtract,
       defaultAllocation
     );
+    console.log(params);
 
     mutate(
       {
@@ -140,7 +149,7 @@ function useExtract() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
-                message: 'Files successfully extracted',
+                message: 'File extraction in progress',
               },
             });
             dispatch({
