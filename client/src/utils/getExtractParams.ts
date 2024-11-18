@@ -7,7 +7,7 @@ export const getExtractParams = (
 ) => {
     const inputFile = `tapis://${file.system}/${file.path}`;
     const archivePath = `${file.path.slice(0, -file.name.length)}`;
-    return JSON.stringify({
+    return {
         job: {
           fileInputs: [
             {
@@ -37,5 +37,5 @@ export const getExtractParams = (
           },
           execSystemId: latestExtract.definition.jobAttributes.execSystemId,
         },
-    });
+    };
 };

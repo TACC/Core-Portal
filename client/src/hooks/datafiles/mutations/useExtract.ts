@@ -14,6 +14,7 @@ import {
 } from 'utils/types';
 // import { useCallback } from 'react';
 import { fetchAppDefinitionUtil } from 'redux/sagas/apps.sagas';
+import { string } from 'prop-types';
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
@@ -35,14 +36,14 @@ export type TConfigurationValues = {
 };
 
 export type TOutputValues = {
-  name: string;
+  name?: string;
   archiveSystemId?: string;
   archiveSystemDir?: string;
 };
 
 export interface TJobSubmit extends TConfigurationValues, TOutputValues {
   archiveOnAppError?: boolean;
-  appId: string;
+  appId?: string;
   fileInputs?: TAppFileInput[];
   parameterSet?: TParameterSetSubmit;
 }
@@ -117,7 +118,7 @@ function useExtract() {
 
     mutate(
       {
-        job: params,
+        job: params
       },
       {
         onSuccess: (response: any) => {
