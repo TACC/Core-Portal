@@ -130,6 +130,21 @@ def test_link_post(postits_create, authenticated_user, client):
     )
 
 
+def test_link_post_already_exists(postits_create, authenticated_user, client):
+    result = client.post("/api/datafiles/link/tapis/system/path")
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"
+    postits_create.assert_called_with(
+       systemId="system",
+       path="path",
+       allowedUses=-1,
+       validSeconds=31536000
+    )
+    result = client.post("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Link for this file already exists"}
+
+
 def test_link_delete(postits_create, authenticated_user, mock_tapis_client, client):
     mock_tapis_client.files.deletePostIt.return_value = "OK"
     client.post("/api/datafiles/link/tapis/system/path")
@@ -137,6 +152,13 @@ def test_link_delete(postits_create, authenticated_user, mock_tapis_client, clie
     assert json.loads(result.content)["data"] == "OK"
     assert result.status_code == 200
     assert len(Link.objects.all()) == 0
+
+
+def test_link_delete_dne(authenticated_user, mock_tapis_client, client):
+    mock_tapis_client.files.deletePostIt.return_value = "Bad Request"
+    result = client.delete("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Post-it does not exist"}
 
 
 def test_link_put(postits_create, authenticated_user, mock_tapis_client, client):
@@ -148,6 +170,13 @@ def test_link_put(postits_create, authenticated_user, mock_tapis_client, client)
     result = client.put("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"
+
+
+def test_link_put_dne(postits_create, authenticated_user, mock_tapis_client, client):
+    mock_tapis_client.files.deletePostIt.return_value = "Bad Request"
+    result = client.put("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Could not find pre-existing link"}
 
 
 def test_get_system(client, authenticated_user, mock_tapis_client, agave_storage_system_mock):
