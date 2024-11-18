@@ -156,6 +156,33 @@ describe('Third Party Apps', () => {
     expect(getByText('Google Drive')).toBeDefined();
     expect(getByText('Disconnect')).toBeDefined();
   });
+  it('Shows potential 3rd party connections other than Google Drive', () => {
+    const testStore = mockStore({
+      profile: {
+        ...dummyState,
+        data: {
+          ...dummyState.data,
+          integrations: [
+            {
+              label: '3rd Party Service',
+              description: '3rd Party Service description',
+              activated: true,
+            },
+          ],
+        },
+      },
+    });
+    const { getByText, queryByText } = render(
+      <Provider store={testStore}>
+        <Integrations />
+      </Provider>
+    );
+    expect(getByText(/3rd Party Apps/)).toBeInTheDocument();
+    // Check that Google Drive is not rendered
+    expect(queryByText('Google Drive')).toBeNull();
+    // Check that other integrations are rendered
+    expect(getByText('3rd Party Service')).toBeInTheDocument();
+  });
 });
 
 describe('License Cell', () => {
