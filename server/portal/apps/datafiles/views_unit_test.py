@@ -326,7 +326,7 @@ def test_tapis_file_view_post_is_unauthorized(mock_indexer, text_file_fixture, c
 
 @patch('portal.libs.agave.operations.tapis_indexer')
 @patch('portal.apps.datafiles.views.tapis_post_handler')
-def test_tapis_file_view_post_is_logged_for_metrics_exception(mock_indexer, mock_post_handler, client, authenticated_user, mock_tapis_client,
+def test_tapis_file_view_post_is_logged_for_metrics_exception(mock_post_handler, mock_indexer, client, authenticated_user, mock_tapis_client,
                                                               logging_metric_mock, tapis_file_mock, requests_mock, text_file_fixture):
     mock_post_handler.side_effect = Exception("Exception in Metrics info or Tapis Put Handler views.py:175")
     mock_tapis_client.files.insert.return_value = tapis_file_mock
