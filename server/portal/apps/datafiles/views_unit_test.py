@@ -241,6 +241,17 @@ def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authent
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
+@patch('portal.apps.datafiles.views.tapis_put_handler')
+def test_tapis_file_view_put_is_logged_for_metrics_exception(mock_put_handler, mock_indexer, client, authenticated_user, mock_tapis_client):
+    mock_put_handler.side_effect = Exception("Exception in Metrics info or Tapis Put Handler views.py:142")
+    body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
+    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+                          content_type="application/json",
+                          data=body)
+    assert response.status_code == 500
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
 def test_tapis_file_view_put_is_unauthorized(mock_indexer, client):
     mock_user = MagicMock()
     mock_user.tapis_oauth = 0
@@ -272,6 +283,29 @@ def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authen
     logging_metric_mock.assert_called_with(
         "user:{} op:upload api:tapis scheme:private "
         "system:frontera.home.username path:/ filename:text_file.txt".format(authenticated_user.username))
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_post_is_unauthorized(mock_indexer, text_file_fixture, client):
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/", data={"uploaded_file": text_file_fixture})
+        assert response.status_code == 403
+        assert response.content == b"This data requires authentication to upload."
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+@patch('portal.apps.datafiles.views.tapis_post_handler')
+def test_tapis_file_view_post_is_logged_for_metrics_exception(mock_indexer, mock_post_handler, client, authenticated_user, mock_tapis_client,
+                                                              logging_metric_mock, tapis_file_mock, requests_mock, text_file_fixture):
+    mock_post_handler.side_effect = Exception("Exception in Metrics info or Tapis Put Handler views.py:175")
+    mock_tapis_client.files.insert.return_value = tapis_file_mock
+
+    response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
+                           data={"uploaded_file": text_file_fixture})
+
+    assert response.status_code == 500
 
 
 POSTIT_HREF = "https://tapis.example/postit/something"
