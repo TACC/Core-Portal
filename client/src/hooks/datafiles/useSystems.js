@@ -29,7 +29,21 @@ function useSystems() {
     [data]
   );
 
-  return { data, loading, error, fetchSystems, fetchSelectedSystem };
+  const isPublicationSystem = useCallback(
+    (system) => {
+      return data.some((s) => s.system === system && s.publicationProject);
+    },
+    [data]
+  );
+
+  const isReviewSystem = useCallback(
+    (system) => {
+      return data.some((s) => s.system === system && s.reviewProject);
+    },
+    [data]
+  );
+
+  return { data, loading, error, fetchSystems, fetchSelectedSystem, isPublicationSystem, isReviewSystem };
 }
 
 export default useSystems;
