@@ -62,14 +62,17 @@ type TJobPostResponse = {
   status: number;
 };
 
-const getAppUtil = async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
+const getAppUtil = async function fetchAppDefinitionUtil(
+  appId: string,
+  appVersion: string
+) {
   const params = { appId, appVersion };
   const result = await fetchUtil({
     url: '/api/workspace/apps',
     params,
   });
   return result.response;
-}
+};
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -98,18 +101,15 @@ function useExtract() {
   );
 
   const defaultAllocation = useSelector(
-    (state: any) => state.allocations.portal_alloc || state.allocations.active[0].projectName
+    (state: any) =>
+      state.allocations.portal_alloc || state.allocations.active[0].projectName
   );
-  
+
   const latestExtract = getAppUtil(extractApp.id, extractApp.version);
 
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
 
-  const extract = ({
-    file,
-  }: {
-    file: TTapisFile;
-  }) => {
+  const extract = ({ file }: { file: TTapisFile }) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
@@ -135,9 +135,9 @@ function useExtract() {
               payload: {
                 operation: 'pushKeys',
                 props: {
-                  system: response.execSys
-                }
-              }
+                  system: response.execSys,
+                },
+              },
             });
           } else if (response.status === 'PENDING') {
             dispatch({
@@ -172,7 +172,7 @@ function useExtract() {
               operation: 'extract',
             },
           });
-        }
+        },
       }
     );
   };
