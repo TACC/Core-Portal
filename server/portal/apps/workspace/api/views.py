@@ -298,11 +298,9 @@ class JobsView(BaseApiView):
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             execSystemId = job_post.get("execSystemId")
-            print('Marker 1: ',execSystemId)
             if not execSystemId:
                 app = _get_app(job_post["appId"], job_post["appVersion"], request.user)
                 execSystemId = app["definition"].jobAttributes.execSystemId
-                print('Marker 2: ',execSystemId)
 
             # Check for and set license environment variable if app requires one
             lic_type = body.get('licenseType')
@@ -320,7 +318,7 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post['archiveSystemId'], 'execSystemId'])):
+            for system_id in list(set([job_post['archiveSystemId'], execSystemId])):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):

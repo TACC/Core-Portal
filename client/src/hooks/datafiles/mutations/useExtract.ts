@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-// import { getCompressParams } from 'utils/getCompressParams';
 import { getExtractParams } from 'utils/getExtractParams';
 import { apiClient } from 'utils/apiClient';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -12,8 +11,6 @@ import {
   TJobKeyValuePair,
   TTapisFile,
 } from 'utils/types';
-import { fetchAppDefinitionUtil } from '../../../redux/sagas/apps.sagas';
-import { parseAst } from 'vite';
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
@@ -65,6 +62,15 @@ type TJobPostResponse = {
   status: number;
 };
 
+const getAppUtil = async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
+  const params = { appId, appVersion };
+  const result = await fetchUtil({
+    url: '/api/workspace/apps',
+    params,
+  });
+  return result.response;
+}
+
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
     `/api/workspace/jobs`,
@@ -95,14 +101,6 @@ function useExtract() {
     (state: any) => state.allocations.portal_alloc || state.allocations.active[0].projectName
   );
   
-  const getAppUtil = async function fetchAppDefinitionUtil(appId: string, appVersion: string) {
-    const params = { appId, appVersion };
-    const result = await fetchUtil({
-      url: '/api/workspace/apps',
-      params,
-    });
-    return result.response;
-  }
   const latestExtract = getAppUtil(extractApp.id, extractApp.version);
 
   const { mutate } = useMutation({ mutationFn: submitJobUtil });
@@ -127,7 +125,7 @@ function useExtract() {
 
     mutate(
       {
-        job: params
+        job: params,
       },
       {
         onSuccess: (response: any) => {
