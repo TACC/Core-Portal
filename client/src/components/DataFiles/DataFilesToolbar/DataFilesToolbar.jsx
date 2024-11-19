@@ -135,6 +135,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleExtractModal = () =>
     toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
+  const toggleLargeDownloadModal = () =>
+    toggle({ operation: 'largeDownload', props: {} });
+
   const toggleLinkModal = () => {
     dispatch({
       type: 'DATA_FILES_LINK',
@@ -151,10 +154,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
   const download = () => {
     if (canDownload) {
-      dispatch({
-        type: 'DATA_FILES_DOWNLOAD',
-        payload: { file: selectedFiles[0] },
-      });
+      // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
+      const maxFileSize = 2 * 1024 * 1024 * 1024;
+      if (selectedFiles[0].length < maxFileSize) {
+        dispatch({
+          type: 'DATA_FILES_DOWNLOAD',
+          payload: { file: selectedFiles[0] },
+        });
+      } else {
+        toggleLargeDownloadModal();
+      }
     } else {
       toggle({
         operation: 'downloadMessage',
