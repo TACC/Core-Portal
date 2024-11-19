@@ -561,6 +561,10 @@ export function* uploadFiles(action) {
     });
 
   yield call(action.payload.reloadCallback);
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'upload', props: {} },
+  });
 }
 
 export function* uploadFile(api, scheme, system, path, file, index, metadata) {

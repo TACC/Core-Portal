@@ -76,10 +76,17 @@ const DataFilesFormModal = () => {
   const validationSchema = Yup.object().shape({
     ...(form?.form_fields ?? []).reduce((schema, field) => {
       if (field.validation?.required) {
-        schema[field.name] = Yup.string().required(
+        schema[field.name] = (schema[field.name] || Yup.string()).required(
           `${field.label} is required`
         );
       }
+
+      if (field.type === 'link') {
+        schema[field.name] = (schema[field.name] || Yup.string())
+          .url(`${field.label} must be a valid URL`)
+          .matches(/^https:\/\//, `${field.label} must start with https://`);
+      }
+
       return schema;
     }, {}),
   });

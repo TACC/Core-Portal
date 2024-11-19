@@ -10,6 +10,7 @@ from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
 from django.db import transaction
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.search.tasks import index_publication
 from tapipy.errors import NotFoundError, BaseTapyException
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -122,14 +123,14 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
         source_project = ProjectMetadata.get_project_by_id(source_project_id)
         source_project.value['doi'] = doi
-        source_project.value['publication_date'] = published_project.created
+        source_project.value['publicationDate'] = published_project.created
         source_project.save()
 
         pub_tree = nx.node_link_graph(published_project.project_graph.value)
         pub_tree.nodes["NODE_ROOT"]["version"] = version
         published_project.project_graph.value = nx.node_link_data(pub_tree)
         published_project.value['doi'] = doi
-        published_project.value['publication_date'] = published_project.created
+        published_project.value['publicationDate'] = published_project.created
         published_project.save()
 
 
@@ -137,6 +138,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             project_id=project_id,
             defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
         )
+
+        index_publication(project_id)
 
         # transfer files 
         client = service_account()
