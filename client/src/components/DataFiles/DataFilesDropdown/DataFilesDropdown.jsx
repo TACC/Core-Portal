@@ -26,7 +26,12 @@ const BreadcrumbsDropdown = ({
 
   const location = useLocation();
   const pathParts = location.pathname.split('/');
+
   const projectId = pathParts.includes('projects')
+    ? pathParts[pathParts.indexOf('projects') + 2]
+    : null;
+  
+  const rootProjectSystem = pathParts.includes('projects')
     ? pathParts[pathParts.indexOf('projects') + 1]
     : null;
 
@@ -35,13 +40,15 @@ const BreadcrumbsDropdown = ({
     let url;
 
     if (scheme === 'projects' && targetPath === systemName) {
-      url = `${basePath}/${api}/projects/${projectId}/`;
+      url = `${basePath}/${api}/projects/${rootProjectSystem}/${projectId}/`;
     } else if (scheme === 'projects' && !targetPath) {
-      url = `${basePath}/${api}/projects/`;
+      url = `${basePath}/${api}/projects/${rootProjectSystem}`;
     } else if (api === 'googledrive' && !targetPath) {
       url = `${basePath}/${api}/${scheme}/${system}/`;
     } else if (api === 'tapis' && scheme !== 'projects' && !targetPath) {
       url = `${basePath}/${api}/${scheme}/${system}/`;
+    } else if (scheme === 'projects') {
+      url = `${basePath}/${api}/projects/${rootProjectSystem}/${system}${targetPath}`;
     } else {
       url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
     }
@@ -69,7 +76,7 @@ const BreadcrumbsDropdown = ({
   );
 
   const sharedWorkspacesDisplayName = systems.find(
-    (e) => e.scheme === 'projects'
+    (e) => e.scheme === 'projects' && e.system === rootProjectSystem
   )?.name;
 
   let currentPath = startingPath;
@@ -81,7 +88,7 @@ const BreadcrumbsDropdown = ({
   const fullPath = paths.reverse();
   const displayPaths =
     scheme === 'projects' ? [...fullPath, systemName] : fullPath;
-  const sliceStart = scheme === 'projects' && systemName ? 0 : 1;
+  const sliceStart = 1
   return (
     <div id="path-button-wrapper">
       <ButtonDropdown
