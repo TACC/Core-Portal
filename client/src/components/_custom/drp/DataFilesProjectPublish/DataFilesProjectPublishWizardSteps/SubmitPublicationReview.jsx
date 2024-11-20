@@ -65,7 +65,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
       <Section contentLayoutName={'oneColumn'}>
         <div>
           If you have any doubts about the process please contact the data
-          curator Maria Esteva before submitting the data for publication.
+          curator <a href="mailto:maria@tacc.utexas.edu">Maria Esteva</a> before submitting the data for publication.
         </div>
         <div className={styles['submit-div']}>
           {doi ? (
