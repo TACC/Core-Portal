@@ -29,15 +29,18 @@ function useSystems() {
     [data]
   );
 
-  const isRootProjectSystem = useCallback(
-    ({ system = '' }) => {
-      return data.some((s) => 
-        s.scheme === 'projects' && s.system === system
-      )
-    }
-  )
+  const isRootProjectSystem = useCallback(({ system = '' }) => {
+    return data.some((s) => s.scheme === 'projects' && s.system === system);
+  });
 
-  return { data, loading, error, fetchSystems, fetchSelectedSystem, isRootProjectSystem };
+  return {
+    data,
+    loading,
+    error,
+    fetchSystems,
+    fetchSelectedSystem,
+    isRootProjectSystem,
+  };
 }
 
 export default useSystems;

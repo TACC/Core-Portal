@@ -31,8 +31,11 @@ const DataFilesShowPathModal = React.memo(() => {
   const { isRootProjectSystem } = useSystems();
 
   useEffect(() => {
-    
-    if (params.api === 'tapis' && params.system && !isRootProjectSystem({ system: params.system })) {
+    if (
+      params.api === 'tapis' &&
+      params.system &&
+      !isRootProjectSystem({ system: params.system })
+    ) {
       dispatch({
         type: 'FETCH_SYSTEM_DEFINITION',
         payload: params.system,

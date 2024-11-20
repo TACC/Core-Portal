@@ -30,7 +30,7 @@ const BreadcrumbsDropdown = ({
   const projectId = pathParts.includes('projects')
     ? pathParts[pathParts.indexOf('projects') + 2]
     : null;
-  
+
   const rootProjectSystem = pathParts.includes('projects')
     ? pathParts[pathParts.indexOf('projects') + 1]
     : null;
@@ -88,7 +88,7 @@ const BreadcrumbsDropdown = ({
   const fullPath = paths.reverse();
   const displayPaths =
     scheme === 'projects' ? [...fullPath, systemName] : fullPath;
-  const sliceStart = 1
+  const sliceStart = 1;
   return (
     <div id="path-button-wrapper">
       <ButtonDropdown

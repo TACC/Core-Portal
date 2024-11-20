@@ -138,11 +138,11 @@ export function* getPublications(action) {
     type: 'DATA_FILES_CLEAR_PROJECT_SELECTION',
     payload: {
       system: action.payload.system,
-    }
+    },
   });
   yield put({
     type: 'PROJECTS_CLEAR_METADATA',
-  })
+  });
   yield put({
     type: 'PUBLICATIONS_GET_PUBLICATIONS_STARTED',
   });
