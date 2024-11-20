@@ -20,9 +20,9 @@ export async function mkdirUtil({
     apiPath = '';
   }
   let url = `/api/datafiles/${api}/mkdir/${scheme}/${system}/${apiPath}/`;
-  url.replace(/\/{2,}/g, '/');
+  url = url.replace(/\/{2,}/g, '/');
   const response = await apiClient.put<{ name: string; path: string }>(url, {
-    dirname: dirname,
+    dir_name: dirname,
   });
 
   return response.data;
@@ -59,17 +59,6 @@ function useMkdir() {
     dirname: string;
     reloadCallback: any;
   }) => {
-    dispatch({
-      type: 'DATA_FILES_MKDIR',
-      payload: {
-        api,
-        scheme,
-        system,
-        path,
-        dirname,
-        reloadCallback,
-      },
-    });
     mutate(
       {
         api,
@@ -87,7 +76,7 @@ function useMkdir() {
               props: {},
             },
           });
-          reloadCallback;
+          reloadCallback();
         },
         onError: () => {},
       }
