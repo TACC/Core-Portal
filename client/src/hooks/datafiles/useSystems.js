@@ -33,12 +33,28 @@ function useSystems() {
     return data.some((s) => s.scheme === 'projects' && s.system === system);
   });
 
+  const isPublicationSystem = useCallback(
+    (system) => {
+      return data.some((s) => s.system === system && s.publicationProject);
+    },
+    [data]
+  );
+
+  const isReviewSystem = useCallback(
+    (system) => {
+      return data.some((s) => s.system === system && s.reviewProject);
+    },
+    [data]
+  );
+
   return {
     data,
     loading,
     error,
     fetchSystems,
     fetchSelectedSystem,
+    isPublicationSystem,
+    isReviewSystem,
     isRootProjectSystem,
   };
 }
