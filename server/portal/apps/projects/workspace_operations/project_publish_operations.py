@@ -14,6 +14,7 @@ from portal.apps.search.tasks import index_publication
 from tapipy.errors import NotFoundError, BaseTapyException
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -249,3 +250,71 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
     review_project.delete()
 
     logger.info(f'Deleted review project {review_project_id} and its associated data.')
+
+
+def get_project_user_emails(project_id):
+    """Return a list of emails for users in a project."""
+    prj = ProjectMetadata.get_project_by_id(project_id)
+    return [user["email"] for user in prj.value["authors"] if user.get("email")]
+
+
+@shared_task(bind=True, queue='default')
+def send_publication_accept_email(project_id):
+    """
+    Alert project authors that their request has been accepted.
+    """
+    user_emails = get_project_user_emails()
+    for user_email in user_emails:
+        email_body = f"""
+            <p>Hello,</p>
+            <p>
+                Congratulations! The following project has been accepted for publication:
+                <br/>
+                <b>{project_id}</b>
+                <br/>
+            </p>
+            <p>
+            Your publication should appear in the portal within 1 business day.
+            </p>
+
+            This is a programmatically generated message. Do NOT reply to this message.
+            """
+
+        send_mail(
+            "DigitalRocks Alert: Your Publication Request has been Accepted",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user_email],
+            html_message=email_body,
+        )
+
+
+@shared_task(bind=True, queue='default')
+def send_publication_reject_email(project_id: str, version: Optional[int], error: str):
+    """
+    Alert project authors that their request has been rejected.
+    """
+    user_emails = get_project_user_emails()
+    for user_email in user_emails:
+        email_body = f"""
+            <p>Hello,</p>
+            <p>
+                The following project has been rejected by a reviewer and cannot be published at this time:
+                <br/>
+                <b>{project_id}</b>
+                <br/>
+            </p>
+            <p>
+            You are welcome to revise this project and re-submit for publication.
+            </p>
+
+            This is a programmatically generated message. Do NOT reply to this message.
+            """
+
+        send_mail(
+            "DigitalRocks Alert: Your Publication Request has been Rejected",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user_email],
+            html_message=email_body,
+        )
