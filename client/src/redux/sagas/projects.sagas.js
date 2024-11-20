@@ -43,7 +43,15 @@ export function* showSharedWorkspaces(action) {
   // Clear FileListing params to reset breadcrumbs
   yield put({
     type: 'DATA_FILES_CLEAR_PROJECT_SELECTION',
+    payload: {
+      system: action.payload.rootSystem,
+    },
   });
+
+  yield put({
+    type: 'PROJECTS_CLEAR_METADATA',
+  });
+
   // Load projects list
   yield put({
     type: 'PROJECTS_GET_LISTING',
@@ -93,6 +101,9 @@ export async function fetchMetadata(system) {
 }
 
 export function* getMetadata(action) {
+  yield put({
+    type: 'PROJECTS_CLEAR_METADATA',
+  });
   yield put({
     type: 'PROJECTS_GET_METADATA_STARTED',
   });

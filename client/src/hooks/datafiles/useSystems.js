@@ -29,6 +29,10 @@ function useSystems() {
     [data]
   );
 
+  const isRootProjectSystem = useCallback(({ system = '' }) => {
+    return data.some((s) => s.scheme === 'projects' && s.system === system);
+  });
+
   const isPublicationSystem = useCallback(
     (system) => {
       return data.some((s) => s.system === system && s.publicationProject);
@@ -51,6 +55,7 @@ function useSystems() {
     fetchSelectedSystem,
     isPublicationSystem,
     isReviewSystem,
+    isRootProjectSystem,
   };
 }
 
