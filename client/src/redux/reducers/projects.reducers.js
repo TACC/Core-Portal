@@ -221,6 +221,11 @@ export default function projects(state = initialState, action) {
         ...state,
         operation: initialState.operation,
       };
+    case 'PROJECTS_CLEAR_METADATA':
+      return {
+        ...state,
+        metadata: initialState.metadata,
+      };
     case 'PROJECTS_CREATE_PUBLICATION_REQUEST_STARTED':
       return {
         ...state,

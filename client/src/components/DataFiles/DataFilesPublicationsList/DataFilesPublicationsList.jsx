@@ -38,6 +38,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       type: 'PUBLICATIONS_GET_PUBLICATIONS',
       payload: {
         queryString: query.query_string,
+        system: selectedSystem.system,
       },
     });
   }, [dispatch, query.query_string]);
