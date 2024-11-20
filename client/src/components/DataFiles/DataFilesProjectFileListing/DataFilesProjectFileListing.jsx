@@ -8,7 +8,11 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useAddonComponents, useFileListing, useSystems } from 'hooks/datafiles';
+import {
+  useAddonComponents,
+  useFileListing,
+  useSystems,
+} from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
@@ -39,7 +43,6 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   useEffect(() => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
-
 
   const metadata = useSelector((state) => state.projects.metadata);
   const folderMetadata = useSelector(
@@ -129,7 +132,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
           ) : null}
           {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
             <Button type="link" onClick={onManage}>
-             {readOnlyTeam ? 'View' : 'Manage'} Team
+              {readOnlyTeam ? 'View' : 'Manage'} Team
             </Button>
           )}
           {DataFilesProjectFileListingAddon && (

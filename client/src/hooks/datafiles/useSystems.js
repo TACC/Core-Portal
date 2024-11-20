@@ -43,7 +43,15 @@ function useSystems() {
     [data]
   );
 
-  return { data, loading, error, fetchSystems, fetchSelectedSystem, isPublicationSystem, isReviewSystem };
+  return {
+    data,
+    loading,
+    error,
+    fetchSystems,
+    fetchSelectedSystem,
+    isPublicationSystem,
+    isReviewSystem,
+  };
 }
 
 export default useSystems;

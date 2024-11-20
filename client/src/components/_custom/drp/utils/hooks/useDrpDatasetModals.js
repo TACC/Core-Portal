@@ -153,14 +153,14 @@ const useDrpDatasetModals = (
       });
     },
     [dispatch]
-  )
+  );
 
   return {
     createSampleModal,
     createOriginDataModal,
     createAnalysisDataModal,
     createTreeModal,
-    createPublicationAuthorsModal
+    createPublicationAuthorsModal,
   };
 };
 

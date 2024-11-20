@@ -85,7 +85,9 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
         <>
           <Button
             type="link"
-            onClick={() => createPublicationAuthorsModal({ authors: metadata?.authors })}
+            onClick={() =>
+              createPublicationAuthorsModal({ authors: metadata?.authors })
+            }
           >
             View Authors
           </Button>
