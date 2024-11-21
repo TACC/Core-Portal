@@ -105,30 +105,34 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      mutateAsync({
-        api: file.api,
-        scheme: scheme,
-        system: file.system,
-        path: file.path,
-        filename: file.name,
-        filetype: file.type,
-        destApi,
-        destSystem,
-        destPath,
-        destPathName: name,
-      })
-        .then(() => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-            payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
-          });
-        })
-        .catch((error: any) => {
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-            payload: { status: 'ERROR', key: file.id, operation: 'copy' },
-          });
-        });
+      mutateAsync(
+        {
+          api: file.api,
+          scheme: scheme,
+          system: file.system,
+          path: file.path,
+          filename: file.name,
+          filetype: file.type,
+          destApi,
+          destSystem,
+          destPath,
+          destPathName: name,
+        },
+        {
+          onSuccess: () => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
+            });
+          },
+          onError: (error: any) => {
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: { status: 'ERROR', key: file.id, operation: 'copy' },
+            });
+          },
+        }
+      );
     });
     // Result
     await Promise.all(copyCalls);
