@@ -19,7 +19,8 @@ export const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  const submissionSystem = allSystems.find((s) => s.type === 'submission');
+  console.log('Systems are', allSystems);
+  let submissionSystem = allSystems.find((s) => s.type === 'submission');
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -30,13 +31,26 @@ export const SubmissionsUpload = () => {
     const filteredFiles = uploadedFiles.filter(
       (f) => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
     );
-    filteredFiles.length > 0 &&
-      upload({
+    console.log('Trying to upload with');
+    console.log('Path', uploadPath);
+    console.log('FilteredFiles', filteredFiles);
+
+    submissionSystem = allSystems.find((s) => s.name === 'My Data (Work)');
+
+    if (!submissionSystem || !submissionSystem.system) {
+      const msg = "System 'submission' does not exist in submission systems";
+      throw new Error(msg, submissionSystem);
+    }
+    console.log('Submission System', submissionSystem);
+    if (filteredFiles.length > 0) {
+      let result = upload({
         system: submissionSystem.system,
         path: uploadPath,
         files: filteredFiles,
         reloadCallback,
       });
+      console.log('RESULT', result);
+    }
   };
 
   const dropZoneDisabled = uploadedFiles.length > 0;
@@ -124,15 +138,20 @@ export const SubmissionsUpload = () => {
 
 const Submissions = () => {
   const getSubmitterRole = async () => {
-    const response = await fetchUtil({
-      url: '/submissions/check-submitter-role/',
-    });
-    return response;
+    // let response = await fetchUtil({
+    //   url: '/submissions/check-submitter-role/',
+    // });
+    // Override for now with fake data
+    const fakeResponse = {
+      is_submitter: true,
+      isLoading: false,
+    };
+    return fakeResponse;
   };
 
   const useSubmitterRole = () => {
     const query = useQuery({
-      queryKey: 'submitter-role',
+      queryKey: ['submitter-role'],
       queryFn: getSubmitterRole,
     });
     return query;
@@ -140,6 +159,7 @@ const Submissions = () => {
 
   const { data, isLoading } = useSubmitterRole();
 
+  console.log('The data is ', data);
   const is_submitter = data?.is_submitter;
 
   const Unauthorized = () => (

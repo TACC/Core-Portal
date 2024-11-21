@@ -227,7 +227,7 @@ _WORKBENCH_SETTINGS = {
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
-    "showSubmissions": False,
+    "showSubmissions": True,
     "hideAllocations": False,
     "hideManageAccount": False,
     "hideSystemStatus": False,

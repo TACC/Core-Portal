@@ -122,6 +122,7 @@ export const initialFilesState = {
   error: {
     FilesListing: false,
     modal: false,
+    message: '',
   },
   listing: {
     FilesListing: [],
@@ -329,6 +330,15 @@ export function files(state = initialFilesState, action) {
         selectAll: {
           ...state.selectAll,
           [action.payload.section]: setValue,
+        },
+      };
+    case 'DATA_FILES_SET_ERROR':
+      console.log('Reducer for setting the error');
+      return {
+        ...state,
+        error: {
+          ...state.error,
+          message: action.payload.message,
         },
       };
     case 'DATA_FILES_SET_LOADING':
