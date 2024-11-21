@@ -13,10 +13,23 @@ const DataFilesPublicationRequestModal = () => {
   const { publicationRequests } =
     useSelector((state) => state.files.modalProps.publicationRequest) || [];
 
+  const compareFn = (req1, req2) => {
+    // sort more recent requests first
+    const date1 = new Date(req1.created_at);
+    const date2 = new Date(req2.created_at);
+    if (date1 < date2) {
+      return 1;
+    }
+    if (date1 > date2) {
+      return -1;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const data = {};
 
-    publicationRequests?.forEach((request, index) => {
+    publicationRequests?.sort(compareFn).forEach((request, index) => {
       const publicationRequestDataObj = {
         Status: request.status,
         Reviewers: request.reviewers.reduce((acc, reviewer, index) => {
@@ -27,6 +40,7 @@ const DataFilesPublicationRequestModal = () => {
           );
         }, ''),
         Submitted: formatDateTime(new Date(request.created_at)),
+        _order: index,
       };
 
       const heading = `Publication Request ${index + 1}`;
