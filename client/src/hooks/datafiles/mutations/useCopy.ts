@@ -80,8 +80,8 @@ function useCopy() {
       payload: { operation: 'copy', status: newStatus },
     });
 
-  const { mutate } = useMutation({ mutationFn: copyFileUtil });
-  const copy = ({
+  const { mutateAsync } = useMutation({ mutationFn: copyFileUtil });
+  const copy = async ({
     srcApi,
     destApi,
     destSystem,
@@ -105,43 +105,37 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-
-      mutate(
-        {
-          api: file.api,
-          scheme: scheme,
-          system: file.system,
-          path: file.path,
-          filename: file.name,
-          filetype: file.type,
-          destApi,
-          destSystem,
-          destPath,
-          destPathName: name,
-        },
-        {
-          onSuccess: () => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
-            });
-            dispatch({
-              type: 'DATA_FILES_TOGGLE_MODAL',
-              payload: { operation: 'copy', props: {} },
-            });
-          },
-          onError: (error) => {
-            console.log('The error is ', error);
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'ERROR', key: file.id, operation: 'copy' },
-            });
-          },
-        }
-      );
+      mutateAsync({
+        api: file.api,
+        scheme: scheme,
+        system: file.system,
+        path: file.path,
+        filename: file.name,
+        filetype: file.type,
+        destApi,
+        destSystem,
+        destPath,
+        destPathName: name,
+      })
+        .then(() => {
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
+          });
+        })
+        .catch((error: any) => {
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: { status: 'ERROR', key: file.id, operation: 'copy' },
+          });
+        });
     });
     // Result
-    const result = copyCalls;
+    await Promise.all(copyCalls);
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'copy', props: {} },
+    });
     dispatch({
       type: 'ADD_TOAST',
       payload: {
