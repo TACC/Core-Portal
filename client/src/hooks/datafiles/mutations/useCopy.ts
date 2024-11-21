@@ -81,7 +81,7 @@ function useCopy() {
     });
 
   const { mutateAsync } = useMutation({ mutationFn: copyFileUtil });
-  const copy = async ({
+  const copy = ({
     srcApi,
     destApi,
     destSystem,
@@ -99,13 +99,13 @@ function useCopy() {
     const filteredSelected = selected
       .filter((f: any) => status[f.id] !== 'SUCCESS')
       .map((f: any) => ({ ...f, api: srcApi }));
-    const copyCalls = filteredSelected.map((file: any) => {
+    const copyCalls: Promise<any>[] = filteredSelected.map((file: any) => {
       // Copy File
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      mutateAsync(
+      return mutateAsync(
         {
           api: file.api,
           scheme: scheme,
@@ -135,20 +135,21 @@ function useCopy() {
       );
     });
     // Result
-    await Promise.all(copyCalls);
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: {} },
+    Promise.all(copyCalls).then(() => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'copy', props: {} },
+      });
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          message: `${
+            copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
+          } copied to ${truncateMiddle(`${destPath}`, 20) || '/'}`,
+        },
+      });
+      callback();
     });
-    dispatch({
-      type: 'ADD_TOAST',
-      payload: {
-        message: `${
-          copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
-        } copied to ${truncateMiddle(`${destPath}`, 20) || '/'}`,
-      },
-    });
-    callback();
   };
   return { copy, status, setStatus };
 }
