@@ -492,21 +492,10 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     body: formData,
   });
   if (!request.ok) {
-    // Error Information is here
-    // 403, 404, Inline and UI
-    // Tapis Errors, Inline
-    /*
-    switch (code) {
-      case 400:
-        if (ClientTapisMessage) {
-          return 'themessage';
-        }
-        // Return client side message
-        return message;
+    if (request.status === 403) {
+      const responseText = await request.text();
+      throw new Error(responseText);
     }
-    */
-    console.log(request);
-    throw new Error(request.status);
   }
   return request;
 }
@@ -571,7 +560,7 @@ export function* uploadFile(api, scheme, system, path, file, index) {
 
     yield put({
       type: 'DATA_FILES_SET_ERROR',
-      payload: { message: 'Error Right here' },
+      payload: { message: e.toString() },
     });
     return 'ERR';
   }
