@@ -333,7 +333,6 @@ export function files(state = initialFilesState, action) {
         },
       };
     case 'DATA_FILES_SET_ERROR':
-      console.log('Reducer for setting the error');
       return {
         ...state,
         error: {
