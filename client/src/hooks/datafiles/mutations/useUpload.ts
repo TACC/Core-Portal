@@ -50,7 +50,7 @@ function useUpload() {
     });
   };
 
-  const { mutate } = useMutation({ mutationFn: uploadUtil });
+  const { mutateAsync } = useMutation({ mutationFn: uploadUtil });
 
   const upload = ({
     system,
@@ -65,18 +65,15 @@ function useUpload() {
   }) => {
     const api = 'tapis';
     const scheme = 'private';
-
-    files.forEach((fileObj) => {
+    const uploadCalls: Promise<any>[] = files.map((fileObj) => {
       const { data: file, id: index } = fileObj;
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'UPLOADING', key: index, operation: 'upload' },
       });
-
       const formData = new FormData();
       formData.append('uploaded_file', file);
-
-      mutate(
+      return mutateAsync(
         {
           api,
           scheme,
@@ -101,17 +98,21 @@ function useUpload() {
         }
       );
     });
-
-    dispatch({
-      type: 'ADD_TOAST',
-      payload: {
-        message: `${
-          files.length > 1 ? `${files.length} files` : 'File'
-        } uploaded to ${truncateMiddle(path, 20) || '/'}`,
-      },
+    Promise.all(uploadCalls).then(() => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'upload', props: {} },
+      });
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          message: `${
+            files.length > 1 ? `${files.length} files` : 'File'
+          } uploaded to ${truncateMiddle(path, 20) || '/'}`,
+        },
+      });
+      reloadCallback();
     });
-
-    reloadCallback();
   };
   return { upload, status, setStatus };
 }
