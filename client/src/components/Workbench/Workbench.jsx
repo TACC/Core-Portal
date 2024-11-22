@@ -75,6 +75,7 @@ function Workbench() {
       dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
   }, [setupComplete]);
+
   return (
     <div className="workbench-wrapper">
       <NotificationToast />

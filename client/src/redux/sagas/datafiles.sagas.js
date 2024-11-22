@@ -496,6 +496,7 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
       const responseText = await request.text();
       throw new Error(responseText);
     }
+    throw new Error(request.status);
   }
   return request;
 }

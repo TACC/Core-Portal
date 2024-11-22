@@ -19,8 +19,7 @@ export const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  let submissionSystem = allSystems.find((s) => s.type === 'submission');
-  submissionSystem = allSystems.find((s) => s.name === 'My Data (Work)');
+  const submissionSystem = allSystems.find((s) => s.type === 'submission');
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -125,7 +124,7 @@ export const SubmissionsUpload = () => {
 
 const Submissions = () => {
   const getSubmitterRole = async () => {
-    let response = await fetchUtil({
+    const response = await fetchUtil({
       url: '/submissions/check-submitter-role/',
     });
     return response;
