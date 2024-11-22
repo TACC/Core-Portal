@@ -19,8 +19,8 @@ export const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
-  console.log('Systems are', allSystems);
   let submissionSystem = allSystems.find((s) => s.type === 'submission');
+  submissionSystem = allSystems.find((s) => s.name === 'My Data (Work)');
   const uploadPath = '';
 
   const { status, upload } = useUpload();
@@ -31,26 +31,13 @@ export const SubmissionsUpload = () => {
     const filteredFiles = uploadedFiles.filter(
       (f) => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
     );
-    console.log('Trying to upload with');
-    console.log('Path', uploadPath);
-    console.log('FilteredFiles', filteredFiles);
-
-    submissionSystem = allSystems.find((s) => s.name === 'My Data (Work)');
-
-    if (!submissionSystem || !submissionSystem.system) {
-      const msg = "System 'submission' does not exist in submission systems";
-      throw new Error(msg, submissionSystem);
-    }
-    console.log('Submission System', submissionSystem);
-    if (filteredFiles.length > 0) {
-      let result = upload({
+    filteredFiles.length > 0 &&
+      upload({
         system: submissionSystem.system,
         path: uploadPath,
         files: filteredFiles,
         reloadCallback,
       });
-      console.log('RESULT', result);
-    }
   };
 
   const dropZoneDisabled = uploadedFiles.length > 0;
@@ -138,15 +125,10 @@ export const SubmissionsUpload = () => {
 
 const Submissions = () => {
   const getSubmitterRole = async () => {
-    // let response = await fetchUtil({
-    //   url: '/submissions/check-submitter-role/',
-    // });
-    // Override for now with fake data
-    const fakeResponse = {
-      is_submitter: true,
-      isLoading: false,
-    };
-    return fakeResponse;
+    let response = await fetchUtil({
+      url: '/submissions/check-submitter-role/',
+    });
+    return response;
   };
 
   const useSubmitterRole = () => {
@@ -159,7 +141,6 @@ const Submissions = () => {
 
   const { data, isLoading } = useSubmitterRole();
 
-  console.log('The data is ', data);
   const is_submitter = data?.is_submitter;
 
   const Unauthorized = () => (

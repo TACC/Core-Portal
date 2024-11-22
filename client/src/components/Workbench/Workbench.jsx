@@ -75,8 +75,6 @@ function Workbench() {
       dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
   }, [setupComplete]);
-  console.log('Submissions', showSubmissions);
-  console.log('Current path:', path, ROUTES.SUBMISSIONS);
   return (
     <div className="workbench-wrapper">
       <NotificationToast />

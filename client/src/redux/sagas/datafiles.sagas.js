@@ -536,10 +536,6 @@ export function* uploadFiles(action) {
 }
 
 export function* uploadFile(api, scheme, system, path, file, index) {
-  console.log('Need to upload at ');
-  console.log('System', system);
-  console.log('Path', path);
-  console.log('File', file);
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'UPLOADING', key: index, operation: 'upload' },
@@ -551,13 +547,10 @@ export function* uploadFile(api, scheme, system, path, file, index) {
       payload: { status: 'SUCCESS', key: index, operation: 'upload' },
     });
   } catch (e) {
-    console.log('Found an error of', e);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'upload' },
     });
-    // Add description of error to the state with some kind of put to a reducer
-
     yield put({
       type: 'DATA_FILES_SET_ERROR',
       payload: { message: e.toString() },
