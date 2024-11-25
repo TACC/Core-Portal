@@ -341,6 +341,9 @@ def list_projects(client, root_system_id=None):
 
         is_review_system = root_system.get('reviewProject', False)
         is_publication_system = root_system.get('publicationProject', False)
+    else:
+        is_review_system = False
+        is_publication_system = False
 
     community_system = next(system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community')
 
