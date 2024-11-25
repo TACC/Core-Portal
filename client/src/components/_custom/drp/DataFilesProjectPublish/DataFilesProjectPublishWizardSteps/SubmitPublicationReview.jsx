@@ -15,7 +15,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
 
   const history = useHistory();
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const { debug }  = useSelector((state) => state.workbench.config);
 
@@ -85,7 +85,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
             <Button
               type="primary"
               className={styles['submit-button']}
-              disabled={submitDisabled || debug}
+              disabled={submitDisabled}
               isLoading={isApproveLoading}
               onClick={handleApproveAndPublish}
             >
