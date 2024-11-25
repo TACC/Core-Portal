@@ -255,6 +255,7 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
+    "canPublish": True,
     "makeLink": False,
     "viewPath": True,
     "compressApp": 'compress',
