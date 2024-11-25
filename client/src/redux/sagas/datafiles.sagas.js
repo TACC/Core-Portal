@@ -492,7 +492,7 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     body: formData,
   });
   if (!request.ok) {
-    if (request.status === 403) {
+    if (request.status === 403 || request.status === 500) {
       const responseText = await request.text();
       throw new Error(responseText);
     }
