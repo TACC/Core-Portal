@@ -175,7 +175,7 @@ export function* setTitleDescription(action) {
     type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED',
   });
   try {
-    const { projectId, data } = action.payload;
+    const { projectId, data, modal } = action.payload;
     const metadata = yield call(setTitleDescriptionUtil, projectId, data);
     yield put({
       type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
@@ -183,7 +183,7 @@ export function* setTitleDescription(action) {
     });
     yield put({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'editproject', props: {} },
+      payload: { operation: modal, props: {} },
     });
     yield put({
       type: 'PROJECTS_GET_LISTING',

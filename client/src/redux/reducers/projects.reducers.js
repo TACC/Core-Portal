@@ -150,7 +150,8 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...action.payload,
+          ...state.metadata,
+          members: action.payload.members,
           loading: false,
           error: null,
         },
