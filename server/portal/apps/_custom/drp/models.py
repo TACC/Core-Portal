@@ -101,6 +101,17 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
     publication_description: Optional[str] = None
     publication_link: Optional[str] = None
 
+class DrpGuestUser(DrpMetadataModel):
+    """Model for DRP Guest User"""
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+
+    first_name: str
+    last_name: str
+    email: str
+
 class DrpProjectMetadata(DrpMetadataModel):
     """Model for DRP Project Metadata"""
 
@@ -122,6 +133,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     file_objs: list[FileObj] = []
     is_review_project: Optional[bool] = None
     is_published_project: Optional[bool] = None
+    guest_users: list[DrpGuestUser] = []
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""
