@@ -220,7 +220,8 @@ class PublicationPublishView(BaseApiView):
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
         
-        send_publication_accept_email.apply_async(args=[full_project_id])
+        if not settings.DEBUG:
+            send_publication_accept_email.apply_async(args=[full_project_id])
         
         if is_review:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
@@ -316,7 +317,8 @@ class PublicationRejectView(BaseApiView):
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
         
-        send_publication_reject_email.apply_async(args=[full_project_id])
+        if not settings.DEBUG:
+            send_publication_reject_email.apply_async(args=[full_project_id])
         
         update_and_cleanup_review_project(full_project_id, PublicationRequest.Status.REJECTED)
 
