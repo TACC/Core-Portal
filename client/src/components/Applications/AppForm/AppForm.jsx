@@ -924,7 +924,6 @@ export const AppSchemaForm = ({ app }) => {
                   ) : null}
                 </div>
                 <Button
-                  id="submit"
                   attr="submit"
                   size="medium"
                   type="primary"
@@ -935,7 +934,6 @@ export const AppSchemaForm = ({ app }) => {
                   Submit
                 </Button>
                 <Button
-                  id="reset"
                   onClick={handleReset}
                   className="btn-resetForm"
                   type="link"
