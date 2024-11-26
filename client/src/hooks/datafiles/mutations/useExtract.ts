@@ -107,7 +107,7 @@ function useExtract() {
 
   const latestExtract = getAppUtil(extractApp.id, extractApp.version);
 
-  const { mutate } = useMutation({ mutationFn: submitJobUtil });
+  const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
 
   const extract = ({ file }: { file: TTapisFile }) => {
     dispatch({
@@ -121,9 +121,8 @@ function useExtract() {
       latestExtract,
       defaultAllocation
     );
-    console.log(params);
 
-    mutate(
+    return mutateAsync(
       {
         job: params,
       },
