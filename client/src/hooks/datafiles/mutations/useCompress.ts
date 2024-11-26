@@ -107,7 +107,7 @@ function useCompress() {
     (state: any) => state.systems.storage.configuration
   );
 
-  const { mutate } = useMutation({ mutationFn: submitJobUtil });
+  const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
 
   const compress = ({
     scheme,
@@ -146,7 +146,7 @@ function useCompress() {
       defaultPrivateSystem
     );
 
-    mutate(
+    return mutateAsync(
       {
         job: params,
       },
