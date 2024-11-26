@@ -46,7 +46,7 @@ function useMove() {
     });
   };
 
-  const { mutate, isIdle, isSuccess, failureCount } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: moveFileUtil,
   });
 
@@ -62,7 +62,7 @@ function useMove() {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
     );
-    filteredSelected.forEach((file: any) => {
+    const moveCalls: Promise<any>[] = filteredSelected.forEach((file: any) => {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: {
@@ -71,10 +71,7 @@ function useMove() {
           operation: 'move',
         },
       });
-    });
-
-    filteredSelected.forEach((file: any) => {
-      mutate(
+      return mutateAsync(
         {
           api: api,
           scheme: scheme,
@@ -93,6 +90,21 @@ function useMove() {
                 operation: 'move',
               },
             });
+            dispatch({
+              type: 'DATA_FILES_TOGGLE_MODAL',
+              payload: { operation: 'move', props: {} },
+            });
+            dispatch({
+              type: 'ADD_TOAST',
+              payload: {
+                message: `${
+                  filteredSelected.length > 1
+                    ? `${filteredSelected.length} files`
+                    : 'File'
+                } moved to ${truncateMiddle(destPath, 20) || '/'}`,
+              },
+            });
+            callback();
           },
           onError: () => {
             dispatch({
@@ -103,35 +115,10 @@ function useMove() {
                 operation: 'move',
               },
             });
+            console.log('File error');
           },
         }
       );
-    });
-    if (!isIdle && isSuccess && failureCount === 0) {
-      callback();
-      dispatch({
-        type: 'ADD_TOAST',
-        payload: {
-          message: `${
-            filteredSelected.length > 1
-              ? `${filteredSelected.length} files`
-              : 'File'
-          } moved to ${truncateMiddle(destPath, 20) || '/'}`,
-        },
-      });
-      dispatch({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { operation: 'move', status: {} },
-      });
-    } else {
-      dispatch({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { operation: 'move', status: 'FAILURE' },
-      });
-    }
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} },
     });
   };
 
