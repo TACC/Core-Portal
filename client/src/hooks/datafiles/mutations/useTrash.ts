@@ -49,7 +49,7 @@ function useTrash() {
     });
   };
 
-  const { mutate } = useMutation({ mutationFn: trashUtil });
+  const { mutateAsync } = useMutation({ mutationFn: trashUtil });
 
   const trash = ({
     selection,
@@ -61,17 +61,16 @@ function useTrash() {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
     );
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: {
-        status: 'RUNNING',
-        key: (index: string) => index,
-        operation: 'trash',
-      },
-    });
-
-    filteredSelected.forEach(() => {
-      mutate(
+    const trashCalls: Promise<any>[] = filteredSelected.forEach((file: any) => {
+      dispatch({
+        type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+        payload: {
+          status: 'RUNNING',
+          key: (index: string) => index,
+          operation: 'trash',
+        },
+      });
+      return mutateAsync(
         {
           api: api,
           scheme: scheme,
@@ -89,13 +88,13 @@ function useTrash() {
                 operation: 'trash',
               },
             });
-            callback(response.name, response.path);
             dispatch({
               type: 'ADD_TOAST',
               payload: {
                 message: `${selection} moved to Trash`,
               },
             });
+            callback(response.name, response.path);
           },
           onError: () => {
             dispatch({
@@ -110,6 +109,8 @@ function useTrash() {
         }
       );
     });
+    // filteredSelected.forEach(() => {
+    // });
   };
 
   return { trash, status, setStatus };
