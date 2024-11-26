@@ -11,19 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-deps/react-18: Update React to v18 by @jarosenb in #979
-Bug/WP-50: Fix sizing of buttons "as-link" by @jmcmillenmusic in #986
-Task/WP-509: Handle file/folder download feature with large number of files by @jmcmillenmusic in #981
-Task/WP-520: AppTray should use versionEnabled for list of apps instead of enabled by @jmcmillenmusic in #991
-Bug/WP-24: Disabling Google Drive Integration by @jalowe13 in #988
-WP-730: Refactor useRename to use react-query by @jarosenb in #993
-Task/WP-728: Mutation hook: Copy file by @jalowe13 in #1000
-Task/WP-78: V3 Shared Workspaces Tests by @jalowe13 in #987
+deps/react-18: Update React to v18 (#979)
+WP-50: Fix sizing of buttons "as-link" (#986)
+WP-509: Handle file/folder download feature with large number of files (#981)
+WP-520: AppTray should use versionEnabled for list of apps instead of enabled (#991)
+WP-24: Disabling Google Drive Integration (#988)
+WP-730: Refactor useRename to use react-query (#993)
+WP-728: Mutation hook: Copy file (#1000)
+WP-78: V3 Shared Workspaces Tests (#987)
 
 ### Fixed
 
-Bug/WP-419 Public Data Header Left Margin by @jalowe13 in #1003
-WP-765: Fix job status button to show background by @chandra-tacc in #1015
+WP-419 Public Data Header Left Margin (#1003)
+WP-765: Fix job status button to show background (#1015)
 
 
 ## [3.9.0]
