@@ -138,6 +138,7 @@ const FormField = ({
 
             <InputGroup>
               <Button
+                size="middle"
                 type="secondary"
                 onClick={() => setOpenTapisFileModal(true)}
               >
