@@ -327,7 +327,7 @@ describe('DataFilesListing - Section Name Determination', () => {
 describe('DataFilesListing - showViewPath', () => {
   afterEach(() => {
     vi.restoreAllMocks();
-  })
+  });
   it('renders the "Path" column when showViewPath is true', () => {
     const testfile = {
       system: 'test.system',
