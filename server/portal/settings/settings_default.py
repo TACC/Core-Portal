@@ -110,14 +110,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'readOnly': False,
         'hideSearchBar': False
     },
-    {
-        'name': 'Google Drive',
-        'system': 'googledrive',
-        'scheme': 'private',
-        'api': 'googledrive',
-        'icon': None,
-        'integration': 'portal.apps.googledrive_integration'
-    }
 ]
 
 ########################

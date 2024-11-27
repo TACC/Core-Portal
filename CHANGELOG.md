@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.10.0]
+
+### Added
+
+- deps/react-18: Update React to v18 (#979)
+- WP-50: Fix sizing of buttons "as-link" (#986)
+- WP-509: Handle file/folder download feature with large number of files (#981)
+- WP-520: AppTray should use versionEnabled for list of apps instead of enabled (#991)
+- WP-24: Disabling Google Drive Integration (#988)
+- WP-730: Refactor useRename to use react-query (#993)
+- WP-728: Mutation hook: Copy file (#1000)
+- WP-78: V3 Shared Workspaces Tests (#987)
+
+### Fixed
+
+- WP-419 Public Data Header Left Margin (#1003)
+- WP-765: Fix job status button to show background (#1015)
+
+
 ## [3.9.0]
 
 ### Fixed
@@ -1115,7 +1134,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.9.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.10.0...HEAD
+[3.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.0
 [3.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.9.0
 [3.8.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.2
 [3.8.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.1
