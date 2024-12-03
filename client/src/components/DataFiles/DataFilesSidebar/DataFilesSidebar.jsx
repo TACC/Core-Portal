@@ -72,6 +72,7 @@ const DataFilesAddButton = ({ readOnly }) => {
         <DropdownToggle
           color="primary"
           id="data-files-add"
+          className="data-files-btn"
         >
           + Add
         </DropdownToggle>

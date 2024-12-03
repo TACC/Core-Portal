@@ -1,5 +1,14 @@
 @import '../../../styles/components/dropdown-menu.css';
 
+.data-files-btn {
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
+  border-radius: 0;
+}
+
+.data-files-btn-cancel {
+  border-radius: 0;
+}
 
 #data-files-add {
   width: 100%;
