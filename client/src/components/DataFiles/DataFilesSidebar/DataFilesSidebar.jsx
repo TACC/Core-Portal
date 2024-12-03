@@ -5,7 +5,7 @@ import {
   Nav,
   NavItem,
   NavLink,
-  ButtonDropdown,
+  Dropdown,
   DropdownMenu,
   DropdownToggle,
   DropdownItem,
@@ -67,8 +67,8 @@ const DataFilesAddButton = ({ readOnly }) => {
   const writeItemStyle = disabled ? 'read-only' : '';
 
   return (
-    <div id="add-button-wrapper">
-      <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+    <>
+      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
         <DropdownToggle
           color="primary"
           id="data-files-add"
@@ -101,8 +101,8 @@ const DataFilesAddButton = ({ readOnly }) => {
             </span>
           </DropdownItem>
         </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+      </Dropdown>
+    </>
   );
 };
 

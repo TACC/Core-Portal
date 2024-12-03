@@ -42,32 +42,16 @@
   padding-left: var(--horizontal-buffer);
 }
 
-/* Nested to prevent styles from affecting CMS header dropdown */
 /* HACK: Using ID to increase specificity (until source of problem is fixed) */
 /* HELP: Why does DataFilesSidebar not need such specificity? */
 /* .go-to-button-dropdown { */
 #go-to-button-dropdown {
-  /* To fix menu not showing */
-  /* HELP: Why does DataFilesSidebar not need this fix? */
-  .dropdown-menu {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  /* To restyle */
   .dropdown-menu {
     margin-top: 38px;
   }
   .dropdown-menu::before,
   .dropdown-menu::after {
     left: 23px;
-    margin-left: 0;
-  }
-  .dropdown-menu::after {
-    top: -9px;
-  }
-
-  .dropdown-item {
-    display: inline-block;
   }
 }
 
