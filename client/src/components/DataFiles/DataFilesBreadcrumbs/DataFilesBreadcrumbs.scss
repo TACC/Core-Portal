@@ -42,12 +42,11 @@
   padding-left: var(--horizontal-buffer);
 }
 
-/* HACK: Using ID to increase specificity (until source of problem is fixed) */
-/* HELP: Why does DataFilesSidebar not need such specificity? */
-/* .go-to-button-dropdown { */
-#go-to-button-dropdown {
+.go-to-button-dropdown {
   .dropdown-menu {
-    margin-top: 38px;
+    /* To push menu down by the height of its button */
+    /* FAQ: Required because `tag={Button}` loses auto-position of menu */
+    top: 28px !important; /* to override `inset` from Popper via Reactstrap */
   }
   .dropdown-menu::before,
   .dropdown-menu::after {
@@ -69,12 +68,12 @@
   padding-left: 20px;
 }
 
-#go-to-button-dropdown .complex-dropdown-item-root,
+.go-to-button-dropdown .complex-dropdown-item-root,
 .complex-dropdown-item-project {
   display: flex !important;
 }
 
-#go-to-button-dropdown .link-hover:hover {
+.go-to-button-dropdown .link-hover:hover {
   text-decoration: none;
 }
 
