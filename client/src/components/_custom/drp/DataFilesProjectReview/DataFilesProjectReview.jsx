@@ -98,7 +98,7 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
                   className="wb-link"
                   to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                 >
-                  Back to Project
+                  Back to Dataset
                 </Link>
               </>
             </div>
