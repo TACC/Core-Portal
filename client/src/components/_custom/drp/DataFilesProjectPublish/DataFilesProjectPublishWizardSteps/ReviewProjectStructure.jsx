@@ -46,7 +46,7 @@ export const ReviewProjectStructure = ({ projectTree }) => {
             <div className={styles.controls}>
               <>
                 <Button type="link" onClick={onEdit}>
-                  Edit Project
+                  Edit Dataset
                 </Button>
               </>
             </div>
