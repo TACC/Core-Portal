@@ -25,7 +25,11 @@ const DataFilesFormModal = () => {
       projectUrl = projectUrl.slice(0, -1);
     }
  
-    const path = updatedPath ? `${projectUrl}/${updatedPath}` : projectUrl;
+    // Avoid appending updatedPath if it's already part of projectUrl
+    const path = updatedPath && !projectUrl.endsWith(updatedPath)
+    ? `${projectUrl}/${updatedPath}`
+    : projectUrl;
+
     history.replace(path);
   };
  
