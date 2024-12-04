@@ -60,6 +60,7 @@ const DataFilesProjectEditDescriptionModal = () => {
             description: values.description || '',
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
+          modal: 'editproject',
         },
       });
     },
