@@ -16,9 +16,8 @@ const DataFilesFormModal = () => {
   const location = useLocation();
 
   const reloadPage = (updatedPath = '') => {
-    // Updated regex to capture the URL up until the last project segment
     let projectUrl = location.pathname.replace(
-      /(\/projects\/[^/]+\/[^/]+)\/?.*/,
+      /(\/projects\/[^/]+\/[^/]+\/?.*)/,
       '$1'
     );
 
@@ -26,7 +25,12 @@ const DataFilesFormModal = () => {
       projectUrl = projectUrl.slice(0, -1);
     }
 
-    const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
+    // Avoid appending updatedPath if it's already part of projectUrl
+    const path =
+      updatedPath && !projectUrl.endsWith(updatedPath)
+        ? `${projectUrl}/${updatedPath}`
+        : projectUrl;
+
     history.replace(path);
   };
 
