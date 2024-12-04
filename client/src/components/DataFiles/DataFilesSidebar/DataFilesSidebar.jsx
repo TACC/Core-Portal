@@ -69,10 +69,7 @@ const DataFilesAddButton = ({ readOnly }) => {
   return (
     <div id="add-button-wrapper">
       <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-        <DropdownToggle
-          color="primary"
-          id="data-files-add"
-        >
+        <DropdownToggle color="primary" id="data-files-add">
           + Add
         </DropdownToggle>
         <DropdownMenu>
