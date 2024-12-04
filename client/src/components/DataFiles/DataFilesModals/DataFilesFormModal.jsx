@@ -20,19 +20,20 @@ const DataFilesFormModal = () => {
       /(\/projects\/[^/]+\/[^/]+\/?.*)/,
       '$1'
     );
- 
+
     if (projectUrl.endsWith('/')) {
       projectUrl = projectUrl.slice(0, -1);
     }
- 
+
     // Avoid appending updatedPath if it's already part of projectUrl
-    const path = updatedPath && !projectUrl.endsWith(updatedPath)
-    ? `${projectUrl}/${updatedPath}`
-    : projectUrl;
+    const path =
+      updatedPath && !projectUrl.endsWith(updatedPath)
+        ? `${projectUrl}/${updatedPath}`
+        : projectUrl;
 
     history.replace(path);
   };
- 
+
   const { form, selectedFile, formName, additionalData, useReloadCallback } =
     useSelector((state) => state.files.modalProps.dynamicform);
   const isOpen = useSelector((state) => state.files.modals.dynamicform);
