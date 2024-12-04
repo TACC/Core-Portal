@@ -21,9 +21,7 @@
 .data-files-sidebar {
   .dropdown-menu {
     /* To make menu wider than button yet still centered */
-    width: calc(
-      100% + var(--global-space--section-left)
-    );
+    width: calc(100% + var(--global-space--section-left));
     left: calc(
       var(--global-space--section-left) / -2
     ) !important; /* to override `inset` from Popper via Reactstrap */

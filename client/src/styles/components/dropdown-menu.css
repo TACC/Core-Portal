@@ -30,10 +30,10 @@ Styleguide Components.Dropdown
     content: '';
   }
   .dropdown-menu::before {
-    top: calc( var(--arrow-size) * -1 );
+    top: calc(var(--arrow-size) * -1);
   }
   .dropdown-menu::after {
-    top: calc(( var(--arrow-size) - var(--border-width)) * -1 );
+    top: calc(( var(--arrow-size) - var(--border-width)) * -1);
     border-bottom-color: var(--global-color-primary--xx-light);
   }
 
