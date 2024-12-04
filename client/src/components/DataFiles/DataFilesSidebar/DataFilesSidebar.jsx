@@ -89,6 +89,7 @@ const DataFilesAddButton = ({ readOnly }) => {
               <i className="icon-folder" /> Shared Workspace
             </DropdownItem>
           )}
+          <DropdownItem divider />
           <DropdownItem
             className={`complex-dropdown-item ${styles[writeItemStyle]}`}
             onClick={toggleUploadModal}

@@ -54,4 +54,9 @@ Styleguide Components.Dropdown
   .dropdown-item:hover {
     background-color: var(--global-color-accent--weak);
   }
+
+  .dropdown-divider {
+    margin-block: 0.25em;
+    border-color: var(--global-color-primary--dark);
+  }
 }
