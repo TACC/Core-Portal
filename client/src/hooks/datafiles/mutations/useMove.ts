@@ -115,7 +115,6 @@ function useMove() {
                 operation: 'move',
               },
             });
-            console.log('File error');
           },
         }
       );
