@@ -20,7 +20,6 @@ Styleguide Components.Dropdown
   .dropdown-menu::before,
   .dropdown-menu::after {
     position: absolute;
-    top: -10px;
     left: 65px;
     border-right: 10px solid transparent;
     border-bottom: 10px solid var(--global-color-accent--normal);
@@ -28,7 +27,11 @@ Styleguide Components.Dropdown
     margin-left: 20px;
     content: '';
   }
+  .dropdown-menu::before {
+    top: -10px;
+  }
   .dropdown-menu::after {
+    top: -9px;
     border-bottom-color: var(--global-color-primary--xx-light);
   }
 

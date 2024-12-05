@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.10.1]
+
+### Fixed
+
+- WP-778: Fix infinite loop for state update in useEffect (#1019)
+- Quick: CSS regression fixes- testing session (#1018)
+
 ## [3.10.0]
 
 ### Added
@@ -1134,7 +1141,8 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.10.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.10.1...HEAD
+[3.10.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.1
 [3.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.0
 [3.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.9.0
 [3.8.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.2
