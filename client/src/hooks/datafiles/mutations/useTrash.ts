@@ -16,19 +16,33 @@ export async function trashUtil({
   system: string;
   path: string;
   homeDir: string;
-}): Promise<{ name: string; path: string }> {
+}) {
+  // const body = {
+  //   homeDir: homeDir
+  // };
+  console.log(homeDir);
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
-  const request = await apiClient.put(url, {
-    headers: {
-      'X-CSRFToken': Cookies.get('csrftoken') || '',
-    },
-    withCredentials: true,
+  // const request = await apiClient.put(url, {
+  //   headers: {
+  //     'X-CSRFToken': Cookies.get('csrftoken'),
+  //   },
+  //   withCredentials: true,
+  //   body: JSON.stringify({
+  //     homeDir: homeDir,
+  //   }),
+  // });
+  const request = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || ''},
+    credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
     }),
   });
-
-  return request.data;
+  // const request = await apiClient.put(url, body);
+  console.log(request);
+  
+  return request;
 }
 
 function useTrash() {
@@ -39,7 +53,7 @@ function useTrash() {
     shallowEqual
   );
 
-  const { api, scheme } = useSelector(
+  const { api, scheme, homeDir } = useSelector(
     (state: any) => state.files.params.FilesListing
   );
   const setStatus = (newStatus: any) => {
@@ -53,10 +67,10 @@ function useTrash() {
 
   const trash = ({
     selection,
-    callback,
+    // callback,
   }: {
     selection: any;
-    callback: (name: string, path: string) => any;
+    // callback: any;
   }) => {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
@@ -70,13 +84,14 @@ function useTrash() {
           operation: 'trash',
         },
       });
+      console.log("File", file);
       return mutateAsync(
         {
           api: api,
           scheme: scheme,
-          system: selection.system,
-          path: selection.path,
-          homeDir: selection.homeDir,
+          system: file.system,
+          path: file.path,
+          homeDir: homeDir,
         },
         {
           onSuccess: (response: any) => {
@@ -94,7 +109,7 @@ function useTrash() {
                 message: `${selection} moved to Trash`,
               },
             });
-            callback(response.name, response.path);
+            // callback;
           },
           onError: () => {
             dispatch({
@@ -109,8 +124,6 @@ function useTrash() {
         }
       );
     });
-    // filteredSelected.forEach(() => {
-    // });
   };
 
   return { trash, status, setStatus };

@@ -7,6 +7,7 @@ import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
+import { useTrash } from 'hooks/datafiles/mutations';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `action icon-${iconName}`;
@@ -40,6 +41,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const { toggle } = useModal();
   const { selectedFiles } = useSelectedFiles();
   const { params } = useFileListing('FilesListing');
+  const { trash } = useTrash();
 
   const history = useHistory();
   const location = useLocation();
@@ -172,20 +174,29 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
-  const trash = useCallback(() => {
+  const trashCallback = useCallback(() => {
     const filteredSelected = selectedFiles.filter(
       (f) => status[f.system + f.path] !== 'SUCCESS'
     );
-
-    dispatch({
-      type: 'DATA_FILES_TRASH',
-      payload: {
-        src: filteredSelected,
-        homeDir: selectedSystem?.homeDir || '',
-        reloadCallback: reloadPage,
-      },
+    trash({
+      filteredSelected, reloadPage
     });
+
+    
+
+    // dispatch({
+    //   type: 'DATA_FILES_TRASH',
+    //   payload: {
+    //     src: filteredSelected,
+    //     homeDir: selectedSystem?.homeDir || '',
+    //     reloadCallback: reloadPage,
+    //   },
+    // });
   }, [selectedFiles, selectedSystem, reloadPage]);
+
+
+
+  // const { status: trashStatus } = useTrash();
 
   const empty = () => {
     dispatch({
