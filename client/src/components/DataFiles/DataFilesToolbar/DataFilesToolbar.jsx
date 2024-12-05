@@ -174,29 +174,17 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
+  const homeDir = selectedSystem?.homeDir;
+
   const trashCallback = useCallback(() => {
-    const filteredSelected = selectedFiles.filter(
-      (f) => status[f.system + f.path] !== 'SUCCESS'
-    );
-    trash({
-      filteredSelected, reloadPage
-    });
-
-    
-
-    // dispatch({
-    //   type: 'DATA_FILES_TRASH',
-    //   payload: {
-    //     src: filteredSelected,
-    //     homeDir: selectedSystem?.homeDir || '',
-    //     reloadCallback: reloadPage,
-    //   },
-    // });
-  }, [selectedFiles, selectedSystem, reloadPage]);
-
-
-
-  // const { status: trashStatus } = useTrash();
+      trash({
+        destSystem: selectedSystem.system,
+        homeDir: homeDir,
+        callback: reloadPage,
+      });
+    },
+    [selectedFiles, reloadPage, status]
+  );
 
   const empty = () => {
     dispatch({
@@ -282,7 +270,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
           <ToolbarButton
             text={!inTrash ? 'Trash' : 'Empty'}
             iconName="trash"
-            onClick={!inTrash ? trash : empty}
+            onClick={!inTrash ? trashCallback : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
             className={!inTrash ? '' : 'is-empty'}
           />

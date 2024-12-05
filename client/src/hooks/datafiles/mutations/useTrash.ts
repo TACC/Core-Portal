@@ -2,7 +2,6 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
-import { apiClient } from 'utils/apiClient';
 
 export async function trashUtil({
   api,
@@ -17,19 +16,12 @@ export async function trashUtil({
   path: string;
   homeDir: string;
 }) {
-  // const body = {
-  //   homeDir: homeDir
-  // };
-  console.log(homeDir);
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
-  // const request = await apiClient.put(url, {
+  // const request = await apiClient.put(url, body, {
   //   headers: {
-  //     'X-CSRFToken': Cookies.get('csrftoken'),
+  //     'X-CSRFToken': Cookies.get('csrftoken' || ''),
   //   },
   //   withCredentials: true,
-  //   body: JSON.stringify({
-  //     homeDir: homeDir,
-  //   }),
   // });
   const request = await fetch(url, {
     method: 'PUT',
@@ -53,9 +45,10 @@ function useTrash() {
     shallowEqual
   );
 
-  const { api, scheme, homeDir } = useSelector(
+  const { api, scheme } = useSelector(
     (state: any) => state.files.params.FilesListing
   );
+
   const setStatus = (newStatus: any) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -66,11 +59,13 @@ function useTrash() {
   const { mutateAsync } = useMutation({ mutationFn: trashUtil });
 
   const trash = ({
-    selection,
-    // callback,
+    destSystem,
+    homeDir,
+    callback,
   }: {
-    selection: any;
-    // callback: any;
+    destSystem: string;
+    homeDir: any;
+    callback: any;
   }) => {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
@@ -89,7 +84,7 @@ function useTrash() {
         {
           api: api,
           scheme: scheme,
-          system: file.system,
+          system: destSystem,
           path: file.path,
           homeDir: homeDir,
         },
@@ -106,10 +101,10 @@ function useTrash() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
-                message: `${selection} moved to Trash`,
+                message: `File moved to Trash`,
               },
             });
-            // callback;
+            callback();
           },
           onError: () => {
             dispatch({
