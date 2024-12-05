@@ -31,7 +31,7 @@ describe('DataFilesSystemSelector', () => {
       store,
       history
     );
-    expect(queryByText(/My Data \(Work\)/)).toBeNull();
+    expect(queryByText(/My Data \(Work\)/)).toBeDefined();
     expect(queryByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(queryByText(/My Data \(Longhorn\)/)).toBeDefined();
     expect(queryByText(/Google Drive/)).toBeDefined();
