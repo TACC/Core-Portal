@@ -25,15 +25,14 @@ export async function trashUtil({
   // });
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || ''},
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
     credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
     }),
   });
   // const request = await apiClient.put(url, body);
-  console.log(request);
-  
+
   return request;
 }
 
@@ -79,7 +78,6 @@ function useTrash() {
           operation: 'trash',
         },
       });
-      console.log("File", file);
       return mutateAsync(
         {
           api: api,

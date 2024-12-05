@@ -177,14 +177,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const homeDir = selectedSystem?.homeDir;
 
   const trashCallback = useCallback(() => {
-      trash({
-        destSystem: selectedSystem.system,
-        homeDir: homeDir,
-        callback: reloadPage,
-      });
-    },
-    [selectedFiles, reloadPage, status]
-  );
+    trash({
+      destSystem: selectedSystem.system,
+      homeDir: homeDir,
+      callback: reloadPage,
+    });
+  }, [selectedFiles, reloadPage, status]);
 
   const empty = () => {
     dispatch({
