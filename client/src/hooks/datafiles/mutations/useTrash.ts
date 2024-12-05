@@ -19,7 +19,7 @@ export async function trashUtil({
 }) {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const body = {
-    homeDir: homeDir
+    homeDir: homeDir,
   };
   const response = await apiClient.put(url, body, {
     headers: {
@@ -100,7 +100,7 @@ function useTrash() {
                 operation: 'trash',
               },
             });
-            
+
             callback();
           },
           onError: () => {
@@ -121,8 +121,8 @@ function useTrash() {
         type: 'ADD_TOAST',
         payload: {
           message: `${
-            filteredSelected.length > 1 
-              ? `${filteredSelected.length} files moved to Trash` 
+            filteredSelected.length > 1
+              ? `${filteredSelected.length} files moved to Trash`
               : 'File moved to Trash'
           }`,
         },
