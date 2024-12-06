@@ -7,7 +7,6 @@ import filesFixture from '../fixtures/DataFiles.files.fixture';
 import renderComponent from 'utils/testing';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import { dataFilesAllocations } from '../../../hooks/datafiles/useDataFilesAllocations';
-// import { allocations } from 'redux/reducers/allocations.reducers';
 
 const mockStore = configureStore();
 
@@ -21,10 +20,10 @@ describe('DataFiles', () => {
           compress: '',
         },
       },
-      // dataFilesAllocations: {
-      //   portal_alloc: 'TACC-ACI'
-      // },
-      allocations: dataFilesAllocations,
+      allocations: {
+        portal_alloc: 'TACC-ACI',
+        active: [{ projectId: 'active-project' }],
+      },
       systems: systemsFixture,
       files: filesFixture,
       pushKeys: {
