@@ -108,7 +108,7 @@ const DataFilesCompressModal = () => {
                 />
                 <p>
                   A job to compress these files will be submitted. The
-                  compressed file archive will appear in the Root directory.
+                  compressed file archive will appear in this directory.
                 </p>
               </ModalBody>
               <ModalFooter>

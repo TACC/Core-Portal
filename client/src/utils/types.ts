@@ -307,4 +307,6 @@ export type TTapisFile = {
   length: number;
   permissions: string;
   doi?: string;
+  scheme?: string;
+  api?: string;
 };

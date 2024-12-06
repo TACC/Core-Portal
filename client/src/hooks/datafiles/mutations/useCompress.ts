@@ -19,8 +19,6 @@ async function submitJobUtil(body: TJobBody) {
 return res.data.response;
 }
 
-
-
 function useCompress() {
   const dispatch = useDispatch();
   const status = useSelector(
@@ -77,6 +75,10 @@ function useCompress() {
     });
 
     let defaultPrivateSystem: TPortalSystem | undefined;
+
+    if (files[0].scheme === 'private' && files[0].api === 'tapis') {
+      defaultPrivateSystem === null
+    };
 
     if (scheme !== 'private' && scheme !== 'projects') {
       defaultPrivateSystem = systems.find((s: any) => s.default);
