@@ -74,6 +74,14 @@ function FileInputDropZone({
                   <InlineMessage type="error">
                     Exceeds File Size Limit
                   </InlineMessage>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setRejectedFiles([]);
+                    }}
+                  >
+                    Remove
+                  </Button>
                 </div>
               ))}
             {files &&
