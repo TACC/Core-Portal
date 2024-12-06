@@ -126,7 +126,7 @@ function useCompress() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
-                message: 'Compressed ZIP file in Root directory shortly',
+                message: 'Compress job submitted.',
               },
             });
             dispatch({
