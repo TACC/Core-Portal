@@ -1,58 +1,57 @@
 import {
-    TTapisSystem,
-    TAppFileInput,
-    TTapisJob,
-    TJobArgSpecs,
-    TJobKeyValuePair,
+  TTapisSystem,
+  TAppFileInput,
+  TTapisJob,
+  TJobArgSpecs,
+  TJobKeyValuePair,
 } from 'utils/types';
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
 export type TParameterSetSubmit = {
-    appArgs?: TJobArgSpecs;
-    containerArgs?: TJobArgSpecs;
-    schedulerOptions?: TJobArgSpecs;
-    envVariables?: TJobKeyValuePair[];
+  appArgs?: TJobArgSpecs;
+  containerArgs?: TJobArgSpecs;
+  schedulerOptions?: TJobArgSpecs;
+  envVariables?: TJobKeyValuePair[];
 };
-  
+
 export type TConfigurationValues = {
-    execSystemId?: string;
-    execSystemLogicalQueue?: string;
-    maxMinutes?: number;
-    nodeCount?: number;
-    coresPerNode?: number;
-    allocation?: string;
-    memoryMB?: number;
+  execSystemId?: string;
+  execSystemLogicalQueue?: string;
+  maxMinutes?: number;
+  nodeCount?: number;
+  coresPerNode?: number;
+  allocation?: string;
+  memoryMB?: number;
 };
 
 export type TOutputValues = {
-    name: string;
-    archiveSystemId?: string;
-    archiveSystemDir?: string;
+  name: string;
+  archiveSystemId?: string;
+  archiveSystemDir?: string;
 };
 
 export interface TJobSubmit extends TConfigurationValues, TOutputValues {
-    archiveOnAppError?: boolean;
-    appId: string;
-    fileInputs?: TAppFileInput[];
-    parameterSet?: TParameterSetSubmit;
-};
+  archiveOnAppError?: boolean;
+  appId: string;
+  fileInputs?: TAppFileInput[];
+  parameterSet?: TParameterSetSubmit;
+}
 
 export type TJobBody = {
-    operation?: TJobPostOperations;
-    uuid?: string;
-    job: TJobSubmit;
-    licenseType?: string;
-    isInteractive?: boolean;
-    execSystemId?: string;
+  operation?: TJobPostOperations;
+  uuid?: string;
+  job: TJobSubmit;
+  licenseType?: string;
+  isInteractive?: boolean;
+  execSystemId?: string;
 };
 
 export interface IJobPostResponse extends TTapisJob {
-    execSys?: TTapisSystem;
+  execSys?: TTapisSystem;
 }
 
 export type TJobPostResponse = {
-    response: IJobPostResponse;
-    status: number;
+  response: IJobPostResponse;
+  status: number;
 };
-

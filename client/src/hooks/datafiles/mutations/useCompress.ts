@@ -2,21 +2,15 @@ import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
-import {
-  TTapisFile,
-  TPortalSystem,
-} from 'utils/types';
-import {
-  TJobBody,
-  TJobPostResponse
-} from './useSubmitJob'
+import { TTapisFile, TPortalSystem } from 'utils/types';
+import { TJobBody, TJobPostResponse } from './useSubmitJob';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
-      `/api/workspace/jobs`,
-      body
+    `/api/workspace/jobs`,
+    body
   );
-return res.data.response;
+  return res.data.response;
 }
 
 function useCompress() {
@@ -77,8 +71,8 @@ function useCompress() {
     let defaultPrivateSystem: TPortalSystem | undefined;
 
     if (files[0].scheme === 'private' && files[0].api === 'tapis') {
-      defaultPrivateSystem === null
-    };
+      defaultPrivateSystem === null;
+    }
 
     if (scheme !== 'private' && scheme !== 'projects') {
       defaultPrivateSystem = systems.find((s: any) => s.default);
