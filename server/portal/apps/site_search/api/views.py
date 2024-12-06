@@ -102,10 +102,18 @@ class SiteSearchApiView(BaseApiView):
         return JsonResponse(response)
 
     def _handle_tapis_ssh_exception(self, e):
-        if 'SSH_POOL_MISSING_CREDENTIALS' in str(e) or 'SSH_FX_PERMISSION_DENIED' in str(e):
+        if (
+            "SSH_POOL_MISSING_CREDENTIALS" in str(e)
+            or "SSH_FX_PERMISSION_DENIED" in str(e)
+            or "FILES_CLIENT_SSH_OP_ERR1" in str(e)
+        ):
             # in case of these error types, user is not authenticated
             # or does not have access do not fail the entire search
             # request, log the issue.
-            logger.exception("Error retrieving search results due to TAPIS SSH related error: {}".format(str(e)))
+            logger.exception(
+                "Error retrieving search results due to TAPIS SSH related error: {}".format(
+                    str(e)
+                )
+            )
         else:
             raise
