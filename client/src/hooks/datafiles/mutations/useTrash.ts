@@ -16,7 +16,7 @@ export async function trashUtil({
   system: string;
   path: string;
   homeDir: string;
-}) {
+}): Promise<{ file: any; path: string }> {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const body = {
     homeDir: homeDir,
@@ -27,15 +27,6 @@ export async function trashUtil({
     },
     withCredentials: true,
   });
-  // const request = await fetch(url, {
-  //   method: 'PUT',
-  //   headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
-  //   credentials: 'same-origin',
-  //   body: JSON.stringify({
-  //     homeDir: homeDir,
-  //   }),
-  // });
-  // const request = await apiClient.put(url, body);
 
   return response.data;
 }
