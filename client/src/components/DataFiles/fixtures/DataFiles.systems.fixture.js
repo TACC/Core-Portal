@@ -1,5 +1,7 @@
 /* TODOv3 update this fixture https://jira.tacc.utexas.edu/browse/WP-68*/
-
+// Updated fixture changes from endpoint https://cep.test/api/datafiles/systems/list/
+// Removed from configuration: hidden, keyservice
+// Removed from storage and defintions array: errorMessage, loading
 const systemsFixture = {
   storage: {
     configuration: [
@@ -9,10 +11,8 @@ const systemsFixture = {
         scheme: 'private',
         api: 'tapis',
         icon: null,
-        hidden: true,
         homeDir: '/home/username',
         default: true,
-        keyservice: true,
       },
       {
         name: 'My Data (Frontera)',
@@ -65,13 +65,30 @@ const systemsFixture = {
         integration: 'portal.apps.googledrive_integration',
       },
     ],
-    error: false,
-    errorMessage: null,
-    loading: false,
+    /*
+     * The following needs to be mirrored for the storage and definitions
+
+    These are included in the datafiles reducers but pass tests without these
+    This means that tests need to be more comprehensive to catch this or removed
+
+    Definitions that use variables other than list are used in:
+    - DataFilesTable.jsx:45 for error
+
+    state.systems.definitions.* is not called for anything else other than error
+    These would need to be removed then
+    - errorMessage
+    - loading
+    */
+
+    //error: false,
+    //errorMessage: null,
+    //loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
     defaultSystem: 'frontera',
   },
+  // This definitions is required for the tests, some can be removed. Referencing datafiles.reducers.js
   definitions: {
+    // For DataFilesTable and DataFilesShowPathModal it requires the id from this list
     list: [
       {
         id: 'frontera.home.username',
@@ -90,9 +107,9 @@ const systemsFixture = {
         effectiveUserId: 'username',
       },
     ],
-    error: false,
-    errorMessage: null,
-    loading: false,
+    error: false, // Commenting this out results in an error
+    //errorMessage: null,
+    //loading: false,
   },
 };
 
