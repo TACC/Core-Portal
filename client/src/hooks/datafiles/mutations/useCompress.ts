@@ -3,72 +3,23 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
 import {
-  TTapisSystem,
-  TAppFileInput,
-  TTapisJob,
-  TJobArgSpecs,
-  TJobKeyValuePair,
   TTapisFile,
   TPortalSystem,
 } from 'utils/types';
-
-export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
-
-export type TParameterSetSubmit = {
-  appArgs?: TJobArgSpecs;
-  containerArgs?: TJobArgSpecs;
-  schedulerOptions?: TJobArgSpecs;
-  envVariables?: TJobKeyValuePair[];
-};
-
-export type TConfigurationValues = {
-  execSystemId?: string;
-  execSystemLogicalQueue?: string;
-  maxMinutes?: number;
-  nodeCount?: number;
-  coresPerNode?: number;
-  allocation?: string;
-  memoryMB?: number;
-};
-
-export type TOutputValues = {
-  name: string;
-  archiveSystemId?: string;
-  archiveSystemDir?: string;
-};
-
-export interface TJobSubmit extends TConfigurationValues, TOutputValues {
-  archiveOnAppError?: boolean;
-  appId: string;
-  fileInputs?: TAppFileInput[];
-  parameterSet?: TParameterSetSubmit;
-}
-
-export type TJobBody = {
-  operation?: TJobPostOperations;
-  uuid?: string;
-  job: TJobSubmit;
-  licenseType?: string;
-  isInteractive?: boolean;
-  execSystemId?: string;
-};
-
-interface IJobPostResponse extends TTapisJob {
-  execSys?: TTapisSystem;
-}
-
-type TJobPostResponse = {
-  response: IJobPostResponse;
-  status: number;
-};
+import {
+  TJobBody,
+  TJobPostResponse
+} from './useSubmitJob'
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
-    `/api/workspace/jobs`,
-    body
+      `/api/workspace/jobs`,
+      body
   );
-  return res.data.response;
+return res.data.response;
 }
+
+
 
 function useCompress() {
   const dispatch = useDispatch();
