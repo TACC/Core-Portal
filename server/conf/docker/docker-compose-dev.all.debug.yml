@@ -6,9 +6,9 @@ services:
   cms:
     image: taccwma/core-cms:latest
     volumes:
-      - ../cms/secrets.py:/code/taccsite_cms/secrets.py
-      - ../cms/settings_local.py:/code/taccsite_cms/settings_local.py
-      - ../cms/settings_custom.py:/code/taccsite_cms/settings_custom.py
+      - ../cms/secrets.py:/code/taccsite_cms/secrets.py:ro
+      - ../cms/settings_local.py:/code/taccsite_cms/settings_local.py:ro
+      - ../cms/settings_custom.py:/code/taccsite_cms/settings_custom.:ro
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
