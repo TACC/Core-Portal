@@ -424,7 +424,7 @@ describe('Test extract with different file names', () => {
 describe('compressFiles', () => {
   const createAction = (scheme) => {
     return {
-      // type: 'DATA_FILES_COMPRESS',
+      type: 'DATA_FILES_COMPRESS',
       payload: {
         filename: 'test',
         files: [
