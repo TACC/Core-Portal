@@ -107,11 +107,15 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### CMS
 
-- Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
+Add CMS settings and secrets:
 
-- To emulate a specific CMS project, copy https://github.com/TACC/Core-CMS-Resources/blob/main/__PROJECT_TO_EMULATE__/settings_custom.py to `server/conf/cms/settings_custom.py`
+```sh
+curl "https://cdn.jsdelivr.net/gh/TACC/Core-CMS@main/taccsite_cms/secrets.example.py" -o server/conf/cms/settings_custom.py
+cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
+curl "https://cdn.jsdelivr.net/gh/TACC/Core-CMS@main/taccsite_cms/settings_local.example.py" -o server/conf/cms/settings_local.py
+```
 
-- To override any standard or custom CMS settings, create a `server/conf/cms/settings_local.py`
+To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
 
 #### Build the image for the portal's django container:
     make build
