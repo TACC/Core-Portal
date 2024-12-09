@@ -15,8 +15,9 @@ To override any standard or custom CMS settings, edit `server/conf/cms/settings_
 
 > **Note:** If your `settings_custom.py` and `settings_local.py` are directories, then they were not properly created before starting environment. To fix:
 > 1. Run `make stop`.
-> 2. [Add CMS settings.](../README.md#CMS)
-> 3. Run `make start`.
+> 2. Delete directories named `settings_….py`
+> 3. [Add CMS settings.](../README.md#CMS)
+> 4. Run `make start`.
 
 
 ## Advanced
