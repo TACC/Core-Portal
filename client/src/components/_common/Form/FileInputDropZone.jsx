@@ -45,6 +45,10 @@ function FileInputDropZone({
     }
   };
 
+  const refreshRejectedFiles = () => {
+    setRejectedFiles(previous => rejectedFiles);
+  }
+
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
 
   return (
@@ -74,6 +78,23 @@ function FileInputDropZone({
                   <InlineMessage type="error">
                     Exceeds File Size Limit
                   </InlineMessage>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      // rejectedFiles.splice(i, 1);
+                      // setRejectedFiles([rejectedFiles]);
+                      // removeRejectedFile(i);
+                      // console.log('click');
+                      // console.log(rejectedFiles[i]);
+                      rejectedFiles.splice(i, 1);
+                      setRejectedFiles(rejectedFiles);
+                      refreshRejectedFiles();
+                      // console.log(rejectedFiles.fileIndex);
+                      // setRejectedFiles([]);
+                    }}
+                  >
+                    Remove
+                  </Button>
                 </div>
               ))}
             {files &&
