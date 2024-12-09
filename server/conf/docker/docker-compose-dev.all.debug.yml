@@ -6,18 +6,10 @@ services:
   cms:
     image: taccwma/core-cms:latest
     volumes:
-      - type: bind
-        source: ../cms/secrets.py
-        target: /code/taccsite_cms/secrets.py
-        read_only: true
-      - type: bind
-        source: ../cms/settings_local.py
-        target: /code/taccsite_cms/settings_local.py
-        read_only: true
-      - type: bind
-        source: ../cms/settings_custom.py
-        target: /code/taccsite_cms/settings_custom.py
-        read_only: true
+      - ../cms/settings/settings_default.py:/code/taccsite_cms/settings_default.py
+      - ../cms/settings/settings_custom.py:/code/taccsite_cms/settings_custom.py
+      - ../cms/settings/secrets.py:/code/taccsite_cms/secrets.py
+      - ../cms/settings/settings_local.py:/code/taccsite_cms/settings_local.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
@@ -155,7 +147,6 @@ services:
     container_name: frontera_docs
 
 volumes:
-  core_portal_cms:
   core_portal_redis_data:
   core_portal_es_data:
   core_portal_rabbitmq_data:

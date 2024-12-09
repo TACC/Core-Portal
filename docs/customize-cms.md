@@ -4,20 +4,27 @@ This is all optional. You can develop Core-Portal without CMS customization.
 
 ## Basic
 
-To create your own test content, [learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv).
+To create your own CMS test **content**, [learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv).
 
-To emulate a specific project's CMS settings:
+To be able to customize CMS **settings**:
+1. Run `make stop`.
+2. Delete `server/conf/cms/settings_*.py` **directories**.
+3. Create CMS settings files:
+    ```sh
+    touch server/conf/cms/settings_custom.py
+    touch server/conf/cms/secrets.py
+    touch server/conf/cms/settings_local.py
+    ```
+4. Run `make start`.
+
+To **emulate** a specific project's CMS **settings**:
 1. Visit https://github.com/TACC/Core-Portal-Resources/blob/main/.
 2. Navigate to specific project.
 3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings_custom.py`.
 
-To override any standard or custom CMS settings, edit `server/conf/cms/settings_local.py`.
+To **override** any CMS **secrets**, edit `server/conf/cms/settings_local.py`.
 
-> **Note:** If your `settings_custom.py` and `settings_local.py` are directories, then they were not properly created before starting environment. To fix:
-> 1. Run `make stop`.
-> 2. Delete directories named `settings_….py`
-> 3. [Add CMS settings.](../README.md#CMS)
-> 4. Run `make start`.
+To **override** any CMS **settings**, edit `server/conf/cms/settings_local.py`.
 
 ## Advanced
 

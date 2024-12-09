@@ -1,9 +1,8 @@
-########################
-# DJANGO
-########################
-
 SECRET_KEY = 'replacethiswithareallysecureandcomplexsecretkeystring'
+
 LOGIN_REDIRECT_URL = '/workbench/dashboard/'
+
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 ########################
 # SEARCH
@@ -22,13 +21,3 @@ HAYSTACK_CONNECTIONS = {
         'KWARGS': {'http_auth': ES_AUTH}
     }
 }
-
-########################
-# REDMINE TRACKER AUTH
-########################
-
-RT_HOST = ''
-RT_UN = ''
-RT_PW = ''
-RT_QUEUE = ''
-RT_TAG = ''
