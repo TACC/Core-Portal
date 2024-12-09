@@ -45,6 +45,10 @@ function FileInputDropZone({
     }
   };
 
+  const refreshRejectedFiles = () => {
+    setRejectedFiles(previous => rejectedFiles);
+  }
+
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
 
   return (
@@ -77,7 +81,16 @@ function FileInputDropZone({
                   <Button
                     type="link"
                     onClick={() => {
-                      setRejectedFiles([]);
+                      // rejectedFiles.splice(i, 1);
+                      // setRejectedFiles([rejectedFiles]);
+                      // removeRejectedFile(i);
+                      // console.log('click');
+                      // console.log(rejectedFiles[i]);
+                      rejectedFiles.splice(i, 1);
+                      setRejectedFiles(rejectedFiles);
+                      refreshRejectedFiles();
+                      // console.log(rejectedFiles.fileIndex);
+                      // setRejectedFiles([]);
                     }}
                   >
                     Remove
