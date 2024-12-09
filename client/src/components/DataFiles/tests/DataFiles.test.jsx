@@ -19,6 +19,10 @@ describe('DataFiles', () => {
           compress: '',
         },
       },
+      allocations: {
+        portal_alloc: 'TACC-ACI',
+        active: [{ projectId: 'active-project' }],
+      },
       systems: systemsFixture,
       files: filesFixture,
       pushKeys: {
