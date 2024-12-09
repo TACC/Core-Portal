@@ -19,7 +19,6 @@ To override any standard or custom CMS settings, edit `server/conf/cms/settings_
 > 3. [Add CMS settings.](../README.md#CMS)
 > 4. Run `make start`.
 
-
 ## Advanced
 
 To populate content from an existing CMS, follow and adapt instructions to [replicate a CMS database](https://tacc-main.atlassian.net/wiki/x/GwBJAg).
