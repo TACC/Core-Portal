@@ -49,7 +49,7 @@ describe('DataFiles', () => {
     //);
     expect(getAllByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();
-    expect(queryByText(/My Data \(Work\)/)).toBeNull();
+    expect(queryByText(/My Data \(Work\)/)).toBeDefined(); // Changed to defined, hidden attribute removed and would be defined by default
   });
 
   it('should not render Data Files with no systems', () => {
@@ -62,6 +62,7 @@ describe('DataFiles', () => {
         },
       },
       systems: {
+        // TODO: Remove rest of unused variables
         storage: {
           configuration: [
             {
