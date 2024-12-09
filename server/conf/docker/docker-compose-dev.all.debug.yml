@@ -4,7 +4,7 @@
 version: "3.8"
 services:
   cms:
-    image: taccwma/core-cms:latest
+    image: taccwma/core-cms:feat-CMD-194-customize-core-cms-in-core-portal
     volumes:
       - ../cms/settings/settings_default.py:/code/taccsite_cms/settings_default.py
       - ../cms/settings/settings_custom.py:/code/taccsite_cms/settings_custom.py
