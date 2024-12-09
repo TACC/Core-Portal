@@ -6,7 +6,6 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import renderComponent from 'utils/testing';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
-import { dataFilesAllocations } from '../../../hooks/datafiles/useDataFilesAllocations';
 
 const mockStore = configureStore();
 

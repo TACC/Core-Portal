@@ -12,18 +12,8 @@ export const getCompressParams = (
     sourceUrl: `tapis://${file.system}/${file.path}`,
   }));
 
-  let archivePath, archiveSystem;
-
-  // if (defaultPrivateSystem) {
-  //   archivePath = defaultPrivateSystem.homeDir;
-  //   archiveSystem = defaultPrivateSystem.system;
-  // } else {
-  //   archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
-  //   archiveSystem = files[0].system;
-  // }
-
-  archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
-  archiveSystem = files[0].system;
+  let archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
+  let archiveSystem = files[0].system;
 
   return {
     fileInputs: fileInputs,
