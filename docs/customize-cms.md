@@ -9,7 +9,7 @@ To create your own test content, [learn Django CMS as we use it](https://tacc-ma
 To emulate a specific project's CMS settings:
 1. Visit https://github.com/TACC/Core-Portal-Resources/blob/main/.
 2. Navigate to specific project.
-3. Copy its `cms.settings_custom.py` to your `server/conf/cms/settings_custom.py`.
+3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings_custom.py`.
 
 To override any standard or custom CMS settings, edit `server/conf/cms/settings_local.py`.
 
