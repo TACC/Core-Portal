@@ -222,8 +222,14 @@ _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
-    "compressApp": 'compress',
-    "extractApp": 'extract',
+    "compressApp": {
+        "id": "compress",
+        "version": "0.0.3"
+    },
+    "extractApp": {
+        "id": "extract",
+        "version": "0.0.1"
+    },
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
