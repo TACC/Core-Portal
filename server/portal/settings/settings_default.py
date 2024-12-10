@@ -103,7 +103,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "siteSearchPriority": 0,
     },
     {
-        'name': 'Projects',
+        'name': 'Dataset',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
@@ -114,7 +114,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/projects',
     },
     {
-        'name': 'Published',
+        'name': 'Published Datasets',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',

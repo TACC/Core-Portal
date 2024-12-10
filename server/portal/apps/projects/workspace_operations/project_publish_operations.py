@@ -290,7 +290,7 @@ def send_publication_accept_email(self, project_id):
 
 
 @shared_task(bind=True, queue='default')
-def send_publication_reject_email(self, project_id: str, version: Optional[int], error: str):
+def send_publication_reject_email(self, project_id: str):
     """
     Alert project authors that their request has been rejected.
     """
