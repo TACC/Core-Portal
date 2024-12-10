@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
-  ShowMore,
-  LoadingSpinner,
-  SectionMessage,
   SectionTableWrapper,
-  DescriptionList,
   Section,
-  SectionContent,
-  Expand,
 } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
 import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersList';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ACMCitation = ({ project, authors }) => {
   const authorString = authors
@@ -157,6 +151,8 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
+  const dispatch = useDispatch();
+
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
     const { username } = state.authenticatedUser.user;
@@ -187,8 +183,10 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
       )
       .map((user) => user.user);
 
+    const guestUsers = project.guest_users || [];
+
     setAuthors(owners);
-    setMembers(members);
+    setMembers([...members, ...guestUsers]);
     onAuthorsUpdate(owners);
   }, [project]);
 
@@ -211,9 +209,29 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
     onAuthorsUpdate(newAuthors);
   };
 
+  const onManageTeam = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'manageproject', props: {} },
+    });
+  };
+
   return (
     <SectionTableWrapper
-      header={<div className={styles.title}>Review Authors and Citation</div>}
+      header={<div className={styles.title}>Review Authors and Citations</div>}
+      headerActions={
+        <>
+          {canEdit && (
+            <div className={styles.controls}>
+              <>
+                <Button type="link" onClick={onManageTeam}>
+                  Manage Team
+                </Button>
+              </>
+            </div>
+          )}
+        </>
+      }
     >
       {authors.length > 0 && project && (
         <Section contentLayoutName={'oneColumn'}>

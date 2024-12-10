@@ -23,6 +23,7 @@ import DataFilesProjectTreeModal from './DataFilesProjectTreeModal';
 import DataFilesProjectDescriptionModal from './DataFilesProjectDescriptionModal';
 import DataFilesViewDataModal from './DataFilesViewDataModal';
 import DataFilesProjectCitationModal from './DataFilesProjectCitationModal';
+import DataFilesPublicationAuthorsModal from './DataFilesPublicationAuthorsModal';
 
 export default function DataFilesModals() {
   return (
@@ -50,6 +51,7 @@ export default function DataFilesModals() {
       <DataFilesProjectDescriptionModal />
       <DataFilesViewDataModal />
       <DataFilesProjectCitationModal />
+      <DataFilesPublicationAuthorsModal />
     </>
   );
 }

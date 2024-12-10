@@ -38,9 +38,10 @@ const DataFilesProjectFileListingMetadataAddon = ({
     const dateLabel = publication_date ? 'Publication Date' : 'Created';
 
     return {
-      [dateLabel]: new Date(
-        publication_date || created
-      ).toLocaleDateString('en-US', dateOptions),
+      [dateLabel]: new Date(publication_date || created).toLocaleDateString(
+        'en-US',
+        dateOptions
+      ),
       license: license ?? 'None',
       ...(doi && { doi }),
       ...(keywords && { keywords }),

@@ -150,7 +150,8 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...action.payload,
+          ...state.metadata,
+          members: action.payload.members,
           loading: false,
           error: null,
         },
@@ -220,6 +221,11 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         operation: initialState.operation,
+      };
+    case 'PROJECTS_CLEAR_METADATA':
+      return {
+        ...state,
+        metadata: initialState.metadata,
       };
     case 'PROJECTS_CREATE_PUBLICATION_REQUEST_STARTED':
       return {

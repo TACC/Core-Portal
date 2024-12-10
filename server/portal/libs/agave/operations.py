@@ -507,9 +507,15 @@ def trash(client, system, path, homeDir, metadata=None):
         if err.response.status_code != 404:
             logger.error(f'Unexpected exception listing .trash path in {system}')
             raise
-        trash_entity = create_entity_metadata(system, constants.TRASH, {})
-        add_node_to_project(system, 'NODE_ROOT', trash_entity.uuid, trash_entity.name, settings.TAPIS_DEFAULT_TRASH_NAME)
         mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
+
+    try:
+        trash_entity = get_entity(system, f'{settings.TAPIS_DEFAULT_TRASH_NAME}')
+        if not trash_entity:
+            new_entity = create_entity_metadata(system, constants.TRASH, {})
+            add_node_to_project(system, 'NODE_ROOT', new_entity.uuid, new_entity.name, settings.TAPIS_DEFAULT_TRASH_NAME)
+    except Exception as e:
+        print(f'Error creating trash entity: {e}')
 
     resp = move(client, system, path, system,
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)

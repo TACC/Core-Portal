@@ -142,11 +142,25 @@ const useDrpDatasetModals = (
     [dispatch]
   );
 
+  const createPublicationAuthorsModal = useCallback(
+    async ({ authors }) => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'publicationAuthors',
+          props: { authors },
+        },
+      });
+    },
+    [dispatch]
+  );
+
   return {
     createSampleModal,
     createOriginDataModal,
     createAnalysisDataModal,
     createTreeModal,
+    createPublicationAuthorsModal,
   };
 };
 

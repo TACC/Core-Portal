@@ -418,7 +418,7 @@ export function files(state = initialFilesState, action) {
           FilesListing: {
             api: 'tapis',
             scheme: 'projects',
-            system: '',
+            system: action.payload.system ?? '',
             path: '',
           },
         },

@@ -94,12 +94,12 @@ class ProjectsApiView(BaseApiView):
         if query_string:
             search = IndexedProject.search()
 
-            ngram_query = Q("query_string", query=query_string,
+            ngram_query = Q("query_string", query=query_string.lower(),
                             fields=["title", "id"],
                             minimum_should_match='100%',
                             default_operator='or')
 
-            wildcard_query = Q("wildcard", title=f'*{query_string}*') | Q("wildcard", id=f'*{query_string}*')
+            wildcard_query = Q("wildcard", title=f'*{query_string.lower()}*') | Q("wildcard", id=f'*{query_string.lower()}*')
 
             search = search.query(ngram_query | wildcard_query)
             search = search.extra(from_=int(offset), size=int(limit))

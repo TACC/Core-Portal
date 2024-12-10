@@ -8,18 +8,18 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useAddonComponents, useFileListing } from 'hooks/datafiles';
+import {
+  useAddonComponents,
+  useFileListing,
+  useSystems,
+} from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
-  const [isPublicationSystem, setIsPublicationSystem] = useState(false);
+  const { isPublicationSystem, isReviewSystem } = useSystems();
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
@@ -43,11 +43,6 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   useEffect(() => {
     fetchListing({ api: 'tapis', scheme: 'projects', system, path });
   }, [system, path, fetchListing]);
-
-  useEffect(() => {
-    const system = systems.find((s) => s.system === rootSystem);
-    setIsPublicationSystem(system?.publicationProject);
-  }, [systems, rootSystem]);
 
   const metadata = useSelector((state) => state.projects.metadata);
   const folderMetadata = useSelector(
@@ -130,14 +125,16 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Project
+                Edit Dataset
               </Button>
               <span className={styles.separator}>|</span>
             </>
           ) : null}
-          <Button type="link" onClick={onManage}>
-            {readOnlyTeam ? 'View' : 'Manage'} Team
-          </Button>
+          {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
+            <Button type="link" onClick={onManage}>
+              {readOnlyTeam ? 'View' : 'Manage'} Team
+            </Button>
+          )}
           {DataFilesProjectFileListingAddon && (
             <DataFilesProjectFileListingAddon
               rootSystem={rootSystem}
@@ -162,7 +159,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
                 folderMetadata={folderMetadata}
                 metadata={metadata}
                 path={path}
-                showCitation={isPublicationSystem}
+                showCitation={isPublicationSystem(rootSystem)}
               />
             </ShowMore>
           ) : (

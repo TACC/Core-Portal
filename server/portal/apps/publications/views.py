@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
-from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project
+from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project, send_publication_accept_email, send_publication_reject_email
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import transaction
 from portal.apps.notifications.models import Notification
@@ -220,6 +220,9 @@ class PublicationPublishView(BaseApiView):
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
         
+        if not settings.DEBUG:
+            send_publication_accept_email.apply_async(args=[full_project_id])
+        
         if is_review:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
         else: 
@@ -313,6 +316,9 @@ class PublicationRejectView(BaseApiView):
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
+        
+        if not settings.DEBUG:
+            send_publication_reject_email.apply_async(args=[full_project_id])
         
         update_and_cleanup_review_project(full_project_id, PublicationRequest.Status.REJECTED)
 
