@@ -105,18 +105,6 @@ After you clone the repository locally, there are several configuration steps re
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
     - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
 
-##### CMS
-
-Add CMS settings and secrets:
-
-```sh
-curl "https://cdn.jsdelivr.net/gh/TACC/Core-CMS@main/taccsite_cms/secrets.example.py" -o server/conf/cms/settings_custom.py
-cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
-curl "https://cdn.jsdelivr.net/gh/TACC/Core-CMS@main/taccsite_cms/settings_local.example.py" -o server/conf/cms/settings_local.py
-```
-
-To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
-
 #### Build the image for the portal's django container:
     make build
 OR
@@ -288,6 +276,7 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 * [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)
+* [Customize the CMS](./docs/customize-cms.md)
 
 
 <!-- Link Aliases -->
