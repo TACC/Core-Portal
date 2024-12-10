@@ -339,13 +339,33 @@ def list_projects(client, root_system_id=None):
         if root_system:
             query += f"~(rootDir.like.{root_system['rootDir']}*)"
 
+        is_review_system = root_system.get('reviewProject', False)
+        is_publication_system = root_system.get('publicationProject', False)
+    else:
+        is_review_system = False
+        is_publication_system = False
+
+    community_system = next(system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community')
+
+    if community_system and not is_review_system and not is_publication_system: 
+        community_data_query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)~(rootDir.like.{community_system['homeDir']}*)"
+    else:
+        community_data_query = None
+
+
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
     listing = client.systems.getSystems(listType='ALL',
                                         search=query,
                                         select=fields,
                                         limit=-1)
-
+    if community_data_query:
+        community_listing = client.systems.getSystems(listType='ALL',
+                                        search=community_data_query,
+                                        select=fields,
+                                        limit=-1)
+        listing = community_listing + listing
+    
     serialized_listing = map(lambda prj: {
         "id": prj.id,
         "path": prj.rootDir,

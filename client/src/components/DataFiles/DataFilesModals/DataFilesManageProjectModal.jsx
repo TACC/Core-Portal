@@ -5,6 +5,7 @@ import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,12 @@ const DataFilesManageProjectModal = () => {
     );
 
     return projectSystem?.readOnly || !canEditSystem;
+  });
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+
+  const { DataFilesManageProjectModalAddon } = useAddonComponents({
+    portalName,
   });
 
   const toggle = useCallback(() => {
@@ -154,6 +161,9 @@ const DataFilesManageProjectModal = () => {
               </Button>
             ) : null}
           </div>
+          {DataFilesManageProjectModalAddon && (
+            <DataFilesManageProjectModalAddon projectId={projectId} />
+          )}
         </ModalBody>
       </Modal>
     </div>

@@ -259,11 +259,11 @@ def get_project_user_emails(project_id):
 
 
 @shared_task(bind=True, queue='default')
-def send_publication_accept_email(project_id):
+def send_publication_accept_email(self, project_id):
     """
     Alert project authors that their request has been accepted.
     """
-    user_emails = get_project_user_emails()
+    user_emails = get_project_user_emails(project_id)
     for user_email in user_emails:
         email_body = f"""
             <p>Hello,</p>
@@ -290,11 +290,11 @@ def send_publication_accept_email(project_id):
 
 
 @shared_task(bind=True, queue='default')
-def send_publication_reject_email(project_id: str, version: Optional[int], error: str):
+def send_publication_reject_email(self, project_id: str):
     """
     Alert project authors that their request has been rejected.
     """
-    user_emails = get_project_user_emails()
+    user_emails = get_project_user_emails(project_id)
     for user_email in user_emails:
         email_body = f"""
             <p>Hello,</p>
