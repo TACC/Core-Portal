@@ -6,7 +6,7 @@ This is all optional. You can develop Core-Portal without CMS customization.
 
 To create your own CMS test **content**, [learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv).
 
-To be able to customize CMS **settings**:
+To be able to customize CMS **settings** or **secrets**:
 1. Run `make stop`.
 2. Delete `server/conf/cms/settings_*.py` **directories**.
 3. Create CMS settings files:
