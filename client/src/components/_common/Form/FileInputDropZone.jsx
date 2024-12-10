@@ -45,27 +45,11 @@ function FileInputDropZone({
     }
   };
 
-  const handleClick = (index) => {
-    // rejectedFiles.splice(index, 1);
-    // setRejectedFiles(rejectedFiles);
-    // useState(setRejectedFiles(rejectedFiles));
-    setRejectedFiles(rejectedFiles.splice(index, 1));
-    setRejectedFiles(rejectedFiles);
-  };
-
-  // useEffect(() => {
-  //   setRejectedFiles(rejectedFiles);
-  //   console.log('useEffect');
-  // }, [rejectedFiles]);
-
-  const refreshRejectedFiles = () => {
-    setRejectedFiles(rejectedFiles);
-  }
-  // useEffect(refreshRejectedFiles, [rejectedFiles]);
-
-  const removeRejectedFile = (index) => {
-    rejectedFiles.splice(index, 1);
-    // setRejectedFiles(rejectedFiles);
+  const removeRejectedFile = (i) => {
+    const newRejectedFiles = rejectedFiles.filter(
+      (file) => file !== rejectedFiles[i]
+    );
+    setRejectedFiles(newRejectedFiles);
   };
 
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
@@ -100,18 +84,7 @@ function FileInputDropZone({
                   <Button
                     type="link"
                     onClick={() => {
-                      // console.log('click');
-                      console.log('To be removed: ', rejectedFiles[i]);
-                      // removeRejectedFile(i);
-                      // rejectedFiles.splice(i, 1);
-                      // setRejectedFiles(rejectedFiles);
-                      // setRejectedFiles([rejectedFiles]);
-                      // refreshRejectedFiles();
-                      // handleClick(i);
-                      handleClick();
-                      console.log('Remaining Rejected Files: ', rejectedFiles);
-                      // console.log(rejectedFiles.fileIndex);
-                      // setRejectedFiles([]);
+                      removeRejectedFile(i);
                     }}
                   >
                     Remove
