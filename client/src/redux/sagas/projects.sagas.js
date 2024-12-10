@@ -144,6 +144,13 @@ export function* setMember(action) {
       type: 'PROJECTS_SET_MEMBER_SUCCESS',
       payload: metadata,
     });
+    if (data.action === 'transfer_ownership')
+      yield put({
+        type: 'ADD_TOAST',
+        payload: {
+          message: `Project ownership transferred to ${data.newOwner}.`,
+        },
+      });
     yield put({
       type: 'PROJECTS_GET_LISTING',
       payload: {
