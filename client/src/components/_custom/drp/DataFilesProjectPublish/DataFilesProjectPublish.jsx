@@ -82,7 +82,9 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
       project: metadata,
       onAuthorsUpdate: handleAuthorsUpdate,
     }),
-    SubmitPublicationRequestStep(),
+    SubmitPublicationRequestStep({
+      callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`,
+    }),
   ];
 
   const formSubmit = (values) => {
@@ -108,7 +110,7 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
           className={styles.root}
           header={
             <div className={styles.title}>
-              Request Project Publication | {metadata.title}
+              Request Dataset Publication | {metadata.title}
             </div>
           }
           headerActions={
@@ -118,7 +120,7 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
                   className="wb-link"
                   to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
                 >
-                  Back to Project
+                  Back to Dataset
                 </Link>
               </>
             </div>

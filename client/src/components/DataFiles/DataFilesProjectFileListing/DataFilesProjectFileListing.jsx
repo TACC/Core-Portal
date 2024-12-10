@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -8,13 +8,18 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useAddonComponents, useFileListing } from 'hooks/datafiles';
+import {
+  useAddonComponents,
+  useFileListing,
+  useSystems,
+} from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
+  const { isPublicationSystem, isReviewSystem } = useSystems();
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
@@ -120,14 +125,16 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Project
+                Edit Dataset
               </Button>
               <span className={styles.separator}>|</span>
             </>
           ) : null}
-          <Button type="link" onClick={onManage}>
-            {readOnlyTeam ? 'View' : 'Manage'} Team
-          </Button>
+          {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
+            <Button type="link" onClick={onManage}>
+              {readOnlyTeam ? 'View' : 'Manage'} Team
+            </Button>
+          )}
           {DataFilesProjectFileListingAddon && (
             <DataFilesProjectFileListingAddon
               rootSystem={rootSystem}
@@ -152,6 +159,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
                 folderMetadata={folderMetadata}
                 metadata={metadata}
                 path={path}
+                showCitation={isPublicationSystem(rootSystem)}
               />
             </ShowMore>
           ) : (

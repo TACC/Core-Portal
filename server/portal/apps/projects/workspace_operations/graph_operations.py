@@ -3,7 +3,7 @@ import networkx as nx
 from django.db import transaction
 import uuid
 import copy
-
+from django.conf import settings
 from portal.apps._custom.drp import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 
@@ -169,3 +169,30 @@ def get_node_from_uuid(project_id: str, uuid: str):
         if project_graph.nodes[node_id]["uuid"] == uuid:
             return {"id": node_id, **project_graph.nodes[node_id]}
     return None
+
+def remove_trash_nodes(graph: nx.DiGraph):
+    trash_node_id = None
+    for node_id in graph.nodes:
+        trash_node = graph.nodes[node_id].get("name") == constants.TRASH
+        if trash_node:
+            trash_node_id = node_id
+            break
+
+    if trash_node_id:
+        trash_descendants = nx.descendants(graph, trash_node_id)
+        nodes_to_remove = {trash_node_id} | trash_descendants
+        graph.remove_nodes_from(nodes_to_remove)
+    return graph
+
+def get_path_uuid_mapping(project_id: str):
+    """Return a mapping of node paths to UUIDs for a project graph."""
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+    path_uuid_mapping = {}
+    for node_id in project_graph.nodes:
+        path_nodes = nx.shortest_path(project_graph, 'NODE_ROOT', node_id)[1:]
+        path =  '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
+        path_uuid_mapping[path] = project_graph.nodes[node_id]["uuid"]
+    return path_uuid_mapping

@@ -33,6 +33,7 @@ from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
+from portal.apps.projects.tasks import sync_files_without_metadata
 
 LOGGER = logging.getLogger(__name__)
 
@@ -116,6 +117,14 @@ class ProjectsApiView(BaseApiView):
             client = request.user.tapis_oauth.client
             listing = list_projects(client, root_system)
 
+        for project in listing:
+            try:
+                project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=project['id']))
+                project.update(get_ordered_value(project_meta.name, project_meta.value))
+                project["projectId"] = project['id']
+            except ProjectMetadata.DoesNotExist:
+                pass
+
         tapis_project_listing_indexer.delay(listing)
 
         return JsonResponse({"status": 200, "response": listing})
@@ -170,12 +179,17 @@ class ProjectInstanceApiView(BaseApiView):
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
-        prj = get_project(request.user.tapis_oauth.client, project_id)
+        client = request.user.tapis_oauth.client
+
+        prj = get_project(client, project_id)
 
         try: 
             project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
             prj.update(get_ordered_value(project.name, project.value))
             prj["projectId"] = project_id
+
+            if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
+                sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
         except: 
             pass
 
@@ -224,13 +238,12 @@ class ProjectInstanceApiView(BaseApiView):
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         client = request.user.tapis_oauth.client
 
-        if metadata is not None:
-            patch_project_entity(project_id_full, metadata)
-
         workspace_def = update_project(client, project_id, data['title'], data['description'])
 
-        if metadata is not None: 
-            workspace_def.update(metadata)
+        if metadata is not None:
+            entity = patch_project_entity(project_id_full, metadata) 
+            workspace_def.update(get_ordered_value(entity.name, entity.value))
+            workspace_def["projectId"] = project_id
 
         return JsonResponse(
             {

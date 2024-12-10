@@ -143,6 +143,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     switch (field.type) {
       case 'text':
       case 'number':
+      case 'link':
         return (
           <FormField
             name={field.name}

@@ -85,15 +85,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None,
     },
     {
-        'name': 'Community Data',
-        'system': 'cloud.data',
-        'scheme': 'community',
-        'api': 'tapis',
-        'homeDir': '/corral/tacc/aci/CEP/community',
-        'icon': None,
-        'siteSearchPriority': 1
-    },
-    {
         'name': 'Public Data',
         'system': 'cloud.data',
         'scheme': 'public',
@@ -103,25 +94,46 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'siteSearchPriority': 0
     },
     {
-        'name': 'Project',
+        "name": "Community Data",
+        "system": "cloud.data",
+        "scheme": "community",
+        "api": "tapis",
+        "homeDir": "/corral-repl/utexas/OTH21076/data_pprd/community",
+        "icon": None,
+        "siteSearchPriority": 0,
+    },
+    {
+        'name': 'Dataset',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': False,
         'hideSearchBar': False,
         'defaultProject': True,
-        'system': 'cep.project.root',
-        'rootDir': '/corral-repl/tacc/aci/CEP/projects',
+        'system': 'drp.pprd.project.root',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/projects',
     },
     {
-        'name': 'Review Projects',
+        'name': 'Published Datasets',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': True,
         'hideSearchBar': False,
-        'system': 'drp.project.review.test',
-        'rootDir': '/corral-repl/utexas/pge-nsf/data_pprd/test',
+        'system': 'drp.pprd.project.published',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/published',
+        'publicationProject': True,
+    },
+    {
+        'name': 'Review',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.pprd.project.review',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/review',
+        'reviewProject': True,
     }
 ]
 
@@ -194,16 +206,22 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 
 _PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.project'
 _PORTAL_PROJECTS_ID_PREFIX = 'CEPV3-DEV'
-_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
-_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
+_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/projects'
+_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'drp.pprd.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 
 _PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = 'cep.project.review' 
-_PORTAL_PROJECTS_REVIEW_ROOT_DIR = '/corral-repl/utexas/pge-nsf/data_pprd/test'
-_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = 'drp.project.review.test'
+_PORTAL_PROJECTS_REVIEW_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/review'
+_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = 'drp.pprd.project.review'
+
+_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'cep.project.published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.pprd.project.published'
+
+_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWER'
 
 ########################
 # Custom Portal Template Assets
@@ -237,6 +255,7 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
+    "canPublish": True,
     "makeLink": False,
     "viewPath": True,
     "compressApp": 'compress',
@@ -254,7 +273,8 @@ _WORKBENCH_SETTINGS = {
     "hasCustomDataFilesToolbarChecks": True,
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 
                'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 
-               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish', 'DataFilesProjectReview'],
+               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish', 'DataFilesProjectReview',
+               'DataFilesManageProjectModalAddon'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",

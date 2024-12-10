@@ -273,3 +273,7 @@ _PORTAL_ELEVATED_ROLES = {
     "usernames": []
   }
 }
+
+
+_SMTP_HOST = "relay.tacc.utexas.edu"
+_DEFAULT_FROM_EMAIL="no-reply@digitalrocksportal.org"

@@ -508,7 +508,9 @@ export async function uploadFileUtil(
   formData.append('uploaded_file', file);
   formData.append(
     'metadata',
-    metadata ? JSON.stringify({ data_type: 'file', ...metadata }) : null
+    metadata && !system.includes('community')
+      ? JSON.stringify({ data_type: 'file', ...metadata })
+      : null
   );
 
   const url = removeDuplicateSlashes(
@@ -561,6 +563,10 @@ export function* uploadFiles(action) {
     });
 
   yield call(action.payload.reloadCallback);
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'upload', props: {} },
+  });
 }
 
 export function* uploadFile(api, scheme, system, path, file, index, metadata) {

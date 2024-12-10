@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
-import { useSelectedFiles } from 'hooks/datafiles';
+import { useSelectedFiles, useSystems } from 'hooks/datafiles';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
@@ -12,11 +12,17 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { metadata } = useSelector((state) => state.projects);
   const { selectedFiles } = useSelectedFiles();
+  const { isPublicationSystem, isReviewSystem } = useSystems();
 
   const dispatch = useDispatch();
 
-  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
-    useDrpDatasetModals(projectId, portalName);
+  const {
+    createSampleModal,
+    createOriginDataModal,
+    createAnalysisDataModal,
+    createTreeModal,
+    createPublicationAuthorsModal,
+  } = useDrpDatasetModals(projectId, portalName);
 
   const createPublicationRequestModal = () => {
     dispatch({
@@ -75,6 +81,18 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
 
   return (
     <>
+      {(isPublicationSystem(rootSystem) || isReviewSystem(rootSystem)) && (
+        <>
+          <Button
+            type="link"
+            onClick={() =>
+              createPublicationAuthorsModal({ authors: metadata?.authors })
+            }
+          >
+            View Authors
+          </Button>
+        </>
+      )}
       {canEditDataset && (
         <>
           <span className={styles.separator}>|</span>
@@ -142,6 +160,15 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
           )}
         </>
       )}
+      <>
+        <span className={styles.separator}>|</span>
+        <Button
+          type="link"
+          onClick={() => createTreeModal({ readOnly: !canEditDataset })}
+        >
+          View Project Tree
+        </Button>
+      </>
       {canRequestPublication && (
         <>
           <span className={styles.separator}>|</span>

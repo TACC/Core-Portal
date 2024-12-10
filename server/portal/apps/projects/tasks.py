@@ -1,20 +1,21 @@
 import logging
+from pathlib import Path
 from django.conf import settings
 from celery import shared_task
 from django.db import transaction
-from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.publications.models import PublicationRequest
-from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
 from portal.libs.agave.utils import user_account, service_account
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata
-from portal.apps.projects.workspace_operations.graph_operations import initialize_project_graph
+from portal.apps.projects.workspace_operations.project_meta_operations import add_file_associations, create_file_obj, get_ordered_value
+from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
 import networkx as nx
 import uuid
+
+# TODO: Cleanup this file
 
 logger = logging.getLogger(__name__)
 
@@ -181,3 +182,53 @@ def post_file_transfer(self, user_access_token, source_workspace_id, review_work
     except Exception as e:
         logger.error(f'Error processing transfer {transfer_task_id} for system {source_system_id} to system {review_system_id}: {e}')
         self.retry(exc=e, countdown=30)
+
+
+@shared_task(bind=True, max_retries=3, queue='default')
+def sync_files_without_metadata(self, user_access_token, project_id: str):
+    client = user_account(user_access_token)
+
+    path_uuid_map = get_path_uuid_mapping(project_id)
+    tapis_files_listing = client.files.listFiles(systemId=project_id, path='/', recurse=True)
+    files = [file for file in tapis_files_listing if file.type != 'dir']
+
+    required_uuids = set(path_uuid_map.values())
+
+    # Cache to avoid repeated database queries for the same parent path
+    entity_cache = {
+        entity.uuid: entity for entity in ProjectMetadata.objects.filter(uuid__in=required_uuids)
+    }
+
+    files_to_add_dict = {}
+
+    for file in files: 
+        file_path = file.path
+        parent_path = str(Path(file_path).parent)
+
+        if parent_path == '.':
+            parent_path = ''
+
+        # Check if the parent path exists in path_uuid_map
+        if parent_path not in path_uuid_map:
+            continue
+
+        # Fetch the cached entity
+        parent_uuid = path_uuid_map[parent_path]
+        entity = entity_cache.get(parent_uuid)
+
+        if not entity:
+            logger.warning(f"Parent entity {parent_uuid} for file {file_path} does not exist")
+            continue
+
+        entity_value = get_ordered_value(entity.name, entity.value)
+        file_objs = entity_value.get('file_objs', [])
+        file_paths_set = {file_obj.get('path') for file_obj in file_objs}
+
+        if file_path not in file_paths_set:
+            new_file_obj = create_file_obj(project_id, file.name, file.size, file_path, {'data_type': 'file'})
+            files_to_add_dict[entity.uuid] = files_to_add_dict.get(entity.uuid, []) + [new_file_obj]
+
+    for entity_uuid, file_objs in files_to_add_dict.items():
+        logger.info(f'Adding {len(file_objs)} files to entity {entity_uuid} in project {project_id}')
+        add_file_associations(entity_uuid, file_objs)
+                

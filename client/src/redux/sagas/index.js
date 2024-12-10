@@ -52,6 +52,7 @@ import {
 import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
+import { watchPublications } from './publications.sagas';
 
 function* watchStartCustomSaga() {
   yield takeEvery('START_CUSTOM_SAGA', startCustomSaga);
@@ -121,5 +122,6 @@ export default function* rootSaga() {
     watchUsers(),
     watchSiteSearch(),
     watchStartCustomSaga(),
+    watchPublications(),
   ]);
 }

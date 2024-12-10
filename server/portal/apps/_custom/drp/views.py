@@ -8,6 +8,7 @@ from portal.apps._custom.drp import constants
 import networkx as nx
 from networkx import shortest_path
 from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value
+from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 class DigitalRocksSampleView(BaseApiView):
 
     def get(self, request):
@@ -16,7 +17,20 @@ class DigitalRocksSampleView(BaseApiView):
 
         full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        samples = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.SAMPLE).values('uuid', 'name', 'value')
+        graph_model = ProjectMetadata.objects.get(
+            name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
+        )
+
+        project_graph = nx.node_link_graph(graph_model.value)
+
+        sample_uuids = []
+
+        for node_id in list(project_graph.successors('NODE_ROOT')):
+            node = project_graph.nodes[node_id]
+            if (node.get('name') == constants.SAMPLE):
+                sample_uuids.append(node.get('uuid'))
+            
+        samples = ProjectMetadata.objects.filter(uuid__in=sample_uuids).values('uuid', 'name', 'value')
 
         origin_data = []
         
@@ -47,18 +61,7 @@ class DigitalRocksTreeView(BaseApiView):
 
         graph = nx.node_link_graph(graph_model.value)
 
-        trash_node_id = None  
-
-        for node_id in graph.nodes:
-            trash_node = graph.nodes[node_id].get('name') == settings.TAPIS_DEFAULT_TRASH_NAME
-            if trash_node:
-                trash_node_id = node_id
-                break
-
-        if trash_node_id:
-            trash_descendants = nx.descendants(graph, trash_node_id)
-            nodes_to_remove = {trash_node_id} | trash_descendants
-            graph.remove_nodes_from(nodes_to_remove)
+        graph = remove_trash_nodes(graph)
 
         for node_id in graph.nodes:
 

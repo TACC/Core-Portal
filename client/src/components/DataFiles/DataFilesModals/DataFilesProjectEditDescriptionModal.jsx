@@ -60,6 +60,7 @@ const DataFilesProjectEditDescriptionModal = () => {
             description: values.description || '',
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
+          modal: 'editproject',
         },
       });
     },
@@ -89,7 +90,7 @@ const DataFilesProjectEditDescriptionModal = () => {
         {({ isValid, dirty }) => (
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Edit Project
+              Edit Dataset
             </ModalHeader>
             <ModalBody className={styles['modal-body']}>
               <FormField

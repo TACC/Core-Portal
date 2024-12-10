@@ -129,7 +129,39 @@ const useDrpDatasetModals = (
     }
   );
 
-  return { createSampleModal, createOriginDataModal, createAnalysisDataModal };
+  const createTreeModal = useCallback(
+    async ({ readOnly = false }) => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'projectTree',
+          props: { readOnly },
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  const createPublicationAuthorsModal = useCallback(
+    async ({ authors }) => {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'publicationAuthors',
+          props: { authors },
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  return {
+    createSampleModal,
+    createOriginDataModal,
+    createAnalysisDataModal,
+    createTreeModal,
+    createPublicationAuthorsModal,
+  };
 };
 
 export default useDrpDatasetModals;

@@ -1,46 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  ShowMore,
-  LoadingSpinner,
-  SectionMessage,
-  SectionTableWrapper,
-  DescriptionList,
-  Section,
-  SectionContent,
-  Expand,
-  Icon,
-} from '_common';
-import { TreeItem, TreeView } from '@material-ui/lab';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Button, SectionTableWrapper, Section } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
-import DataDisplay from '../../utils/DataDisplay/DataDisplay';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFileListing } from 'hooks/datafiles';
-import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
+import { ProjectTreeView } from './ProjectTreeView';
 
-const ReviewProjectStructure = ({ projectTree }) => {
+export const ReviewProjectStructure = ({ projectTree }) => {
   const dispatch = useDispatch();
 
-  const [expandedNodes, setExpandedNodes] = useState([]);
-
-  const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
 
   const { params } = useFileListing('FilesListing');
-
-  useEffect(() => {
-    if (projectTree && projectTree.length > 0) {
-      setExpandedNodes([projectTree[0].id]);
-    }
-  }, []);
-
-  const handleNodeToggle = (event, nodeIds) => {
-    // Update the list of expanded nodes
-    setExpandedNodes(nodeIds);
-  };
-
-  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
-    useDrpDatasetModals(projectId, portalName, false);
 
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
@@ -63,122 +33,6 @@ const ReviewProjectStructure = ({ projectTree }) => {
     });
   };
 
-  const onEditData = (node) => {
-    const dataType = node.metadata.data_type;
-    // reconstruct editFile to mimic SelectedFile object
-    const editFile = {
-      id: node.id,
-      uuid: node.uuid,
-      metadata: node.metadata,
-      name: node.metadata.name,
-      system: params.system,
-      type: 'dir',
-      path: node.path,
-    };
-    switch (dataType) {
-      case 'sample':
-        createSampleModal('EDIT_SAMPLE_DATA', editFile);
-        break;
-      case 'digital_dataset':
-        createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
-        break;
-      case 'analysis_data':
-        createAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
-        break;
-      case 'file':
-        // Dispatch an action to toggle the modal for previewing the file
-        dispatch({
-          type: 'DATA_FILES_TOGGLE_MODAL',
-          payload: {
-            operation: 'preview',
-            props: {
-              api: params.api,
-              scheme: params.scheme,
-              system: params.system,
-              path: node.path,
-              name: node.name,
-              href: `tapis://${params.system}/${node.path}`,
-              length: node.length,
-              metadata: node.metadata,
-              useReloadCallback: false,
-            },
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
-
-  const formatDatatype = (data_type) =>
-    data_type
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
-  const renderTree = (node) => (
-    <>
-      <Section
-        className={styles['section-project-structure']}
-        contentLayoutName="oneColumn"
-      >
-        <div>
-          <TreeItem
-            key={node.id}
-            nodeId={node.id}
-            label={
-              <div className={styles['node-name-div']}>
-                {node.label ?? node.name}
-                {node.metadata.data_type && (
-                  <span className={styles['data-type-box']}>
-                    {formatDatatype(node.metadata.data_type)}
-                  </span>
-                )}
-              </div>
-            }
-            classes={{
-              label: styles['tree-label'],
-            }}
-            onLabelClick={() => handleNodeToggle}
-          >
-            {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
-              <div className={styles['metadata-description-div']}>
-                {(canEdit || node.metadata.data_type === 'file') && (
-                  <Button
-                    className={styles['edit-button']}
-                    type="link"
-                    onClick={() => onEditData(node)}
-                  >
-                    {canEdit && node.metadata.data_type !== 'file'
-                      ? 'Edit'
-                      : 'View'}
-                  </Button>
-                )}
-                <div className={styles['description']}>
-                  <ShowMore>{node.metadata.description}</ShowMore>
-                  <DataDisplay
-                    data={node.metadata}
-                    excludeKeys={[
-                      'description',
-                      'data_type',
-                      'sample',
-                      'digital_dataset',
-                      'file_objs',
-                    ]}
-                  />
-                </div>
-              </div>
-            )}
-            {Array.isArray(node.fileObjs) &&
-              node.fileObjs.map((fileObj) => renderTree(fileObj))}
-            {Array.isArray(node.children) &&
-              node.children.map((child) => renderTree(child))}
-          </TreeItem>
-        </div>
-      </Section>
-    </>
-  );
-
   return (
     <SectionTableWrapper
       header={
@@ -192,7 +46,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
             <div className={styles.controls}>
               <>
                 <Button type="link" onClick={onEdit}>
-                  Edit Project
+                  Edit Dataset
                 </Button>
               </>
             </div>
@@ -223,16 +77,7 @@ const ReviewProjectStructure = ({ projectTree }) => {
           </ul>
         </div>
 
-        {projectTree && projectTree.length > 0 && (
-          <TreeView
-            defaultCollapseIcon={<Icon name={'contract'} />}
-            defaultExpandIcon={<Icon name={'expand'} />}
-            expanded={expandedNodes}
-            onNodeToggle={handleNodeToggle}
-          >
-            {projectTree.map((node) => renderTree(node))}
-          </TreeView>
-        )}
+        <ProjectTreeView projectId={projectId} readOnly={!canEdit} />
       </Section>
     </SectionTableWrapper>
   );

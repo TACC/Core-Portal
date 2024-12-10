@@ -19,21 +19,22 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
 
   const { loading } = useFileListing('FilesListing');
 
-  const { canEditDataset } = useSelector(
-    (state) =>
-      state.projects.metadata.members
-        .filter((member) =>
-          member.user
-            ? member.user.username === state.authenticatedUser.user.username
-            : { access: null }
-        )
-        .map((currentUser) => {
-          return {
-            canEditDataset:
-              currentUser.access === 'owner' || currentUser.access === 'edit',
-          };
-        })[0]
-  );
+  const { canEditDataset } = useSelector((state) => {
+    const userAccess = state.projects.metadata.members
+      .filter((member) =>
+        member.user
+          ? member.user.username === state.authenticatedUser.user.username
+          : { access: null }
+      )
+      .map((currentUser) => {
+        return {
+          canEditDataset:
+            currentUser.access === 'owner' || currentUser.access === 'edit',
+        };
+      })[0];
+
+    return userAccess || { canEditDataset: false };
+  });
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
     useDrpDatasetModals(projectId, portalName);
