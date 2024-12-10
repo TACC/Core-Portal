@@ -6,22 +6,10 @@ services:
   cms:
     image: taccwma/core-cms:feat-CMD-194-customize-core-cms-in-core-portal
     volumes:
-      - type: bind
-        source: ../cms/settings/settings_default.py
-        target: /code/taccsite_cms/settings_default.py
-        read_only: true
-      - type: bind
-        source: ../cms/settings/settings_custom.py
-        target: /code/taccsite_cms/settings_custom.py
-        read_only: true
-      - type: bind
-        source: ../cms/settings/secrets.py
-        target: /code/taccsite_cms/secrets.py
-        read_only: true
-      - type: bind
-        source: ../cms/settings/settings_local.py
-        target: /code/taccsite_cms/settings_local.py
-        read_only: true
+      - ../cms/settings/settings_default.py:/code/taccsite_cms/settings_default.py
+      - ../cms/settings/settings_custom.py:/code/taccsite_cms/settings_custom.py
+      - ../cms/settings/secrets.py:/code/taccsite_cms/secrets.py
+      - ../cms/settings/settings_local.py:/code/taccsite_cms/settings_local.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
