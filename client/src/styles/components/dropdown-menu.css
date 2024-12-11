@@ -6,32 +6,34 @@ A menu of navigation elements.
 Styleguide Components.Dropdown
 */
 
-/* Nested to prevent styles from affecting CMS header dropdown */
-.workbench-wrapper {
+.workbench-wrapper /* nested so CMS header dropdown is unaffected */ {
   .dropdown-menu {
-    border-color: var(--global-color-accent--normal);
-    border-radius: 0;
-    margin-top: 11px;
-    padding: 0;
-    min-width: 200px;
-    width: auto;
-    vertical-align: top;
+    --border-width: 1px;
+    --border-color: var(--global-color-accent--normal);
+    --arrow-size: 10px;
+
+    margin-top: var(--arrow-size); /* to make space for arrow */
+
+    padding-block: unset; /* to undo Bootstrap */
+    border-radius: unset; /* to undo Bootstrap */
+
+    border: var(--border-width) solid var(--border-color);
   }
   .dropdown-menu::before,
   .dropdown-menu::after {
     position: absolute;
-    left: 65px;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid var(--global-color-accent--normal);
-    border-left: 10px solid transparent;
-    margin-left: 20px;
+
+    border-right: var(--arrow-size) solid transparent;
+    border-bottom: var(--arrow-size) solid var(--global-color-accent--normal);
+    border-left: var(--arrow-size) solid transparent;
+
     content: '';
   }
   .dropdown-menu::before {
-    top: -10px;
+    top: calc(var(--arrow-size) * -1);
   }
   .dropdown-menu::after {
-    top: -9px;
+    top: calc(( var(--arrow-size) - var(--border-width)) * -1);
     border-bottom-color: var(--global-color-primary--xx-light);
   }
 
@@ -50,9 +52,11 @@ Styleguide Components.Dropdown
   }
   .dropdown-item:focus,
   .dropdown-item:hover {
-    /* FAQ: Before FP-1083, value was #E6E0FB, which matched Design
-            and was `--global-color-accent` at 25% opacity on white…
-            which is what `--global-color-accent--weak` is now */
     background-color: var(--global-color-accent--weak);
+  }
+
+  .dropdown-divider {
+    margin-block: 0.25em;
+    border-color: var(--global-color-primary--dark);
   }
 }
