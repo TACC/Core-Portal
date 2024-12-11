@@ -297,6 +297,11 @@ class JobsView(BaseApiView):
                     homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
+            execSystemId = job_post.get("execSystemId")
+            if not execSystemId:
+                app = _get_app(job_post["appId"], job_post["appVersion"], request.user)
+                execSystemId = app["definition"].jobAttributes.execSystemId
+
             # Check for and set license environment variable if app requires one
             lic_type = body.get('licenseType')
             if lic_type:
@@ -313,7 +318,7 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
+            for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
@@ -343,7 +348,6 @@ class JobsView(BaseApiView):
                                                            [{'key': '_INTERACTIVE_WEBHOOK_URL', 'value':  wh_base_url}]
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
-                execSystemId = job_post['execSystemId']
                 system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
                 tasdir = get_user_data(username)['homeDirectory']
                 if system:
