@@ -39,6 +39,10 @@
   font-size: 1rem;
 }
 
+.modalButton {
+  font-size: 0.75rem !important;
+}
+
 .icon--before {
   composes: c-button__icon--before from '../../../styles/components/c-button--new.css';
 }
