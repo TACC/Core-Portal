@@ -196,7 +196,11 @@ const DataFilesBreadcrumbs = ({
         )}
       </div>
       {systemName && api === 'tapis' && (
-        <Button type="link" className={styles.modalButton} onClick={openFullPathModal}>
+        <Button
+          type="link"
+          className={styles.modalButton}
+          onClick={openFullPathModal}
+        >
           View Full Path
         </Button>
       )}
