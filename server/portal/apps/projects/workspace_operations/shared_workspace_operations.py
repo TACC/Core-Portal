@@ -202,8 +202,8 @@ def add_user_to_workspace(client: Tapis,
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        username,
                        "add",
                        role)
@@ -231,8 +231,8 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        username,
                        "add",
                        new_role)
@@ -247,8 +247,8 @@ def remove_user(client, workspace_id: str, username: str):
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        username,
                        "remove",
                        "none")
@@ -271,8 +271,8 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        new_owner,
                        "add",
                        "writer")
