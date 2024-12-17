@@ -137,7 +137,7 @@ class TapisFilesView(BaseApiView):
         try:
             client = request.user.tapis_oauth.client
         except AttributeError:
-            return HttpResponseForbidden
+            return HttpResponseForbidden("This data requires authentication to view.")
 
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
@@ -160,7 +160,7 @@ class TapisFilesView(BaseApiView):
         try:
             client = request.user.tapis_oauth.client
         except AttributeError:
-            return HttpResponseForbidden()
+            return HttpResponseForbidden("This data requires authentication to upload.")
 
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
