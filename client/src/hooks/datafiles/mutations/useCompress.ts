@@ -71,7 +71,7 @@ function useCompress() {
     let defaultPrivateSystem: TPortalSystem | undefined;
 
     if (files[0].scheme === 'private' && files[0].api === 'tapis') {
-      defaultPrivateSystem === null;
+      defaultPrivateSystem = undefined;
     }
 
     if (scheme !== 'private' && scheme !== 'projects') {
