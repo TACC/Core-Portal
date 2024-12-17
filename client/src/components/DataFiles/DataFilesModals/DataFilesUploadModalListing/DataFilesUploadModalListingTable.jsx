@@ -5,13 +5,11 @@ import { LoadingSpinner, InlineMessage, Button } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import { useUpload } from 'hooks/datafiles/mutations';
 import styles from './DataFilesUploadModalListingTable.module.scss';
-import { useSelector } from 'react-redux';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter((f) => f.id === i).length > 0) {
     return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
-  const errorMessage = useSelector((state) => state.files.error.message);
   const status = useUpload().status[i];
   switch (status) {
     case 'UPLOADING':
@@ -19,11 +17,7 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
     case 'SUCCESS':
       return <span className="badge badge-success">SUCCESS</span>;
     case 'ERROR':
-      return (
-        <InlineMessage type="error">
-          Upload Failed: {errorMessage}
-        </InlineMessage>
-      );
+      return <InlineMessage type="error">Upload Failed</InlineMessage>;
     default:
       return (
         <Button type="link" onClick={() => removeCallback(i)}>

@@ -486,23 +486,16 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
   );
 
-  try {
-    const request = await fetch(url, {
-      method: 'POST',
-      headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-      credentials: 'same-origin',
-      body: formData,
-    });
-    if (!request.ok) {
-      throw new Error(`HTTP error: ${request.status}`);
-    }
-    return request;
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error('Network error: The file upload was blocked.');
-    }
-    throw error;
+  const request = await fetch(url, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: formData,
+  });
+  if (!request.ok) {
+    throw new Error(request.status);
   }
+  return request;
 }
 
 export function* watchUpload() {

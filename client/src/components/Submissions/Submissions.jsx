@@ -132,7 +132,7 @@ const Submissions = () => {
 
   const useSubmitterRole = () => {
     const query = useQuery({
-      queryKey: ['submitter-role'],
+      queryKey: 'submitter-role',
       queryFn: getSubmitterRole,
     });
     return query;
