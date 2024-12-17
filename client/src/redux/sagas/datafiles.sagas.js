@@ -486,16 +486,23 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
   );
 
-  const request = await fetch(url, {
-    method: 'POST',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: formData,
-  });
-  if (!request.ok) {
-    throw new Error(request.status);
+  try {
+    const request = await fetch(url, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+      credentials: 'same-origin',
+      body: formData,
+    });
+    if (!request.ok) {
+      throw new Error(`HTTP error: ${request.status}`);
+    }
+    return request;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error('Network error: The file upload was blocked.');
+    }
+    throw error;
   }
-  return request;
 }
 
 export function* watchUpload() {
@@ -548,6 +555,10 @@ export function* uploadFile(api, scheme, system, path, file, index) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'upload' },
+    });
+    yield put({
+      type: 'DATA_FILES_SET_ERROR',
+      payload: { message: e.toString() },
     });
     return 'ERR';
   }
