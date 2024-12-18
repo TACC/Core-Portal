@@ -120,7 +120,7 @@ const DataFilesModalButtonCell = ({
       <span>
         <Button
           type="primary"
-          className="float-right data-files-btn"
+          className="float-right"
           disabled={disabled}
           onClick={onClick}
         >
