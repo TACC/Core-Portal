@@ -25,7 +25,7 @@ describe('DataFiles', () => {
             id: 'extract',
             version: '0.0.1',
           },
-          compress: { 
+          compress: {
             id: 'compress',
             version: '0.0.3',
           },
