@@ -16,10 +16,10 @@ class DjangoRt:
 
     def getUserTickets(self, userEmail, status="ALL"):
         if not status == "ALL":
-            ticket_list = self.tracker.search(Queue=rt.ALL_QUEUES, Requestor__exact=userEmail, Status__exact=status,
+            ticket_list = self.tracker.search(Queue=rt.ALL_QUEUES, Requestors__exact=userEmail, Status__exact=status,
                                               order='-LastUpdated')
         else:
-            ticket_list = self.tracker.search(Queue=rt.ALL_QUEUES, Requestor__exact=userEmail, order='-LastUpdated')
+            ticket_list = self.tracker.search(Queue=rt.ALL_QUEUES, Requestors__exact=userEmail, order='-LastUpdated')
 
         for ticket in ticket_list:
             ticket['id'] = ticket['id'].replace('ticket/', '')
@@ -42,7 +42,7 @@ class DjangoRt:
 
         return ticketHistory
 
-    def create_ticket(self, attachments, subject, problem_description, requestor, cc=[]):
+    def create_ticket(self, attachments, subject, problem_description, requestor, cc):
         return self.tracker.create_ticket(Queue=self.rtQueue,
                                           files=attachments,
                                           Subject=subject,
@@ -60,7 +60,7 @@ class DjangoRt:
     def hasAccess(self, ticket_id, user=None):
         if user and ticket_id:
             ticket = self.tracker.get_ticket(ticket_id)
-            if DjangoRt.contains_user(ticket.get('Requestor', ''), user) or DjangoRt.contains_user(ticket.get('Cc', ''), user):
+            if DjangoRt.contains_user(ticket.get('Requestors', ''), user) or DjangoRt.contains_user(ticket.get('Cc', ''), user):
                 return True
 
         return False
