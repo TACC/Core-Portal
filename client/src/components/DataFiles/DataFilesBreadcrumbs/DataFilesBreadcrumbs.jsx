@@ -14,7 +14,6 @@ import {
   useSystems,
 } from 'hooks/datafiles';
 import truncateMiddle from 'utils/truncateMiddle';
-import styles from '../../../components/_common/Button/Button.module.css';
 
 const BreadcrumbLink = ({
   api,
@@ -198,7 +197,6 @@ const DataFilesBreadcrumbs = ({
       {systemName && api === 'tapis' && (
         <Button
           type="link"
-          className={styles.modalButton}
           onClick={openFullPathModal}
         >
           View Full Path

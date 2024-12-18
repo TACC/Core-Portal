@@ -21,7 +21,6 @@ export const SIZE_MAP = {
   long: 'width-long',
   auto: 'width-auto',
   small: 'size-small',
-  modalButton: 'modalButton',
 };
 export const SIZES = [''].concat(Object.keys(SIZE_MAP));
 
