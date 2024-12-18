@@ -1,5 +1,5 @@
 /* FP-993: Allow use by DataFilesUploadModal */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button, InlineMessage } from '_common';
 import PropTypes from 'prop-types';
@@ -45,6 +45,13 @@ function FileInputDropZone({
     }
   };
 
+  const removeRejectedFile = (i) => {
+    const newRejectedFiles = rejectedFiles.filter(
+      (file) => file !== rejectedFiles[i]
+    );
+    setRejectedFiles(newRejectedFiles);
+  };
+
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
 
   return (
@@ -74,6 +81,14 @@ function FileInputDropZone({
                   <InlineMessage type="error">
                     Exceeds File Size Limit
                   </InlineMessage>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      removeRejectedFile(i);
+                    }}
+                  >
+                    Remove
+                  </Button>
                 </div>
               ))}
             {files &&
