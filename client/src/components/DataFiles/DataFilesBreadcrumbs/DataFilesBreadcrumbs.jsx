@@ -195,10 +195,7 @@ const DataFilesBreadcrumbs = ({
         )}
       </div>
       {systemName && api === 'tapis' && (
-        <Button
-          type="link"
-          onClick={openFullPathModal}
-        >
+        <Button type="link" onClick={openFullPathModal}>
           View Full Path
         </Button>
       )}
