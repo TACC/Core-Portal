@@ -8,6 +8,7 @@ from celery import shared_task
 from portal.apps._custom.drp import constants
 from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, upsert_datacite_json, publish_datacite_doi
 from django.db import transaction
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.search.tasks import index_publication
@@ -118,7 +119,12 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             value=nx.node_link_data(publication_tree),
         )
 
-        doi = 'test_doi'  # Replace with actual DOI retrieval logic
+        # Mint a DataCite DOI
+        existing_doi = source_project.value.get("doi", None)
+
+        datacite_json = get_datacite_json(publication_tree)
+        datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+        doi = datacite_resp["data"]["id"]
 
         # Update project metadata with datacite doi
         source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
@@ -139,6 +145,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             project_id=project_id,
             defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
         )
+
+        if not settings.DEBUG:
+            publish_datacite_doi(doi)
 
         index_publication(project_id)
 
