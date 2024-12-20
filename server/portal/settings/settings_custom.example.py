@@ -233,8 +233,14 @@ _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
     "makeLink": True,
     "viewPath": True,
-    "compressApp": 'compress',
-    "extractApp": 'extract',
+    "compressApp": {
+        "id": "compress",
+        "version": "0.0.3"  # Can be set to "" to use the latest version
+    },
+    "extractApp": {
+        "id": "extract",
+        "version": "0.0.1"  # Can be set to "" to use the latest version
+    },
     "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
