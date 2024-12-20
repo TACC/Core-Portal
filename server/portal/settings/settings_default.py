@@ -228,7 +228,7 @@ _WORKBENCH_SETTINGS = {
     },
     "extractApp": {
         "id": "extract",
-        "version": "0.0.3"
+        "version": "0.0.1"
     },
     "makePublic": True,
     "hideApps": False,
