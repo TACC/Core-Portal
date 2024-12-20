@@ -301,6 +301,7 @@ class JobsView(BaseApiView):
             if not execSystemId:
                 app = _get_app(job_post["appId"], job_post["appVersion"], request.user)
                 execSystemId = app["definition"].jobAttributes.execSystemId
+
             if not job_post.get("appVersion"):
                 app = _get_app(job_post["appId"], None, request.user)
                 job_post["appVersion"] = app["definition"].version
