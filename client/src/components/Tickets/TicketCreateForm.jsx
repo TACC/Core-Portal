@@ -197,7 +197,7 @@ function TicketCreateForm({
                       <FormField
                         name="cc"
                         label="Cc"
-                        description="Separate emails with commas"
+                        description="Separate emails with commas. NOTE: Emails listed here will only receive emails on replies to tickets."
                       />
                     </Col>
                   </Row>
