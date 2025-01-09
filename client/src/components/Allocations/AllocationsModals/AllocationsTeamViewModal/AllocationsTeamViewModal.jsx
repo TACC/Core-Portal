@@ -94,14 +94,23 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
-      <ModalHeader className="pe-3 has-MuiTabs" toggle={toggle} charCode="&#xe912;">
+      <ModalHeader
+        className="pe-3 has-MuiTabs"
+        toggle={toggle}
+        charCode="&#xe912;"
+      >
         <Tabs
           style={{ marginBottom: '-8px' }}
           value={selectedTab}
           onChange={handleTabChange}
         >
           <Tab style={{ width: '160px', color: '#222222' }} label="View Team" />
-          {isManager && <Tab style={{ width: '160px', color: '#222222' }} label="Manage Team" />}
+          {isManager && (
+            <Tab
+              style={{ width: '160px', color: '#222222' }}
+              label="Manage Team"
+            />
+          )}
         </Tabs>
       </ModalHeader>
       <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'pb-0'}>
