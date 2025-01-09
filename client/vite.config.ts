@@ -7,9 +7,12 @@ import fs from 'fs';
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/core/static/',
-  css: { preprocessorOptions: { scss: { charset: false } } },
+  css: { preprocessorOptions: { scss: { charset: false, api: 'modern' } } },
   plugins: [
-    {...eslint({include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false}), enforce: 'pre', },
+    {
+      ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false }),
+      enforce: 'pre',
+    },
     react(),
   ],
 
@@ -23,14 +26,16 @@ export default defineConfig({
   },
 
   server: {
-    host: "cep.test",
+    origin: 'cep.test',
     port: 3000,
-    https: {
-      key: fs.readFileSync('../server/conf/nginx/certificates/cep.test.key'),
-      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.test.crt')
-    },
     hmr: {
+      protocol: 'ws',
+      host: 'localhost',
       port: 3000,
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
   },
 });

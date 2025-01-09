@@ -272,7 +272,6 @@ const DataFilesTableRow = ({
         } ${row.original.disabled && 'tr-disabled'}`}
         role="row"
         tabIndex={-1}
-        index={row.index}
         onClick={onClick}
         onKeyDown={onKeyDown}
         data-testid="file-listing-item"

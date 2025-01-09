@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './AppIcon.scss';
-import iconStyles from '../../../styles/trumps/icon.css';
-import iconFontsStyles from '../../../styles/trumps/icon.fonts.css';
+import iconStyles from '../../../styles/trumps/icon.css?inline';
+import iconFontsStyles from '../../../styles/trumps/icon.fonts.css?inline';
 import doesClassExist from 'utils/doesClassExist';
 
 const AppIcon = ({ appId, category }) => {

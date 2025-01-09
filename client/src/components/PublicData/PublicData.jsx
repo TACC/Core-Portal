@@ -18,7 +18,7 @@ import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPa
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import styles from './PublicData.module.css';
-import dropdownStyles from '../../styles/components/dropdown-menu.css';
+import '../../styles/components/dropdown-menu.css';
 import CombinedBreadcrumbs from '../DataFiles/CombinedBreadcrumbs/CombinedBreadcrumbs';
 
 const PublicData = () => {
@@ -119,6 +119,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           disabled={!canDownload}
         />
       }
+      contentLayoutName="oneColumn"
     >
       <SectionTableWrapper className={styles.content} manualContent>
         <DataFilesListing

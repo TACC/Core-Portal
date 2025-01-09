@@ -1,0 +1,21 @@
+/* Override Bootstrap styles */
+
+.nav-sidebar a {
+  color: #707070 !important;
+}
+
+.nav-sidebar a:hover {
+  text-decoration: none;
+}
+
+.nav-item a:hover {
+  text-decoration: none;
+}
+
+.apps-grid-item a:hover {
+  text-decoration: none;
+}
+
+.nav-link {
+  transition: none;
+}

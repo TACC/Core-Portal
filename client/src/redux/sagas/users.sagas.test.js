@@ -1,4 +1,5 @@
 import fetch from 'cross-fetch';
+import { vi } from 'vitest';
 import fetchMock from 'fetch-mock';
 import { fetchUserSearch, userSearch } from './users.sagas';
 import { initialState } from '../reducers/users.reducers';
@@ -6,7 +7,7 @@ import { users as usersReducer } from '../reducers/users.reducers';
 import { expectSaga } from 'redux-saga-test-plan';
 import usersSearchFixture from './fixtures/users.fixture';
 
-jest.mock('cross-fetch');
+vi.mock('cross-fetch');
 
 describe('user search', () => {
   beforeEach(() => {

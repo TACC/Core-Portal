@@ -63,7 +63,7 @@ export const appTrayFixture = {
       ],
     },
   ],
-  html_definitions: {
+  htmlDefinitions: {
     'vis-portal': {
       appType: 'html',
       html: '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',

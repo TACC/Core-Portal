@@ -16,14 +16,14 @@
 
   {% if DEBUG %}
     <script type="module">
-      import RefreshRuntime from "https://cep.test:3000/core/static/@react-refresh"
+      import RefreshRuntime from "http://localhost:3000/core/static/@react-refresh"
       RefreshRuntime.injectIntoGlobalHook(window)
       window.$RefreshReg$ = () => {}
       window.$RefreshSig$ = () => (type) => type
       window.__vite_plugin_react_preamble_installed__ = true
     </script>
-    <script type="module" src="https://cep.test:3000/core/static/@vite/client"></script>
-    <script type="module" src="https://cep.test:3000/core/static/src/index.jsx"></script>
+    <script type="module" src="http://localhost:3000/core/static/@vite/client"></script>
+    <script type="module" src="http://localhost:3000/core/static/src/index.jsx"></script>
   {% else %}
     {% include "index.html" %}
   {% endif %}

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
   createNotificationsSocket,
   socketEmitter,
@@ -7,7 +8,7 @@ import { WebSocket } from 'mock-socket';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 global.WebSocket = WebSocket;
-jest.mock('reconnecting-websocket');
+vi.mock('reconnecting-websocket');
 test('Create Notification Socket function', () => {
   global.window = Object.create(window);
   const url = 'https://google.com';
@@ -21,7 +22,7 @@ test('Create Notification Socket function', () => {
   );
 });
 
-jest.mock('redux-saga');
+vi.mock('redux-saga');
 test('Socket Emitter', () => {
   const fakeSocket = new WebSocket('wss://Hello-World');
   socketEmitter(fakeSocket);

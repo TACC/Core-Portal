@@ -1,5 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
+import { vi } from 'vitest';
 
 import {
   fetchOnboardingAdminList,
@@ -18,7 +19,7 @@ import {
 } from './fixtures/onboarding.fixture';
 import { onboarding } from '../reducers/onboarding.reducers';
 
-jest.mock('cross-fetch');
+vi.mock('cross-fetch');
 
 describe('getOnboardingAdminList Saga', () => {
   it('should fetch list of onboarding users and transform state', () =>
