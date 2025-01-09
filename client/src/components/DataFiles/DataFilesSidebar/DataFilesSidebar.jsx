@@ -69,11 +69,7 @@ const DataFilesAddButton = ({ readOnly }) => {
   return (
     <>
       <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-        <DropdownToggle
-          color="primary"
-          id="data-files-add"
-          className="data-files-btn"
-        >
+        <DropdownToggle color="primary" id="data-files-add">
           + Add
         </DropdownToggle>
         <DropdownMenu>

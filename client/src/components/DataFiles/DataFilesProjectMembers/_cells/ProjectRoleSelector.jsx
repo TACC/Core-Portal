@@ -75,7 +75,6 @@ const ProjectRoleSelector = ({ projectId, username }) => {
       {data.role !== selectedRole && !isFetching && (
         <Button
           type="primary"
-          className="data-files-btn"
           onClick={() =>
             setProjectRole({ oldRole: data.role, newRole: selectedRole })
           }
