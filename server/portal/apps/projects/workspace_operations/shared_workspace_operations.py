@@ -60,8 +60,8 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
     }
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
-        logger.info(f"Using setfacl job to submit ACL change for project: {path}, username: {username}, operation: {operation}, role: {role}")
-        job_res = submit_workspace_acls_job(username, path, role, operation)
+        logger.info(f"Using setfacl job to submit ACL change for project: {system_id}, username: {username}, operation: {operation}, role: {role}")
+        job_res = submit_workspace_acls_job(username, system_id, role, operation)
         logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
         return
 
@@ -83,8 +83,10 @@ def submit_workspace_acls_job(
     client = service_account()
     portal_name = settings.PORTAL_NAMESPACE
 
+    prj = client.systems.getSystem(systemId=system_id)
+    
     job_body = {
-        "name": f"setfacl-project-{project_name}-{username}-{action}-{role}",
+        "name": f"setfacl-project-{system_id}-{username}-{action}-{role}",
         "appId": "setfacl-corral-wmaprtl",
         "appVersion": "0.0.1",
         "description": "Add/Remove ACLs on a directory",
@@ -96,7 +98,7 @@ def submit_workspace_acls_job(
                 {"key": "usernames", "value": username},
                 {
                     "key": "directory",
-                    "value": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{project_name}",
+                    "value": f"{prj.rootDir}",
                 },
                 {"key": "action", "value": action},
                 {"key": "role", "value": role},
