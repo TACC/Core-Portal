@@ -352,6 +352,10 @@ def get_project(client, workspace_id):
             access = 'edit'
         elif perms.permission == 'READ':
             access = 'read'
+        else:
+            logger.info(f"System shared to user without proper Tapis file permissions: {system_id}, username: {username}")
+            access = 'none'
+        
         users.append({"user": get_project_user(username), "access": access})
 
     return {
