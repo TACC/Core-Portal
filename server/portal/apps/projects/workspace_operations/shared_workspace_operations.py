@@ -73,7 +73,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
 
 
 def submit_workspace_acls_job(
-    username, project_name, role, action=Literal["add", "remove"]
+    username, system_id, role, action=Literal["add", "remove"]
 ):
     """
     Submit a job to set ACLs on a project for a specific user. This should be used if
