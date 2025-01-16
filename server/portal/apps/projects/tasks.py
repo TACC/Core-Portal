@@ -1,3 +1,5 @@
+import os
+import base64
 import logging
 from pathlib import Path
 from django.conf import settings
@@ -10,10 +12,11 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.project_meta_operations import add_file_associations, create_file_obj, get_ordered_value
+from portal.apps.projects.workspace_operations.project_meta_operations import add_file_associations, create_file_obj, get_file_obj, get_ordered_value
 from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
 import networkx as nx
-import uuid
+from portal.apps._custom.drp.models import FileObj
+from portal.libs.files.file_processing import binary_correction, conf_raw, conf_tiff, create_animation, create_histogram, create_thumbnail
 
 # TODO: Cleanup this file
 
@@ -232,3 +235,75 @@ def sync_files_without_metadata(self, user_access_token, project_id: str):
         logger.info(f'Adding {len(file_objs)} files to entity {entity_uuid} in project {project_id}')
         add_file_associations(entity_uuid, file_objs)
                 
+@shared_task(bind=True, queue='default')
+def process_file(self, project_id: str, path: str, user_access_token, encoded_file=None):
+
+    client = user_account(user_access_token)
+
+    logger.info(f'Processing file {path} in project {project_id}')
+
+    if encoded_file:
+        logger.info('Decoding file')
+        file = base64.b64decode(encoded_file)
+    else:
+        logger.info('Retrieving file using Tapis')
+        file = client.files.getContents(systemId=project_id, path=path)
+    
+    logger.info('File retrieved')
+
+    parent_path = str(Path(path).parent)
+
+    file_obj: FileObj = get_file_obj(project_id, path)
+
+    if file and file_obj: 
+        value = get_ordered_value(constants.FILE, file_obj.get('value'))
+
+        file_name = file_obj.get('name')
+
+        _, file_ext = os.path.splitext(file_obj.get('name'))
+
+        if file_ext in ['.tif', '.tiff']:
+            adv_image = conf_tiff(file)
+        else:
+            adv_image = conf_raw(value, file)
+
+        try:
+            if value.get('use_binary_correction'):
+                adv_image = binary_correction(adv_image)
+        except Exception as e:
+            logger.error(f'Error applying binary correction: {e}')
+
+        try:
+            thumbnail = create_thumbnail(adv_image)
+
+            thumbnail_path = f'{parent_path}/{file_name}.thumb.jpg'
+
+            logger.info('Uploading generated thumbnail')
+            client.files.insert(systemId=project_id, path=thumbnail_path, file=thumbnail)
+        except Exception as e: 
+            logger.error(f'Error generating thumbnail: {e}')
+
+        try:
+            histogram_img, histogram_csv = create_histogram(adv_image)
+
+            histogram_img_path = f'{parent_path}/{file_name}.histogram.jpg'
+            histogram_csv_path = f'{parent_path}/{file_name}.histogram.csv'
+
+            logger.info('Uploading generated histogram')
+            client.files.insert(systemId=project_id, path=histogram_img_path, file=histogram_img)
+            client.files.insert(systemId=project_id, path=histogram_csv_path, file=histogram_csv)
+        except Exception as e: 
+            logger.error(f'Error generating histogram: {e}')
+
+        try:
+            animation = create_animation(adv_image)
+
+            animation_path = f'{parent_path}/{file_name}.gif'
+
+            logger.info('Uploading generated animation')
+            client.files.insert(systemId=project_id, path=animation_path, file=animation)
+        except Exception as e: 
+            logger.error(f'Error generating animation: {e}')
+        
+    else: 
+        print(f"File {path} does not exist in project {project_id}")
