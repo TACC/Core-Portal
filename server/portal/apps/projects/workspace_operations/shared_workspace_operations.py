@@ -60,7 +60,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
     }
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
-        logger.info(f"Using setfacl job to submit ACL change for project: {system_id}, username: {username}, operation: {operation}, role: {role}")
+        logger.info(f"Using setfacl job to submit ACL change for project: {system_id}, path: {path}, username: {username}, operation: {operation}, role: {role}")
         job_res = submit_workspace_acls_job(client, username, system_id, role, operation)
         logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
         return
