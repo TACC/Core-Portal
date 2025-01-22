@@ -61,7 +61,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
         logger.info(f"Using setfacl job to submit ACL change for project: {system_id}, username: {username}, operation: {operation}, role: {role}")
-        job_res = submit_workspace_acls_job(username, system_id, role, operation)
+        job_res = submit_workspace_acls_job(client, username, system_id, role, operation)
         logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
         return
 
@@ -73,7 +73,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
 
 
 def submit_workspace_acls_job(
-    username, system_id, role, action=Literal["add", "remove"]
+    user_client, username, system_id, role, action=Literal["add", "remove"]
 ):
     """
     Submit a job to set ACLs on a project for a specific user. This should be used if
@@ -83,10 +83,10 @@ def submit_workspace_acls_job(
     client = service_account()
     portal_name = settings.PORTAL_NAMESPACE
 
-    prj = client.systems.getSystem(systemId=system_id)
+    prj = user_client.systems.getSystem(systemId=system_id)
     
     job_body = {
-        "name": f"setfacl-project-{system_id}-{username}-{action}-{role}",
+        "name": f"setfacl-project-{system_id}-{username}-{action}-{role}"[:64],
         "appId": "setfacl-corral-wmaprtl",
         "appVersion": "0.0.1",
         "description": "Add/Remove ACLs on a directory",
@@ -201,9 +201,8 @@ def add_user_to_workspace(client: Tapis,
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
-    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(service_client,
+    set_workspace_acls(client,
                        system_id,
                        "/",
                        username,
