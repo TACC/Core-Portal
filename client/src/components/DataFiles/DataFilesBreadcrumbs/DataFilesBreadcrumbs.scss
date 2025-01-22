@@ -42,32 +42,15 @@
   padding-left: var(--horizontal-buffer);
 }
 
-/* Nested to prevent styles from affecting CMS header dropdown */
-/* HACK: Using ID to increase specificity (until source of problem is fixed) */
-/* HELP: Why does DataFilesSidebar not need such specificity? */
-/* .go-to-button-dropdown { */
-#go-to-button-dropdown {
-  /* To fix menu not showing */
-  /* HELP: Why does DataFilesSidebar not need this fix? */
+.go-to-button-dropdown {
   .dropdown-menu {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  /* To restyle */
-  .dropdown-menu {
-    margin-top: 38px;
+    /* To push menu down by the height of its button */
+    /* FAQ: Required because `tag={Button}` loses auto-position of menu */
+    top: 28px !important; /* to override `inset` from Popper via Reactstrap */
   }
   .dropdown-menu::before,
   .dropdown-menu::after {
     left: 23px;
-    margin-left: 0;
-  }
-  .dropdown-menu::after {
-    top: -9px;
-  }
-
-  .dropdown-item {
-    display: inline-block;
   }
 }
 
@@ -85,12 +68,12 @@
   padding-left: 20px;
 }
 
-#go-to-button-dropdown .complex-dropdown-item-root,
+.complex-dropdown-item-root,
 .complex-dropdown-item-project {
-  display: flex !important;
+  display: flex;
 }
 
-#go-to-button-dropdown .link-hover:hover {
+.go-to-button-dropdown .link-hover:hover {
   text-decoration: none;
 }
 

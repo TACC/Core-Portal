@@ -89,7 +89,7 @@ class ProjectMembershipStep(AbstractStep):
                         username=self.user.username
                     ),
                     Text=ticket_text,
-                    Requestors=self.user.email,
+                    Requestor=self.user.email,
                     CF_resource=settings.RT_TAG
                 )
                 tracker.logout()
