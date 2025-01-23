@@ -512,6 +512,11 @@ TACC_EXEC_SYSTEMS = {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
+    'vista': {
+        'work_dir': '/work/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
 }
 
 """
