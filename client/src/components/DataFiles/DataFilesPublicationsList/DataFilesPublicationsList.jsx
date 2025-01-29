@@ -14,10 +14,12 @@ import './DataFilesPublicationsList.scss';
 import Searchbar from '_common/Searchbar';
 import { formatDate, formatDateTimeFromValue } from 'utils/timeFormat';
 
-const DataFilesPublicationsList = ({ rootSystem }) => {
+const DataFilesPublicationsList = ({ rootSystem, basePath }) => {
   const { error, loading, publications } = useSelector(
     (state) => state.publications.listing
   );
+
+  const _basePath = basePath ?? '/workbench/data';
 
   const query = queryStringParser.parse(useLocation().search);
 
@@ -38,7 +40,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       type: 'PUBLICATIONS_GET_PUBLICATIONS',
       payload: {
         queryString: query.query_string,
-        system: selectedSystem.system,
+        system: selectedSystem?.system,
       },
     });
   }, [dispatch, query.query_string]);
@@ -60,7 +62,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
       Cell: (el) => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`}
+          to={`${_basePath}/tapis/projects/${selectedSystem?.system}/${el.row.original.id}`}
         >
           {el.value}
         </Link>
@@ -141,6 +143,7 @@ const DataFilesPublicationsList = ({ rootSystem }) => {
           isLoading={loading}
           noDataText={noDataText}
           className="publications-listing"
+          columnMemoProps={[selectedSystem]}
         />
       </div>
     </SectionTableWrapper>

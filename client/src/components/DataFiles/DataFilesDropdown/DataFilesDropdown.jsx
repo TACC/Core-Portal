@@ -17,6 +17,7 @@ const BreadcrumbsDropdown = ({
   scheme,
   system,
   path,
+  basePath,
   section,
   isPublic,
 }) => {
@@ -36,7 +37,7 @@ const BreadcrumbsDropdown = ({
     : null;
 
   const handleNavigation = (targetPath) => {
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
     let url;
 
     if (scheme === 'projects' && targetPath === systemName) {

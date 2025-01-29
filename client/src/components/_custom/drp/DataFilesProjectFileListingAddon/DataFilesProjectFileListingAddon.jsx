@@ -37,7 +37,7 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
   const { canEditDataset, canRequestPublication, canReviewPublication } =
     useSelector((state) => {
       const { members } = state.projects.metadata;
-      const { username } = state.authenticatedUser.user;
+      const { username } = state.authenticatedUser?.user ?? {};
       const currentUser = members.find(
         (member) => member.user?.username === username
       );
