@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getExtractParams } from 'utils/getExtractParams';
 import { apiClient } from 'utils/apiClient';
@@ -43,13 +43,23 @@ function useExtract() {
   const extractApp = useSelector(
     (state: any) => state.workbench.config.extractApp
   );
+  const defaultAllocation = useSelector((state: any) => {
+    if (state.allocations.portal_alloc) {
+      return state.allocations.portal_alloc;
+    }
+    if (
+      Array.isArray(state.allocations.active) &&
+      state.allocations.active.length > 0
+    ) {
+      return state.allocations.active[0].projectName || null;
+    }
+    return null;
+  });
 
-  const defaultAllocation = useSelector(
-    (state: any) =>
-      state.allocations.portal_alloc || state.allocations.active[0].projectName
-  );
-
-  const latestExtract = getAppUtil(extractApp.id, extractApp.version);
+  const { data: latestExtract } = useQuery({
+    queryKey: ['extract-app', extractApp.id, extractApp.version],
+    queryFn: () => getAppUtil(extractApp.id, extractApp.version),
+  });
 
   const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
 

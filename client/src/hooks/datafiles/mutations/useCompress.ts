@@ -41,10 +41,18 @@ function useCompress() {
     (state: any) => state.workbench.config.compressApp
   );
 
-  const defaultAllocation = useSelector(
-    (state: any) =>
-      state.allocations.portal_alloc || state.allocations.active[0].projectName
-  );
+  const defaultAllocation = useSelector((state: any) => {
+    if (state.allocations.portal_alloc) {
+      return state.allocations.portal_alloc;
+    }
+    if (
+      Array.isArray(state.allocations.active) &&
+      state.allocations.active.length > 0
+    ) {
+      return state.allocations.active[0].projectName || null;
+    }
+    return null;
+  });
 
   const systems = useSelector(
     (state: any) => state.systems.storage.configuration
