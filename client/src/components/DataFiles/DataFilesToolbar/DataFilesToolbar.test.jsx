@@ -350,4 +350,68 @@ describe('DataFilesToolbar', () => {
       },
     });
   });
+  it('disables compress and extract when allocation is unavailable', () => {
+    const { queryByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        allocations: { portal_alloc: undefined, active: [] },
+        workbench: {
+          config: {
+            extractApp: { id: 'extract', version: '0.0.3' },
+            compressApp: { id: 'compress', version: '0.0.3' },
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username/hello.zip',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [] },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      }),
+      createMemoryHistory()
+    );
+    expect(queryByText(/compress/)).toBeFalsy();
+    expect(queryByText(/extract/)).toBeFalsy();
+  });
+  it('enables compress and extract when allocation is available', () => {
+    const { queryByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        allocations: { portal_alloc: undefined, active: ['foo'] },
+        workbench: {
+          config: {
+            extractApp: { id: 'extract', version: '0.0.3' },
+            compressApp: { id: 'compress', version: '0.0.3' },
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username/hello.zip',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [] },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      }),
+      createMemoryHistory()
+    );
+    expect(queryByText(/compress/)).toBeDefined();
+    expect(queryByText(/extract/)).toBeDefined();
+  });
 });
