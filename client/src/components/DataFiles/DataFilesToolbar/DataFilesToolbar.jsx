@@ -106,12 +106,26 @@ const DataFilesToolbar = ({ scheme, api }) => {
       (scheme === 'private' || scheme === 'projects')
   );
 
+  const hasActiveAllocation = (state) => {
+    return (
+      state.allocations.portal_alloc ||
+      (Array.isArray(state.allocations.active) &&
+        state.allocations.active.length > 0)
+    );
+  };
+
   const showCompress = !!useSelector(
-    (state) => state.workbench.config.extractApp && modifiableUserData
+    (state) =>
+      state.workbench.config.extractApp &&
+      modifiableUserData &&
+      hasActiveAllocation(state)
   );
 
   const showExtract = !!useSelector(
-    (state) => state.workbench.config.compressApp && modifiableUserData
+    (state) =>
+      state.workbench.config.compressApp &&
+      modifiableUserData &&
+      hasActiveAllocation(state)
   );
 
   const showMakePublic = useSelector(

@@ -82,6 +82,12 @@ function useCompress() {
       defaultPrivateSystem = undefined;
     }
 
+    if (!defaultAllocation) {
+      throw new Error('You need an allocation to compress.', {
+        cause: 'compressError',
+      });
+    }
+
     if (scheme !== 'private' && scheme !== 'projects') {
       defaultPrivateSystem = systems.find((s: any) => s.default);
 

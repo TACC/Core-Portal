@@ -68,6 +68,11 @@ function useExtract() {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
     });
+    if (!defaultAllocation) {
+      throw new Error('You need an allocation to extract.', {
+        cause: 'extractError',
+      });
+    }
 
     const params = getExtractParams(
       file,
