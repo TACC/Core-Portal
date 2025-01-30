@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import uuid
 import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
@@ -289,9 +290,23 @@ GOOGLE_ANALYTICS_PROPERTY_ID = settings_custom._GOOGLE_ANALYTICS_PROPERTY_ID
 SETTINGS: LOGGING
 """
 
+def portal_filter(record):
+    """Log filter that adds portal-specific vars to each entry"""
+
+    record.logGuid = uuid.uuid4().hex
+    record.portal = PORTAL_NAMESPACE
+    record.tenant = TAPIS_TENANT_BASEURL
+    return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    "filters": {
+        "portalFilter": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": portal_filter,
+        },
+    },
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
@@ -302,8 +317,9 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
+                      ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=%(portal)s tenant=%(tenant)s'
         },
     },
     'handlers': {
@@ -320,18 +336,11 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'default',
         },
-        'metrics_console': {
-            'level': 'DEBUG',
+        'metrics': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
-        },
-        'metrics_file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/portal/metrics.log',
-            'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'metrics',
+            'filters': ['portalFilter']
         },
     },
     'loggers': {
@@ -345,8 +354,9 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'metrics': {
-            'handlers': ['metrics_console', 'metrics_file'],
-            'level': 'DEBUG',
+            'handlers': ['metrics'],
+            'filters': ['portalFilter'],
+            'level': 'INFO',
         },
         'paramiko': {
             'handlers': ['console'],
