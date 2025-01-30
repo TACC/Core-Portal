@@ -28,6 +28,9 @@ export default defineConfig({
   server: {
     origin: 'cep.test',
     port: 3000,
+    cors: {
+      origin: ['https://cep.test'],
+    },
     hmr: {
       protocol: 'ws',
       host: 'localhost',
