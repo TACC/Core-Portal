@@ -290,6 +290,7 @@ GOOGLE_ANALYTICS_PROPERTY_ID = settings_custom._GOOGLE_ANALYTICS_PROPERTY_ID
 SETTINGS: LOGGING
 """
 
+
 def portal_filter(record):
     """Log filter that adds portal-specific vars to each entry"""
 

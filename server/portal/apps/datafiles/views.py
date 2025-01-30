@@ -345,18 +345,18 @@ class LinkView(BaseApiView):
         """
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': 'delete-postit',
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'delete-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
@@ -370,17 +370,17 @@ class LinkView(BaseApiView):
             Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             METRICS.info('Data Files',
-                        extra={
-                             'user': request.user.username,
-                             'sessionId': getattr(request.session, 'session_key', ''),
-                             'operation': 'create-postit',
-                             'agent': request.META.get('HTTP_USER_AGENT'),
-                             'ip': get_client_ip(request),
-                             'info': {
-                                 'api': 'tapis',
-                                 'systemId': system,
-                                 'filePath': path,
-                                 'query': request.GET.dict()}
+                         extra={
+                              'user': request.user.username,
+                              'sessionId': getattr(request.session, 'session_key', ''),
+                              'operation': 'create-postit',
+                              'agent': request.META.get('HTTP_USER_AGENT'),
+                              'ip': get_client_ip(request),
+                              'info': {
+                                  'api': 'tapis',
+                                  'systemId': system,
+                                  'filePath': path,
+                                  'query': request.GET.dict()}
                          })
             # Link doesn't exist - proceed with creating one
             postit = self.create_postit(request, scheme, system, path)
