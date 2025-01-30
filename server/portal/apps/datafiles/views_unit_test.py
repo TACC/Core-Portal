@@ -229,7 +229,7 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
     }
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_any_call()
+    logging_metric_mock.assert_called()
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
@@ -262,7 +262,7 @@ def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authent
     assert response.status_code == 200
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_any_call()
+    logging_metric_mock.assert_called()
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
@@ -305,7 +305,7 @@ def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authen
     assert response.json() == {"data": tapis_file_mock}
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_any_call()
+    logging_metric_mock.assert_called()
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
