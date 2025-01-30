@@ -298,6 +298,7 @@ def portal_filter(record):
     record.tenant = TAPIS_TENANT_BASEURL
     return True
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

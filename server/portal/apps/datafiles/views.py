@@ -99,18 +99,18 @@ class TapisFilesView(BaseApiView):
                     status=403)
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': operation,
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             response = tapis_get_handler(
                 client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", **request.GET.dict())
 
@@ -148,20 +148,20 @@ class TapisFilesView(BaseApiView):
 
         try:
             METRICS.info('Data Depot',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': body,
-                         }
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': operation,
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'scheme': scheme,
+                                 'system': system,
+                                 'path': path,
+                                 'body': body,
+                             }
+                         })
             response = tapis_put_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body=body)
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
@@ -179,19 +179,19 @@ class TapisFilesView(BaseApiView):
 
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'scheme': scheme,
-                             'system': system,
-                             'path': path,
-                             'body': request.POST.dict()
-                         }})
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': operation,
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'scheme': scheme,
+                                 'system': system,
+                                 'path': path,
+                                 'body': request.POST.dict()
+                             }})
 
             response = tapis_post_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}",  body=body)
         except Exception as exc:
@@ -206,18 +206,18 @@ class GoogleDriveFilesView(BaseApiView):
             path='root'):
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': operation,
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'googledrive',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': operation,
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'googledrive',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             client = request.user.googledrive_user_token.client
         except AttributeError:
             raise ApiException("Login Required", status=400)
@@ -322,18 +322,18 @@ class LinkView(BaseApiView):
         """
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': 'retrieve-postit',
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'retrieve-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             return JsonResponse({"data": None, "expiration": None})
@@ -370,18 +370,18 @@ class LinkView(BaseApiView):
             Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': 'create-postit',
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                        extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'create-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             # Link doesn't exist - proceed with creating one
             postit = self.create_postit(request, scheme, system, path)
             return JsonResponse({"data": postit['data'], "expiration": postit['expiration']})
@@ -393,18 +393,18 @@ class LinkView(BaseApiView):
         """
         try:
             METRICS.info('Data Files',
-                     extra={
-                         'user': request.user.username,
-                         'sessionId': getattr(request.session, 'session_key', ''),
-                         'operation': 'replace-postit',
-                         'agent': request.META.get('HTTP_USER_AGENT'),
-                         'ip': get_client_ip(request),
-                         'info': {
-                             'api': 'tapis',
-                             'systemId': system,
-                             'filePath': path,
-                             'query': request.GET.dict()}
-                     })
+                         extra={
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'replace-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
+                         })
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
             self.delete_link(request, link)
         except Link.DoesNotExist:

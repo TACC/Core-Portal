@@ -167,7 +167,6 @@ class ProjectInstanceApiView(BaseApiView):
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
-        
         METRICS.info(
             "Projects",
             extra={
@@ -270,7 +269,7 @@ class ProjectMembersApiView(BaseApiView):
                 403,
                 request.POST.dict()
             )
-        
+
         METRICS.info(
             "Projects",
             extra={

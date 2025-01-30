@@ -330,8 +330,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
             'destinationURI': dest_url
-        }],
-        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+        }], headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
         copy_result = {
             'uuid': copy_response.uuid,
@@ -491,7 +490,7 @@ def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     file_ext = os.path.splitext(file_name)[1].lower()
 
     postit = client.files.createPostIt(systemId=system,
-                                       path=path, allowedUses=max_uses, 
+                                       path=path, allowedUses=max_uses,
                                        validSeconds=lifetime,
                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
