@@ -434,7 +434,7 @@ def test_project_change_system_role_setfacl_job(
     client, mock_service_account, mock_tapis_client
 ):
     mock_rootDir = mock_service_account().systems.getSystem().rootDir
-    
+
     # USER translates to writer role
     patch_body = {
         "action": "change_system_role",
@@ -477,6 +477,7 @@ def test_project_change_system_role_setfacl_job(
         username="test_user",
         permission="MODIFY",
     )
+
 
 def test_members_view_add(
     authenticated_user, client, mock_tapis_client, project_list
@@ -526,7 +527,7 @@ def test_members_view_add(
             "title": project_list["api_response"][0]["title"],
         },
     }
-    
+
     mock_tapis_client.files.setFacl.assert_called_with(
         systemId="test.project.PRJ-123",
         path="/",

@@ -60,7 +60,8 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
     }
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
-        logger.info(f"Using setfacl job to submit ACL change for project: {system_id}, path: {path}, username: {username}, operation: {operation}, role: {role}")
+        logger.info(f"""Using setfacl job to submit ACL change for project: {system_id},
+                    path: {path}, username: {username}, operation: {operation}, role: {role}""")
         job_res = submit_workspace_acls_job(client, username, system_id, role, operation)
         logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
         return
@@ -84,7 +85,7 @@ def submit_workspace_acls_job(
     portal_name = settings.PORTAL_NAMESPACE
 
     prj = user_client.systems.getSystem(systemId=system_id)
-    
+
     job_body = {
         "name": f"setfacl-project-{system_id}-{username}-{action}-{role}"[:64],
         "appId": "setfacl-corral-wmaprtl",
@@ -356,7 +357,7 @@ def get_project(client, workspace_id):
         else:
             logger.info(f"System shared to user without proper Tapis file permissions: {system_id}, username: {username}")
             access = 'none'
-        
+
         users.append({"user": get_project_user(username), "access": access})
 
     return {
