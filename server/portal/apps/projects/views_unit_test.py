@@ -373,7 +373,7 @@ def test_project_instance_patch(
     }
 
 
-def test_project_change_role(client, mock_project_mgr):
+def test_project_change_role(client, mock_project_mgr, project_list):
     mock_project_mgr.change_project_role.return_value = MagicMock(
         metadata={"projectId": "PRJ-123"}
     )
@@ -395,7 +395,7 @@ def test_project_change_role(client, mock_project_mgr):
 
 
 def test_project_change_system_role(
-    client, mock_service_account, mock_tapis_client
+    client, mock_service_account, mock_tapis_client, project_list
 ):
     # USER translates to writer role
     patch_body = {
@@ -431,7 +431,7 @@ def test_project_change_system_role(
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
 def test_project_change_system_role_setfacl_job(
-    client, mock_service_account, mock_tapis_client
+    client, mock_service_account, mock_tapis_client, project_list
 ):
     mock_rootDir = mock_service_account().systems.getSystem().rootDir
 
