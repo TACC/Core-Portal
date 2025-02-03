@@ -161,9 +161,7 @@ def test_projects_search(
 
 
 def test_projects_search_result_not_in_tapis(
-    authenticated_user,
     client,
-    mock_tapis_client,
     mock_project_index,
     mock_project_search_indexer,
     project_list,
@@ -219,6 +217,9 @@ def test_projects_post(
 def test_projects_post_setfacl_job(
     authenticated_user, client, mock_service_account, mock_tapis_client
 ):
+
+    mock_rootDir = mock_service_account().systems.getSystem().rootDir
+
     response = client.post(
         "/api/projects/",
         {
@@ -227,7 +228,6 @@ def test_projects_post_setfacl_job(
         },
         content_type="application/json",
     )
-
     assert response.status_code == 200
     assert response.json() == {
         "status": 200,
@@ -241,7 +241,7 @@ def test_projects_post_setfacl_job(
     )
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-test.project-2-username-add-writer',
+        name='setfacl-project-projects.system.name-username-add-writer',
         appId='setfacl-corral-wmaprtl',
         appVersion='0.0.1',
         description='Add/Remove ACLs on a directory',
@@ -251,7 +251,7 @@ def test_projects_post_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'username'},
-                {'key': 'directory', 'value': '/path/to/root/test.project-2'},
+                {'key': 'directory', 'value': str(mock_rootDir)},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
             ],
@@ -373,7 +373,7 @@ def test_project_instance_patch(
     }
 
 
-def test_project_change_role(authenticated_user, client, mock_project_mgr):
+def test_project_change_role(client, mock_project_mgr, project_list):
     mock_project_mgr.change_project_role.return_value = MagicMock(
         metadata={"projectId": "PRJ-123"}
     )
@@ -395,7 +395,7 @@ def test_project_change_role(authenticated_user, client, mock_project_mgr):
 
 
 def test_project_change_system_role(
-    authenticated_user, client, mock_service_account, mock_tapis_client
+    client, mock_service_account, mock_tapis_client, project_list
 ):
     # USER translates to writer role
     patch_body = {
@@ -409,8 +409,8 @@ def test_project_change_system_role(
     assert response.json() == {"status": 200, "response": "OK"}
     # System Id used in setFacl is project root system name
     mock_service_account().files.setFacl.assert_called_with(
-        systemId="projects.system.name",
-        path="PRJ-123",
+        systemId="test.project.PRJ-123",
+        path="/",
         operation="ADD",
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user:rwX,u:test_user:rwX",
@@ -431,8 +431,10 @@ def test_project_change_system_role(
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
 def test_project_change_system_role_setfacl_job(
-    authenticated_user, client, mock_service_account, mock_tapis_client
+    client, mock_service_account, mock_tapis_client, project_list
 ):
+    mock_rootDir = mock_service_account().systems.getSystem().rootDir
+
     # USER translates to writer role
     patch_body = {
         "action": "change_system_role",
@@ -446,7 +448,7 @@ def test_project_change_system_role_setfacl_job(
     # System Id used in setFacl is project root system name
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-PRJ-123-test_user-add-writer',
+        name='setfacl-project-test.project.PRJ-123-test_user-add-writer',
         appId='setfacl-corral-wmaprtl',
         appVersion='0.0.1',
         description='Add/Remove ACLs on a directory',
@@ -456,7 +458,7 @@ def test_project_change_system_role_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'directory', 'value': str(mock_rootDir)},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
             ],
@@ -478,7 +480,7 @@ def test_project_change_system_role_setfacl_job(
 
 
 def test_members_view_add(
-    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+    authenticated_user, client, mock_tapis_client, project_list
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
@@ -525,9 +527,10 @@ def test_members_view_add(
             "title": project_list["api_response"][0]["title"],
         },
     }
-    mock_service_account().files.setFacl.assert_called_with(
-        systemId="projects.system.name",
-        path="PRJ-123",
+
+    mock_tapis_client.files.setFacl.assert_called_with(
+        systemId="test.project.PRJ-123",
+        path="/",
         operation="ADD",
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user:rwX,u:test_user:rwX",
@@ -599,7 +602,7 @@ def test_members_view_add_setfacl_job(
     }
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-PRJ-123-test_user-add-writer',
+        name='setfacl-project-test.project.PRJ-123-test_user-add-writer',
         appId='setfacl-corral-wmaprtl',
         appVersion='0.0.1',
         description='Add/Remove ACLs on a directory',
@@ -609,7 +612,7 @@ def test_members_view_add_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'directory', 'value': '/corral-repl/tacc/aci/CEP/projects/CEP-1018'},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
             ],
@@ -633,7 +636,7 @@ def test_members_view_add_setfacl_job(
 
 
 def test_members_view_remove(
-    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+    client, mock_service_account, mock_tapis_client, project_list
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     patch_body = {"action": "remove_member", "username": "test_user"}
@@ -661,8 +664,8 @@ def test_members_view_remove(
         },
     }
     mock_service_account().files.setFacl.assert_called_with(
-        systemId="projects.system.name",
-        path="PRJ-123",
+        systemId="test.project.PRJ-123",
+        path="/",
         operation="REMOVE",
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user,u:test_user",
@@ -685,9 +688,10 @@ def test_members_view_remove(
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
 def test_members_view_remove_setfacl_job(
-    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
+    client, mock_service_account, mock_tapis_client, project_list
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
+    mock_rootDir = mock_service_account().systems.getSystem().rootDir
     patch_body = {"action": "remove_member", "username": "test_user"}
 
     response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
@@ -714,7 +718,7 @@ def test_members_view_remove_setfacl_job(
     }
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-PRJ-123-test_user-remove-none',
+        name='setfacl-project-test.project.PRJ-123-test_user-remove-none',
         appId='setfacl-corral-wmaprtl',
         appVersion='0.0.1',
         description='Add/Remove ACLs on a directory',
@@ -724,7 +728,7 @@ def test_members_view_remove_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': '/path/to/root/PRJ-123'},
+                {'key': 'directory', 'value': str(mock_rootDir)},
                 {'key': 'action', 'value': 'remove'},
                 {'key': 'role', 'value': 'none'},
             ],

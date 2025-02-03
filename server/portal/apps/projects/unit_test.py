@@ -251,8 +251,8 @@ def create_shared_workspace_2_user(
     new_username = "new_user"
     mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
     mock_service_account().files.setFacl.assert_called_with(
-        systemId="projects.system.name",
-        path="test.project-2",
+        systemId="test.project.test.project-2",
+        path="/",
         operation="ADD",
         recursionMethod="PHYSICAL",
         aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
@@ -519,7 +519,7 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
             "created": mock_system_result.updated,
-            "projectId": "test.project-2",
+            "projectId": "test.project.test.project-2",
             "members": [
                 {"user": ws_o.get_project_user("username"), "access": "owner"},
             ],
@@ -548,8 +548,8 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
             mock_service_account.assert_called()
 
             mock_service_account().files.setFacl.assert_called_with(
-                systemId="projects.system.name",
-                path="test.project-2",
+                systemId="test.project.test.project-2",
+                path="/",
                 operation="ADD",
                 recursionMethod="PHYSICAL",
                 aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
@@ -768,8 +768,8 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         new_username = "new_user"
         mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
         mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
+            systemId="test.project.test.project-2",
+            path="/",
             operation="ADD",
             recursionMethod="PHYSICAL",
             aclString=f"d:u:{new_username}:rwX,u:{new_username}:rwX",
@@ -801,8 +801,8 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         # Add user action
         mock_add_user_to_workspace(client, workspace_id, "GuestAccount", "reader")
         mock_service_account().files.setFacl.assert_called_with(
-            systemId="projects.system.name",
-            path="test.project-2",
+            systemId="test.project.test.project-2",
+            path="/",
             operation="ADD",
             recursionMethod="PHYSICAL",
             aclString="d:u:GuestAccount:rX,u:GuestAccount:rX",
