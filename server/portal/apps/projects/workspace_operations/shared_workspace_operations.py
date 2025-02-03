@@ -60,8 +60,9 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
     }
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
-        logger.info(f"Using setfacl job to submit ACL change for project: {path}, username: {username}, operation: {operation}, role: {role}")
-        job_res = submit_workspace_acls_job(username, path, role, operation)
+        logger.info(f"""Using setfacl job to submit ACL change for project: {system_id},
+                    path: {path}, username: {username}, operation: {operation}, role: {role}""")
+        job_res = submit_workspace_acls_job(client, username, system_id, role, operation)
         logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
         return
 
@@ -73,7 +74,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role):
 
 
 def submit_workspace_acls_job(
-    username, project_name, role, action=Literal["add", "remove"]
+    user_client, username, system_id, role, action=Literal["add", "remove"]
 ):
     """
     Submit a job to set ACLs on a project for a specific user. This should be used if
@@ -83,8 +84,10 @@ def submit_workspace_acls_job(
     client = service_account()
     portal_name = settings.PORTAL_NAMESPACE
 
+    prj = user_client.systems.getSystem(systemId=system_id)
+
     job_body = {
-        "name": f"setfacl-project-{project_name}-{username}-{action}-{role}",
+        "name": f"setfacl-project-{system_id}-{username}-{action}-{role}"[:64],
         "appId": "setfacl-corral-wmaprtl",
         "appVersion": "0.0.1",
         "description": "Add/Remove ACLs on a directory",
@@ -96,7 +99,7 @@ def submit_workspace_acls_job(
                 {"key": "usernames", "value": username},
                 {
                     "key": "directory",
-                    "value": f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{project_name}",
+                    "value": f"{prj.rootDir}",
                 },
                 {"key": "action", "value": action},
                 {"key": "role", "value": role},
@@ -199,11 +202,10 @@ def add_user_to_workspace(client: Tapis,
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
-    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+    set_workspace_acls(client,
+                       system_id,
+                       "/",
                        username,
                        "add",
                        role)
@@ -231,8 +233,8 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        username,
                        "add",
                        new_role)
@@ -247,8 +249,8 @@ def remove_user(client, workspace_id: str, username: str):
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        username,
                        "remove",
                        "none")
@@ -271,8 +273,8 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     set_workspace_acls(service_client,
-                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                       workspace_id,
+                       system_id,
+                       "/",
                        new_owner,
                        "add",
                        "writer")
@@ -352,6 +354,10 @@ def get_project(client, workspace_id):
             access = 'edit'
         elif perms.permission == 'READ':
             access = 'read'
+        else:
+            logger.info(f"System shared to user without proper Tapis file permissions: {system_id}, username: {username}")
+            access = 'none'
+
         users.append({"user": get_project_user(username), "access": access})
 
     return {

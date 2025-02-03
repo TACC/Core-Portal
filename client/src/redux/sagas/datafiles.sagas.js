@@ -14,6 +14,7 @@ import {
 import { fetchUtil } from 'utils/fetchUtil';
 import truncateMiddle from '../../utils/truncateMiddle';
 import { fetchAppDefinitionUtil } from './apps.sagas';
+import { getCompressParams } from 'utils/getCompressParams';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -485,16 +486,23 @@ export async function uploadFileUtil(api, scheme, system, path, file) {
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
   );
 
-  const request = await fetch(url, {
-    method: 'POST',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: formData,
-  });
-  if (!request.ok) {
-    throw new Error(request.status);
+  try {
+    const request = await fetch(url, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+      credentials: 'same-origin',
+      body: formData,
+    });
+    if (!request.ok) {
+      throw new Error(`HTTP error: ${request.status}`);
+    }
+    return request;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error('Network error: The file upload was blocked.');
+    }
+    throw error;
   }
-  return request;
 }
 
 export function* watchUpload() {
@@ -547,6 +555,10 @@ export function* uploadFile(api, scheme, system, path, file, index) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'upload' },
+    });
+    yield put({
+      type: 'DATA_FILES_SET_ERROR',
+      payload: { message: e.toString() },
     });
     return 'ERR';
   }
@@ -984,72 +996,6 @@ export function* watchExtract() {
   yield takeLeading('DATA_FILES_EXTRACT', extractFiles);
 }
 
-/**
- * Create JSON string of job params
- * @async
- * @param {Array<Object>} files
- * @param {String} archiveFileName
- * @returns {String}
- */
-const getCompressParams = (
-  files,
-  archiveFileName,
-  compressionType,
-  defaultPrivateSystem,
-  latestCompress,
-  defaultAllocation
-) => {
-  const fileInputs = files.map((file) => ({
-    sourceUrl: `tapis://${file.system}/${file.path}`,
-  }));
-
-  let archivePath, archiveSystem;
-
-  if (defaultPrivateSystem) {
-    archivePath = defaultPrivateSystem.homeDir;
-    archiveSystem = defaultPrivateSystem.system;
-  } else {
-    archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
-    archiveSystem = files[0].system;
-  }
-
-  return JSON.stringify({
-    job: {
-      fileInputs: fileInputs,
-      name: `${latestCompress.definition.id}-${
-        latestCompress.definition.version
-      }_${new Date().toISOString().split('.')[0]}`,
-      archiveSystemId: archiveSystem,
-      archiveSystemDir: archivePath,
-      archiveOnAppError: false,
-      appId: latestCompress.definition.id,
-      appVersion: latestCompress.definition.version,
-      parameterSet: {
-        appArgs: [
-          {
-            name: 'Archive File Name',
-            arg: archiveFileName,
-          },
-          {
-            name: 'Compression Type',
-            arg: compressionType,
-          },
-        ],
-        schedulerOptions: [
-          {
-            name: 'TACC Allocation',
-            description:
-              'The TACC allocation associated with this job execution',
-            include: true,
-            arg: `-A ${defaultAllocation}`,
-          },
-        ],
-      },
-      execSystemId: latestCompress.definition.jobAttributes.execSystemId,
-    },
-  });
-};
-
 export const compressAppSelector = (state) =>
   state.workbench.config.compressApp;
 
@@ -1095,9 +1041,9 @@ export function* compressFiles(action) {
       action.payload.files,
       action.payload.filename,
       action.payload.compressionType,
-      defaultPrivateSystem,
       latestCompress,
-      defaultAllocation
+      defaultAllocation,
+      defaultPrivateSystem
     );
 
     const res = yield call(jobHelper, params);
