@@ -8,9 +8,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
-from portal.apps.accounts.managers import accounts as AccountsManager
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
-from portal.utils.encryption import createKeyPair
 
 logger = logging.getLogger(__name__)
 
@@ -34,34 +32,16 @@ class SystemKeysView(BaseApiView):
         return op(request, system_id, body)
 
     def push(self, request, system_id, body):
-        """Pushed public key to a system's host
+        """Create credentials for the system.
 
         :param request: Django's request object
         :param str system_id: System id
         """
 
         logger.info(f"Resetting credentials for user {request.user.username} on system {system_id}")
-        (priv_key_str, publ_key_str) = createKeyPair()
-
-        _, result, http_status = AccountsManager.add_pub_key_to_resource(
-            request.user,
-            password=body['form']['password'],
-            token=body['form']['token'],
-            system_id=system_id,
-            pub_key=publ_key_str,
-            hostname=body['form']['hostname']
-        )
 
         create_system_credentials(request.user.tapis_oauth.client,
                                   request.user.username,
-                                  publ_key_str,
-                                  priv_key_str,
                                   system_id)
 
-        return JsonResponse(
-            {
-                'systemId': system_id,
-                'message': result
-            },
-            status=http_status
-        )
+        return JsonResponse({'systemId': system_id, }, )

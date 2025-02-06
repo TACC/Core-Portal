@@ -1,33 +1,27 @@
 import logging
 import requests
-from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
-from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from tapipy.errors import BaseTapyException
 
 
 logger = logging.getLogger(__name__)
 
-
 def create_system_credentials(client,
                               username,
-                              public_key,
-                              private_key,
                               system_id,
                               skipCredentialCheck=False) -> int:
     """
-    Set an RSA key pair as the user's auth credential on a Tapis system.
+    Create user's auth credential on a Tapis system. This Tapis API uses TMS.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
-    data = {'privateKey': private_key, 'publicKey': public_key}
+    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using TMS")
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
+        createTmsKeys=True,
         skipCredentialCheck=skipCredentialCheck,
-        **data
     )
 
 
@@ -101,20 +95,9 @@ class SystemAccessStepV3(AbstractStep):
             except BaseTapyException:
                 self.log(f"Creating credentials for system: {system}")
 
-            (priv, pub) = createKeyPair()
-
-            try:
-                register_public_key(self.user.username, pub, system)
-                self.log(f"Successfully registered public key for system: {system}")
-            except HTTPError as e:
-                logger.error(e)
-                self.fail(f"Failed to register public key with key service for system: {system}")
-
             try:
                 create_system_credentials(self.user.tapis_oauth.client,
                                           self.user.username,
-                                          pub,
-                                          priv,
                                           system)
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as e:
