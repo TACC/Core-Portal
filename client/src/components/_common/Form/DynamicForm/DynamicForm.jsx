@@ -42,47 +42,23 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     };
   };
 
-  const handleVisibilityDependency = (
-    field,
-    values,
-    setFieldValue,
-    modifiedField
-  ) => {
+  const handleVisibilityDependency = (field, values, setFieldValue, modifiedField) => {
     const { dependency } = field;
-
-    // Stores the value of the dependency field that is currently entered in the form
-    let currentDependencyFieldValue;
-
-    // If the dependency field is a nested field (e.g. sample.type)
-    if (dependency.name.includes('.')) {
-      const [dependencyName, nestedDependencyField] =
-        dependency.name.split('.');
-      const dependentFormField = formFields.find(
-        (field) => field.name === dependencyName
-      );
-      // converts both values to string to compare
-      const dependentField = dependentFormField?.options.find(
-        (option) => `${option.value}` === `${values[dependencyName]}`
-      );
-
-      currentDependencyFieldValue = dependentField
-        ? dependentField[nestedDependencyField]
-        : null;
-    } else {
-      currentDependencyFieldValue = values[dependency.name];
-    }
-
+    if (!dependency) return field;
+  
+    let currentDependencyFieldValue = values[dependency.name];
+  
     const isHidden = Array.isArray(dependency.value)
       ? !dependency.value.includes(currentDependencyFieldValue)
       : dependency.value !== currentDependencyFieldValue;
-
-    // Resets the fields value when the field is hidden
+  
     if (isHidden) {
       setFieldValue(field.name, '');
     }
-
+  
     return { ...field, hidden: isHidden };
   };
+  
 
   const updateFormFieldsBasedOnDependency = useMemo(() => {
     return (formFields, values, setFieldValue, modifiedField) => {
@@ -124,7 +100,6 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     onChange && onChange(formFields, values);
   }, [formFields, values]);
 
-  // This function updates and filters any dependant fields. Field dependency is described in the form config file
   const handleDependentFieldUpdate = (value, modifiedField) => {
     const updatedFormFields = updateFormFieldsBasedOnDependency(
       formFields,
@@ -132,8 +107,15 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
       setFieldValue,
       modifiedField
     );
-    setFormFields(updatedFormFields);
+  
+    setFormFields(updatedFormFields.map((field) => {
+      if (field.name === 'digital_dataset_other') {
+        return { ...field, hidden: value !== 'other' };
+      }
+      return field;
+    }));
   };
+  
 
   const renderFormField = (field) => {
     if (field.hidden) {
@@ -142,6 +124,15 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
 
     switch (field.type) {
       case 'text':
+      return (
+        <FormField
+          name={field.name}
+          label={field.label}
+          type="text"
+          description={field?.description}
+          required={field?.validation?.required}
+        />
+      );
       case 'number':
       case 'link':
         return (
@@ -164,47 +155,34 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             required={field?.validation?.required}
           />
         );
-      case 'select':
-        return (
-          <FormField
-            name={field.name}
-            label={field.label}
-            type="select"
-            description={field?.description}
-            required={field?.validation?.required}
-            onChange={(event) => {
-              setFieldValue(field.name, event.target.value);
-              handleDependentFieldUpdate(event.target.value, field);
-            }}
-          >
-            {/* If we have a select with optgroup */}
-            {field.optgroups
-              ? field.optgroups.map((optgroup) => {
-                  return (
-                    <optgroup label={optgroup.label}>
-                      {optgroup.options.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  );
-                })
-              : // shows only filtered fields
-              field.filteredOptions
-              ? field.filteredOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))
-              : // shows all fields
-                field.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-          </FormField>
-        );
+        case 'select':
+          return (
+            <FormField
+              name={field.name}
+              label={field.label}
+              type="select"
+              description={field?.description}
+              required={field?.validation?.required}
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                setFieldValue(field.name, selectedValue);
+                handleDependentFieldUpdate(selectedValue, field);
+        
+                setFormFields((prevFields) =>
+                  prevFields.map((f) =>
+                    f.name === 'digital_dataset_other' ? { ...f, hidden: selectedValue !== 'other' } : f
+                  )
+                );
+              }}
+            >
+              {field.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </FormField>
+          );
+        
       // uses FieldArray from formik to handle array fields. arrayHelpers from FieldArray is used to add and remove fields
       case 'array':
         return (
