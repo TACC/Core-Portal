@@ -18,6 +18,7 @@ from portal.apps.onboarding.execute import (
 )
 from portal.apps.search.tasks import index_allocations
 from portal.apps.users.utils import check_user_groups
+from portal.utils import get_client_ip
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f'metrics.{__name__}')
@@ -138,8 +139,18 @@ def tapis_oauth_callback(request):
             TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
 
             login(request, user)
-            METRICS.debug(f"user:{user.username} successful oauth login")
             launch_setup_checks(user)
+            METRICS.info(
+                "Auth",
+                extra={
+                    "user": user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": "LOGIN",
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {},
+                },
+            )
         else:
             messages.error(
                 request,
