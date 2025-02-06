@@ -26,7 +26,11 @@ const useDrpDatasetModals = (
       },
     });
 
-    return response;
+  const projectsResponse = await fetchUtil({
+    url: 'api/projects',
+  });
+
+  return { ...response, projects: projectsResponse };
   };
 
   const dispatch = useDispatch();
@@ -84,35 +88,49 @@ const useDrpDatasetModals = (
   const createAnalysisDataModal = useCallback(
     async (formName, selectedFile = null) => {
       const form = await getFormFields(formName);
-      const { samples, origin_data: originDatasets } = await getDatasets(
+  
+      const { samples, origin_data: originDatasets, projects } = await getDatasets(
         projectId,
         portalName,
         true
       );
-
+    
+      const projectOptions = [
+        { value: '', label: '' },
+        ...projects.response.map((project) => ({
+          value: project.id, 
+          label: project.title 
+        })),
+        { value: 'other', label: 'Other (Specify Below)' }
+      ];
+    
       form.form_fields.map((field) => {
         if (field.name === 'sample') {
           field.options.push(
-            ...samples.map((sample) => {
-              return {
-                value: sample.uuid,
-                label: sample.value.name,
-              };
-            })
+            ...samples.map((sample) => ({
+              value: sample.uuid,
+              label: sample.value.name,
+            }))
           );
-        } else if (field.name === 'base_origin_data') {
-          field.options.push(
-            ...originDatasets.map((originData) => {
-              return {
-                value: originData.uuid,
-                label: originData.value.name,
-                dependentId: originData.value.sample,
-              };
-            })
-          );
+        }
+        else if (field.name === 'digital_dataset') {
+          field.options = projectOptions; 
         }
       });
 
+      const datasetFieldIndex = form.form_fields.findIndex(field => field.name === 'digital_dataset');
+
+      if (datasetFieldIndex !== -1) {
+        form.form_fields.splice(datasetFieldIndex + 1, 0, {
+          name: 'digital_dataset_other',
+          label: 'Please specify the project',
+          type: 'text',
+          hidden: true, 
+          validation: { required: true },
+          dependency: { name: 'digital_dataset', type: 'visibility', value: 'other' }, 
+        });
+      }
+    
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
@@ -121,7 +139,7 @@ const useDrpDatasetModals = (
             selectedFile,
             form,
             formName,
-            additionalData: { samples, originDatasets },
+            additionalData: { samples, originDatasets, projects },
             useReloadCallback,
           },
         },
