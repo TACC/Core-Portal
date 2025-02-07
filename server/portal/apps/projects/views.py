@@ -122,7 +122,7 @@ class ProjectsApiView(BaseApiView):
         title = data['title']
 
         client = request.user.tapis_oauth.client
-        system_id = create_shared_workspace(client, title, request.user.username)
+        system_id = create_shared_workspace(client, title, request.user.username, tapis_tracking_id=f"portals.{request.session.session_key}")
 
         METRICS.info(
             "Projects",
