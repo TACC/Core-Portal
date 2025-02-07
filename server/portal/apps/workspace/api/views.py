@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
-from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
+from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -21,10 +21,13 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import check_job_for_timeout
+from portal.apps.workspace.api.utils import (
+    check_job_for_timeout,
+    should_push_keys,
+    test_system_credentials,
+)
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -82,22 +85,6 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def _test_listing_after_creating_credentials(system, user):
-    if system.defaultAuthnMethod != 'TMS_KEYS':
-        return False
-    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
-    tapis = user.tapis_oauth.client
-    # Attempt listing a second time after credentials are added to system
-    try:
-        create_system_credentials(user.tapis_oauth.client,
-                                  user.username, system.id)
-        tapis.files.listFiles(systemId=system.id, path="/")
-    except BaseTapyException:
-        return False
-
-    return True
-
-
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -116,9 +103,10 @@ class AppsView(BaseApiView):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
-                    success = _test_listing_after_creating_credentials(system_def, request.user)
-                    logger.info(f"Unable to create credentials for {request.user} in system: {system_id}")
+                    success = test_system_credentials(system_def, request.user)
                     data['systemNeedsKeys'] = not success
+                    if should_push_keys(system_def):
+                        data['pushKeysSystem'] = system_def
         else:
             METRICS.info("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
@@ -319,7 +307,7 @@ class JobsView(BaseApiView):
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = _test_listing_after_creating_credentials(system_def, request.user)
+                    success = test_system_credentials(system_def, request.user)
                     if not success:
                         logger.info(f"Unable to create credentials for {username} in system: {system_id}")
                         return JsonResponse(

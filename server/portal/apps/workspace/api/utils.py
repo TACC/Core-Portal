@@ -1,4 +1,10 @@
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, create_system_credentials_with_keys
+from tapipy.errors import BaseTapyException
+from django.core.exceptions import ObjectDoesNotExist
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_tapis_timeout_error_messages(job_id):
@@ -26,3 +32,45 @@ def check_job_for_timeout(job):
             job.remoteOutcome = 'FINISHED'
 
     return job
+
+
+def should_push_keys(system):
+    """
+    If keyservice is False or defaultAuthnMethod is not TMS_KEYS, return true,
+    otherwise it uses TMS.
+    """
+    return not system.get("keyservice", False) or system.get("defaultAuthnMethod") != 'TMS_KEYS'
+
+
+def test_system_credentials(system, user):
+    """
+    If system has key service support, create keys and
+    tapis system credentials using keys, otherwise create
+    credentials with TMS.
+    """
+    tapis = user.tapis_oauth.client
+    if should_push_keys(system):
+        # Check for existing keypair stored for this hostname
+        try:
+            keys = user.ssh_keys.for_hostname(hostname=system.host)
+            priv_key_str = keys.private_key()
+            publ_key_str = keys.public
+        except ObjectDoesNotExist:
+            return False
+
+        # Attempt listing a second time after credentials are added to system
+        try:
+            create_system_credentials_with_keys(user.tapis_oauth.client,
+                                                user.username, publ_key_str,
+                                                priv_key_str, system.id)
+            tapis.files.listFiles(systemId=system.id, path="/")
+        except BaseTapyException:
+            return False
+    else:
+        try:
+            create_system_credentials(user.tapis_oauth.client, user.username, system.id, createTmsKeys=True)
+            tapis.files.listFiles(systemId=system.id, path="/")
+        except BaseTapyException:
+            return False
+
+    return True
