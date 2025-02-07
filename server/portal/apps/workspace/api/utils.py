@@ -48,6 +48,7 @@ def test_system_credentials(system, user):
     tapis system credentials using keys, otherwise create
     credentials with TMS.
     """
+    # TODOv3: Add Tapis system test utility method with proper error handling https://tacc-main.atlassian.net/browse/WP-101
     tapis = user.tapis_oauth.client
     if should_push_keys(system):
         # Check for existing keypair stored for this hostname
