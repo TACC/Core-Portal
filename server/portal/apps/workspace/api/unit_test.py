@@ -23,7 +23,9 @@ class TestJobHistoryView(TestCase):
         response = self.client.get("/api/workspace/jobs/{}/history".format(job_uuid))
         self.mock_tapis_client.jobs.getJobHistory.assert_called_with(
             jobUuid=job_uuid,
-            headers={"X-Tapis-Tracking-ID": self.client.session.session_key},
+            headers={
+                "X-Tapis-Tracking-ID": f"portals.{self.client.session.session_key}"
+            },
         )
 
         data = json.loads(response.content)
