@@ -198,32 +198,32 @@ def test_job_post_is_logged_for_metrics(
     )
 
 
-def request_jobs_util(rf, authenticated_user, query_params={}):
+def request_jobs_util(client, authenticated_user, query_params={}):
     # Unit test helper function
     view = JobsView()
-    request = rf.get("/api/workspace/jobs/", query_params)
+    request = client.get("/api/workspace/jobs/", query_params)
     request.user = authenticated_user
     operation = "listing"
     response = view.get(request, operation)
     return json.loads(response.content)["response"]
 
 
-def test_get_no_tapis_jobs(rf, authenticated_user, mock_tapis_client):
+def test_get_no_tapis_jobs(client, authenticated_user, mock_tapis_client):
     mock_tapis_client.jobs.getJobSearchList.return_value = []
-    jobs = request_jobs_util(rf, authenticated_user)
+    jobs = request_jobs_util(client, authenticated_user)
     assert len(jobs) == 0
 
 
-def test_get_no_portal_jobs(rf, authenticated_user, mock_tapis_client):
+def test_get_no_portal_jobs(client, authenticated_user, mock_tapis_client):
     JobSubmission.objects.create(user=authenticated_user, jobId="9876")
     mock_tapis_client.jobs.getJobSearchList.return_value = []
-    jobs = request_jobs_util(rf, authenticated_user)
+    jobs = request_jobs_util(client, authenticated_user)
     assert len(jobs) == 0
 
 
-def test_get_jobs_bad_offset(rf, authenticated_user, mock_tapis_client):
+def test_get_jobs_bad_offset(client, authenticated_user, mock_tapis_client):
     mock_tapis_client.jobs.getJobSearchList.return_value = []
-    jobs = request_jobs_util(rf, authenticated_user, query_params={"offset": 100})
+    jobs = request_jobs_util(client, authenticated_user, query_params={"offset": 100})
     assert len(jobs) == 0
 
 
@@ -280,7 +280,7 @@ def test_get_app_dynamic_exec_sys(
     django_db_blocker,
     mock_tapis_client,
     authenticated_user,
-    rf,
+    client,
     tapis_get_systems_list,
 ):
     # Load fixtures
@@ -301,7 +301,7 @@ def test_get_app_dynamic_exec_sys(
     # invoke and assert
     apps_view = AppsView()
     query_params = {"appId": "hello-world", "appVersion": "0.0.1"}
-    request = rf.get("/api/workspace/apps/", query_params)
+    request = client.get("/api/workspace/apps/", query_params)
     request.user = authenticated_user
     response = apps_view.get(request)
     assert response.status_code == 200
