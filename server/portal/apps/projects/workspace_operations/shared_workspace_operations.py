@@ -111,11 +111,13 @@ def submit_workspace_acls_job(
     return res
 
 
-def create_workspace_dir(workspace_id: str) -> str:
+def create_workspace_dir(workspace_id: str, **kwargs) -> str:
     client = service_account()
     system_id = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
     path = f"{workspace_id}"
-    client.files.mkdir(systemId=system_id, path=path)
+    client.files.mkdir(systemId=system_id,
+                       path=path,
+                       headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return path
 
 
@@ -162,7 +164,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str):
+def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -171,7 +173,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
     workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
     # Service client creates directory and gives owner write permissions
-    create_workspace_dir(workspace_id)
+    create_workspace_dir(workspace_id, **kwargs)
     set_workspace_acls(service_client,
                        settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
                        workspace_id,
