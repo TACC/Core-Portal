@@ -36,15 +36,14 @@ def check_job_for_timeout(job):
 
 def should_push_keys(system):
     """
-    If keyservice is False or defaultAuthnMethod is not TMS_KEYS, return true,
-    otherwise it uses TMS.
+    If defaultAuthnMethod is not TMS_KEYS, return true. Otherwise, false.
     """
-    return not system.get("keyservice", False) or system.get("defaultAuthnMethod") != 'TMS_KEYS'
+    return system.get("defaultAuthnMethod") != 'TMS_KEYS'
 
 
 def test_system_credentials(system, user):
     """
-    If system has key service support, create keys and
+    If system does not support TMS, create keys and
     tapis system credentials using keys, otherwise create
     credentials with TMS.
     """

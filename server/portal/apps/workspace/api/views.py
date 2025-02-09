@@ -105,8 +105,7 @@ class AppsView(BaseApiView):
                 except (InternalServerError, UnauthorizedError):
                     success = test_system_credentials(system_def, request.user)
                     data['systemNeedsKeys'] = not success
-                    if should_push_keys(system_def):
-                        data['pushKeysSystem'] = system_def
+                    data['pushKeysSystem'] = system_def
         else:
             METRICS.info("user:{} is requesting all apps".format(request.user.username))
             data = {'appListing': tapis.apps.getApps()}
