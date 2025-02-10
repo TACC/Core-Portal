@@ -2718,13 +2718,13 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
 name = "tapipy"
-version = "1.4.1"
+version = "1.8.1"
 description = "Python lib for interacting with an instance of the Tapis API Framework"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = "<4.0,>=3.7"
 files = [
-    {file = "tapipy-1.4.1-py3-none-any.whl", hash = "sha256:883ea9c95dd90f084aaf41168fd401324d2418a5b1356d7c8d5aebfd0d490b2d"},
-    {file = "tapipy-1.4.1.tar.gz", hash = "sha256:50b7e1a700dfaf9e18723c15bdf371255f918bd15ced54657b7a95066b725f48"},
+    {file = "tapipy-1.8.1-py3-none-any.whl", hash = "sha256:167bfde33b18500b240f5ec7a437fa12e8343b973a70eb58b1c41fc45ceb6766"},
+    {file = "tapipy-1.8.1.tar.gz", hash = "sha256:65c4624a7b65050e34a60d66a7c862534fa86f93d3c034fc051171cbca8438ae"},
 ]
 
 [package.dependencies]
@@ -2741,7 +2741,6 @@ pyyaml = ">=5.4"
 requests = ">=2.20.0,<3.0.0"
 setuptools = ">=21.0.0"
 six = ">=1.10,<2.0"
-typing_extensions = "<4.6"
 urllib3 = ">=1.26.5,<2.0.0"
 
 [[package]]
@@ -3012,4 +3011,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c90f57361d9d8076a37997b3771c0fb9acc6070cb14b2489d2ba2c635a068902"
+content-hash = "2279f1f06e128a87ae4393ce6553b7ca674c71f929c6ed867e940424aee84803"
