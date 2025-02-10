@@ -1,6 +1,5 @@
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, create_system_credentials_with_keys
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from tapipy.errors import BaseTapyException
-from django.core.exceptions import ObjectDoesNotExist
 import json
 import logging
 
@@ -50,22 +49,7 @@ def test_system_credentials(system, user):
     # TODOv3: Add Tapis system test utility method with proper error handling https://tacc-main.atlassian.net/browse/WP-101
     tapis = user.tapis_oauth.client
     if should_push_keys(system):
-        # Check for existing keypair stored for this hostname
-        try:
-            keys = user.ssh_keys.for_hostname(hostname=system.host)
-            priv_key_str = keys.private_key()
-            publ_key_str = keys.public
-        except ObjectDoesNotExist:
-            return False
-
-        # Attempt listing a second time after credentials are added to system
-        try:
-            create_system_credentials_with_keys(user.tapis_oauth.client,
-                                                user.username, publ_key_str,
-                                                priv_key_str, system.id)
-            tapis.files.listFiles(systemId=system.id, path="/")
-        except BaseTapyException:
-            return False
+        return False
     else:
         try:
             create_system_credentials(user.tapis_oauth.client, user.username, system.id, createTmsKeys=True)
