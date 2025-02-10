@@ -25,7 +25,6 @@ from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
-    should_push_keys,
     test_system_credentials,
 )
 
