@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "portal-backend"
+name = "portal"
 version = "3.0.0"
 description = "Django backend for the core portal."
 authors = ["TACC-WMA <wma-portals@tacc.utexas.edu>"]
