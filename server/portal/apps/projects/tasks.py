@@ -6,17 +6,28 @@ from django.conf import settings
 from celery import shared_task
 from django.db import transaction
 from portal.apps.publications.models import PublicationRequest
-from portal.apps import SCHEMA_MAPPING
 from portal.libs.agave.utils import user_account, service_account
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.project_meta_operations import add_file_associations, create_file_obj, get_file_obj, get_ordered_value
+from portal.apps.projects.workspace_operations.project_meta_operations import (
+        add_file_associations, 
+        create_file_obj, 
+        get_file_obj, 
+        get_ordered_value 
+    )
 from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
 import networkx as nx
 from portal.apps._custom.drp.models import FileObj
-from portal.libs.files.file_processing import binary_correction, conf_raw, conf_tiff, create_animation, create_histogram, create_thumbnail
+from portal.libs.files.file_processing import ( 
+        binary_correction, 
+        conf_raw, 
+        conf_tiff, 
+        create_animation, 
+        create_histogram, 
+        create_thumbnail 
+    )
 from portal.apps.notifications.models import Notification
 
 # TODO: Cleanup this file

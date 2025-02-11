@@ -5,7 +5,6 @@ from matplotlib import pyplot as plt
 import csv
 import matplotlib.animation as anim
 import tempfile
-from portal.apps._custom.drp.models import DrpFileMetadata, FileObj
 import tifffile as tiff
 
 logger = logging.getLogger(__name__)
