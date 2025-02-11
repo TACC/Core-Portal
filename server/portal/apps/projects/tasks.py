@@ -17,6 +17,7 @@ from portal.apps.projects.workspace_operations.graph_operations import get_path_
 import networkx as nx
 from portal.apps._custom.drp.models import FileObj
 from portal.libs.files.file_processing import binary_correction, conf_raw, conf_tiff, create_animation, create_histogram, create_thumbnail
+from portal.apps.notifications.models import Notification
 
 # TODO: Cleanup this file
 
@@ -234,11 +235,19 @@ def sync_files_without_metadata(self, user_access_token, project_id: str):
     for entity_uuid, file_objs in files_to_add_dict.items():
         logger.info(f'Adding {len(file_objs)} files to entity {entity_uuid} in project {project_id}')
         add_file_associations(entity_uuid, file_objs)
-                
+
 @shared_task(bind=True, queue='default')
-def process_file(self, project_id: str, path: str, user_access_token, encoded_file=None):
+def process_file(self, project_id: str, path: str, user_access_token: str, encoded_file=None):
 
     client = user_account(user_access_token)
+    username = client.access_token.claims['tapis/username']
+
+    Notification.objects.create(**{
+        Notification.EVENT_TYPE: 'default',
+        Notification.STATUS: Notification.INFO,
+        Notification.USER: username,
+        Notification.MESSAGE: f'Generating Images',
+    })
 
     logger.info(f'Processing file {path} in project {project_id}')
 
@@ -304,6 +313,13 @@ def process_file(self, project_id: str, path: str, user_access_token, encoded_fi
             client.files.insert(systemId=project_id, path=animation_path, file=animation)
         except Exception as e: 
             logger.error(f'Error generating animation: {e}')
-        
+
+        with transaction.atomic():
+            Notification.objects.create(**{
+                Notification.EVENT_TYPE: 'default',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: username,
+                Notification.MESSAGE: f'Image generation complete. Please refresh the page.',
+            })
     else: 
         print(f"File {path} does not exist in project {project_id}")
