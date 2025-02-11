@@ -26,7 +26,7 @@ export async function uploadUtil({
   const fileField = file.get('uploaded_file') as Blob;
   formData.append('uploaded_file', fileField);
   let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
-  url.replace(/\/{2,}/g, '/');
+  url = url.replace(/\/{2,}/g, '/');
   const response = await apiClient.post(url, formData, {
     headers: {
       'X-CSRFToken': Cookies.get('csrftoken') || '',
