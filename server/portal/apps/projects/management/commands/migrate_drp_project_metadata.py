@@ -104,29 +104,38 @@ class Command(BaseCommand):
 
         print(f"Found {len(projects)} projects to migrate")
 
+        projects_with_error = []
+
         for project in projects:
 
-            with transaction.atomic():
-                print(f"Processing project {project['id']}")
+            try:
+                with transaction.atomic():
+                    print(f"Processing project {project['id']}")
 
-                project_mapping = self.migrate_project(project)
+                    project_mapping = self.migrate_project(project)
 
-                sample_mappings = self.migrate_sample(project_mapping)
+                    sample_mappings = self.migrate_sample(project_mapping)
 
-                origin_data_mappings = self.migrate_origin_data(project_mapping, sample_mappings)
+                    origin_data_mappings = self.migrate_origin_data(project_mapping, sample_mappings)
 
-                analysis_data_mappings = self.migrate_analysis_dataset(project_mapping, sample_mappings, origin_data_mappings)
+                    analysis_data_mappings = self.migrate_analysis_dataset(project_mapping, sample_mappings, origin_data_mappings)
 
-                if not self.dry_run:
-                    _, new_project_id = project_mapping
-                    self.make_directories(new_project_id, sample_mappings)
-                    self.make_directories(new_project_id, origin_data_mappings)
-                    self.make_directories(new_project_id, analysis_data_mappings)
+                    if not self.dry_run:
+                        _, new_project_id = project_mapping
+                        self.make_directories(new_project_id, sample_mappings)
+                        self.make_directories(new_project_id, origin_data_mappings)
+                        self.make_directories(new_project_id, analysis_data_mappings)
 
-                    if self.publication:                
-                        self.update_project_and_create_publication(new_project_id)
-                else: 
-                    print(f"Dry run success for project {project['id']}: No changes made to the database.")
+                        if self.publication:                
+                            self.update_project_and_create_publication(new_project_id)
+                    else: 
+                        print(f"Dry run success for project {project['id']}: No changes made to the database.")
+            except Exception as e:
+                print(f"Error processing project {project['id']}: {e}")
+                projects_with_error.append({project['id']: str(e)})
+                continue
+
+        print(f'Migration completed with errors for projects: {projects_with_error}')
 
     def get_project_users(self, project_id, user_id):
 
@@ -313,8 +322,12 @@ class Command(BaseCommand):
                 file_parent_path = Path(file['file']).parent
 
                 if file_parent_path not in directory_cache:
-                    directory_cache[file_parent_path] = client.files.listFiles(systemId='cloud.data', 
-                                                                              path = f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}')
+                    try:
+                        directory_cache[file_parent_path] = client.files.listFiles(systemId='cloud.data', 
+                                                                                path = f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}')
+                    except Exception as e:
+                        print(f"Error listing files in directory {file_parent_path}: {e}")
+                        continue
 
                 files_in_parent_path = directory_cache[file_parent_path]
                 

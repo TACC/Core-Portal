@@ -4,7 +4,6 @@ import networkx as nx
 from portal.apps.projects.migration_utils.sql_db_utils import get_project_by_id, query_projects, query_published_projects
 from portal.apps.publications.models import Publication
 from portal.libs.agave.utils import service_account
-from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.workspace_operations.project_publish_operations import _add_values_to_tree
 
 class Command(BaseCommand):
@@ -59,40 +58,42 @@ class Command(BaseCommand):
         client = service_account()
 
         for project in projects:
-            pub_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{project['id']}"
-            project_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX if self.publication else settings.PORTAL_PROJECTS_SYSTEM_PREFIX
-            project_id = f'{project_prefix}.{pub_id}'
-            
-
-            if self.publication:
-                pub = Publication.objects.get(project_id=pub_id)
-                project_graph = pub.tree
-            else: 
-                project_graph = nx.node_link_data(_add_values_to_tree(project_id)) 
-
-            file_mapping = {}
-
-            for node in project_graph.get('nodes', []):
-                file_objs = node.get("value", {}).get("fileObjs", [])
-                for file_obj in file_objs: 
-                    legacy_path = file_obj.get("legacyPath")
-                    path = file_obj.get("path")
-                    if legacy_path and path:
-                        file_mapping[legacy_path] = path
-
-            transfer_elements = []
-            for legacy_path, new_path in file_mapping.items():
-                print(f"Legacy Path: {legacy_path} -> New Path: {new_path}")
-
-                transfer_elements.append( 
-                    {                       
-                        'sourceURI': f'tapis://cloud.data/corral-repl/utexas/pge-nsf/media/{legacy_path.strip("/")}',
-                        'destinationURI': f'tapis://{project_id}/{new_path.strip("/")}'
-                    })
+            try:
+                pub_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{project['id']}"
+                project_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX if self.publication else settings.PORTAL_PROJECTS_SYSTEM_PREFIX
+                project_id = f'{project_prefix}.{pub_id}'
                 
-            if not self.dry_run:
-                transfer = client.files.createTransferTask(elements=transfer_elements)
-                print(f"Transfer started for {len(file_mapping)} files: {transfer}")
-            else: 
-                print(f'Dry run complete with {len(file_mapping)} files to transfer. No changes made.')
 
+                if self.publication:
+                    pub = Publication.objects.get(project_id=pub_id)
+                    project_graph = pub.tree
+                else: 
+                    project_graph = nx.node_link_data(_add_values_to_tree(project_id)) 
+
+                file_mapping = {}
+
+                for node in project_graph.get('nodes', []):
+                    file_objs = node.get("value", {}).get("fileObjs", [])
+                    for file_obj in file_objs: 
+                        legacy_path = file_obj.get("legacyPath")
+                        path = file_obj.get("path")
+                        if legacy_path and path:
+                            file_mapping[legacy_path] = path
+
+                transfer_elements = []
+                for legacy_path, new_path in file_mapping.items():
+
+                    transfer_elements.append( 
+                        {                       
+                            'sourceURI': f'tapis://cloud.data/corral-repl/utexas/pge-nsf/media/{legacy_path.strip("/")}',
+                            'destinationURI': f'tapis://{project_id}/{new_path.strip("/")}'
+                        })
+                    
+                if not self.dry_run:
+                    transfer = client.files.createTransferTask(elements=transfer_elements)
+                    print(f"Transfer started for {len(file_mapping)} files: {transfer}")
+                else: 
+                    print(f'Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.')
+            except Exception as e:
+                print(f"Error processing project {project['id']}: {e}")
+                continue
