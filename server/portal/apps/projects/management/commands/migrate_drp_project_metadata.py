@@ -3,6 +3,8 @@ import networkx as nx
 from pathlib import Path
 from django.conf import settings
 from django.db import transaction
+import dateutil.parser
+from django.utils import timezone
 from django.core.management.base import BaseCommand
 from portal.apps.projects.migration_utils.sql_db_utils import (get_project_by_id, query_advanced_file_metadata, query_analysis_data, 
                                                                query_files, query_origin_data, query_projects, query_published_projects, 
@@ -20,7 +22,6 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
 from portal.apps.publications.models import Publication
 from portal.apps.search.tasks import index_publication
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-
 class Command(BaseCommand):
     help = "Migrate DRP project metadata to the new schema."
 
@@ -70,9 +71,22 @@ class Command(BaseCommand):
         published_project.project_graph.value = nx.node_link_data(pub_tree)
         published_project.save()
 
+        pub_date_str = published_project.value.get('publicationDate', None)
+
+        pub_defaults = {
+            'value': published_project.value,
+            'tree': nx.node_link_data(pub_tree),
+            'version': 1,
+        }
+
+        if pub_date_str:
+            pub_date = dateutil.parser.parse(pub_date_str)
+            pub_date = timezone.make_aware(pub_date)
+            pub_defaults['created'] = pub_date
+
         pub_metadata = Publication.objects.update_or_create(
             project_id=project_id,
-            defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": 1},
+            defaults=pub_defaults
         )
 
         print(f'Created publication for {published_project_id}')
@@ -172,7 +186,7 @@ class Command(BaseCommand):
             DrpProjectRelatedPublications(
                 publication_title=pub['title'],
                 publication_author=pub['author'],
-                publication_doi=pub['doi'],
+                publication_doi=pub['doi'].split("doi:")[-1] if pub['doi'] else None,
                 publication_date_of_publication=pub['publication_year'],
                 publication_publisher=pub['publisher'],
                 publication_description=pub['abstract'],

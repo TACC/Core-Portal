@@ -93,7 +93,7 @@ class Command(BaseCommand):
                     transfer = client.files.createTransferTask(elements=transfer_elements)
                     print(f"Transfer started for {len(file_mapping)} files: {transfer}")
                 else: 
-                    print(f'Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.')
+                    print(f"Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.")
             except Exception as e:
                 print(f"Error processing project {project['id']}: {e}")
                 continue
