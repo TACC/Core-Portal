@@ -33,7 +33,7 @@ from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
-from portal.apps.projects.tasks import sync_files_without_metadata
+from portal.apps.projects.tasks import process_file, sync_files_without_metadata
 
 LOGGER = logging.getLogger(__name__)
 
@@ -398,6 +398,7 @@ class ProjectEntityView(BaseApiView):
         if value['data_type'] == 'file':
             try: 
                 patch_file_obj_entity(client, project_id, value, path)
+                process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
