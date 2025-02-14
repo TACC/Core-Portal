@@ -297,7 +297,7 @@ class Command(BaseCommand):
                 add_node_to_project(new_project_id, parent_node['id'], sample_uuid, constants.SAMPLE, sample_entity.value['name'])
 
 
-            sample_mappings[sample['id']] = {'sample_uuid': sample_uuid, 'path': f'/{sample["name"]}'}
+            sample_mappings[sample['id']] = {'sample_uuid': sample_uuid, 'path': f'{sample["name"]}'}
 
         return sample_mappings
     

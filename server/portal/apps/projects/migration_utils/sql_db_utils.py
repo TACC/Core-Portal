@@ -7,7 +7,17 @@ def run_query(query, params=None):
         else:
             cursor.execute(query)
         columns = [col[0] for col in cursor.description]
-        return [dict(zip(columns, row)) for row in cursor.fetchall()]
+        rows = cursor.fetchall()
+
+    result = []
+    for row in rows:
+        row_dict = dict(zip(columns, row))
+        # Trim all string fields
+        for key, value in row_dict.items():
+            if isinstance(value, str):
+                row_dict[key] = value.strip()
+        result.append(row_dict)
+    return result
 
 def query_projects():
     query = "SELECT * FROM upload_project WHERE access = %s;"
