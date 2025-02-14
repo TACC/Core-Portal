@@ -216,6 +216,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 <div>
                   <div>
                     <h2>{field.label}</h2>
+                    {field.description && (
+                      <p className={styles['array-field-description']}>{field.description}</p>
+                    )}
                   </div>
                   {values[field.name]?.map((_, index) => (
                     <div

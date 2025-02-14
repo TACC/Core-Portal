@@ -5,6 +5,7 @@ import { DynamicForm } from '_common/Form/DynamicForm';
 import { useSelector } from 'react-redux';
 import { useFormikContext } from 'formik';
 import * as Yup from 'yup';
+import styles from './DataFilesProjectEditDescriptionModalAddon.module.scss';
 
 const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   const { setFieldValue } = useFormikContext();
@@ -91,7 +92,7 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   };
 
   return (
-    <div>
+    <div className={styles['dataset-form-container']}>
       {!isLoading && form && (
         <DynamicForm
           initialFormFields={form?.form_fields ?? []}
