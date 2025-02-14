@@ -149,7 +149,10 @@ class Command(BaseCommand):
                 projects_with_error.append({project['id']: str(e)})
                 continue
 
-        print(f'Migration completed with errors for projects: {projects_with_error}')
+        if projects_with_error:
+            print(f'Migration completed with errors for projects: {projects_with_error}')
+        else: 
+            print(f'Migration completed successfully for all projects.')
 
     def get_project_users(self, project_id, user_id):
 
@@ -186,7 +189,7 @@ class Command(BaseCommand):
             DrpProjectRelatedPublications(
                 publication_title=pub['title'],
                 publication_author=pub['author'],
-                publication_doi=pub['doi'].split("doi:")[-1] if pub['doi'] else None,
+                publication_doi=pub['doi'].split("doi:")[-1] if pub['doi'] else '',
                 publication_date_of_publication=pub['publication_year'],
                 publication_publisher=pub['publisher'],
                 publication_description=pub['abstract'],
@@ -409,7 +412,8 @@ class Command(BaseCommand):
                     add_node_to_project(new_project_id, parent_node['id'], origin_uuid, constants.DIGITAL_DATASET, new_origin.value['name'])
                     add_file_associations(origin_uuid, file_objs)
 
-                origin_data_mappings[origin['id']] = {'origin_data_uuid': origin_uuid, 'path': f'{new_sample_path}/{origin["name"]}'}
+                origin_data_mappings[origin['id']] = {'origin_data_uuid': origin_uuid, 'path': f'{new_sample_path}/{origin["name"]}',
+                                                      'sample_id': legacy_sample_id}
 
         return origin_data_mappings
 
@@ -421,6 +425,13 @@ class Command(BaseCommand):
         for analysis in query_analysis_data(legacy_project_id):
             new_sample = sample_mappings.get(analysis['sample_id'])
             new_origin_data = origin_data_mappings.get(analysis['base_origin_data_id'])
+
+            if not new_sample: 
+                if new_origin_data:
+                    new_sample = sample_mappings.get(new_origin_data['sample_id'])
+                else: 
+                    print(f'No sample found for analysis {analysis["id"]}. Skipping.')
+                    continue
 
             dataset_type = metadata_mappings.ANALYSIS_DATA_TYPE_MAPPING.get(analysis['type'])
 
