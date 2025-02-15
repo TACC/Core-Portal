@@ -131,7 +131,7 @@ class AllocationsView(BaseApiView):
         data = get_allocations(request.user.username)
 
         # This line iterates through all the projects in the active allocations and filters out the ones that are excluded in settings.
-        filtered_projects = [project for project in data["active"] if project["projectName"]not in settings.ALLOCATIONS_TO_EXCLUDE]
+        filtered_projects = [project for project in data["active"] if project.get("projectName") not in settings.ALLOCATIONS_TO_EXCLUDE]
 
         data["active"] = filtered_projects
 
