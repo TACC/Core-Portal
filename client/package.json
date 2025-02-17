@@ -12,7 +12,7 @@
     "axios": "^1.7.7",
     "bowser": "^2.9.0",
     "cross-fetch": "^3.1.4",
-    "dompurify": "^2.5.4",
+    "dompurify": "^3.2.4",
     "formik": "^2.2.9",
     "html-react-parser": "^1.4.8",
     "js-cookie": "^2.2.1",
