@@ -146,7 +146,7 @@ def create_shared_workspace(
     mock_create_workspace_dir.assert_called()
     mock_service_account.assert_called()
     mock_service_account().files.mkdir.assert_called_with(
-        systemId="projects.system.name", path=f"test.project-{workspace_num}"
+        systemId="projects.system.name", path=f"test.project-{workspace_num}", headers={'X-Tapis-Tracking-ID': ''}
     )
     # Set Workspace ACLS
     # Authenticated_user is whoever the mock_owner or creator of the project is
