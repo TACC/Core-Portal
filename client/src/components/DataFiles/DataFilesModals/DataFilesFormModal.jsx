@@ -15,18 +15,21 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = (updatedPath = '') => {
-    // Updated regex to capture the URL up until the last project segment
+  const reloadPage = (updatedPath = '') => {  
     let projectUrl = location.pathname.replace(
-      /(\/projects\/[^/]+\/[^/]+)\/?.*/,
+      /(\/projects\/[^/]+\/[^/]+\/?.*)/,
       '$1'
     );
-
+    
     if (projectUrl.endsWith('/')) {
       projectUrl = projectUrl.slice(0, -1);
     }
-
-    const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
+  
+    // Replace the last segment with the updatedPath
+    const path = updatedPath
+      ? projectUrl.replace(/[^/]+$/, updatedPath).replace(/\/\//g, '/') 
+      : projectUrl;
+  
     history.replace(path);
   };
 
