@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from portal.libs.agave.utils import service_account
 from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
@@ -157,7 +158,6 @@ class ProjectsApiView(BaseApiView):
 
 
 @method_decorator(agave_jwt_login, name='dispatch')
-@method_decorator(login_required, name='dispatch')
 class ProjectInstanceApiView(BaseApiView):
     """Project Instance API view.
 
@@ -178,8 +178,11 @@ class ProjectInstanceApiView(BaseApiView):
         # Based on url mapping, either system_id or project_id is always available.
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
-
-        client = request.user.tapis_oauth.client
+        
+        if system_id and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
+            client = service_account()
+        else:
+            client = request.user.tapis_oauth.client
 
         prj = get_project(client, project_id)
 
