@@ -8,7 +8,7 @@ import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPa
 import DataFilesViewDataModal from '../DataFiles/DataFilesModals/DataFilesViewDataModal';
 import DataFilesProjectFileListing from '../DataFiles/DataFilesProjectFileListing/DataFilesProjectFileListing';
 
-function PublicationDetailPublicView({params}) {
+function PublicationDetailPublicView({ params }) {
   return (
     <div
       style={{
@@ -29,6 +29,7 @@ function PublicationDetailPublicView({params}) {
         rootSystem={params.root_system}
         system={params.system}
         path={params.path || '/'}
+        basePath="/publications"
       />
       <DataFilesPreviewModal />
       <DataFilesShowPathModal />
