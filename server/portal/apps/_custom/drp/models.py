@@ -41,6 +41,7 @@ class DrpFileMetadata(DrpMetadataModel):
     offset_to_first_image: Optional[int] = None
     gap_between_images: Optional[int] = None
     byte_order: Optional[Literal['big_endian', 'little_endian']] = None
+    use_binary_correction: Optional[bool] = None
 
 class FileObj(DrpMetadataModel):
     """Model for associated files"""

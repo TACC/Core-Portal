@@ -54,7 +54,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
       metadata.members
         .filter((member) =>
           member.user
-            ? member.user.username === state.authenticatedUser.user.username
+            ? member.user.username === state.authenticatedUser?.user?.username
             : { access: null }
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
@@ -172,6 +172,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
         scheme="projects"
         system={system}
         path={path || '/'}
+        basePath="/publications"
         rootSystem={rootSystem}
       />
     </SectionTableWrapper>

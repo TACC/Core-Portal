@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from portal.libs.agave.utils import service_account
 from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
@@ -33,7 +34,7 @@ from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
-from portal.apps.projects.tasks import sync_files_without_metadata
+from portal.apps.projects.tasks import process_file, sync_files_without_metadata
 
 LOGGER = logging.getLogger(__name__)
 
@@ -157,7 +158,6 @@ class ProjectsApiView(BaseApiView):
 
 
 @method_decorator(agave_jwt_login, name='dispatch')
-@method_decorator(login_required, name='dispatch')
 class ProjectInstanceApiView(BaseApiView):
     """Project Instance API view.
 
@@ -178,8 +178,11 @@ class ProjectInstanceApiView(BaseApiView):
         # Based on url mapping, either system_id or project_id is always available.
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
-
-        client = request.user.tapis_oauth.client
+        
+        if system_id and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
+            client = service_account()
+        else:
+            client = request.user.tapis_oauth.client
 
         prj = get_project(client, project_id)
 
@@ -398,6 +401,7 @@ class ProjectEntityView(BaseApiView):
         if value['data_type'] == 'file':
             try: 
                 patch_file_obj_entity(client, project_id, value, path)
+                process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
