@@ -55,7 +55,7 @@ class SystemListingView(BaseApiView):
                 response['default_host'] = system_def.host
                 response['default_system'] = system_id
         else:
-            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public']
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public' or sys['system'] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME]
 
         return JsonResponse(response)
 
@@ -70,6 +70,8 @@ class SystemDefinitionView(BaseApiView):
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == systemId:
+                client = service_account()
+            if systemId.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse({'message': 'Unauthorized'}, status=401)
@@ -91,6 +93,8 @@ class TapisFilesView(BaseApiView):
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == system and path.startswith(public_sys['homeDir'].strip('/')):
+                client = service_account()
+            if system and system.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse(
