@@ -28,7 +28,8 @@ class TestOperations(TestCase):
         client.files.listFiles.assert_called_with(systemId='test.system',
                                                   path='/path/to/file',
                                                   offset=1,
-                                                  limit=100)
+                                                  limit=100,
+                                                  headers={'X-Tapis-Tracking-ID': ''})
 
         mock_response_listing = [{'system': 'test.system',
                                   'type': 'file',
@@ -112,7 +113,11 @@ class TestOperations(TestCase):
 
         move(client, 'test.system', '/path/to/src', 'test.system', '/path/to/dest')
 
-        client.files.moveCopy.assert_called_with(systemId='test.system', path='/path/to/src', operation='MOVE', newPath='path/to/dest/src')
+        client.files.moveCopy.assert_called_with(systemId='test.system',
+                                                 path='/path/to/src',
+                                                 operation='MOVE',
+                                                 newPath='path/to/dest/src',
+                                                 headers={'X-Tapis-Tracking-ID': ''})
 
         self.assertEqual(mock_indexer.apply_async.call_count, 3)
 
@@ -128,7 +133,11 @@ class TestOperations(TestCase):
 
         copy(client, 'test.system', '/path/to/src', 'test.system', '/path/to/dest')
 
-        client.files.moveCopy.assert_called_with(systemId='test.system', path='/path/to/src', operation='COPY', newPath='path/to/dest/src')
+        client.files.moveCopy.assert_called_with(systemId='test.system',
+                                                 path='/path/to/src',
+                                                 operation='COPY',
+                                                 newPath='path/to/dest/src',
+                                                 headers={'X-Tapis-Tracking-ID': ''})
 
         self.assertEqual(mock_indexer.apply_async.call_count, 2)
 
