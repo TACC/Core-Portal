@@ -35,6 +35,9 @@ from pathlib import Path
 from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
 from portal.apps.projects.tasks import process_file, sync_files_without_metadata
+from portal.libs.files.file_processing import resize_cover_image
+from portal.libs.agave.utils import service_account
+from django.http.multipartparser import MultiPartParser
 
 LOGGER = logging.getLogger(__name__)
 
@@ -133,21 +136,34 @@ class ProjectsApiView(BaseApiView):
     @transaction.atomic
     def post(self, request):  # pylint: disable=no-self-use
         """POST handler."""
-        data = json.loads(request.body)
-        title = data['title']
-        description = data['description']
-        metadata = data['metadata']
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        metadata = request.POST.get('metadata')
+        cover_image = request.FILES.get('cover_image')
 
         workspace_number = increment_workspace_count()
-        workspace_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
+        system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
         if metadata is not None: 
-            metadata["projectId"] = workspace_id
+            metadata = json.loads(metadata)
+
+            if cover_image:
+                metadata['cover_image'] = f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}'
+
+            metadata["projectId"] = system_id
             project_meta = create_project_metadata(metadata)
             initialize_project_graph(project_meta.project_id)
 
         client = request.user.tapis_oauth.client
         system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number)
+
+        # Upload cover image to media folder
+        if cover_image: 
+            service_client = service_account()
+            resized_file = resize_cover_image(cover_image)
+            service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
+                                path=f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}', 
+                                file=resized_file)
 
         return JsonResponse(
             {
@@ -190,6 +206,11 @@ class ProjectInstanceApiView(BaseApiView):
             project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
             prj.update(get_ordered_value(project.name, project.value))
             prj["projectId"] = project_id
+
+            if prj["cover_image"] is not None:
+                service_client = service_account()
+                postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, path=prj['cover_image'], allowedUses=-1)
+                prj["cover_image_url"] = postit.redeemUrl
 
             if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
                 sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
@@ -236,17 +257,42 @@ class ProjectInstanceApiView(BaseApiView):
         :param request: Request object
         :param str project_id: Project Id.
         """
-        data = json.loads(request.body)
-        metadata = data['metadata']
+        query_dict, multi_value_dict = MultiPartParser(request.META, request, 
+                                            request.upload_handlers).parse()
+        
+        title = query_dict.get('title')
+        description = query_dict.get('description')
+        metadata = query_dict.get('metadata')
+        cover_image = multi_value_dict.get('cover_image')
+        
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         client = request.user.tapis_oauth.client
 
-        workspace_def = update_project(client, project_id, data['title'], data['description'])
+        workspace_def = update_project(client, project_id, title, description)
 
         if metadata is not None:
-            entity = patch_project_entity(project_id_full, metadata) 
+            metadata = json.loads(metadata)
+
+            if cover_image:
+                metadata['cover_image'] = f'media/{project_id}/cover_image/{cover_image.name}'
+    
+            entity = patch_project_entity(project_id_full, metadata)
             workspace_def.update(get_ordered_value(entity.name, entity.value))
             workspace_def["projectId"] = project_id
+        
+        # Upload cover image to media folder
+        if cover_image: 
+            service_client = service_account()
+            resized_file = resize_cover_image(cover_image)
+            service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
+                                path=f'media/{project_id}/cover_image/{cover_image.name}', 
+                                file=resized_file)
+            
+            # Get the postit for the cover image
+            postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
+                                                       path=f'media/{project_id}/cover_image/{cover_image.name}',
+                                                       allowedUses=-1)
+            workspace_def["cover_image_url"] = postit.redeemUrl
 
         return JsonResponse(
             {
