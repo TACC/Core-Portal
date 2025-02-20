@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 import truncateMiddle from 'utils/truncateMiddle';
 import { useMutation } from '@tanstack/react-query';
 
+apiClient.defaults.timeout = 5 * 60 * 1000; // 5 minutes
+
 export async function uploadUtil({
   api,
   scheme,
