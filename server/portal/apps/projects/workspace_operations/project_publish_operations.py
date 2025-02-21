@@ -39,6 +39,27 @@ def _transfer_files(client, source_system_id, dest_system_id):
     transfer = service_client.files.createTransferTask(elements=transfer_elements)
     return transfer
 
+def _transfer_cover_image(source_system_id, dest_system_id, cover_image_path):
+    
+    if not cover_image_path:
+        logger.info('No cover image found for project, skipping transfer.')
+        return None
+    
+    service_client = service_account()
+
+    # Transfer the cover image to the destination system
+    transfer_elements = [
+        {
+            'sourceURI': f'tapis://{source_system_id}/{cover_image_path}',
+            'destinationURI': f'tapis://{dest_system_id}/{cover_image_path}'
+        }
+    ]
+
+    transfer = service_client.files.createTransferTask(elements=transfer_elements)
+    logger.info(f"Transfer task created for cover image: {transfer.uuid}")
+    return transfer
+
+
 def _check_transfer_status(service_client, transfer_task_id):
     transfer_details = service_client.files.getTransferTask(transferTaskId=transfer_task_id)
     return transfer_details.status
@@ -155,6 +176,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         # transfer files 
         client = service_account()
         transfer = _transfer_files(client, review_system_id, published_system_id)
+        cover_image_transfer = _transfer_cover_image(settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, 
+                                                     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, 
+                                                     project_meta.value.get("coverImage", None))
 
         poll_tapis_file_transfer.apply_async(
             args=(transfer.uuid, False),
@@ -180,6 +204,9 @@ def copy_graph_and_files_for_review_system(self, user_access_token, source_works
 
         client = user_account(user_access_token)
         transfer = _transfer_files(client, source_system_id, review_system_id)
+        cover_image_trasnfer = _transfer_cover_image(settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
+                                                     settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, 
+                                                     review_project.value.get("coverImage", None))
 
         logger.info(f'Transfer task submmited with id {transfer.uuid}')
 
