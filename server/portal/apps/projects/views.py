@@ -209,7 +209,15 @@ class ProjectInstanceApiView(BaseApiView):
 
             if prj["cover_image"] is not None:
                 service_client = service_account()
-                postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, path=prj['cover_image'], allowedUses=-1)
+
+                if prj["is_published_project"]:
+                    root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+                elif prj["is_review_project"]:
+                    root_system = settings.PORTAL_PROJECTS_REVIEW_ROOT_SYSTEM_NAME
+                else:
+                    root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+
+                postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1)
                 prj["cover_image_url"] = postit.redeemUrl
 
             if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
