@@ -15,27 +15,27 @@ allowed_actions = {
 }
 
 
-def tapis_get_handler(client, scheme, system, path, operation, **kwargs):
+def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id=None, **kwargs):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
     op = getattr(operations, operation)
-    return op(client, system, path, **kwargs)
+    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
 
 
 def tapis_post_handler(client, scheme, system,
-                       path, operation, body=None):
+                       path, operation, body=None, tapis_tracking_id=None):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied("")
 
     op = getattr(operations, operation)
-    return op(client, system, path, **body)
+    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
 
 
 def tapis_put_handler(client, scheme, system,
-                      path, operation, body=None):
+                      path, operation, body=None, tapis_tracking_id=None):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
 
     op = getattr(operations, operation)
 
-    return op(client, system, path, **body)
+    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
