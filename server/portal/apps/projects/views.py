@@ -217,7 +217,8 @@ class ProjectInstanceApiView(BaseApiView):
                 else:
                     root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
-                postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1)
+                postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1,
+                                                           validSeconds=86400)
                 prj["cover_image_url"] = postit.redeemUrl
 
             if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
@@ -299,7 +300,8 @@ class ProjectInstanceApiView(BaseApiView):
             # Get the postit for the cover image
             postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
                                                        path=f'media/{project_id}/cover_image/{cover_image.name}',
-                                                       allowedUses=-1)
+                                                       allowedUses=-1, 
+                                                       validSeconds=86400)
             workspace_def["cover_image_url"] = postit.redeemUrl
 
         return JsonResponse(
