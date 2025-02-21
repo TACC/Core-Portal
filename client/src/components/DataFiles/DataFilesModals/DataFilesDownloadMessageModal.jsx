@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  InputGroupAddon,
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage, SectionMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
@@ -51,21 +44,65 @@ const DataFilesDownloadMessageModal = () => {
     }
   };
 
-  const compressCallback = () => {
-    const { filenameDisplay, compressionType } = formRef.current.values;
+  // Toggles the Large Download Modal when a user selects files to download totaling more than 2 GB
+  const toggleDataFilesLargeDownloadModal = () => {
     dispatch({
-      type: 'DATA_FILES_COMPRESS',
+      type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
-        filename: filenameDisplay,
-        files: selected,
-        scheme: params.scheme,
-        compressionType,
-        onSuccess: {
-          type: 'DATA_FILES_TOGGLE_MODAL',
-          payload: { operation: 'downloadMessage', props: {} },
-        },
+        operation: 'largeDownload',
+        props: {},
       },
     });
+  };
+
+  // Toggles the No Folders Modal when a user selects 1 or more folders to download
+  const toggleDataFilesNoFoldersModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'noFolders',
+        props: {},
+      },
+    });
+  };
+
+  const compressCallback = () => {
+    const { filenameDisplay, compressionType } = formRef.current.values;
+    let containsFolder = false;
+    let totalFileSize = 0;
+    const maxFileSize = 2 * 1024 * 1024 * 1024;
+    // Add up the file sizes of all files and shows if the user selected a folder
+    for (let i = 0; i < selectedFiles.length; i++) {
+      totalFileSize = totalFileSize + selectedFiles[i].length;
+      if (selectedFiles[i].format == 'folder') {
+        containsFolder = true;
+      }
+    }
+    // Run the dispatch if the user does not select any folders...
+    if (containsFolder === false) {
+      // ...and if the total file size is below 2 GB
+      if (totalFileSize < maxFileSize) {
+        dispatch({
+          type: 'DATA_FILES_COMPRESS',
+          payload: {
+            filename: filenameDisplay,
+            files: selected,
+            scheme: params.scheme,
+            compressionType,
+            onSuccess: {
+              type: 'DATA_FILES_TOGGLE_MODAL',
+              payload: { operation: 'downloadMessage', props: {} },
+            },
+          },
+        });
+        // Prevent the compression process and redirect the user to Globus otherwise
+      } else {
+        toggleDataFilesLargeDownloadModal();
+      }
+      // Prevents compression of folders if a folder is among the selected files
+    } else {
+      toggleDataFilesNoFoldersModal();
+    }
   };
 
   const initialValues = {
@@ -129,22 +166,17 @@ const DataFilesDownloadMessageModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon
-                      addonType="append"
-                      className={styles['input-field']}
+                    <Input
+                      type="select"
+                      name="compressionType"
+                      bsSize="sm"
+                      onChange={handleSelectChange}
+                      disabled={formDisabled}
+                      className={styles['bg-color']}
                     >
-                      <Input
-                        type="select"
-                        name="compressionType"
-                        bsSize="sm"
-                        onChange={handleSelectChange}
-                        disabled={formDisabled}
-                        className={styles['bg-color']}
-                      >
-                        <option value="zip">.zip</option>
-                        <option value="tgz">.tar.gz</option>
-                      </Input>
-                    </InputGroupAddon>
+                      <option value="zip">.zip</option>
+                      <option value="tgz">.tar.gz</option>
+                    </Input>
                   }
                 />
                 <p>

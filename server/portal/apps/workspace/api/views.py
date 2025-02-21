@@ -10,8 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
+from django.core.exceptions import PermissionDenied
+from tapipy.tapis import TapisResult
+from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -21,10 +22,14 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import check_job_for_timeout
+from portal.apps.workspace.api.utils import (
+    check_job_for_timeout,
+    test_system_credentials,
+)
+from portal.utils import get_client_ip
+
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -82,38 +87,24 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def _test_listing_with_existing_keypair(system, user):
-    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
-    tapis = user.tapis_oauth.client
-
-    # Check for existing keypair stored for this hostname
-    try:
-        keys = user.ssh_keys.for_hostname(hostname=system.host)
-        priv_key_str = keys.private_key()
-        publ_key_str = keys.public
-    except ObjectDoesNotExist:
-        return False
-
-    # Attempt listing a second time after credentials are added to system
-    try:
-        create_system_credentials(user.tapis_oauth.client,
-                                  user.username, publ_key_str,
-                                  priv_key_str, system.id)
-        tapis.files.listFiles(systemId=system.id, path="/")
-    except BaseTapyException:
-        return False
-
-    return True
-
-
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get('appId')
         if app_id:
+            METRICS.info(
+                "Apps",
+                extra={
+                    "user": request.user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": "getApp",
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {"query": request.GET.dict()},
+                },
+            )
             app_version = request.GET.get('appVersion')
-            METRICS.info("user:{} is requesting app id:{} version:{}".format(request.user.username, app_id, app_version))
             data = _get_app(app_id, app_version, request.user)
 
             # Check if default storage system needs keys pushed
@@ -124,11 +115,21 @@ class AppsView(BaseApiView):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
-                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    success = test_system_credentials(system_def, request.user)
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
-            METRICS.info("user:{} is requesting all apps".format(request.user.username))
+            METRICS.info(
+                "Apps",
+                extra={
+                    "user": request.user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": "getApps",
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {"query": request.GET.dict()},
+                },
+            )
             data = {'appListing': tapis.apps.getApps()}
 
         return JsonResponse(
@@ -165,6 +166,18 @@ class JobsView(BaseApiView):
         if operation not in allowed_actions:
             raise PermissionDenied
 
+        METRICS.info(
+            "Jobs",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": operation,
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": request.GET.dict()},
+            },
+        )
+
         op = getattr(self, operation)
         data = op(tapis, request)
 
@@ -184,7 +197,7 @@ class JobsView(BaseApiView):
 
     def select(self, client, request):
         job_uuid = request.GET.get('job_uuid')
-        data = client.jobs.getJob(jobUuid=job_uuid)
+        data = client.jobs.getJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
 
         return data
 
@@ -198,7 +211,7 @@ class JobsView(BaseApiView):
             skip=offset,
             orderBy='lastUpdated(desc),name(asc)',
             _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
-            select='allAttributes'
+            select='allAttributes', headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
 
         return data
@@ -231,15 +244,25 @@ class JobsView(BaseApiView):
             request_body={
                 "search": sql_queries
             },
-            select="allAttributes"
+            select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
         return data
 
     def delete(self, request, *args, **kwargs):
+        METRICS.info(
+            "Jobs",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "delete",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": request.GET.dict()},
+            },
+        )
         tapis = request.user.tapis_oauth.client
         job_uuid = request.GET.get('job_uuid')
-        METRICS.info("user:{} is deleting job uuid:{}".format(request.user.username, job_uuid))
-        data = tapis.jobs.hideJob(jobUuid=job_uuid)
+        data = tapis.jobs.hideJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
         return JsonResponse(
             {
                 'status': 200,
@@ -259,11 +282,47 @@ class JobsView(BaseApiView):
         if job_uuid and job_action:
             if job_action == 'resubmit':
                 METRICS.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
-                data = tapis.jobs.resubmitJob(jobUuid=job_uuid)
+                data = tapis.jobs.resubmitJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
+                if isinstance(data, TapisResult):
+                    metrics_info = {
+                        "body": body,
+                    }
+                    response_uuid = data.get("uuid", None)
+                    if response_uuid:
+                        metrics_info["response_uuid"] = response_uuid
+                    METRICS.info(
+                        "Jobs",
+                        extra={
+                            "user": username,
+                            "sessionId": getattr(request.session, "session_key", ""),
+                            "operation": "resubmitJob",
+                            "agent": request.META.get("HTTP_USER_AGENT"),
+                            "ip": get_client_ip(request),
+                            "info": metrics_info,
+                        },
+                    )
 
             elif job_action == 'cancel':
                 METRICS.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
-                data = tapis.jobs.cancelJob(jobUuid=job_uuid)
+                data = tapis.jobs.cancelJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
+                if isinstance(data, TapisResult):
+                    metrics_info = {
+                        "body": body,
+                    }
+                    response_uuid = data.get("uuid", None)
+                    if response_uuid:
+                        metrics_info["response_uuid"] = response_uuid
+                    METRICS.info(
+                        "Jobs",
+                        extra={
+                            "user": username,
+                            "sessionId": getattr(request.session, "session_key", ""),
+                            "operation": "cancelJob",
+                            "agent": request.META.get("HTTP_USER_AGENT"),
+                            "ip": get_client_ip(request),
+                            "info": metrics_info,
+                        },
+                    )
             else:
                 raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
                     username,
@@ -297,6 +356,15 @@ class JobsView(BaseApiView):
                     homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
+            execSystemId = job_post.get("execSystemId")
+            if not execSystemId:
+                app = _get_app(job_post["appId"], job_post["appVersion"], request.user)
+                execSystemId = app["definition"].jobAttributes.execSystemId
+
+            if not job_post.get("appVersion"):
+                app = _get_app(job_post["appId"], None, request.user)
+                job_post["appVersion"] = app["definition"].version
+
             # Check for and set license environment variable if app requires one
             lic_type = body.get('licenseType')
             if lic_type:
@@ -313,14 +381,14 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post['archiveSystemId'], job_post['execSystemId']])):
+            for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    success = test_system_credentials(system_def, request.user)
                     if not success:
-                        logger.info(f"Keys for user {username} must be manually pushed to system: {system_id}")
+                        logger.info(f"Unable to create credentials for {username} in system: {system_id}")
                         return JsonResponse(
                             {
                                 'status': 200,
@@ -343,7 +411,6 @@ class JobsView(BaseApiView):
                                                            [{'key': '_INTERACTIVE_WEBHOOK_URL', 'value':  wh_base_url}]
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
-                execSystemId = job_post['execSystemId']
                 system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
                 tasdir = get_user_data(username)['homeDirectory']
                 if system:
@@ -370,7 +437,27 @@ class JobsView(BaseApiView):
             ]
 
             logger.info("user:{} is submitting job:{}".format(username, job_post))
-            response = tapis.jobs.submitJob(**job_post)
+            response = tapis.jobs.submitJob(**job_post, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
+
+            if isinstance(response, TapisResult):
+                metrics_info = {
+                    "body": body,
+                }
+                response_uuid = response.get("uuid", None)
+                if response_uuid:
+                    metrics_info["response_uuid"] = response_uuid
+                METRICS.info(
+                    "Jobs",
+                    extra={
+                        "user": username,
+                        "sessionId": getattr(request.session, "session_key", ""),
+                        "operation": "submitJob",
+                        "agent": request.META.get("HTTP_USER_AGENT"),
+                        "ip": get_client_ip(request),
+                        "info": metrics_info,
+                    },
+                )
+
             return JsonResponse(
                 {
                     'status': 200,
@@ -415,7 +502,7 @@ class SystemsView(BaseApiView):
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
         tapis = request.user.tapis_oauth.client
-        data = tapis.jobs.getJobHistory(jobUuid=job_uuid)
+        data = tapis.jobs.getJobHistory(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
         return JsonResponse(
             {
                 'status': 200,
@@ -429,7 +516,8 @@ class JobHistoryView(BaseApiView):
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="MINE")
+        # Only shows enabled versions of apps
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="MINE")
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -441,7 +529,8 @@ class AppsTrayView(BaseApiView):
 
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(enabled.eq.true)", listType="SHARED_PUBLIC")
+        # Only shows enabled versions of apps
+        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="SHARED_PUBLIC")
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority

@@ -7,6 +7,7 @@ import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
+import { useTrash } from 'hooks/datafiles/mutations';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `action icon-${iconName}`;
@@ -40,6 +41,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const { toggle } = useModal();
   const { selectedFiles } = useSelectedFiles();
   const { params } = useFileListing('FilesListing');
+  const { trash } = useTrash();
 
   const history = useHistory();
   const location = useLocation();
@@ -143,12 +145,26 @@ const DataFilesToolbar = ({ scheme, api }) => {
       (scheme === 'private' || scheme === 'projects')
   );
 
+  const hasActiveAllocation = (state) => {
+    return (
+      state.allocations.portal_alloc ||
+      (Array.isArray(state.allocations.active) &&
+        state.allocations.active.length > 0)
+    );
+  };
+
   const showCompress = !!useSelector(
-    (state) => state.workbench.config.extractApp && modifiableUserData
+    (state) =>
+      state.workbench.config.extractApp &&
+      modifiableUserData &&
+      hasActiveAllocation(state)
   );
 
   const showExtract = !!useSelector(
-    (state) => state.workbench.config.compressApp && modifiableUserData
+    (state) =>
+      state.workbench.config.compressApp &&
+      modifiableUserData &&
+      hasActiveAllocation(state)
   );
 
   const showMakePublic = useSelector(
@@ -174,6 +190,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleExtractModal = () =>
     toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
+  const toggleLargeDownloadModal = () =>
+    toggle({ operation: 'largeDownload', props: {} });
+
   const toggleLinkModal = () => {
     dispatch({
       type: 'DATA_FILES_LINK',
@@ -190,10 +209,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
   const download = () => {
     if (canDownload) {
-      dispatch({
-        type: 'DATA_FILES_DOWNLOAD',
-        payload: { file: selectedFiles[0] },
-      });
+      // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
+      const maxFileSize = 2 * 1024 * 1024 * 1024;
+      if (selectedFiles[0].length < maxFileSize) {
+        dispatch({
+          type: 'DATA_FILES_DOWNLOAD',
+          payload: { file: selectedFiles[0] },
+        });
+      } else {
+        toggleLargeDownloadModal();
+      }
     } else {
       toggle({
         operation: 'downloadMessage',
@@ -202,20 +227,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
-  const trash = useCallback(() => {
-    const filteredSelected = selectedFiles.filter(
-      (f) => status[f.system + f.path] !== 'SUCCESS'
-    );
+  const homeDir = selectedSystem?.homeDir;
 
-    dispatch({
-      type: 'DATA_FILES_TRASH',
-      payload: {
-        src: filteredSelected,
-        homeDir: selectedSystem?.homeDir || '',
-        reloadCallback: reloadPage,
-      },
+  const trashCallback = useCallback(() => {
+    trash({
+      destSystem: selectedSystem.system,
+      homeDir: homeDir,
+      callback: reloadPage,
     });
-  }, [selectedFiles, selectedSystem, reloadPage]);
+  }, [selectedFiles, reloadPage, status]);
 
   const empty = () => {
     dispatch({
@@ -306,7 +326,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
           <ToolbarButton
             text={!inTrash ? 'Trash' : 'Empty'}
             iconName="trash"
-            onClick={!inTrash ? trash : empty}
+            onClick={!inTrash ? trashCallback : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
             className={!inTrash ? '' : 'is-empty'}
           />

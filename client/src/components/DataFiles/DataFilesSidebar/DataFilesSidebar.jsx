@@ -5,7 +5,7 @@ import {
   Nav,
   NavItem,
   NavLink,
-  ButtonDropdown,
+  Dropdown,
   DropdownMenu,
   DropdownToggle,
   DropdownItem,
@@ -67,13 +67,9 @@ const DataFilesAddButton = ({ readOnly }) => {
   const writeItemStyle = disabled ? 'read-only' : '';
 
   return (
-    <div id="add-button-wrapper">
-      <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-        <DropdownToggle
-          color="primary"
-          id="data-files-add"
-          className="data-files-btn"
-        >
+    <>
+      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+        <DropdownToggle color="primary" id="data-files-add">
           + Add
         </DropdownToggle>
         <DropdownMenu>
@@ -89,6 +85,7 @@ const DataFilesAddButton = ({ readOnly }) => {
               <i className="icon-folder" /> {sharedWorkspaces.name}
             </DropdownItem>
           )}
+          <DropdownItem divider />
           <DropdownItem
             className={`complex-dropdown-item ${styles[writeItemStyle]}`}
             onClick={toggleUploadModal}
@@ -101,8 +98,8 @@ const DataFilesAddButton = ({ readOnly }) => {
             </span>
           </DropdownItem>
         </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+      </Dropdown>
+    </>
   );
 };
 
@@ -150,7 +147,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   ];
 
   return (
-    <div className={`data-files-sidebar ${styles['root']}`}>
+    <div className={`nav-sidebar data-files-sidebar ${styles['root']}`}>
       <Sidebar sidebarItems={sidebarItems} addItemsBefore={addItems} />
     </div>
   );

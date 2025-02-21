@@ -91,7 +91,8 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     raw_listing = client.files.listFiles(systemId=system,
                                          path=path,
                                          offset=int(offset),
-                                         limit=int(limit))
+                                         limit=int(limit),
+                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
         
     folder_entity_value = get_value(system, path)
 
@@ -244,7 +245,7 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
     return redeemUrl
 
 @transaction.atomic
-def mkdir(client, system, path, dir_name, metadata=None):
+def mkdir(client, system, path, dir_name, metadata=None, **kwargs):
     """Create a new directory.
 
     Params
@@ -282,7 +283,7 @@ def mkdir(client, system, path, dir_name, metadata=None):
     return {"result": "OK"}
 
 @transaction.atomic
-def move(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None):
+def move(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None, **kwargs):
     """Move a current file to the given destination.
 
     Params
@@ -332,7 +333,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
         move_result = client.files.moveCopy(systemId=src_system,
                                             path=src_path,
                                             operation="MOVE",
-                                            newPath=dest_path_full)
+                                            newPath=dest_path_full,
+                                            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
         tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
@@ -403,7 +405,8 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
         copy_result = client.files.moveCopy(systemId=src_system,
                                             path=src_path,
                                             operation="COPY",
-                                            newPath=dest_path_full)
+                                            newPath=dest_path_full,
+                                            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     else:
 
         src_url = f'tapis://{src_system}/{src_path}'
@@ -412,7 +415,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
             'destinationURI': dest_url
-        }])
+        }], headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
         copy_result = {
             'uuid': copy_response.uuid,
@@ -456,10 +459,12 @@ def delete(client, system, path):
     except DataFilesMetadata.DoesNotExist:
         pass
 
+def delete(client, system, path, *args, **kwargs):
     return client.files.delete(systemId=system,
-                               path=path)
+                               path=path,
+                               headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
-def rename(client, system, path, new_name, metadata=None):
+def rename(client, system, path, new_name, metadata=None, *args, **kwargs):
     """Renames a file. This is performed under the hood by moving the file to
     the same parent folder but with a new name.
 
@@ -480,9 +485,9 @@ def rename(client, system, path, new_name, metadata=None):
     """
     new_path = os.path.dirname(path)
     return move(client, src_system=system, src_path=path,
-                dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata)
+                dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata, **kwargs)
 
-def trash(client, system, path, homeDir, metadata=None):
+def trash(client, system, path, homeDir, metadata=None, *args, **kwargs):
     """Move a file to the .Trash folder.
 
     Params
@@ -520,12 +525,12 @@ def trash(client, system, path, homeDir, metadata=None):
         print(f'Error creating trash entity: {e}')
 
     resp = move(client, system, path, system,
-                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata)
+                f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata, **kwargs)
 
     return resp
 
 @transaction.atomic
-def upload(client, system, path, uploaded_file, metadata=None):
+def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
     """Upload a file.
     Params
     ------
@@ -565,7 +570,10 @@ def upload(client, system, path, uploaded_file, metadata=None):
         uploaded_file.seek(0)
         transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token, encoded_file))
 
-    response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
+    response_json = client.files.insert(systemId=system,
+                                        path=dest_path,
+                                        file=uploaded_file,
+                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
                                       'filePath': path,
@@ -598,7 +606,10 @@ def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
-    postit = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+    postit = client.files.createPostIt(systemId=system,
+                                       path=path, allowedUses=max_uses,
+                                       validSeconds=lifetime,
+                                       headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     url = postit.redeemUrl
     txt = None
@@ -637,7 +648,7 @@ def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
     return {'href': url, 'fileType': file_type, 'content': txt, 'error': error}
 
 
-def download_bytes(client, system, path):
+def download_bytes(client, system, path, *args, **kwargs):
     """Returns a BytesIO object representing the file.
 
     Params

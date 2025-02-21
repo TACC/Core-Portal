@@ -92,7 +92,9 @@ function JobsStatus({ status, fancy, jobUuid }) {
   return (
     <div className={styles.root}>
       {fancy && color ? (
-        <Badge color={color}>{userStatus}</Badge>
+        <Badge className={`badge-${color}`} color={null}>
+          {userStatus}
+        </Badge>
       ) : (
         <span>{userStatus}</span>
       )}

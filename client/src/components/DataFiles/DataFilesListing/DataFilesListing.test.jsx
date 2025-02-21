@@ -12,6 +12,15 @@ import * as DataFilesModalListingTable from '../DataFilesModals/DataFilesModalTa
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -236,18 +245,20 @@ describe('DataFilesListing', () => {
     });
 
     const { queryByText } = render(
-      <Provider store={store}>
-        <BrowserRouter history={history}>
-          <DataFilesListing
-            api="tapis"
-            scheme="projects"
-            system="test.system"
-            resultCount={0}
-            path="/"
-            isPublic={false}
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter history={history}>
+            <DataFilesListing
+              api="tapis"
+              scheme="projects"
+              system="test.system"
+              resultCount={0}
+              path="/"
+              isPublic={false}
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
     expect(queryByText(/Search/)).toBeNull();
   });
@@ -269,16 +280,18 @@ describe('DataFilesListing - Section Name Determination', () => {
     ).mockImplementationOnce(() => 'Mock System Name');
 
     const { getByPlaceholderText } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <DataFilesListing
-            api="tapis"
-            scheme="private"
-            system="test.system"
-            path="/home/user" // Same as homeDir
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <DataFilesListing
+              api="tapis"
+              scheme="private"
+              system="test.system"
+              path="/home/user" // Same as homeDir
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
 
     expect(getByPlaceholderText('Search Mock System Name')).toBeInTheDocument();
@@ -292,20 +305,121 @@ describe('DataFilesListing - Section Name Determination', () => {
     ).mockImplementationOnce(() => currentDirName);
 
     const { getByPlaceholderText } = render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <DataFilesListing
-            api="tapis"
-            scheme="private"
-            system="test.system"
-            path="/home/user/some/other/dir" // Different from homeDir
-          />
-        </BrowserRouter>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <DataFilesListing
+              api="tapis"
+              scheme="private"
+              system="test.system"
+              path="/home/user/some/other/dir" // Different from homeDir
+            />
+          </BrowserRouter>
+        </Provider>
+      </QueryClientProvider>
     );
 
     expect(
       getByPlaceholderText(`Search ${currentDirName}`)
     ).toBeInTheDocument();
+  });
+});
+describe('DataFilesListing - showViewPath', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+  it('renders the "Path" column when showViewPath is true', () => {
+    const testfile = {
+      system: 'test.system',
+      path: '/path/to/file',
+      name: 'testfile',
+      format: 'file',
+      length: 4096,
+      lastModified: '2019-06-17T15:49:53-05:00',
+      _links: { self: { href: 'href.test' } },
+    };
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const store = mockStore({
+      ...initialMockState,
+      files: {
+        ...initialMockState.files,
+        listing: { FilesListing: [testfile] },
+      },
+      workbench: {
+        config: {
+          viewPath: true,
+        },
+      },
+    });
+    // Spy on useMemo to capture the cells array
+    const useMemoSpy = vi
+      .spyOn(React, 'useMemo')
+      .mockImplementation((fn) => fn());
+    const { getByText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="private"
+        system="test.system"
+        resultCount={4}
+        path="/"
+      />,
+      store,
+      history
+    );
+    // Path cell is added
+    expect(getByText('Path')).toBeDefined();
+    // Check the length of the cells array
+    const cellsArray = useMemoSpy.mock.results.find((result) =>
+      Array.isArray(result.value)
+    ).value;
+    expect(cellsArray.length).toBe(6);
+  });
+  it('does not render the "Path" column when showViewPath is false', () => {
+    const testfile = {
+      system: 'test.system',
+      path: '/path/to/file',
+      name: 'testfile',
+      format: 'file',
+      length: 4096,
+      lastModified: '2019-06-17T15:49:53-05:00',
+      _links: { self: { href: 'href.test' } },
+    };
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const store = mockStore({
+      ...initialMockState,
+      files: {
+        ...initialMockState.files,
+        listing: { FilesListing: [testfile] },
+      },
+      workbench: {
+        config: {
+          viewPath: false,
+        },
+      },
+    });
+    // Spy on useMemo to capture the cells array
+    const useMemoSpy = vi
+      .spyOn(React, 'useMemo')
+      .mockImplementation((fn) => fn());
+    const { queryByText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="private"
+        system="test.system"
+        resultCount={4}
+        path="/"
+      />,
+      store,
+      history
+    );
+    // Path should not exist as a new cell
+    expect(queryByText('Path')).toBeNull();
+    // Check the length of the cells array
+    const cellsArray = useMemoSpy.mock.results.find((result) =>
+      Array.isArray(result.value)
+    ).value;
+    expect(cellsArray.length).toBe(5);
   });
 });

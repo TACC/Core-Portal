@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody, Container, Col, Row } from 'reactstrap';
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { InlineMessage, LoadingSpinner } from '_common';
 import { has } from 'lodash';
@@ -94,10 +94,23 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
-      <ModalHeader className="has-MuiTabs" toggle={toggle} charCode="&#xe912;">
-        <Tabs value={selectedTab} onChange={handleTabChange}>
-          <Tab label="View Team" />
-          {isManager && <Tab label="Manage Team" />}
+      <ModalHeader
+        className="pe-3 has-MuiTabs"
+        toggle={toggle}
+        charCode="&#xe912;"
+      >
+        <Tabs
+          style={{ marginBottom: '-8px' }}
+          value={selectedTab}
+          onChange={handleTabChange}
+        >
+          <Tab style={{ width: '160px', color: '#222222' }} label="View Team" />
+          {isManager && (
+            <Tab
+              style={{ width: '160px', color: '#222222' }}
+              label="Manage Team"
+            />
+          )}
         </Tabs>
       </ModalHeader>
       <ModalBody className={selectedTab === 0 ? 'd-flex p-0' : 'pb-0'}>

@@ -113,6 +113,8 @@ export const initialFilesState = {
       loading: false,
     },
     dynamicform: {},
+    largeDownload: {},
+    noFolders: {},
   },
   loadingScroll: {
     FilesListing: false,
@@ -121,6 +123,7 @@ export const initialFilesState = {
   error: {
     FilesListing: false,
     modal: false,
+    message: '',
   },
   folderMetadata: null,
   listing: {
@@ -165,6 +168,8 @@ export const initialFilesState = {
     downloadMessage: false,
     dynamicform: false,
     publicationRequest: false,
+    largeDownload: false,
+    noFolders: false,
   },
   modalProps: {
     preview: {},
@@ -339,6 +344,14 @@ export function files(state = initialFilesState, action) {
         selectAll: {
           ...state.selectAll,
           [action.payload.section]: setValue,
+        },
+      };
+    case 'DATA_FILES_SET_ERROR':
+      return {
+        ...state,
+        error: {
+          ...state.error,
+          message: action.payload.message,
         },
       };
     case 'DATA_FILES_SET_LOADING':

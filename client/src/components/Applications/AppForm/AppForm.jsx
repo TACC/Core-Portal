@@ -152,7 +152,6 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
     if (previousValues) {
-      let valueUpdated = false;
       let updatedValues = { ...values };
 
       // Set the current allocation
@@ -171,7 +170,6 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
           updatedValues,
           formStateUpdateHandler
         );
-        valueUpdated = true;
       }
       if (previousValues.execSystemId !== values.execSystemId) {
         updatedValues = execSystemChangeHandler(
@@ -179,16 +177,16 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
           values,
           formStateUpdateHandler
         );
-        valueUpdated = true;
       }
 
       if (
         previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
       ) {
         updatedValues = updateValuesForQueue(app, values);
-        valueUpdated = true;
       }
-      if (valueUpdated) setValues(updatedValues);
+      if (JSON.stringify(updatedValues) !== JSON.stringify(values)) {
+        setValues(updatedValues);
+      }
     }
     setPreviousValues(values);
   }, [app, values, setValues, formStateUpdateHandler]);
@@ -235,6 +233,7 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
+  const { systemNeedsKeys, pushKeysSystem } = app;
 
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
@@ -257,10 +256,7 @@ export const AppSchemaForm = ({ app }) => {
       state.allocations
     );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
-
-    const keyService = state.systems.storage.configuration.find(
-      (sys) => sys.system === defaultSystem && sys.default
-    )?.keyservice;
+    const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
       configuration.length &&
@@ -300,8 +296,6 @@ export const AppSchemaForm = ({ app }) => {
   const hideManageAccount = useSelector(
     (state) => state.workbench.config.hideManageAccount
   );
-
-  const { systemNeedsKeys, pushKeysSystem } = app;
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
