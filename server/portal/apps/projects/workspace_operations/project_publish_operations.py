@@ -119,6 +119,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             value=nx.node_link_data(publication_tree),
         )
 
+        source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
+        source_project = ProjectMetadata.get_project_by_id(source_project_id)
+
         # Mint a DataCite DOI
         existing_doi = source_project.value.get("doi", None)
 
@@ -127,8 +130,6 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         doi = datacite_resp["data"]["id"]
 
         # Update project metadata with datacite doi
-        source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
-        source_project = ProjectMetadata.get_project_by_id(source_project_id)
         source_project.value['doi'] = doi
         source_project.value['publicationDate'] = published_project.created
         source_project.save()
