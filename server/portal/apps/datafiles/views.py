@@ -200,7 +200,7 @@ class TapisFilesView(BaseApiView):
                                  'body': request.POST.dict()
                              }})
 
-            response = tapis_post_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", {**body, 'metadata': metadata})
+            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{request.session.session_key}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
