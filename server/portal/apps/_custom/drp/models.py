@@ -137,6 +137,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     is_review_project: Optional[bool] = None
     is_published_project: Optional[bool] = None
     guest_users: list[DrpGuestUser] = []
+    cover_image: Optional[str] = None
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""
