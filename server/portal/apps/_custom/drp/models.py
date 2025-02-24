@@ -49,6 +49,7 @@ class FileObj(DrpMetadataModel):
     system: str
     name: str
     path: str
+    legacy_path: Optional[str] = None
     type: Literal["file", "dir"]
     length: Optional[int] = None
     last_modified: Optional[str] = None
@@ -97,6 +98,7 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
 
     publication_title: str
     publication_author: str
+    publication_doi: str
     publication_date_of_publication: str
     publication_publisher: str
     publication_description: Optional[str] = None
