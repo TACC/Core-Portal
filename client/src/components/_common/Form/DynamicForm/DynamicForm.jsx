@@ -300,6 +300,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
               name={field.name}
               label={field.label}
               type="file"
+              accept={field?.validation?.accept}
               description={field?.description}
               required={field?.validation?.required}
               onChange={(event) => {

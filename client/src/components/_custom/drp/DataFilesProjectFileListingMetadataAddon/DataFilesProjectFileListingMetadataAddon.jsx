@@ -15,6 +15,8 @@ const excludeKeys = [
   'sample',
   'digital_dataset',
   'file_objs',
+  'cover_image',
+  'cover_image_url',
 ];
 
 const DataFilesProjectFileListingMetadataAddon = ({
@@ -33,6 +35,8 @@ const DataFilesProjectFileListingMetadataAddon = ({
     license,
     doi,
     keywords,
+    cover_image,
+    cover_image_url,
   }) => {
     const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
     const dateLabel = publication_date ? 'Publication Date' : 'Created';
@@ -45,6 +49,8 @@ const DataFilesProjectFileListingMetadataAddon = ({
       license: license ?? 'None',
       ...(doi && { doi }),
       ...(keywords && { keywords }),
+      ...(cover_image && { cover_image }),
+      ...(cover_image_url && { cover_image_url }),
     };
   };
 
@@ -105,8 +111,9 @@ const DataFilesProjectFileListingMetadataAddon = ({
             <DataDisplay
               data={getProjectMetadata(metadata)}
               path={path}
-              excludeKeys={[]}
+              excludeKeys={excludeKeys}
               modalData={getProjectModalMetadata(metadata)}
+              coverImage={metadata.cover_image}
             />
           </>
         ))}
