@@ -23,3 +23,11 @@
 .expand-card > div:first-child {
   padding-bottom: 20px;
 }
+
+.array-field-description {
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  margin-top: -5px; /* Reduce space between title and description */
+  margin-bottom: 10px; /* Add space before form fields */
+}
