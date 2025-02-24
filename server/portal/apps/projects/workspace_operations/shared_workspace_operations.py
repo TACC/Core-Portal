@@ -4,7 +4,6 @@ from tapipy.tapis import Tapis
 from typing import Literal
 from django.conf import settings
 from django.contrib.auth import get_user_model
-# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
 
 
 import logging
@@ -111,11 +110,13 @@ def submit_workspace_acls_job(
     return res
 
 
-def create_workspace_dir(workspace_id: str) -> str:
+def create_workspace_dir(workspace_id: str, **kwargs) -> str:
     client = service_account()
     system_id = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
     path = f"{workspace_id}"
-    client.files.mkdir(systemId=system_id, path=path)
+    client.files.mkdir(systemId=system_id,
+                       path=path,
+                       headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return path
 
 
@@ -162,7 +163,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str):
+def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -171,7 +172,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
     workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
     # Service client creates directory and gives owner write permissions
-    create_workspace_dir(workspace_id)
+    create_workspace_dir(workspace_id, **kwargs)
     set_workspace_acls(service_client,
                        settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
                        workspace_id,
@@ -181,16 +182,6 @@ def create_shared_workspace(client: Tapis, title: str, owner: str):
 
     # User creates the system and adds their credential
     system_id = create_workspace_system(client, workspace_id, title)
-    # priv_key, pub_key = createKeyPair()
-    # register_public_key(owner,
-    #                     pub_key,
-    #                     system_id)
-    # create_system_credentials(client, owner, pub_key, priv_key, system_id)
-    # create_system_credentials(service_client,
-    #                           settings.PORTAL_ADMIN_USERNAME,
-    #                          settings.PORTAL_PROJECTS_PUBLIC_KEY,
-    #                           settings.PORTAL_PROJECTS_PRIVATE_KEY,
-    #                           system_id)
 
     return system_id
 
@@ -209,14 +200,6 @@ def add_user_to_workspace(client: Tapis,
                        username,
                        "add",
                        role)
-
-    # Code to generate/push user keys to a workspace
-    # (uncomment to add per-user credentials)
-    # priv_key, pub_key = createKeyPair()
-    # register_public_key(username,
-    #                     pub_key,
-    #                     system_id)
-    # create_system_credentials(client, username, pub_key, priv_key, system_id)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
