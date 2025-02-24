@@ -275,17 +275,21 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
 
     file_obj: FileObj = get_file_obj(project_id, path)
 
-    if file and file_obj: 
+    if file and file_obj:
         value = get_ordered_value(constants.FILE, file_obj.get('value'))
 
         file_name = file_obj.get('name')
 
         _, file_ext = os.path.splitext(file_obj.get('name'))
 
-        if file_ext in ['.tif', '.tiff']:
-            adv_image = conf_tiff(file)
-        else:
-            adv_image = conf_raw(value, file)
+        try:
+            if file_ext in ['.tif', '.tiff']:
+                adv_image = conf_tiff(file)
+            else:
+                adv_image = conf_raw(value, file)
+        except Exception as e:
+            logger.error(f'Could not generate advanced image for {file_name} due to error: {e}')
+            return
 
         try:
             if value.get('use_binary_correction'):
