@@ -188,15 +188,18 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
-  const homeDir = selectedSystem?.homeDir;
-
   const trashCallback = useCallback(() => {
+    // Specific handling for shared workspaces.
+    const homeDir = selectedSystem?.homeDir || '';
+    const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
+    if (!destSystem) return;
+
     trash({
-      destSystem: selectedSystem.system,
-      homeDir: homeDir,
+      destSystem,
+      homeDir,
       callback: reloadPage,
     });
-  }, [selectedFiles, reloadPage, status]);
+  }, [selectedFiles, selectedSystem, reloadPage, status]);
 
   const empty = () => {
     dispatch({
