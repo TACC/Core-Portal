@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import networkx as nx
+from pathlib import Path
 from portal.apps.projects.migration_utils.sql_db_utils import get_project_by_id, query_projects, query_published_projects
 from portal.apps.publications.models import Publication
 from portal.libs.agave.utils import service_account
@@ -33,6 +34,16 @@ class Command(BaseCommand):
             action='store_true',
             help="Moves files to a regular project location"
         )
+    
+    def transfer_cover_image(self, client, workspace_id, cover_pic):
+        root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME if self.publication else settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+        cover_image_transfer_elements = [{
+            'sourceURI': f'tapis://cloud.data/corral-repl/utexas/pge-nsf/media/{cover_pic.strip("/")}',
+            'destinationURI': f'tapis://{root_system}/media/{workspace_id}/cover_image/{Path(cover_pic).name}'
+        }]
+        cover_image_transfer = client.files.createTransferTask(elements=cover_image_transfer_elements)
+        print(f"Cover image transfer started: {cover_image_transfer}")
+
 
     def handle(self, *args, **options):
         self.dry_run = options['dry_run']
@@ -63,7 +74,6 @@ class Command(BaseCommand):
                 project_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX if self.publication else settings.PORTAL_PROJECTS_SYSTEM_PREFIX
                 project_id = f'{project_prefix}.{pub_id}'
                 
-
                 if self.publication:
                     pub = Publication.objects.get(project_id=pub_id)
                     project_graph = pub.tree
@@ -92,8 +102,13 @@ class Command(BaseCommand):
                 if not self.dry_run:
                     transfer = client.files.createTransferTask(elements=transfer_elements)
                     print(f"Transfer started for {len(file_mapping)} files: {transfer}")
+
+                    # transfer the cover image
+                    if project["cover_pic"]:
+                        self.transfer_cover_image(client, pub_id, project["cover_pic"])
                 else: 
                     print(f"Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.")
             except Exception as e:
                 print(f"Error processing project {project['id']}: {e}")
                 continue
+    

@@ -215,6 +215,7 @@ class Command(BaseCommand):
         project_data = {
             **project_metadata_value,
             "project_id": system_id,
+            "cover_image": f"media/{workspace_id}/cover_image/{Path(project_metadata_value['cover_image']).name}" if project_metadata_value.get('cover_image') else None,
         }
 
         print(f"Creating project {project_data['title']}")
@@ -248,12 +249,17 @@ class Command(BaseCommand):
             "is_review_project": False,
             "is_published_project": True if self.publication else False,
             "publication_date": str(project['creation_date']) if self.publication else None,  
-            "related_publications": self.get_related_publications(project['id'])
+            "related_publications": self.get_related_publications(project['id']),
+            "cover_image": project['cover_pic'] if project['cover_pic'] else None,
         }
 
         if self.dry_run:
             project_id = 'dry_run_project_id'
             project_data['project_id'] = project_id
+            if project_data.get('cover_image'):
+                project_data['cover_image'] = f"media/{project_id}/cover_image/{Path(project_data['cover_image']).name}"
+            else:
+                project_data['cover_image'] = None
             validated_project = SCHEMA_MAPPING[constants.PROJECT].model_validate(project_data)
             # print(f"Dry run: Successfully created project with legacy id: {project['id']}")
         else:
