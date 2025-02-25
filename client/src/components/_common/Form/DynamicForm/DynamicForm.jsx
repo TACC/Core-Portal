@@ -23,21 +23,18 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     modifiedField
   ) => {
     const { dependency } = field;
-    console.log(field.options)
     const filteredOptions = field.options.filter(option => {
       if (option.value === 'other') {
         return true;
       }
       return option.dependentId === values[dependency.name];
     });
-    console.log(filteredOptions)
     const updatedOptions = [{ value: '', label: '' }, ...filteredOptions];
 
     // Only update the field value if the modified field is the dependency field
     if (modifiedField && modifiedField.name === dependency.name) {
       setFieldValue(field.name, updatedOptions[0].value);
     }
-    console.log(updatedOptions)
     return {
       ...field,
       hidden: false,
