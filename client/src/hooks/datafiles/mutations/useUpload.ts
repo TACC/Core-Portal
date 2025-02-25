@@ -22,7 +22,6 @@ export async function uploadUtil({
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
-    return { file, path: apiPath };
   }
   const formData = new FormData();
   const fileField = file.get('uploaded_file') as Blob;
