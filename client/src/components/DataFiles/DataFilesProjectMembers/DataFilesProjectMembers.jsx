@@ -101,7 +101,7 @@ const DataFilesProjectMembers = ({
   };
 
   const memberColumn = {
-    Header: 'Members',
+    Header: 'Authors',
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
