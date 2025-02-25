@@ -1,23 +1,27 @@
 import logging
+import requests
+from requests.exceptions import HTTPError
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
+from django.conf import settings
+from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from tapipy.errors import BaseTapyException
-from portal.utils.encryption import createKeyPair
+
 
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials_with_keys(client,
-                                        username,
-                                        public_key,
-                                        private_key,
-                                        system_id,
-                                        skipCredentialCheck=False) -> int:
+def create_system_credentials(client,
+                              username,
+                              public_key,
+                              private_key,
+                              system_id,
+                              skipCredentialCheck=False) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using keys")
+    logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
     data = {'privateKey': private_key, 'publicKey': public_key}
     client.systems.createUserCredential(
         systemId=system_id,
@@ -27,21 +31,16 @@ def create_system_credentials_with_keys(client,
     )
 
 
-def create_system_credentials(client,
-                              username,
-                              system_id,
-                              createTmsKeys,
-                              skipCredentialCheck=False) -> int:
+def register_public_key(username, publicKey, system_id) -> int:
     """
-    Create user's auth credential on a Tapis system. This Tapis API uses TMS.
+    Push a public key to the Key Service API.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using TMS")
-    client.systems.createUserCredential(
-        systemId=system_id,
-        userName=username,
-        createTmsKeys=createTmsKeys,
-        skipCredentialCheck=skipCredentialCheck,
-    )
+    url = "https://api.tacc.utexas.edu/keys/v2/" + username
+    headers = {"Authorization": "Bearer {}".format(settings.KEY_SERVICE_TOKEN)}
+    data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    return response.status_code
 
 
 def set_user_permissions(user, system_id):
@@ -78,12 +77,6 @@ class SystemAccessStepV3(AbstractStep):
         self.state = SetupState.PENDING
         self.log("Awaiting TACC systems access.")
 
-    def get_system(self, system_id) -> None:
-        """
-        Get the system definition
-        """
-        return self.user.tapis_oauth.client.systems.getSystem(systemId=system_id)
-
     def check_system(self, system_id) -> None:
         """
         Check whether a user already has access to a storage system by attempting a listing.
@@ -108,17 +101,21 @@ class SystemAccessStepV3(AbstractStep):
             except BaseTapyException:
                 self.log(f"Creating credentials for system: {system}")
 
-            system_definition = self.get_system(system)
+            (priv, pub) = createKeyPair()
+
             try:
-                if system_definition.get("defaultAuthnMethod") != 'TMS_KEYS':
-                    (priv, pub) = createKeyPair()
-                    create_system_credentials_with_keys(
-                        self.user.tapis_oauth.client, self.user.username, pub, priv, system
-                    )
-                else:
-                    create_system_credentials(
-                        self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
-                    )
+                register_public_key(self.user.username, pub, system)
+                self.log(f"Successfully registered public key for system: {system}")
+            except HTTPError as e:
+                logger.error(e)
+                self.fail(f"Failed to register public key with key service for system: {system}")
+
+            try:
+                create_system_credentials(self.user.tapis_oauth.client,
+                                          self.user.username,
+                                          pub,
+                                          priv,
+                                          system)
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as e:
                 logger.error(e)
