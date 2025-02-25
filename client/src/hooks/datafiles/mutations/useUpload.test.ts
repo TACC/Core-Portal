@@ -38,12 +38,12 @@ describe('uploadUtil', () => {
     );
   });
 
-  it('should not call post when path is "/"', async () => {
+  it('should call post when path is "/"', async () => {
     vi.mocked(apiClient.post).mockResolvedValue({
       data: { file: 'mockFile', path: '' },
     });
     await uploadUtil({ api, scheme, system, path: '/', file });
-    expect(apiClient.post).not.toHaveBeenCalled();
+    expect(apiClient.post).toHaveBeenCalled();
   });
 
   it('should construct the correct URL when path is regular folder', async () => {
