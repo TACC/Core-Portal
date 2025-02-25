@@ -41,6 +41,7 @@ class DrpFileMetadata(DrpMetadataModel):
     offset_to_first_image: Optional[int] = None
     gap_between_images: Optional[int] = None
     byte_order: Optional[Literal['big_endian', 'little_endian']] = None
+    use_binary_correction: Optional[bool] = None
 
 class FileObj(DrpMetadataModel):
     """Model for associated files"""
@@ -48,6 +49,7 @@ class FileObj(DrpMetadataModel):
     system: str
     name: str
     path: str
+    legacy_path: Optional[str] = None
     type: Literal["file", "dir"]
     length: Optional[int] = None
     last_modified: Optional[str] = None
@@ -96,6 +98,7 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
 
     publication_title: str
     publication_author: str
+    publication_doi: str
     publication_date_of_publication: str
     publication_publisher: str
     publication_description: Optional[str] = None
@@ -134,6 +137,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     is_review_project: Optional[bool] = None
     is_published_project: Optional[bool] = None
     guest_users: list[DrpGuestUser] = []
+    cover_image: Optional[str] = None
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""

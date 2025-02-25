@@ -23,7 +23,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
     const userAccess = state.projects.metadata.members
       .filter((member) =>
         member.user
-          ? member.user.username === state.authenticatedUser.user.username
+          ? member.user.username === state.authenticatedUser?.user?.username
           : { access: null }
       )
       .map((currentUser) => {

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Section, SectionContent, LoadingSpinner, Button } from '_common';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './DataDisplay.module.scss';
-import { useFileListing } from 'hooks/datafiles';
 import { useDispatch } from 'react-redux';
 
 // Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
@@ -80,9 +79,17 @@ const processModalViewableData = (data) => {
   }));
 };
 
-const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
-  const location = useLocation();
+const processCoverImage = (data) => {
+  return [{
+    label: 'Cover Image',
+    value: 
+      <a href={data.cover_image_url} target='_blank' rel="noreferrer" className='wb-link'>
+        {data.cover_image.split('/').pop()}
+      </a>
+  }]
+}
 
+const DataDisplay = ({ data, path, excludeKeys, modalData, coverImage }) => {
   //filter out empty values and unwanted keys
   let processedData = Object.entries(data)
     .filter(([key, value]) => value !== '' && !excludeKeys.includes(key))
@@ -90,6 +97,10 @@ const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
       label: formatLabel(key),
       value: typeof value === 'string' ? formatLabel(value) : value,
     }));
+
+  if (coverImage) {
+    processedData.unshift(...processCoverImage(data));
+  }
 
   if (path) {
     processedData.unshift(...processSampleAndOriginData(data, path));

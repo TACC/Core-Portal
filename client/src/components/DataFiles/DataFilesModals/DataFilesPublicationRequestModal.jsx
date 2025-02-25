@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { DescriptionList } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesPublicationRequestModal.module.scss';
-import { formatDateTime } from 'utils/timeFormat';
+import { formatDate, formatDateTime } from 'utils/timeFormat';
 
 const DataFilesPublicationRequestModal = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const DataFilesPublicationRequestModal = () => {
         _order: index,
       };
 
-      const heading = `Publication Request ${index + 1}`;
+      const heading = `Publication Request | ${formatDate(new Date(request.created_at))}`;
 
       data[heading] = <DescriptionList data={publicationRequestDataObj} />;
     });
