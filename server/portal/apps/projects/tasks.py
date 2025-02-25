@@ -289,6 +289,14 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
                 adv_image = conf_raw(value, file)
         except Exception as e:
             logger.error(f'Could not generate advanced image for {file_name} due to error: {e}')
+
+            Notification.objects.create(**{
+                Notification.EVENT_TYPE: 'default',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: username,
+                Notification.MESSAGE: f'Failed to Generate Images for {Path(path).name}',
+            })
+            
             return
 
         try:

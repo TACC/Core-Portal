@@ -457,7 +457,8 @@ class ProjectEntityView(BaseApiView):
         if value['data_type'] == 'file':
             try: 
                 patch_file_obj_entity(client, project_id, value, path)
-                process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
+                if (len(value) > 1):
+                    process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
