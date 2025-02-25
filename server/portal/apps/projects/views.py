@@ -212,7 +212,7 @@ class ProjectInstanceApiView(BaseApiView):
                 if prj.get("is_published_project", False):
                     root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
                 elif prj.get("is_review_project", False):
-                    root_system = settings.PORTAL_PROJECTS_REVIEW_ROOT_SYSTEM_NAME
+                    root_system = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME
                 else:
                     root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
