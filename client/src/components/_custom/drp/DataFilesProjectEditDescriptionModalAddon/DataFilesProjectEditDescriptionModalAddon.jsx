@@ -10,14 +10,14 @@ import styles from './DataFilesProjectEditDescriptionModalAddon.module.scss';
 const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   const { setFieldValue } = useFormikContext();
 
-  const { data: form, isLoading } = useQuery('form_EDIT_PROJECT', () =>
-    fetchUtil({
+  const { data: form, isLoading } = useQuery('form_EDIT_PROJECT', async () => {
+    const response = await fetchUtil({
       url: 'api/forms',
-      params: {
-        form_name: 'EDIT_PROJECT_ADDON',
-      },
-    })
-  );
+      params: { form_name: 'EDIT_PROJECT_ADDON' },
+    });
+    return response;
+  });
+  
 
   const { metadata } = useSelector((state) => state.projects);
 

@@ -100,6 +100,11 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
     publication_publisher: Optional[str] = None
     publication_description: Optional[str] = None
     publication_link: Optional[str] = None
+    publication_type: Literal[
+        "context",
+        "linked_dataset",
+        "cited_by"
+    ]
 
 class DrpGuestUser(DrpMetadataModel):
     """Model for DRP Guest User"""
