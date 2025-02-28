@@ -7,6 +7,7 @@ import fs from 'fs';
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/core/static/',
+  publicDir: 'public',
   css: { preprocessorOptions: { scss: { charset: false, api: 'modern' } } },
   plugins: [
     {
@@ -22,6 +23,7 @@ export default defineConfig({
       hooks: resolve(__dirname, 'src/hooks'),
       utils: resolve(__dirname, 'src/utils'),
       styles: resolve(__dirname, 'src/styles'),
+      public: resolve(__dirname, 'src/public'),
     },
   },
 

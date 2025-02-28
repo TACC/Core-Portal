@@ -21,9 +21,9 @@
 
 
 
-      {% include "includes/nav_cms.html" with className="navbar-nav" only %}
+      {% include "includes/nav_cms.html" with className="navbar-nav  me-auto" only %}
 
-      {% include "includes/nav_search.html" with className="form-inline  ml-auto" only %}
+      {% include "includes/nav_search.html" with className="form-inline" only %}
       {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
       {% include "includes/nav_portal.html" with className="navbar-nav" user=user settings=settings only %}
 
