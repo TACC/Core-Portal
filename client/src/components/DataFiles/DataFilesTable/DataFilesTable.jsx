@@ -34,6 +34,11 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       (sysDef) => sysDef.id === state.files.params.FilesListing.system
     )
   );
+
+  const { fetchSelectedSystem } = useSystems();
+
+  const selectedSystem = fetchSelectedSystem(params ?? {});
+
   const currSystemHost = currSystem ? currSystem.host : '';
 
   const modalRefs = useSelector((state) => state.files.refs);
@@ -118,30 +123,29 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         ['private', 'projects'].includes(scheme) &&
         currSystem?.effectiveUserId === currentUser
       ) {
-        const sectionMessage =
-          currSystem?.defaultAuthnMethod === 'TMS_KEYS' ? (
-            <span>
-              For help, please{' '}
-              <Link
-                className="wb-link"
-                to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-              >
-                submit a ticket.
-              </Link>
-            </span>
-          ) : (
-            <span>
-              If this is your first time accessing this system, you may need to{' '}
-              <a
-                className="data-files-nav-link"
-                type="button"
-                href="#"
-                onClick={pushKeys}
-              >
-                push your keys
-              </a>
-            </span>
-          );
+        const sectionMessage = selectedSystem?.keyservice ? (
+          <span>
+            For help, please{' '}
+            <Link
+              className="wb-link"
+              to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+            >
+              submit a ticket.
+            </Link>
+          </span>
+        ) : (
+          <span>
+            If this is your first time accessing this system, you may need to{' '}
+            <a
+              className="data-files-nav-link"
+              type="button"
+              href="#"
+              onClick={pushKeys}
+            >
+              push your keys
+            </a>
+          </span>
+        );
 
         return (
           <div className="h-100 listing-placeholder">
