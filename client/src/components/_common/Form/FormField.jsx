@@ -155,7 +155,7 @@ const FormField = ({
       </FormFieldWrapper>
       {hasAddon ? <FieldNote /> : null}
     </>
-  );  
+  );
 };
 FormField.propTypes = {
   id: PropTypes.string,
