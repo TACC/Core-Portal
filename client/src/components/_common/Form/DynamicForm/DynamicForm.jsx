@@ -229,10 +229,10 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                       <Expand
                         className={styles['expand-card']}
                         detail={
-                          values[field.name][index][field.fields[0].name] || ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] || ''
                         }
                         isOpenDefault={
-                          values[field.name][index][field.fields[0].name] === ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] === ''
                             ? true
                             : false
                         }
