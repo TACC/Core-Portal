@@ -27,11 +27,7 @@
     <!-- Header CSS -->
     <link rel="stylesheet" href="/static/site_cms/css/build/core-styles.theme.default.css">
     <link rel="stylesheet" href="/static/site_cms/css/build/core-styles.header.css">
-    {% if DEBUG %}
-    <link rel="stylesheet" href="http://localhost:3000/core/static/src/styles/core-styles-v2.header.css">
-    {% else %}
-    <link rel="stylesheet" href="/core/static/src/styles/core-styles-v2.header.css">
-    {% endif %}
+    <link rel="stylesheet" href="{% static 'src/styles/core-styles-v2.header.css' %}">
 
     {% block styles %}{% endblock %}
   </head>
