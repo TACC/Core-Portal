@@ -4,7 +4,7 @@
 version: "3.8"
 services:
   cms:
-    image: taccwma/core-cms:ff737a3
+    image: taccwma/core-cms:latest
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini

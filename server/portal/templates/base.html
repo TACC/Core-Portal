@@ -15,10 +15,16 @@
     {% endif %}
     <link rel="canonical" href="{{request.get_full_path}}">
     <base href="/">
+    <!-- Header CSS (from CMS) -->
+    <link rel="stylesheet" href="/static/site_cms/css/build/core-styles.theme.default.css">
+    <link rel="stylesheet" href="/static/site_cms/css/build/core-styles.header.css">
+    <!-- Header CSS (from Portal) -->
+    {% if DEBUG %}
+    <link rel="stylesheet" href="http://localhost:3000/core/static/src/styles/core-styles-v2.header.css">
+    {% else %}
+    <link rel="stylesheet" href="/core/static/src/styles/core-styles-v2.header.css">
+    {% endif %}
     {% block head_extra %}{% endblock %}
-    <!-- Core CSS -->
-    <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css" />
     {% if settings.PORTAL_CSS_FILENAMES|length %}
     <!-- Project CSS -->
       {% for stylesheet in settings.PORTAL_CSS_FILENAMES %}
