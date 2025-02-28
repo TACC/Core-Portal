@@ -10,9 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from tapipy.tapis import TapisResult
-from tapipy.errors import InternalServerError, UnauthorizedError
+from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -22,12 +22,10 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import (
-    check_job_for_timeout,
-    test_system_credentials,
-)
+from portal.apps.workspace.api.utils import check_job_for_timeout
 from portal.utils import get_client_ip
 
 
@@ -87,6 +85,30 @@ def _get_app(app_id, app_version, user):
     return data
 
 
+def _test_listing_with_existing_keypair(system, user):
+    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
+    tapis = user.tapis_oauth.client
+
+    # Check for existing keypair stored for this hostname
+    try:
+        keys = user.ssh_keys.for_hostname(hostname=system.host)
+        priv_key_str = keys.private_key()
+        publ_key_str = keys.public
+    except ObjectDoesNotExist:
+        return False
+
+    # Attempt listing a second time after credentials are added to system
+    try:
+        create_system_credentials(user.tapis_oauth.client,
+                                  user.username, publ_key_str,
+                                  priv_key_str, system.id)
+        tapis.files.listFiles(systemId=system.id, path="/")
+    except BaseTapyException:
+        return False
+
+    return True
+
+
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -115,7 +137,7 @@ class AppsView(BaseApiView):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
-                    success = test_system_credentials(system_def, request.user)
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
@@ -386,9 +408,9 @@ class JobsView(BaseApiView):
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = test_system_credentials(system_def, request.user)
+                    success = _test_listing_with_existing_keypair(system_def, request.user)
                     if not success:
-                        logger.info(f"Unable to create credentials for {username} in system: {system_id}")
+                        logger.info(f"Keys for user {username} must be manually pushed to system: {system_id}")
                         return JsonResponse(
                             {
                                 'status': 200,
