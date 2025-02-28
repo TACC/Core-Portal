@@ -16,10 +16,16 @@ import {
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
-const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
+const DataFilesProjectFileListing = ({
+  rootSystem,
+  system,
+  path,
+  basePath,
+}) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
   const { isPublicationSystem, isReviewSystem } = useSystems();
+  if (!basePath) basePath = '/workbench/data';
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
@@ -172,7 +178,7 @@ const DataFilesProjectFileListing = ({ rootSystem, system, path }) => {
         scheme="projects"
         system={system}
         path={path || '/'}
-        basePath="/publications"
+        basePath={basePath}
         rootSystem={rootSystem}
       />
     </SectionTableWrapper>

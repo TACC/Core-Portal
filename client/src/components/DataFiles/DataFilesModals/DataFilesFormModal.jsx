@@ -15,19 +15,16 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = (updatedPath = '') => {
-    // Updated regex to capture the URL up until the last project segment
-    let projectUrl = location.pathname.replace(
-      /(\/projects\/[^/]+\/[^/]+)\/?.*/,
-      '$1'
-    );
+  const reloadPage = (updatedPath = '') => {  
+    const match = location.pathname.match(/^\/workbench\/data\/tapis\/[^\/]+\/[^\/]+\/[^\/]+/);
+    if (!match) return;
 
-    if (projectUrl.endsWith('/')) {
-      projectUrl = projectUrl.slice(0, -1);
-    }
-
-    const path = updatedPath ? `${projectUrl}/${updatedPath}` : `${projectUrl}`;
-    history.replace(path);
+    const projectUrl = match[0];
+  
+    const cleanProjectUrl = projectUrl.replace(/\/$/, '');
+    const cleanUpdatedPath = updatedPath.replace(/^\/+/, '');
+  
+    history.replace(`${cleanProjectUrl}/${cleanUpdatedPath}`);
   };
 
   const { form, selectedFile, formName, additionalData, useReloadCallback } =

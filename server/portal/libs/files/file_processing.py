@@ -1,11 +1,13 @@
 import numpy as np
 import io
+import os
 import logging
 from matplotlib import pyplot as plt
 import csv
 import matplotlib.animation as anim
 import tempfile
 import tifffile as tiff
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -181,3 +183,38 @@ def create_animation(img):
 
     logger.debug('Animated Gif Created')
     return gif_binary_data
+
+def resize_cover_image(img):
+    
+    max_size = 500
+    image = Image.open(img)
+    (width, height) = image.size
+
+    _, ext = os.path.splitext(img.name)
+
+    if width > max_size or height > max_size:
+        # Calculate the resizing modifier
+        modifier = max_size / width if width > height else max_size / height
+        resized_width = width * modifier
+        resized_height = height * modifier
+        size = (round(resized_width), round(resized_height))
+
+        # Resize the image
+        image = image.resize(size, Image.Resampling.LANCZOS)
+
+        format_map = {
+            '.jpg': 'JPEG',
+            '.jpeg': 'JPEG',
+            '.png': 'PNG',
+            '.gif': 'GIF',
+        }
+
+        # Save the resized image to a binary stream
+        buffer = io.BytesIO()
+        image.save(buffer, format=format_map[ext])  # Preserve the original format
+        buffer.seek(0)  # Reset the stream's position to the beginning
+
+        # Clean up
+        image.close()
+
+        return buffer.getvalue()
