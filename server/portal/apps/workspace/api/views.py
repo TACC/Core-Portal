@@ -25,10 +25,7 @@ from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import (
-    check_job_for_timeout,
-    test_system_credentials,
-)
+from portal.apps.workspace.api.utils import check_job_for_timeout
 from portal.utils import get_client_ip
 
 
