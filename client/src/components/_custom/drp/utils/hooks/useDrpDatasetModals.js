@@ -111,12 +111,6 @@ const useDrpDatasetModals = (
             }),
             { value: 'other', label: 'Other (Specify Below)' }
           );
-          // field.options.push(
-          //      {
-          //       value: 'other',
-          //       label: 'Other',
-          //     }
-          // );
         }
       });
 
