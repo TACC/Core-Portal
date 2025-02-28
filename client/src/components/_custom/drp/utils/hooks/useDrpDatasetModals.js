@@ -100,7 +100,7 @@ const useDrpDatasetModals = (
               };
             })
           );
-        } else if (field.name === 'base_origin_data') {
+        } else if (field.name === 'digital_dataset') {
           field.options.push(
             ...originDatasets.map((originData) => {
               return {
@@ -108,7 +108,8 @@ const useDrpDatasetModals = (
                 label: originData.value.name,
                 dependentId: originData.value.sample,
               };
-            })
+            }),
+            { value: 'other', label: 'Other (Specify Below)' }
           );
         }
       });
