@@ -91,7 +91,7 @@ urlpatterns = [
     path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
     path('api/site-search/', include('portal.apps.site_search.api.urls', namespace='site_search_api')),
     path('api/forms/', include('portal.apps.forms.urls', namespace='forms')),
-    path('api/publications/', include('portal.apps.publications.urls', namespace='publications')),
+    path('api/publications/', include('portal.apps.publications.urls', namespace='publications_api')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
@@ -103,6 +103,7 @@ urlpatterns = [
                  namespace='googledrive-privacy-policy')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
     path('public-data/', include('portal.apps.public_data.urls', namespace='public')),
+    path('publications/', include('portal.apps.public_data.urls', namespace='publications')),
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 

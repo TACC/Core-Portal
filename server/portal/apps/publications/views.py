@@ -199,7 +199,7 @@ class PublicationListingView(BaseApiView):
                 'description': publication.value.get('description'),
                 'keywords': publication.value.get('keywords'),
                 'authors': publication.value.get('authors'),
-                'publication_date': publication.last_updated,
+                'publication_date': publication.created,
             }
             for publication in publications
         ]
