@@ -24,7 +24,6 @@ const DataFilesViewDataModal = () => {
 
     const descriptionListFormattedData = values.map((val) => {
       const formattedData = Object.entries(val).reduce((acc, [key, value]) => {
-        if (value === null || value === undefined) return acc;
         acc[formatLabel(key)] = value;
         return acc;
       }, {});
