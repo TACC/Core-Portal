@@ -217,6 +217,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 <div>
                   <div>
                     <h2>{field.label}</h2>
+                    {field.description && (
+                      <p className={styles['array-field-description']}>{field.description}</p>
+                    )}
                   </div>
                   {values[field.name]?.map((_, index) => (
                     <div
@@ -226,10 +229,10 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                       <Expand
                         className={styles['expand-card']}
                         detail={
-                          values[field.name][index][field.fields[0].name] || ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] || ''
                         }
                         isOpenDefault={
-                          values[field.name][index][field.fields[0].name] === ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] === ''
                             ? true
                             : false
                         }
