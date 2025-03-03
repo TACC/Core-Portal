@@ -185,17 +185,27 @@ class Command(BaseCommand):
 
     def get_related_publications(self, project_id):
         """Fetch related publications."""
-        return [
-            DrpProjectRelatedPublications(
+
+        related_pubs = query_related_publications(project_id)
+        migrated_related_pubs = []
+        
+        for pub in related_pubs:
+            pub_link = pub['doi'].split("doi:")[-1] if pub['doi'] else pub['url']
+
+            if not pub_link:
+                print(f'No related publication link found for {pub["title"]}')
+
+            migrated_related_pubs.append(DrpProjectRelatedPublications(
+                publication_type='cited_by',
                 publication_title=pub['title'],
+                publication_link=pub_link if pub_link else '',
                 publication_author=pub['author'],
-                publication_doi=pub['doi'].split("doi:")[-1] if pub['doi'] else '',
                 publication_date_of_publication=pub['publication_year'],
                 publication_publisher=pub['publisher'],
                 publication_description=pub['abstract'],
-                publication_link=pub['url']
-            ) for pub in query_related_publications(project_id)
-        ]
+            ))
+
+        return migrated_related_pubs
     
     def create_project(self, legacy_project_id, project_metadata_value):
 

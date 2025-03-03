@@ -96,13 +96,18 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
         extra="forbid",
     )
 
+    publication_type: Literal[
+        "context",
+        "linked_dataset",
+        "cited_by"
+    ]
     publication_title: str
-    publication_author: str
-    publication_doi: str
-    publication_date_of_publication: str
-    publication_publisher: str
+    publication_link: str
+    publication_author: Optional[str] = None
+    publication_doi: Optional[str] = None
+    publication_date_of_publication: Optional[str] = None
+    publication_publisher: Optional[str] = None
     publication_description: Optional[str] = None
-    publication_link: Optional[str] = None
 
 class DrpGuestUser(DrpMetadataModel):
     """Model for DRP Guest User"""
@@ -147,7 +152,7 @@ class DrpDatasetMetadata(DrpMetadataModel):
     )
 
     name: str
-    description: str
+    description: Optional[str] = None
     data_type: Literal[
         "sample", 
         "origin_data",
@@ -237,3 +242,4 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     sample: str
     # base_origin_data: Optional[str] = None
     digital_dataset: Optional[str] = None
+    digital_dataset_other_information: Optional[str] = None
