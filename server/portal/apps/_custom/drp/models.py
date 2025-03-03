@@ -223,7 +223,6 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     ]] = None
     dimensionality: Optional[str] = None
     digital_dataset: Optional[str] = None
-    description: str
     external_uri: Optional[str] = None # TODO_DRP: Remove in new model
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
