@@ -1,4 +1,4 @@
-@import url('@tacc/core-styles/src/lib/_imports/settings/color.css');
+@import url('@tacc/core-styles/dist/settings/color.css');
 
 /* If Design doc uses color on the left, use color on the right
   (When design is updated to use the new colors, we can remove this)
