@@ -17,12 +17,9 @@ Generated using nucleoapp.com
 -------------------------*/
 .icon,
 /* TACC: To also select icons that neglect `.icon` class */
-/* HELP: Solution is duplicated in `site.header.css` */
 :is([class^='icon-'], [class*=' icon-']):not(.icon) {
   display: inline-block;
   font: normal normal normal 1em/1 'cortal';
-
-  font-family: cortal !important; /* TACC: To override `site.header.css` */
 
   color: inherit;
   flex-shrink: 0;
