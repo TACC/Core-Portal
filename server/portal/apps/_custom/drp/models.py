@@ -196,9 +196,16 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     grain_size_min: Optional[float] = None
     grain_size_max: Optional[float] = None
     grain_size_avg: Optional[float] = None
+    grain_size_units: Optional[Literal[
+        "nanometer",
+        "micrometer",
+        "millimeter",
+        "other"
+    ]] = None
     porosity: Optional[float] = None
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
+    date_of_creation: Optional[str] = None
     identifier: Optional[str] = None
     location: Optional[str] = None # TODO_DRP: Remove in new model
 
