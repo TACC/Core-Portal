@@ -22,5 +22,22 @@
       scopeElement: container,
       ancestorActiveElementSelector: 'li'
     });
+
+    /* Make (CMS) Bootstrap 4 toggle compatible with (Portal) Bootstrap 5 */
+    [ ...container.querySelectorAll('[data-toggle]')].forEach(toggle => {
+      const cmsUsesBootstrap4Toggle = (
+        toggle.dataset.toggle !== undefined &&
+        toggle.dataset.bsToggle === undefined
+      )
+
+      if ( cmsUsesBootstrap4Toggle ) {
+        toggle.dataset.bsToggle = toggle.dataset.toggle;
+        delete toggle.dataset.toggle;
+        console.log(
+          'Replaced `data-toggle` with `data-bs-toggle` in `#s-cms-nav`.',
+          'To not need this, update CMS Bootstrap from 4 to 5.'
+        )
+      }
+    });
   });
 </script>
