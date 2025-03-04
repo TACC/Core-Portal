@@ -36,7 +36,6 @@ from portal.apps._custom.drp import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
 from portal.apps.projects.tasks import process_file, sync_files_without_metadata
 from portal.libs.files.file_processing import resize_cover_image
-from portal.libs.agave.utils import service_account
 from django.http.multipartparser import MultiPartParser
 
 LOGGER = logging.getLogger(__name__)
@@ -210,10 +209,10 @@ class ProjectInstanceApiView(BaseApiView):
             if prj["cover_image"] is not None:
                 service_client = service_account()
 
-                if prj["is_published_project"]:
+                if prj.get("is_published_project", False):
                     root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
-                elif prj["is_review_project"]:
-                    root_system = settings.PORTAL_PROJECTS_REVIEW_ROOT_SYSTEM_NAME
+                elif prj.get("is_review_project", False):
+                    root_system = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME
                 else:
                     root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
@@ -457,7 +456,8 @@ class ProjectEntityView(BaseApiView):
         if value['data_type'] == 'file':
             try: 
                 patch_file_obj_entity(client, project_id, value, path)
-                process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
+                if (len(value) > 1):
+                    process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:

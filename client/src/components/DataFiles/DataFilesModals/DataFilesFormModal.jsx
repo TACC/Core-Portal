@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, FormText } from 'reactstrap';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { useQuery } from 'react-query';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -109,6 +109,14 @@ const DataFilesFormModal = () => {
                   {form.heading}
                 </ModalHeader>
                 <ModalBody className={styles['modal-body-container']}>
+                  {form?.description && (
+                    <FormText
+                      className="form-field__help"
+                      color='muted'
+                    >
+                      {form.description}
+                    </FormText>
+                  )}
                   <DynamicForm
                     initialFormFields={form.form_fields ?? []}
                   ></DynamicForm>
