@@ -75,7 +75,7 @@ const DataFilesAddProjectModal = () => {
       type: 'PROJECTS_CREATE',
       payload: {
         title: values.title,
-        description: values.description || null,
+        description: values.description, // Ensure this is included
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -84,7 +84,7 @@ const DataFilesAddProjectModal = () => {
         onCreate,
       },
     });
-  };
+  };  
 
   const onAdd = (newUser) => {
     setMembers([...members, newUser]);
@@ -101,7 +101,12 @@ const DataFilesAddProjectModal = () => {
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
+    description: Yup.string()
+      .min(200, 'Description must be at least 200 characters')
+      .max(300, 'Description must be at most 300 characters')
+      .required('Please enter a description.'),
   });
+  
 
   return (
     <>
@@ -113,7 +118,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', description: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -122,7 +127,7 @@ const DataFilesAddProjectModal = () => {
               Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
-              <FormField
+            <FormField
                 name="title"
                 label={
                   <div>
@@ -130,17 +135,28 @@ const DataFilesAddProjectModal = () => {
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
+                    <br />
+                    <small style={{ color: '#666' }}>
+                      <em>The title should be descriptive and distinctive from related publications.</em>
+                    </small>
                   </div>
                 }
               />
-              {DataFilesAddProjectModalAddon && (
-                <DataFilesAddProjectModalAddon />
-              )}
-              <DataFilesProjectMembers
-                members={members}
-                onAdd={onAdd}
-                onRemove={onRemove}
+              <FormField
+                name="description"
+                label={
+                  <div>
+                    Dataset Description{' '}
+                    <br />
+                    <small style={{ color: '#666' }}>
+                      <em>Provide 200-300 words clearly describing the data as an independent output; do not copy related publication abstract.</em>
+                    </small>
+                  </div>
+                }
+                type="textarea"
               />
+              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
+              <DataFilesProjectMembers members={members} onAdd={onAdd} onRemove={onRemove} />
             </ModalBody>
             <ModalFooter>
               {error ? (
