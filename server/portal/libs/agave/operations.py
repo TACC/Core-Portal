@@ -517,10 +517,11 @@ def trash(client, system, path, homeDir, metadata=None, *args, **kwargs):
         mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
     try:
-        trash_entity = get_entity(system, f'{settings.TAPIS_DEFAULT_TRASH_NAME}')
-        if not trash_entity:
-            new_entity = create_entity_metadata(system, constants.TRASH, {})
-            add_node_to_project(system, 'NODE_ROOT', new_entity.uuid, new_entity.name, settings.TAPIS_DEFAULT_TRASH_NAME)
+        if metadata is not None:
+            trash_entity = get_entity(system, f'{settings.TAPIS_DEFAULT_TRASH_NAME}')
+            if not trash_entity:
+                new_entity = create_entity_metadata(system, constants.TRASH, {})
+                add_node_to_project(system, 'NODE_ROOT', new_entity.uuid, new_entity.name, settings.TAPIS_DEFAULT_TRASH_NAME)
     except Exception as e:
         print(f'Error creating trash entity: {e}')
 

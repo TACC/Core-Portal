@@ -175,8 +175,8 @@ class TapisFilesView(BaseApiView):
 
     def post(self, request, operation=None, scheme=None,
              handler=None, system=None, path='/'):
-        
-        metadata = json.loads(request.POST.get('metadata', None))
+
+        metadata = json.loads(request.POST.get("metadata", "null"))
         body = request.FILES.dict()
 
         try:

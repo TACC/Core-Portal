@@ -230,7 +230,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const trashCallback = useCallback(() => {
     // Specific handling for shared workspaces.
     const homeDir = selectedSystem?.homeDir || '';
-    const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
+    const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
     if (!destSystem) return;
 
     trash({
