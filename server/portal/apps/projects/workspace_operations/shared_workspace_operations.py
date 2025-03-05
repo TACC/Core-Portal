@@ -4,6 +4,7 @@ from tapipy.tapis import Tapis
 from typing import Literal
 from django.conf import settings
 from django.contrib.auth import get_user_model
+# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
 
 
 import logging
@@ -182,6 +183,16 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
 
     # User creates the system and adds their credential
     system_id = create_workspace_system(client, workspace_id, title)
+    # priv_key, pub_key = createKeyPair()
+    # register_public_key(owner,
+    #                     pub_key,
+    #                     system_id)
+    # create_system_credentials(client, owner, pub_key, priv_key, system_id)
+    # create_system_credentials(service_client,
+    #                           settings.PORTAL_ADMIN_USERNAME,
+    #                          settings.PORTAL_PROJECTS_PUBLIC_KEY,
+    #                           settings.PORTAL_PROJECTS_PRIVATE_KEY,
+    #                           system_id)
 
     return system_id
 
@@ -200,6 +211,14 @@ def add_user_to_workspace(client: Tapis,
                        username,
                        "add",
                        role)
+
+    # Code to generate/push user keys to a workspace
+    # (uncomment to add per-user credentials)
+    # priv_key, pub_key = createKeyPair()
+    # register_public_key(username,
+    #                     pub_key,
+    #                     system_id)
+    # create_system_credentials(client, username, pub_key, priv_key, system_id)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
