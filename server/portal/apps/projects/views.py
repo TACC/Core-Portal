@@ -186,7 +186,7 @@ class ProjectsApiView(BaseApiView):
                 "operation": "projects.create",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
-                "info": {"body": data, "id": system_id},
+                "info": {"body": request.POST.dict(), "id": system_id},
             },
         )
 
@@ -321,7 +321,7 @@ class ProjectInstanceApiView(BaseApiView):
                 "operation": "projects.patch",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
-                "info": {"body": data},
+                "info": {"body": query_dict},
             },
         )
 
