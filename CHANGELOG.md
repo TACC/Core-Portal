@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.11.3] 02-25-25
+
+### Added
+* task/WP-834 - Add behavior for ignoring DesignSafe-Corral allocation for running jobs (#1057)
+* task/WI-239: Add audit logs for datafiles/projects endpoints (#1047)
+
+### Fixed
+* WP-870: Fix broken file uploads and APCD file submissions (#1055)
+* WP-865 - Fix to make trash command in shared workspace work again (#1049)
+* Hotfix: increase axios timeout (#1062)
+* chore: do not clone bootstrap for tacc-search-bar (#971)
+
+
+
+## [3.12.0]
+
+### Added
+* Task/WP-832: switching to TMS for credentials (#1051)
+
+### Fixed
+* chore: do not clone bootstrap for tacc-search-bar (#971)
+
+## [3.11.2]
+
+### Added
+* task/WP-682: Fix Community Project Folders on Core portals (#1041)
+
+### Fixed
+* Quick: Add explicit CORS config to Vite (#1048)
+
+
+## [3.11.1]
+
+### Fixed
+* Bug/WP-835: Click through file location in site search results is failing (#1045)
+
+## [3.11.0]
+
+### Added
+* Task/WP-726: Mutation hook: Mkdir (#997)
+* Task/WP-727: Mutation hook: Upload file (#999)
+* Task/WP-68: Update DataFiles Unit Tests (#992)
+* Task/WP-505: APCD File Upload Failures Logging Request (#1013)
+* Task/WP-731: Mutation hook: Trash file/folder (#994)
+* task/WI-212:Fix security suggestions (#1030)
+* Task/WP-729: Mutation hook: Move files (#996)
+* Task/WP-724: Mutation Hooks: Compress Files (#1009)
+* refactor: wp-791 dropdown menu (#1028)
+* Task/WP-833: resource json update to include vista (#1042)
+
+### Fixed
+
+* Bug/WP-418: site search error when user does not have community file listing access. (#1005)
+* Bug/WP-779: [Regression] File preview is smaller compared to production (#1032)
+* Bug/WP-321: Removing oversized attachments from tickets (#1012)
+* Bug/WP-364: Ticket creation emails are not sent to 'cc' emails (#1017)
+* Bug/WP-782: Resized View Full Path link in modals (#1036)
+* WP-781: FIx UI formatting issues (#1038)
+
+### Removed
+* chore: remove class data-files-btn (#1029)
+
+
 ## [3.10.1]
 
 ### Fixed
@@ -1141,7 +1204,12 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.10.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.12.0...HEAD
+[3.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.12.0
+[3.11.3]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.3
+[3.11.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.2
+[3.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.1
+[3.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.0
 [3.10.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.1
 [3.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.0
 [3.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.9.0

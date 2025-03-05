@@ -214,6 +214,14 @@ def add_user_to_workspace(client: Tapis,
                        "add",
                        role)
 
+    # Code to generate/push user keys to a workspace
+    # (uncomment to add per-user credentials)
+    # priv_key, pub_key = createKeyPair()
+    # register_public_key(username,
+    #                     pub_key,
+    #                     system_id)
+    # create_system_credentials(client, username, pub_key, priv_key, system_id)
+
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
     set_workspace_permissions(client, username, system_id, role)
