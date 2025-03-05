@@ -1,9 +1,5 @@
 /* Shims for deprecated Bootstrap4 utils */
 
-.ml-auto {
-  margin-left: auto !important;
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
