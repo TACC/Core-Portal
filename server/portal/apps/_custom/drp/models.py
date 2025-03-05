@@ -49,6 +49,7 @@ class FileObj(DrpMetadataModel):
     system: str
     name: str
     path: str
+    legacy_path: Optional[str] = None
     type: Literal["file", "dir"]
     length: Optional[int] = None
     last_modified: Optional[str] = None
@@ -95,12 +96,18 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
         extra="forbid",
     )
 
+    publication_type: Literal[
+        "context",
+        "linked_dataset",
+        "cited_by"
+    ]
     publication_title: str
-    publication_author: str
-    publication_date_of_publication: str
-    publication_publisher: str
+    publication_link: str
+    publication_author: Optional[str] = None
+    publication_doi: Optional[str] = None
+    publication_date_of_publication: Optional[str] = None
+    publication_publisher: Optional[str] = None
     publication_description: Optional[str] = None
-    publication_link: Optional[str] = None
 
 class DrpGuestUser(DrpMetadataModel):
     """Model for DRP Guest User"""
@@ -135,6 +142,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     is_review_project: Optional[bool] = None
     is_published_project: Optional[bool] = None
     guest_users: list[DrpGuestUser] = []
+    cover_image: Optional[str] = None
 
 class DrpDatasetMetadata(DrpMetadataModel):
     """Model for Base DRP Dataset Metadata"""
@@ -144,7 +152,7 @@ class DrpDatasetMetadata(DrpMetadataModel):
     )
 
     name: str
-    description: str
+    description: Optional[str] = None
     data_type: Literal[
         "sample", 
         "origin_data",
@@ -188,9 +196,16 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     grain_size_min: Optional[float] = None
     grain_size_max: Optional[float] = None
     grain_size_avg: Optional[float] = None
+    grain_size_units: Optional[Literal[
+        "nanometer",
+        "micrometer",
+        "millimeter",
+        "other"
+    ]] = None
     porosity: Optional[float] = None
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
+    date_of_creation: Optional[str] = None
     identifier: Optional[str] = None
     location: Optional[str] = None # TODO_DRP: Remove in new model
 
@@ -214,6 +229,7 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
         "other"
     ]] = None
     dimensionality: Optional[str] = None
+    digital_dataset: Optional[str] = None
     external_uri: Optional[str] = None # TODO_DRP: Remove in new model
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
@@ -232,3 +248,4 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     sample: str
     # base_origin_data: Optional[str] = None
     digital_dataset: Optional[str] = None
+    digital_dataset_other_information: Optional[str] = None

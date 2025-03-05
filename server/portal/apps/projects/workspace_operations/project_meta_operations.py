@@ -87,7 +87,9 @@ def get_ordered_value(name, value):
             if item_type and hasattr(item_type, "model_fields"):
                 # Re-order each item in the list if it's a list of Pydantic models
                 ordered_value[field] = [
-                    {k: item.get(snake_to_camel(k)) for k in item_type.model_fields.keys()}
+                    {k: item.get(snake_to_camel(k)) 
+                     for k in item_type.model_fields.keys() 
+                     if item.get(snake_to_camel(k)) is not None}
                     for item in field_value
                 ]
             else:
