@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_keys
 from portal.utils.encryption import createKeyPair
 
 logger = logging.getLogger(__name__)
@@ -52,11 +52,11 @@ class SystemKeysView(BaseApiView):
             hostname=body['form']['hostname']
         )
 
-        create_system_credentials(request.user.tapis_oauth.client,
-                                  request.user.username,
-                                  publ_key_str,
-                                  priv_key_str,
-                                  system_id)
+        create_system_credentials_with_keys(request.user.tapis_oauth.client,
+                                            request.user.username,
+                                            publ_key_str,
+                                            priv_key_str,
+                                            system_id)
 
         return JsonResponse(
             {
