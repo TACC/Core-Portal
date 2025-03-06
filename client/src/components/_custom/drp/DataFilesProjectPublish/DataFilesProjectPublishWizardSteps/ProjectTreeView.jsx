@@ -5,13 +5,28 @@ import {
   Section,
   Icon,
 } from '_common';
-import { TreeItem, TreeView } from '@material-ui/lab';
+import { TreeItem, TreeView } from '@mui/x-tree-view';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import DataDisplay from '../../utils/DataDisplay/DataDisplay';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFileListing } from 'hooks/datafiles';
 import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
 import { fetchUtil } from 'utils/fetchUtil';
+import { createTheme, ThemeProvider } from '@mui/material';
+
+const theme = createTheme({
+  components: {
+    MuiTreeItem: {
+      styleOverrides: {
+        root: {
+          "& > .MuiTreeItem-content.Mui-selected": {
+            backgroundColor: 'transparent',
+          }
+        }
+      }
+    }
+  }
+})
 
 export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   const [expandedNodes, setExpandedNodes] = useState([]);
@@ -186,14 +201,16 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   return (
     tree &&
     tree.length > 0 && (
-      <TreeView
-        defaultCollapseIcon={<Icon name={'contract'} />}
-        defaultExpandIcon={<Icon name={'expand'} />}
-        expanded={expandedNodes}
-        onNodeToggle={handleNodeToggle}
-      >
-        {tree.map((node) => renderTree(node))}
-      </TreeView>
+      <ThemeProvider theme={theme}>
+        <TreeView
+          defaultCollapseIcon={<Icon name={'contract'} />}
+          defaultExpandIcon={<Icon name={'expand'} />}
+          expanded={expandedNodes}
+          onNodeToggle={handleNodeToggle}
+        >
+          {tree.map((node) => renderTree(node))}
+        </TreeView>
+      </ThemeProvider>
     )
   );
 };
