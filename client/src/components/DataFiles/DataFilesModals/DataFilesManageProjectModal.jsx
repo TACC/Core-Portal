@@ -135,7 +135,7 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          {readOnlyTeam ? 'View' : 'Manage'} Team
+          {readOnlyTeam ? 'View' : 'Manage'} Authors
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -150,7 +150,7 @@ const DataFilesManageProjectModal = () => {
           {error ? (
             <div className={styles.error}>
               <Message type="warn">
-                An error occurred while modifying team members
+                An error occurred while modifying authors
               </Message>
             </div>
           ) : null}

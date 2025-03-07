@@ -5,7 +5,7 @@ import styles from './ProjectMembersList.module.scss';
 const ProjectMembersList = ({ members, onAddCoAuthor }) => {
   return (
     <>
-      <h3>Other Members</h3>
+      <h3>Other Authors</h3>
       {members.map((member, index) => (
         <div key={index} className={styles['user-div']}>
           <span className={styles['user-name']}>
