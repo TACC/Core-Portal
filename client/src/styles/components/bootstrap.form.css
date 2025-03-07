@@ -17,7 +17,11 @@ textarea.form-control {
   /* FAQ: Vertical padding reduced by 1px each to near input height of design * 1.2 */
   padding: 6px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
 }
+
 .input-group-prepend {
+  display: flex;
+}
+.input-group-prepend, .input-group button {
   z-index: 1; /* so child button border is above sibling input border */
 }
 
@@ -28,4 +32,10 @@ textarea.form-control {
 .form-control-sm {
   /* To increase height jsut enough to match height of regular _common Button */
   height: calc(1.5em + 0.5rem + 3px); /* 3px ← 2px from Bootstrap _forms.css */
+}
+
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
 }

@@ -7,7 +7,7 @@ import fs from 'fs';
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/core/static/',
-  css: { preprocessorOptions: { scss: { charset: false } } },
+  css: { preprocessorOptions: { scss: { charset: false, api: 'modern' } } },
   plugins: [
     {
       ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false }),
@@ -29,6 +29,9 @@ export default defineConfig({
   server: {
     origin: 'cep.test',
     port: 3000,
+    cors: {
+      origin: ['https://cep.test'],
+    },
     hmr: {
       protocol: 'ws',
       host: 'localhost',

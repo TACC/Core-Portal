@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, FormText } from 'reactstrap';
 import { DynamicForm } from '_common/Form/DynamicForm';
-import { useQuery } from 'react-query';
-import { fetchUtil } from 'utils/fetchUtil';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import styles from './DataFilesFormModal.module.scss';

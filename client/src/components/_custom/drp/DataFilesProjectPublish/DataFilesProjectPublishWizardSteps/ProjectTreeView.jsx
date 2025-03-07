@@ -5,13 +5,28 @@ import {
   Section,
   Icon,
 } from '_common';
-import { TreeItem, TreeView } from '@material-ui/lab';
+import { TreeItem2 as TreeItem, SimpleTreeView } from '@mui/x-tree-view';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import DataDisplay from '../../utils/DataDisplay/DataDisplay';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFileListing } from 'hooks/datafiles';
 import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
 import { fetchUtil } from 'utils/fetchUtil';
+import { createTheme, ThemeProvider } from '@mui/material';
+
+const theme = createTheme({
+  components: {
+    MuiTreeItem2: {
+      styleOverrides: {
+        root: {
+          "& > .MuiTreeItem-content.Mui-selected": {
+            backgroundColor: 'transparent',
+          }
+        },
+      }
+    }
+  }
+})
 
 export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   const [expandedNodes, setExpandedNodes] = useState([]);
@@ -59,9 +74,14 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     }
   }, []);
 
-  const handleNodeToggle = (event, nodeIds) => {
+  const handleNodeToggle = (event, node) => {
     // Update the list of expanded nodes
-    setExpandedNodes(nodeIds);
+    setExpandedNodes((prev) => {
+      if (prev.includes(node)) {
+        return prev.filter((id) => id !== node);
+      }
+      return [...prev, node];
+    });
   };
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
@@ -120,7 +140,22 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
-  const renderTree = (node) => (
+  const renderTree = (node) => {
+    
+    let treeItemSlots; 
+
+    if (node.children && node.children.length > 0) {
+      treeItemSlots = {
+        collapseIcon: () => <Icon name={'contract'} />,
+        expandIcon: () => <Icon name={'expand'} />,
+      };
+    } else {
+      treeItemSlots = {
+        icon: () => <Icon name={'expand'} />,
+      };
+    }
+
+    return (
     <>
       <Section
         className={styles['section-project-structure']}
@@ -129,7 +164,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
         <div>
           <TreeItem
             key={node.id}
-            nodeId={node.id}
+            itemId={node.id}
             label={
               <div className={styles['node-name-div']}>
                 {node.label ?? node.name}
@@ -143,7 +178,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
             classes={{
               label: styles['tree-label'],
             }}
-            onLabelClick={() => handleNodeToggle}
+            slots={treeItemSlots}
           >
             {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
               <div className={styles['metadata-description-div']}>
@@ -182,18 +217,17 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
       </Section>
     </>
   );
+}
 
-  return (
-    tree &&
-    tree.length > 0 && (
-      <TreeView
-        defaultCollapseIcon={<Icon name={'contract'} />}
-        defaultExpandIcon={<Icon name={'expand'} />}
-        expanded={expandedNodes}
-        onNodeToggle={handleNodeToggle}
+  return (tree &&
+  tree.length > 0 && (
+    <ThemeProvider theme={theme}>
+      <SimpleTreeView
+        expandedItems={expandedNodes}
+        onItemClick={handleNodeToggle}
       >
         {tree.map((node) => renderTree(node))}
-      </TreeView>
-    )
-  );
+      </SimpleTreeView>
+    </ThemeProvider>
+  ));
 };

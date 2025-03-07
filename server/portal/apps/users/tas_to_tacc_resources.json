@@ -1,4 +1,9 @@
 {
+    "Vista": {
+        "name": "Vista",
+        "host": "vista.tacc.utexas.edu",
+        "type": "HPC"
+    },
     "Stampede3": {
         "name": "Stampede3",
         "host": "stampede3.tacc.utexas.edu",

@@ -152,7 +152,6 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
   const { values, setValues } = useFormikContext();
   React.useEffect(() => {
     if (previousValues) {
-      let valueUpdated = false;
       let updatedValues = { ...values };
 
       // Set the current allocation
@@ -171,7 +170,6 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
           updatedValues,
           formStateUpdateHandler
         );
-        valueUpdated = true;
       }
       if (previousValues.execSystemId !== values.execSystemId) {
         updatedValues = execSystemChangeHandler(
@@ -179,16 +177,16 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
           values,
           formStateUpdateHandler
         );
-        valueUpdated = true;
       }
 
       if (
         previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
       ) {
         updatedValues = updateValuesForQueue(app, values);
-        valueUpdated = true;
       }
-      if (valueUpdated) setValues(updatedValues);
+      if (JSON.stringify(updatedValues) !== JSON.stringify(values)) {
+        setValues(updatedValues);
+      }
     }
     setPreviousValues(values);
   }, [app, values, setValues, formStateUpdateHandler]);

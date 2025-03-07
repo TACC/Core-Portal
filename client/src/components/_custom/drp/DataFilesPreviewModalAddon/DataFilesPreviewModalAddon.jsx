@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { Form, Formik } from 'formik';
@@ -34,14 +34,27 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
   const { ...file } = useSelector((state) => state.files.modalProps.preview);
 
-  const { data: form, isLoading } = useQuery('form_UPLOAD_FILE', () =>
-    fetchUtil({
+
+  const getEditFileForm = async() => {
+    const response = await fetchUtil({
       url: 'api/forms',
       params: {
         form_name: 'EDIT_FILE',
       },
-    })
-  );
+    });
+
+    return response;
+  }
+
+  const useEditFileForm = () => {
+    const query = useQuery({
+      queryKey: 'form-edit-file',
+      queryFn: getEditFileForm,
+    });
+    return query;
+  }
+
+  const { data: form, isLoading } = useEditFileForm();
 
   const initialValues = form?.form_fields.reduce((acc, field) => {
     let value = '';

@@ -11,6 +11,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from portal.libs.agave.utils import service_account
+from portal.utils import get_client_ip
 from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
@@ -39,6 +40,7 @@ from portal.libs.files.file_processing import resize_cover_image
 from django.http.multipartparser import MultiPartParser
 
 LOGGER = logging.getLogger(__name__)
+METRICS = logging.getLogger(f"metrics.{__name__}")
 
 def validate_project_metadata(metadata):
     portal_name = settings.PORTAL_NAMESPACE
@@ -91,6 +93,18 @@ class ProjectsApiView(BaseApiView):
         query_string = request.GET.get('query_string')
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
+
+        METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.listing",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {},
+            },
+        )
 
         listing = []
 
@@ -154,7 +168,7 @@ class ProjectsApiView(BaseApiView):
             initialize_project_graph(project_meta.project_id)
 
         client = request.user.tapis_oauth.client
-        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number)
+        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number, tapis_tracking_id=f"portals.{request.session.session_key}")
 
         # Upload cover image to media folder
         if cover_image: 
@@ -163,6 +177,18 @@ class ProjectsApiView(BaseApiView):
             service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
                                 path=f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}', 
                                 file=resized_file)
+
+        METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.create",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request.POST.dict(), "id": system_id},
+            },
+        )
 
         return JsonResponse(
             {
@@ -200,6 +226,18 @@ class ProjectInstanceApiView(BaseApiView):
             client = request.user.tapis_oauth.client
 
         prj = get_project(client, project_id)
+        
+        METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.detail",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"project_id": project_id},
+            },
+        )
 
         try: 
             project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
@@ -274,6 +312,19 @@ class ProjectInstanceApiView(BaseApiView):
         cover_image = multi_value_dict.get('cover_image')
         
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
+        
+        METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.patch",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": query_dict},
+            },
+        )
+
         client = request.user.tapis_oauth.client
 
         workspace_def = update_project(client, project_id, title, description)
@@ -335,6 +386,19 @@ class ProjectMembersApiView(BaseApiView):
                 403,
                 request.POST.dict()
             )
+
+        METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.patchMembers",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": data},
+            },
+        )
+
         return operation(request, project_id, **data)
 
     def transfer_ownership(self, request, project_id, **data):
@@ -426,6 +490,19 @@ class ProjectMembersApiView(BaseApiView):
 def get_project_role(request, project_id, username):
     role = None
     client = request.user.tapis_oauth.client
+
+    METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.get_project_role",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"project_id": project_id, "username": username},
+            },
+        )
+
     role = get_workspace_role(client, project_id, username)
 
     return JsonResponse({'username': username, 'role': role})
@@ -434,6 +511,19 @@ def get_project_role(request, project_id, username):
 @login_required
 def get_system_role(request, project_id, username):
     client = request.user.tapis_oauth.client
+
+    METRICS.info(
+            "Projects",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "projects.get_system_role",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"project_id": project_id, "username": username},
+            },
+        )
+
     role = get_workspace_role(client, project_id, username)
 
     return JsonResponse({'username': username, 'role': role})

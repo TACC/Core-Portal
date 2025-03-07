@@ -66,7 +66,10 @@ export const Remaining = ({ cell }) => {
       {cell.value.map(({ remaining, ratio, type, id }) => (
         <div key={uuidv4()} className="sub-table-cell">
           <span>
-            <Badge className="alloc-badge" color={getColor(ratio)}>
+            <Badge
+              className={`alloc-badge badge-${getColor(ratio)}`}
+              color={null}
+            >
               {remaining} {type === 'HPC' ? 'SU' : 'GB'}
             </Badge>
           </span>

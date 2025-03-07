@@ -7,6 +7,114 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.11.3] 02-25-25
+
+### Added
+* task/WP-834 - Add behavior for ignoring DesignSafe-Corral allocation for running jobs (#1057)
+* task/WI-239: Add audit logs for datafiles/projects endpoints (#1047)
+
+### Fixed
+* WP-870: Fix broken file uploads and APCD file submissions (#1055)
+* WP-865 - Fix to make trash command in shared workspace work again (#1049)
+* Hotfix: increase axios timeout (#1062)
+* chore: do not clone bootstrap for tacc-search-bar (#971)
+
+
+
+## [3.12.0]
+
+### Added
+* Task/WP-832: switching to TMS for credentials (#1051)
+
+### Fixed
+* chore: do not clone bootstrap for tacc-search-bar (#971)
+
+## [3.11.2]
+
+### Added
+* task/WP-682: Fix Community Project Folders on Core portals (#1041)
+
+### Fixed
+* Quick: Add explicit CORS config to Vite (#1048)
+
+
+## [3.11.1]
+
+### Fixed
+* Bug/WP-835: Click through file location in site search results is failing (#1045)
+
+## [3.11.0]
+
+### Added
+* Task/WP-726: Mutation hook: Mkdir (#997)
+* Task/WP-727: Mutation hook: Upload file (#999)
+* Task/WP-68: Update DataFiles Unit Tests (#992)
+* Task/WP-505: APCD File Upload Failures Logging Request (#1013)
+* Task/WP-731: Mutation hook: Trash file/folder (#994)
+* task/WI-212:Fix security suggestions (#1030)
+* Task/WP-729: Mutation hook: Move files (#996)
+* Task/WP-724: Mutation Hooks: Compress Files (#1009)
+* refactor: wp-791 dropdown menu (#1028)
+* Task/WP-833: resource json update to include vista (#1042)
+
+### Fixed
+
+* Bug/WP-418: site search error when user does not have community file listing access. (#1005)
+* Bug/WP-779: [Regression] File preview is smaller compared to production (#1032)
+* Bug/WP-321: Removing oversized attachments from tickets (#1012)
+* Bug/WP-364: Ticket creation emails are not sent to 'cc' emails (#1017)
+* Bug/WP-782: Resized View Full Path link in modals (#1036)
+* WP-781: FIx UI formatting issues (#1038)
+
+### Removed
+* chore: remove class data-files-btn (#1029)
+
+
+## [3.10.1]
+
+### Fixed
+
+- WP-778: Fix infinite loop for state update in useEffect (#1019)
+- Quick: CSS regression fixes- testing session (#1018)
+
+## [3.10.0]
+
+### Added
+
+- deps/react-18: Update React to v18 (#979)
+- WP-50: Fix sizing of buttons "as-link" (#986)
+- WP-509: Handle file/folder download feature with large number of files (#981)
+- WP-520: AppTray should use versionEnabled for list of apps instead of enabled (#991)
+- WP-24: Disabling Google Drive Integration (#988)
+- WP-730: Refactor useRename to use react-query (#993)
+- WP-728: Mutation hook: Copy file (#1000)
+- WP-78: V3 Shared Workspaces Tests (#987)
+
+### Fixed
+
+- WP-419 Public Data Header Left Margin (#1003)
+- WP-765: Fix job status button to show background (#1015)
+
+
+## [3.9.0]
+
+### Fixed
+
+- WP-53: Rename loading status fix (#980)
+- WP-417: Onboarding User List Alternating Color (#985)
+- WP-420: Search placeholder does not update on navigating to directories (#989)
+- WP-265 and WP-266 - tickets tests js warnings (#975)
+- WP-261: Search bar component - fix js warnings related to button usage (#974)
+- WP-76: Add unit tests for /api/accounts/systems/ route (#984)
+- WP-267: JS Warnings: Adjust button usage and pass in required fields (#973)
+- WP-701: ProjectId can be optional in DataFilesProjectMembers component (#976)
+
+### Deps
+
+- bump werkzeug from 3.0.3 to 3.0.6 in /server (#990)
+- bump django from 4.2.15 to 4.2.16 in /server (#982)
+
+
 ## [3.8.2]
 
 ### Added
@@ -1096,7 +1204,15 @@ WP-306: Fix target path regression (#871)
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.8.2...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v3.12.0...HEAD
+[3.12.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.12.0
+[3.11.3]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.3
+[3.11.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.2
+[3.11.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.1
+[3.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.11.0
+[3.10.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.1
+[3.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.10.0
+[3.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.9.0
 [3.8.2]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.2
 [3.8.1]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.1
 [3.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v3.8.0
