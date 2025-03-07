@@ -222,7 +222,7 @@ const DataFilesProjectMembers = ({
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Member
+            Add Authors
           </Label>
 
           <div className={styles['user-search']}>
