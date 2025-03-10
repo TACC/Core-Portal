@@ -13,7 +13,7 @@ const validationSchema = Yup.object({
 });
 
 const SubmitPublicationRequest = ({ callbackUrl }) => {
-  const { handleChange, handleBlur, values, submitForm, resetForm } =
+  const { handleChange, handleBlur, values, submitForm, resetForm, setValues } =
     useFormikContext();
   const history = useHistory();
 
@@ -45,6 +45,15 @@ const SubmitPublicationRequest = ({ callbackUrl }) => {
       setSubmitDisabled(!valid);
     });
   }, [values]);
+
+
+  const onSubmit = () => {
+    setValues({
+      ...values,
+      formSubmitted: true,
+    });
+    submitForm();
+  }
 
   return (
     <SectionTableWrapper
@@ -94,7 +103,7 @@ const SubmitPublicationRequest = ({ callbackUrl }) => {
             className={styles['submit-button']}
             disabled={submitDisabled}
             isLoading={loading}
-            onClick={submitForm}
+            onClick={onSubmit}
           >
             Submit Publication Request
           </Button>
@@ -111,6 +120,7 @@ export const SubmitPublicationRequestStep = ({ callbackUrl }) => ({
   initialValues: {
     reviewInfo: false,
     reviewRelatedPublications: false,
+    formSubmitted: false,
   },
   validationSchema,
 });
