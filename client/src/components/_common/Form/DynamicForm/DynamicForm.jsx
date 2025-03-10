@@ -311,6 +311,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 setFieldValue('file', event.currentTarget.files[0]);
               }}
             />
+            <span className={styles['file-name']}>
+              Uploaded File: {field?.file_name}
+            </span>
           </div>
         );
       case 'submit':
