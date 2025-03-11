@@ -4,7 +4,8 @@ export function getNumberOfUnreadNotifications(notifications) {
       (n) =>
         !n.read &&
         n.event_type !== 'job' &&
-        n.event_type !== `interactive_session_ready`
+        n.event_type !== `interactive_session_ready` &&
+        n.event_type !== 'info'
     ).length + getNumberOfUnreadJobNotifications(notifications)
   );
 }

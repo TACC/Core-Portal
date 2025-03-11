@@ -48,6 +48,7 @@ export function* handleSocket(action) {
       yield put({ type: 'ONBOARDING_EVENT', payload: action });
       break;
     case 'data_files':
+    case 'info':
       yield put({ type: 'ADD_TOAST', payload: action });
       break;
     default:

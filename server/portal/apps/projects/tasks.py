@@ -254,7 +254,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
     username = client.access_token.claims['tapis/username']
 
     Notification.objects.create(**{
-        Notification.EVENT_TYPE: 'default',
+        Notification.EVENT_TYPE: 'info',
         Notification.STATUS: Notification.INFO,
         Notification.USER: username,
         Notification.MESSAGE: f'Generating Images for {Path(path).name}',
@@ -291,7 +291,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
             logger.error(f'Could not generate advanced image for {file_name} due to error: {e}')
 
             Notification.objects.create(**{
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'info',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: username,
                 Notification.MESSAGE: f'Failed to Generate Images for {Path(path).name}',
@@ -339,7 +339,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
 
         with transaction.atomic():
             Notification.objects.create(**{
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'info',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: username,
                 Notification.MESSAGE: f'Image generation complete. Please refresh the page.',
