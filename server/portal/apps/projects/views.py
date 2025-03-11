@@ -256,7 +256,7 @@ class ProjectInstanceApiView(BaseApiView):
 
                 postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1,
                                                            validSeconds=86400)
-                prj["cover_image_url"] = postit.redeemUrl
+                prj["file_url"] = postit.redeemUrl
 
             if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
                 sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
@@ -353,7 +353,7 @@ class ProjectInstanceApiView(BaseApiView):
                                                        path=f"media/{project_id}/cover_image/{Path(workspace_def['cover_image']).name}",
                                                        allowedUses=-1, 
                                                        validSeconds=86400)
-            workspace_def["cover_image_url"] = postit.redeemUrl
+            workspace_def["file_url"] = postit.redeemUrl
 
         return JsonResponse(
             {
