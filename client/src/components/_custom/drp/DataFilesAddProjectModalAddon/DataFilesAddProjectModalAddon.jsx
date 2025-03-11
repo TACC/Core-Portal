@@ -18,7 +18,7 @@ const DataFilesAddProjectModalAddon = () => {
 
   const useProjectFormAddon = () => {
     const query = useQuery({
-      queryKey: 'form-add-project',
+      queryKey: ['form-add-project'],
       queryFn: getProjectFormAddon,
     });
     return query;
