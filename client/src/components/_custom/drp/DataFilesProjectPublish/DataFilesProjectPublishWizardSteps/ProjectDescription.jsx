@@ -46,7 +46,7 @@ const ProjectDescription = ({ project }) => {
 
     if (project.cover_image) {
       projectData['Cover Image'] = (
-        <a href={project.cover_image_url} target='_blank' rel="noreferrer" className='wb-link'>
+        <a href={project.file_url} target='_blank' rel="noreferrer" className='wb-link'>
           {project.cover_image.split('/').pop()}
         </a>
       );

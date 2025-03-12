@@ -49,6 +49,8 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             });
           } else {
             if (field.type === 'file') {
+              field.file_name = metadata[field.name].split('/').pop();
+              field.file_url = metadata['file_url'];
               return;
             }
             setFieldValue(field.name, metadata[field.name]);
