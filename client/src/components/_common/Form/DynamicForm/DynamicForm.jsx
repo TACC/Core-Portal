@@ -163,6 +163,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             rows={5}
             description={field?.description}
             required={field?.validation?.required}
+            className={styles['textarea']}
           />
         );
       case 'select':

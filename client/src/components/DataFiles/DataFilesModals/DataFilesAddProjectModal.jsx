@@ -75,7 +75,7 @@ const DataFilesAddProjectModal = () => {
       type: 'PROJECTS_CREATE',
       payload: {
         title: values.title,
-        description: values.description, // Ensure this is included
+        description: values.description || null,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -102,9 +102,7 @@ const DataFilesAddProjectModal = () => {
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
     description: Yup.string()
-      .min(200, 'Description must be at least 200 characters')
-      .max(300, 'Description must be at most 300 characters')
-      .required('Please enter a description.'),
+      .max(800, 'Description must be at most 800 characters')
   });
   
 
@@ -136,24 +134,9 @@ const DataFilesAddProjectModal = () => {
                       <em>(Maximum 150 characters)</em>
                     </small>
                     <br />
-                    <small style={{ color: '#666' }}>
-                      <em>The title should be descriptive and distinctive from related publications.</em>
-                    </small>
                   </div>
                 }
-              />
-              <FormField
-                name="description"
-                label={
-                  <div>
-                    Dataset Description{' '}
-                    <br />
-                    <small style={{ color: '#666' }}>
-                      <em>Provide 200-300 words clearly describing the data as an independent output; do not copy related publication abstract.</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
+                description={'The title should be descriptive and distinctive from related publications.'}
               />
               {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
               <DataFilesProjectMembers members={members} onAdd={onAdd} onRemove={onRemove} />

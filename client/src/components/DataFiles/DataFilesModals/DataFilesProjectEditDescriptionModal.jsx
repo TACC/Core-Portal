@@ -117,6 +117,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   </div>
                 }
                 type="textarea"
+                rows={5}
                 className={styles['description-textarea']}
               />
               {DataFilesProjectEditDescriptionModalAddon && (
