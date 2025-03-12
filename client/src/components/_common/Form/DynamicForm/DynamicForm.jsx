@@ -311,12 +311,14 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 setFieldValue('file', event.currentTarget.files[0]);
               }}
             />
-            <span className={styles['file-name']}>
+            {field?.file_name && (
+              <span className={styles['file-name']}>
               Uploaded File:&nbsp;
-              <a href={field.file_url} target='_blank' rel="noreferrer" className='wb-link'>
-                {field?.file_name}
-              </a>
-            </span>
+                <a href={field.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+                  {field.file_name}
+                </a>
+              </span>
+            )}
           </div>
         );
       case 'submit':
