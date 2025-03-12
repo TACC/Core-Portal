@@ -111,7 +111,7 @@ const validateFolder = (node) => {
   
   // Process the current node
   if (!hasFileObjs(node)) {
-    errors.push(`Entity "${node.label}" (path: ${node.path}) has no files in itself or any of its child entities.`);
+    errors.push(`Entity "${node.label}" (path: /${node.path}) has no files in itself or any of its child entities.`);
   }
   
   // Recursively validate all children
