@@ -23,7 +23,7 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
 
   const useEditProjectFormAddon = () => {
     const query = useQuery({
-      queryKey: 'form-edit-project',
+      queryKey: ['form-edit-project'],
       queryFn: getEditProjectFormAddon,
     });
     return query;

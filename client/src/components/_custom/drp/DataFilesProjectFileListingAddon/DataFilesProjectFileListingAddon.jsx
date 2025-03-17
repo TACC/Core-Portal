@@ -166,7 +166,7 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
           type="link"
           onClick={() => createTreeModal({ readOnly: !canEditDataset })}
         >
-          View Project Tree
+          View Tree Diagram
         </Button>
       </>
       {canRequestPublication && (

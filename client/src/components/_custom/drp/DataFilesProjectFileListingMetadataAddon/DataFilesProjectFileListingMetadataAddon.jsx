@@ -122,7 +122,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
 };
 
 DataFilesProjectFileListingMetadataAddon.propTypes = {
-  folderMetadata: PropTypes.shape({}).isRequired,
+  folderMetadata: PropTypes.shape({}),
 };
 
 export default DataFilesProjectFileListingMetadataAddon;

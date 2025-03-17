@@ -141,7 +141,7 @@ const DataDisplay = ({ data, path, excludeKeys, modalData, coverImage }) => {
 
 DataDisplay.propTypes = {
   data: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
   excludeKeys: PropTypes.array,
 };
 
