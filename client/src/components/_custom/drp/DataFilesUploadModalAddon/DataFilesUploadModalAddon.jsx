@@ -42,7 +42,7 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
 
   const useUploadFileForm = () => {
     const query = useQuery({
-      queryKey: 'form-upload-file',
+      queryKey: ['form-upload-file'],
       queryFn: getUploadFileForm,
     });
     return query;

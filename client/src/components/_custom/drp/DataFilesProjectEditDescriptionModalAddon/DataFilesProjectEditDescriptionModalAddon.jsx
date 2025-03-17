@@ -23,7 +23,7 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
 
   const useEditProjectFormAddon = () => {
     const query = useQuery({
-      queryKey: 'form-edit-project',
+      queryKey: ['form-edit-project'],
       queryFn: getEditProjectFormAddon,
     });
     return query;
@@ -49,6 +49,8 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             });
           } else {
             if (field.type === 'file') {
+              field.file_name = metadata[field.name].split('/').pop();
+              field.file_url = metadata['file_url'];
               return;
             }
             setFieldValue(field.name, metadata[field.name]);

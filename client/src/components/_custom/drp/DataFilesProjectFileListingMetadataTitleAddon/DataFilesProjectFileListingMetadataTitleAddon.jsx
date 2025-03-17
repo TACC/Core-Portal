@@ -13,7 +13,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
   system,
   path,
 }) => {
-  const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
 
@@ -105,7 +104,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
 };
 
 DataFilesProjectFileListingMetadataTitleAddon.propTypes = {
-  folderMetadata: PropTypes.shape({}).isRequired,
+  folderMetadata: PropTypes.shape({}),
 };
 
 export default DataFilesProjectFileListingMetadataTitleAddon;

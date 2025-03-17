@@ -158,6 +158,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     return (
     <>
       <Section
+        key={node.id}
         className={styles['section-project-structure']}
         contentLayoutName="oneColumn"
       >
@@ -209,9 +210,17 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
               </div>
             )}
             {Array.isArray(node.fileObjs) &&
-              node.fileObjs.map((fileObj) => renderTree(fileObj))}
+              node.fileObjs.map((fileObj) => (
+                <React.Fragment key={fileObj.id}>
+                  {renderTree(fileObj)}
+                </React.Fragment>
+              ))}
             {Array.isArray(node.children) &&
-              node.children.map((child) => renderTree(child))}
+              node.children.map((child) => (
+                <React.Fragment key={child.id}>
+                  {renderTree(child)}
+                </React.Fragment>
+              ))}
           </TreeItem>
         </div>
       </Section>
@@ -226,7 +235,11 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
         expandedItems={expandedNodes}
         onItemClick={handleNodeToggle}
       >
-        {tree.map((node) => renderTree(node))}
+        {tree.map((node) => (
+          <React.Fragment key={node.id}>
+            {renderTree(node)}
+          </React.Fragment>
+        ))}
       </SimpleTreeView>
     </ThemeProvider>
   ));

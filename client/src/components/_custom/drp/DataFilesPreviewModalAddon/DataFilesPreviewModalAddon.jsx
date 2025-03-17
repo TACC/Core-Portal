@@ -48,7 +48,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
   const useEditFileForm = () => {
     const query = useQuery({
-      queryKey: 'form-edit-file',
+      queryKey: ['form-edit-file'],
       queryFn: getEditFileForm,
     });
     return query;

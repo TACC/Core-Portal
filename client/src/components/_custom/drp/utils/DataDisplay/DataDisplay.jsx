@@ -83,7 +83,7 @@ const processCoverImage = (data) => {
   return [{
     label: 'Cover Image',
     value: 
-      <a href={data.cover_image_url} target='_blank' rel="noreferrer" className='wb-link'>
+      <a href={data.file_url} target='_blank' rel="noreferrer" className='wb-link'>
         {data.cover_image.split('/').pop()}
       </a>
   }]
@@ -141,7 +141,7 @@ const DataDisplay = ({ data, path, excludeKeys, modalData, coverImage }) => {
 
 DataDisplay.propTypes = {
   data: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
   excludeKeys: PropTypes.array,
 };
 
