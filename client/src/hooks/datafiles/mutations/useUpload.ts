@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 import truncateMiddle from 'utils/truncateMiddle';
 import { useMutation } from '@tanstack/react-query';
 
+apiClient.defaults.timeout = 5 * 60 * 1000; // 5 minutes
+
 export async function uploadUtil({
   api,
   scheme,
@@ -20,13 +22,12 @@ export async function uploadUtil({
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
-    return { file, path: apiPath };
   }
   const formData = new FormData();
   const fileField = file.get('uploaded_file') as Blob;
   formData.append('uploaded_file', fileField);
   let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
-  url.replace(/\/{2,}/g, '/');
+  url = url.replace(/\/{2,}/g, '/');
   const response = await apiClient.post(url, formData, {
     headers: {
       'X-CSRFToken': Cookies.get('csrftoken') || '',
