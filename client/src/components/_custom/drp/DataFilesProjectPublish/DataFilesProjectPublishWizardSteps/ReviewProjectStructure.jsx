@@ -84,6 +84,7 @@ export const ReviewProjectStructure = ({ projectTree }) => {
                 <li key={key}>{errors[key]}</li>
               ))}
             </ul>
+            <p>Please delete {Object.keys(errors).length === 1 ? 'entity' : 'entities'} or upload files to continue</p>
           </div>
         )}
         <ProjectTreeView projectId={projectId} readOnly={!canEdit} />
