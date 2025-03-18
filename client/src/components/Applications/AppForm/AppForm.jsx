@@ -233,6 +233,7 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
+  const { systemNeedsKeys, pushKeysSystem } = app;
 
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
@@ -255,10 +256,7 @@ export const AppSchemaForm = ({ app }) => {
       state.allocations
     );
     const { defaultHost, configuration, defaultSystem } = state.systems.storage;
-
-    const keyService = state.systems.storage.configuration.find(
-      (sys) => sys.system === defaultSystem && sys.default
-    )?.keyservice;
+    const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
       configuration.length &&
@@ -298,8 +296,6 @@ export const AppSchemaForm = ({ app }) => {
   const hideManageAccount = useSelector(
     (state) => state.workbench.config.hideManageAccount
   );
-
-  const { systemNeedsKeys, pushKeysSystem } = app;
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
