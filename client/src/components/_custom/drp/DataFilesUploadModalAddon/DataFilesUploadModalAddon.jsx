@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { Form, Formik } from 'formik';
@@ -29,14 +29,26 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
     );
   }, [uploadedFiles]);
 
-  const { data: form, isLoading } = useQuery('form_UPLOAD_FILE', () =>
-    fetchUtil({
+  const getUploadFileForm = async () => {
+    const response = await fetchUtil({
       url: 'api/forms',
       params: {
         form_name: 'UPLOAD_FILE',
       },
-    })
-  );
+    });
+    
+    return response;
+  };
+
+  const useUploadFileForm = () => {
+    const query = useQuery({
+      queryKey: ['form-upload-file'],
+      queryFn: getUploadFileForm,
+    });
+    return query;
+  };
+
+  const { data: form, isLoading } = useUploadFileForm();
 
   const handleUploadedFileMetadata = (formFields, values, file) => {
     const updatedFiles = uploadedFiles.map((uploadedFile) => {

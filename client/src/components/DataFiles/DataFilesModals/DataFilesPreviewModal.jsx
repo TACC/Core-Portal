@@ -108,11 +108,10 @@ const DataFilesPreviewModal = () => {
           <NiiVue imageUrl={href} fileName={params.path}></NiiVue>
         )}
         {previewUsingHref && !previewUsingBrainmap && (
-          <div className="embed-responsive embed-responsive-4by3">
+          <div className="ratio ratio-4x3">
             <iframe
               title="preview"
               frameBorder="0"
-              className="embed-responsive-item"
               onLoad={onFrameLoad}
               src={href}
             />

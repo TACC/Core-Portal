@@ -127,7 +127,7 @@ class PublicationRequestView(BaseApiView):
 
         # Create notification 
         event_data = {
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'projects',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: request.user.username,
                 Notification.MESSAGE: f'{source_workspace_id} submitted for review',
@@ -199,7 +199,7 @@ class PublicationListingView(BaseApiView):
                 'description': publication.value.get('description'),
                 'keywords': publication.value.get('keywords'),
                 'authors': publication.value.get('authors'),
-                'publication_date': publication.last_updated,
+                'publication_date': publication.created,
             }
             for publication in publications
         ]
@@ -242,7 +242,7 @@ class PublicationPublishView(BaseApiView):
 
         # Create notification 
         event_data = {
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'projects',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: request.user.username,
                 Notification.MESSAGE: f'{project_id} submitted for publication',
@@ -296,7 +296,7 @@ class PublicationVersionView(BaseApiView):
 
         # Create notification 
         event_data = {
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'projects',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: request.user.username,
                 Notification.MESSAGE: f'{project_id} submitted for publication',
@@ -324,7 +324,7 @@ class PublicationRejectView(BaseApiView):
 
         # Create notification 
         event_data = {
-                Notification.EVENT_TYPE: 'default',
+                Notification.EVENT_TYPE: 'projects',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: request.user.username,
                 Notification.MESSAGE: f'{full_project_id} was rejected',

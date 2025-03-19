@@ -20,12 +20,12 @@
 </style>
 {% if user.is_authenticated %}
 <li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="icon icon-user"></i>
     <span>{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
   </a>
-  <nav class="dropdown-menu dropdown-menu-right">
+  <nav class="dropdown-menu dropdown-menu-end">
     <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
       <i class="icon icon-dashboard"></i> My Dashboard
     </a>

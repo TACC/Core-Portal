@@ -10,10 +10,12 @@ import styles from './DataFilesProjectPublishWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/timeFormat';
 import { formatDataKey } from 'utils/dataKeyFormat';
+import { useFormikContext } from 'formik';
 
 const ProjectDescription = ({ project }) => {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
+  const { errors } = useFormikContext();
 
   const canEdit = useSelector((state) => {
     const { members } = state.projects.metadata;
@@ -40,9 +42,17 @@ const ProjectDescription = ({ project }) => {
     let projectData = {
       Title: project.title,
       Created: formatDate(new Date(project.created)),
-      Abstract: <ShowMore> {project.description} </ShowMore>,
+      Description: <ShowMore> {project.description} </ShowMore>,
       License: project.license ?? 'None',
     };
+
+    if (project.cover_image) {
+      projectData['Cover Image'] = (
+        <a href={project.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+          {project.cover_image.split('/').pop()}
+        </a>
+      );
+    }
 
     if (project.keywords) {
       projectData['Keywords'] = project.keywords;
@@ -134,14 +144,14 @@ const ProjectDescription = ({ project }) => {
 
   return (
     <SectionTableWrapper
-      header={<div className={styles.title}>Proofread Project</div>}
+      header={<div className={styles.title}>Proofread Dataset</div>}
       headerActions={
         <>
           {canEdit && (
             <div className={styles.controls}>
               <>
                 <Button type="link" onClick={onEdit}>
-                  Edit Project
+                  Edit Dataset
                 </Button>
               </>
             </div>
@@ -149,14 +159,43 @@ const ProjectDescription = ({ project }) => {
         </>
       }
     >
+      {Object.keys(errors).length > 0 && (
+        <div className={styles['errors-div']}>
+          <p>Dataset metadata has the following errors:</p>
+          <ul>
+            {Object.keys(errors).map((key) => (
+              <li key={key}>{errors[key]}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <DescriptionList data={data} direction={'vertical'} />
     </SectionTableWrapper>
   );
+};
+
+const validateProjectMetadata = (values) => {
+  const errors = {};
+  
+  if (!values.title) {
+    errors.title = 'Title is required';
+  }
+  
+  if (!values.description) {
+    errors.description = 'Description is required';
+  }
+
+  if (!values.cover_image) {
+    errors.cover_image = 'Cover image is required';
+  }
+  
+  return errors;
 };
 
 export const ProjectDescriptionStep = ({ project }) => ({
   id: 'project_description',
   name: 'Project Description',
   render: <ProjectDescription project={project} />,
-  initialValues: {},
+  validate: validateProjectMetadata,
+  initialValues: project,
 });

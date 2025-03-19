@@ -1,6 +1,7 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
 import queryStringParser from 'query-string';
 import { fetchUtil } from 'utils/fetchUtil';
+import Cookies from 'js-cookie';
 
 export async function fetchProjectsListing(queryString, rootSystem) {
   const q = queryStringParser.stringify({ query_string: queryString });
@@ -63,14 +64,30 @@ export function* showSharedWorkspaces(action) {
 }
 
 export async function fetchCreateProject(project) {
+
+  const formData = new FormData();
+
+  const { file, ...projectMetadata } = project.metadata; // Exclude the file
+  formData.append('metadata', JSON.stringify(projectMetadata));
+
+  if (file) {
+    formData.append('cover_image', file);
+  }
+
+  Object.entries(project)
+    .filter(([key, value]) => value != null && key !== 'metadata')
+    .forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+  
   const result = await fetchUtil({
     url: `/api/projects/`,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(project),
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: formData,
   });
+
   return result.response;
 }
 
@@ -144,6 +161,13 @@ export function* setMember(action) {
       type: 'PROJECTS_SET_MEMBER_SUCCESS',
       payload: metadata,
     });
+    if (data.action === 'transfer_ownership')
+      yield put({
+        type: 'ADD_TOAST',
+        payload: {
+          message: `Project ownership transferred to ${data.newOwner}.`,
+        },
+      });
     yield put({
       type: 'PROJECTS_GET_LISTING',
       payload: {
@@ -159,14 +183,30 @@ export function* setMember(action) {
 }
 
 export async function setTitleDescriptionUtil(projectId, data) {
+
+  const formData = new FormData();
+
+  const { file, ...projectMetadata } = data.metadata; // Exclude the file
+  formData.append('metadata', JSON.stringify(projectMetadata));
+
+  if (file) {
+    formData.append('cover_image', file);
+  }
+
+  Object.entries(data)
+    .filter(([key, value]) => value != null && key !== 'metadata')
+    .forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/`,
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: formData,
   });
+
   return result.response;
 }
 

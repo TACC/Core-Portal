@@ -2,6 +2,10 @@
   font-weight: bold;
 }
 
+.textarea {
+  height: auto !important;
+}
+
 .radio-input {
   margin-left: 1rem;
   margin-bottom: 0rem;
@@ -22,4 +26,18 @@
 
 .expand-card > div:first-child {
   padding-bottom: 20px;
+}
+
+.array-field-description {
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  margin-top: -5px; /* Reduce space between title and description */
+  margin-bottom: 10px; /* Add space before form fields */
+}
+
+.file-name {
+  display: flex;
+  padding-bottom: 20px;
+  font-weight: bold;
 }

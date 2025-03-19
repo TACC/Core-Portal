@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import uuid
 import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
@@ -258,6 +259,14 @@ DATABASES = {
         'PASSWORD': settings_secret._DJANGO_DB_PASSWORD,
         'HOST': settings_secret._DJANGO_DB_HOST,
         'PORT': settings_secret._DJANGO_DB_PORT
+    }, 
+    'drp_mysql': {
+        'ENGINE': settings_secret._DJANGO_DRP_DB_ENGINE,
+        'NAME': settings_secret._DJANGO_DRP_DB_NAME,
+        'USER': settings_secret._DJANGO_DRP_DB_USER,
+        'PASSWORD': settings_secret._DJANGO_DRP_DB_PASSWORD,
+        'HOST': settings_secret._DJANGO_DRP_DB_HOST,
+        'PORT': settings_secret._DJANGO_DRP_DB_PORT
     }
 }
 
@@ -294,9 +303,25 @@ GOOGLE_ANALYTICS_PROPERTY_ID = settings_custom._GOOGLE_ANALYTICS_PROPERTY_ID
 SETTINGS: LOGGING
 """
 
+
+def portal_filter(record):
+    """Log filter that adds portal-specific vars to each entry"""
+
+    record.logGuid = uuid.uuid4().hex
+    record.portal = PORTAL_NAMESPACE
+    record.tenant = TAPIS_TENANT_BASEURL
+    return True
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    "filters": {
+        "portalFilter": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": portal_filter,
+        },
+    },
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
@@ -307,8 +332,9 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
+                      ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=%(portal)s tenant=%(tenant)s'
         },
     },
     'handlers': {
@@ -325,18 +351,11 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'default',
         },
-        'metrics_console': {
-            'level': 'DEBUG',
+        'metrics': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
-        },
-        'metrics_file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/portal/metrics.log',
-            'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'metrics',
+            'filters': ['portalFilter']
         },
     },
     'loggers': {
@@ -350,8 +369,9 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'metrics': {
-            'handlers': ['metrics_console', 'metrics_file'],
-            'level': 'DEBUG',
+            'handlers': ['metrics'],
+            'filters': ['portalFilter'],
+            'level': 'INFO',
         },
         'paramiko': {
             'handlers': ['console'],
@@ -517,6 +537,11 @@ TACC_EXEC_SYSTEMS = {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home1/{}'
     },
+    'vista': {
+        'work_dir': '/work/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
+    },
 }
 
 """
@@ -592,6 +617,21 @@ PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = settings_custom.\
 PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = settings_custom.\
     _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME
 
+PORTAL_PUBLICATION_DATACITE_SHOULDER = settings_custom.\
+    _PORTAL_PUBLICATION_DATACITE_SHOULDER
+
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = settings_custom.\
+    _PORTAL_PUBLICATION_DATACITE_URL_PREFIX
+
+DATACITE_URL = settings_custom.\
+    _DATACITE_URL
+
+DATACITE_USER = settings_secret.\
+    _DATACITE_USER
+
+DATACITE_PASS = settings_secret.\
+    _DATACITE_PASS
+
 PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
     _PORTAL_PROJECTS_PRIVATE_KEY
 
@@ -618,13 +658,17 @@ PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
+ALLOCATIONS_TO_EXCLUDE = (
+    getattr(settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"])
+)
+
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
-PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', False)
+PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', True)
 
 """
 SETTINGS: ELASTICSEARCH
