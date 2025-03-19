@@ -1,12 +1,16 @@
 import React from 'react';
 import CombinedBreadcrumbs from '../DataFiles/CombinedBreadcrumbs/CombinedBreadcrumbs';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
+import DataFilesCopyModal from '../DataFiles/DataFilesModals/DataFilesCopyModal';
 import DataFilesProjectCitationModal from '../DataFiles/DataFilesModals/DataFilesProjectCitationModal';
 import DataFilesProjectTreeModal from '../DataFiles/DataFilesModals/DataFilesProjectTreeModal';
 import DataFilesPublicationAuthorsModal from '../DataFiles/DataFilesModals/DataFilesPublicationAuthorsModal';
 import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPathModal';
 import DataFilesViewDataModal from '../DataFiles/DataFilesModals/DataFilesViewDataModal';
 import DataFilesProjectFileListing from '../DataFiles/DataFilesProjectFileListing/DataFilesProjectFileListing';
+import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
+import NotificationToast from '../Toasts';
+import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
 
 function PublicationDetailPublicView({ params }) {
   return (
@@ -17,6 +21,8 @@ function PublicationDetailPublicView({ params }) {
         padding: '10px',
       }}
     >
+      <NotificationToast />
+      <DataFilesToolbar api="tapis" scheme="public" />
       <CombinedBreadcrumbs
         api="tapis"
         scheme="projects"
@@ -37,6 +43,8 @@ function PublicationDetailPublicView({ params }) {
       <DataFilesPublicationAuthorsModal />
       <DataFilesProjectCitationModal />
       <DataFilesViewDataModal />
+      <DataFilesCopyModal />
+      <DataFilesLargeDownloadModal />
     </div>
   );
 }

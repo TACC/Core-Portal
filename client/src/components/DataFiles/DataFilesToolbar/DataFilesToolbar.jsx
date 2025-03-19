@@ -94,7 +94,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   }, [hasCustomDataFilesToolbarChecks, portalName]);
 
   const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
+    (state) => state.authenticatedUser?.user?.username
   );
 
   const { query: authenticatedUserQuery } = useSystemRole(
@@ -260,7 +260,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
   const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
   const canMove = getFilePermissions('move', permissionParams) && !isGuest;
-  const canCopy = getFilePermissions('copy', permissionParams);
+  const canCopy =
+    getFilePermissions('copy', permissionParams) && !!authenticatedUser;
   const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
