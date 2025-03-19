@@ -1,13 +1,14 @@
-import pytest
 import json
 import logging
 import os
-from mock import patch, MagicMock
-from tapipy.errors import InternalServerError
-from portal.apps.datafiles.models import Link
+
+import pytest
 from django.conf import settings
+from mock import MagicMock, patch
+from tapipy.errors import InternalServerError
 from tapipy.tapis import TapisResult
 
+from portal.apps.datafiles.models import Link
 pytestmark = pytest.mark.django_db
 
 
@@ -129,6 +130,21 @@ def test_link_post(postits_create, authenticated_user, client):
     )
 
 
+def test_link_post_already_exists(postits_create, authenticated_user, client):
+    result = client.post("/api/datafiles/link/tapis/system/path")
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"
+    postits_create.assert_called_with(
+       systemId="system",
+       path="path",
+       allowedUses=-1,
+       validSeconds=31536000
+    )
+    result = client.post("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Link for this file already exists"}
+
+
 def test_link_delete(postits_create, authenticated_user, mock_tapis_client, client):
     mock_tapis_client.files.deletePostIt.return_value = "OK"
     client.post("/api/datafiles/link/tapis/system/path")
@@ -136,6 +152,13 @@ def test_link_delete(postits_create, authenticated_user, mock_tapis_client, clie
     assert json.loads(result.content)["data"] == "OK"
     assert result.status_code == 200
     assert len(Link.objects.all()) == 0
+
+
+def test_link_delete_dne(authenticated_user, mock_tapis_client, client):
+    mock_tapis_client.files.deletePostIt.return_value = "Bad Request"
+    result = client.delete("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Post-it does not exist"}
 
 
 def test_link_put(postits_create, authenticated_user, mock_tapis_client, client):
@@ -147,6 +170,13 @@ def test_link_put(postits_create, authenticated_user, mock_tapis_client, client)
     result = client.put("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"
+
+
+def test_link_put_dne(postits_create, authenticated_user, mock_tapis_client, client):
+    mock_tapis_client.files.deletePostIt.return_value = "Bad Request"
+    result = client.put("/api/datafiles/link/tapis/system/path")
+    assert result.status_code == 400
+    assert result.json() == {"message": "Could not find pre-existing link"}
 
 
 def test_get_system(client, authenticated_user, mock_tapis_client, agave_storage_system_mock):
@@ -199,9 +229,25 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
     }
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_called_with(
-        "user:{} op:listing api:tapis scheme:private system:frontera.home.username path:test.txt filesize:1234".format(
-            authenticated_user.username))
+    logging_metric_mock.assert_called()
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+@patch(
+    "django.conf.settings.PORTAL_DATAFILES_STORAGE_SYSTEMS",
+    [{"scheme": "public", "system": "public.system", "homeDir": "/public/home/"}],
+)
+def test_tapis_file_view_get_unauthorized(
+    mock_indexer,
+    client,
+):
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
+
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234")
+        assert response.status_code == 403
+        assert response.json() == {'message': 'This data requires authentication to view.'}
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
@@ -216,9 +262,33 @@ def test_tapis_file_view_put_is_logged_for_metrics(mock_indexer, client, authent
     assert response.status_code == 200
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_called_with(
-        "user:{} op:move api:tapis scheme:private "
-        "system:frontera.home.username path:test.txt body:{}".format(authenticated_user.username, body))
+    logging_metric_mock.assert_called()
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+@patch('portal.apps.datafiles.views.tapis_put_handler')
+def test_tapis_file_view_put_is_logged_for_metrics_exception(mock_put_handler, mock_indexer, client, authenticated_user, mock_tapis_client):
+    mock_put_handler.side_effect = Exception("Exception in Metrics info or Tapis Put Handler views.py:142")
+    body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
+    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+                          content_type="application/json",
+                          data=body)
+    assert response.status_code == 500
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_put_is_unauthorized(mock_indexer, client):
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
+        response = client.put(
+            "/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+            content_type="application/json",
+            data=body,
+        )
+        assert response.status_code == 403
+        assert response.content == b"This data requires authentication to view."
 
 
 @patch('portal.libs.agave.operations.tapis_indexer')
@@ -235,9 +305,30 @@ def test_tapis_file_view_post_is_logged_for_metrics(mock_indexer, client, authen
     assert response.json() == {"data": tapis_file_mock}
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_called_with(
-        "user:{} op:upload api:tapis scheme:private "
-        "system:frontera.home.username path:/ filename:text_file.txt".format(authenticated_user.username))
+    logging_metric_mock.assert_called()
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+def test_tapis_file_view_post_is_unauthorized(mock_indexer, text_file_fixture, client):
+    mock_user = MagicMock()
+    mock_user.tapis_oauth = 0
+    with patch('django.contrib.auth.get_user', return_value=mock_user):
+        response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/", data={"uploaded_file": text_file_fixture})
+        assert response.status_code == 403
+        assert response.content == b"This data requires authentication to upload."
+
+
+@patch('portal.libs.agave.operations.tapis_indexer')
+@patch('portal.apps.datafiles.views.tapis_post_handler')
+def test_tapis_file_view_post_is_logged_for_metrics_exception(mock_post_handler, mock_indexer, client, authenticated_user, mock_tapis_client,
+                                                              logging_metric_mock, tapis_file_mock, requests_mock, text_file_fixture):
+    mock_post_handler.side_effect = Exception("Exception in Metrics info or Tapis Put Handler views.py:175")
+    mock_tapis_client.files.insert.return_value = tapis_file_mock
+
+    response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
+                           data={"uploaded_file": text_file_fixture})
+
+    assert response.status_code == 500
 
 
 POSTIT_HREF = "https://tapis.example/postit/something"

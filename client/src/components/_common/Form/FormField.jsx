@@ -6,7 +6,6 @@ import {
   FormText,
   Badge,
   InputGroup,
-  InputGroupAddon,
 } from 'reactstrap';
 import { Button } from '_common';
 
@@ -89,7 +88,11 @@ const FormField = ({
         </code>
       )}
       {required ? (
-        <Badge color="danger" style={{ marginLeft: '10px' }}>
+        <Badge
+          color={null}
+          className="badge badge-danger"
+          style={{ marginLeft: '10px' }}
+        >
           Required
         </Badge>
       ) : null}
@@ -121,6 +124,7 @@ const FormField = ({
       {label && hasAddon ? <FieldLabel /> : null}
       <FormFieldWrapper type={wrapperType}>
         {label && !hasAddon ? <FieldLabel /> : null}
+        {!hasAddon ? <FieldNote /> : null}
         {tapisFile ? (
           <>
             <SelectModal
@@ -132,16 +136,14 @@ const FormField = ({
                 helpers.setValue(`tapis://${system}/${path}`);
               }}
             />
-
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <Button
-                  type="secondary"
-                  onClick={() => setOpenTapisFileModal(true)}
-                >
-                  Select
-                </Button>
-              </InputGroupAddon>
+              <Button
+                size="middle"
+                type="secondary"
+                onClick={() => setOpenTapisFileModal(true)}
+              >
+                Select
+              </Button>
               <Input {...field} {...props} bsSize="sm" />
             </InputGroup>
           </>
@@ -152,7 +154,6 @@ const FormField = ({
             {hasAddon && addonType === 'append' ? addon : null}
           </>
         )}
-        {!hasAddon ? <FieldNote /> : null}
       </FormFieldWrapper>
       {hasAddon ? <FieldNote /> : null}
     </>

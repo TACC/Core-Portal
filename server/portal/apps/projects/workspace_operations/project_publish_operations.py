@@ -10,6 +10,7 @@ from celery import shared_task
 from portal.apps._custom.drp import constants
 from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, upsert_datacite_json, publish_datacite_doi
 from django.db import transaction
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.search.tasks import index_publication
@@ -39,6 +40,27 @@ def _transfer_files(client, source_system_id, dest_system_id):
 
     transfer = service_client.files.createTransferTask(elements=transfer_elements)
     return transfer
+
+def _transfer_cover_image(source_system_id, dest_system_id, cover_image_path):
+    
+    if not cover_image_path:
+        logger.info('No cover image found for project, skipping transfer.')
+        return None
+    
+    service_client = service_account()
+
+    # Transfer the cover image to the destination system
+    transfer_elements = [
+        {
+            'sourceURI': f'tapis://{source_system_id}/{cover_image_path}',
+            'destinationURI': f'tapis://{dest_system_id}/{cover_image_path}'
+        }
+    ]
+
+    transfer = service_client.files.createTransferTask(elements=transfer_elements)
+    logger.info(f"Transfer task created for cover image: {transfer.uuid}")
+    return transfer
+
 
 def _check_transfer_status(service_client, transfer_task_id):
     transfer_details = service_client.files.getTransferTask(transferTaskId=transfer_task_id)
@@ -176,11 +198,17 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             value=nx.node_link_data(publication_tree),
         )
 
-        doi = 'test_doi'  # Replace with actual DOI retrieval logic
-
-        # Update project metadata with datacite doi
         source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
         source_project = ProjectMetadata.get_project_by_id(source_project_id)
+
+        # Mint a DataCite DOI
+        existing_doi = source_project.value.get("doi", None)
+
+        datacite_json = get_datacite_json(publication_tree)
+        datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+        doi = datacite_resp["data"]["id"]
+
+        # Update project metadata with datacite doi
         source_project.value['doi'] = doi
         source_project.value['publicationDate'] = published_project.created
         source_project.save()
@@ -198,6 +226,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
         )
 
+        if not settings.DEBUG:
+            publish_datacite_doi(doi)
+
         upload_metadata_file(published_workspace_id, pub_metadata.tree)
 
         index_publication(project_id)
@@ -205,6 +236,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         # transfer files 
         client = service_account()
         transfer = _transfer_files(client, review_system_id, published_system_id)
+        cover_image_transfer = _transfer_cover_image(settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, 
+                                                     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, 
+                                                     project_meta.value.get("coverImage", None))
 
         poll_tapis_file_transfer.apply_async(
             args=(transfer.uuid, False),
@@ -231,6 +265,9 @@ def copy_graph_and_files_for_review_system(self, user_access_token, source_works
 
         client = user_account(user_access_token)
         transfer = _transfer_files(client, source_system_id, review_system_id)
+        cover_image_trasnfer = _transfer_cover_image(settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
+                                                     settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, 
+                                                     review_project.value.get("coverImage", None))
 
         logger.info(f'Transfer task submmited with id {transfer.uuid}')
 

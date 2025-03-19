@@ -223,6 +223,11 @@ _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.pprd.project.published'
 
 _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWER'
 
+# Datacite
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.80023"
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/drp.project.published.test"
+_DATACITE_URL = "https://api.test.datacite.org/"
+
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.
@@ -258,8 +263,14 @@ _WORKBENCH_SETTINGS = {
     "canPublish": True,
     "makeLink": False,
     "viewPath": True,
-    "compressApp": 'compress',
-    "extractApp": 'extract',
+    "compressApp": {
+        "id": "compress",
+        "version": "0.0.3"  # Can be set to "" to use the latest version
+    },
+    "extractApp": {
+        "id": "extract",
+        "version": "0.0.1"  # Can be set to "" to use the latest version
+    },
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,

@@ -24,7 +24,7 @@ const DataFilesViewDataModal = () => {
 
     const descriptionListFormattedData = values.map((val) => {
       const formattedData = Object.entries(val).reduce((acc, [key, value]) => {
-        acc[formatLabel(key)] = value;
+        acc[formatLabel(key)] = formatLabel(value);
         return acc;
       }, {});
       return <DescriptionList data={formattedData} />;

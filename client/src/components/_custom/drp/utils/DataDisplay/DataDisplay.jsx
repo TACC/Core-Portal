@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Section, SectionContent, LoadingSpinner, Button } from '_common';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './DataDisplay.module.scss';
-import { useFileListing } from 'hooks/datafiles';
 import { useDispatch } from 'react-redux';
 
 // Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
@@ -16,7 +15,7 @@ const formatLabel = (key) =>
 const processSampleAndOriginData = (data, path) => {
   // use the path to get sample and origin data names
   const sample = data.sample ? path.split('/')[0] : null;
-  const origin_data = data.digital_dataset ? path.split('/')[1] : null;
+  // const origin_data = data.digital_dataset ? path.split('/')[1] : null;
 
   // remove trailing / from pathname
   const locationPathname = location.pathname.endsWith('/')
@@ -42,17 +41,17 @@ const processSampleAndOriginData = (data, path) => {
     });
   }
 
-  if (origin_data) {
-    const originDataUrl = locationPathnameParts.slice(0, -1).join('/');
-    sampleAndOriginMetadata.push({
-      label: 'Origin Data',
-      value: (
-        <Link className={`${styles['dataset-link']}`} to={originDataUrl}>
-          {origin_data}
-        </Link>
-      ),
-    });
-  }
+  // if (origin_data) {
+  //   const originDataUrl = locationPathnameParts.slice(0, -1).join('/');
+  //   sampleAndOriginMetadata.push({
+  //     label: 'Origin Data',
+  //     value: (
+  //       <Link className={`${styles['dataset-link']}`} to={originDataUrl}>
+  //         {origin_data}
+  //       </Link>
+  //     ),
+  //   });
+  // }
 
   return sampleAndOriginMetadata;
 };
@@ -80,9 +79,17 @@ const processModalViewableData = (data) => {
   }));
 };
 
-const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
-  const location = useLocation();
+const processCoverImage = (data) => {
+  return [{
+    label: 'Cover Image',
+    value: 
+      <a href={data.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+        {data.cover_image.split('/').pop()}
+      </a>
+  }]
+}
 
+const DataDisplay = ({ data, path, excludeKeys, modalData, coverImage }) => {
   //filter out empty values and unwanted keys
   let processedData = Object.entries(data)
     .filter(([key, value]) => value !== '' && !excludeKeys.includes(key))
@@ -90,6 +97,10 @@ const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
       label: formatLabel(key),
       value: typeof value === 'string' ? formatLabel(value) : value,
     }));
+
+  if (coverImage) {
+    processedData.unshift(...processCoverImage(data));
+  }
 
   if (path) {
     processedData.unshift(...processSampleAndOriginData(data, path));
@@ -130,7 +141,7 @@ const DataDisplay = ({ data, path, excludeKeys, modalData }) => {
 
 DataDisplay.propTypes = {
   data: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
   excludeKeys: PropTypes.array,
 };
 

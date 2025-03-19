@@ -13,7 +13,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
   system,
   path,
 }) => {
-  const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
 
@@ -23,7 +22,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
     const userAccess = state.projects.metadata.members
       .filter((member) =>
         member.user
-          ? member.user.username === state.authenticatedUser.user.username
+          ? member.user.username === state.authenticatedUser?.user?.username
           : { access: null }
       )
       .map((currentUser) => {
@@ -105,7 +104,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
 };
 
 DataFilesProjectFileListingMetadataTitleAddon.propTypes = {
-  folderMetadata: PropTypes.shape({}).isRequired,
+  folderMetadata: PropTypes.shape({}),
 };
 
 export default DataFilesProjectFileListingMetadataTitleAddon;

@@ -84,7 +84,7 @@ const DataFilesAddProjectModal = () => {
         onCreate,
       },
     });
-  };
+  };  
 
   const onAdd = (newUser) => {
     setMembers([...members, newUser]);
@@ -101,7 +101,10 @@ const DataFilesAddProjectModal = () => {
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
+    description: Yup.string()
+      .max(800, 'Description must be at most 800 characters')
   });
+  
 
   return (
     <>
@@ -113,7 +116,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', description: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -122,7 +125,7 @@ const DataFilesAddProjectModal = () => {
               Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
-              <FormField
+            <FormField
                 name="title"
                 label={
                   <div>
@@ -130,17 +133,13 @@ const DataFilesAddProjectModal = () => {
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
+                    <br />
                   </div>
                 }
+                description={'The title should be descriptive and distinctive from related publications.'}
               />
-              {DataFilesAddProjectModalAddon && (
-                <DataFilesAddProjectModalAddon />
-              )}
-              <DataFilesProjectMembers
-                members={members}
-                onAdd={onAdd}
-                onRemove={onRemove}
-              />
+              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
+              <DataFilesProjectMembers members={members} onAdd={onAdd} onRemove={onRemove} />
             </ModalBody>
             <ModalFooter>
               {error ? (

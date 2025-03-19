@@ -72,3 +72,27 @@ Styleguide Components.Bootstrap.Modal
 .modal-header.has-MuiTabs .close {
   transform: translate(-25%, 25%);
 }
+
+.MuiTab-root {
+  font-size: 19px;
+  text-align: center;
+  opacity: 1;
+  display: inline-block;
+  position: absolute;
+  width: 25%;
+  height: 60.5px;
+}
+
+.modal-content .badge-danger {
+  background-color: #eb6e6e;
+  color: white;
+}
+
+.modal-content .badge-success {
+  background-color: #43d130;
+}
+
+.modal-content .badge-warning {
+  background-color: #c7ce1d;
+  color: white;
+}

@@ -59,6 +59,7 @@ export const FileNavCell = React.memo(
     scheme,
     href,
     isPublic,
+    basePath,
     length,
     metadata,
     rootSystem,
@@ -80,7 +81,7 @@ export const FileNavCell = React.memo(
       });
     };
 
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
 
     return (
       <>

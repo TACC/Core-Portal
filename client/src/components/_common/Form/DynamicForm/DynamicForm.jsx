@@ -23,17 +23,18 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     modifiedField
   ) => {
     const { dependency } = field;
-
-    const filteredOptions = field.options.filter(
-      (option) => option.dependentId == values[dependency.name]
-    );
+    const filteredOptions = field.options.filter(option => {
+      if (option.value === 'other') {
+        return true;
+      }
+      return option.dependentId === values[dependency.name];
+    });
     const updatedOptions = [{ value: '', label: '' }, ...filteredOptions];
 
     // Only update the field value if the modified field is the dependency field
     if (modifiedField && modifiedField.name === dependency.name) {
       setFieldValue(field.name, updatedOptions[0].value);
     }
-
     return {
       ...field,
       hidden: false,
@@ -162,6 +163,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             rows={5}
             description={field?.description}
             required={field?.validation?.required}
+            className={styles['textarea']}
           />
         );
       case 'select':
@@ -216,6 +218,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 <div>
                   <div>
                     <h2>{field.label}</h2>
+                    {field.description && (
+                      <p className={styles['array-field-description']}>{field.description}</p>
+                    )}
                   </div>
                   {values[field.name]?.map((_, index) => (
                     <div
@@ -225,10 +230,10 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                       <Expand
                         className={styles['expand-card']}
                         detail={
-                          values[field.name][index][field.fields[0].name] || ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] || ''
                         }
                         isOpenDefault={
-                          values[field.name][index][field.fields[0].name] === ''
+                          values[field.name][index][field.title_field ?? field.fields[0].name] === ''
                             ? true
                             : false
                         }
@@ -300,12 +305,21 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
               name={field.name}
               label={field.label}
               type="file"
+              accept={field?.validation?.accept}
               description={field?.description}
               required={field?.validation?.required}
               onChange={(event) => {
                 setFieldValue('file', event.currentTarget.files[0]);
               }}
             />
+            {field?.file_name && (
+              <span className={styles['file-name']}>
+              Uploaded File:&nbsp;
+                <a href={field.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+                  {field.file_name}
+                </a>
+              </span>
+            )}
           </div>
         );
       case 'submit':

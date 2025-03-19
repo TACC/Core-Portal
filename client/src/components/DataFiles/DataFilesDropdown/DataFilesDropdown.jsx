@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '_common';
 import {
+  Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  ButtonDropdown,
 } from 'reactstrap';
 import { useSystemDisplayName, useSystems } from 'hooks/datafiles';
 import '../DataFilesBreadcrumbs/DataFilesBreadcrumbs.scss';
@@ -17,6 +17,7 @@ const BreadcrumbsDropdown = ({
   scheme,
   system,
   path,
+  basePath,
   section,
   isPublic,
 }) => {
@@ -36,7 +37,7 @@ const BreadcrumbsDropdown = ({
     : null;
 
   const handleNavigation = (targetPath) => {
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
     let url;
 
     if (scheme === 'projects' && targetPath === systemName) {
@@ -91,10 +92,9 @@ const BreadcrumbsDropdown = ({
   const sliceStart = 1;
   return (
     <div id="path-button-wrapper">
-      <ButtonDropdown
+      <Dropdown
         isOpen={dropdownOpen}
         toggle={toggleDropdown}
-        id="go-to-button-dropdown"
         className="go-to-button-dropdown"
       >
         <DropdownToggle tag={Button}>Go to ...</DropdownToggle>
@@ -148,7 +148,7 @@ const BreadcrumbsDropdown = ({
             </DropdownItem>
           </Link>
         </DropdownMenu>
-      </ButtonDropdown>
+      </Dropdown>
     </div>
   );
 };

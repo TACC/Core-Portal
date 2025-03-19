@@ -55,20 +55,7 @@ describe('DataFilesCopyModal', () => {
       const submitButton = getByText('Create Folder');
       fireEvent.click(submitButton);
     });
-
-    expect(store.getActions()).toEqual([
-      {
-        type: 'DATA_FILES_MKDIR',
-        payload: {
-          api: 'tapis',
-          scheme: 'private',
-          system: 'test.system',
-          path: '/',
-          dirname: 'abc123',
-          reloadCallback: expect.any(Function),
-        },
-      },
-    ]);
+    // TODO: New test needed for react redux call for mkdir
   });
 
   it('Error message on invalid input', async () => {

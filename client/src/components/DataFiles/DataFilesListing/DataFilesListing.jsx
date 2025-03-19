@@ -45,6 +45,7 @@ const DataFilesListing = ({
   path,
   isPublic,
   rootSystem,
+  basePath,
 }) => {
   // Redux hooks
   const location = useLocation();
@@ -54,7 +55,7 @@ const DataFilesListing = ({
   );
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
   const isPortalProject = scheme === 'projects';
-  const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
+  const hideSearchBar = isPortalProject && sharedWorkspaces?.hideSearchBar;
 
   const showViewPath = useSelector(
     (state) =>
@@ -101,6 +102,7 @@ const DataFilesListing = ({
           scheme={scheme}
           href={row.original._links.self.href}
           isPublic={isPublic}
+          basePath={basePath}
           length={row.original.length}
           metadata={row.original.metadata}
         />
@@ -207,7 +209,7 @@ const DataFilesListing = ({
     path
   ) {
     if (isAtHomeDir) {
-      return isRootDir ? 'Root' : systemDisplayName;
+      return systemDisplayName;
     }
     return getCurrentDirectory(path);
   }

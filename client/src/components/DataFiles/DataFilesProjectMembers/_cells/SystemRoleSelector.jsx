@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import fetch from 'cross-fetch';
@@ -36,18 +36,19 @@ const setSystemRole = async (projectId, username, role) => {
 };
 
 export const useSystemRole = (projectId, username) => {
-  const query = useQuery(
-    ['system-role', projectId, username],
-    () => getSystemRole(projectId, username),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
-  const mutation = useMutation(async (role) => {
-    await setSystemRole(projectId, username, role);
-    query.refetch();
+  const query = useQuery({
+    queryKey: ['system-role', projectId, username],
+    queryFn: () => getSystemRole(projectId, username),
+
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const mutation = useMutation({
+    mutationFn: async (role) => {
+      await setSystemRole(projectId, username, role);
+      query.refetch();
+    },
   });
   return { query, mutation };
 };

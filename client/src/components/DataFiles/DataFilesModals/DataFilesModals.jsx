@@ -16,6 +16,8 @@ import DataFilesLinkModal from './DataFilesLinkModal';
 import DataFilesShowPathModal from './DataFilesShowPathModal';
 import DataFilesMakePublicModal from './DataFilesMakePublicModal';
 import DataFilesDownloadMessageModal from './DataFilesDownloadMessageModal';
+import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
+import DataFilesNoFoldersModal from './DataFilesNoFoldersModal';
 import './DataFilesModals.scss';
 import DataFilesFormModal from './DataFilesFormModal';
 import DataFilesPublicationRequestModal from './DataFilesPublicationRequestModal';
@@ -52,6 +54,8 @@ export default function DataFilesModals() {
       <DataFilesViewDataModal />
       <DataFilesProjectCitationModal />
       <DataFilesPublicationAuthorsModal />
+      <DataFilesLargeDownloadModal />
+      <DataFilesNoFoldersModal />
     </>
   );
 }

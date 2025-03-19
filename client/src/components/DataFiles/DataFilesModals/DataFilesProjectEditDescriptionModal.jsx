@@ -98,7 +98,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Dataset Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
@@ -110,13 +110,14 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="description"
                 label={
                   <div>
-                    Workspace Description{' '}
+                    Dataset Description{' '}
                     <small>
                       <em>(Maximum 800 characters)</em>
                     </small>
                   </div>
                 }
                 type="textarea"
+                rows={5}
                 className={styles['description-textarea']}
               />
               {DataFilesProjectEditDescriptionModalAddon && (
