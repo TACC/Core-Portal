@@ -130,14 +130,15 @@ def upload_metadata_file(project_id: str, project_json: str):
     """
     published_root = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
     upload_name = f"{project_id}_metadata.json"
-    upload_path = f"/archive/{upload_name}"
+    upload_full_path = f"/archive/{project_id}/{upload_name}"
     client = service_account()
+    client.files.mkdir(systemId=published_root, path=f"/archive/{project_id}")
     with StringIO() as f:
         json.dump(project_json, f, ensure_ascii=False, indent=4)
         f.seek(0)
         f.name = upload_name
-        client.files.insert(systemId=published_root, path=upload_path, file=f)
-    logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_path)
+        client.files.insert(systemId=published_root, path=upload_full_path, file=f)
+    logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_full_path)
 
 
 def archive_publication_files(project_id: str):
@@ -169,7 +170,7 @@ def archive_publication_files(project_id: str):
                 }
             ],
         },
-        "tags": ["portalName:designsafe"],
+        "tags": ["portalName:drp"],
     }
     res = client.jobs.submitJob(**job_body)
     return res
