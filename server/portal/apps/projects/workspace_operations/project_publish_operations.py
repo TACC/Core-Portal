@@ -1,6 +1,8 @@
 from typing import Optional
 from django.conf import settings
 import logging
+import json
+from io import StringIO
 from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 import networkx as nx
@@ -82,12 +84,15 @@ def _add_values_to_tree(project_id):
 
     return publication_tree
 
-def publish_project_callback(review_project_id, published_project_id):
+def publish_project_callback(review_project_id, published_project_id, archive_project_id):
         service_client = service_account()
         update_and_cleanup_review_project(review_project_id, PublicationRequest.Status.APPROVED)
 
         # Make system public for listing
         service_client.systems.shareSystemPublic(systemId=published_project_id)
+
+        # Create ZIP archive of published files
+        archive_publication_files(archive_project_id)
 
 def publication_request_callback(user_access_token, source_workspace_id, review_workspace_id, source_system_id, review_system_id):
     service_client = service_account()
@@ -116,6 +121,60 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
                 settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
             )
             logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
+
+
+def upload_metadata_file(project_id: str, project_json: str):
+    """
+    Upload the metadata file for a project. The uploaded file will appear at:
+    tapis://{PUBLISHED_ROOT_SYSTEM}/archive/{PROJECT_ID}_metadata.json 
+    """
+    published_root = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    upload_name = f"{project_id}_metadata.json"
+    upload_full_path = f"/archive/{project_id}/{upload_name}"
+    client = service_account()
+    client.files.mkdir(systemId=published_root, path=f"/archive/{project_id}")
+    with StringIO() as f:
+        json.dump(project_json, f, ensure_ascii=False, indent=4)
+        f.seek(0)
+        f.name = upload_name
+        client.files.insert(systemId=published_root, path=upload_full_path, file=f)
+    logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_full_path)
+
+
+def archive_publication_files(project_id: str):
+    """
+    Run a Tapis job to create a ZIP archive of published files that includes metadata.
+    """
+
+    client = service_account()
+    published_root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    published_root_dir = client.systems.getSystem(systemId=published_root_system).rootDir
+
+    job_body = {
+        "name": f"drp-archive-publication-{project_id}",
+        "appId": "digitalrocks-archive-publication",
+        "appVersion": "0.0.1",
+        "description": "Archive DRP publication",
+        "fileInputs": [],
+        "parameterSet": {
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {
+                    "key": "publishedRootDir",
+                    "value": published_root_dir
+                },
+                {
+                    "key": "projectId",
+                    "value": project_id
+                }
+            ],
+        },
+        "tags": ["portalName:drp"],
+    }
+    res = client.jobs.submitJob(**job_body)
+    return res
+
 
 @shared_task(bind=True, max_retries=3, queue='default')
 def publish_project(self, project_id: str, version: Optional[int] = 1):
@@ -163,13 +222,15 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         published_project.save()
 
 
-        pub_metadata = Publication.objects.update_or_create(
+        pub_metadata, _ = Publication.objects.update_or_create(
             project_id=project_id,
             defaults={"value": published_project.value, "tree": nx.node_link_data(pub_tree), "version": version},
         )
 
         if not settings.DEBUG:
             publish_datacite_doi(doi)
+
+        upload_metadata_file(published_workspace_id, pub_metadata.tree)
 
         index_publication(project_id)
 
@@ -185,6 +246,7 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             kwargs={
             'review_project_id': review_system_id,
             'published_project_id': published_system_id,
+            'archive_project_id': published_workspace_id
         }, countdown=30)
 
 @shared_task(bind=True, max_retries=3, queue='default')
