@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 import { Niivue } from '@niivue/niivue';
-import { useAddonComponents } from 'hooks/datafiles';
+import { useAddonComponents, useModal } from 'hooks/datafiles';
 
 const NiiVue = ({ imageUrl, fileName }) => {
   const canvas = useRef();
@@ -44,11 +44,25 @@ const DataFilesPreviewModal = () => {
     if (previewUsingBrainmap) setIsFrameLoading(false);
   }, [previewUsingBrainmap]);
 
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'preview', props: {} },
-    });
+  const { toggle } = useModal();
+
+  const togglePreview = () => toggle({ operation: 'preview', props: {} });
+
+  const toggleLargeDownloadModal = () =>
+    toggle({ operation: 'largeDownload', props: {} });
+
+  const download = () => {
+    // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
+    const maxFileSize = 2 * 1024 * 1024 * 1024;
+    if (params.length < maxFileSize) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: params },
+      });
+    } else {
+      toggleLargeDownloadModal();
+    }
+  };
 
   const onOpen = () => {
     setIsFrameLoading(true);
@@ -82,10 +96,10 @@ const DataFilesPreviewModal = () => {
       isOpen={isOpen}
       onOpened={onOpen}
       onClosed={onClosed}
-      toggle={toggle}
+      toggle={togglePreview}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
+      <ModalHeader toggle={togglePreview} charCode="&#xe912;">
         File Preview: {params.name}
       </ModalHeader>
       <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
@@ -126,11 +140,7 @@ const DataFilesPreviewModal = () => {
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
-            <Button
-              className={styles.button}
-              href={href}
-              target={fileType === 'other' ? '' : '_blank'}
-            >
+            <Button className={styles.button} onClick={download}>
               <i className="icon-exit" />
               <span className="toolbar-button-text">Download File</span>
             </Button>
