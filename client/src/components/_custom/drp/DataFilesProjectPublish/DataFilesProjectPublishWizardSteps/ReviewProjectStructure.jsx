@@ -58,6 +58,17 @@ export const ReviewProjectStructure = ({ projectTree }) => {
         contentLayoutName={'oneColumn'}
         className={styles['description-section']}
       >
+        {Object.keys(errors).length > 0 && (
+          <div className={styles['errors-div']}>
+            <p>Dataset structure has the following errors:</p>
+            <ul>
+              {Object.keys(errors).map((key) => (
+                <li key={key}><b>{errors[key]}</b></li>
+              ))}
+            </ul>
+            <p>Please delete {Object.keys(errors).length === 1 ? 'entity' : 'entities'} or upload files to continue</p>
+          </div>
+        )}
         <div className={styles['description']}>
           <p>
             Review the data tree structure to make sure that the relationships
@@ -76,17 +87,6 @@ export const ReviewProjectStructure = ({ projectTree }) => {
             </li>
           </ul>
         </div>
-        {Object.keys(errors).length > 0 && (
-          <div className={styles['errors-div']}>
-            <p>Dataset structure has the following errors:</p>
-            <ul>
-              {Object.keys(errors).map((key) => (
-                <li key={key}>{errors[key]}</li>
-              ))}
-            </ul>
-            <p>Please delete {Object.keys(errors).length === 1 ? 'entity' : 'entities'} or upload files to continue</p>
-          </div>
-        )}
         <ProjectTreeView projectId={projectId} readOnly={!canEdit} />
       </Section>
     </SectionTableWrapper>

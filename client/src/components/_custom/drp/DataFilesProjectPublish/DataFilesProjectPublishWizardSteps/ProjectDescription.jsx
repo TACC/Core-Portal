@@ -164,7 +164,7 @@ const ProjectDescription = ({ project }) => {
           <p>Dataset metadata has the following errors:</p>
           <ul>
             {Object.keys(errors).map((key) => (
-              <li key={key}>{errors[key]}</li>
+              <li key={key}><b>{errors[key]}</b></li>
             ))}
           </ul>
         </div>
