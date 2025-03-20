@@ -13,9 +13,10 @@ const ACMCitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name} ${a.last_name}`)
     .join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
-    .split('-')
-    .pop()}`;
+  // Use DOI if available, fallback to project URL
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
   const createdDate = new Date(project.created).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
@@ -33,7 +34,10 @@ const APACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name.charAt(0)}.`)
     .join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org`;
+  // Use DOI if available, fallback to project URL
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
   const createdDateObj = new Date(project.created);
   const createdDate = `${createdDateObj.getFullYear()}, ${createdDateObj.toLocaleString(
     'en-US',
@@ -54,9 +58,10 @@ const BibTeXCitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name}`)
     .join(' and ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
-    .split('-')
-    .pop()}`;
+  // Use DOI if available, fallback to project URL
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
   const year = new Date(project.created).getFullYear();
 
   return (
@@ -75,9 +80,10 @@ export const MLACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name}`)
     .join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
-    .split('-')
-    .pop()}`;
+  // Use DOI if available, fallback to project URL
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
   const createdDate = new Date(project.created).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -101,9 +107,10 @@ const IEEECitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name[0]}. ${a.last_name}`)
     .join(', ');
-  const projectUrl = `https://www.digitalrocksportal.org/projects/${project.projectId
-    .split('-')
-    .pop()}`;
+  // Use DOI if available, fallback to project URL
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
   const date = new Date(project.created);
   const year = date.getFullYear();
   const day = date.getDate();

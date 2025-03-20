@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { useSelector } from 'react-redux';
@@ -10,14 +10,26 @@ import styles from './DataFilesProjectEditDescriptionModalAddon.module.scss';
 const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   const { setFieldValue } = useFormikContext();
 
-  const { data: form, isLoading } = useQuery('form_EDIT_PROJECT', async () => {
+  const getEditProjectFormAddon = async () => {
     const response = await fetchUtil({
-      url: 'api/forms',
-      params: { form_name: 'EDIT_PROJECT_ADDON' },
+      url: '/api/forms',
+      params: {
+        form_name: 'EDIT_PROJECT_ADDON',
+      },
     });
+
     return response;
-  });
-  
+  };
+
+  const useEditProjectFormAddon = () => {
+    const query = useQuery({
+      queryKey: ['form-edit-project'],
+      queryFn: getEditProjectFormAddon,
+    });
+    return query;
+  };
+
+  const { data: form, isLoading } = useEditProjectFormAddon();
 
   const { metadata } = useSelector((state) => state.projects);
 
@@ -37,6 +49,8 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             });
           } else {
             if (field.type === 'file') {
+              field.file_name = metadata[field.name].split('/').pop();
+              field.file_url = metadata['file_url'];
               return;
             }
             setFieldValue(field.name, metadata[field.name]);

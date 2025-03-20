@@ -15,7 +15,7 @@ const formatLabel = (key) =>
 const processSampleAndOriginData = (data, path) => {
   // use the path to get sample and origin data names
   const sample = data.sample ? path.split('/')[0] : null;
-  const origin_data = data.digital_dataset ? path.split('/')[1] : null;
+  // const origin_data = data.digital_dataset ? path.split('/')[1] : null;
 
   // remove trailing / from pathname
   const locationPathname = location.pathname.endsWith('/')
@@ -41,17 +41,17 @@ const processSampleAndOriginData = (data, path) => {
     });
   }
 
-  if (origin_data) {
-    const originDataUrl = locationPathnameParts.slice(0, -1).join('/');
-    sampleAndOriginMetadata.push({
-      label: 'Origin Data',
-      value: (
-        <Link className={`${styles['dataset-link']}`} to={originDataUrl}>
-          {origin_data}
-        </Link>
-      ),
-    });
-  }
+  // if (origin_data) {
+  //   const originDataUrl = locationPathnameParts.slice(0, -1).join('/');
+  //   sampleAndOriginMetadata.push({
+  //     label: 'Origin Data',
+  //     value: (
+  //       <Link className={`${styles['dataset-link']}`} to={originDataUrl}>
+  //         {origin_data}
+  //       </Link>
+  //     ),
+  //   });
+  // }
 
   return sampleAndOriginMetadata;
 };
@@ -83,7 +83,7 @@ const processCoverImage = (data) => {
   return [{
     label: 'Cover Image',
     value: 
-      <a href={data.cover_image_url} target='_blank' rel="noreferrer" className='wb-link'>
+      <a href={data.file_url} target='_blank' rel="noreferrer" className='wb-link'>
         {data.cover_image.split('/').pop()}
       </a>
   }]
@@ -141,7 +141,7 @@ const DataDisplay = ({ data, path, excludeKeys, modalData, coverImage }) => {
 
 DataDisplay.propTypes = {
   data: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
   excludeKeys: PropTypes.array,
 };
 

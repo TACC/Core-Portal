@@ -93,7 +93,7 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
       authors: authors,
     };
 
-    if (Object.keys(values).length > 0) {
+    if (values.formSubmitted) {
       dispatch({
         type: 'PROJECTS_CREATE_PUBLICATION_REQUEST',
         payload: data,

@@ -16,7 +16,7 @@ const excludeKeys = [
   'digital_dataset',
   'file_objs',
   'cover_image',
-  'cover_image_url',
+  'file_url',
 ];
 
 const DataFilesProjectFileListingMetadataAddon = ({
@@ -36,7 +36,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
     doi,
     keywords,
     cover_image,
-    cover_image_url,
+    file_url,
   }) => {
     const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
     const dateLabel = publication_date ? 'Publication Date' : 'Created';
@@ -50,7 +50,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
       ...(doi && { doi }),
       ...(keywords && { keywords }),
       ...(cover_image && { cover_image }),
-      ...(cover_image_url && { cover_image_url }),
+      ...(file_url && { file_url }),
     };
   };
 
@@ -122,7 +122,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
 };
 
 DataFilesProjectFileListingMetadataAddon.propTypes = {
-  folderMetadata: PropTypes.shape({}).isRequired,
+  folderMetadata: PropTypes.shape({}),
 };
 
 export default DataFilesProjectFileListingMetadataAddon;

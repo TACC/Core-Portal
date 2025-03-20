@@ -28,7 +28,7 @@ const DataFilesProjectTreeModal = () => {
         className={styles['modal-dialog']}
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          Project Tree
+          Tree Diagram
         </ModalHeader>
         <ModalBody className={styles['modal-body']}>
           {' '}

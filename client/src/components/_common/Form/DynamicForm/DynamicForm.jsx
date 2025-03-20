@@ -163,6 +163,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             rows={5}
             description={field?.description}
             required={field?.validation?.required}
+            className={styles['textarea']}
           />
         );
       case 'select':
@@ -311,6 +312,14 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                 setFieldValue('file', event.currentTarget.files[0]);
               }}
             />
+            {field?.file_name && (
+              <span className={styles['file-name']}>
+              Uploaded File:&nbsp;
+                <a href={field.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+                  {field.file_name}
+                </a>
+              </span>
+            )}
           </div>
         );
       case 'submit':

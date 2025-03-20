@@ -209,7 +209,7 @@ const DataFilesListing = ({
     path
   ) {
     if (isAtHomeDir) {
-      return isRootDir ? 'Root' : systemDisplayName;
+      return systemDisplayName;
     }
     return getCurrentDirectory(path);
   }
