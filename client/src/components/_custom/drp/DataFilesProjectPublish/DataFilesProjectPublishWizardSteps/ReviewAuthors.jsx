@@ -232,7 +232,7 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
             <div className={styles.controls}>
               <>
                 <Button type="link" onClick={onManageTeam}>
-                  Manage Team
+                  Manage Authors
                 </Button>
               </>
             </div>

@@ -138,7 +138,7 @@ const DataFilesProjectFileListing = ({
           ) : null}
           {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
             <Button type="link" onClick={onManage}>
-              {`${readOnlyTeam ? 'View' : 'Manage'} Team`}
+              {readOnlyTeam ? 'View' : 'Manage'} Authors
             </Button>
           )}
           {DataFilesProjectFileListingAddon && (

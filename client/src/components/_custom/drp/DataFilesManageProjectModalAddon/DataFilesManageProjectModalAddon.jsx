@@ -78,7 +78,7 @@ const DataFilesManageProjectModalAddon = ({ projectId }) => {
 
   const columns = [
     {
-      Header: 'Guest Members',
+      Header: 'Guest Authors',
       accessor: (el) => el,
       Cell: (el) => {
         const { first_name, last_name, email } = el.value;
@@ -162,8 +162,13 @@ const DataFilesManageProjectModalAddon = ({ projectId }) => {
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Guest Member
+            Add Guest Author 
           </Label>
+          <div style={{ marginTop: "-12px", marginBottom: "12px" }}>
+            <small className="text-muted">
+              Collaborators who do not have TACC accounts. These authors won’t have access to the portal but will be included as authors.
+            </small>
+          </div>
           <Formik
             initialValues={{ guestUsers: [] }}
             validationSchema={validationSchema}
@@ -233,7 +238,7 @@ const DataFilesManageProjectModalAddon = ({ projectId }) => {
                           iconNameBefore="add"
                           className={styles['button-full']}
                         >
-                          Add Guest Member
+                          Add Guest Author
                         </Button>
                       </>
                     )}
