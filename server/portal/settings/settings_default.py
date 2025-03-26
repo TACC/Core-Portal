@@ -285,7 +285,7 @@ _WORKBENCH_SETTINGS = {
     "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 
                'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 
                'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish', 'DataFilesProjectReview',
-               'DataFilesManageProjectModalAddon'],
+               'DataFilesManageProjectModalAddon', 'DataFilesUploadModalListingTableAddon'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
