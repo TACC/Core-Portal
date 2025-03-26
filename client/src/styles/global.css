@@ -2,10 +2,12 @@
 /* SEE: ./README.md */
 
 /* SETTINGS */
-@import url('@tacc/core-styles/src/lib/_imports/settings/border.css');
-@import url('./settings/color.css');
-@import url('./settings/font.css');
-@import url('./settings/space.css');
+@import url('@tacc/core-styles/dist/settings/border.css');
+@import url('@tacc/core-styles/dist/settings/color.css');
+@import url('@tacc/core-styles/dist/settings/color--portal.v2.css');
+@import url('@tacc/core-styles/dist/settings/font.css');
+@import url('@tacc/core-styles/dist/settings/font--portal.css');
+@import url('@tacc/core-styles/dist/settings/space.css');
 
 /* TOOLS */
 /* … */
