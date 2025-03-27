@@ -442,7 +442,7 @@ export const helloWorldAppSubmissionPayloadFixture = {
     maxMinutes: 10,
     archiveSystemId: 'frontera',
     archiveSystemDir:
-      '/home/username//tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
+      '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
     archiveOnAppError: true,
     appId: 'hello-world',
     appVersion: '0.0.1',
