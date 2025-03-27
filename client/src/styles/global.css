@@ -4,7 +4,7 @@
 /* SETTINGS */
 @import url('@tacc/core-styles/dist/settings/border.css');
 @import url('@tacc/core-styles/dist/settings/color.css');
-@import url('@tacc/core-styles/dist/settings/color--portal.v2.css');
+@import url('@tacc/core-styles/dist/settings/color--portal.css');
 @import url('@tacc/core-styles/dist/settings/font.css');
 @import url('@tacc/core-styles/dist/settings/font--portal.css');
 @import url('@tacc/core-styles/dist/settings/space.css');
