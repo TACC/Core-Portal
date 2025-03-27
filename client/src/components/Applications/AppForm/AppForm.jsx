@@ -247,7 +247,8 @@ export const AppSchemaForm = ({ app }) => {
     hasStorageSystems,
     downSystems,
     execSystem,
-    defaultSystem,
+    defaultSystemId,
+    defaultArchivePath,
     keyService,
     allocationToExecSysMap,
   } = useSelector((state) => {
@@ -255,7 +256,7 @@ export const AppSchemaForm = ({ app }) => {
       app,
       state.allocations
     );
-    const { defaultHost, configuration, defaultSystem } = state.systems.storage;
+    const { defaultHost, configuration, defaultSystemId } = state.systems.storage;
     const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
@@ -263,6 +264,11 @@ export const AppSchemaForm = ({ app }) => {
       ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
         defaultHost?.endsWith(s)
       );
+    const defaultSystem = configuration.find(
+      (system) => system.id === defaultSystemId
+    ) || configuration[0]
+    const defaultArchivePath = `${defaultSystem?.homeDir || '$WORK'}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
+
     return {
       allocations: getAllocationList(
         app,
@@ -288,7 +294,8 @@ export const AppSchemaForm = ({ app }) => {
           app,
           allocationToExecSysMap.get(state.allocations.portal_alloc) ?? []
         ) ?? '',
-      defaultSystem,
+      defaultSystemId,
+      defaultArchivePath,
       keyService,
       allocationToExecSysMap,
     };
@@ -352,8 +359,8 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      app.definition.jobAttributes.archiveSystemId || defaultSystem,
-    archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
+    defaultSystemId || app.definition.jobAttributes.archiveSystemId,
+    archiveSystemDir: defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
     appVersion: app.definition.version,
@@ -552,8 +559,8 @@ export const AppSchemaForm = ({ app }) => {
               maxMinutes: getMaxMinutesValidation(queue, app).required(
                 'Required max minutes'
               ),
-              archiveSystemId: Yup.string(),
-              archiveSystemDir: Yup.string(),
+              archiveSystemId: Yup.string().notRequired(),
+              archiveSystemDir: Yup.string().notRequired(),
               allocation: isJobTypeBATCH(app)
                 ? getAllocationValidation(allocations).test(
                     'exec-systems-check',
@@ -903,7 +910,7 @@ export const AppSchemaForm = ({ app }) => {
                         name="archiveSystemId"
                         type="text"
                         placeholder={
-                          app.definition.archiveSystemId || defaultSystem
+                          defaultSystemId || app.definition.archiveSystemId
                         }
                       />
                       <FormField
@@ -912,8 +919,9 @@ export const AppSchemaForm = ({ app }) => {
                         name="archiveSystemDir"
                         type="text"
                         placeholder={
-                          app.definition.archiveSystemDir ||
-                          'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}'
+                          defaultArchivePath ||
+                          app.definition.archiveSystemDir
+
                         }
                       />
                     </>
