@@ -43,7 +43,7 @@ const FormSchema = (app) => {
         }
 
         const field = {
-          label: param.name ?? param.key,
+          label: param.notes?.label ?? param.name ?? param.key,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',

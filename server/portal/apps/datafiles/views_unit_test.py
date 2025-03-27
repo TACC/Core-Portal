@@ -422,7 +422,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
     response = client.get('/api/datafiles/systems/list/')
     assert response.json() == {
         "default_host": "cloud.data.tacc.utexas.edu",
-        "default_system": "cloud.data",
+        "default_system_id": "cloud.data",
         "system_list": [
             {
                 'name': 'My Data (Work)',
