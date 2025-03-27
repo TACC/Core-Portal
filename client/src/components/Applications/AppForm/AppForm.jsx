@@ -256,7 +256,8 @@ export const AppSchemaForm = ({ app }) => {
       app,
       state.allocations
     );
-    const { defaultHost, configuration, defaultSystemId } = state.systems.storage;
+    const { defaultHost, configuration, defaultSystemId } =
+      state.systems.storage;
     const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
@@ -264,10 +265,12 @@ export const AppSchemaForm = ({ app }) => {
       ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
         defaultHost?.endsWith(s)
       );
-    const defaultSystem = configuration.find(
-      (system) => system.id === defaultSystemId
-    ) || configuration[0]
-    const defaultArchivePath = `${defaultSystem?.homeDir || '$WORK'}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
+    const defaultSystem =
+      configuration.find((system) => system.id === defaultSystemId) ||
+      configuration[0];
+    const defaultArchivePath = `${
+      defaultSystem?.homeDir || '$WORK'
+    }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
 
     return {
       allocations: getAllocationList(
@@ -359,8 +362,9 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-    defaultSystemId || app.definition.jobAttributes.archiveSystemId,
-    archiveSystemDir: defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
+      defaultSystemId || app.definition.jobAttributes.archiveSystemId,
+    archiveSystemDir:
+      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
     archiveOnAppError: true,
     appId: app.definition.id,
     appVersion: app.definition.version,
@@ -919,9 +923,7 @@ export const AppSchemaForm = ({ app }) => {
                         name="archiveSystemDir"
                         type="text"
                         placeholder={
-                          defaultArchivePath ||
-                          app.definition.archiveSystemDir
-
+                          defaultArchivePath || app.definition.archiveSystemDir
                         }
                       />
                     </>
