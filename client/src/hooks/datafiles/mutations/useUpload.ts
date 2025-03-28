@@ -31,7 +31,7 @@ export async function uploadUtil({
   
   // Append metadata as a JSON string
   if (metadata && !system.includes('community')) {
-    formData.append('metadata', JSON.stringify({ ...metadata }));
+    formData.append('metadata', JSON.stringify({ data_type: 'file', ...metadata }));
   }
 
   let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
