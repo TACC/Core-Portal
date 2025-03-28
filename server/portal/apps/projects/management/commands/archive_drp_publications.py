@@ -15,6 +15,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--project-id',
             type=str,
+            nargs='+',
             help="Specify a project ID to archive."
         )
 
