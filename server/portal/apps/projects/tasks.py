@@ -83,13 +83,6 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
     client = user_account(user_access_token)
     username = client.access_token.claims['tapis/username']
 
-    Notification.objects.create(**{
-        Notification.EVENT_TYPE: 'projects',
-        Notification.STATUS: Notification.INFO,
-        Notification.USER: username,
-        Notification.MESSAGE: f'Generating Images for {Path(path).name}',
-    })
-
     logger.info(f'Processing file {path} in project {project_id}')
 
     if encoded_file:
@@ -128,6 +121,13 @@ def process_file(self, project_id: str, path: str, user_access_token: str, encod
             })
             
             return
+        
+        Notification.objects.create(**{
+            Notification.EVENT_TYPE: 'projects',
+            Notification.STATUS: Notification.INFO,
+            Notification.USER: username,
+            Notification.MESSAGE: f'Generating Images for {Path(path).name}',
+        })
 
         try:
             if value.get('use_binary_correction'):

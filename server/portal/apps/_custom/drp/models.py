@@ -30,6 +30,7 @@ class DrpFileMetadata(DrpMetadataModel):
     ) 
 
     data_type: Literal['file']
+    is_advanced_image_file: Optional[bool] = False
     name: Optional[str] = None
     image_type: Optional[Literal[
         '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real', 
