@@ -83,6 +83,12 @@ const DataFilesFormModal = () => {
           .matches(/^https:\/\//, `${field.label} must start with https://`);
       }
 
+      if (field.type === 'number') {
+        schema[field.name] = (schema[field.name] || Yup.number())
+          .max(field.validation?.max ?? Infinity, `${field.label} must be less than or equal to ${field.validation?.max}`)
+          .min(field.validation?.min ?? -Infinity, `${field.label} must be greater than or equal to ${field.validation?.min}`)
+      }
+
       return schema;
     }, {}),
   });
