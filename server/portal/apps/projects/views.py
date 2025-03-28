@@ -347,7 +347,7 @@ class ProjectInstanceApiView(BaseApiView):
                                 path=f'media/{project_id}/cover_image/{cover_image.name}', 
                                 file=resized_file)
             
-        if workspace_def['cover_image']:
+        if workspace_def.get('cover_image') is not None:
             # Get the postit for the cover image
             postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
                                                        path=f"media/{project_id}/cover_image/{Path(workspace_def['cover_image']).name}",

@@ -61,7 +61,6 @@ def _transfer_cover_image(source_system_id, dest_system_id, cover_image_path):
     logger.info(f"Transfer task created for cover image: {transfer.uuid}")
     return transfer
 
-
 def _check_transfer_status(service_client, transfer_task_id):
     transfer_details = service_client.files.getTransferTask(transferTaskId=transfer_task_id)
     return transfer_details.status
@@ -122,7 +121,6 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
             )
             logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
 
-
 def upload_metadata_file(project_id: str, project_json: str):
     """
     Upload the metadata file for a project. The uploaded file will appear at:
@@ -139,7 +137,6 @@ def upload_metadata_file(project_id: str, project_json: str):
         f.name = upload_name
         client.files.insert(systemId=published_root, path=upload_full_path, file=f)
     logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_full_path)
-
 
 def archive_publication_files(project_id: str):
     """
@@ -174,7 +171,6 @@ def archive_publication_files(project_id: str):
     }
     res = client.jobs.submitJob(**job_body)
     return res
-
 
 @shared_task(bind=True, max_retries=3, queue='default')
 def publish_project(self, project_id: str, version: Optional[int] = 1):
@@ -350,12 +346,10 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
 
     logger.info(f'Deleted review project {review_project_id} and its associated data.')
 
-
 def get_project_user_emails(project_id):
     """Return a list of emails for users in a project."""
     prj = ProjectMetadata.get_project_by_id(project_id)
     return [user["email"] for user in prj.value["authors"] if user.get("email")]
-
 
 @shared_task(bind=True, queue='default')
 def send_publication_accept_email(self, project_id):
@@ -386,7 +380,6 @@ def send_publication_accept_email(self, project_id):
             [user_email],
             html_message=email_body,
         )
-
 
 @shared_task(bind=True, queue='default')
 def send_publication_reject_email(self, project_id: str):

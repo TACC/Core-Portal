@@ -76,7 +76,7 @@ class DrpProjectRelatedDatasets(DrpMetadataModel):
     )
 
     dataset_title: str
-    dataset_description: str = ""
+    dataset_description: Optional[str] = None
     dataset_link: str = ""
 
 class DrpProjectRelatedSoftware(DrpMetadataModel):
