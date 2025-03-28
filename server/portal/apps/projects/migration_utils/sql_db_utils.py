@@ -29,9 +29,9 @@ def query_published_projects():
     params = [1]
     return run_query(query, params)
 
-def get_project_by_id(project_id):
-    query = "SELECT * FROM upload_project WHERE id = %s;"
-    params = [project_id]
+def get_project_by_id(project_ids):
+    query = f"SELECT * FROM upload_project WHERE id IN ({', '.join(['%s'] * len(project_ids))});"
+    params = project_ids
     return run_query(query, params)
 
 def query_related_publications(project_id):
