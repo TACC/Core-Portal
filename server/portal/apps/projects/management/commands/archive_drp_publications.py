@@ -33,5 +33,5 @@ class Command(BaseCommand):
         for pub in publications:
             project_id = pub.project_id
             upload_metadata_file(project_id, pub.tree)
-            archive_publication_files(project_id)
-            print(f'Submitted archive files job for publication id {project_id}.')
+            job_res = archive_publication_files(project_id)
+            print(f'Submitted archive files job for publication id {project_id} with job UUID {job_res.uuid}.')
