@@ -152,19 +152,20 @@ class Command(BaseCommand):
                 project_id = transfer["project_id"]
                 transfer_id = transfer["transfer_id"]
 
-                if transfer_id in completed_transfers or transfer_id in failed_transfers:
-                    continue
 
+                if any(transfer_id == t["transfer_id"] for t in completed_transfers + failed_transfers):
+                    continue
+                
                 transfer_details = client.files.getTransferTask(transferTaskId=transfer_id)
                 status = transfer_details.status
 
                 if status == "COMPLETED":
                     print(f"Transfer completed for project {project_id}.")
-                    completed_transfers.append(project_id)
+                    completed_transfers.append({"project_id": project_id, "transfer_id": transfer_id})
 
                 elif status in ["FAILED", "CANCELED", "FAILED_OPT", "PAUSED"]:
                     print(f"Transfer failed for project {project_id}.")
-                    failed_transfers.append(project_id)
+                    failed_transfers.append({"project_id": project_id, "transfer_id": transfer_id})
             
             time.sleep(TRANSFER_STATUS_CHECK_INTERVAL)
 
