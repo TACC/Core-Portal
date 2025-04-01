@@ -30,6 +30,9 @@ def query_published_projects():
     return run_query(query, params)
 
 def get_project_by_id(project_ids):
+    if not project_ids:
+        return []
+    
     query = f"SELECT * FROM upload_project WHERE id IN ({', '.join(['%s'] * len(project_ids))});"
     params = project_ids
     return run_query(query, params)
