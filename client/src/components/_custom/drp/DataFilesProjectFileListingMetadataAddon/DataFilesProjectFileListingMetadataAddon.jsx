@@ -57,8 +57,8 @@ const DataFilesProjectFileListingMetadataAddon = ({
   const getProjectModalMetadata = (metadata) => {
     const fields = [
       'related_publications',
-      'related_software',
       'related_datasets',
+      'related_software',
     ];
     return fields.reduce((formattedMetadata, field) => {
       if (metadata[field] && metadata[field].length > 0) {
