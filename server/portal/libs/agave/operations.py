@@ -4,6 +4,7 @@ import io
 from django.conf import settings
 from django.db import transaction
 import logging
+import urllib
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
@@ -132,6 +133,28 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     # Update Elasticsearch after each listing.
     tapis_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit), 'folder_metadata': folder_entity_value}
+
+
+def detail(client, system, path, *args, **kwargs):
+    """
+    Retrieve the uuid for a file by parsing the query string in _links.metadata.href
+    """
+    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    f = _listing[0]
+    listing_res = {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f"/{f.path}",
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}
+
+    return listing_res
 
 
 def iterate_listing(client, system, path, limit=100):

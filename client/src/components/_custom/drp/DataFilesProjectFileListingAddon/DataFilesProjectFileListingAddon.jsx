@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
-import { useSelectedFiles, useSystems } from 'hooks/datafiles';
+import { useModal, useSelectedFiles, useSystems } from 'hooks/datafiles';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
@@ -24,6 +24,8 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
     createPublicationAuthorsModal,
   } = useDrpDatasetModals(projectId, portalName);
 
+  const { toggle: toggleModal } = useModal();
+
   const createPublicationRequestModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -33,6 +35,12 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
       },
     });
   };
+
+  const togglePublicationDownloadModal = () =>
+    toggleModal({
+      operation: 'publicationDownload',
+      props: { projectId, system, metadata },
+    });
 
   const { canEditDataset, canRequestPublication, canReviewPublication } =
     useSelector((state) => {
@@ -196,6 +204,14 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
           <span className={styles.separator}>|</span>
           <Button type="link" onClick={createPublicationRequestModal}>
             View Publication Requests
+          </Button>
+        </>
+      )}
+      {isPublicationSystem(rootSystem) && (
+        <>
+          <span className={styles.separator}>|</span>
+          <Button type="link" onClick={togglePublicationDownloadModal}>
+            Download Dataset
           </Button>
         </>
       )}

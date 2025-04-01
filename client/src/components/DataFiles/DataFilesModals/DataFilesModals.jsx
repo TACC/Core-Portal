@@ -21,6 +21,7 @@ import DataFilesNoFoldersModal from './DataFilesNoFoldersModal';
 import './DataFilesModals.scss';
 import DataFilesFormModal from './DataFilesFormModal';
 import DataFilesPublicationRequestModal from './DataFilesPublicationRequestModal';
+import DataFilesPublicationDownloadModal from './DataFilesPublicationDownloadModal';
 import DataFilesProjectTreeModal from './DataFilesProjectTreeModal';
 import DataFilesProjectDescriptionModal from './DataFilesProjectDescriptionModal';
 import DataFilesViewDataModal from './DataFilesViewDataModal';
@@ -50,6 +51,7 @@ export default function DataFilesModals() {
       <DataFilesFormModal />
       <DataFilesProjectTreeModal />
       <DataFilesPublicationRequestModal />
+      <DataFilesPublicationDownloadModal />
       <DataFilesProjectDescriptionModal />
       <DataFilesViewDataModal />
       <DataFilesProjectCitationModal />
