@@ -19,7 +19,7 @@ export function toBytes(bytes) {
 const DataFilesPublicationDownloadModal = () => {
   const dispatch = useDispatch();
   const { toggle: toggleModal, getStatus, getProps } = useModal();
-  const { projectId, system } = getProps('publicationDownload') || {};
+  const { projectId, rootSystem } = getProps('publicationDownload') || {};
   const archiveProjectId = (projectId ?? '').split('published.')[1];
 
   const isOpen = getStatus('publicationDownload') ?? false;
@@ -31,7 +31,7 @@ const DataFilesPublicationDownloadModal = () => {
   const archivePath = `/archive/${archiveProjectId}/${archiveProjectId}_archive.zip`;
   const { isLoading, isError, data } = useFileDetail(
     'tapis',
-    system,
+    rootSystem,
     'public',
     archivePath,
     isOpen
@@ -48,7 +48,7 @@ const DataFilesPublicationDownloadModal = () => {
   const downloadFile = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
-      payload: { file: { system, path: archivePath } },
+      payload: { file: { system: rootSystem, path: archivePath } },
     });
   };
 

@@ -39,7 +39,7 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
   const togglePublicationDownloadModal = () =>
     toggleModal({
       operation: 'publicationDownload',
-      props: { projectId, system, metadata },
+      props: { projectId, rootSystem },
     });
 
   const { canEditDataset, canRequestPublication, canReviewPublication } =
