@@ -20,7 +20,7 @@ const DataFilesPublicationDownloadModal = () => {
   const dispatch = useDispatch();
   const { toggle: toggleModal, getStatus, getProps } = useModal();
   const { projectId, rootSystem } = getProps('publicationDownload') || {};
-  const archiveProjectId = (projectId ?? '').split('published.')[1];
+  const archiveProjectId = (projectId ?? '').split('.').pop();
 
   const isOpen = getStatus('publicationDownload') ?? false;
 
