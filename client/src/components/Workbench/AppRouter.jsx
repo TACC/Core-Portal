@@ -53,7 +53,7 @@ function AppRouter() {
         component={PublicationsPublicView}
       />
       <Route
-        path={`${ROUTES > ROUTES.PUBLICATIONS}/tapis/projects/:root_system`}
+        path={`${ROUTES.PUBLICATIONS}/tapis/projects/:root_system`}
         exact
       >
         <Redirect to={ROUTES.PUBLICATIONS} />

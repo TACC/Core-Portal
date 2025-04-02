@@ -11,7 +11,7 @@ import DataFilesProjectFileListing from '../DataFiles/DataFilesProjectFileListin
 import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import NotificationToast from '../Toasts';
 import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
-import PUBLICATIONS from '../../constants/routes'
+import { PUBLICATIONS } from '../../constants/routes'
 
 function PublicationDetailPublicView({ params }) {
   return (
