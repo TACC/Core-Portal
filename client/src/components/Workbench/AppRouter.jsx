@@ -12,7 +12,6 @@ import SiteSearch from '../SiteSearch';
 import PublicationsPublicView from '../Publications/PublicationsPublicView';
 import PublicationDetailPublicView from '../Publications/PublicationDetailPublicView';
 
-
 function AppRouter() {
   const dispatch = useDispatch();
   const { fetchSystems } = useSystems();
@@ -48,14 +47,21 @@ function AppRouter() {
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
       <Route path="/tickets/new" component={TicketStandaloneCreate} />
       <Route path="/public-data" component={PublicData} />
-      <Route path="/publications" exact component={PublicationsPublicView}/>
-      <Route path="/publications/tapis/projects/:root_system" exact>
-        <Redirect to="/publications" />
+      <Route
+        path={ROUTES.PUBLICATIONS}
+        exact
+        component={PublicationsPublicView}
+      />
+      <Route
+        path={`${ROUTES > ROUTES.PUBLICATIONS}/tapis/projects/:root_system`}
+        exact
+      >
+        <Redirect to={ROUTES.PUBLICATIONS} />
       </Route>
       <Route
-        path={`/publications/tapis/projects/:root_system/:system/:path*`}
+        path={`${ROUTES.PUBLICATIONS}/tapis/projects/:root_system/:system/:path*`}
         render={({ match: { params } }) => {
-          return <PublicationDetailPublicView params={params}/>;
+          return <PublicationDetailPublicView params={params} />;
         }}
       />
       <Route path="/request-access" component={RequestAccess} />
