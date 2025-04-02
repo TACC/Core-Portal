@@ -36,6 +36,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
   const { ...file } = useSelector((state) => state.files.modalProps.preview);
 
+  const { is_review_project, is_published_project } = useSelector((state) => state.projects.metadata);
 
   const getEditFileForm = async() => {
     const response = await fetchUtil({
@@ -109,7 +110,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
   return (
     <>
-      {!isLoading &&  (
+      {!isLoading && !is_review_project && !is_published_project && (
         <div className={styles['expand-div']}>
             {!isAdvancedImageFile && (
               <div className={styles['metadata-div']}>
