@@ -204,6 +204,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                       'sample',
                       'digital_dataset',
                       'file_objs',
+                      'is_advanced_image_file'
                     ]}
                   />
                 </div>
