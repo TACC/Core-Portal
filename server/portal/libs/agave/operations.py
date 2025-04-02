@@ -590,7 +590,7 @@ def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
             add_file_associations(root_node['uuid'], [file_obj])
 
         # additional processing for files
-        if len(metadata) > 1:
+        if metadata.get('is_advanced_image_file', None):
             encoded_file = base64.b64encode(uploaded_file.read()).decode('utf-8')
             uploaded_file.seek(0)
             transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token, encoded_file))

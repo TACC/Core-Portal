@@ -25,27 +25,19 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
     }
 
     setUploadedFilesWithMetadata(
-      uploadedFiles.filter((file) => !standardImageType.test(file.data.name))
+      uploadedFiles.filter((file) => file.is_advanced_image_file)
     );
   }, [uploadedFiles]);
 
-  const getUploadFileForm = async () => {
-    const response = await fetchUtil({
-      url: 'api/forms',
-      params: {
-        form_name: 'UPLOAD_FILE',
-      },
-    });
-    
-    return response;
-  };
-
   const useUploadFileForm = () => {
-    const query = useQuery({
+    return useQuery({
       queryKey: ['form-upload-file'],
-      queryFn: getUploadFileForm,
+      queryFn: async () =>
+        fetchUtil({
+          url: 'api/forms',
+          params: { form_name: 'UPLOAD_FILE' },
+        }),
     });
-    return query;
   };
 
   const { data: form, isLoading } = useUploadFileForm();
@@ -55,7 +47,10 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
       if (uploadedFile.data.name === file.data.name) {
         return {
           ...uploadedFile,
-          metadata: { name: uploadedFile.data.name, ...values },
+          metadata: { 
+            name: uploadedFile.data.name,
+            is_advanced_image_file: uploadedFile.is_advanced_image_file,
+            ...values },
         };
       }
       return uploadedFile;
