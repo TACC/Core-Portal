@@ -68,7 +68,9 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             field.fields.reduce((subAcc, subField) => {
               if (subField.type === 'link') {
                 subAcc[subField.name] = (subAcc[subField.name] || Yup.string())
-                  .url(`${subField.label} must be a valid URL`)
+                  .url(
+                    `${subField.label} must be a valid URL starting with https://...`
+                  )
                   .matches(
                     /^https:\/\//,
                     `${subField.label} must start with https://`
@@ -93,7 +95,7 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
         if (field.type === 'link') {
           acc[field.name] = (acc[field.name] || Yup.string())
             .required(`${field.label} is required`)
-            .url(`${field.label} must be a valid URL`)
+            .url(`${field.label} must be a valid URL starting with https://...`)
             .matches(/^https:\/\//, `${field.label} must start with https://`);
         }
       }

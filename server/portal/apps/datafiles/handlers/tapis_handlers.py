@@ -6,11 +6,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 allowed_actions = {
-    'private': ['listing', 'search', 'copy', 'download', 'mkdir',
+    'private': ['listing', 'search', 'copy', 'download', 'mkdir', 'detail',
                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'delete'],
-    'public': ['listing', 'search', 'copy', 'download', 'preview'],
-    'community': ['listing', 'search', 'copy', 'download', 'preview'],
-    'projects': ['listing', 'search', 'copy', 'download', 'mkdir',
+    'public': ['listing', 'search', 'copy', 'download', 'preview', 'detail'],
+    'community': ['listing', 'search', 'copy', 'download', 'preview', 'detail'],
+    'projects': ['listing', 'search', 'copy', 'download', 'mkdir', 'detail',
                  'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'update_metadata']
 }
 
