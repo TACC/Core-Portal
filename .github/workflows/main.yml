@@ -29,7 +29,7 @@ jobs:
     - name: Install Python Packages
       run:  |
         cd server
-        poetry install
+        poetry install --with dev
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
@@ -65,7 +65,7 @@ jobs:
     - name: Install Python Packages
       run:  |
         cd server
-        poetry install
+        poetry install --with dev
 
     - name: Server-Side Linting
       run: |
@@ -80,7 +80,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: npm
         cache-dependency-path: '**/package-lock.json'
 
@@ -108,7 +108,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: npm
         cache-dependency-path: '**/package-lock.json'
 
