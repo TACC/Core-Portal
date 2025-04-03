@@ -79,7 +79,7 @@ const DataFilesFormModal = () => {
 
       if (field.type === 'link') {
         schema[field.name] = (schema[field.name] || Yup.string())
-          .url(`${field.label} must be a valid URL`)
+          .url(`${field.label} must be a valid URL starting with https://...`)
           .matches(/^https:\/\//, `${field.label} must start with https://`);
       }
 

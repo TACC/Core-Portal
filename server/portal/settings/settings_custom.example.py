@@ -67,7 +67,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'tapis',
         'homeDir': '/home/{username}',
         'icon': None,
-        'keyservice': True,
         'default': True
     },
     {

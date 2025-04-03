@@ -35,6 +35,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--project-id',
             type=str,
+            nargs='+',
             help="Specify a project ID to migrate."
         )
 
@@ -336,6 +337,7 @@ class Command(BaseCommand):
                 
                 value = {
                     'data_type': 'file',
+                    'is_advanced_image_file': True,
                     'name': file_name,
                     'image_type': metadata_mappings.FILE_IMAGE_TYPE_MAPPING.get(advanced_image_file['image_type']),
                     'height': advanced_image_file['height'],

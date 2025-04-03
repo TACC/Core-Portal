@@ -11,7 +11,9 @@ import DataFilesProjectFileListing from '../DataFiles/DataFilesProjectFileListin
 import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import NotificationToast from '../Toasts';
 import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
+import DataFilesPublicationDownloadModal from '../DataFiles/DataFilesModals/DataFilesPublicationDownloadModal';
 import { PUBLICATIONS } from '../../constants/routes'
+
 
 function PublicationDetailPublicView({ params }) {
   return (
@@ -46,6 +48,7 @@ function PublicationDetailPublicView({ params }) {
       <DataFilesViewDataModal />
       <DataFilesCopyModal />
       <DataFilesLargeDownloadModal />
+      <DataFilesPublicationDownloadModal />
     </div>
   );
 }

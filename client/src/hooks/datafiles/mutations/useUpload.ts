@@ -28,8 +28,6 @@ export async function uploadUtil({
   const formData = new FormData();
   const fileField = file.get('uploaded_file') as Blob;
   formData.append('uploaded_file', fileField);
-
-  console.log('metadata', metadata);
   
   // Append metadata as a JSON string
   if (metadata && !system.includes('community')) {

@@ -7,10 +7,8 @@ from typing import Literal
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from portal.apps.projects.models.metadata import ProjectsMetadata
-from django.db import models
 from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_keys
 
 import logging
 logger = logging.getLogger(__name__)
@@ -213,14 +211,6 @@ def add_user_to_workspace(client: Tapis,
                        username,
                        "add",
                        role)
-
-    # Code to generate/push user keys to a workspace
-    # (uncomment to add per-user credentials)
-    # priv_key, pub_key = createKeyPair()
-    # register_public_key(username,
-    #                     pub_key,
-    #                     system_id)
-    # create_system_credentials(client, username, pub_key, priv_key, system_id)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
@@ -466,7 +456,7 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
     if listing and listing[0].deleted:
         service_client.systems.undeleteSystem(systemId=target_system_id)
         # Add back system credentials since the system was previously deleted
-        create_system_credentials(service_client, portal_admin_username, settings.PORTAL_PROJECTS_PUBLIC_KEY, 
+        create_system_credentials_with_keys(service_client, portal_admin_username, settings.PORTAL_PROJECTS_PUBLIC_KEY, 
                                   settings.PORTAL_PROJECTS_PRIVATE_KEY, target_system_id)
     else:
     # Create the target workspace system
