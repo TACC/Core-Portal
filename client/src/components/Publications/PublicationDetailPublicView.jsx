@@ -12,6 +12,8 @@ import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import NotificationToast from '../Toasts';
 import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
 import DataFilesPublicationDownloadModal from '../DataFiles/DataFilesModals/DataFilesPublicationDownloadModal';
+import { PUBLICATIONS } from '../../constants/routes'
+
 
 function PublicationDetailPublicView({ params }) {
   return (
@@ -30,13 +32,13 @@ function PublicationDetailPublicView({ params }) {
         system={params.system}
         path={params.path || ''}
         section="FilesListing"
-        basePath="/publications"
+        basePath={PUBLICATIONS}
       />
       <DataFilesProjectFileListing
         rootSystem={params.root_system}
         system={params.system}
         path={params.path || '/'}
-        basePath="/publications"
+        basePath={PUBLICATIONS}
       />
       <DataFilesPreviewModal />
       <DataFilesShowPathModal />
