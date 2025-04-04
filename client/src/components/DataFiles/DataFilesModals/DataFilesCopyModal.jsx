@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SectionMessage } from '_common';
@@ -22,7 +22,8 @@ const DataFilesCopyModal = React.memo(() => {
   const { copy, setStatus } = useCopy();
   const { getStatus, getProps, setProps, toggle: toggleModal } = useModal();
 
-  const { params } = useFileListing('FilesListing');
+  const { params: initialParams } = useFileListing('FilesListing');
+
   const {
     params: modalParams,
     data: files,
@@ -30,6 +31,20 @@ const DataFilesCopyModal = React.memo(() => {
   } = useFileListing('modal');
 
   const { fetchSelectedSystem } = useSystems();
+
+  const [params, setParams] = useState({});
+  const [selectedSystem, setSelectedSystem] = useState({});
+
+  useEffect(() => {
+    if (initialParams) {
+      setParams(initialParams);
+    }
+  }, [initialParams]);
+
+  useEffect(() => {
+    const system = fetchSelectedSystem(params);
+    setSelectedSystem(system);
+  }, [params, fetchSelectedSystem])
 
   const dispatch = useDispatch();
 
@@ -65,7 +80,32 @@ const DataFilesCopyModal = React.memo(() => {
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
     .map((s) => `${s.system}${s.homeDir || ''}`);
 
-  const selectedSystem = fetchSelectedSystem(params);
+  useEffect(() => {
+    if (
+      selectedSystem &&
+      excludedSystems.includes(`${selectedSystem?.system}${selectedSystem?.homeDir || ''}`)
+    ) {
+  
+      const defaultSystem = systems.find(system => !excludedSystems.includes(`${system.system}${system.homeDir || ''}`));
+      
+      if (
+        defaultSystem &&
+        `${defaultSystem.system}${defaultSystem.homeDir || ''}` !==
+          `${selectedSystem.system}${selectedSystem.homeDir || ''}`
+      ) {
+        const updatedParams = {
+          api: defaultSystem.api,
+          scheme: defaultSystem.scheme,
+          system: defaultSystem.system,
+          path: defaultSystem.homeDir || '/',
+        };
+        setParams(updatedParams);
+        setSelectedSystem(defaultSystem);
+        fetchListing(updatedParams);
+      }
+    }
+  }, [selectedSystem, excludedSystems, systems, fetchListing]);
+  
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
