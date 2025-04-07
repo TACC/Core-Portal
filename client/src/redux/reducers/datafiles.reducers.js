@@ -5,7 +5,7 @@ export const initialSystemState = {
     errorMessage: null,
     loading: false,
     defaultHost: '',
-    defaultSystem: '',
+    defaultSystemId: '',
   },
   definitions: {
     list: [],
@@ -41,7 +41,7 @@ export function systems(state = initialSystemState, action) {
           ...state.storage,
           configuration: action.payload.system_list,
           defaultHost: action.payload.default_host,
-          defaultSystem: action.payload.default_system,
+          defaultSystemId: action.payload.default_system_id,
           loading: false,
         },
       };
