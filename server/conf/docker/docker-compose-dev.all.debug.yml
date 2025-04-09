@@ -3,7 +3,7 @@
 ---
 services:
   cms:
-    image: taccwma/core-cms:v4.26.1
+    image: taccwma/core-cms:v4.25.2
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
