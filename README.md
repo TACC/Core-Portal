@@ -153,6 +153,9 @@ OR
 
 Finally, create a home page in the CMS.
 
+> [!HINT]
+> If you get an error `Applying taccsite_cms.0001_add_groups...`, run `python3 manage.py migrate taccsite_cms zero` (to reset the CMS migrations), then rerun `python3 manage.py migrate` ([TACC/Core-CMS#931](https://github.com/TACC/Core-CMS/issues/931)).
+
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
 ### Setting up search index:
