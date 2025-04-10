@@ -517,7 +517,12 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="MINE")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            listType="MINE",
+            limit=-1,
+        )
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -530,7 +535,12 @@ class AppsTrayView(BaseApiView):
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="SHARED_PUBLIC")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            listType="SHARED_PUBLIC",
+            limit=-1,
+        )
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
@@ -543,10 +553,10 @@ class AppsTrayView(BaseApiView):
             # Only return Tapis apps that are known to exist and are enabled
             tapis_apps = []
             for portal_app in portal_apps:
-                portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
+                portal_app_id = (portal_app['appId'], portal_app['version']) if portal_app['version'] else portal_app['appId']
 
                 # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
-                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, (x.id, x.version)]), None)
                 if matching_app:
                     tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 
