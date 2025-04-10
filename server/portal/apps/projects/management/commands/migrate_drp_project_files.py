@@ -127,8 +127,13 @@ class Command(BaseCommand):
 
                     if not self.dry_run:
                         transfer = client.files.createTransferTask(elements=transfer_elements)
-                        transfer_ids.append({"project_id": project["id"], "transfer_id": transfer.id})
-                        print(f"Transfer started for {len(file_mapping)} files: {transfer}")
+                        transfer_ids.append({"project_id": project["id"], "transfer_id": transfer.uuid})
+                        print('#' * 40)
+                        print('')
+                        print(f"Transfer started for project {project['id']} with {len(file_mapping)} files")
+                        print(f"Transfer UUID: {transfer.uuid}")
+                        print('')
+                        print('#' * 40)
                     else:
                         print(f"Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.")
 
