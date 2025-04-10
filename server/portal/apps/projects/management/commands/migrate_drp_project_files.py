@@ -78,12 +78,13 @@ class Command(BaseCommand):
         else:
             projects = query_projects()
 
-        client = service_account()
 
         for i in range(0, len(projects), BATCH_SIZE):
             batch = projects[i:i+BATCH_SIZE]
             transfer_ids = []
 
+            print('#' * 40)
+            print('')
             print(f"Processing batch {i//BATCH_SIZE + 1}/{len(projects)//BATCH_SIZE + 1}")
             print(f"Processing project IDs: {', '.join([str(project['id']) for project in batch])}")
 
@@ -126,20 +127,25 @@ class Command(BaseCommand):
                         })
 
                     if not self.dry_run:
+                        client = service_account()
                         transfer = client.files.createTransferTask(elements=transfer_elements)
                         transfer_ids.append({"project_id": project["id"], "transfer_id": transfer.uuid})
+
                         print('#' * 40)
                         print('')
                         print(f"Transfer started for project {project['id']} with {len(file_mapping)} files")
                         print(f"Transfer UUID: {transfer.uuid}")
                         print('')
-                        print('#' * 40)
                     else:
                         print(f"Dry run complete for project {project['id']} with {len(file_mapping)} files to transfer. No changes made.")
 
                 except Exception as e:
                     print(f"Error processing project {project['id']}: {e}")
                     continue
+            
+            print(f'End of batch {i//BATCH_SIZE + 1}/{len(projects)//BATCH_SIZE + 1}')
+            print('')
+            print('#' * 40)
 
             if not self.dry_run:
                 completed_transfers, failed_transfers = self.monitor_transfers(transfer_ids)
