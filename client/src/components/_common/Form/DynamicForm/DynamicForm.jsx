@@ -143,6 +143,15 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
 
     switch (field.type) {
       case 'text':
+        return (
+          <FormField
+            name={field.name}
+            type={field.type}
+            label={field.label}
+            description={field?.description}
+            required={field?.validation?.required}
+          />
+        );
       case 'link':
         return (
           <FormField
