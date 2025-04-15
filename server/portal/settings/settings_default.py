@@ -198,7 +198,7 @@ _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
 # _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
 
 # Default Art.
-_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+_PORTAL_ICON_FILENAME = "/static/site_cms/img/favicons/favicon.ico"
 
 ########################
 # GOOGLE ANALYTICS
