@@ -89,6 +89,28 @@ const DataFilesFormModal = () => {
           .min(field.validation?.min ?? -Infinity, `${field.label} must be greater than or equal to ${field.validation?.min}`)
       }
 
+      if (field.name === 'date_of_creation' || field.name === 'date_of_collection') {
+        schema[field.name] = Yup.string()
+          .required(`${field.label} is required`)
+          .test(
+            'is-valid-mmddyyyy-date',
+            `${field.label} must be a valid date in MM-DD-YYYY format`,
+            (value) => {
+              if (!value) return true;
+              const regex = /^(0[1-9]|1[0-2])-([0-2][0-9]|3[01])-\d{4}$/;
+              if (!regex.test(value)) return false;
+      
+              const [month, day, year] = value.split('-').map(Number);
+              const parsed = new Date(`${year}-${month}-${day}`);
+              return (
+                parsed.getFullYear() === year &&
+                parsed.getMonth() + 1 === month &&
+                parsed.getDate() === day
+              );
+            }
+          );
+      }      
+
       return schema;
     }, {}),
   });

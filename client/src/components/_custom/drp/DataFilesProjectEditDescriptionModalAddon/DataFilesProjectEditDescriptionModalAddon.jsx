@@ -98,6 +98,27 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
             .url(`${field.label} must be a valid URL starting with https://...`)
             .matches(/^https:\/\//, `${field.label} must start with https://`);
         }
+        if (field.type === 'text' && (field.name === 'date_of_collection' || field.name === 'date_of_creation')) {
+          acc[field.name] = (acc[field.name] || Yup.string())
+            .required(`${field.label} is required`)
+            .test(
+              'is-valid-mmddyyyy-date',
+              `${field.label} must be a valid date in MM-DD-YYYY format`,
+              (value) => {
+                if (!value) return true;
+                const regex = /^(0[1-9]|1[0-2])-([0-2][0-9]|3[01])-\d{4}$/;
+                if (!regex.test(value)) return false;
+        
+                const [month, day, year] = value.split('-').map(Number);
+                const parsed = new Date(`${year}-${month}-${day}`);
+                return (
+                  parsed.getFullYear() === year &&
+                  parsed.getMonth() + 1 === month &&
+                  parsed.getDate() === day
+                );
+              }
+            );
+        }        
       }
       return acc;
     }, {});
