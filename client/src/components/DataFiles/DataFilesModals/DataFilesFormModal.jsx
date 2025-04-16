@@ -71,24 +71,45 @@ const DataFilesFormModal = () => {
 
   const validationSchema = Yup.object().shape({
     ...(form?.form_fields ?? []).reduce((schema, field) => {
+      
+      let validator;
+
+      if (field.type === 'number') {
+        validator = Yup.number();
+      } else {
+        validator = Yup.string();
+      }
+
       if (field.validation?.required) {
-        schema[field.name] = (schema[field.name] || Yup.string()).required(
-          `${field.label} is required`
+        validator = validator.required(`${field.label} is required`);
+      }
+
+      if (field.validation?.pathSafe) {
+        validator = validator.matches(
+          /^[\d\w\s\-_.]+$/,
+          'Please enter a valid name (accepted characters are A-Z a-z 0-9 - _ .)'
         );
       }
 
       if (field.type === 'link') {
-        schema[field.name] = (schema[field.name] || Yup.string())
+        validator = validator
           .url(`${field.label} must be a valid URL starting with https://...`)
           .matches(/^https:\/\//, `${field.label} must start with https://`);
       }
 
       if (field.type === 'number') {
-        schema[field.name] = (schema[field.name] || Yup.number())
-          .max(field.validation?.max ?? Infinity, `${field.label} must be less than or equal to ${field.validation?.max}`)
-          .min(field.validation?.min ?? -Infinity, `${field.label} must be greater than or equal to ${field.validation?.min}`)
+        validator = validator
+          .max(
+            field.validation?.max ?? Infinity,
+            `${field.label} must be less than or equal to ${field.validation?.max}`
+          )
+          .min(
+            field.validation?.min ?? -Infinity,
+            `${field.label} must be greater than or equal to ${field.validation?.min}`
+          );
       }
 
+      schema[field.name] = validator;
       return schema;
     }, {}),
   });
