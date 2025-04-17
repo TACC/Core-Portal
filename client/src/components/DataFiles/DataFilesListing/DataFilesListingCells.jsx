@@ -84,8 +84,8 @@ export const FileNavCell = React.memo(
     if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
 
     // encoding for % and # in path. Done twice due to react-router encoding bug. fixed in react router v6
-    path = path.replace(/%/g, encodeURIComponent(encodeURIComponent('%')))
-              .replace(/#/g, encodeURIComponent(encodeURIComponent('#')));
+    path = path.replace(/%/g, encodeURIComponent('%'))
+              .replace(/#/g, encodeURIComponent('#'));
 
     return (
       <>
