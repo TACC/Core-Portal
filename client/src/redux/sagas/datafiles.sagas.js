@@ -109,7 +109,13 @@ export async function fetchFilesUtil(
     nextPageToken,
   });
 
-  path = path.split('/').map((p) => encodeURIComponent(p)).join('/');
+  path = path.split('/').map((p) => {
+    try {
+      return decodeURIComponent(p);
+    } catch {
+      return encodeURIComponent(p);
+    }
+  }).join('/');
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
