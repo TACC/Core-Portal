@@ -108,6 +108,9 @@ export async function fetchFilesUtil(
     filter,
     nextPageToken,
   });
+
+  path = path.split('/').map((p) => encodeURIComponent(p)).join('/');
+
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
   );

@@ -113,11 +113,24 @@ const DataFilesSwitch = React.memo(() => {
       <Route
         path={`${path}/tapis/projects/:root_system/:system/:path*`}
         render={({ match: { params } }) => {
+
+          let path; 
+
+          if (params.path) {
+            try {
+              path = params.path.split('/').map((p) => decodeURIComponent(p)).join('/');
+            } catch (error) {
+              path = params.path;
+            }
+          } else {
+            path = '/';
+          }
+
           return (
             <DataFilesProjectFileListing
               rootSystem={params.root_system}
               system={params.system}
-              path={params.path || '/'}
+              path={path}
             />
           );
         }}
