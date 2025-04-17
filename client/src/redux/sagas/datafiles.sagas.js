@@ -109,9 +109,9 @@ export async function fetchFilesUtil(
     nextPageToken,
   });
 
-  path = path.split('/').map((p) => {
+  path = path.split('/').map(p => {
     try {
-      return decodeURIComponent(p);
+      return encodeURIComponent(decodeURIComponent(p));
     } catch {
       return encodeURIComponent(p);
     }
