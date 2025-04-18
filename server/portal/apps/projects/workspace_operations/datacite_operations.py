@@ -51,6 +51,43 @@ def get_datacite_json(pub_graph: nx.DiGraph):
     datacite_json["url"] = datacite_url
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
 
+    datacite_json["relatedIdentifiers"] = []
+    for r_data in base_meta.get("relatedDatasets", []):
+        identifier = {}
+        if {"datasetTitle", "datasetDescription", "datasetLink"} <= r_data.keys():
+            identifier["relationType"] = "References"
+            identifier["relatedIdentifier"] = r_data["datasetLink"]
+            identifier["relatedIdentifierType"] = "URL"
+            datacite_json["relatedIdentifiers"].append(identifier)
+
+    for r_data in base_meta.get("relatedSoftware", []):
+        identifier = {}
+        if {"softwareTitle", "softwareDescription", "softwareLink"} <= r_data.keys():
+            identifier["relationType"] = "References"
+            identifier["relatedIdentifier"] = r_data["softwareLink"]
+            identifier["relatedIdentifierType"] = "URL"
+            datacite_json["relatedIdentifiers"].append(identifier)
+
+    relation_mapping = {
+        "linked_dataset": "IsPartOf",
+        "cited_by": "IsCitedBy",
+        "context": "IsDocumentedBy",
+    }
+
+    for r_data in base_meta.get("relatedPublications", []):
+        identifier = {}
+        if {"publicationLink"} <= r_data.keys():
+            publication_type = r_data.get("publicationType", None)
+            identifier["relationType"] = relation_mapping.get(
+                publication_type, "References"
+            )
+            identifier["relatedIdentifier"] = r_data["publicationLink"]
+            identifier["relatedIdentifierType"] = "URL"
+            if "publicationDoi" in r_data:
+                identifier["relatedIdentifier"] = r_data["publicationDoi"]
+                identifier["relatedIdentifierType"] = "DOI"
+            datacite_json["relatedIdentifiers"].append(identifier)
+
     return datacite_json
 
 
