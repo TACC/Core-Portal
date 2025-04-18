@@ -113,6 +113,8 @@ const DataFilesSwitch = React.memo(() => {
       <Route
         path={`${path}/tapis/projects/:root_system/:system/:path*`}
         render={({ match: { params } }) => {
+          
+          console.log('params path', params.path);
 
           const fullyDecode = (str) => {
             while (true) {
@@ -127,6 +129,8 @@ const DataFilesSwitch = React.memo(() => {
           }
 
           const updatedPath = params.path ? fullyDecode(params.path) : '/';
+
+          console.log('updatedPath', updatedPath);
 
           return (
             <DataFilesProjectFileListing
