@@ -87,8 +87,6 @@ export const FileNavCell = React.memo(
     path = path.replace(/%/g, encodeURIComponent(encodeURIComponent('%')))
               .replace(/#/g, encodeURIComponent(encodeURIComponent('#')));
 
-    console.log('FileNavCell', path)
-
     return (
       <>
         <span className="data-files-name">

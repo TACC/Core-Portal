@@ -12,10 +12,14 @@ import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import NotificationToast from '../Toasts';
 import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
 import DataFilesPublicationDownloadModal from '../DataFiles/DataFilesModals/DataFilesPublicationDownloadModal';
+import { getDecodedPath } from '../../utils/datafilesUtil';
 import { PUBLICATIONS } from '../../constants/routes'
 
 
 function PublicationDetailPublicView({ params }) {
+  
+  const decodedPath = getDecodedPath(params.path);
+
   return (
     <div
       style={{
@@ -30,14 +34,14 @@ function PublicationDetailPublicView({ params }) {
         api="tapis"
         scheme="projects"
         system={params.system}
-        path={params.path || ''}
+        path={decodedPath}
         section="FilesListing"
         basePath={PUBLICATIONS}
       />
       <DataFilesProjectFileListing
         rootSystem={params.root_system}
         system={params.system}
-        path={params.path || '/'}
+        path={decodedPath}
         basePath={PUBLICATIONS}
       />
       <DataFilesPreviewModal />
