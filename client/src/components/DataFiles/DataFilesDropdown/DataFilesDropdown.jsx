@@ -21,6 +21,10 @@ const BreadcrumbsDropdown = ({
   section,
   isPublic,
 }) => {
+
+  // encode path to handle special characters
+  path = path.split('/').map(encodeURIComponent).join('/');
+
   const paths = [];
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -102,7 +106,13 @@ const BreadcrumbsDropdown = ({
           {displayPaths
             .slice(sliceStart, displayPaths.length)
             .map((path, index) => {
-              const folderName = path.split('/').pop();
+              let folderName = path.split('/').pop();
+
+              // decode folder name to remove URL encoding
+              try {
+                folderName = decodeURIComponent(folderName);
+              } catch {}
+
               return (
                 <Link
                   className="link-hover"

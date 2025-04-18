@@ -1,6 +1,7 @@
 import base64
 import os
 import io
+from urllib.parse import quote
 from django.conf import settings
 from django.db import transaction
 import logging
@@ -90,11 +91,11 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     """
     raw_listing = client.files.listFiles(systemId=system,
-                                         path=path,
+                                         path=quote(path, safe='/'),
                                          offset=int(offset),
                                          limit=int(limit),
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
-        
+
     folder_entity_value = get_value(system, path)
 
     try:

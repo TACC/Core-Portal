@@ -26,6 +26,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 import { useSystemRole } from './DataFilesProjectMembers/_cells/SystemRoleSelector';
 import DataFilesPublicationsList from './DataFilesPublicationsList/DataFilesPublicationsList';
 import DataFilesReviewProjectList from './DataFilesReviewProjectsList/DataFilesReviewProjectList';
+import { getDecodedPath } from 'utils/datafilesUtil';
 
 const DefaultSystemRedirect = () => {
   const systems = useSelector(
@@ -113,11 +114,14 @@ const DataFilesSwitch = React.memo(() => {
       <Route
         path={`${path}/tapis/projects/:root_system/:system/:path*`}
         render={({ match: { params } }) => {
+
+          const decodedPath = getDecodedPath(params.path);
+  
           return (
             <DataFilesProjectFileListing
               rootSystem={params.root_system}
               system={params.system}
-              path={params.path || '/'}
+              path={decodedPath}
             />
           );
         }}
