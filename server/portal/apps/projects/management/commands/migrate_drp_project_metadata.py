@@ -22,6 +22,8 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
 from portal.apps.publications.models import Publication
 from portal.apps.search.tasks import index_publication
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from tapipy.errors import NotFoundError
+
 class Command(BaseCommand):
     help = "Migrate DRP project metadata to the new schema."
 
@@ -230,6 +232,16 @@ class Command(BaseCommand):
         }
 
         print(f"Creating project {project_data['title']}")
+
+        try:
+            existing_system = service_client.systems.getSystem(systemId=system_id)
+        except NotFoundError:
+            existing_system = None
+            pass
+
+        if existing_system:
+            print(f"Project {project_data['title']} already exists. Skipping creation.")
+            return system_id
 
         new_project = create_project_metadata(project_data)
         new_project.save()
