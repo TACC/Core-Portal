@@ -1,10 +1,9 @@
 # This compose file is useful for testing https.
 # The .env file sets ENVVARS for the Docker CLI used by this compose file.
 ---
-version: "3.8"
 services:
   cms:
-    image: taccwma/core-cms:ff737a3
+    image: taccwma/core-cms:v4.25.2
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
@@ -16,7 +15,7 @@ services:
       - postgrescms
 
   redis:
-    image: redis:5.0
+    image: redis:latest
     volumes:
       - core_portal_redis_data:/data
     container_name: core_portal_redis
@@ -72,7 +71,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/portal
 
   nginx:
-    image: nginx
+    image: nginx:stable
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../uwsgi/uwsgi_params:/etc/nginx/uwsgi_params
@@ -131,7 +130,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     command: >
-      sh -c "celery -A portal beat -l info --pidfile= --schedule=/tmp/celerybeat-schedule & 
+      sh -c "celery -A portal beat -l info --pidfile= --schedule=/tmp/celerybeat-schedule &
              celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
 
     container_name: core_portal_workers
