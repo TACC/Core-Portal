@@ -234,6 +234,17 @@ class Command(BaseCommand):
         print(f"Creating project {project_data['title']}")
 
         try:
+            # Check if the project metadata already exists and delete it if it does
+            project = ProjectMetadata.get_project_by_id(system_id)
+            project.delete()
+        except ProjectMetadata.DoesNotExist:
+            # Project does not exist, continue with creation
+            pass
+
+        new_project = create_project_metadata(project_data)
+        new_project.save()
+
+        try:
             existing_system = service_client.systems.getSystem(systemId=system_id)
         except NotFoundError:
             existing_system = None
@@ -242,9 +253,6 @@ class Command(BaseCommand):
         if existing_system:
             print(f"Project {project_data['title']} already exists. Skipping creation.")
             return system_id
-
-        new_project = create_project_metadata(project_data)
-        new_project.save()
 
         create_workspace_dir(workspace_id, root_system_name)
 
