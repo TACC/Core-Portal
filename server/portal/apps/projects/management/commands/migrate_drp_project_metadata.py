@@ -256,6 +256,7 @@ class Command(BaseCommand):
             "description": project['description'],
             "license": 'ODC-BY 1.0' if project['license'] and project['license'] == 1 else None,
             "doi": project['doi'].split("doi:")[-1] if project['doi'] else None,
+            "institution": project['institution'] if project['institution'] else None,
             "authors": self.get_project_users(project['id'], project['user_id']),
             "is_review_project": False,
             "is_published_project": True if self.publication else False,

@@ -133,6 +133,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     description: str = ""
     license: Optional[str] = None
     doi: Optional[str] = None
+    institution: Optional[str] = None
     keywords: Optional[str] = None
     related_datasets: list[DrpProjectRelatedDatasets] = []
     related_software: list[DrpProjectRelatedSoftware] = []
