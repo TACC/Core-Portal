@@ -8,15 +8,18 @@ export const getCompressParams = (
   defaultAllocation: string,
   defaultPrivateSystem?: TPortalSystem
 ) => {
-  const fileInputs = files.map((file) => ({
-    sourceUrl: `tapis://${file.system}/${file.path}`,
-  }));
+  const fileInputs = [{
+    name: 'Target path to be compressed',
+    sourceUrls: files.map((file) => {
+      `tapis://${file.system}/${file.path}`
+    }),
+  }];
 
   let archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
   let archiveSystem = files[0].system;
 
   return {
-    fileInputs: fileInputs,
+    fileInputArrays: fileInputs,
     name: `${compressApp.id}-${compressApp.version}_${
       new Date().toISOString().split('.')[0]
     }`,
