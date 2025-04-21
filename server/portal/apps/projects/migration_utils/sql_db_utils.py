@@ -38,36 +38,57 @@ def get_project_by_id(project_ids):
     return run_query(query, params)
 
 def query_related_publications(project_id):
+
+    print(f"Querying related publications for project_id: {project_id}")
+    
     query = "SELECT * FROM upload_publication WHERE project_id = %s;"
     params = [project_id]
     return run_query(query, params)
 
 def query_authors(project_id):
+
+    print(f"Querying authors for project_id: {project_id}")
+
     query = "SELECT * FROM upload_collaborator WHERE project_id = %s;"
     params = [project_id]
     return run_query(query, params)
 
 def query_user(user_id):
+
+    print(f"Querying user for user_id: {user_id}")
+
     query = "SELECT * FROM upload_myuser WHERE id = %s;"
     params = [user_id]
     return run_query(query, params)
 
 def query_samples(project_id):
+
+    print(f"Querying samples for project_id: {project_id}")
+
     query = "SELECT * FROM upload_sample WHERE project_id = %s;"
     params = [project_id]
     return run_query(query, params)
 
 def query_origin_data(project_id, sample_id):
+
+    print(f"Querying origin data for project_id: {project_id}, sample_id: {sample_id}")
+
     query = "SELECT * FROM upload_origin_data WHERE project_id = %s AND sample_id = %s;"
     params = [project_id, sample_id]
     return run_query(query, params)
 
 def query_analysis_data(project_id):
+
+    print(f"Querying analysis data for project_id: {project_id}")
+
     query = "SELECT * FROM upload_analysis_data WHERE project_id = %s;"
     params = [project_id]
     return run_query(query, params)
 
 def query_files(origin_data_id, analysis_data_id):
+
+    print(f"Querying files for origin_data_id: {origin_data_id}, analysis_data_id: {analysis_data_id}")
+
     if analysis_data_id is None:
         query = "SELECT * FROM upload_datafile WHERE origin_data_id = %s AND analysis_data_id IS NULL;"
         params = [origin_data_id]
@@ -80,6 +101,9 @@ def query_files(origin_data_id, analysis_data_id):
     return run_query(query, params)
 
 def query_advanced_file_metadata(file_id):
+
+    print(f"Querying advanced file metadata for file_id: {file_id}")
+
     query = "SELECT * FROM upload_advancedimagefile WHERE datafile_ptr_id = %s;"
     params = [file_id]
     return run_query(query, params)

@@ -131,11 +131,19 @@ class Command(BaseCommand):
 
                     project_mapping = self.migrate_project(project)
 
+                    print(f'Migrated project {project["id"]} to {project_mapping}')
+
                     sample_mappings = self.migrate_sample(project_mapping)
+
+                    print(f'Migrated samples for project {project["id"]} to {sample_mappings}')
 
                     origin_data_mappings = self.migrate_origin_data(project_mapping, sample_mappings)
 
+                    print(f'Migrated origin data for project {project["id"]} to {origin_data_mappings}')
+
                     analysis_data_mappings = self.migrate_analysis_dataset(project_mapping, sample_mappings, origin_data_mappings)
+
+                    print(f'Migrated analysis data for project {project["id"]} to {analysis_data_mappings}')
 
                     if not self.dry_run:
                         _, new_project_id = project_mapping
