@@ -7,6 +7,7 @@ from portal.apps.publications.models import Publication
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.workspace_operations.project_publish_operations import _add_values_to_tree
 import time
+from django.db import close_old_connections
 
 TRANSFER_STATUS_CHECK_INTERVAL = 60
 
@@ -45,6 +46,14 @@ class Command(BaseCommand):
             default=10,
             help="Number of projects to process in each batch. Default is 10.",
         )
+
+        parser.add_argument(
+            '--batch-skip',
+            type=int,
+            default=0,
+            help="Number of batches to skip before starting processing.",
+        )
+
     
     def transfer_cover_image(self, client, workspace_id, cover_pic):
         root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME if self.publication else settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
@@ -59,6 +68,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.dry_run = options['dry_run']
         BATCH_SIZE = options['batch_size']
+        BATCH_SKIP = options['batch_skip']
 
         if not options['project'] and not options['publication']:
             print("Please specify either --project or --publication")
@@ -79,7 +89,7 @@ class Command(BaseCommand):
             projects = query_projects()
 
 
-        for i in range(0, len(projects), BATCH_SIZE):
+        for i in range(BATCH_SKIP * BATCH_SIZE, len(projects), BATCH_SIZE):
             batch = projects[i:i+BATCH_SIZE]
             transfer_ids = []
 
@@ -90,6 +100,8 @@ class Command(BaseCommand):
 
             for project in batch:
                 try:
+                    close_old_connections()
+
                     pub_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{project['id']}"
                     project_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX if self.publication else settings.PORTAL_PROJECTS_SYSTEM_PREFIX
                     project_id = f'{project_prefix}.{pub_id}'
@@ -97,7 +109,7 @@ class Command(BaseCommand):
                     if self.publication:
                         pub = Publication.objects.get(project_id=pub_id)
                         project_graph = pub.tree
-                    else: 
+                    else:
                         project_graph = nx.node_link_data(_add_values_to_tree(project_id)) 
 
                     file_mapping = {}
@@ -113,7 +125,7 @@ class Command(BaseCommand):
                     transfer_elements = []
                     for legacy_path, new_path in file_mapping.items():
                         transfer_elements.append( 
-                            {                       
+                            {
                                 'sourceURI': f'tapis://cloud.data/corral-repl/utexas/pge-nsf/media/{legacy_path.strip("/")}',
                                 'destinationURI': f'tapis://{project_id}/{new_path.strip("/")}'
                             })
