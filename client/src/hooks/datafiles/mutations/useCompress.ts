@@ -150,8 +150,8 @@ function useCompress() {
               });
             } else {
               dispatch({
-                  type: 'DATA_FILES_TOGGLE_MODAL',
-                  payload: { operation: 'downloadMessage', props: {} },
+                type: 'DATA_FILES_TOGGLE_MODAL',
+                payload: { operation: 'downloadMessage', props: {} },
               });
             }
           }
