@@ -10,9 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db.models.functions import Coalesce
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from tapipy.tapis import TapisResult
-from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
+from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -22,10 +22,12 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import check_job_for_timeout
+from portal.apps.workspace.api.utils import (
+    check_job_for_timeout,
+    test_system_credentials,
+)
 from portal.utils import get_client_ip
 
 
@@ -85,30 +87,6 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def _test_listing_with_existing_keypair(system, user):
-    # TODOv3: Add Tapis system test utility method with proper error handling https://jira.tacc.utexas.edu/browse/WP-101
-    tapis = user.tapis_oauth.client
-
-    # Check for existing keypair stored for this hostname
-    try:
-        keys = user.ssh_keys.for_hostname(hostname=system.host)
-        priv_key_str = keys.private_key()
-        publ_key_str = keys.public
-    except ObjectDoesNotExist:
-        return False
-
-    # Attempt listing a second time after credentials are added to system
-    try:
-        create_system_credentials(user.tapis_oauth.client,
-                                  user.username, publ_key_str,
-                                  priv_key_str, system.id)
-        tapis.files.listFiles(systemId=system.id, path="/")
-    except BaseTapyException:
-        return False
-
-    return True
-
-
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -137,7 +115,7 @@ class AppsView(BaseApiView):
                 try:
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
-                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    success = test_system_credentials(system_def, request.user)
                     data['systemNeedsKeys'] = not success
                     data['pushKeysSystem'] = system_def
         else:
@@ -408,9 +386,9 @@ class JobsView(BaseApiView):
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = _test_listing_with_existing_keypair(system_def, request.user)
+                    success = test_system_credentials(system_def, request.user)
                     if not success:
-                        logger.info(f"Keys for user {username} must be manually pushed to system: {system_id}")
+                        logger.info(f"Unable to create credentials for {username} in system: {system_id}")
                         return JsonResponse(
                             {
                                 'status': 200,
@@ -539,7 +517,12 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="MINE")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            listType="MINE",
+            limit=-1,
+        )
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -552,7 +535,12 @@ class AppsTrayView(BaseApiView):
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="SHARED_PUBLIC")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            listType="SHARED_PUBLIC",
+            limit=-1,
+        )
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
@@ -565,10 +553,10 @@ class AppsTrayView(BaseApiView):
             # Only return Tapis apps that are known to exist and are enabled
             tapis_apps = []
             for portal_app in portal_apps:
-                portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
+                portal_app_id = (portal_app['appId'], portal_app['version']) if portal_app['version'] else portal_app['appId']
 
                 # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
-                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, (x.id, x.version)]), None)
                 if matching_app:
                     tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 

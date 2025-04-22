@@ -252,7 +252,7 @@ describe('AppSchemaForm', () => {
           errorMessage: null,
           loading: false,
           defaultHost: '',
-          defaultSystem: '',
+          defaultSystemId: '',
         },
         definitions: {
           list: [],

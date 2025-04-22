@@ -21,6 +21,7 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from portal.apps.auth.views import tapis_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
@@ -117,8 +118,15 @@ urlpatterns = [
     # health check
     path('core/health-check', health_check),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 # internal docs
 if settings.INTERNAL_DOCS_URL and settings.INTERNAL_DOCS_ROOT:
     urlpatterns.append(re_path(f"^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$", serve_docs))
+
+if settings.DEBUG:
+    # https://docs.djangoproject.com/en/4.2/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#static-file-development-view
+    urlpatterns += staticfiles_urlpatterns()

@@ -27,6 +27,8 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
 else:
     from portal.settings import settings_default as settings_custom
 
+DEBUG = settings_custom._DEBUG
+
 FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
 ]
@@ -44,6 +46,14 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
+
+if not DEBUG:
+    # Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
+    CSRF_COOKIE_SECURE = True
+    # Prevent the cookie's value from being read or set by client-side JavaScript.
+    CSRF_COOKIE_HTTPONLY = True
+
+#
 CSRF_COOKIE_SAMESITE = 'Strict'
 # for local testing
 CSRF_TRUSTED_ORIGINS = getattr(settings_custom, '_CSRF_TRUSTED_ORIGINS', [])
@@ -240,8 +250,6 @@ FIXTURE_DIRS = [
 """
 SETTINGS: LOCAL
 """
-
-DEBUG = settings_custom._DEBUG
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

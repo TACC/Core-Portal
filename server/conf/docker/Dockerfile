@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye as python-base
+FROM python:3.11-bullseye AS python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -7,18 +7,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=1.8.2 \
+ENV POETRY_VERSION=2.1.1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
-# prepend poetry and venv to path
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+# prepend venv and poetry to path
+ENV PATH="$VENV_PATH/bin:$POETRY_HOME/bin:$PATH"
 
+# `builder-base` stage is used to build deps + create virtual environment
+FROM python-base AS builder-base
 
-FROM python-base as builder-base
 # install locales for en_us.utf-8
 RUN apt-get update && apt-get install -y \
     dialog \
@@ -35,20 +35,21 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
     postgresql \
     postgresql-client
 
-RUN pip3 install --upgrade pip setuptools wheel
-
-# Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
-RUN curl -sSL https://install.python-poetry.org | python3 -
+# Install poetry version $POETRY_VERSION to $POETRY_HOME
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel \
+    && python3 -m venv "$POETRY_HOME" \
+    && "$POETRY_HOME/bin/pip" install --no-cache-dir poetry=="$POETRY_VERSION"
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
 COPY server/pyproject.toml server/poetry.lock ./
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN poetry install --without dev
+RUN poetry install
 
-# `development` image is used for local development
-FROM python-base as development
+# `development` target is used for local development
+FROM python-base AS development
+
 WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
@@ -56,7 +57,7 @@ COPY --from=builder-base $POETRY_HOME $POETRY_HOME
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
 # quicker install as runtime deps are already installed
-RUN poetry install
+RUN poetry install --with dev
 
 COPY . /srv/www/portal
 
@@ -64,11 +65,11 @@ RUN mkdir -p /var/log/portal
 
 WORKDIR /srv/www/portal/server
 
-# `production` image is used for deployed runtime environments
-FROM python-base as production
+# `production` target is used for deployed runtime environments
+FROM python-base AS production
 
-# install node 20.x
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+# install node 22.x
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt-get install -y nodejs
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
