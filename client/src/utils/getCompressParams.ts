@@ -11,9 +11,7 @@ export const getCompressParams = (
   const fileInputs = [
     {
       name: 'Target path to be compressed',
-      sourceUrls: files.map((file) => {
-        `tapis://${file.system}/${file.path}`;
-      }),
+      sourceUrls: files.map((file) => `tapis://${file.system}/${file.path}`),
     },
   ];
 
