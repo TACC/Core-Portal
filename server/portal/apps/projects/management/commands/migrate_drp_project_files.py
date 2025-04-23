@@ -186,7 +186,7 @@ class Command(BaseCommand):
                     print(f"Transfer completed for project {project_id}.")
                     completed_transfers.append({"project_id": project_id, "transfer_id": transfer_id})
 
-                elif status in ["FAILED", "CANCELED", "FAILED_OPT", "PAUSED"]:
+                elif status in ["FAILED", "CANCELLED", "FAILED_OPT", "PAUSED"]:
                     print(f"Transfer failed for project {project_id}.")
                     failed_transfers.append({"project_id": project_id, "transfer_id": transfer_id})
             
