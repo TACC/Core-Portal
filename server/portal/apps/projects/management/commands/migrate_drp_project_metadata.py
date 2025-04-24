@@ -394,11 +394,30 @@ class Command(BaseCommand):
                     gen_file_obj = create_file_obj(project_id, gen_file.name, None, f'{path}/{gen_file.name}', { 'data_type': 'file' })
                     gen_file_obj.legacy_path = f'{file_parent_path}/{gen_file.name}'
                     file_objs.append(gen_file_obj)
-
             else: 
                 file_obj = create_file_obj(project_id, file_name, None, f'{path}/{file_name}', { 'data_type': 'file' })
                 file_obj.legacy_path = file['file']
                 file_objs.append(file_obj)
+
+                file_parent_path = Path(file['file']).parent
+
+                if file_parent_path not in directory_cache:
+                    try:
+                        directory_cache[file_parent_path] = client.files.listFiles(systemId='cloud.data', 
+                                                                                path = f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}')
+                    except Exception as e:
+                        print(f"Error listing files in directory {file_parent_path}: {e}")
+                        continue
+
+                files_in_parent_path = directory_cache[file_parent_path]
+                
+                generated_files = [gen_file for gen_file in files_in_parent_path 
+                                   if gen_file.name.startswith(file_name) and gen_file.name != file_name]
+
+                for gen_file in generated_files:
+                    gen_file_obj = create_file_obj(project_id, gen_file.name, None, f'{path}/{gen_file.name}', { 'data_type': 'file' })
+                    gen_file_obj.legacy_path = f'{file_parent_path}/{gen_file.name}'
+                    file_objs.append(gen_file_obj)
 
         return file_objs
     
