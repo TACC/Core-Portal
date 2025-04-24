@@ -342,41 +342,49 @@ class Command(BaseCommand):
 
         return sample_mappings
     
-    def get_full_tapis_file_listing(self, client, file_parent_path): 
-        full_listing = []
-        offset = 0
-        page_size = 1000
-
-        while True:
-            print
-            listing = client.files.listFiles(
-                systemId='cloud.data',
-                path=f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}',
-                offset=offset
-            )
-            full_listing.extend(listing)
-
-            if len(listing) < page_size:
-                break  # no more pages
-
-            offset += page_size
-            
-        return full_listing
-
     def get_file_objs(self, files, path, project_id):
-
         file_objs = []
         client = service_account()
-
         directory_cache = {}
+        remaining_files = set()  # Track all files discovered during listings
 
         for file in files:
+            file_path = Path(file['file'])
+            file_name = file_path.name
+            file_parent_path = file_path.parent
 
-            file_name = Path(file['file']).name
+            # Cache directory listing and collect all files
+            if file_parent_path not in directory_cache:
+                try:
+                    full_listing = []
+                    offset = 0
+                    page_size = 1000
 
+                    while True:
+                        listing = client.files.listFiles(
+                            systemId='cloud.data',
+                            path=f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}',
+                            offset=offset
+                        )
+                        full_listing.extend(listing)
+
+                        if len(listing) < page_size:
+                            break  # no more pages
+
+                        offset += page_size
+
+                    directory_cache[file_parent_path] = full_listing
+
+                    for f in full_listing:
+                        full_path = str(file_parent_path / f.name)
+                        remaining_files.add(full_path)
+                except Exception as e:
+                    print(f"Error listing files in directory {file_parent_path}: {e}")
+                    continue
+
+            # Handle metadata
             if file['isAdvancedImageFile'] == 1:
                 advanced_image_file = query_advanced_file_metadata(file['id'])[0]
-                
                 value = {
                     'data_type': 'file',
                     'is_advanced_image_file': True,
@@ -390,53 +398,30 @@ class Command(BaseCommand):
                     'byte_order': metadata_mappings.FILE_BYTE_ORDER_MAPPING.get(advanced_image_file['byteOrder']),
                     'use_binary_correction': metadata_mappings.FILE_USE_BINARY_CORRECTION_MAPPING.get(advanced_image_file['use_binary_correction']),
                 }
+            else:
+                value = { 'data_type': 'file' }
 
-                file_obj = create_file_obj(project_id, file_name, None, f'{path}/{file_name}', value)
-                file_obj.legacy_path = file['file']
-                file_objs.append(file_obj)
+            # Add main file
+            file_obj = create_file_obj(project_id, file_name, None, f'{path}/{file_name}', value)
+            file_obj.legacy_path = str(file_path)
+            file_objs.append(file_obj)
+            remaining_files.discard(str(file_path))
 
-                # Find and add the generated image files for this advanced file 
-                file_parent_path = Path(file['file']).parent
-
-                if file_parent_path not in directory_cache:
-                    try:                        
-                        directory_cache[file_parent_path] = self.get_full_tapis_file_listing(client, file_parent_path)
-                    except Exception as e:
-                        print(f"Error listing files in directory {file_parent_path}: {e}")
-                        continue
-
-                files_in_parent_path = directory_cache[file_parent_path]
-                
-                generated_files = [gen_file for gen_file in files_in_parent_path 
-                                   if gen_file.name.startswith(file_name) and gen_file.name != file_name]
-
-                for gen_file in generated_files:
+            # Add generated files
+            for gen_file in directory_cache[file_parent_path]:
+                if gen_file.name.startswith(file_name) and gen_file.name != file_name:
+                    gen_file_path = str(file_parent_path / gen_file.name)
                     gen_file_obj = create_file_obj(project_id, gen_file.name, None, f'{path}/{gen_file.name}', { 'data_type': 'file' })
-                    gen_file_obj.legacy_path = f'{file_parent_path}/{gen_file.name}'
+                    gen_file_obj.legacy_path = gen_file_path
                     file_objs.append(gen_file_obj)
-            else: 
-                file_obj = create_file_obj(project_id, file_name, None, f'{path}/{file_name}', { 'data_type': 'file' })
-                file_obj.legacy_path = file['file']
-                file_objs.append(file_obj)
+                    remaining_files.discard(gen_file_path)
 
-                file_parent_path = Path(file['file']).parent
-
-                if file_parent_path not in directory_cache:
-                    try:                        
-                        directory_cache[file_parent_path] = self.get_full_tapis_file_listing(client, file_parent_path)
-                    except Exception as e:
-                        print(f"Error listing files in directory {file_parent_path}: {e}")
-                        continue
-
-                files_in_parent_path = directory_cache[file_parent_path]
-                
-                generated_files = [gen_file for gen_file in files_in_parent_path 
-                                   if gen_file.name.startswith(file_name) and gen_file.name != file_name]
-
-                for gen_file in generated_files:
-                    gen_file_obj = create_file_obj(project_id, gen_file.name, None, f'{path}/{gen_file.name}', { 'data_type': 'file' })
-                    gen_file_obj.legacy_path = f'{file_parent_path}/{gen_file.name}'
-                    file_objs.append(gen_file_obj)
+        #Final sweep for remaining files
+        for leftover_path in remaining_files:
+            leftover_name = Path(leftover_path).name
+            file_obj = create_file_obj(project_id, leftover_name, None, f'{path}/{leftover_name}', { 'data_type': 'file' })
+            file_obj.legacy_path = leftover_path
+            file_objs.append(file_obj)
 
         return file_objs
     
