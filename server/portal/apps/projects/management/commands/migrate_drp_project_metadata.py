@@ -342,6 +342,27 @@ class Command(BaseCommand):
 
         return sample_mappings
     
+    def get_full_tapis_file_listing(self, client, file_parent_path): 
+        full_listing = []
+        offset = 0
+        page_size = 1000
+
+        while True:
+            print
+            listing = client.files.listFiles(
+                systemId='cloud.data',
+                path=f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}',
+                offset=offset
+            )
+            full_listing.extend(listing)
+
+            if len(listing) < page_size:
+                break  # no more pages
+
+            offset += page_size
+            
+        return full_listing
+
     def get_file_objs(self, files, path, project_id):
 
         file_objs = []
@@ -378,9 +399,8 @@ class Command(BaseCommand):
                 file_parent_path = Path(file['file']).parent
 
                 if file_parent_path not in directory_cache:
-                    try:
-                        directory_cache[file_parent_path] = client.files.listFiles(systemId='cloud.data', 
-                                                                                path = f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}')
+                    try:                        
+                        directory_cache[file_parent_path] = self.get_full_tapis_file_listing(client, file_parent_path)
                     except Exception as e:
                         print(f"Error listing files in directory {file_parent_path}: {e}")
                         continue
@@ -402,9 +422,8 @@ class Command(BaseCommand):
                 file_parent_path = Path(file['file']).parent
 
                 if file_parent_path not in directory_cache:
-                    try:
-                        directory_cache[file_parent_path] = client.files.listFiles(systemId='cloud.data', 
-                                                                                path = f'/corral-repl/utexas/pge-nsf/media/{file_parent_path}')
+                    try:                        
+                        directory_cache[file_parent_path] = self.get_full_tapis_file_listing(client, file_parent_path)
                     except Exception as e:
                         print(f"Error listing files in directory {file_parent_path}: {e}")
                         continue
