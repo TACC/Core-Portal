@@ -53,7 +53,7 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            'status-check-interval',
+            '--status-check-interval',
             type=int,
             default=60,
             help="Interval in seconds to check transfer status. Default is 60 seconds.",
