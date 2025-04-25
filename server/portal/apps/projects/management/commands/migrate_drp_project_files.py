@@ -9,8 +9,6 @@ from portal.apps.projects.workspace_operations.project_publish_operations import
 import time
 from django.db import close_old_connections
 
-TRANSFER_STATUS_CHECK_INTERVAL = 60
-
 class Command(BaseCommand):
     help = "Migrate DRP project files to the new location."
 
@@ -54,6 +52,13 @@ class Command(BaseCommand):
             help="Number of batches to skip before starting processing.",
         )
 
+        parser.add_argument(
+            'status-check-interval',
+            type=int,
+            default=60,
+            help="Interval in seconds to check transfer status. Default is 60 seconds.",
+        )
+
     
     def transfer_cover_image(self, client, workspace_id, cover_pic):
         root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME if self.publication else settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
@@ -69,6 +74,7 @@ class Command(BaseCommand):
         self.dry_run = options['dry_run']
         BATCH_SIZE = options['batch_size']
         BATCH_SKIP = options['batch_skip']
+        STATUS_CHECK_INTERVAL = options['status_check_interval']
 
         if not options['project'] and not options['publication']:
             print("Please specify either --project or --publication")
@@ -160,17 +166,19 @@ class Command(BaseCommand):
             print('#' * 40)
 
             if not self.dry_run:
-                completed_transfers, failed_transfers = self.monitor_transfers(transfer_ids)
+                print(f'Starting transfer monitoring with interval {STATUS_CHECK_INTERVAL} seconds')
+                completed_transfers, failed_transfers = self.monitor_transfers(transfer_ids, STATUS_CHECK_INTERVAL)
                 print(f"Completed transfers: {completed_transfers}")
                 print(f"Failed transfers: {failed_transfers}")
                 
-    def monitor_transfers(self, transfer_ids):
-        client = service_account()
+    def monitor_transfers(self, transfer_ids, status_check_interval):
 
         completed_transfers = []
         failed_transfers = []
 
         while (len(completed_transfers) + len(failed_transfers)) < len(transfer_ids):
+            client = service_account()
+
             for transfer in transfer_ids:
                 project_id = transfer["project_id"]
                 transfer_id = transfer["transfer_id"]
@@ -190,6 +198,7 @@ class Command(BaseCommand):
                     print(f"Transfer failed for project {project_id}.")
                     failed_transfers.append({"project_id": project_id, "transfer_id": transfer_id})
             
-            time.sleep(TRANSFER_STATUS_CHECK_INTERVAL)
+            if (len(completed_transfers) + len(failed_transfers)) < len(transfer_ids):
+                time.sleep(status_check_interval)
 
         return completed_transfers, failed_transfers
