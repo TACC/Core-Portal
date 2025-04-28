@@ -358,7 +358,7 @@ describe('DataFilesToolbar', () => {
         workbench: {
           config: {
             extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.3' },
+            compressApp: { id: 'compress', version: '0.0.4' },
           },
         },
         files: {
@@ -390,7 +390,7 @@ describe('DataFilesToolbar', () => {
         workbench: {
           config: {
             extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.3' },
+            compressApp: { id: 'compress', version: '0.0.4' },
           },
         },
         files: {
