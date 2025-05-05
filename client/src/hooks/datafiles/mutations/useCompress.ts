@@ -65,11 +65,13 @@ function useCompress() {
     files,
     filename,
     compressionType,
+    fromDownload = false,
   }: {
     scheme: string;
     files: TTapisFile[];
     filename: string;
     compressionType: string;
+    fromDownload?: boolean;
   }) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -141,10 +143,17 @@ function useCompress() {
               type: 'DATA_FILES_SET_OPERATION_STATUS',
               payload: { operation: 'compress', status: {} },
             });
-            dispatch({
-              type: 'DATA_FILES_TOGGLE_MODAL',
-              payload: { operation: 'compress', props: {} },
-            });
+            if (!fromDownload) {
+              dispatch({
+                type: 'DATA_FILES_TOGGLE_MODAL',
+                payload: { operation: 'compress', props: {} },
+              });
+            } else {
+              dispatch({
+                type: 'DATA_FILES_TOGGLE_MODAL',
+                payload: { operation: 'downloadMessage', props: {} },
+              });
+            }
           }
         },
         onError: (response) => {
