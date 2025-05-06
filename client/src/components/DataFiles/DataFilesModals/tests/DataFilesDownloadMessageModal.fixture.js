@@ -73,6 +73,20 @@ const DataFilesDownloadMessageModalFixture = {
   },
   allocations: {
     portal_alloc: '',
+    active: [
+      {
+        systems: [
+          {
+            allocation: {
+              computeAllocated: 10,
+              computeUsed: 1.1,
+              project: ''
+            },
+            type: ''
+          }
+        ],
+      }
+    ]
   },
   systems: {
     storage: {
