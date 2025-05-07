@@ -191,6 +191,16 @@ def resize_cover_image(img):
     (width, height) = image.size
 
     _, ext = os.path.splitext(img.name)
+    ext = ext.lower()
+
+    format_map = {
+        '.jpg': 'JPEG',
+        '.jpeg': 'JPEG',
+        '.png': 'PNG',
+        '.gif': 'GIF',
+    }
+
+    image_format = format_map.get(ext)
 
     if width > max_size or height > max_size:
         # Calculate the resizing modifier
@@ -202,19 +212,16 @@ def resize_cover_image(img):
         # Resize the image
         image = image.resize(size, Image.Resampling.LANCZOS)
 
-        format_map = {
-            '.jpg': 'JPEG',
-            '.jpeg': 'JPEG',
-            '.png': 'PNG',
-            '.gif': 'GIF',
-        }
-
         # Save the resized image to a binary stream
         buffer = io.BytesIO()
-        image.save(buffer, format=format_map[ext])  # Preserve the original format
+        image.save(buffer, format=image_format)  # Preserve the original format
         buffer.seek(0)  # Reset the stream's position to the beginning
 
         # Clean up
         image.close()
+    else:
+        buffer = io.BytesIO()
+        image.save(buffer, format=image_format)
+        buffer.seek(0)
 
-        return buffer.getvalue()
+    return buffer.getvalue()
