@@ -65,8 +65,7 @@ export function getJobDisplayInformation(job, app) {
       .filter((obj) => {
         const notes = obj.notes ? JSON.parse(obj.notes) : null;
         return !notes || !notes.isHidden;
-      })
-      .filter((obj) => !(obj.name || obj.sourceUrl || '').startsWith('_'));
+      });
 
   const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);
