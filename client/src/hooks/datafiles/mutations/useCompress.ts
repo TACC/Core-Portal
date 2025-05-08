@@ -86,10 +86,7 @@ function useCompress() {
     compressionType: string;
     fromDownload?: boolean;
   }) => {
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'compress' },
-    });
+    setStatus({ type: 'RUNNING' });
 
     let defaultPrivateSystem: TPortalSystem | undefined;
 
@@ -142,20 +139,14 @@ function useCompress() {
               },
             });
           } else if (response.status === 'PENDING') {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
-            });
+            setStatus({type: 'SUCCESS'});
             dispatch({
               type: 'ADD_TOAST',
               payload: {
                 message: 'Compress job submitted.',
               },
             });
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { operation: 'compress', status: {} },
-            });
+            setStatus({});
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',
@@ -174,13 +165,7 @@ function useCompress() {
             response.cause === 'compressError'
               ? response.message
               : 'An error has occurred.';
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: {
-              status: { type: 'ERROR', message: errorMessage },
-              operation: 'compress',
-            },
-          });
+          setStatus({ type: 'ERROR', message: errorMessage });
         },
       }
     );

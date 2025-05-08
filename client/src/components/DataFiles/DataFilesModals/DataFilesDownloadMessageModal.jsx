@@ -189,7 +189,7 @@ const DataFilesDownloadMessageModal = () => {
                   disabled={buttonDisabled}
                   type="primary"
                   size={status.type === 'ERROR' ? 'long' : 'medium'}
-                  isLoading={status === 'RUNNING'}
+                  isLoading={status.type === 'RUNNING'}
                   iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
                   attr="submit"
                 >
