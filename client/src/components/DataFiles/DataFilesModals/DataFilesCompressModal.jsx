@@ -124,8 +124,8 @@ const DataFilesCompressModal = () => {
                   disabled={buttonDisabled}
                   isLoading={status.type === 'RUNNING'}
                   type="primary"
-                  size={true ? 'long' : 'medium'}
-                  iconNameBefore={true ? 'alert' : null}
+                  size={status.type === 'ERROR' ? 'long' : 'medium'}
+                  iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
                   attr="submit"
                 >
                   Compress
