@@ -16,12 +16,14 @@ async function submitJobUtil(body: TJobBody) {
 function getAvailableAlloc(activeAllocations: any) {
   for (let activeAlloc of activeAllocations) {
     for (let allocSys of activeAlloc.systems) {
-      if (allocSys.type === 'HPC' ) {
-        const availCompute = allocSys.allocation.computeAllocated - allocSys.allocation.computeUsed;
-        if ( availCompute > 0 ) {
-          return allocSys.allocation.project;  // allocation name
+      if (allocSys.type === 'HPC') {
+        const availCompute =
+          allocSys.allocation.computeAllocated -
+          allocSys.allocation.computeUsed;
+        if (availCompute > 0) {
+          return allocSys.allocation.project; // allocation name
         }
-      }  
+      }
     }
   }
 }
@@ -139,7 +141,7 @@ function useCompress() {
               },
             });
           } else if (response.status === 'PENDING') {
-            setStatus({type: 'SUCCESS'});
+            setStatus({ type: 'SUCCESS' });
             dispatch({
               type: 'ADD_TOAST',
               payload: {

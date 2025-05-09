@@ -80,13 +80,13 @@ const DataFilesDownloadMessageModalFixture = {
             allocation: {
               computeAllocated: 10,
               computeUsed: 1.1,
-              project: ''
+              project: '',
             },
-            type: ''
-          }
+            type: '',
+          },
         ],
-      }
-    ]
+      },
+    ],
   },
   systems: {
     storage: {

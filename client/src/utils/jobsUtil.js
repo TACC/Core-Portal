@@ -61,11 +61,10 @@ export function getAllocatonFromDirective(directive) {
  */
 export function getJobDisplayInformation(job, app) {
   const filterHiddenObjects = (objects) =>
-    objects
-      .filter((obj) => {
-        const notes = obj.notes ? JSON.parse(obj.notes) : null;
-        return !notes || !notes.isHidden;
-      });
+    objects.filter((obj) => {
+      const notes = obj.notes ? JSON.parse(obj.notes) : null;
+      return !notes || !notes.isHidden;
+    });
 
   const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);

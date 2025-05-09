@@ -80,7 +80,8 @@ const DataFilesCompressModal = () => {
           const handleSelectChange = (e) => {
             setFieldValue('compressionType', e.target.value);
           };
-          const formDisabled = status.type === 'RUNNING' || status.type === 'SUCCESS';
+          const formDisabled =
+            status.type === 'RUNNING' || status.type === 'SUCCESS';
           const buttonDisabled =
             formDisabled || !isValid || values.filenameDisplay === '';
           return (
@@ -112,7 +113,10 @@ const DataFilesCompressModal = () => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <InlineMessage isVisible={status.type === 'SUCCESS'} type="success">
+                <InlineMessage
+                  isVisible={status.type === 'SUCCESS'}
+                  type="success"
+                >
                   Successfully started compress job
                 </InlineMessage>
                 <Button
