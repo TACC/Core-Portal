@@ -96,12 +96,11 @@ export function getJobDisplayInformation(job, app) {
   const envVariables = parameterSet.envVariables;
   const schedulerOptions = parameterSet.schedulerOptions;
 
-
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
-    inputs: fileInputs.map((input, index) => ({
-      label: getFileInputLabel(input.name, index),
+    inputs: fileInputs.map((input) => ({
+      label: getFileInputLabel(input.name),
       id: input.sourceUrl,
       value: input.sourceUrl,
     })),
