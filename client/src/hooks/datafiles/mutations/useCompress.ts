@@ -1,9 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
 import { TTapisFile, TPortalSystem } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
+import { getAppUtil, getDefaultAllocation } from './toolbarAppUtils';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -11,21 +12,6 @@ async function submitJobUtil(body: TJobBody) {
     body
   );
   return res.data.response;
-}
-
-function getAvailableAlloc(activeAllocations: any) {
-  for (let activeAlloc of activeAllocations) {
-    for (let allocSys of activeAlloc.systems) {
-      if (allocSys.type === 'HPC') {
-        const availCompute =
-          allocSys.allocation.computeAllocated -
-          allocSys.allocation.computeUsed;
-        if (availCompute > 0) {
-          return allocSys.allocation.project; // allocation name
-        }
-      }
-    }
-  }
 }
 
 function useCompress() {
@@ -55,18 +41,13 @@ function useCompress() {
   const compressApp = useSelector(
     (state: any) => state.workbench.config.compressApp
   );
+  const { data: fullCompressApp } = useQuery({
+    queryKey: ['compress-app', compressApp.id, compressApp.version],
+    queryFn: () => getAppUtil(compressApp.id, compressApp.version),
+  });
 
   const defaultAllocation = useSelector((state: any) => {
-    if (state.allocations.portal_alloc) {
-      return state.allocations.portal_alloc;
-    }
-    if (
-      Array.isArray(state.allocations.active) &&
-      state.allocations.active.length > 0
-    ) {
-      return getAvailableAlloc(state.allocations.active) || null;
-    }
-    return null;
+    return getDefaultAllocation(state.allocations, fullCompressApp)
   });
 
   const systems = useSelector(
@@ -148,7 +129,7 @@ function useCompress() {
                 message: 'Compress job submitted.',
               },
             });
-            setStatus({});
+            setStatus({});  // clear compress status after successful submission
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',
