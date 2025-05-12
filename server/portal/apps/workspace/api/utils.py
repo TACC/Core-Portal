@@ -1,5 +1,5 @@
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
-from tapipy.errors import BaseTapyException
+from tapipy.errors import BaseTapyException, UnauthorizedError
 import json
 import logging
 
@@ -40,21 +40,24 @@ def should_push_keys(system):
     return system.get("defaultAuthnMethod") != 'TMS_KEYS'
 
 
-def test_system_credentials(system, user):
+def ensure_system_credentials(system_id, user):
     """
-    If system does not support TMS, create keys and
-    tapis system credentials using keys, otherwise create
-    credentials with TMS.
+    Attempt to create system credentials for user on system if no credentials exist.
     """
-    # TODOv3: Add Tapis system test utility method with proper error handling https://tacc-main.atlassian.net/browse/WP-101
     tapis = user.tapis_oauth.client
-    if should_push_keys(system):
-        return False
-    else:
-        try:
-            create_system_credentials(user.tapis_oauth.client, user.username, system.id, createTmsKeys=True)
-            tapis.files.listFiles(systemId=system.id, path="/")
-        except BaseTapyException:
-            return False
 
-    return True
+    try:
+        tapis.systems.checkUserCredential(systemId=system_id, userName=user.username)
+    except UnauthorizedError:
+        create_system_credentials(tapis, user.username, system_id, createTmsKeys=True)
+
+
+def test_system_access(system_id, user):
+    """
+    Test system access by attempting to list files in the root directory.
+    """
+    tapis = user.tapis_oauth.client
+    try:
+        tapis.files.listFiles(systemId=system_id, path="/")
+    except BaseTapyException:
+        return False

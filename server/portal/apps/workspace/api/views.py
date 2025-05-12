@@ -26,7 +26,8 @@ from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
-    test_system_credentials,
+    ensure_system_credentials,
+    should_push_keys,
 )
 from portal.utils import get_client_ip
 
@@ -110,14 +111,15 @@ class AppsView(BaseApiView):
             # Check if default storage system needs keys pushed
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
                 system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-                system_def = tapis.systems.getSystem(systemId=system_id)
 
                 try:
+                    ensure_system_credentials(system_id, request.user)
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
-                    success = test_system_credentials(system_def, request.user)
-                    data['systemNeedsKeys'] = not success
-                    data['pushKeysSystem'] = system_def
+                    system_def = tapis.systems.getSystem(systemId=system_id)
+                    if should_push_keys(system_def):
+                        data['systemNeedsKeys'] = True
+                        data['pushKeysSystem'] = system_def
         else:
             METRICS.info(
                 "Apps",
@@ -281,7 +283,7 @@ class JobsView(BaseApiView):
 
         if job_uuid and job_action:
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
+                logger.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
@@ -303,7 +305,7 @@ class JobsView(BaseApiView):
                     )
 
             elif job_action == 'cancel':
-                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
+                logger.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
@@ -345,7 +347,7 @@ class JobsView(BaseApiView):
 
         # submit job
         else:
-            METRICS.info("processing job submission for user:{}: {}".format(username, job_post))
+            logger.info("processing job submission for user:{}: {}".format(username, job_post))
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
@@ -383,19 +385,24 @@ class JobsView(BaseApiView):
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
                 try:
+                    ensure_system_credentials(system_id, request.user)
                     tapis.files.listFiles(systemId=system_id, path="/")
                 except (InternalServerError, UnauthorizedError):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = test_system_credentials(system_def, request.user)
-                    if not success:
-                        logger.info(f"Unable to create credentials for {username} in system: {system_id}")
+                    if should_push_keys(system_def):
                         return JsonResponse(
                             {
-                                'status': 200,
-                                'response': {"execSys": system_def},
+                                "status": 200,
+                                "response": {"execSys": system_def},
                             },
-                            encoder=BaseTapisResultSerializer
+                            encoder=BaseTapisResultSerializer,
                         )
+
+                    logger.exception(
+                        "Unable to ensure access for system %s for user: %s",
+                        system_id,
+                        username,
+                    )
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + reverse('webhooks:interactive_wh_handler')
@@ -475,11 +482,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            logger.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            logger.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -488,7 +495,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        logger.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
@@ -638,7 +645,7 @@ class TapisAppsView(BaseApiView):
                 status=403)
 
         get_params = request.GET.dict()
-        METRICS.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
+        logger.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({'data': response})
