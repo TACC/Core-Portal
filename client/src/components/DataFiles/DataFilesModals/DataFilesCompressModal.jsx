@@ -90,6 +90,7 @@ const DataFilesCompressModal = () => {
                 <FormField
                   label="Compressed File Name"
                   name="filenameDisplay"
+                  id="filenameDisplay"
                   disabled={formDisabled}
                   addonType="append"
                   addon={
