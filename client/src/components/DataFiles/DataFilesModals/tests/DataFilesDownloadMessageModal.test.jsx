@@ -106,6 +106,11 @@ describe('DataFilesDownloadMessageModal', () => {
       <DataFilesDownloadMessageModal />,
       mockStore({
         ...DataFilesDownloadMessageModalFixture,
+        allocations: {
+          /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
+          portal_alloc: '',
+          active: [],
+        },
         files: {
           ...DataFilesDownloadMessageModalFixture.files,
           selected: { FilesListing: [1, 2, 3] },
@@ -149,6 +154,11 @@ describe('DataFilesDownloadMessageModal', () => {
         // Create the store
         mockStore({
           ...DataFilesDownloadMessageModalFixture,
+          allocations: {
+            /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
+            portal_alloc: '',
+            active: [],
+          },
           files: {
             ...DataFilesDownloadMessageModalFixture.files,
             selected: { FilesListing: [3] },
@@ -191,7 +201,11 @@ describe('DataFilesDownloadMessageModal', () => {
         <DataFilesDownloadMessageModal />,
         mockStore({
           ...DataFilesDownloadMessageModalFixture,
-
+          allocations: {
+            /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
+            portal_alloc: '',
+            active: [],
+          },
         })
       );
 
