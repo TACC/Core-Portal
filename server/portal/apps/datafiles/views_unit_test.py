@@ -5,7 +5,7 @@ import os
 import pytest
 from django.conf import settings
 from mock import MagicMock, patch
-from tapipy.errors import InternalServerError
+from tapipy.errors import InternalServerError, UnauthorizedError
 from tapipy.tapis import TapisResult
 
 from portal.apps.datafiles.models import Link
@@ -77,6 +77,7 @@ def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, 
 
 def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
     mock_tapis_get = mocker.patch('portal.apps.datafiles.views.tapis_get_handler')
+    mock_tapis_client.systems.checkUserCredential.side_effect = UnauthorizedError()
     mock_error = InternalServerError()
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
@@ -92,7 +93,8 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     }
 
     system = {
-        'host': 'frontera.tacc.utexas.edu'
+        'host': 'frontera.tacc.utexas.edu',
+        'defaultAuthnMethod': 'PKI_KEYS',
     }
 
     mock_tapis_client.systems.getSystem.return_value = TapisResult(**system)
