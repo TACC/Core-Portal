@@ -1,9 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
 import { TTapisFile, TPortalSystem } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
+import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -40,18 +41,13 @@ function useCompress() {
   const compressApp = useSelector(
     (state: any) => state.workbench.config.compressApp
   );
+  const { data: fullCompressApp } = useQuery({
+    queryKey: ['compress-app', compressApp.id, compressApp.version],
+    queryFn: () => getAppUtil(compressApp.id, compressApp.version),
+  });
 
-  const defaultAllocation = useSelector((state: any) => {
-    if (state.allocations.portal_alloc) {
-      return state.allocations.portal_alloc;
-    }
-    if (
-      Array.isArray(state.allocations.active) &&
-      state.allocations.active.length > 0
-    ) {
-      return state.allocations.active[0].projectName || null;
-    }
-    return null;
+  const allocationForCompress = useSelector((state: any) => {
+    return getAllocationForToolbarAction(state.allocations, fullCompressApp);
   });
 
   const systems = useSelector(
@@ -73,10 +69,7 @@ function useCompress() {
     compressionType: string;
     fromDownload?: boolean;
   }) => {
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'compress' },
-    });
+    setStatus({ type: 'RUNNING' });
 
     let defaultPrivateSystem: TPortalSystem | undefined;
 
@@ -84,7 +77,7 @@ function useCompress() {
       defaultPrivateSystem = undefined;
     }
 
-    if (!defaultAllocation) {
+    if (!allocationForCompress) {
       throw new Error('You need an allocation to compress.', {
         cause: 'compressError',
       });
@@ -105,7 +98,7 @@ function useCompress() {
       filename,
       compressionType,
       compressApp,
-      defaultAllocation,
+      allocationForCompress,
       defaultPrivateSystem
     );
 
@@ -129,20 +122,14 @@ function useCompress() {
               },
             });
           } else if (response.status === 'PENDING') {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: { type: 'SUCCESS' }, operation: 'compress' },
-            });
+            setStatus({ type: 'SUCCESS' });
             dispatch({
               type: 'ADD_TOAST',
               payload: {
                 message: 'Compress job submitted.',
               },
             });
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { operation: 'compress', status: {} },
-            });
+            setStatus({}); // clear compress status after successful submission
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',
@@ -161,13 +148,7 @@ function useCompress() {
             response.cause === 'compressError'
               ? response.message
               : 'An error has occurred.';
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: {
-              status: { type: 'ERROR', message: errorMessage },
-              operation: 'compress',
-            },
-          });
+          setStatus({ type: 'ERROR', message: errorMessage });
         },
       }
     );
