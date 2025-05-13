@@ -33,26 +33,26 @@ def check_job_for_timeout(job):
     return job
 
 
-def should_push_keys(system):
+def should_push_keys(system_def: object) -> bool:
     """
     If defaultAuthnMethod is not TMS_KEYS, return true. Otherwise, false.
     """
-    return system.get("defaultAuthnMethod") != 'TMS_KEYS'
+    return system_def.get("defaultAuthnMethod") != "TMS_KEYS"
 
 
-def ensure_system_credentials(system_id, user):
+def system_credentials_ok(system_id: str, user: object) -> bool:
     """
-    Attempt to create system credentials for user on system if no credentials exist.
+    Check if user has system credentials on system.
     """
     tapis = user.tapis_oauth.client
-
     try:
         tapis.systems.checkUserCredential(systemId=system_id, userName=user.username)
     except UnauthorizedError:
-        create_system_credentials(tapis, user.username, system_id, createTmsKeys=True)
+        return False
+    return True
 
 
-def test_system_access(system_id, user):
+def test_system_access(system_id: str, user: object) -> bool:
     """
     Test system access by attempting to list files in the root directory.
     """
@@ -61,3 +61,27 @@ def test_system_access(system_id, user):
         tapis.files.listFiles(systemId=system_id, path="/")
     except BaseTapyException:
         return False
+    return True
+
+
+def push_keys_required_if_not_credentials_ensured(system_id: str, user: object) -> bool:
+    """
+    Check if system credentials are required to be pushed by the user on the system.
+    """
+    tapis = user.tapis_oauth.client
+
+    if not system_credentials_ok(system_id, user):
+        system_def = tapis.systems.getSystem(systemId=system_id)
+        if should_push_keys(system_def):
+            logger.info(
+                "user: %s is missing system credentials and must push keys for system: %s",
+                user.username,
+                system_id,
+            )
+            return True
+
+        create_system_credentials(
+            tapis, user.username, system_id, createTmsKeys=True
+        )
+
+    return False

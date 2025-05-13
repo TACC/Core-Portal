@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
 from tapipy.tapis import TapisResult
-from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -26,8 +25,7 @@ from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
-    ensure_system_credentials,
-    should_push_keys,
+    push_keys_required_if_not_credentials_ensured
 )
 from portal.utils import get_client_ip
 
@@ -111,15 +109,11 @@ class AppsView(BaseApiView):
             # Check if default storage system needs keys pushed
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
                 system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-
-                try:
-                    ensure_system_credentials(system_id, request.user)
-                    tapis.files.listFiles(systemId=system_id, path="/")
-                except (InternalServerError, UnauthorizedError):
+                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    if should_push_keys(system_def):
-                        data['systemNeedsKeys'] = True
-                        data['pushKeysSystem'] = system_def
+                    data['systemNeedsKeys'] = True
+                    data['pushKeysSystem'] = system_def
+
         else:
             METRICS.info(
                 "Apps",
@@ -384,24 +378,14 @@ class JobsView(BaseApiView):
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
-                try:
-                    ensure_system_credentials(system_id, request.user)
-                    tapis.files.listFiles(systemId=system_id, path="/")
-                except (InternalServerError, UnauthorizedError):
+                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    if should_push_keys(system_def):
-                        return JsonResponse(
-                            {
-                                "status": 200,
-                                "response": {"execSys": system_def},
-                            },
-                            encoder=BaseTapisResultSerializer,
-                        )
-
-                    logger.exception(
-                        "Unable to ensure access for system %s for user: %s",
-                        system_id,
-                        username,
+                    return JsonResponse(
+                        {
+                            "status": 200,
+                            "response": {"execSys": system_def},
+                        },
+                        encoder=BaseTapisResultSerializer,
                     )
 
             if settings.DEBUG:
