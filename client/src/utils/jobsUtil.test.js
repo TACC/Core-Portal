@@ -5,6 +5,7 @@ import {
   getExecutionPath,
   isTerminalState,
   isOutputState,
+  getFileInputLabel,
 } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
@@ -56,5 +57,12 @@ describe('jobsUtil', () => {
     expect(isOutputState('FINISHED')).toEqual(true);
     expect(isOutputState('STOPPED')).toEqual(false);
     expect(isOutputState('RUNNING')).toEqual(false);
+  });
+
+  it('get file input label ', () => {
+    expect(getFileInputLabel('Input File')).toEqual('Input File');
+    expect(getFileInputLabel('Input File_1.1')).toEqual('Input File');
+    expect(getFileInputLabel('_1.2')).toEqual('--------------');
+    expect(getFileInputLabel('_21.12')).toEqual('--------------');
   });
 });
