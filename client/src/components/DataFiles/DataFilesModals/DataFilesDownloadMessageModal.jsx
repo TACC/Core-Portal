@@ -28,8 +28,6 @@ const DataFilesDownloadMessageModal = () => {
       })),
     shallowEqual
   );
-  const selected = useMemo(() => selectedFiles, [isOpen]);
-  const formRef = React.useRef();
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -61,11 +59,11 @@ const DataFilesDownloadMessageModal = () => {
     });
   };
 
-  const compressCallback = () => {
-    const { filenameDisplay, compressionType } = formRef.current.values;
+  const compressCallback = ({ filenameDisplay, compressionType }) => {
     let containsFolder = false;
     let totalFileSize = 0;
     const maxFileSize = 2 * 1024 * 1024 * 1024;
+
     // Add up the file sizes of all files and shows if the user selected a folder
     for (let i = 0; i < selectedFiles.length; i++) {
       totalFileSize = totalFileSize + selectedFiles[i].length;
@@ -73,6 +71,7 @@ const DataFilesDownloadMessageModal = () => {
         containsFolder = true;
       }
     }
+
     // Run the dispatch if the user does not select any folders...
     if (containsFolder === false) {
       // ...and if the total file size is below 2 GB
@@ -128,7 +127,6 @@ const DataFilesDownloadMessageModal = () => {
         Download
       </ModalHeader>
       <Formik
-        innerRef={formRef}
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={compressCallback}
