@@ -41,7 +41,8 @@ export function getAllocationForToolbarAction(
   }
   if (
     Array.isArray(allocationsState.active) &&
-    allocationsState.active.length > 0
+    allocationsState.active.length > 0 &&
+    appObj
   ) {
     return (
       getAvailableHPCAlloc(
