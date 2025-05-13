@@ -47,7 +47,7 @@ function useCompress() {
   });
 
   const defaultAllocation = useSelector((state: any) => {
-    return getDefaultAllocation(state.allocations, fullCompressApp)
+    return getDefaultAllocation(state.allocations, fullCompressApp);
   });
 
   const systems = useSelector(
@@ -129,7 +129,7 @@ function useCompress() {
                 message: 'Compress job submitted.',
               },
             });
-            setStatus({});  // clear compress status after successful submission
+            setStatus({}); // clear compress status after successful submission
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',

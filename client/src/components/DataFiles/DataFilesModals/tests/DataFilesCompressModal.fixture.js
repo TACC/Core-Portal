@@ -1,3 +1,14 @@
+export const compressAppFixture = {
+  definition: {
+    jobAttributes: {
+      description: 'Compress a file or folder for download.',
+      dynamicExecSystem: false,
+      execSystemConstraints: null,
+      execSystemId: 'frontera',
+    },
+  },
+};
+
 const testFileSize1 = 1.5 * 1024 * 1024 * 1024;
 const testFileSize2 = 1 * 1024 * 1024 * 1024;
 

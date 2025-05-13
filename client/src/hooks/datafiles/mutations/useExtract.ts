@@ -36,7 +36,7 @@ function useExtract() {
     queryFn: () => getAppUtil(extractApp.id, extractApp.version),
   });
   const defaultAllocation = useSelector((state: any) => {
-    return getDefaultAllocation(state.allocations, fullExtractApp)
+    return getDefaultAllocation(state.allocations, fullExtractApp);
   });
 
   const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });

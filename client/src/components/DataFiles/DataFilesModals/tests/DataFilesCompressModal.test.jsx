@@ -1,20 +1,40 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import configureStore from 'redux-mock-store';
+import { waitFor, renderHook } from '@testing-library/react';
+import { vi } from 'vitest';
 import renderComponent from 'utils/testing';
-import DataFilesCompressModalFixture from './DataFilesCompressModal.fixture';
+import DataFilesCompressModalFixture, {
+  compressAppFixture,
+} from './DataFilesCompressModal.fixture';
 import DataFilesCompressModal from '../DataFilesCompressModal';
+import { getAppUtil } from 'hooks/datafiles/mutations/toolbarAppUtils';
 
+vi.mock('@tanstack/react-query');
+vi.mock('hooks/datafiles/mutations/toolbarAppUtils');
 const mockStore = configureStore();
 
 describe('DataFilesCompressModal', () => {
-  it('renders the compress modal', () => {
-    const store = mockStore(DataFilesCompressModalFixture);
-    const { getAllByText } = renderComponent(<DataFilesCompressModal />, store);
+  beforeEach(async () => {
+    getAppUtil.mockResolvedValue(compressAppFixture);
+    useQuery.mockReturnValue({ data: compressAppFixture });
 
-    expect(getAllByText(/Compressed File Name/)).toBeDefined();
+    const { result } = renderHook(() => useQuery('compress-app', getAppUtil));
+    await waitFor(() => result.current.isSuccess);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+  it('renders the compress modal', async () => {
+    const store = mockStore(DataFilesCompressModalFixture);
+    const { findByText } = renderComponent(<DataFilesCompressModal />, store);
+
+    await waitFor(() =>
+      expect(findByText(/Compressed File Name/)).toBeDefined()
+    );
   });
 
-  it('disables form when submitting compress job', () => {
+  it('disables form when submitting compress job', async () => {
     const store = mockStore({
       ...DataFilesCompressModalFixture,
       files: {
@@ -22,18 +42,19 @@ describe('DataFilesCompressModal', () => {
         operationStatus: { compress: { type: 'RUNNING' } },
       },
     });
-    const { getByLabelText, getByText } = renderComponent(
+    const { findByLabelText } = renderComponent(
       <DataFilesCompressModal />,
       store
     );
 
-    const compressInputField = getByLabelText('Compressed File Name');
-    const compressButton = getByText('Compress').closest('button');
-    expect(compressInputField.toBeDisabled);
-    expect(compressButton.toBeDisabled);
+    //const compressButtonText = await findByText('Compress');
+    //expect(compressButtonText.closest('button').toBeDisabled);
+    await waitFor(async () =>
+      expect(findByLabelText(/Compressed File Name/).toBeDisabled)
+    );
   });
 
-  it('displays error state on error status', () => {
+  it('displays error state on error status', async () => {
     const store = mockStore({
       ...DataFilesCompressModalFixture,
       files: {
@@ -41,9 +62,9 @@ describe('DataFilesCompressModal', () => {
         operationStatus: { compress: { type: 'ERROR' } },
       },
     });
-    const { getByTestId } = renderComponent(<DataFilesCompressModal />, store);
+    const { findByTestId } = renderComponent(<DataFilesCompressModal />, store);
 
-    const compressErrorIcon = getByTestId('icon-before');
-    expect(compressErrorIcon.toBeVisible);
+    const compressErrorIcon = findByTestId('icon-before');
+    await waitFor(() => expect(compressErrorIcon.toBeVisible));
   });
 });

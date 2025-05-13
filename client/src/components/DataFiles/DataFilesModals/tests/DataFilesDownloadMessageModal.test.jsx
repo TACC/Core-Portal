@@ -1,11 +1,16 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { compressAppFixture } from './DataFilesCompressModal.fixture';
+import { fireEvent, screen, waitFor, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
+import { getAppUtil } from 'hooks/datafiles/mutations/toolbarAppUtils';
 
+vi.mock('@tanstack/react-query');
+vi.mock('hooks/datafiles/mutations/toolbarAppUtils');
 const mockStore = configureStore();
 
 // Establish a boolean that checks for a folder among selectedFiles
@@ -13,23 +18,31 @@ let containsFolder = false;
 // Create test files for all tests
 
 describe('DataFilesDownloadMessageModal', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear all mocks before each test
     vi.clearAllMocks();
+
+    getAppUtil.mockResolvedValue(compressAppFixture);
+    useQuery.mockReturnValue({ data: compressAppFixture });
+
+    const { result } = renderHook(() => useQuery('compress-app', getAppUtil));
+    await waitFor(() => result.current.isSuccess);
   });
 
-  it('renders the data files download message modal', () => {
+  it('renders the data files download message modal', async () => {
     const store = mockStore(DataFilesDownloadMessageModalFixture);
-    const { getAllByText } = renderComponent(
+    const { findAllByText } = renderComponent(
       <DataFilesDownloadMessageModal />,
       store
     );
 
-    expect(
-      getAllByText(
-        /Folders and multiple files must be compressed before downloading./
-      )
-    ).toBeDefined();
+    await waitFor(() =>
+      expect(
+        findAllByText(
+          /Folders and multiple files must be compressed before downloading./
+        )
+      ).toBeDefined()
+    );
   });
 
   // Test to prevent folder downloads
