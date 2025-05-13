@@ -43,7 +43,8 @@ const DataFilesDownloadMessageModalFixture = {
         },
         {
           name: 'testFolder',
-          type: 'folder',
+          format: 'folder',
+          type: 'dir',
           path: '/testFolder',
           id: 789,
         },
