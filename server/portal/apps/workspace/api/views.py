@@ -519,7 +519,7 @@ class AppsTrayView(BaseApiView):
         # Only shows enabled versions of apps
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)",
             listType="MINE",
             limit=-1,
         )
