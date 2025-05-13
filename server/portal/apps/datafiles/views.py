@@ -22,6 +22,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
 from portal.apps.users.utils import get_user_data
+from portal.apps.workspace.api.utils import (
+    push_keys_required_if_not_credentials_ensured
+)
 from .utils import notify, NOTIFY_ACTIONS
 import dateutil.parser
 
@@ -118,22 +121,33 @@ class TapisFilesView(BaseApiView):
                 notify(request.user.username, operation, 'success', {'response': response})
         except (InternalServerError, UnauthorizedError) as e:
             error_status = e.response.status_code
-            error_json = e.response.json()
-            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
+            operation in NOTIFY_ACTIONS and notify(
+                request.user.username, operation, "error", {}
+            )
             if error_status == 500 or error_status == 401:
                 logger.info(e)
                 # In case of 500 determine cause
-                system = client.systems.getSystem(systemId=system)
+                system_def = client.systems.getSystem(systemId=system)
                 allocations = get_allocations(request.user.username)
 
                 # If user is missing a non-corral allocation mangle error to a 403
-                if not any(system.host.endswith(ele) for ele in
-                           list(allocations['hosts'].keys()) + ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
-                    raise PermissionDenied
+                if not any(
+                    system_def.host.endswith(ele)
+                    for ele in list(allocations["hosts"].keys())
+                    + ["corral.tacc.utexas.edu", "data.tacc.utexas.edu"]
+                ):
+                    raise PermissionDenied from e
 
-                # If a user needs to push keys, return a response specifying the system
-                error_json['system'] = system
-                return JsonResponse(error_json, status=error_status, encoder=BaseTapisResultSerializer)
+                if push_keys_required_if_not_credentials_ensured(system, request.user):
+                    # If a user needs to push keys, return a response specifying the system
+                    error_json = e.response.json()
+                    error_json["system"] = system_def
+                    return JsonResponse(
+                        error_json,
+                        status=error_status,
+                        encoder=BaseTapisResultSerializer,
+                    )
+
             raise e
 
         return JsonResponse({'data': response})
