@@ -64,11 +64,6 @@ describe('DataFilesDownloadMessageModal', () => {
 
     const store = mockStore({
       ...DataFilesDownloadMessageModalFixture,
-      allocations: {
-        /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
-        portal_alloc: '',
-        active: [],
-      },
       files: {
         ...DataFilesDownloadMessageModalFixture.files,
         selected: { FilesListing: [4] } /*single folder*/,
