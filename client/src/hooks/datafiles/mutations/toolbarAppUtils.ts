@@ -32,7 +32,10 @@ function getAvailableHPCAlloc(activeAllocations: any, appExecSysId: string) {
   }
 }
 
-export function getDefaultAllocation(allocationsState: any, appObj: any) {
+export function getAllocationForToolbarAction(
+  allocationsState: any,
+  appObj: any
+) {
   if (allocationsState.portal_alloc) {
     return allocationsState.portal_alloc;
   }

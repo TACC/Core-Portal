@@ -4,7 +4,7 @@ import { getCompressParams } from 'utils/getCompressParams';
 import { apiClient } from 'utils/apiClient';
 import { TTapisFile, TPortalSystem } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
-import { getAppUtil, getDefaultAllocation } from './toolbarAppUtils';
+import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -46,8 +46,8 @@ function useCompress() {
     queryFn: () => getAppUtil(compressApp.id, compressApp.version),
   });
 
-  const defaultAllocation = useSelector((state: any) => {
-    return getDefaultAllocation(state.allocations, fullCompressApp);
+  const allocationForCompress = useSelector((state: any) => {
+    return getAllocationForToolbarAction(state.allocations, fullCompressApp);
   });
 
   const systems = useSelector(
@@ -77,7 +77,7 @@ function useCompress() {
       defaultPrivateSystem = undefined;
     }
 
-    if (!defaultAllocation) {
+    if (!allocationForCompress) {
       throw new Error('You need an allocation to compress.', {
         cause: 'compressError',
       });
@@ -98,7 +98,7 @@ function useCompress() {
       filename,
       compressionType,
       compressApp,
-      defaultAllocation,
+      allocationForCompress,
       defaultPrivateSystem
     );
 

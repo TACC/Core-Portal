@@ -4,7 +4,7 @@ import { getExtractParams } from 'utils/getExtractParams';
 import { apiClient } from 'utils/apiClient';
 import { TTapisFile } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
-import { getAppUtil, getDefaultAllocation } from './toolbarAppUtils';
+import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -35,8 +35,8 @@ function useExtract() {
     queryKey: ['extract-app', extractApp.id, extractApp.version],
     queryFn: () => getAppUtil(extractApp.id, extractApp.version),
   });
-  const defaultAllocation = useSelector((state: any) => {
-    return getDefaultAllocation(state.allocations, fullExtractApp);
+  const allocationForExtract = useSelector((state: any) => {
+    return getAllocationForToolbarAction(state.allocations, fullExtractApp);
   });
 
   const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
@@ -46,7 +46,7 @@ function useExtract() {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
     });
-    if (!defaultAllocation) {
+    if (!allocationForExtract) {
       throw new Error('You need an allocation to extract.', {
         cause: 'extractError',
       });
@@ -56,7 +56,7 @@ function useExtract() {
       file,
       extractApp,
       fullExtractApp,
-      defaultAllocation
+      allocationForExtract
     );
 
     return mutateAsync(
