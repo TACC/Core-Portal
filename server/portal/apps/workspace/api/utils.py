@@ -71,6 +71,7 @@ def push_keys_required_if_not_credentials_ensured(system_id: str, user: object) 
     tapis = user.tapis_oauth.client
 
     if not system_credentials_ok(system_id, user):
+        logger.info("user: %s is missing system credentials", user.username)
         system_def = tapis.systems.getSystem(systemId=system_id)
         if should_push_keys(system_def):
             logger.info(

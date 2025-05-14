@@ -27,6 +27,7 @@ from portal.apps.workspace.api.utils import (
 )
 from .utils import notify, NOTIFY_ACTIONS
 import dateutil.parser
+from portal.utils.decorators import retry
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -88,6 +89,7 @@ class SystemDefinitionView(BaseApiView):
 
 
 class TapisFilesView(BaseApiView):
+    @retry(UnauthorizedError, tries=3, max_time=15)
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
             client = request.user.tapis_oauth.client
@@ -117,13 +119,14 @@ class TapisFilesView(BaseApiView):
             response = tapis_get_handler(
                 client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", **request.GET.dict())
 
-            operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, 'success', {'response': response})
+            if operation in NOTIFY_ACTIONS:
+                notify(
+                    request.user.username, operation, "success", {"response": response}
+                )
         except (InternalServerError, UnauthorizedError) as e:
             error_status = e.response.status_code
-            operation in NOTIFY_ACTIONS and notify(
-                request.user.username, operation, "error", {}
-            )
+            if operation in NOTIFY_ACTIONS:
+                notify(request.user.username, operation, "error", {})
             if error_status == 500 or error_status == 401:
                 logger.info(e)
                 # In case of 500 determine cause
@@ -148,9 +151,28 @@ class TapisFilesView(BaseApiView):
                         encoder=BaseTapisResultSerializer,
                     )
 
-            raise e
+                # If the user has valid system credentials, retry the request
+                response = tapis_get_handler(
+                    client,
+                    scheme,
+                    system,
+                    path,
+                    operation,
+                    tapis_tracking_id=f"portals.{request.session.session_key}",
+                    **request.GET.dict(),
+                )
 
-        return JsonResponse({'data': response})
+                if operation in NOTIFY_ACTIONS:
+                    notify(
+                        request.user.username,
+                        operation,
+                        "success",
+                        {"response": response},
+                    )
+            else:
+                raise e
+
+        return JsonResponse({"data": response})
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
