@@ -2,21 +2,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { getExtractParams } from 'utils/getExtractParams';
 import { apiClient } from 'utils/apiClient';
-import { fetchUtil } from 'utils/fetchUtil';
 import { TTapisFile } from 'utils/types';
 import { TJobBody, TJobPostResponse } from './useSubmitJob';
-
-const getAppUtil = async function fetchAppDefinitionUtil(
-  appId: string,
-  appVersion: string
-) {
-  const params = { appId, appVersion };
-  const result = await fetchUtil({
-    url: '/api/workspace/apps',
-    params,
-  });
-  return result.response;
-};
+import { getAppUtil, getAllocationForToolbarAction } from './toolbarAppUtils';
 
 async function submitJobUtil(body: TJobBody) {
   const res = await apiClient.post<TJobPostResponse>(
@@ -43,22 +31,12 @@ function useExtract() {
   const extractApp = useSelector(
     (state: any) => state.workbench.config.extractApp
   );
-  const defaultAllocation = useSelector((state: any) => {
-    if (state.allocations.portal_alloc) {
-      return state.allocations.portal_alloc;
-    }
-    if (
-      Array.isArray(state.allocations.active) &&
-      state.allocations.active.length > 0
-    ) {
-      return state.allocations.active[0].projectName || null;
-    }
-    return null;
-  });
-
-  const { data: latestExtract } = useQuery({
+  const { data: fullExtractApp } = useQuery({
     queryKey: ['extract-app', extractApp.id, extractApp.version],
     queryFn: () => getAppUtil(extractApp.id, extractApp.version),
+  });
+  const allocationForExtract = useSelector((state: any) => {
+    return getAllocationForToolbarAction(state.allocations, fullExtractApp);
   });
 
   const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
@@ -68,7 +46,7 @@ function useExtract() {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' },
     });
-    if (!defaultAllocation) {
+    if (!allocationForExtract) {
       throw new Error('You need an allocation to extract.', {
         cause: 'extractError',
       });
@@ -77,8 +55,8 @@ function useExtract() {
     const params = getExtractParams(
       file,
       extractApp,
-      latestExtract,
-      defaultAllocation
+      fullExtractApp,
+      allocationForExtract
     );
 
     return mutateAsync(
@@ -120,7 +98,7 @@ function useExtract() {
         },
         onError: (response) => {
           const errorMessage =
-            response.cause === 'compressError'
+            response.cause === 'extractError'
               ? response.message
               : 'An error has occurred.';
           dispatch({

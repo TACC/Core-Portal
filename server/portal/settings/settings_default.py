@@ -238,7 +238,7 @@ _DATACITE_URL = "https://api.test.datacite.org/"
 # _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
 
 # Default Art.
-_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+_PORTAL_ICON_FILENAME = "/static/site_cms/img/favicons/favicon.ico"
 
 ########################
 # GOOGLE ANALYTICS
@@ -265,7 +265,7 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": {
         "id": "compress",
-        "version": "0.0.3"  # Can be set to "" to use the latest version
+        "version": "0.0.4"  # Can be set to "" to use the latest version
     },
     "extractApp": {
         "id": "extract",

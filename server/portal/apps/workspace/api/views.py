@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
 from tapipy.tapis import TapisResult
-from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -26,7 +25,7 @@ from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
-    test_system_credentials,
+    push_keys_required_if_not_credentials_ensured
 )
 from portal.utils import get_client_ip
 
@@ -110,14 +109,11 @@ class AppsView(BaseApiView):
             # Check if default storage system needs keys pushed
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
                 system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-                system_def = tapis.systems.getSystem(systemId=system_id)
-
-                try:
-                    tapis.files.listFiles(systemId=system_id, path="/")
-                except (InternalServerError, UnauthorizedError):
-                    success = test_system_credentials(system_def, request.user)
-                    data['systemNeedsKeys'] = not success
+                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
+                    system_def = tapis.systems.getSystem(systemId=system_id)
+                    data['systemNeedsKeys'] = True
                     data['pushKeysSystem'] = system_def
+
         else:
             METRICS.info(
                 "Apps",
@@ -281,7 +277,7 @@ class JobsView(BaseApiView):
 
         if job_uuid and job_action:
             if job_action == 'resubmit':
-                METRICS.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
+                logger.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.resubmitJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
@@ -303,7 +299,7 @@ class JobsView(BaseApiView):
                     )
 
             elif job_action == 'cancel':
-                METRICS.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
+                logger.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
                 data = tapis.jobs.cancelJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
@@ -345,7 +341,7 @@ class JobsView(BaseApiView):
 
         # submit job
         else:
-            METRICS.info("processing job submission for user:{}: {}".format(username, job_post))
+            logger.info("processing job submission for user:{}: {}".format(username, job_post))
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
@@ -382,20 +378,15 @@ class JobsView(BaseApiView):
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
-                try:
-                    tapis.files.listFiles(systemId=system_id, path="/")
-                except (InternalServerError, UnauthorizedError):
+                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    success = test_system_credentials(system_def, request.user)
-                    if not success:
-                        logger.info(f"Unable to create credentials for {username} in system: {system_id}")
-                        return JsonResponse(
-                            {
-                                'status': 200,
-                                'response': {"execSys": system_def},
-                            },
-                            encoder=BaseTapisResultSerializer
-                        )
+                    return JsonResponse(
+                        {
+                            "status": 200,
+                            "response": {"execSys": system_def},
+                        },
+                        encoder=BaseTapisResultSerializer,
+                    )
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + reverse('webhooks:interactive_wh_handler')
@@ -475,11 +466,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            logger.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            logger.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -488,7 +479,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        logger.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
@@ -517,7 +508,12 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="MINE")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)",
+            listType="MINE",
+            limit=-1,
+        )
         my_apps = list(map(lambda app: {
             "label": getattr(app.notes, 'label', app.id),
             "version": app.version,
@@ -530,7 +526,12 @@ class AppsTrayView(BaseApiView):
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
-        apps_listing = tapis.apps.getApps(select="version,id,notes", search="(versionEnabled.eq.true)", listType="SHARED_PUBLIC")
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
+            listType="SHARED_PUBLIC",
+            limit=-1,
+        )
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
@@ -543,10 +544,10 @@ class AppsTrayView(BaseApiView):
             # Only return Tapis apps that are known to exist and are enabled
             tapis_apps = []
             for portal_app in portal_apps:
-                portal_app_id = f"{portal_app['appId']}-{portal_app['version']}" if portal_app['version'] else portal_app['appId']
+                portal_app_id = (portal_app['appId'], portal_app['version']) if portal_app['version'] else portal_app['appId']
 
                 # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
-                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, f'{x.id}-{x.version}']), None)
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, (x.id, x.version)]), None)
                 if matching_app:
                     tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 
@@ -628,7 +629,7 @@ class TapisAppsView(BaseApiView):
                 status=403)
 
         get_params = request.GET.dict()
-        METRICS.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
+        logger.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({'data': response})
