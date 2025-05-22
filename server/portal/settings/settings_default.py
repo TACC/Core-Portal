@@ -224,7 +224,7 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": {
         "id": "compress",
-        "version": "0.0.3"  # Can be set to "" to use the latest version
+        "version": "0.0.4"  # Can be set to "" to use the latest version
     },
     "extractApp": {
         "id": "extract",
