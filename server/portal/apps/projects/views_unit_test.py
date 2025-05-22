@@ -1,4 +1,5 @@
 import pytest
+from hashlib import sha256
 from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
@@ -199,7 +200,7 @@ def test_projects_post(
     # 3. standard client creates workspace client.systems.createSystem
     mock_service_account().files.mkdir.assert_called_with(
         systemId="projects.system.name", path="test.project-2",
-        headers={"X-Tapis-Tracking-ID": f"portals.{client.session.session_key}"}
+        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"}
     )
     mock_service_account().files.setFacl.assert_called_with(
         systemId="projects.system.name",
@@ -239,7 +240,7 @@ def test_projects_post_setfacl_job(
     # 3. standard client creates workspace client.systems.createSystem
     mock_service_account().files.mkdir.assert_called_with(
         systemId="projects.system.name", path="test.project-2",
-        headers={"X-Tapis-Tracking-ID": f"portals.{client.session.session_key}"}
+        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"}
     )
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
