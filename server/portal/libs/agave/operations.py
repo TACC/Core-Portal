@@ -14,7 +14,7 @@ from tapipy.errors import BaseTapyException
 logger = logging.getLogger(__name__)
 
 
-def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
+def listing(client, system, pattern, path, offset=0, limit=100, *args, **kwargs):
     """
     Perform a Tapis file listing
 
@@ -24,6 +24,8 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         Tapis client to use for the listing.
     system: str
         Tapis system ID.
+    pattern: str
+        Listing files pattern.
     path: str
         Path in which to peform the listing.
     offset: int
@@ -41,6 +43,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          path=path,
                                          offset=int(offset),
                                          limit=int(limit),
+                                         pattern=pattern,
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     try:

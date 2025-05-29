@@ -19,7 +19,11 @@ def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
     op = getattr(operations, operation)
-    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
+    # Exclude .Trash directory from Public and Community Data listings
+    pattern = ''
+    if scheme == 'public' or scheme == 'community':
+        pattern = 'regex:^(?!\.Trash)'
+    return op(client, system, pattern, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
 
 
 def tapis_post_handler(client, scheme, system,
