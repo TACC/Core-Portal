@@ -15,7 +15,7 @@ export function isOutputState(status) {
 export function getArchivePath(job) {
   return `${job.archiveSystemId}${
     job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
+  }${job.archiveSystemDir === '/.' ? '' : job.archiveSystemDir}`;
 }
 
 export function getExecutionPath(job) {
