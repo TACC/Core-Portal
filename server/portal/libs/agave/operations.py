@@ -41,9 +41,9 @@ def listing(client, system, path, pattern='', offset=0, limit=100, *args, **kwar
     """
     raw_listing = client.files.listFiles(systemId=system,
                                          path=path,
+                                         pattern=pattern,
                                          offset=int(offset),
                                          limit=int(limit),
-                                         pattern=pattern,
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     try:
