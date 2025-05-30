@@ -22,7 +22,7 @@ def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id
     # Exclude .Trash directory from Public and Community Data listings
     pattern = ''
     if scheme == 'public' or scheme == 'community':
-        pattern = 'regex:^(?!\.Trash)'
+        pattern = 'regex:^(?!.Trash)'
     return op(client, system, pattern, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
 
 
