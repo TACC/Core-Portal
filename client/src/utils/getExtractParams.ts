@@ -10,7 +10,7 @@ export const getExtractParams = (
   defaultAllocation: string
 ) => {
   const inputFile = `tapis://${file.system}/${file.path}`;
-  const archivePath = `${file.path.slice(0, -file.name.length)}`;
+  const archivePath = `${file.path.slice(0, -file.name.length)}` || '.';  // set archive path to root if no enclosing folder;
   return {
     fileInputs: [
       {

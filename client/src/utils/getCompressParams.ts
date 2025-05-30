@@ -15,7 +15,7 @@ export const getCompressParams = (
     },
   ];
 
-  let archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
+  let archivePath = `${files[0].path.slice(0, -files[0].name.length)}` || '.';  // set archive path to root if no enclosing folder 
   let archiveSystem = files[0].system;
 
   return {
