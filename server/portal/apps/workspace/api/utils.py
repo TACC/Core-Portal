@@ -1,6 +1,8 @@
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from tapipy.errors import BaseTapyException, UnauthorizedError
+from tapipy.tapis import TapisResult
 import json
+from typing import Union
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,6 +15,18 @@ def get_tapis_timeout_error_messages(job_id):
     ]
 
 
+def _get_job_notes(job_notes: Union[str, TapisResult]):
+    """
+    Normalize `job.notes` as in older version of Tapis `notes` is a JSON-formatted string
+    but this is being changed to a TapisResult object. Once all tenants are migrated to
+    return structured (non-string) 'notes', this can be
+    removed
+    """
+    if isinstance(job_notes, str):
+        return json.loads(job_notes)
+    return job_notes
+
+
 def check_job_for_timeout(job):
     """
     Check an interactive job for timeout status and mark it as finished
@@ -20,7 +34,7 @@ def check_job_for_timeout(job):
     """
 
     if (hasattr(job, 'notes')):
-        notes = json.loads(job.notes)
+        notes = _get_job_notes(job.notes)
 
         is_failed = job.status == 'FAILED'
         is_interactive = notes.get('isInteractive', False)
