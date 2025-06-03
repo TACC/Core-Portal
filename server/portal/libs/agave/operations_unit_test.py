@@ -23,7 +23,7 @@ class TestOperations(TestCase):
         })]
 
         client.files.listFiles.return_value = mock_tapis_listing
-        ls = listing(client, 'test.system', '/path/to/file', '', 1)
+        ls = listing(client, 'test.system', '/path/to/file', 1)
 
         client.files.listFiles.assert_called_with(systemId='test.system',
                                                   path='/path/to/file',

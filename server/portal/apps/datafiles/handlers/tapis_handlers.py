@@ -23,7 +23,6 @@ def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id
     if operation == 'listing' and scheme in ('public', 'community'):
         kwargs['pattern'] = 'regex:^(?!.Trash)'
     return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
-    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
 
 
 def tapis_post_handler(client, scheme, system,
