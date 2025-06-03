@@ -33,7 +33,7 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
     }
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is False
@@ -67,7 +67,7 @@ def test_push_keys_required_if_not_credentials_ensured_credentials_ok(
     }
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is False
@@ -94,7 +94,7 @@ def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
     mock_tapis_client.systems.getSystem.return_value = tapis_system
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is True
