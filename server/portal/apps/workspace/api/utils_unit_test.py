@@ -17,10 +17,12 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
         "id": "test_system",
         "host": "frontera.tacc.utexas.edu",
         "defaultAuthnMethod": "TMS_KEYS",
+        "effectiveUserId": authenticated_user.username,
     }
     tapis_system = TapisResult(**system)
 
     mock_tapis_client.systems.checkUserCredential.side_effect = UnauthorizedError()
+    mock_tapis_client.files.listFiles.side_effect = UnauthorizedError()
     mock_tapis_client.systems.getSystem.return_value = tapis_system
     mock_tapis_client.systems.createUserCredential.return_value = {
         "result": None,
@@ -33,7 +35,7 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
     }
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is False
@@ -67,7 +69,7 @@ def test_push_keys_required_if_not_credentials_ensured_credentials_ok(
     }
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is False
@@ -87,14 +89,16 @@ def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
         "id": "test_system",
         "host": "frontera.tacc.utexas.edu",
         "defaultAuthnMethod": "PKI_KEYS",
+        "effectiveUserId": authenticated_user.username,
     }
     tapis_system = TapisResult(**system)
 
     mock_tapis_client.systems.checkUserCredential.side_effect = UnauthorizedError()
+    mock_tapis_client.files.listFiles.side_effect = UnauthorizedError()
     mock_tapis_client.systems.getSystem.return_value = tapis_system
 
     result = push_keys_required_if_not_credentials_ensured(
-        "test_system", authenticated_user
+        authenticated_user, "test_system", "/"
     )
 
     assert result is True
