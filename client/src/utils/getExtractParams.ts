@@ -1,3 +1,4 @@
+import { getParentPath } from './jobsUtil';
 import { TTapisFile } from './types';
 
 export const getExtractParams = (
@@ -10,7 +11,7 @@ export const getExtractParams = (
   defaultAllocation: string
 ) => {
   const inputFile = `tapis://${file.system}/${file.path}`;
-  const archivePath = `${file.path.slice(0, -file.name.length)}` || '.'; // set archive path to root if no enclosing folder;
+  const archivePath = getParentPath(file);
   return {
     fileInputs: [
       {

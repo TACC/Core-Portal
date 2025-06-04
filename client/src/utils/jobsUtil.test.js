@@ -5,6 +5,7 @@ import {
   getExecutionPath,
   isTerminalState,
   isOutputState,
+  getParentPath,
 } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
@@ -56,5 +57,15 @@ describe('jobsUtil', () => {
     expect(isOutputState('FINISHED')).toEqual(true);
     expect(isOutputState('STOPPED')).toEqual(false);
     expect(isOutputState('RUNNING')).toEqual(false);
+  });
+
+  it('returns directory path when file is in a folder', () => {
+    const file = { name: 'test.txt', path: 'outerTestFolder/innerTestFolder/test.txt'};
+    expect(getParentPath(file)).toEqual('outerTestFolder/innerTestFolder/');
+  });
+
+  it("returns '.' when file is at root of system", () => {
+    const file = { name: 'test.txt', path: 'test.txt'};
+    expect(getParentPath(file)).toEqual('.');
   });
 });

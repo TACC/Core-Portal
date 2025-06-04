@@ -1,3 +1,4 @@
+import { getParentPath } from './jobsUtil';
 import { TPortalSystem, TTapisFile } from './types';
 
 export const getCompressParams = (
@@ -15,7 +16,7 @@ export const getCompressParams = (
     },
   ];
 
-  let archivePath = `${files[0].path.slice(0, -files[0].name.length)}` || '.'; // set archive path to root if no enclosing folder
+  let archivePath = getParentPath(files[0]);
   let archiveSystem = files[0].system;
 
   return {
