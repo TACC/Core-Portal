@@ -78,6 +78,7 @@ def test_ignore_missing_corral(client, authenticated_user, mocker, monkeypatch, 
 def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
     mock_tapis_get = mocker.patch('portal.apps.datafiles.views.tapis_get_handler')
     mock_tapis_client.systems.checkUserCredential.side_effect = UnauthorizedError()
+    mock_tapis_client.files.listFiles.side_effect = UnauthorizedError()
     mock_error = InternalServerError()
     monkeypatch.setattr(
         mock_error, 'response', MagicMock(
