@@ -96,6 +96,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     system = {
         'host': 'frontera.tacc.utexas.edu',
         'defaultAuthnMethod': 'PKI_KEYS',
+        "effectiveUserId": authenticated_user.username,
     }
 
     mock_tapis_client.systems.getSystem.return_value = TapisResult(**system)

@@ -17,6 +17,7 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
         "id": "test_system",
         "host": "frontera.tacc.utexas.edu",
         "defaultAuthnMethod": "TMS_KEYS",
+        "effectiveUserId": authenticated_user.username,
     }
     tapis_system = TapisResult(**system)
 
@@ -88,6 +89,7 @@ def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
         "id": "test_system",
         "host": "frontera.tacc.utexas.edu",
         "defaultAuthnMethod": "PKI_KEYS",
+        "effectiveUserId": authenticated_user.username,
     }
     tapis_system = TapisResult(**system)
 
