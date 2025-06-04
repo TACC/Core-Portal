@@ -60,12 +60,15 @@ describe('jobsUtil', () => {
   });
 
   it('returns directory path when file is in a folder', () => {
-    const file = { name: 'test.txt', path: 'outerTestFolder/innerTestFolder/test.txt'};
+    const file = {
+      name: 'test.txt',
+      path: 'outerTestFolder/innerTestFolder/test.txt',
+    };
     expect(getParentPath(file)).toEqual('outerTestFolder/innerTestFolder/');
   });
 
   it("returns '.' when file is at root of system", () => {
-    const file = { name: 'test.txt', path: 'test.txt'};
+    const file = { name: 'test.txt', path: 'test.txt' };
     expect(getParentPath(file)).toEqual('.');
   });
 });
