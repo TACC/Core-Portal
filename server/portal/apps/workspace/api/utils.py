@@ -46,11 +46,12 @@ def should_push_keys(system_def: object, username) -> bool:
     """
     If defaultAuthnMethod is not TMS_KEYS, return true. Otherwise, false.
     """
-    return (not is_tms_system(system_def)) and \
-        (system_def.get("effectiveUserId") == username)
+    return (not is_tms_system(system_def)) and (
+        system_def.get("effectiveUserId") == username
+    )
 
 
-def system_credentials_ok(user: object, system_id: str, path: str) -> bool:
+def system_credentials_ok(user: object, system_id: str, path: str = "/") -> bool:
     """
     Check if user has system credentials on system.
     """
@@ -61,10 +62,10 @@ def system_credentials_ok(user: object, system_id: str, path: str) -> bool:
     except UnauthorizedError:
         # If a system does not have a static effectiveUserId, it may not have a user credential.
         # In this case, we can test access to the system with a file listing.
-        return test_system_access(user, system_id, path)
+        return test_system_access_ok(user, system_id, path)
 
 
-def test_system_access(user: object, system_id: str, path: str) -> bool:
+def test_system_access_ok(user: object, system_id: str, path: str = "/") -> bool:
     """
     Test system access by attempting to list files in the root directory.
     """
@@ -76,12 +77,16 @@ def test_system_access(user: object, system_id: str, path: str) -> bool:
         return False
     except BaseTapyException as e:
         logger.exception(
-            "System access check failed for user: %s on system: %s", user.username, system_id
+            "System access check failed for user: %s on system: %s",
+            user.username,
+            system_id,
         )
         raise e
 
 
-def push_keys_required_if_not_credentials_ensured(user: object, system_id: str, path: str) -> bool:
+def push_keys_required_if_not_credentials_ensured(
+    user: object, system_id: str, path: str = "/"
+) -> bool:
     """
     Check if system credentials are required to be pushed by the user on the system, or attempt
     to create credentials if they are not present.
@@ -89,7 +94,11 @@ def push_keys_required_if_not_credentials_ensured(user: object, system_id: str, 
     tapis = user.tapis_oauth.client
 
     if not system_credentials_ok(user, system_id, path):
-        logger.info("user: %s is missing system credentials on system: %s", user.username, system_id)
+        logger.info(
+            "user: %s is missing system credentials on system: %s",
+            user.username,
+            system_id,
+        )
         system_def = tapis.systems.getSystem(systemId=system_id)
         if should_push_keys(system_def, user.username):
             logger.info(
@@ -104,8 +113,9 @@ def push_keys_required_if_not_credentials_ensured(user: object, system_id: str, 
                 tapis, user.username, system_id, createTmsKeys=True
             )
         else:
-            raise ApiException(f"User {user.username} does not have system \
-                               credentials and cannot push keys or create \
-                               credentials for system {system_id}.")
+            raise ApiException(
+                f"User {user.username} does not have system credentials and \
+                    cannot push keys or create credentials for system {system_id}."
+            )
 
     return False
