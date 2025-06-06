@@ -12,10 +12,14 @@ export function isOutputState(status) {
   return isTerminalState(status) && status !== 'CANCELLED';
 }
 
+export function getParentPath(file) {
+  return `${file.path.slice(0, -file.name.length)}` || '.'; // set parent path to root if no enclosing folder
+}
+
 export function getArchivePath(job) {
   return `${job.archiveSystemId}${
     job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
+  }${job.archiveSystemDir === '/.' ? '' : job.archiveSystemDir}`;
 }
 
 export function getExecutionPath(job) {
