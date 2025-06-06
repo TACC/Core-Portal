@@ -6,6 +6,7 @@ import {
   isTerminalState,
   isOutputState,
   getParentPath,
+  getArchivePath,
 } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
@@ -70,5 +71,31 @@ describe('jobsUtil', () => {
   it("returns '.' when file is at root of system", () => {
     const file = { name: 'test.txt', path: 'test.txt' };
     expect(getParentPath(file)).toEqual('.');
+  });
+});
+
+describe('getArchivePath', () => {
+  it('handles various archiveSystemDir formats correctly', () => {
+    expect(
+      getArchivePath({
+        archiveSystemId: 'sys1',
+        archiveSystemDir: '/path/to/dir',
+      })
+    ).toEqual('sys1/path/to/dir');
+
+    expect(
+      getArchivePath({
+        archiveSystemId: 'sys2',
+        archiveSystemDir: 'relative/path',
+      })
+    ).toEqual('sys2/relative/path');
+
+    expect(
+      getArchivePath({ archiveSystemId: 'sys3', archiveSystemDir: '/.' })
+    ).toEqual('sys3');
+
+    expect(
+      getArchivePath({ archiveSystemId: 'sys4', archiveSystemDir: '' })
+    ).toEqual('sys4/');
   });
 });
