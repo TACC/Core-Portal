@@ -24,6 +24,11 @@ const jobDetailDisplayFixture = {
       label: 'Sleep Time',
       value: '1',
     },
+    {
+      label: '_mainProgram',
+      id: '_mainProgram',
+      value: 'OpenSeesSP',
+    },
   ],
   queue: 'development',
   systemName: 'Frontera',

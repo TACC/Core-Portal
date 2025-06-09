@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import uuid
 import logging
+from hashlib import sha256
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
@@ -26,6 +27,8 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
     from portal.settings import settings_custom
 else:
     from portal.settings import settings_default as settings_custom
+
+DEBUG = settings_custom._DEBUG
 
 FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
@@ -44,10 +47,13 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
-# Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
-CSRF_COOKIE_SECURE = True
-# Prevent the cookie's value from being read or set by client-side JavaScript.
-CSRF_COOKIE_HTTPONLY = True
+
+if not DEBUG:
+    # Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
+    CSRF_COOKIE_SECURE = True
+    # Prevent the cookie's value from being read or set by client-side JavaScript.
+    CSRF_COOKIE_HTTPONLY = True
+
 #
 CSRF_COOKIE_SAMESITE = 'Strict'
 # for local testing
@@ -246,8 +252,6 @@ FIXTURE_DIRS = [
 SETTINGS: LOCAL
 """
 
-DEBUG = settings_custom._DEBUG
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -300,6 +304,8 @@ def portal_filter(record):
     """Log filter that adds portal-specific vars to each entry"""
 
     record.logGuid = uuid.uuid4().hex
+    if record.sessionId is not None:
+        record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     record.portal = PORTAL_NAMESPACE
     record.tenant = TAPIS_TENANT_BASEURL
     return True
@@ -539,7 +545,6 @@ TACC_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-KEY_SERVICE_TOKEN = getattr(settings_secret, "_KEY_SERVICE_TOKEN", '')
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
     settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []

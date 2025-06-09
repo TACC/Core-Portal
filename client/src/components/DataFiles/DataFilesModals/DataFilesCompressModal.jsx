@@ -80,7 +80,8 @@ const DataFilesCompressModal = () => {
           const handleSelectChange = (e) => {
             setFieldValue('compressionType', e.target.value);
           };
-          const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
+          const formDisabled =
+            status.type === 'RUNNING' || status.type === 'SUCCESS';
           const buttonDisabled =
             formDisabled || !isValid || values.filenameDisplay === '';
           return (
@@ -89,6 +90,7 @@ const DataFilesCompressModal = () => {
                 <FormField
                   label="Compressed File Name"
                   name="filenameDisplay"
+                  id="filenameDisplay"
                   disabled={formDisabled}
                   addonType="append"
                   addon={
@@ -112,15 +114,18 @@ const DataFilesCompressModal = () => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+                <InlineMessage
+                  isVisible={status.type === 'SUCCESS'}
+                  type="success"
+                >
                   Successfully started compress job
                 </InlineMessage>
                 <Button
                   disabled={buttonDisabled}
-                  isLoading={status === 'RUNNING'}
+                  isLoading={status.type === 'RUNNING'}
                   type="primary"
-                  size={status === 'ERROR' ? 'long' : 'medium'}
-                  iconNameBefore={status === 'ERROR' ? 'alert' : null}
+                  size={status.type === 'ERROR' ? 'long' : 'medium'}
+                  iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
                   attr="submit"
                 >
                   Compress
