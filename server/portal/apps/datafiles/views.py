@@ -143,7 +143,7 @@ class TapisFilesView(BaseApiView):
                 ):
                     raise PermissionDenied from e
 
-                if push_keys_required_if_not_credentials_ensured(system, request.user):
+                if push_keys_required_if_not_credentials_ensured(request.user, system, path):
                     # If a user needs to push keys, return a response specifying the system
                     error_json = e.response.json()
                     error_json["system"] = system_def
