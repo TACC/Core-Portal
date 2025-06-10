@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import uuid
 import logging
+from hashlib import sha256
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
@@ -316,6 +317,8 @@ def portal_filter(record):
     """Log filter that adds portal-specific vars to each entry"""
 
     record.logGuid = uuid.uuid4().hex
+    if record.sessionId is not None:
+        record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     record.portal = PORTAL_NAMESPACE
     record.tenant = TAPIS_TENANT_BASEURL
     return True

@@ -109,7 +109,7 @@ class AppsView(BaseApiView):
             # Check if default storage system needs keys pushed
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
                 system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
-                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
+                if push_keys_required_if_not_credentials_ensured(request.user, system_id, '/'):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     data['systemNeedsKeys'] = True
                     data['pushKeysSystem'] = system_def
@@ -378,7 +378,7 @@ class JobsView(BaseApiView):
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
-                if push_keys_required_if_not_credentials_ensured(system_id, request.user):
+                if push_keys_required_if_not_credentials_ensured(request.user, system_id):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     return JsonResponse(
                         {

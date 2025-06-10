@@ -6,6 +6,7 @@
 import json
 import logging
 from django.http import HttpRequest, JsonResponse
+from hashlib import sha256
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
@@ -168,7 +169,8 @@ class ProjectsApiView(BaseApiView):
             initialize_project_graph(project_meta.project_id)
 
         client = request.user.tapis_oauth.client
-        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number, tapis_tracking_id=f"portals.{request.session.session_key}")
+        session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
+        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number, tapis_tracking_id=f"portals.{session_key_hash}")
 
         # Upload cover image to media folder
         if cover_image: 

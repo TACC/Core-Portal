@@ -1,5 +1,6 @@
 import json
 import logging
+from hashlib import sha256
 from portal.apps.users.utils import get_allocations
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
@@ -120,8 +121,9 @@ class TapisFilesView(BaseApiView):
                                  'filePath': path,
                                  'query': request.GET.dict()}
                          })
+            session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
             response = tapis_get_handler(
-                client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", **request.GET.dict())
+                client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", **request.GET.dict())
 
             if operation in NOTIFY_ACTIONS:
                 notify(
@@ -145,7 +147,7 @@ class TapisFilesView(BaseApiView):
                 ):
                     raise PermissionDenied from e
 
-                if push_keys_required_if_not_credentials_ensured(system, request.user):
+                if push_keys_required_if_not_credentials_ensured(request.user, system, path):
                     # If a user needs to push keys, return a response specifying the system
                     error_json = e.response.json()
                     error_json["system"] = system_def
@@ -156,13 +158,14 @@ class TapisFilesView(BaseApiView):
                     )
 
                 # If the user has valid system credentials, retry the request
+                session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
                 response = tapis_get_handler(
                     client,
                     scheme,
                     system,
                     path,
                     operation,
-                    tapis_tracking_id=f"portals.{request.session.session_key}",
+                    tapis_tracking_id=f"portals.{session_key_hash}",
                     **request.GET.dict(),
                 )
 
@@ -202,7 +205,8 @@ class TapisFilesView(BaseApiView):
                                  'body': body,
                              }
                          })
-            response = tapis_put_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body=body)
+            session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
+            response = tapis_put_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", body=body)
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -235,8 +239,8 @@ class TapisFilesView(BaseApiView):
                                  'path': path,
                                  'body': request.POST.dict()
                              }})
-
-            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{request.session.session_key}")
+            session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
+            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
