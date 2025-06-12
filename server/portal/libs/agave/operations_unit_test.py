@@ -27,6 +27,7 @@ class TestOperations(TestCase):
 
         client.files.listFiles.assert_called_with(systemId='test.system',
                                                   path='/path/to/file',
+                                                  pattern='',
                                                   offset=1,
                                                   limit=100,
                                                   headers={'X-Tapis-Tracking-ID': ''})
