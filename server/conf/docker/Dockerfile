@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye AS python-base
+FROM python:3.12-slim AS python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=2.1.1 \
+ENV POETRY_VERSION=2.1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     PYSETUP_PATH="/opt/pysetup" \
