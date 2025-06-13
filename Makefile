@@ -3,9 +3,9 @@ DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
 DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose > /dev/null; then echo "docker-compose"; else echo "docker compose"; fi)
-NGROK_ENV_FILE = ./conf/env_files/ngrok.env
+NGROK_ENV_FILE = ./server/conf/env_files/ngrok.env
 ifeq ("$(wildcard $(NGROK_ENV_FILE))","")
-    NGROK_ENV_FILE = ./conf/env_files/ngrok.sample.env
+    NGROK_ENV_FILE = ./server/conf/env_files/ngrok.sample.env
 endif
 
 ####
