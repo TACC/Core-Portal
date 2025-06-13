@@ -170,3 +170,6 @@ portal_crypt.key
 
 # vim stuff
 *.swp
+
+# ngrok
+ngrok.env

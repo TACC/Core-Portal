@@ -14,7 +14,7 @@ def webhook_url():
         callback="portal.apps.webhooks.views_unit_test.MockCallback",
         callback_data={"key": "value"}
     )
-    yield webhook_url[len(settings.WH_BASE_URL):]
+    yield webhook_url[len(settings.VANITY_BASE_URL):]
 
 
 class MockCallback(WebhookCallback):

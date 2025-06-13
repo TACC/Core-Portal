@@ -389,8 +389,12 @@ class JobsView(BaseApiView):
                     )
 
             if settings.DEBUG:
-                wh_base_url = settings.WH_BASE_URL + reverse('webhooks:interactive_wh_handler')
-                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+                wh_base_url = (
+                    settings.get("NGROK_DOMAIN") or settings.get("WH_BASE_URL", "")
+                ) + reverse("webhooks:interactive_wh_handler")
+                jobs_wh_url = (
+                    settings.get("NGROK_DOMAIN") or settings.get("WH_BASE_URL", "")
+                ) + reverse("webhooks:jobs_wh_handler")
             else:
                 wh_base_url = request.build_absolute_uri(reverse('webhooks:interactive_wh_handler'))
                 jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
