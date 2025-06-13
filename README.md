@@ -117,7 +117,7 @@ After you clone the repository locally, there are several configuration steps re
     make build
 OR
 
-    docker-compose -f ./server/conf/docker/docker-compose.yml build
+    docker compose -f ./server/conf/docker/docker-compose.yml build
 
 
 #### Start the development environment:
