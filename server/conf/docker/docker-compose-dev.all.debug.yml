@@ -66,6 +66,12 @@ services:
       - POSTGRES_USER=postgresadmin
       - POSTGRES_DB=taccsite
       - PGDATA=/var/lib/postgresql/data/portal
+  docs:
+    image: taccwma/frontera-docs:latest-master
+    volumes:
+      - ../../docs:/docs/site
+    command: ["mkdocs", "build"]
+    container_name: frontera_docs
 
   nginx:
     image: nginx:stable
@@ -143,8 +149,8 @@ services:
 
   ngrok:
     image: ngrok/ngrok:latest
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    env_file:
+      - path: ../env_files/ngrok.env
     command:
       - "http"
       - --url=${NGROK_DOMAIN}
