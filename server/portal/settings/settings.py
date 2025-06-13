@@ -634,11 +634,14 @@ PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_US
 VANITY_BASE_URL = getattr(
     settings_custom,
     "_VANITY_BASE_URL",
-    "_WH_BASE_URL",
-    (
-        f"https://{os.environ.get('NGINX_SERVER_NAME')}"
-        if os.environ.get("NGINX_SERVER_NAME")
-        else ""
+    getattr(
+        settings_custom,
+        "_WH_BASE_URL",
+        (
+            f"https://{os.environ.get('NGINX_SERVER_NAME')}"
+            if os.environ.get("NGINX_SERVER_NAME")
+            else ""
+        ),
     ),
 )
 
