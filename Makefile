@@ -2,7 +2,6 @@ DOCKERHUB_REPO := $(shell cat ./docker_repo.var)
 DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
-DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose > /dev/null; then echo "docker-compose"; else echo "docker compose"; fi)
 
 ####
 # `DOCKER_IMAGE_BRANCH` tag is the git tag for the commit if it exists, else the branch on which the commit exists
@@ -10,7 +9,7 @@ DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --ta
 
 .PHONY: build
 build:
-	$(DOCKER_COMPOSE_CMD) -f ./server/conf/docker/docker-compose.yml build
+	docker compose -f ./server/conf/docker/docker-compose.yml build
 
 .PHONY: build-full
 build-full:
@@ -29,12 +28,12 @@ publish-latest:
 
 .PHONY: start
 start:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: stop-full
 stop-v:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
+	docker compose -f server/conf/docker/docker-compose-dev.all.debug.yml down -v

@@ -124,7 +124,7 @@ OR
     make start
 OR
 
-    docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
+    docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
 #### Install client-side dependencies and bundle code:
