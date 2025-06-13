@@ -11,7 +11,7 @@ _DEBUG = True
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
 
-VANITY_BASE_URL = 'https://cep.test'
+_VANITY_BASE_URL = 'https://cep.test'
 
 # To authenticate a user with the CMS after Portal login,
 # set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
