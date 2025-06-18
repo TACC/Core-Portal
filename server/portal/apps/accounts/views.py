@@ -8,6 +8,8 @@ from django.forms.models import model_to_dict
 from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
@@ -15,8 +17,35 @@ from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
 from portal.utils.decorators import handle_uncaught_exceptions
+from portal.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
+
+
+class LogoutView(DjangoLogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        # Get the token from the request 
+        token = TapisOAuthToken.access_token
+        if token:
+            logger.info('???'*999)
+            logger.info(vars(token))
+            # logger.info(request.user.tapis_oauth.access_token)
+            # self.revoke_token(token)
+
+        # Log out the user
+        logout(request)
+
+        # Return response
+        return JsonResponse({'detail': 'Logged out and token revoked'}, status=200)
+
+    def revoke_token(self, token):
+        revoke_endpoint = settings.TOKEN_REVOKE_ENDPOINT  # e.g., 'https://auth.example.com/revoke'
+        try:
+            response = requests.post(revoke_endpoint, data={'token': token})
+            response.raise_for_status()
+        except requests.RequestException as e:
+            # Optionally log the error
+            print(f"Token revocation failed: {e}")
 
 
 def accounts(request):

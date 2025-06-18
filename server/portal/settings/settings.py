@@ -205,6 +205,7 @@ IMPERSONATE = {
 LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
 LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
 LOGIN_URL = '/auth/tapis/'
+TOKEN_REVOKE_ENDPOINT = '/v3/tokens/revoke'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
