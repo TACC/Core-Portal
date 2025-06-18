@@ -3,7 +3,7 @@ import { React, useEffect } from 'react';
 import { LoadingSpinner, InlineMessage } from '_common';
 import { useExternalStyles } from 'hooks/datafiles';
 
-function DataTable() {
+function DataGallery() {
   const { hostRef, styleStatus, renderWithStyles } = useExternalStyles();
 
   useEffect(() => {
@@ -31,4 +31,4 @@ function DataTable() {
   return <div ref={hostRef}></div>;
 }
 
-export default DataTable;
+export default DataGallery;

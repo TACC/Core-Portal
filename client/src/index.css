@@ -1,4 +1,6 @@
-@import url('./styles/global.css');
+@import url('./styles/global.css') layer(project);
+
+@layer project {
 
 /*
   Sectioning Root
@@ -102,4 +104,6 @@ body > .content {
   right: 0;
   top: 0;
   bottom: 0;
+}
+
 }

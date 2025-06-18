@@ -1,1 +1,1 @@
-export { default } from './DataFilesTest';
+export { default } from './DataFilesTestStyleConflict';
