@@ -1,24 +1,31 @@
 import { React, useEffect } from 'react';
 
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner, InlineMessage } from '_common';
 import { useExternalStyles } from 'hooks/datafiles';
 
 function DataTable() {
-  const { hostRef, areStylesLoaded, renderWithStyles } = useExternalStyles();
+  const { hostRef, styleStatus, renderWithStyles } = useExternalStyles();
 
   useEffect(() => {
-    if (areStylesLoaded) {
+    // IDEA: How about change these to single value like `isReadyToRenderWithStyles`?
+    if (hostRef.current && styleStatus.completed) {
       renderWithStyles(
         <div>
           <h2>Browse Datasets</h2>
+          {styleStatus.failed.length > 0 && (
+            <InlineMessage type="warn">
+              Some styles failed to load. UI may look incorrect.
+            </InlineMessage>
+          )}
           <p>Sample content.</p>
         </div>
       );
     }
-  }, [areStylesLoaded, renderWithStyles]);
+  }, [hostRef.current, styleStatus, renderWithStyles]);
 
-  if (!areStylesLoaded) {
-    return <LoadingSpinner />;
+
+  if (!styleStatus.completed) {
+    return <div ref={hostRef}><LoadingSpinner /></div>;
   }
 
   return <div ref={hostRef}></div>;
