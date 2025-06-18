@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const DEFAULT_STYLESHEETS = [
@@ -16,10 +16,10 @@ function useExternalStyles(externalStylesheets = DEFAULT_STYLESHEETS) {
     completed: false
   });
 
-  useEffect(() => {
+  function initializeShadowRoot() {
     if (!hostRef.current) {
       console.warn('No hostRef.current found');
-      return;
+      return null;
     }
 
     if (!shadowRootRef.current) {
@@ -28,37 +28,73 @@ function useExternalStyles(externalStylesheets = DEFAULT_STYLESHEETS) {
           hostRef.current.attachShadow({ mode: 'open' });
       } catch (error) {
         console.error('Failed to create shadow root:', error);
-        return;
+        return null;
       }
     }
 
-    const totalStylesheets = externalStylesheets.length;
-    
-    const checkAllComplete = (loaded, failed) => {
-      if (loaded.length + failed.length === totalStylesheets) {
-        console.log('Style loading complete:', {
-          succeeded: loaded,
-          failed: failed
-        });
-        setStyleStatus({
-          loaded,
-          failed,
-          completed: true
-        });
-      }
-    };
+    return shadowRootRef.current;
+  }
 
+  function cleanupDOM() {
+    if (shadowRootRef.current) {
+      const container = shadowRootRef.current.querySelector('div');
+      if (container) container.remove();
+      const links = shadowRootRef.current.querySelectorAll('link');
+      links.forEach(link => link.remove());
+    }
+  }
+
+  function cleanupReact() {
+    if (reactRootRef.current) {
+      reactRootRef.current.unmount();
+      reactRootRef.current = null;
+    }
+    
+    setStyleStatus({
+      loaded: [],
+      failed: [],
+      completed: false
+    });
+  }
+
+  useLayoutEffect(() => {
+    return cleanupDOM;
+  }, []);
+
+  useEffect(() => {
+    const shadowRoot = initializeShadowRoot();
+    if (!shadowRoot) return;
+
+    loadStylesheets(shadowRoot);
+
+    return cleanupReact;
+  }, [externalStylesheets]);
+
+  function loadStylesheets(shadowRoot) {
+    const totalStylesheets = externalStylesheets.length;
     if (totalStylesheets === 0) {
       setStyleStatus({ loaded: [], failed: [], completed: true });
       return;
     }
 
-    // Remove any existing stylesheets before adding new ones
-    const existingLinks = shadowRootRef.current.querySelectorAll('link');
+    const existingLinks = shadowRoot.querySelectorAll('link');
     existingLinks.forEach(link => link.remove());
 
     const loaded = [];
     const failed = [];
+
+    function checkAllComplete() {
+      if (loaded.length + failed.length === totalStylesheets) {
+        setStyleStatus({
+          loaded,
+          failed,
+          completed: true
+        });
+        if (failed.length > 0) {
+          console.warn('Some stylesheets failed to load:', failed);
+        }
+      }
+    }
 
     externalStylesheets.forEach(url => {
       const link = document.createElement('link');
@@ -66,60 +102,32 @@ function useExternalStyles(externalStylesheets = DEFAULT_STYLESHEETS) {
       link.href = url;
       link.onload = () => {
         loaded.push(url);
-        checkAllComplete(loaded, failed);
+        checkAllComplete();
       };
-      link.onerror = (error) => {
-        console.error(`Failed to load stylesheet: ${url}`, error);
+      link.onerror = () => {
         failed.push(url);
-        checkAllComplete(loaded, failed);
+        checkAllComplete();
       };
-      shadowRootRef.current.appendChild(link);
+      shadowRoot.appendChild(link);
     });
+  }
 
-    return () => {
-      if (reactRootRef.current) {
-        // Unmount the React root first
-        reactRootRef.current.unmount();
-        reactRootRef.current = null;
-      }
-
-      // Clean up stylesheets
-      const links = shadowRootRef.current?.querySelectorAll('link');
-      links?.forEach(link => link.remove());
-
-      // Reset the status
-      setStyleStatus({
-        loaded: [],
-        failed: [],
-        completed: false
-      });
-    };
-  }, [externalStylesheets]);
-
-  const renderWithStyles = (children) => {
-    if (!shadowRootRef.current) {
+  function renderWithStyles(children) {
+    const shadowRoot = shadowRootRef.current;
+    if (!shadowRoot) {
       console.warn('Cannot render: no shadow root');
       return;
     }
 
     if (!reactRootRef.current) {
-      // Clean up any existing container
-      const existingContainer = shadowRootRef.current.querySelector('div');
-      if (existingContainer) {
-        existingContainer.remove();
-      }
-
       const container = document.createElement('div');
-      shadowRootRef.current.appendChild(container);
+      shadowRoot.appendChild(container);
       reactRootRef.current = createRoot(container);
     }
 
-    if (styleStatus.failed.length > 0) {
-      console.warn('Rendering with missing styles:', styleStatus.failed);
-    }
-
     reactRootRef.current.render(children);
-  };
+  }
+
 
   return {
     hostRef,
