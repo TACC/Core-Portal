@@ -1,7 +1,4 @@
-import { React, useEffect } from 'react';
-
-import { LoadingSpinner, InlineMessage } from '_common';
-import { useExternalStyles } from 'hooks/datafiles';
+import { React } from 'react';
 
 const externalCSS = `
   @layer mimic-cms.base, mimic-cms.project, mimic-cms.revert;
