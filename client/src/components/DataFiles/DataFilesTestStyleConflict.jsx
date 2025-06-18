@@ -1,5 +1,11 @@
 import { React } from 'react';
 
+const temporaryCSS = `
+  .nav-sidebar {
+    display: none;
+  }
+`;
+
 const externalCSS = `
   @layer mimic-cms.base, mimic-cms.project, mimic-cms.revert;
 
@@ -12,21 +18,14 @@ const externalCSS = `
 `;
 
 const revertCSS = `
-  /* To preserve .nav-sidebar appearance */
-  /* WARNING: Does not make CMS content look exactly correct */
-  /* WARNING: Makes CMS content looks incorrect in a different way */
-  @layer mimic-cms.revert {
-    html,
-    body {
+  @layer mimic-cms {
+    /* To revert Portal styles */
+    #react-root, #react-root * {
       all: revert;
     }
-    body {
-      /* NOTE: Effect is only noticeable if nav-sidebar link text wraps */
-      line-height: var(--bs-body-line-height);
-    }
 
-    .nav-sidebar,
-    .nav-sidebar * {
+    /* To re-apply CMS styles */
+    #mimic-cms, #mimic-cms * {
       all: revert-layer;
     }
   }
@@ -34,6 +33,7 @@ const revertCSS = `
 
 function DataGallery() {
   return (<>
+    <style dangerouslySetInnerHTML={{ __html: temporaryCSS }} />
     <style dangerouslySetInnerHTML={{ __html: externalCSS }} />
     <style dangerouslySetInnerHTML={{ __html: revertCSS }} />
     <div id="mimic-cms">
