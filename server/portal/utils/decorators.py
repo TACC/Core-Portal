@@ -4,6 +4,7 @@
 """
 
 import logging
+import time
 from functools import wraps
 from django.http import JsonResponse
 from portal.utils.jwt_auth import login_user_agave_jwt
@@ -66,3 +67,48 @@ def handle_uncaught_exceptions(message):
                 return JsonResponse({'message': message}, status=500)
         return wrapper
     return _decorator
+
+
+def retry(exc: Exception, tries=4, delay=3, backoff=2, max_time=10 * 60):
+    """
+    A decorator that retries a function call with exponential backoff in case of an exception.
+
+    Note: Pass skip_retry=True to the function to skip the retry logic.
+
+    Args:
+        exc (Exception): The exception to catch and retry on.
+        tries (int, optional): The maximum number of attempts. Defaults to 4.
+        delay (int, optional): The initial delay between retries in seconds. Defaults to 3.
+        backoff (int, optional): The multiplier applied to the delay after each retry. Defaults to 2.
+        max_time (int, optional): The maximum time to retry in seconds. Defaults to 10*60 == 10 minutes.
+
+    Returns:
+        function: A decorator that wraps the function with retry logic.
+
+    Example:
+        @retry(ValueError, tries=3, delay=2, backoff=2, max_time=5*60)
+        def test_function():
+            # function implementation
+    """
+
+    def deco_retry(func):
+
+        @wraps(func)
+        def f_retry(*args, **kwargs):
+            if kwargs.get("skip_retry"):
+                return func(*args, **kwargs)
+            mtries, mdelay, mmax_time = tries, delay, max_time
+            while mtries and mmax_time > 0:
+                try:
+                    return func(*args, **kwargs)
+                except exc:
+                    logger.warning("%s, Retrying in %d seconds...", str(exc), mdelay)
+                    time.sleep(mdelay)
+                    mtries -= 1
+                    mdelay *= backoff
+                    mmax_time -= mdelay
+            return func(*args, **kwargs)
+
+        return f_retry
+
+    return deco_retry

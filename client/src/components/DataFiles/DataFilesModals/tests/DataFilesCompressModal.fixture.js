@@ -1,7 +1,18 @@
+export const compressAppFixture = {
+  definition: {
+    jobAttributes: {
+      description: 'Compress a file or folder for download.',
+      dynamicExecSystem: false,
+      execSystemConstraints: null,
+      execSystemId: 'frontera',
+    },
+  },
+};
+
 const testFileSize1 = 1.5 * 1024 * 1024 * 1024;
 const testFileSize2 = 1 * 1024 * 1024 * 1024;
 
-const DataFilesDownloadMessageModalFixture = {
+const DataFilesCompressModalFixture = {
   files: {
     operationStatus: {
       copy: {},
@@ -43,8 +54,7 @@ const DataFilesDownloadMessageModalFixture = {
         },
         {
           name: 'testFolder',
-          format: 'folder',
-          type: 'dir',
+          type: 'folder',
           path: '/testFolder',
           id: 789,
         },
@@ -63,8 +73,7 @@ const DataFilesDownloadMessageModalFixture = {
       modal: [],
     },
     modals: {
-      copy: true,
-      downloadMessage: true,
+      compress: true,
     },
   },
   workbench: {
@@ -96,4 +105,4 @@ const DataFilesDownloadMessageModalFixture = {
   },
 };
 
-export default DataFilesDownloadMessageModalFixture;
+export default DataFilesCompressModalFixture;

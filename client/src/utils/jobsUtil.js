@@ -12,10 +12,14 @@ export function isOutputState(status) {
   return isTerminalState(status) && status !== 'CANCELLED';
 }
 
+export function getParentPath(file) {
+  return `${file.path.slice(0, -file.name.length)}` || '.'; // set parent path to root if no enclosing folder
+}
+
 export function getArchivePath(job) {
   return `${job.archiveSystemId}${
     job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
+  }${job.archiveSystemDir === '/.' ? '' : job.archiveSystemDir}`;
 }
 
 export function getExecutionPath(job) {
@@ -61,12 +65,10 @@ export function getAllocatonFromDirective(directive) {
  */
 export function getJobDisplayInformation(job, app) {
   const filterHiddenObjects = (objects) =>
-    objects
-      .filter((obj) => {
-        const notes = obj.notes ? JSON.parse(obj.notes) : null;
-        return !notes || !notes.isHidden;
-      })
-      .filter((obj) => !(obj.name || obj.sourceUrl || '').startsWith('_'));
+    objects.filter((obj) => {
+      const notes = obj.notes ? JSON.parse(obj.notes) : null;
+      return !notes || !notes.isHidden;
+    });
 
   const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);

@@ -53,9 +53,6 @@ _TAPIS_CLIENT_KEY = ''
 # Long-live portal admin access token
 _TAPIS_ADMIN_JWT = ''
 
-# Key service token for registering public keys with cloud.corral
-_KEY_SERVICE_TOKEN = ''
-
 ########################
 # RABBITMQ SETTINGS
 ########################
