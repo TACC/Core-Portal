@@ -1,6 +1,6 @@
-@import url('./styles/global.css') layer(project);
+@import url('./styles/global.css') layer(portal);
 
-@layer project {
+@layer portal {
 
 /*
   Sectioning Root

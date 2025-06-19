@@ -1,13 +1,10 @@
 import { React } from 'react';
 
-const temporaryCSS = `
-  .nav-sidebar {
-    display: none;
-  }
-`;
+/* HACK: Temporary; see stylesheet for notes */
+import './DataFilesTestStyleConflict.global.css';
 
 const externalCSS = `
-  @layer mimic-cms.base, mimic-cms.project, mimic-cms.revert;
+  @layer mimic-cms.base, mimic-cms.project;
 
   @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
   @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
@@ -18,25 +15,65 @@ const externalCSS = `
 `;
 
 const revertCSS = `
-  @layer mimic-cms {
-    /* To revert Portal styles */
-    #react-root, #react-root * {
-      all: revert;
-    }
+  /* To restore relevant behavior of Bootstrap grid */
+  .workbench-content .container {
+    /* To use padding from Bootstrap 4 (which CMS still uses) */
+    --bs-gutter-x: 15px;
 
-    /* To re-apply CMS styles */
-    #mimic-cms, #mimic-cms * {
-      all: revert-layer;
-    }
+    /* To undo Workbench.scss */
+    margin-left: revert-layer;
+    max-width: revert-layer;
+  }
+
+  /* To undo generic Portal styles that do not match CMS */
+  body {
+    -webkit-font-smoothing: revert;
+  }
+
+  /* To adjust Portal styles that mimic old Core Styles */
+  .c-button {
+    --max-width: auto;
+  }
+`;
+
+const breadcrumbCSS = `
+  .s-breadcrumbs a:not([href]) {
+    opacity: 1;
+    color: unset;
   }
 `;
 
 function DataGallery() {
-  return (<>
-    <style dangerouslySetInnerHTML={{ __html: temporaryCSS }} />
-    <style dangerouslySetInnerHTML={{ __html: externalCSS }} />
-    <style dangerouslySetInnerHTML={{ __html: revertCSS }} />
-    <div id="mimic-cms">
+  return (
+    <div id="mimic-cms" class="container">
+      <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />
+      <nav class="s-breadcrumbs" id="cms-breadcrumbs">
+        <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+          <li itemscope
+              itemprop="itemListElement"
+              itemtype="https://schema.org/ListItem"
+          >
+            <a href="/" itemprop="item">
+              <span itemprop="name">Index</span>
+            </a>
+            <meta itemprop="position" content="1" />
+          </li>
+          <li itemscope
+              itemprop="itemListElement"
+              itemtype="https://schema.org/ListItem"
+          >
+            <span itemprop="name">Browse Datasets</span>
+            <meta itemprop="position" content="2" />
+          </li>
+        </ol>
+      </nav>
+      <script>
+        const crumbs = document.getElementById('cms-breadcrumbs');
+        const secondLink = crumbs && crumbs.querySelector('li:nth-of-type(2) > a');
+        if (secondLink) secondLink.removeAttribute('href');
+      </script>
+      <style dangerouslySetInnerHTML={{ __html: externalCSS }} />
+      <style dangerouslySetInnerHTML={{ __html: revertCSS }} />
       <div className="o-section">
         <h1>Browse Datasets</h1>
         <div className="c-card-list">
@@ -313,7 +350,7 @@ function DataGallery() {
         </div>
       </div>
     </div>
-  </>);
+  );
 }
 
 export default DataGallery;
