@@ -1,7 +1,7 @@
 import { React } from 'react';
 
 /* HACK: Temporary; see stylesheet for notes */
-import './DataFilesTestStyleConflict.global.css';
+import './DataFilesForDPMWithCMSStyles.global.css';
 
 const externalCSS = `
   @layer mimic-cms.base, mimic-cms.project;
