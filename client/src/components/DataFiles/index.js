@@ -1,1 +1,1 @@
-export { default } from './DataFilesTestStyleConflict';
+export { default } from './DataFilesForDPMWithCMSStyles';
