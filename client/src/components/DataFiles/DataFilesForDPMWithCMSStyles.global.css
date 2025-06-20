@@ -1,0 +1,4 @@
+/* HACK: Should use routes to not render sidebar */
+#react-root:has(#mimic-cms) .nav-sidebar {
+  display: none;
+}

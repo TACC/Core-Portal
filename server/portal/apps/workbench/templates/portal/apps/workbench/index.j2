@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[1] %>">
 {% endblock %}
 {% block content %}
-  <div id="react-root"></div>
+  <main id="react-root"></main>
 {% endblock %}
 {% block scripts %}
   <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
