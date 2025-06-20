@@ -17,6 +17,11 @@ const externalCSS = `
 `;
 
 const revertCSS = `
+  /* To restore CMS body color */
+  .workbench-wrapper {
+    color: var(--global-color-primary--x-dark);
+  }
+
   /* To restore relevant behavior of Bootstrap grid */
   .workbench-content .container {
     /* To use padding from Bootstrap 4 (which CMS still uses) */
