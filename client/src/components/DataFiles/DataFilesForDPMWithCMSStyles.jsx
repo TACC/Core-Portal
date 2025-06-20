@@ -1,5 +1,7 @@
 import { React } from 'react';
 
+import DataFilesForDPMWithCMSStylesBreadcrumbs from './DataFilesForDPMWithCMSStylesBreadcrumbs';
+
 /* HACK: Temporary; see stylesheet for notes */
 import './DataFilesForDPMWithCMSStyles.global.css';
 
@@ -36,42 +38,10 @@ const revertCSS = `
   }
 `;
 
-const breadcrumbCSS = `
-  .s-breadcrumbs a:not([href]) {
-    opacity: 1;
-    color: unset;
-  }
-`;
-
 function DataGallery() {
   return (
     <div id="mimic-cms" className="container">
-      <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />
-      <nav className="s-breadcrumbs" id="cms-breadcrumbs">
-        <ol itemScope itemType="https://schema.org/BreadcrumbList">
-          <li itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
-          >
-            <a href="/" itemProp="item">
-              <span itemProp="name">Index</span>
-            </a>
-            <meta itemProp="position" content="1" />
-          </li>
-          <li itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
-          >
-            <span itemProp="name">Browse Datasets</span>
-            <meta itemProp="position" content="2" />
-          </li>
-        </ol>
-      </nav>
-      <script>
-        const crumbs = document.getElementById('cms-breadcrumbs');
-        const secondLink = crumbs && crumbs.querySelector('li:nth-of-type(2) > a');
-        if (secondLink) secondLink.removeAttribute('href');
-      </script>
+      <DataFilesForDPMWithCMSStylesBreadcrumbs />
       <style dangerouslySetInnerHTML={{ __html: externalCSS }} />
       <style dangerouslySetInnerHTML={{ __html: revertCSS }} />
       <div className="o-section">
