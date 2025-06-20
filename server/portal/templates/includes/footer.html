@@ -1,3 +1,11 @@
 {% load static %}
-<footer class="container-fluid">
+<footer class="container-fluid" id="cms-footer">
 </footer>
+
+<script type="module">
+    import { replaceFromURL } from '/static/site_cms/js/modules/importHTML.js';
+
+    const placeholder = document.getElementById('cms-footer');
+
+    replaceFromURL('/cms/markup/footer', placeholder);
+</script>

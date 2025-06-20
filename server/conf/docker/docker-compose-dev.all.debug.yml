@@ -3,7 +3,7 @@
 ---
 services:
   cms:
-    image: taccwma/core-cms:latest
+    image: taccwma/core-cms:feat-WC-274-serve-footer-markup # e46d45d5
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
