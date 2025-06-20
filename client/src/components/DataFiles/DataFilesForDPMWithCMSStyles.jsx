@@ -45,25 +45,25 @@ const breadcrumbCSS = `
 
 function DataGallery() {
   return (
-    <div id="mimic-cms" class="container">
+    <div id="mimic-cms" className="container">
       <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />
-      <nav class="s-breadcrumbs" id="cms-breadcrumbs">
-        <ol itemscope itemtype="https://schema.org/BreadcrumbList">
-          <li itemscope
-              itemprop="itemListElement"
-              itemtype="https://schema.org/ListItem"
+      <nav className="s-breadcrumbs" id="cms-breadcrumbs">
+        <ol itemScope itemType="https://schema.org/BreadcrumbList">
+          <li itemScope
+              itemProp="itemListElement"
+              itemType="https://schema.org/ListItem"
           >
-            <a href="/" itemprop="item">
-              <span itemprop="name">Index</span>
+            <a href="/" itemProp="item">
+              <span itemProp="name">Index</span>
             </a>
-            <meta itemprop="position" content="1" />
+            <meta itemProp="position" content="1" />
           </li>
-          <li itemscope
-              itemprop="itemListElement"
-              itemtype="https://schema.org/ListItem"
+          <li itemScope
+              itemProp="itemListElement"
+              itemType="https://schema.org/ListItem"
           >
-            <span itemprop="name">Browse Datasets</span>
-            <meta itemprop="position" content="2" />
+            <span itemProp="name">Browse Datasets</span>
+            <meta itemProp="position" content="2" />
           </li>
         </ol>
       </nav>
