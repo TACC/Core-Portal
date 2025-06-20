@@ -3,9 +3,12 @@
 </footer>
 
 <script type="module">
-    import { replaceFromURL } from '/static/site_cms/js/modules/importHTML.js';
-
-    const placeholder = document.getElementById('footer');
-
-    replaceFromURL('/cms/markup/footer', placeholder);
+    // Listen for custom event for CMS styles activation
+    window.addEventListener('cms-styles-activated', async (event) => {
+        if (event.detail && event.detail.includeFooter !== false) {
+            const { replaceFromURL } = await import('/static/site_cms/js/modules/importHTML.js');
+            const placeholder = document.getElementById('footer');
+            replaceFromURL('/cms/markup/footer', placeholder);
+        }
+    });
 </script>

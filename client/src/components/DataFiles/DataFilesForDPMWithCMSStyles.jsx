@@ -1,4 +1,4 @@
-import { React } from 'react';
+import { React, useEffect } from 'react';
 
 import DataFilesForDPMWithCMSStylesBreadcrumbs from './DataFilesForDPMWithCMSStylesBreadcrumbs';
 
@@ -44,6 +44,22 @@ const revertCSS = `
 `;
 
 function DataGallery() {
+  useEffect(() => {
+    // When component mounts, activate CMS styles and footer
+    window.dispatchEvent(new CustomEvent('cms-styles-activated', { 
+      detail: { 
+        source: 'DataFilesForDPMWithCMSStyles',
+        includeFooter: true,
+        includeStyles: true
+      } 
+    }));
+
+    // When component unmounts, deactivate CMS styles
+    return () => {
+      window.dispatchEvent(new CustomEvent('cms-styles-deactivated'));
+    };
+  }, []);
+
   return (
     <div id="mimic-cms" className="container">
       <DataFilesForDPMWithCMSStylesBreadcrumbs />
