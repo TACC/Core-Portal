@@ -4,6 +4,7 @@
 """
 import logging
 import json
+from urllib.parse import urlparse
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -389,21 +390,25 @@ class JobsView(BaseApiView):
                     )
 
             if settings.DEBUG:
-                wh_base_url = (
-                    getattr(settings, "NGROK_DOMAIN", None) or getattr(settings, "WH_BASE_URL", "")
-                ) + reverse("webhooks:interactive_wh_handler")
-                jobs_wh_url = (
-                    getattr(settings, "NGROK_DOMAIN", None) or getattr(settings, "WH_BASE_URL", "")
-                ) + reverse("webhooks:jobs_wh_handler")
+                webhook_url = getattr(settings, "NGROK_DOMAIN", None) or getattr(settings, "WH_BASE_URL", "")
+                parsed_url = urlparse(webhook_url)
+                if not parsed_url.scheme:
+                    webhook_base_url = f"https://{webhook_url}"
+                else:
+                    webhook_base_url = settings.NGROK_DOMAIN
+
+                interactive_wh_url = webhook_base_url + reverse("webhooks:interactive_wh_handler")
+                jobs_wh_url = webhook_base_url + reverse("webhooks:jobs_wh_handler")
             else:
-                wh_base_url = request.build_absolute_uri(reverse('webhooks:interactive_wh_handler'))
-                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+                interactive_wh_url = request.build_absolute_uri(reverse("webhooks:interactive_wh_handler"))
+                jobs_wh_url = request.build_absolute_uri(reverse("webhooks:jobs_wh_handler"))
 
             # Add additional data for interactive apps
             if body.get('isInteractive'):
                 # Add webhook URL environment variable for interactive apps
-                job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + \
-                                                           [{'key': '_INTERACTIVE_WEBHOOK_URL', 'value':  wh_base_url}]
+                job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
+                    "envVariables", []
+                ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": interactive_wh_url}]
 
                 # Make sure $HOME/.tap directory exists for user when running interactive apps
                 system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
