@@ -2,59 +2,10 @@ import { React, useEffect } from 'react';
 
 import DataFilesForDPMWithCMSStylesBreadcrumbs from './DataFilesForDPMWithCMSStylesBreadcrumbs';
 
-/* HACK: Temporary; see stylesheet for notes */
-import './DataFilesForDPMWithCMSStyles.global.css';
-
-const externalCSS = `
-  @layer mimic-cms.base, mimic-cms.project;
-
-  @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
-  @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
-  @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
-
-  @import url(https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/cms.css) layer(mimic-cms);
-  @import url(https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/for-core-styles.css) layer(mimic-cms);
-`;
-
-const revertCSS = `
-  /* To restore CMS body color */
-  .workbench-wrapper {
-    color: var(--global-color-primary--x-dark);
-  }
-
-  /* To restore relevant behavior of Bootstrap grid */
-  .workbench-content .container {
-    /* To use padding from Bootstrap 4 (which CMS still uses) */
-    --bs-gutter-x: 15px;
-
-    /* To undo Workbench.scss */
-    margin-left: revert-layer;
-    max-width: revert-layer;
-  }
-
-  /* To undo generic Portal styles that do not match CMS */
-  body {
-    -webkit-font-smoothing: revert;
-  }
-
-  /* To adjust Portal styles that mimic old Core Styles */
-  .c-button {
-    --max-width: auto;
-  }
-`;
-
 function DataGallery() {
   useEffect(() => {
-    // When component mounts, activate CMS styles and footer
-    window.dispatchEvent(new CustomEvent('cms-styles-activated', { 
-      detail: { 
-        source: 'DataFilesForDPMWithCMSStyles',
-        includeFooter: true,
-        includeStyles: true
-      } 
-    }));
-
-    // When component unmounts, deactivate CMS styles
+    // To (de)activate CMS styles on (un)mount
+    window.dispatchEvent(new CustomEvent('cms-styles-activated'));
     return () => {
       window.dispatchEvent(new CustomEvent('cms-styles-deactivated'));
     };
@@ -63,8 +14,6 @@ function DataGallery() {
   return (
     <div id="mimic-cms" className="container">
       <DataFilesForDPMWithCMSStylesBreadcrumbs />
-      <style dangerouslySetInnerHTML={{ __html: externalCSS }} />
-      <style dangerouslySetInnerHTML={{ __html: revertCSS }} />
       <div className="o-section">
         <h1>Browse Datasets</h1>
         <div className="c-card-list">
