@@ -103,7 +103,7 @@ After you clone the repository locally, there are several configuration steps re
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
 
 - Copy `server/conf/env_files/ngrok.sample.env` to `server/conf/env_files/ngrok.env`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `settings_local.py` to enable webhook notifications locally_
+    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
 
 ##### CMS
 
