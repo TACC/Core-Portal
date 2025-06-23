@@ -2,6 +2,8 @@ import { React, useEffect } from 'react';
 
 import DataFilesForDPMWithCMSStylesBreadcrumbs from './DataFilesForDPMWithCMSStylesBreadcrumbs';
 
+import './DataFilesForDPMWithCMSStyles.global.css';
+
 function DataGallery() {
   useEffect(() => {
     // To (de)activate CMS styles on (un)mount
