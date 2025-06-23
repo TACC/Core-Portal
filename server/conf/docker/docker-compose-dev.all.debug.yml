@@ -66,12 +66,6 @@ services:
       - POSTGRES_USER=postgresadmin
       - POSTGRES_DB=taccsite
       - PGDATA=/var/lib/postgresql/data/portal
-  docs:
-    image: taccwma/frontera-docs:latest-master
-    volumes:
-      - ../../docs:/docs/site
-    command: ["mkdocs", "build"]
-    container_name: frontera_docs
 
   nginx:
     image: nginx:stable
@@ -146,6 +140,13 @@ services:
              celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
 
     container_name: core_portal_workers
+
+  docs:
+    image: taccwma/frontera-docs:latest-master
+    volumes:
+      - ../../docs:/docs/site
+    command: ["mkdocs", "build"]
+    container_name: frontera_docs
 
   ngrok:
     image: ngrok/ngrok:latest
