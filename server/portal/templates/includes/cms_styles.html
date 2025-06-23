@@ -1,109 +1,57 @@
-<!-- To (un)load CMS styles on demand -->
-<script>
-  (function() {
-    const externalCSS = `
-      @layer mimic-cms.base, mimic-cms.project;
+<style id="cms-ui-styles" disabled>
+  @layer mimic-cms, mimic-cms.base, mimic-cms.project;
 
-      @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
-      @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
-      @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
-      @import ('@tacc/core-styles/dist/trumps/s-footer.css') layer(mimic-cms.project);
+  @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
+  @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
+  @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
+  @import url('@tacc/core-styles/dist/trumps/s-footer.css') layer(mimic-cms.project);
 
-      @import url(https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/cms.css) layer(mimic-cms);
-      @import url(https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/for-core-styles.css) layer(mimic-cms);
-    `;
-    const revertCSS = `
-      /* To restore CMS body color */
-      .workbench-wrapper {
-        color: var(--global-color-primary--x-dark);
-      }
+  /* To change high-level styles to match CMS */
+  .workbench-wrapper { color: var(--global-color-primary--x-dark); }
+  .workbench-content .container {
+    --bs-gutter-x: 15px;
+    margin-left: revert-layer;
+    max-width: revert-layer;
+  }
+  body { -webkit-font-smoothing: revert; }
+  .c-button { --max-width: auto; }
 
-      /* To restore relevant behavior of Bootstrap grid */
-      .workbench-content .container {
-        /* To use padding from Bootstrap 4 (which CMS still uses) */
-        --bs-gutter-x: 15px;
+  /* To hide navbar */
+  /* TODO: Instead of this, component using CMS styles should not use navbar */
+  #react-root:has(#mimic-cms) .nav-sidebar {
+    display: none;
+  }
+</style>
 
-        /* To undo Workbench.scss */
-        margin-left: revert-layer;
-        max-width: revert-layer;
-      }
+<script id="cms-ui-script" type="module">
+  let footerEl = null;
+  let footerOriginalContent = null;
 
-      /* To undo generic Portal styles that do not match CMS */
-      body {
-        -webkit-font-smoothing: revert;
-      }
+  const toggleStyles = (enabled) => {
+    document.getElementById('cms-ui-styles').disabled = !enabled;
+  };
 
-      /* To adjust Portal styles that mimic old Core Styles */
-      .c-button {
-        --max-width: auto;
-      }
-    `;
-    const temporaryCSS = `
-        /* HACK: Should use routes to not render sidebar */
-        #react-root:has(#mimic-cms) .nav-sidebar {
-            display: none;
-        }
-    `;
+  const useCMSFooter = async () => {
+    footerEl = document.getElementById('footer');
 
-    let externalStyleEl = null;
-    let revertStyleEl = null;
-    let temporaryStyleEl = null;
-    let footerEl = null;
-    let footerOriginalContent = null;
+    if (footerEl?.childNodes.length) {
+      footerOriginalContent = footerEl.innerHTML;
+      const { replaceFromURL } = await import('/static/site_cms/js/modules/importHTML.js');
+      await replaceFromURL('/cms/markup/footer', footerEl);
+    }
+  };
+  const restorePortalFooter = async () => {
+    if (footerEl && footerOriginalContent) {
+      footerEl.innerHTML = footerOriginalContent;
+    }
+  };
 
-    window.addEventListener('cms-styles-activated', async (event) => {
-      console.info(event.name);
-
-      if (!externalStyleEl) {
-        externalStyleEl = document.createElement('style');
-        externalStyleEl.setAttribute('id', 'cms-external-styles');
-        externalStyleEl.textContent = externalCSS;
-        document.head.appendChild(externalStyleEl);
-      }
-      if (!revertStyleEl) {
-        revertStyleEl = document.createElement('style');
-        revertStyleEl.setAttribute('id', 'cms-revert-styles');
-        revertStyleEl.textContent = revertCSS;
-        document.head.appendChild(revertStyleEl);
-      }
-      if (!temporaryStyleEl) {
-        temporaryStyleEl = document.createElement('style');
-        temporaryStyleEl.setAttribute('id', 'cms-temporary-styles');
-        temporaryStyleEl.textContent = temporaryCSS;
-        document.head.appendChild(temporaryStyleEl);
-      }
-
-      footerEl = document.getElementById('footer');
-      if (footerEl) {
-        if (footerEl.childNodes.length) {
-          footerOriginalContent = footerEl.innerHTML;
-        }
-
-        import('/static/site_cms/js/modules/importHTML.js').then(module => {
-          const { replaceFromURL } = module;
-          return replaceFromURL('/cms/markup/footer', footerEl);
-        });
-      }
-    });
-    window.addEventListener('cms-styles-deactivated', (event) => {
-      console.info(event.name);
-
-      if (externalStyleEl) {
-        document.head.removeChild(externalStyleEl);
-        externalStyleEl = null;
-      }
-      if (revertStyleEl) {
-        document.head.removeChild(revertStyleEl);
-        revertStyleEl = null;
-      }
-      if (temporaryStyleEl) {
-        document.head.removeChild(temporaryStyleEl);
-        temporaryStyleEl = null;
-      }
-
-      if (footerEl && footerOriginalContent) {
-        footerEl.innerHTML = footerOriginalContent;
-      }
-    });
-  })();
+  window.addEventListener('cms-styles-activated', async () => {
+    toggleStyles(true);
+    await useCMSFooter();
+  });
+  window.addEventListener('cms-styles-deactivated', () => {
+    toggleStyles(false);
+    restorePortalFooter();
+  });
 </script>
