@@ -24,12 +24,12 @@ logger = logging.getLogger(__name__)
 class LogoutView(DjangoLogoutView):
     def dispatch(self, request, *args, **kwargs):
         token = str(request.user.tapis_oauth.access_token)
-        
+
         logger.info('Attempting to revoke JWT token for user: ' + str(request.user))
         self.revoke_token(token)
 
         logout(request)
-               
+
         redirect = getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
         response = HttpResponseRedirect(redirect)
         return response
