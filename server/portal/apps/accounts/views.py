@@ -17,7 +17,6 @@ from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
 from portal.utils.decorators import handle_uncaught_exceptions
-from portal.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 
