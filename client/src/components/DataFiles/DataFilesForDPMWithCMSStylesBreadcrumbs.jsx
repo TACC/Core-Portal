@@ -7,7 +7,7 @@ import React from 'react';
  * @see https://github.com/TACC/Core-CMS/blob/v4.30.0/taccsite_cms/templates/nav_cms_breadcrumbs.html
  * @returns {JSX.Element} - breadcrumbs
  */
-const DataFilesForDPMWithCMSStylesBreadcrumbs = () => {
+export default function DataFilesForDPMWithCMSStylesBreadcrumbs() {
   const breadcrumbCSS = `
     .s-breadcrumbs a:not([href]) {
       opacity: 1;
@@ -48,5 +48,3 @@ const DataFilesForDPMWithCMSStylesBreadcrumbs = () => {
     </>
   );
 };
-
-export default DataFilesForDPMWithCMSStylesBreadcrumbs;
