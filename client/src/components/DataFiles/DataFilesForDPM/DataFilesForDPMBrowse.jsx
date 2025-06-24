@@ -1,6 +1,7 @@
-import { React } from 'react';
+import React from 'react';
 
-export default function SampleHTML() {
+/* TODO: Replace use of this with component(s) from WC-219 */
+export default function DataFilesForDPMBrowse() {
   return (
     <div className="o-section">
         <h1>Browse Datasets</h1>

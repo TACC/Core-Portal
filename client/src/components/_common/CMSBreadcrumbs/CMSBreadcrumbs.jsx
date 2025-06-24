@@ -1,13 +1,8 @@
 import React from 'react';
 
-/**
- * Display CMS-styled breadcrumbs for the Digital Rocks Portal
- * XXX: This is static content specific to the Digital Rocks Portal interface.
- * @see https://pprd.digitalrocks.tacc.utexas.edu/datasets/
- * @see https://github.com/TACC/Core-CMS/blob/v4.30.0/taccsite_cms/templates/nav_cms_breadcrumbs.html
- * @returns {JSX.Element} - breadcrumbs
- */
-export default function DataFilesForDPMWithCMSStylesBreadcrumbs() {
+export default function CMSBreadcrumbs() {
+  /* TODO: Move to …module.css OR into Core-Styles */
+  /* https://github.com/TACC/Core-CMS/blob/v4.30.0/taccsite_cms/templates/nav_cms_breadcrumbs.html#L4-L11 */
   const breadcrumbCSS = `
     .s-breadcrumbs a:not([href]) {
       opacity: 1;
@@ -15,6 +10,7 @@ export default function DataFilesForDPMWithCMSStylesBreadcrumbs() {
     }
   `;
 
+  /* TODO: Migrate to JSX logic (when it exists) */
   React.useEffect(() => {
     // Disable href for the current page breadcrumb
     const crumbs = document.getElementById('cms-breadcrumbs');
@@ -22,6 +18,7 @@ export default function DataFilesForDPMWithCMSStylesBreadcrumbs() {
     if (secondLink) secondLink.removeAttribute('href');
   }, []);
 
+  /* TODO: Render based on data param, not as static content */
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />

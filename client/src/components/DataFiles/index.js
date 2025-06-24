@@ -1,1 +1,1 @@
-export { default } from './DataFilesForDPMWithCMSStyles';
+export { default } from './DataFilesForDPM/DataFilesForDPM';

@@ -1,10 +1,10 @@
 import { React, useEffect } from 'react';
-import CMSWrapper from '../_common/CMSWrapper';
+import CMSWrapper from '_common/CMSWrapper';
 
-import DataFilesForDPMWithCMSStylesBreadcrumbs from './DataFilesForDPMWithCMSStylesBreadcrumbs';
-import DataFilesForDPMWithCMSStylesSampleHTML from './DataFilesForDPMWithCMSStylesSampleHTML';
+import DataFilesForDPMBreadcrumbs from './DataFilesForDPMBreadcrumbs';
+import DataFilesForDPMBrowse from './DataFilesForDPMBrowse';
 
-import './DataFilesForDPMWithCMSStyles.global.css';
+import './DataFilesForDPM.global.css';
 
 function DataGallery() {
   useEffect(() => {
@@ -17,8 +17,8 @@ function DataGallery() {
 
   return (
     <CMSWrapper>
-      <DataFilesForDPMWithCMSStylesBreadcrumbs />
-      <DataFilesForDPMWithCMSStylesSampleHTML />
+      <DataFilesForDPMBreadcrumbs />
+      <DataFilesForDPMBrowse />
     </CMSWrapper>
   );
 }

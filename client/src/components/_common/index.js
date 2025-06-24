@@ -25,6 +25,7 @@ export {
   default as IntroMessage,
   isKnownMessage as isKnownIntroMessage,
 } from './IntroMessage';
+export { default as CMSBreadcrumbs } from './CMSBreadcrumbs';
 export { default as CMSWrapper } from './CMSWrapper';
 export { default as CustomMessage } from './CustomMessage';
 export { default as Pill } from './Pill';
