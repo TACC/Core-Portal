@@ -1,10 +1,10 @@
-<style id="cms-ui-styles" disabled>
+<style id="cms-ui-styles" media="not all">{# i.e. disabled #}
   @layer mimic-cms, mimic-cms.base, mimic-cms.project;
 
   @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
   @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
   @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
-  @import url('@tacc/core-styles/dist/trumps/s-footer.css') layer(mimic-cms.project);
+  @import url('https://cdn.jsdelivr.net/npm/@tacc/core-styles@v2/dist/trumps/s-footer.css') layer(mimic-cms.project);
 
   /* To change high-level styles to match CMS */
   .workbench-wrapper { color: var(--global-color-primary--x-dark); }
@@ -28,7 +28,8 @@
   let footerOriginalContent = null;
 
   const toggleStyles = (enabled) => {
-    document.getElementById('cms-ui-styles').disabled = !enabled;
+    const media = (enabled) ? 'all' : 'not all';
+    document.getElementById('cms-ui-styles').media = media;
   };
 
   const useCMSFooter = async () => {
