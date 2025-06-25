@@ -24,18 +24,20 @@ export default function CMSBreadcrumbs() {
       <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />
       <nav className="s-breadcrumbs" id="cms-breadcrumbs">
         <ol itemScope itemType="https://schema.org/BreadcrumbList">
-          <li itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
+          <li
+            itemScope
+            itemProp="itemListElement"
+            itemType="https://schema.org/ListItem"
           >
             <a href="/" itemProp="item">
               <span itemProp="name">Index</span>
             </a>
             <meta itemProp="position" content="1" />
           </li>
-          <li itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
+          <li
+            itemScope
+            itemProp="itemListElement"
+            itemType="https://schema.org/ListItem"
           >
             <span itemProp="name">Browse Datasets</span>
             <meta itemProp="position" content="2" />
@@ -44,4 +46,4 @@ export default function CMSBreadcrumbs() {
       </nav>
     </>
   );
-};
+}
