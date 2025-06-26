@@ -32,6 +32,10 @@
     document.getElementById('cms-ui-styles').media = media;
   };
 
+  const toggleLayout = (enabled) => {
+    document.body.classList.toggle('has-cms-ui', enabled);
+  };
+
   const useCMSFooter = async () => {
     footerEl = document.getElementById('footer');
 
@@ -49,10 +53,12 @@
 
   window.addEventListener('cms-styles-activated', async () => {
     toggleStyles(true);
+    toggleLayout(true);
     await useCMSFooter();
   });
   window.addEventListener('cms-styles-deactivated', () => {
     toggleStyles(false);
+    toggleLayout(false);
     restorePortalFooter();
   });
 </script>
