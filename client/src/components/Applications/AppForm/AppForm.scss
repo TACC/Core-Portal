@@ -8,7 +8,8 @@
   /* As a flex container */
   display: flex;
 
-  height: 100%;
+  /* FAQ: `min-height` (not `height`) forces scroll when text is off-screen */
+  min-height: 100%;
   /* To ensure flex children stretch to height of scrolled content */
   /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
   /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */

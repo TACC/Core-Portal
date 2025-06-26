@@ -1,13 +1,7 @@
 .workbench-wrapper {
-  display: flex;
-  flex-direction: row;
-
   color: var(--global-color-primary--xx-dark);
 }
 .workbench-content {
-  /* As a flex item */
-  flex-grow: 1;
-
   /* Allow wide content to shrink */
   /* SEE: https://github.com/philipwalton/flexbugs#flexbug-1 */
   min-width: 0;
