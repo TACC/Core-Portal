@@ -45,7 +45,7 @@
       await replaceFromURL('/cms/markup/footer', footerEl);
     }
   };
-  const restorePortalFooter = async () => {
+  const restorePortalFooter = () => {
     if (footerEl && footerOriginalContent) {
       footerEl.innerHTML = footerOriginalContent;
     }
