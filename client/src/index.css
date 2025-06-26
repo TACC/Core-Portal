@@ -26,6 +26,76 @@ body {
 }
 
 /*
+  App Layout
+  ===
+  Layout only as tall as browser window. Footer is sticky.
+  React root has optional side nav and required main content,
+  each of which should independently vertically scroll as necessary.
+  (Header currently not sticky, but probably should be so as to match TUP.)
+
+  WARNING: This HTML structure is challengingly complex. Consider refactor.
+
+  <body>
+    <div class="content">
+      <div id="header-branding" />
+      <div id="s-header" />
+      <div id="react-root">
+        <div class="nav-sidebar" />
+        <div class="workbench-wrapper">
+          <div class="workbench-content" />
+        </div>
+      </div>
+    </div>
+    <footer />
+  </body>
+*/
+body:not(.has-cms-ui) {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* critical for flexbox scrolling */
+  }
+  footer {
+    flex-shrink: 0;
+  }
+
+  #header-branding,
+  #s-header {
+    flex-shrink: 0;
+  }
+  #react-root {
+    flex: 1;
+    display: flex;
+    min-height: 0; /* critical for flexbox scrolling */
+    overflow: hidden;
+  }
+
+  .nav-sidebar {
+    flex-shrink: 0;
+    overflow-y: auto;
+    /* Add width/min-width as needed */
+  }
+  .workbench-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-height: 0; /* critical for flexbox scrolling */
+  }
+
+  .workbench-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0; /* critical for flexbox scrolling */
+  }
+}
+
+/*
   Inline Text Semantics
   ===
   https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics
@@ -34,76 +104,6 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-/*
-  External Layout
-  ===
-  Expand, to fill desired space, any wrapper elements
-  that are outside scope of the application codebase
-*/
-
-/* Allow expansion (with no respect to ancestors and siblings)
-
-    <html>
-      <body>…</body>
-    </html>
-*/
-/* FAQ: The CMS applies a `margin-top` on the `<html>` */
-/* FAQ: The `html` and `body` boxes are only as tall as their content
-        (which may be shorter than window height), cannot have siblings elements
-        (would be influenced by force stretch), so force stretch outward. */
-html,
-body {
-  /* As a stretched item */
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
-
-/* Allow expansion (with respect to ancestors and siblings)
-
-    <body>
-      <div class="content">
-        <div id="react-root">
-          <div class="…">…</div>
-        </div>
-      </div>
-    </body>
-*/
-/* FAQ: Shared hosting with CMS renders header and footer siblings */
-/* FAQ: The `.content` and `#react-root` boxes are only as tall as their content
-        (which may be shorter than window height), can have siblings elements
-        (would be influenced by force stretch), so gently stretch outward. */
-body {
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-}
-body > .content {
-  /* As a flex item */
-  flex-grow: 1;
-
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-}
-#react-root {
-  /* As a flex item */
-  flex-grow: 1;
-
-  /* As a stretched item container */
-  position: relative;
-}
-#react-root > :only-child {
-  /* As a stretched item */
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
 }
 
 /* end @layer portal */
