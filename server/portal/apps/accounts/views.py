@@ -6,8 +6,10 @@ import requests
 
 from django.forms.models import model_to_dict
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
@@ -17,6 +19,28 @@ from portal.apps.accounts import integrations
 from portal.utils.decorators import handle_uncaught_exceptions
 
 logger = logging.getLogger(__name__)
+
+
+class LogoutView(DjangoLogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        token = str(request.user.tapis_oauth.access_token)
+
+        logger.info('Attempting to revoke JWT token for user: ' + str(request.user))
+        self.revoke_token(token)
+
+        logout(request)
+
+        redirect = getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
+        response = HttpResponseRedirect(redirect)
+        return response
+
+    def revoke_token(self, token):
+        revoke_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/tokens/revoke"
+        try:
+            response = requests.post(revoke_endpoint, json={'token': token})
+            response.raise_for_status()
+        except requests.RequestException as e:
+            logger.exception(f"Token revocation failed: {e}")
 
 
 def accounts(request):
