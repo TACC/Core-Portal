@@ -1,3 +1,0 @@
-/* IDEA: Move these styles from CDN to here, though they would still need to be global, unless tediously converted to module */
-@import url('https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/cms.css') layer(mimic-cms);
-@import url('https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/for-core-styles.css') layer(mimic-cms);
