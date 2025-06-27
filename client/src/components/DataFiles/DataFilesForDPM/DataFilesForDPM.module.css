@@ -8,7 +8,9 @@
   top: 0;
 }
 
-/* to remove space to left and right of view */
+/* to remove styles from tab-pane */
 .content :global(.tab-pane) {
-  padding-inline: unset; /* overrides core-styles */
+  /* overrides core-styles */
+  border-top: none;
+  padding-inline: unset;
 }
