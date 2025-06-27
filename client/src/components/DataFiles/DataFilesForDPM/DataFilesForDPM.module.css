@@ -1,0 +1,14 @@
+/* to position nav to the right of breadcrumbs */
+:global(#mimic-cms) {
+  position: relative;
+}
+.nav {
+  position: absolute;
+  right: var(--bs-gutter-x);
+  top: 0;
+}
+
+/* to remove space to left and right of view */
+.content :global(.tab-pane) {
+  padding-inline: unset; /* overrides core-styles */
+}
