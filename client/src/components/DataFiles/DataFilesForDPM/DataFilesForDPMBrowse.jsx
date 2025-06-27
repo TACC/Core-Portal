@@ -268,7 +268,6 @@ export default function DataFilesForDPMBrowse() {
         </li>
       </div>
       <div className="o-section">
-        {/* <!-- FAQ: Bootstrap 4's Pagination pattern --> */}
         <ul className="pagination">
           <li className="page-item disabled">
             <span className="page-link">&lt; Previous</span>
