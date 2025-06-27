@@ -25,7 +25,7 @@
 
 <script id="cms-ui-script" type="module">
   let footerEl = null;
-  let footerOriginalContent = null;
+  let footerOriginalMarkup = null;
 
   const toggleStyles = (enabled) => {
     const media = (enabled) ? 'all' : 'not all';
@@ -38,25 +38,23 @@
 
   const useCMSFooter = async () => {
     footerEl = document.getElementById('footer');
+    footerOriginalMarkup = footerEl.outerHTML;
 
-    if (footerEl?.childNodes.length) {
-      footerOriginalContent = footerEl.innerHTML;
-      const { replaceFromURL } = await import('/static/site_cms/js/modules/importHTML.js');
-      await replaceFromURL('/cms/markup/footer', footerEl);
-    }
+    const { replaceFromURL } = await import('/static/site_cms/js/modules/importHTML.js');
+    footerEl = await replaceFromURL('/cms/markup/footer', footerEl);
   };
   const restorePortalFooter = () => {
-    if (footerEl && footerOriginalContent) {
-      footerEl.innerHTML = footerOriginalContent;
-    }
+    footerEl.outerHTML = footerOriginalMarkup;
   };
 
-  window.addEventListener('cms-styles-activated', async () => {
+  window.addEventListener('cms-styles-activated', async (event) => {
+    console.log(`event: ${event.type}`);
     toggleStyles(true);
     toggleLayout(true);
     await useCMSFooter();
   });
-  window.addEventListener('cms-styles-deactivated', () => {
+  window.addEventListener('cms-styles-deactivated', (event) => {
+    console.log(`event: ${event.type}`);
     toggleStyles(false);
     toggleLayout(false);
     restorePortalFooter();
