@@ -57,6 +57,7 @@ export default function DataFilesForDPMRead() {
 
         <p>
           <strong>Download Citation:</strong>
+          {' '}
           <a
             href="https://api.datacite.org/application/vnd.datacite.datacite+xml/10.17612/f4h1-w124"
             rel="noreferrer"
@@ -64,8 +65,8 @@ export default function DataFilesForDPMRead() {
             aria-label="Opens in new window."
           >
             DataCite XML
-          </a>{' '}
-          |
+          </a>
+          {' '}|{' '}
           <a
             href="https://api.datacite.org/application/x-research-info-systems/10.17612/f4h1-w124"
             rel="noreferrer"
@@ -73,8 +74,8 @@ export default function DataFilesForDPMRead() {
             aria-label="Opens in new window."
           >
             RIS
-          </a>{' '}
-          |
+          </a>
+          {' '}|{' '}
           <a
             href="https://api.datacite.org/application/x-bibtex/10.17612/f4h1-w124"
             rel="noreferrer"
@@ -82,8 +83,8 @@ export default function DataFilesForDPMRead() {
             aria-label="Opens in new window."
           >
             BibTeX
-          </a>{' '}
-          |
+          </a>
+          {' '}|{' '}
           <a
             href="https://commons.datacite.org/doi.org/10.17612/f4h1-w124"
             rel="noreferrer"
@@ -95,8 +96,8 @@ export default function DataFilesForDPMRead() {
           <br />
           <mark>
             <output>0</output> Citations
-          </mark>{' '}
-          |
+          </mark>
+          {' '}|{' '}
           <strong>
             <a
               className="c-button c-button--as-link"
