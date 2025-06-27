@@ -38,12 +38,14 @@ CMSWrapper.useDynamicStylesheets = (urls, componentName) => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = url;
-    link.id = `cms-wrapper-styles-from-${componentName || 'undefined'}-${index}`;
+    link.id = `cms-wrapper-styles-from-${
+      componentName || 'undefined'
+    }-${index}`;
     document.head.appendChild(link);
     return link;
   });
-  
-  return () => links.forEach(link => link.remove());
+
+  return () => links.forEach((link) => link.remove());
 };
 
 CMSWrapper.propTypes = {
