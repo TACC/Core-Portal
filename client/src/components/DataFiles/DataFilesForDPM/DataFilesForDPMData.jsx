@@ -51,25 +51,17 @@ export default function DataFilesForDPMData() {
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
               srcSet="
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
-            
-            /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
-        "
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
+              "
               sizes="
-            
-                (max-width: 576px) 576px,
-            
-                (max-width: 768px) 768px,
-            
-                (max-width: 992px) 992px,
-            
-            1000.0px
-        "
+                      (max-width: 576px) 576px,
+                      (max-width: 768px) 768px,
+                      (max-width: 992px) 992px,
+                      1000.0px
+              "
               className="img-fluid"
             />
 
@@ -179,25 +171,17 @@ export default function DataFilesForDPMData() {
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
               srcSet="
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
-            
-            /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
-        "
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
+              "
               sizes="
-            
-                (max-width: 576px) 576px,
-            
-                (max-width: 768px) 768px,
-            
-                (max-width: 992px) 992px,
-            
-            1000.0px
-        "
+                      (max-width: 576px) 576px,
+                      (max-width: 768px) 768px,
+                      (max-width: 992px) 992px,
+                      1000.0px
+              "
               className="img-fluid"
             />
 
@@ -307,25 +291,17 @@ export default function DataFilesForDPMData() {
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
               srcSet="
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
-            
-            /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
-        "
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
+              "
               sizes="
-            
-                (max-width: 576px) 576px,
-            
-                (max-width: 768px) 768px,
-            
-                (max-width: 992px) 992px,
-            
-            1000.0px
-        "
+                      (max-width: 576px) 576px,
+                      (max-width: 768px) 768px,
+                      (max-width: 992px) 992px,
+                      1000.0px
+              "
               className="img-fluid"
             />
 
@@ -435,25 +411,17 @@ export default function DataFilesForDPMData() {
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
               srcSet="
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
-            
-            /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
-        "
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
+              "
               sizes="
-            
-                (max-width: 576px) 576px,
-            
-                (max-width: 768px) 768px,
-            
-                (max-width: 992px) 992px,
-            
-            1000.0px
-        "
+                      (max-width: 576px) 576px,
+                      (max-width: 768px) 768px,
+                      (max-width: 992px) 992px,
+                      1000.0px
+              "
               className="img-fluid"
             />
 
@@ -563,25 +531,17 @@ export default function DataFilesForDPMData() {
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
               srcSet="
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
-            
-                /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
-            
-            /media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
-        "
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__576x576_q85_subsampling-2.jpg 576w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__768x768_q85_subsampling-2.jpg 768w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__992x992_q85_subsampling-2.jpg 992w,
+                      https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg 1000.0w
+              "
               sizes="
-            
-                (max-width: 576px) 576px,
-            
-                (max-width: 768px) 768px,
-            
-                (max-width: 992px) 992px,
-            
-            1000.0px
-        "
+                      (max-width: 576px) 576px,
+                      (max-width: 768px) 768px,
+                      (max-width: 992px) 992px,
+                      1000.0px
+              "
               className="img-fluid"
             />
 
