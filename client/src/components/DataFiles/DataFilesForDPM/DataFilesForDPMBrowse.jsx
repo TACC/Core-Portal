@@ -1,6 +1,6 @@
 import React from 'react';
 
-/* TODO: Replace use of this with component(s) from WC-219 */
+// TODO: Replace use of this with component(s) from WC-219
 export default function DataFilesForDPMBrowse() {
   return (
     <div className="o-section">
