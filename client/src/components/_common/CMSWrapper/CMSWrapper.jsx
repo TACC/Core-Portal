@@ -12,9 +12,9 @@ function CMSWrapper({ children }) {
   }, []);
 
   return (
-    <div id="mimic-cms" className="container">
+    <main id="mimic-cms" className="container">
       {children}
-    </div>
+    </main>
   );
 }
 
