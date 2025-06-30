@@ -6,10 +6,13 @@
   @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
   @import url('https://cdn.jsdelivr.net/npm/@tacc/core-styles@v2/dist/trumps/s-footer.css') layer(mimic-cms.project);
 
+  /* To mimic Bootstrap v4 (which CMS uses) */
+  .workbench-content .container { --bs-gutter-x: 15px; }
+  .workbench-content .row { --bs-gutter-x: 30px; }
+
   /* To change high-level styles to match CMS */
   .workbench-wrapper { color: var(--global-color-primary--x-dark); }
   .workbench-content .container {
-    --bs-gutter-x: 15px;
     margin-left: revert-layer;
     max-width: revert-layer;
   }

@@ -109,7 +109,7 @@ export default function DataFilesForDPMRead() {
           </strong>
         </p>
       </div>
-      <div className="o-section o-section--style-light">
+      <div className="o-section o-section--style-light container">
         <div className="row project-overview">
           <div className="col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
             <img
