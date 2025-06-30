@@ -276,7 +276,7 @@ export default function DataFilesForDPMRead() {
 
         <div className="project-content">
           <div id="project-files">
-            <h2>Files</h2>
+            <h3>Files</h3>
 
             <ul className="data-tree">
               <li className="data-tree__item" id="sample-berea">
