@@ -283,8 +283,7 @@ export default function DataFilesForDPMRead() {
                 <details>
                   <summary className="u-summary-link-merged">
                     <a className="u-title-needs-colon">
-                      <span>Sample</span>
-                      <strong>Berea</strong>
+                      <span>Sample</span> <strong>Berea</strong>
                     </a>
                   </summary>
                   {/* <p className="js-show-more"> */}
@@ -334,7 +333,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Berea_2d25um_grayscale.raw</strong>
                     </a>
                   </li>
@@ -343,7 +342,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Berea_2d25um_grayscale_filtered.raw</strong>
                     </a>
                   </li>
@@ -352,7 +351,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Berea_2d25um_binary.raw</strong>
                     </a>
                   </li>
@@ -362,8 +361,7 @@ export default function DataFilesForDPMRead() {
                 <details>
                   <summary className="u-summary-link-merged">
                     <a className="u-title-needs-colon">
-                      <span>Sample</span>
-                      <strong>Bandera Brown</strong>
+                      <span>Sample</span> <strong>Bandera Brown</strong>
                     </a>
                   </summary>
                   {/* <p className="js-show-more"> */}
@@ -413,7 +411,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BanderaBrown_2d25um_grayscale.raw</strong>
                     </a>
                   </li>
@@ -422,7 +420,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BanderaBrown_2d25um_binary.raw</strong>
                     </a>
                   </li>
@@ -431,7 +429,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>
                         BanderaBrown_2d25um_grayscale_filtered.raw
                       </strong>
@@ -443,8 +441,7 @@ export default function DataFilesForDPMRead() {
                 <details>
                   <summary className="u-summary-link-merged">
                     <a className="u-title-needs-colon">
-                      <span>Sample</span>
-                      <strong>Bandera Gray</strong>
+                      <span>Sample</span> <strong>Bandera Gray</strong>
                     </a>
                   </summary>
                   {/* <p className="js-show-more"> */}
@@ -494,7 +491,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BanderaGray_2d25um_binary.raw</strong>
                     </a>
                   </li>
@@ -503,7 +500,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BanderaGray_2d25um_grayscale_filtered.raw</strong>
                     </a>
                   </li>
@@ -512,7 +509,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BanderaGray_2d25um_grayscale.raw</strong>
                     </a>
                   </li>
@@ -522,8 +519,7 @@ export default function DataFilesForDPMRead() {
                 <details>
                   <summary className="u-summary-link-merged">
                     <a className="u-title-needs-colon">
-                      <span>Sample</span>
-                      <strong>Bentheimer</strong>
+                      <span>Sample</span> <strong>Bentheimer</strong>
                     </a>
                   </summary>
                   {/* <p className="js-show-more"> */}
@@ -573,7 +569,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Bentheimer_2d25um_binary.raw</strong>
                     </a>
                   </li>
@@ -582,7 +578,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Bentheimer_2d25um_grayscale_filtered.raw</strong>
                     </a>
                   </li>
@@ -591,7 +587,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>Bentheimer_2d25um_grayscale.raw</strong>
                     </a>
                   </li>
@@ -601,8 +597,7 @@ export default function DataFilesForDPMRead() {
                 <details>
                   <summary className="u-summary-link-merged">
                     <a className="u-title-needs-colon">
-                      <span>Sample</span>
-                      <strong>Berea Sister Gray</strong>
+                      <span>Sample</span> <strong>Berea Sister Gray</strong>
                     </a>
                   </summary>
                   {/* <p className="js-show-more"> */}
@@ -652,7 +647,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BSG_2d25um_grayscale.raw</strong>
                     </a>
                   </li>
@@ -661,7 +656,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BSG_2d25um_grayscale_filtered.raw</strong>
                     </a>
                   </li>
@@ -670,7 +665,7 @@ export default function DataFilesForDPMRead() {
                       className="u-title-needs-colon"
                       href="/datasets/317/origin-data/1352/"
                     >
-                      <span>Origin Data</span>
+                      <span>Origin Data</span>{' '}
                       <strong>BSG_2d25um_binary.raw</strong>
                     </a>
                   </li>
