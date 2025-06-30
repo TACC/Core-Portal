@@ -12,14 +12,14 @@ export const getAppUtil = async function fetchAppDefinitionUtil(
   return result.response;
 };
 
-function getAvailableHPCAlloc(activeAllocations: any, appExecSysId: string) {
+function getAvailableHPCAlloc(activeAllocations: any, appExecHostname: string) {
   // Returns the project name of the first available HPC allocation matching the
   // exec system for the app with remaining compute time, or undefined if none found
   for (let activeAlloc of activeAllocations) {
     for (let allocSys of activeAlloc.systems) {
       if (
         allocSys.type === 'HPC' &&
-        allocSys.name.toLowerCase() === appExecSysId
+        allocSys.host === appExecHostname
       ) {
         const availCompute =
           allocSys.allocation.computeAllocated -
@@ -47,7 +47,7 @@ export function getAllocationForToolbarAction(
     return (
       getAvailableHPCAlloc(
         allocationsState.active,
-        appObj.definition.jobAttributes.execSystemId
+        appObj.execSystems[0].host
       ) || null
     );
   }
