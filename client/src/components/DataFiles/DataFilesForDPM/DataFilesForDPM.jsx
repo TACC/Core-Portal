@@ -43,7 +43,7 @@ function DataFilesForDPM() {
         'https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/cms.css',
         'https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/for-core-styles.css',
       ],
-      'DataFilesForDPM'
+      'DataFilesForDPM',
     );
   }, []);
 
