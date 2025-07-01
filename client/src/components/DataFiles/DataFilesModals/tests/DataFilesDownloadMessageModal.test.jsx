@@ -15,8 +15,8 @@ vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
   return {
     ...actual, // keep `getDefaultAllocation`
     getAppUtil: vi.fn().mockResolvedValue({
-      id: 'compress',
-      version: '0.0.4',
+      id: 'compress-express',
+      version: '0.0.1',
       definition: {
         jobAttributes: {
           execSystemId: 'frontera',
