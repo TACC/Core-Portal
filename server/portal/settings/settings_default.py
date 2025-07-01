@@ -246,11 +246,11 @@ _WORKBENCH_SETTINGS = {
     "makeLink": True,
     "viewPath": True,
     "compressApp": {
-        "id": "compress",
-        "version": "0.0.4"  # Can be set to "" to use the latest version
+        "id": "compress-express",
+        "version": "0.0.1"  # Can be set to "" to use the latest version
     },
     "extractApp": {
-        "id": "extract",
+        "id": "extract-express",
         "version": "0.0.1"  # Can be set to "" to use the latest version
     },
     "makePublic": True,
