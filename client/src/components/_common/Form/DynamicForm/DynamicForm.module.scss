@@ -1,0 +1,47 @@
+.bold-label {
+  font-weight: bold;
+}
+
+.textarea {
+  height: auto !important;
+}
+
+.radio-input {
+  margin-left: 1rem;
+  margin-bottom: 0.25rem !important;
+}
+
+.radio-input input {
+  margin-right: 0.25rem;
+}
+
+.array-input-container {
+  margin: 20px 0px;
+}
+
+.button-full {
+  min-width: 100% !important;
+  margin-bottom: 20px;
+}
+
+.expand-card {
+  padding-top: 20px;
+}
+
+.expand-card > div:first-child {
+  padding-bottom: 20px;
+}
+
+.array-field-description {
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  margin-top: -5px; /* Reduce space between title and description */
+  margin-bottom: 10px; /* Add space before form fields */
+}
+
+.file-name {
+  display: flex;
+  padding-bottom: 20px;
+  font-weight: bold;
+}

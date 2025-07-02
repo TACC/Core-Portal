@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
+import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -16,6 +17,10 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
+
+  // logic to render addonComponents for DRP
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesAddProjectModalAddon } = useAddonComponents({ portalName });
 
   useEffect(() => {
     setMembers([
@@ -41,6 +46,18 @@ const DataFilesAddProjectModal = () => {
     );
   });
 
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const system = systems.find(
+    (s) => s.scheme === 'projects' && s.defaultProject == true
+  );
+
+  const sharedWorkspacesDisplayName = system?.name;
+  const rootSystem = system?.system;
+
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -50,22 +67,24 @@ const DataFilesAddProjectModal = () => {
 
   const onCreate = (system) => {
     toggle();
-    history.push(`${match.path}/tapis/projects/${system}`);
+    history.push(`${match.path}/tapis/projects/${rootSystem}/${system}`);
   };
 
-  const addproject = ({ title }) => {
+  const addproject = (values) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
-        title,
+        title: values.title,
+        description: values.description || null,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
         })),
+        metadata: DataFilesAddProjectModalAddon ? values : null,
         onCreate,
       },
     });
-  };
+  };  
 
   const onAdd = (newUser) => {
     setMembers([...members, newUser]);
@@ -82,7 +101,10 @@ const DataFilesAddProjectModal = () => {
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
+    description: Yup.string()
+      .max(800, 'Description must be at most 800 characters')
   });
+  
 
   return (
     <>
@@ -94,36 +116,35 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', description: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
           <Form>
             <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Add Shared Workspace
+              Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
-              <FormField
+            <FormField
                 name="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    {sharedWorkspacesDisplayName} Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
+                    <br />
                   </div>
                 }
+                description={'The title should be descriptive and distinctive from related publications.'}
               />
-              <DataFilesProjectMembers
-                members={members}
-                onAdd={onAdd}
-                onRemove={onRemove}
-              />
+              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
+              <DataFilesProjectMembers members={members} onAdd={onAdd} onRemove={onRemove} />
             </ModalBody>
             <ModalFooter>
               {error ? (
                 <InlineMessage type="error">
-                  Your shared workspace could not be created
+                  Your {sharedWorkspacesDisplayName} could not be created
                 </InlineMessage>
               ) : null}
               <Button
@@ -132,7 +153,7 @@ const DataFilesAddProjectModal = () => {
                 attr="submit"
                 isLoading={isCreating}
               >
-                Add Workspace
+                Add {sharedWorkspacesDisplayName}
               </Button>
             </ModalFooter>
           </Form>

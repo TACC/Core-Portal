@@ -28,6 +28,10 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
 else:
     from portal.settings import settings_default as settings_custom
 
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_forms.py')):
+    from portal.settings import settings_forms
+
+
 DEBUG = settings_custom._DEBUG
 
 FIXTURE_DIRS = [
@@ -118,6 +122,7 @@ INSTALLED_APPS = [
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
     'portal.apps.portal_messages',
+    'portal.apps.publications',
 ]
 
 MIDDLEWARE = [
@@ -263,6 +268,14 @@ DATABASES = {
         'PASSWORD': settings_secret._DJANGO_DB_PASSWORD,
         'HOST': settings_secret._DJANGO_DB_HOST,
         'PORT': settings_secret._DJANGO_DB_PORT
+    }, 
+    'drp_mysql': {
+        'ENGINE': settings_secret._DJANGO_DRP_DB_ENGINE,
+        'NAME': settings_secret._DJANGO_DRP_DB_NAME,
+        'USER': settings_secret._DJANGO_DRP_DB_USER,
+        'PASSWORD': settings_secret._DJANGO_DRP_DB_PASSWORD,
+        'HOST': settings_secret._DJANGO_DRP_DB_HOST,
+        'PORT': settings_secret._DJANGO_DRP_DB_PORT
     }
 }
 
@@ -561,6 +574,8 @@ PORTAL_SEARCH_MANAGERS = {
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
+FORMS = getattr(settings_forms, '_FORMS', {})
+
 """
 SETTINGS: EXTERNAL DATA RESOURCES
 """
@@ -590,6 +605,42 @@ PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_custom.\
 
 PORTAL_PROJECTS_ROOT_HOST = settings_custom.\
     _PORTAL_PROJECTS_ROOT_HOST
+
+PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX
+
+PORTAL_PROJECTS_REVIEW_ROOT_DIR = settings_custom.\
+    _PORTAL_PROJECTS_REVIEW_ROOT_DIR
+
+PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = settings_custom.\
+    _PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME
+
+PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
+
+PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = settings_custom.\
+    _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR
+
+PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = settings_custom.\
+    _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+
+PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = settings_custom.\
+    _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME
+
+PORTAL_PUBLICATION_DATACITE_SHOULDER = settings_custom.\
+    _PORTAL_PUBLICATION_DATACITE_SHOULDER
+
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = settings_custom.\
+    _PORTAL_PUBLICATION_DATACITE_URL_PREFIX
+
+DATACITE_URL = settings_custom.\
+    _DATACITE_URL
+
+DATACITE_USER = settings_secret.\
+    _DATACITE_USER
+
+DATACITE_PASS = settings_secret.\
+    _DATACITE_PASS
 
 PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
     _PORTAL_PROJECTS_PRIVATE_KEY
@@ -775,6 +826,16 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
+SETTINGS: EMAIL
+"""
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getattr(settings_custom, '_SMTP_HOST', 'localhost')
+EMAIL_PORT = getattr(settings_custom, '_SMTP_PORT', 25)
+EMAIL_HOST_USER = getattr(settings_custom, '_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = getattr(settings_custom, '_SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = getattr(settings_custom, '_DEFAULT_FROM_EMAIL', '')
+
+"""
 SETTINGS: INTERNAL DOCS
 """
 INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
@@ -786,3 +847,8 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
+
+"""
+SETTINGS: PUBLICATIONS
+"""
+PUBLICATION_REVIEWERS = getattr(settings_secret, '_PUBLICATION_REVIEWERS', [])

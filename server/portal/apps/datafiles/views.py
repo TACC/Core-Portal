@@ -55,13 +55,13 @@ class SystemListingView(BaseApiView):
             ]
 
             default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
-            if default_system:
+            if default_system and default_system.get('scheme') != 'projects':
                 default_system_id = default_system.get('system')
                 system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=default_system_id, select='host')
                 response['default_host'] = system_def.host
                 response['default_system_id'] = default_system_id
         else:
-            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public']
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public' or sys['system'] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME]
 
         return JsonResponse(response)
 
@@ -76,6 +76,8 @@ class SystemDefinitionView(BaseApiView):
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == systemId:
+                client = service_account()
+            if systemId.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse({'message': 'Unauthorized'}, status=401)
@@ -98,6 +100,8 @@ class TapisFilesView(BaseApiView):
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == system and path.startswith(public_sys['homeDir'].strip('/')):
+                client = service_account()
+            if system and system.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse(
@@ -211,7 +215,10 @@ class TapisFilesView(BaseApiView):
 
     def post(self, request, operation=None, scheme=None,
              handler=None, system=None, path='/'):
+
+        metadata = json.loads(request.POST.get("metadata", "null"))
         body = request.FILES.dict()
+
         try:
             client = request.user.tapis_oauth.client
         except AttributeError:
@@ -233,7 +240,7 @@ class TapisFilesView(BaseApiView):
                                  'body': request.POST.dict()
                              }})
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-            response = tapis_post_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}",  body=body)
+            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc

@@ -9,7 +9,7 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 _DEBUG = True
 
 # Namespace for portal
-_PORTAL_NAMESPACE = 'CEP'
+_PORTAL_NAMESPACE = 'DRP'
 
 _VANITY_BASE_URL = 'https://cep.test'
 
@@ -84,15 +84,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None,
     },
     {
-        'name': 'Community Data',
-        'system': 'cloud.data',
-        'scheme': 'community',
-        'api': 'tapis',
-        'homeDir': '/corral/tacc/aci/CEP/community',
-        'icon': None,
-        'siteSearchPriority': 1
-    },
-    {
         'name': 'Public Data',
         'system': 'cloud.data',
         'scheme': 'public',
@@ -102,13 +93,47 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'siteSearchPriority': 0
     },
     {
-        'name': 'Shared Workspaces',
+        "name": "Community Data",
+        "system": "cloud.data",
+        "scheme": "community",
+        "api": "tapis",
+        "homeDir": "/corral-repl/utexas/OTH21076/data_pprd/community",
+        "icon": None,
+        "siteSearchPriority": 0,
+    },
+    {
+        'name': 'Dataset',
         'scheme': 'projects',
         'api': 'tapis',
         'icon': 'publications',
         'readOnly': False,
-        'hideSearchBar': False
+        'hideSearchBar': False,
+        'defaultProject': True,
+        'system': 'drp.pprd.project.root',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/projects',
     },
+    {
+        'name': 'Published Datasets',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.pprd.project.published',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/published',
+        'publicationProject': True,
+    },
+    {
+        'name': 'Review',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': 'publications',
+        'readOnly': True,
+        'hideSearchBar': False,
+        'system': 'drp.pprd.project.review',
+        'rootDir': '/corral-repl/utexas/OTH21076/data_pprd/review',
+        'reviewProject': True,
+    }
 ]
 
 ########################
@@ -203,13 +228,28 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 #######################
 
 _PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.project'
-_PORTAL_PROJECTS_ID_PREFIX = 'CEP'
-_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
-_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
+_PORTAL_PROJECTS_ID_PREFIX = 'CEPV3-DEV'
+_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/projects'
+_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'drp.pprd.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.data.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
-_PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+_PORTAL_PROJECTS_USE_SET_FACL_JOB = False
+
+_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = 'cep.project.review' 
+_PORTAL_PROJECTS_REVIEW_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/review'
+_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = 'drp.pprd.project.review'
+
+_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'cep.project.published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = '/corral-repl/utexas/OTH21076/data_pprd/published'
+_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = 'drp.pprd.project.published'
+
+_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = 'PROJECT_REVIEWER'
+
+# Datacite
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = "10.80023"
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://cep.test/data/tapis/projects/drp.project.published.test"
+_DATACITE_URL = "https://api.test.datacite.org/"
 
 ########################
 # Custom Portal Template Assets
@@ -243,7 +283,8 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
-    "makeLink": True,
+    "canPublish": True,
+    "makeLink": False,
     "viewPath": True,
     "compressApp": {
         "id": "compress",
@@ -261,6 +302,14 @@ _WORKBENCH_SETTINGS = {
     "hideManageAccount": False,
     "hideSystemStatus": False,
     "hasUserGuide": True,
+    "hasCustomSagas": True,
+    "hasCustomEndpoints": True,
+    "hasCustomDataFilesToolbarChecks": True,
+    "addons": ['DataFilesProjectFileListingAddon', 'DataFilesAddProjectModalAddon', 'DataFilesProjectEditDescriptionModalAddon', 
+               'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon', 
+               'DataFilesUploadModalAddon', 'DataFilesPreviewModalAddon', 'DataFilesProjectPublish', 'DataFilesProjectReview',
+               'DataFilesManageProjectModalAddon', 'DataFilesUploadModalListingTableAddon'],
+    "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
     "noPHISystem": "",
     "customDashboardSection": None,

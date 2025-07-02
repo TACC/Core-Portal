@@ -37,3 +37,14 @@
   color: #707070;
   display: flex;
 }
+
+.dataTypeBox {
+  display: inline-block;
+  background-color: #808080; /* Light grey background */
+  color: #fff; /* Dark text color */
+  padding: 2px 8px; /* Small top/bottom padding, larger left/right padding */
+  border-radius: 12px; /* Rounded corners */
+  font-size: 0.875rem; /* Smaller font size */
+  margin: 8px 0px;
+  font-weight: bold;
+}

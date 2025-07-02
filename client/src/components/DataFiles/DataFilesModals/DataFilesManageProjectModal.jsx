@@ -5,6 +5,7 @@ import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,12 @@ const DataFilesManageProjectModal = () => {
     );
 
     return projectSystem?.readOnly || !canEditSystem;
+  });
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+
+  const { DataFilesManageProjectModalAddon } = useAddonComponents({
+    portalName,
   });
 
   const toggle = useCallback(() => {
@@ -128,7 +135,7 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          {readOnlyTeam ? 'View' : 'Manage'} Team
+          {readOnlyTeam ? 'View' : 'Manage'} Authors
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -143,7 +150,7 @@ const DataFilesManageProjectModal = () => {
           {error ? (
             <div className={styles.error}>
               <Message type="warn">
-                An error occurred while modifying team members
+                An error occurred while modifying authors
               </Message>
             </div>
           ) : null}
@@ -154,6 +161,9 @@ const DataFilesManageProjectModal = () => {
               </Button>
             ) : null}
           </div>
+          {DataFilesManageProjectModalAddon && (
+            <DataFilesManageProjectModalAddon projectId={projectId} />
+          )}
         </ModalBody>
       </Modal>
     </div>

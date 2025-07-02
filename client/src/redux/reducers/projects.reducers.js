@@ -37,6 +37,7 @@ export default function projects(state = initialState, action) {
         ...state,
         listing: {
           ...state.listing,
+          projects: [],
           error: null,
           loading: true,
         },
@@ -119,6 +120,7 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
+          ...state.metadata,
           ...action.payload,
           loading: false,
           error: null,
@@ -148,7 +150,8 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         metadata: {
-          ...action.payload,
+          ...state.metadata,
+          members: action.payload.members,
           loading: false,
           error: null,
         },
@@ -218,6 +221,75 @@ export default function projects(state = initialState, action) {
       return {
         ...state,
         operation: initialState.operation,
+      };
+    case 'PROJECTS_CLEAR_METADATA':
+      return {
+        ...state,
+        metadata: initialState.metadata,
+      };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: true,
+          error: null,
+          result: null,
+        },
+      };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_SUCCESS':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: false,
+          error: null,
+          result: action.payload,
+        },
+      };
+    case 'PROJECTS_CREATE_PUBLICATION_REQUEST_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'publicationRequest',
+          loading: false,
+          error: action.payload,
+          result: null,
+        },
+      };
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'getPublicationRequests',
+          loading: true,
+          error: null,
+          result: null,
+        },
+      };
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_SUCCESS':
+      return {
+        ...state,
+        metadata: {
+          ...state.metadata,
+          publication_requests: action.payload,
+        },
+        operation: {
+          name: 'getPublicationRequests',
+          loading: false,
+          error: null,
+          result: action.payload,
+        },
+      };
+    case 'PROJECTS_GET_PUBLICATION_REQUESTS_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'getPublicationRequests',
+          loading: false,
+          error: action.payload,
+          result: null,
+        },
       };
     default:
       return state;

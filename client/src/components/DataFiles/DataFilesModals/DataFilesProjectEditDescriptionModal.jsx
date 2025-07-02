@@ -1,11 +1,12 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, Message } from '_common';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,11 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.name === 'titleDescription' &&
       state.projects.operation.error
     );
+  });
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
+    portalName,
   });
 
   const initialValues = useMemo(
@@ -52,43 +58,47 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
+            metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
+          modal: 'editproject',
         },
       });
     },
     [projectId, dispatch]
   );
 
-  const validationSchema = Yup.object().shape({
-    title: Yup.string()
-      .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
-      .required('Please enter a title.'),
-    description: Yup.string().max(
-      800,
-      'Description must be at most 800 characters'
-    ),
-  });
+  const [validationSchema, setValidationSchema] = useState(
+    Yup.object().shape({
+      title: Yup.string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(150, 'Title must be at most 150 characters')
+        .required('Please enter a title.'),
+      description: Yup.string().max(
+        800,
+        'Description must be at most 800 characters'
+      ),
+    })
+  );
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Descriptions
-      </ModalHeader>
-      <ModalBody>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={setProjectTitleDescription}
-          validationSchema={validationSchema}
-        >
-          {({ isValid, dirty }) => (
-            <Form>
+    <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
+      <Formik
+        initialValues={initialValues}
+        onSubmit={setProjectTitleDescription}
+        validationSchema={validationSchema}
+      >
+        {({ isValid, dirty }) => (
+          <Form>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
+              Edit Dataset
+            </ModalHeader>
+            <ModalBody className={styles['modal-body']}>
               <FormField
                 name="title"
                 aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Dataset Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
@@ -100,15 +110,23 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="description"
                 label={
                   <div>
-                    Workspace Description{' '}
+                    Dataset Description{' '}
                     <small>
                       <em>(Maximum 800 characters)</em>
                     </small>
                   </div>
                 }
                 type="textarea"
+                rows={5}
                 className={styles['description-textarea']}
               />
+              {DataFilesProjectEditDescriptionModalAddon && (
+                <DataFilesProjectEditDescriptionModalAddon
+                  setValidationSchema={setValidationSchema}
+                />
+              )}
+            </ModalBody>
+            <ModalFooter>
               <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">
@@ -126,10 +144,10 @@ const DataFilesProjectEditDescriptionModal = () => {
                   Update Changes
                 </Button>
               </div>
-            </Form>
-          )}
-        </Formik>
-      </ModalBody>
+            </ModalFooter>
+          </Form>
+        )}
+      </Formik>
     </Modal>
   );
 };

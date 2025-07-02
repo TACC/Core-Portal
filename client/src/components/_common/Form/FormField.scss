@@ -1,10 +1,15 @@
 .form-field__label {
   font-weight: bold;
+  margin-top: -5px;
 }
 
 .form-field__help {
+  display: flex;
+  flex-direction: column;
   font-style: italic;
   font-weight: 400;
+  margin-top: -5px; 
+  margin-bottom: 5px;
 }
 
 .form-field__validation-error {
@@ -12,3 +17,4 @@
   color: #eb6e6e;
   padding-top: 5px;
 }
+

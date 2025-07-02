@@ -5,6 +5,8 @@
     "paths": {
       "_common/*": ["components/_common/*"],
       "_common": ["components/_common"],
+      "_custom/*": ["components/_custom/*"],
+      "_custom": ["components/_custom"],
       "utils/*": ["utils/*"]
     },
     "useDefineForClassFields": true,

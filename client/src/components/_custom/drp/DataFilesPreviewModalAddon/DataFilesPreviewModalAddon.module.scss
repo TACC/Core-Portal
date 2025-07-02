@@ -1,0 +1,36 @@
+.section main {
+  padding: 0;
+  margin: 0;
+}
+
+.listing-header {
+  font-size: 20px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0px;
+}
+
+.footer-remove-button {
+  margin-right: 10px;
+}
+
+.expand-div {
+  padding-bottom: 20px;
+}
+
+.input {
+  margin-right: 5px;
+}
+
+.metadata-div {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0px;
+}
+
+.metadata-button {
+  min-width: 250px !important;
+}

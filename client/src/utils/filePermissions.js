@@ -6,7 +6,10 @@
  * @param {String} api
  * @returns {Boolean}
  */
-export default function getFilePermissions(name, { files, scheme, api }) {
+export default function getFilePermissions(
+  name,
+  { files, scheme, api, customPermissionCheck }
+) {
   const protectedFiles = [
     '.bash_profile',
     '.bashrc',
@@ -25,28 +28,50 @@ export default function getFilePermissions(name, { files, scheme, api }) {
   switch (name) {
     case 'rename':
       return (
-        !isProtected && files.length === 1 && isPrivate && api !== 'googledrive'
+        !isProtected &&
+        files.length === 1 &&
+        isPrivate &&
+        api !== 'googledrive' &&
+        customPermissionCheck(name, files)
       );
     case 'download':
       return (
         files.length === 1 &&
         files[0].format !== 'folder' &&
-        api !== 'googledrive'
+        api !== 'googledrive' &&
+        customPermissionCheck(name, files)
       );
     case 'areMultipleFilesOrFolderSelected':
       return (
         (files.length > 1 || files.some((file) => file.format === 'folder')) &&
-        api !== 'googledrive'
+        api !== 'googledrive' &&
+        customPermissionCheck(name, files)
       );
     case 'extract':
-      return files.length === 1 && isArchive && isPrivate && api === 'tapis';
+      return (
+        files.length === 1 &&
+        isArchive &&
+        isPrivate &&
+        api === 'tapis' &&
+        customPermissionCheck(name, files)
+      );
     case 'compress':
-      return !isArchive && files.length > 0 && isPrivate && api === 'tapis';
+      return (
+        !isArchive &&
+        files.length > 0 &&
+        isPrivate &&
+        api === 'tapis' &&
+        customPermissionCheck(name, files)
+      );
     case 'copy':
-      return files.length > 0;
+      return files.length > 0 && customPermissionCheck(name, files);
     case 'move':
       return (
-        !isProtected && files.length > 0 && isPrivate && api !== 'googledrive'
+        !isProtected &&
+        files.length > 0 &&
+        isPrivate &&
+        api !== 'googledrive' &&
+        customPermissionCheck(name, files)
       );
     case 'trash':
       return (

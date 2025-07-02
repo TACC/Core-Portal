@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -54,14 +54,47 @@ const DataFilesToolbar = ({ scheme, api }) => {
     shallowEqual
   );
 
-  const selectedSystem = systemList.find(
-    (sys) => sys.system === params.system && sys.scheme === params.scheme
-  );
+  // A project system has different fields than a regular system
+  const selectedSystem = systemList.find((sys) => {
+    if (params.scheme === 'projects') {
+      return params.api === sys.api && sys.scheme === params.scheme;
+    } else {
+      return sys.system === params.system && sys.scheme === params.scheme;
+    }
+  });
 
   const { projectId } = useSelector((state) => state.projects.metadata);
 
+  // defaults to return true if no custom permission check is provided
+  const [customPermissionCheck, setCustomPermissionCheck] = useState(
+    () => () => true
+  );
+  const { hasCustomDataFilesToolbarChecks } = useSelector(
+    (state) => state.workbench.config
+  );
+  const { portalName } = useSelector((state) => state.workbench);
+
+  useEffect(() => {
+    // dynamically import custom permission check function if it exists
+
+    const loadCustomPermissions = async () => {
+      try {
+        const module = await import(
+          `../../_custom/${portalName.toLowerCase()}/utils/DataFilesToolbar/customFilePermissions.js`
+        );
+        setCustomPermissionCheck(() => module.default);
+      } catch (error) {
+        console.error('Error loading custom permission check:', error);
+      }
+    };
+
+    if (hasCustomDataFilesToolbarChecks && portalName) {
+      loadCustomPermissions();
+    }
+  }, [hasCustomDataFilesToolbarChecks, portalName]);
+
   const authenticatedUser = useSelector(
-    (state) => state.authenticatedUser.user.username
+    (state) => state.authenticatedUser?.user?.username
   );
 
   const { query: authenticatedUserQuery } = useSystemRole(
@@ -72,13 +105,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const isGuest = authenticatedUserQuery?.data?.role === 'GUEST';
 
   const inTrash = useSelector((state) => {
-    // remove leading slash from homeDir value
-    const homeDir = selectedSystem?.homeDir?.slice(1);
-    if (!homeDir) return false;
+    if (selectedSystem?.scheme === 'projects') {
+      return state.files.params.FilesListing.path.startsWith(
+        `${state.workbench.config.trashPath}`
+      );
+    } else {
+      // remove leading slash from homeDir value
+      const homeDir = selectedSystem?.homeDir?.slice(1);
+      if (!homeDir) return false;
 
-    return state.files.params.FilesListing.path.startsWith(
-      `${homeDir}/${state.workbench.config.trashPath}`
-    );
+      return state.files.params.FilesListing.path.startsWith(
+        `${homeDir}/${state.workbench.config.trashPath}`
+      );
+    }
   });
 
   const trashedFiles = useSelector((state) =>
@@ -191,7 +230,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const trashCallback = useCallback(() => {
     // Specific handling for shared workspaces.
     const homeDir = selectedSystem?.homeDir || '';
-    const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
+    const destSystem = selectedFiles[0]?.system || selectedSystem?.system;
     if (!destSystem) return;
 
     trash({
@@ -208,7 +247,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme, api };
+  const permissionParams = {
+    files: selectedFiles,
+    scheme,
+    api,
+    customPermissionCheck,
+  };
   const canDownload = getFilePermissions('download', permissionParams);
   const areMultipleFilesOrFolderSelected = getFilePermissions(
     'areMultipleFilesOrFolderSelected',
@@ -216,7 +260,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
   const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
   const canMove = getFilePermissions('move', permissionParams) && !isGuest;
-  const canCopy = getFilePermissions('copy', permissionParams);
+  const canCopy =
+    getFilePermissions('copy', permissionParams) && !!authenticatedUser;
   const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);

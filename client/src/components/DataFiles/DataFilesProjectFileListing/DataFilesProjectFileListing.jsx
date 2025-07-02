@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -8,16 +8,40 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import { useFileListing } from 'hooks/datafiles';
+import {
+  useAddonComponents,
+  useFileListing,
+  useSystems,
+} from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import styles from './DataFilesProjectFileListing.module.scss';
 
-const DataFilesProjectFileListing = ({ system, path }) => {
+const DataFilesProjectFileListing = ({
+  rootSystem,
+  system,
+  path,
+  basePath,
+}) => {
   const dispatch = useDispatch();
   const { fetchListing } = useFileListing('FilesListing');
+  const { isPublicationSystem, isReviewSystem } = useSystems();
+  if (!basePath) basePath = '/workbench/data';
+
+  // logic to render addonComponents for DRP
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    DataFilesProjectFileListingAddon,
+    DataFilesProjectFileListingMetadataAddon,
+    DataFilesProjectFileListingMetadataTitleAddon,
+  } = useAddonComponents({ portalName });
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
+      payload: system,
+    });
+
+    dispatch({
+      type: 'PROJECTS_GET_PUBLICATION_REQUESTS',
       payload: system,
     });
   }, [system]);
@@ -27,13 +51,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }, [system, path, fetchListing]);
 
   const metadata = useSelector((state) => state.projects.metadata);
+  const folderMetadata = useSelector(
+    (state) => state.files.folderMetadata?.FilesListing
+  );
 
   const canEditSystem = useSelector(
     (state) =>
       metadata.members
         .filter((member) =>
           member.user
-            ? member.user.username === state.authenticatedUser.user.username
+            ? member.user.username === state.authenticatedUser?.user?.username
             : { access: null }
         )
         .map((currentUser) => currentUser.access === 'owner')[0]
@@ -85,20 +112,41 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     <SectionTableWrapper
       className={styles.root}
-      header={<div className={styles.title}>{metadata.title}</div>}
+      header={
+        <div className={styles.title}>
+          {DataFilesProjectFileListingMetadataTitleAddon ? (
+            <DataFilesProjectFileListingMetadataTitleAddon
+              folderMetadata={folderMetadata}
+              metadata={metadata}
+              system={system}
+              path={path}
+            />
+          ) : (
+            metadata.title
+          )}
+        </div>
+      }
       headerActions={
         <div className={styles.controls}>
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Descriptions
+                Edit Dataset
               </Button>
               <span className={styles.separator}>|</span>
             </>
           ) : null}
-          <Button type="link" onClick={onManage}>
-            {`${readOnlyTeam ? 'View' : 'Manage'} Team`}
-          </Button>
+          {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
+            <Button type="link" onClick={onManage}>
+              {readOnlyTeam ? 'View' : 'Manage'} Authors
+            </Button>
+          )}
+          {DataFilesProjectFileListingAddon && (
+            <DataFilesProjectFileListingAddon
+              rootSystem={rootSystem}
+              system={system}
+            />
+          )}
         </div>
       }
       manualContent
@@ -110,13 +158,28 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
+        <>
+          {DataFilesProjectFileListingMetadataAddon ? (
+            <ShowMore key={`${system}-${path}`}>
+              <DataFilesProjectFileListingMetadataAddon
+                folderMetadata={folderMetadata}
+                metadata={metadata}
+                path={path}
+                showCitation={isPublicationSystem(rootSystem)}
+              />
+            </ShowMore>
+          ) : (
+            <ShowMore>{metadata.description}</ShowMore>
+          )}
+        </>
       </div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
         system={system}
         path={path || '/'}
+        basePath={basePath}
+        rootSystem={rootSystem}
       />
     </SectionTableWrapper>
   );
