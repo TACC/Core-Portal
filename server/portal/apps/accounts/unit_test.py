@@ -50,9 +50,7 @@ def mock_user():
 
     class MockUser:
         tapis_oauth = MockAccessToken()
-
-        def __str__(self):
-            return 'mockuser'
+        username = 'mockuser'
 
     return MockUser()
 
