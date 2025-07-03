@@ -57,16 +57,22 @@ const DataFilesExtractModal = () => {
         </p>
       </ModalBody>
       <ModalFooter>
-        <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+        <InlineMessage isVisible={status.type === 'SUCCESS'} type="success">
           Successfully started extract job
         </InlineMessage>
+        <InlineMessage
+          isVisible={status.type === 'ERROR'}
+          type="error"
+        >
+          {status.message}
+        </InlineMessage>        
         <Button
           onClick={extractCallback}
-          disabled={status === 'RUNNING' || status === 'SUCCESS'}
-          isLoading={status === 'RUNNING'}
+          disabled={status.type === 'RUNNING' || status.type === 'SUCCESS'}
+          isLoading={status.type === 'RUNNING'}
           type="primary"
           size="medium"
-          iconNameBefore={status === 'ERROR' ? 'alert' : null}
+          iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
         >
           Extract
         </Button>
