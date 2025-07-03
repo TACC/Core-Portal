@@ -42,14 +42,11 @@ function useExtract() {
   const { mutateAsync } = useMutation({ mutationFn: submitJobUtil });
 
   const extract = ({ file }: { file: TTapisFile }) => {
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'RUNNING', operation: 'extract' },
-    });
+    setStatus({ type: 'RUNNING' });
+
     if (!allocationForExtract) {
-      throw new Error('You need an allocation to extract.', {
-        cause: 'extractError',
-      });
+      setStatus({ type: 'ERROR', message: 'You need an allocation to extract.' });
+      return null;
     }
 
     const params = getExtractParams(
@@ -76,20 +73,14 @@ function useExtract() {
               },
             });
           } else if (response.status === 'PENDING') {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { status: { type: 'SUCCESS' }, operation: 'extract' },
-            });
+            setStatus({ type: 'SUCCESS' });
             dispatch({
               type: 'ADD_TOAST',
               payload: {
                 message: 'File extraction in progress',
               },
             });
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS',
-              payload: { operation: 'extract', status: {} },
-            });
+            setStatus({});
             dispatch({
               type: 'DATA_FILES_TOGGLE_MODAL',
               payload: { operation: 'extract', props: {} },
@@ -101,13 +92,7 @@ function useExtract() {
             response.cause === 'extractError'
               ? response.message
               : 'An error has occurred.';
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS',
-            payload: {
-              status: { type: 'ERROR', message: errorMessage },
-              operation: 'extract',
-            },
-          });
+          setStatus({ type: 'ERROR', message: errorMessage });
         },
       }
     );

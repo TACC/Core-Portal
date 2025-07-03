@@ -78,18 +78,16 @@ function useCompress() {
     }
 
     if (!allocationForCompress) {
-      throw new Error('You need an allocation to compress.', {
-        cause: 'compressError',
-      });
+      setStatus({ type: 'ERROR', message: 'You need an allocation to compress.' });
+      return null;
     }
 
     if (scheme !== 'private' && scheme !== 'projects') {
       defaultPrivateSystem = systems.find((s: any) => s.default);
 
       if (!defaultPrivateSystem) {
-        throw new Error('Folder downloads are unavailable in this portal', {
-          cause: 'compressError',
-        });
+        setStatus({ type: 'ERROR', message: 'Folder downloads are unavailable in this portal.' });
+        return null;
       }
     }
 
@@ -143,7 +141,7 @@ function useCompress() {
             }
           }
         },
-        onError: (response) => {
+        onError: (response: any) => {
           const errorMessage =
             response.cause === 'compressError'
               ? response.message
