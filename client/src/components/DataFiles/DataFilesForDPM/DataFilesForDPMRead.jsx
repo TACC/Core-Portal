@@ -5,7 +5,7 @@ export default function DataFilesForDPMRead() {
   useEffect(() => {
     // Or use `ShowMore` common component instead of `js-show-more` class
     import(
-      'https://cdn.jsdelivr.net/gh/TACC/Core-Styles@v2.38.0/src/lib/_imports/components/c-show-more/c-show-more.js'
+      'https://cdn.jsdelivr.net/gh/TACC/Core-Styles@v2/src/lib/_imports/components/c-show-more/c-show-more.js'
     )
       .then(({ generateMarkup }) => {
         generateMarkup(document.getElementsByClassName('js-show-more'), {
