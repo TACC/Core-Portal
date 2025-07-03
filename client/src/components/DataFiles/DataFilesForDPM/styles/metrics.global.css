@@ -1,0 +1,22 @@
+/* Metrics */
+
+.metrics-tableset {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-evenly;
+}
+
+.metrics-caption {
+    padding-block: 8px;
+    padding-inline: 12px;
+}
+p.metrics-caption {
+    margin-bottom: 0;
+}
+
+.metrics-note {
+    font-style: italic;
+}
+.metrics-note:not(small) {
+    font-size: small;
+} 

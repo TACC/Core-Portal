@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import { React, useState } from 'react';
 import CMSWrapper from '_common/CMSWrapper';
 
 import DataFilesForDPMBreadcrumbs from './DataFilesForDPMBreadcrumbs';
@@ -8,6 +8,7 @@ import DataFilesForDPMBrowse from './DataFilesForDPMBrowse';
 import DataFilesForDPMRead from './DataFilesForDPMRead';
 import DataFilesForDPMData from './DataFilesForDPMData';
 
+import './DataFilesForDPM.global.css';
 import style from './DataFilesForDPM.module.css';
 
 const tabs = [
@@ -36,16 +37,6 @@ const tabs = [
 
 function DataFilesForDPM() {
   const [view, setView] = useState('browse');
-
-  useEffect(() => {
-    return CMSWrapper.useDynamicStylesheets(
-      [
-        'https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/cms.css',
-        'https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@5717c8d/digitalrocks_assets/css/for-core-styles.css',
-      ],
-      'DataFilesForDPM',
-    );
-  }, []);
 
   return (
     <CMSWrapper>
