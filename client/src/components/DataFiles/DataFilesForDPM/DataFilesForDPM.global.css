@@ -1,9 +1,4 @@
 @import url('@tacc/core-styles/dist/components/bootstrap.pagination.css');
 
-@import url('./styles/data-tree.global.css');
-@import url('./styles/project.global.css');
-@import url('./styles/publication.global.css');
-@import url('./styles/metrics.global.css');
-@import url('./styles/license.global.css');
-
-@import url('./styles/tweak-core-styles.global.css');
+@import url('./styles/components.global.css');
+@import url('./styles/customize-core-styles.global.css');
