@@ -89,7 +89,7 @@ export default function DataFilesForDPMData() {
                   <th className="c-data-list__key">Number of Slices</th>
                   <td className="c-data-list__value">1000</td>
                 </tr>
-                <tr className="c-data-list__row--start-final">
+                <tr>
                   <th className="c-data-list__key">Byte Order</th>
                   <td className="c-data-list__value">little-endian</td>
                 </tr>
@@ -209,7 +209,7 @@ export default function DataFilesForDPMData() {
                   <th className="c-data-list__key">Number of Slices</th>
                   <td className="c-data-list__value">1000</td>
                 </tr>
-                <tr className="c-data-list__row--start-final">
+                <tr>
                   <th className="c-data-list__key">Byte Order</th>
                   <td className="c-data-list__value">little-endian</td>
                 </tr>
@@ -329,7 +329,7 @@ export default function DataFilesForDPMData() {
                   <th className="c-data-list__key">Number of Slices</th>
                   <td className="c-data-list__value">1000</td>
                 </tr>
-                <tr className="c-data-list__row--start-final">
+                <tr>
                   <th className="c-data-list__key">Byte Order</th>
                   <td className="c-data-list__value">little-endian</td>
                 </tr>
@@ -449,7 +449,7 @@ export default function DataFilesForDPMData() {
                   <th className="c-data-list__key">Number of Slices</th>
                   <td className="c-data-list__value">1000</td>
                 </tr>
-                <tr className="c-data-list__row--start-final">
+                <tr>
                   <th className="c-data-list__key">Byte Order</th>
                   <td className="c-data-list__value">little-endian</td>
                 </tr>
@@ -569,7 +569,7 @@ export default function DataFilesForDPMData() {
                   <th className="c-data-list__key">Number of Slices</th>
                   <td className="c-data-list__value">1000</td>
                 </tr>
-                <tr className="c-data-list__row--start-final">
+                <tr>
                   <th className="c-data-list__key">Byte Order</th>
                   <td className="c-data-list__value">little-endian</td>
                 </tr>

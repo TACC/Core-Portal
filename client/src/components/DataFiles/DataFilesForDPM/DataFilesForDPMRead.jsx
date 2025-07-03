@@ -275,13 +275,13 @@ export default function DataFilesForDPMRead() {
         </div>
 
         <div className="project-content">
-          <div id="project-files">
+          <div id="files">
             <h3>Files</h3>
 
             <ul className="data-tree">
               <li className="data-tree__item" id="sample-berea">
                 <details>
-                  <summary className="u-summary-link-merged">
+                  <summary className="u-summary-with-a-link">
                     <a className="u-title-needs-colon">
                       <span>Sample</span> <strong>Berea</strong>
                     </a>
@@ -359,7 +359,7 @@ export default function DataFilesForDPMRead() {
               </li>
               <li className="data-tree__item" id="sample-bandera-brown">
                 <details>
-                  <summary className="u-summary-link-merged">
+                  <summary className="u-summary-with-a-link">
                     <a className="u-title-needs-colon">
                       <span>Sample</span> <strong>Bandera Brown</strong>
                     </a>
@@ -439,7 +439,7 @@ export default function DataFilesForDPMRead() {
               </li>
               <li className="data-tree__item" id="sample-bandera-gray">
                 <details>
-                  <summary className="u-summary-link-merged">
+                  <summary className="u-summary-with-a-link">
                     <a className="u-title-needs-colon">
                       <span>Sample</span> <strong>Bandera Gray</strong>
                     </a>
@@ -517,7 +517,7 @@ export default function DataFilesForDPMRead() {
               </li>
               <li className="data-tree__item" id="sample-bentheimer">
                 <details>
-                  <summary className="u-summary-link-merged">
+                  <summary className="u-summary-with-a-link">
                     <a className="u-title-needs-colon">
                       <span>Sample</span> <strong>Bentheimer</strong>
                     </a>
@@ -595,7 +595,7 @@ export default function DataFilesForDPMRead() {
               </li>
               <li className="data-tree__item" id="sample-berea-sister-gray">
                 <details>
-                  <summary className="u-summary-link-merged">
+                  <summary className="u-summary-with-a-link">
                     <a className="u-title-needs-colon">
                       <span>Sample</span> <strong>Berea Sister Gray</strong>
                     </a>
