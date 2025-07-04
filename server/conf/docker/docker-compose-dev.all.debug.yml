@@ -1,6 +1,6 @@
 services:
   cms:
-    image: taccwma/core-cms:deps-core-styles-v2-45
+    image: taccwma/core-cms:latest
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
