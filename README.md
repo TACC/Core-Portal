@@ -102,8 +102,8 @@ After you clone the repository locally, there are several configuration steps re
 
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
 
-- Copy `server/conf/env_files/ngrok.sample.env` to `server/conf/env_files/ngrok.env`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
+- Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
+    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
 
 ##### CMS
 
@@ -117,14 +117,14 @@ After you clone the repository locally, there are several configuration steps re
     make build
 OR
 
-    docker compose -f ./server/conf/docker/docker-compose.yml build
+    docker-compose -f ./server/conf/docker/docker-compose.yml build
 
 
 #### Start the development environment:
     make start
 OR
 
-    docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
+    docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
 #### Install client-side dependencies and bundle code:
@@ -187,14 +187,9 @@ setup_allocations_index(force=True)
 
 ### Setting up notifications locally:
 
-1. Configure ngrok
-
-   a. Install [ngrok](https://ngrok.com/docs/getting-started/), and create an ngrok account.
-
-   b. Copy [server/conf/env_files/ngrok.sample.env](server/conf/env_files/ngrok.sample.env) to `server/conf/env_files/ngrok.env`.
-
-   c. In `server/conf/env_files/ngrok.env`, set the `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` variables using your authtoken and static ngrok domain found in your [ngrok dashboard](https://dashboard.ngrok.com/).
-
+1. Setup an account in ngrok, https://dashboard.ngrok.com/signup. Run the auth setup the signup steps suggest.
+2. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `core_portal_nginx`:
+   
 ```
 ngrok http 443
 ```

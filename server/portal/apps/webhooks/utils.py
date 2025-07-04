@@ -27,7 +27,7 @@ def register_webhook(callback=None, callback_data=None, user=None):
         user=user,
         webhook_id=get_webhook_id()
     )
-    return "{}/webhooks/callbacks/{}/".format(settings.VANITY_BASE_URL, external_call.webhook_id)
+    return "{}/webhooks/callbacks/{}/".format(settings.WH_BASE_URL, external_call.webhook_id)
 
 
 def validate_webhook(webhook_id):

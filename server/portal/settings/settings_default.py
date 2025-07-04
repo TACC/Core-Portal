@@ -11,7 +11,8 @@ _DEBUG = True
 # Namespace for portal
 _PORTAL_NAMESPACE = 'DRP'
 
-_VANITY_BASE_URL = 'https://cep.test'
+# NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
+_WH_BASE_URL = ''
 
 # To authenticate a user with the CMS after Portal login,
 # set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
@@ -19,7 +20,7 @@ _VANITY_BASE_URL = 'https://cep.test'
 _LOGIN_REDIRECT_URL = '/remote/login/'
 _LOGOUT_REDIRECT_URL = '/cms/logout/'
 
-_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede3', 'Lonestar6', 'Frontera', 'Vista']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['Stampede3', 'Lonestar6', 'Frontera']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -68,7 +69,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'default': True
     },
     {
-        'name': 'My Data (Frontera Scratch)',
+        'name': 'My Data (Scratch)',
         'system': 'frontera',
         'scheme': 'private',
         'api': 'tapis',
@@ -76,7 +77,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     },
     {
-        'name': 'My Data (Frontera Home)',
+        'name': 'My Data (Frontera)',
         'system': 'frontera',
         'scheme': 'private',
         'api': 'tapis',
@@ -163,17 +164,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
         'settings': {
-            # List of TAS project SQL IDs to check membership against for
-            # portal access. Only one is required.
-            'project_sql_id': [12345, 66858],
-
-            # TAS project SQL Id to set as the default project for users in
-            # this portal if user does not have membership in any project in
-            # the project_sql_id list.
-            'default_project_sql_id': 66858,
-
-            # Defaults to 'Accounting' if left blank
-            'rt_queue': 'Life Sciences'
+            'project_sql_id': 12345,
+            'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
         }
     },
     {
@@ -188,7 +180,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
             'access_systems': ['cloud.data', 'frontera', 'stampede2.community'],  # Tapis systems to grant file access
-            'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with TMS
+            'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with the keys service
         }
     },
 ]
@@ -200,24 +192,9 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            # List of TAS project SQL IDs to check membership against for
-            # portal access. Only one is required.
-            'project_sql_id': [12345, 66858],
-
-            # TAS project SQL Id to set upon approval as the default project
-            # for users in this portal if user does not have membership in any
-            # project in the project_sql_id list.
-            'default_project_sql_id': 66858,
-
-            # Defaults to 'Accounting' if left blank
-            'rt_queue': 'Life Sciences'
-        }
-    },
-    {
         'step': 'portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
         'settings': {
+            'access_systems': ['cloud.data', 'frontera', 'ls6'],
             'credentials_systems': ['cloud.data']
         }
     },

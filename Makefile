@@ -2,10 +2,7 @@ DOCKERHUB_REPO := $(shell cat ./docker_repo.var)
 DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
-NGROK_ENV_FILE = ./server/conf/env_files/ngrok.env
-ifeq ("$(wildcard $(NGROK_ENV_FILE))","")
-    NGROK_ENV_FILE = ./server/conf/env_files/ngrok.sample.env
-endif
+DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose > /dev/null; then echo "docker-compose"; else echo "docker compose"; fi)
 
 ####
 # `DOCKER_IMAGE_BRANCH` tag is the git tag for the commit if it exists, else the branch on which the commit exists
@@ -13,7 +10,7 @@ DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --ta
 
 .PHONY: build
 build:
-	docker compose -f ./server/conf/docker/docker-compose.yml build
+	$(DOCKER_COMPOSE_CMD) -f ./server/conf/docker/docker-compose.yml build
 
 .PHONY: build-full
 build-full:
@@ -32,12 +29,12 @@ publish-latest:
 
 .PHONY: start
 start:
-	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml down
+	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: stop-full
 stop-v:
-	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
+	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down -v

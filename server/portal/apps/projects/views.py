@@ -179,6 +179,7 @@ class ProjectsApiView(BaseApiView):
             service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
                                 path=f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}', 
                                 file=resized_file)
+
         METRICS.info(
             "Projects",
             extra={

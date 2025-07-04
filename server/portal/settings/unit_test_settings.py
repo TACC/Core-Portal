@@ -520,7 +520,7 @@ TACC_EXEC_SYSTEMS = {
     },
 }
 
-VANITY_BASE_URL = "https://testserver"
+WH_BASE_URL = "https://testserver"
 
 WORKBENCH_SETTINGS = {
     "debug": False
