@@ -78,7 +78,10 @@ function useCompress() {
     }
 
     if (!allocationForCompress) {
-      setStatus({ type: 'ERROR', message: 'You need an allocation to compress.' });
+      setStatus({
+        type: 'ERROR',
+        message: 'You need an allocation to compress.',
+      });
       return null;
     }
 
@@ -86,7 +89,10 @@ function useCompress() {
       defaultPrivateSystem = systems.find((s: any) => s.default);
 
       if (!defaultPrivateSystem) {
-        setStatus({ type: 'ERROR', message: 'Folder downloads are unavailable in this portal.' });
+        setStatus({
+          type: 'ERROR',
+          message: 'Folder downloads are unavailable in this portal.',
+        });
         return null;
       }
     }
