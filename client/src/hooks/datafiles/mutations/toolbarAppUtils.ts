@@ -17,10 +17,7 @@ function getAvailableHPCAlloc(activeAllocations: any, appExecHostname: string) {
   // exec system for the app with remaining compute time, or undefined if none found
   for (let activeAlloc of activeAllocations) {
     for (let allocSys of activeAlloc.systems) {
-      if (
-        allocSys.type === 'HPC' &&
-        allocSys.host === appExecHostname
-      ) {
+      if (allocSys.type === 'HPC' && allocSys.host === appExecHostname) {
         const availCompute =
           allocSys.allocation.computeAllocated -
           allocSys.allocation.computeUsed;
