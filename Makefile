@@ -32,12 +32,12 @@ publish-latest:
 
 .PHONY: start
 start:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml up
+	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down
+	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: stop-full
 stop-v:
-	$(DOCKER_COMPOSE_CMD) -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
+	docker compose --env-file $(NGROK_ENV_FILE) -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
