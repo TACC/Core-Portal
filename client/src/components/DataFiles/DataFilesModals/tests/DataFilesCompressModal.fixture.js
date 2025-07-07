@@ -78,7 +78,7 @@ const DataFilesCompressModalFixture = {
   },
   workbench: {
     config: {
-      compressApp: { id: 'compress', version: '0.0.4' },
+      compressApp: { id: 'compress-express', version: '0.0.1' },
     },
   },
   allocations: {
