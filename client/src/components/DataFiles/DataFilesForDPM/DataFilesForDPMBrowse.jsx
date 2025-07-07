@@ -6,10 +6,7 @@ export default function DataFilesForDPMBrowse() {
     <div className="o-section">
       <h1>Browse Datasets</h1>
       <div className="c-card-list">
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>11 Sandstones: raw, filtered and segmented data</h3>
           <p>
             <strong>Rodrigo Neumann</strong>
@@ -36,10 +33,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>
             Bentheimer and Nugget Residual Saturation Micro-Computed Tomography
             Data
@@ -71,10 +65,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>11 Sandstones: raw, filtered and segmented data</h3>
           <p>
             <strong>Rodrigo Neumann</strong>
@@ -101,10 +92,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>
             Bentheimer and Nugget Residual Saturation Micro-Computed Tomography
             Data
@@ -136,10 +124,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>11 Sandstones: raw, filtered and segmented data</h3>
           <p>
             <strong>Rodrigo Neumann</strong>
@@ -166,10 +151,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>
             Bentheimer and Nugget Residual Saturation Micro-Computed Tomography
             Data
@@ -201,10 +183,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>11 Sandstones: raw, filtered and segmented data</h3>
           <p>
             <strong>Rodrigo Neumann</strong>
@@ -231,10 +210,7 @@ export default function DataFilesForDPMBrowse() {
             className="img-fluid"
           />
         </li>
-        <li
-          className="c-card--image-top c-card--plain"
-          data-tag-change-from="article"
-        >
+        <li className="c-card--image-top c-card--plain">
           <h3>
             Bentheimer and Nugget Residual Saturation Micro-Computed Tomography
             Data

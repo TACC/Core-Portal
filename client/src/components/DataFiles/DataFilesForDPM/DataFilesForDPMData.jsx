@@ -42,11 +42,8 @@ export default function DataFilesForDPMData() {
       <section id="data" className="o-section">
         <h3>Data</h3>
 
-        <ul className="c-card-list" data-tag-change-from="div">
-          <li
-            className="c-card--image-top c-card--plain"
-            data-tag-change-from="article"
-          >
+        <ul className="c-card-list">
+          <li className="c-card--image-top c-card--plain">
             <img
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
@@ -96,7 +93,7 @@ export default function DataFilesForDPMData() {
               </tbody>
             </table>
 
-            <p className="dropdown" data-tag-change-from="div">
+            <p className="dropdown">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
                 data-bs-toggle="dropdown"
@@ -163,10 +160,7 @@ export default function DataFilesForDPMData() {
               </menu>
             </p>
           </li>
-          <li
-            className="c-card--image-top c-card--plain"
-            data-tag-change-from="article"
-          >
+          <li className="c-card--image-top c-card--plain">
             <img
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
@@ -216,7 +210,7 @@ export default function DataFilesForDPMData() {
               </tbody>
             </table>
 
-            <p className="dropdown" data-tag-change-from="div">
+            <p className="dropdown">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
                 data-bs-toggle="dropdown"
@@ -283,10 +277,7 @@ export default function DataFilesForDPMData() {
               </menu>
             </p>
           </li>
-          <li
-            className="c-card--image-top c-card--plain"
-            data-tag-change-from="article"
-          >
+          <li className="c-card--image-top c-card--plain">
             <img
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
@@ -336,7 +327,7 @@ export default function DataFilesForDPMData() {
               </tbody>
             </table>
 
-            <p className="dropdown" data-tag-change-from="div">
+            <p className="dropdown">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
                 data-bs-toggle="dropdown"
@@ -403,10 +394,7 @@ export default function DataFilesForDPMData() {
               </menu>
             </p>
           </li>
-          <li
-            className="c-card--image-top c-card--plain"
-            data-tag-change-from="article"
-          >
+          <li className="c-card--image-top c-card--plain">
             <img
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
@@ -456,7 +444,7 @@ export default function DataFilesForDPMData() {
               </tbody>
             </table>
 
-            <p className="dropdown" data-tag-change-from="div">
+            <p className="dropdown">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
                 data-bs-toggle="dropdown"
@@ -523,10 +511,7 @@ export default function DataFilesForDPMData() {
               </menu>
             </p>
           </li>
-          <li
-            className="c-card--image-top c-card--plain"
-            data-tag-change-from="article"
-          >
+          <li className="c-card--image-top c-card--plain">
             <img
               src="/media/filer_public_thumbnails/filer_public/30/62/3062e147-8fdb-4cd8-afa1-3fbbc6c42b31/dr-proj-317-data-1352.jpg__1000.0x1000.0_q85_subsampling-2.jpg"
               alt=""
@@ -575,7 +560,7 @@ export default function DataFilesForDPMData() {
                 </tr>
               </tbody>
             </table>
-            <p className="dropdown" data-tag-change-from="div">
+            <p className="dropdown">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
                 data-bs-toggle="dropdown"
