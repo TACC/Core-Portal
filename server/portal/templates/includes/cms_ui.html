@@ -26,6 +26,17 @@
   body { -webkit-font-smoothing: revert; }
   .c-button { --max-width: auto; }
 
+  /* To change Portal's Bootstrap styles to match CMS */
+  .workbench-wrapper .dropdown-menu,
+  .workbench-wrapper .dropdown-menu::before,
+  .workbench-wrapper .dropdown-menu::after,
+  .workbench-wrapper .dropdown-item,
+  .workbench-wrapper .dropdown-item:focus,
+  .workbench-wrapper .dropdown-item:hover,
+  .workbench-wrapper .dropdown-divider {
+    all: revert-layer;
+  }
+
   /* To hide navbar */
   /* TODO: Instead of this, component using CMS styles should not use navbar */
   #react-root:has(#mimic-cms) .nav-sidebar {
