@@ -787,7 +787,7 @@ export default function DataFilesForDPMRead() {
               <button
                 type="button"
                 className="close"
-                data-dismiss="modal"
+                data-bs-dismiss="modal"
                 aria-label="Close"
               >
                 <i aria-hidden="true">×</i>
