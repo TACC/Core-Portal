@@ -26,7 +26,7 @@ export default function DataFilesForDPMRead() {
             className="c-button c-button--primary  project-download-button"
             data-target="#project-download-modal"
             data-toggle="modal"
-            href="/media/filer_public_thumbnails/filer_public/65/10/6510c85e-4f00-4bde-b560-31614fb30ce0/dr-proj-317.png__768x768_subsampling-2.png"
+            href="#"
             target="_blank"
           >
             <i
@@ -113,7 +113,7 @@ export default function DataFilesForDPMRead() {
         <div className="row project-overview">
           <div className="col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
             <img
-              src="/media/filer_public_thumbnails/filer_public/65/10/6510c85e-4f00-4bde-b560-31614fb30ce0/dr-proj-317.png__800.0x764.0_subsampling-2.png"
+              src="https://www.digitalrocksportal.org/media/projects/317/archive.zip"
               alt=""
               srcSet="
                       https://pprd.digitalrocks.tacc.utexas.edu/media/filer_public_thumbnails/filer_public/65/10/6510c85e-4f00-4bde-b560-31614fb30ce0/dr-proj-317.png__576x576_subsampling-2.png 576w,
