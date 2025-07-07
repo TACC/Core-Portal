@@ -1,6 +1,4 @@
-@import url('./styles/global.css') layer(portal);
-
-@layer portal {
+@import url('./styles/global.css');
 
 /*
   Sectioning Root
@@ -23,6 +21,17 @@ body {
   min-height: var(--min-height, 0);
   min-width: var(--min-width, 0);
   /* stylelint-enable length-zero-no-unit */
+}
+
+/*
+  Inline Text Semantics
+  ===
+  https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics
+*/
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
 /*
@@ -49,7 +58,7 @@ body {
     <footer />
   </body>
 */
-body:not(.has-cms-ui) {
+body {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -93,18 +102,4 @@ body:not(.has-cms-ui) {
     overflow-y: auto;
     min-height: 0; /* critical for flexbox scrolling */
   }
-}
-
-/*
-  Inline Text Semantics
-  ===
-  https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics
-*/
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* end @layer portal */
 }
