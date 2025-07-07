@@ -843,7 +843,6 @@ export default function DataFilesForDPMRead() {
                           title="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
                           data-bs-toggle="tooltip"
                           data-bs-placement="top"
-                          data-title="Unique Requests (Downloads)"
                         >
                           ⓘ
                         </i>
@@ -858,7 +857,6 @@ export default function DataFilesForDPMRead() {
                           title="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
                           data-bs-toggle="tooltip"
                           data-bs-placement="top"
-                          data-title="Total Requests"
                         >
                           ⓘ
                         </i>
