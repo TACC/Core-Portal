@@ -5,16 +5,14 @@ import { Button, FormField, InlineMessage, SectionMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
+import { useCompress } from 'hooks/datafiles/mutations';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesDownloadMessageModal = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
-  const status = useSelector(
-    (state) => state.files.operationStatus.compress,
-    shallowEqual
-  );
+  const { compress, status, setStatus } = useCompress();
 
   const isOpen = useSelector((state) => state.files.modals.downloadMessage);
 
@@ -30,16 +28,11 @@ const DataFilesDownloadMessageModal = () => {
       })),
     shallowEqual
   );
-  const selected = useMemo(() => selectedFiles, [isOpen]);
-  const formRef = React.useRef();
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
-      dispatch({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'compress' },
-      });
+      setStatus({});
       history.push(location.pathname);
     }
   };
@@ -66,11 +59,11 @@ const DataFilesDownloadMessageModal = () => {
     });
   };
 
-  const compressCallback = () => {
-    const { filenameDisplay, compressionType } = formRef.current.values;
+  const compressCallback = ({ filenameDisplay, compressionType }) => {
     let containsFolder = false;
     let totalFileSize = 0;
     const maxFileSize = 2 * 1024 * 1024 * 1024;
+
     // Add up the file sizes of all files and shows if the user selected a folder
     for (let i = 0; i < selectedFiles.length; i++) {
       totalFileSize = totalFileSize + selectedFiles[i].length;
@@ -78,22 +71,16 @@ const DataFilesDownloadMessageModal = () => {
         containsFolder = true;
       }
     }
+
     // Run the dispatch if the user does not select any folders...
     if (containsFolder === false) {
       // ...and if the total file size is below 2 GB
       if (totalFileSize < maxFileSize) {
-        dispatch({
-          type: 'DATA_FILES_COMPRESS',
-          payload: {
-            filename: filenameDisplay,
-            files: selected,
-            scheme: params.scheme,
-            compressionType,
-            onSuccess: {
-              type: 'DATA_FILES_TOGGLE_MODAL',
-              payload: { operation: 'downloadMessage', props: {} },
-            },
-          },
+        compress({
+          filename: filenameDisplay,
+          files: selectedFiles,
+          compressionType,
+          fromDownload: true,
         });
         // Prevent the compression process and redirect the user to Globus otherwise
       } else {
@@ -140,7 +127,6 @@ const DataFilesDownloadMessageModal = () => {
         Download
       </ModalHeader>
       <Formik
-        innerRef={formRef}
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={compressCallback}

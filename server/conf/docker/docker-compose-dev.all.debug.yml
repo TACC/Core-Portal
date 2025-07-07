@@ -1,7 +1,3 @@
-# This compose file is useful for testing https.
-# The .env file sets ENVVARS for the Docker CLI used by this compose file.
----
-version: "3.8"
 services:
   cms:
     image: taccwma/core-cms:latest
@@ -94,6 +90,9 @@ services:
 
   websockets:
     image: taccwma/core-portal:latest
+    env_file:
+      - path: ../env_files/ngrok.env
+        required: false
     volumes:
       - ../../../.:/srv/www/portal
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
@@ -107,6 +106,9 @@ services:
 
   django:
     image: taccwma/core-portal:latest
+    env_file:
+      - path: ../env_files/ngrok.env
+        required: false
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -126,6 +128,9 @@ services:
 
   workers:
     image: taccwma/core-portal:latest
+    env_file:
+      - path: ../env_files/ngrok.env
+        required: false
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -145,6 +150,19 @@ services:
       - ../../docs:/docs/site
     command: ["mkdocs", "build"]
     container_name: frontera_docs
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    env_file:
+      - path: ../env_files/ngrok.env
+    command:
+      - "http"
+      - --url=${NGROK_DOMAIN}
+      - "https://host.docker.internal:443"
+    ports:
+      - 4040:4040
+    container_name: core_portal_ngrok
+    hostname: core_portal_ngrok
 
 volumes:
   core_portal_redis_data:
