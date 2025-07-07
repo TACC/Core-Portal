@@ -809,7 +809,7 @@ export default function DataFilesForDPMRead() {
             </div>
             <div className="modal-body">
               <div className="metrics-tableset">
-                <table>
+                <table className="metrics-table">
                   <thead>
                     <tr>
                       <th>Aggregated Usage</th>
@@ -867,7 +867,7 @@ export default function DataFilesForDPMRead() {
                     </tr>
                   </tbody>
                 </table>
-                <table>
+                <table className="metrics-table">
                   <thead>
                     <tr>
                       <th>

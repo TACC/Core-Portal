@@ -5,6 +5,27 @@
     gap: 1rem;
     justify-content: space-evenly;
 }
+.metrics-tableset > * {
+    align-self: start;
+}
+
+.metrics-table :is(input, select, textarea) {
+    font-size: small;
+}
+/* To undo CMS size of interactive elements */
+@layer mimic-cms.base {
+    .metrics-table :is(input, select, textarea) {
+        padding: revert-layer;
+    }
+}
+/* To undo CMS size of interactive elements (for DPM Pre-Prod CMS) */
+/* TODO: Remove after DPM pprd CMS "Browse Databases" reference is useless */
+/* https://github.com/TACC/Core-CMS-Custom/blob/9f5d6b1/digitalrocks_assets/css/browse-datasets.css */
+@layer base {
+    .metrics-table :is(input, select, textarea) {
+        padding: revert-layer;
+    }
+}
 
 .metrics-caption {
     padding-block: 8px;
