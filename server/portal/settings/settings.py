@@ -674,11 +674,27 @@ ALLOCATIONS_TO_EXCLUDE = (
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
-WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
+NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', '')
 
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
 PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', True)
+
+# Vanity URL for the portal. Backwards compatibility with old _WH_BASE_URL setting.
+# Also include support for NGINX_SERVER_NAME environment variable if no settings are set.
+VANITY_BASE_URL = getattr(
+    settings_custom,
+    "_VANITY_BASE_URL",
+    getattr(
+        settings_custom,
+        "_WH_BASE_URL",
+        (
+            f"https://{os.environ.get('NGINX_SERVER_NAME')}"
+            if os.environ.get("NGINX_SERVER_NAME")
+            else ""
+        ),
+    ),
+)
 
 """
 SETTINGS: ELASTICSEARCH

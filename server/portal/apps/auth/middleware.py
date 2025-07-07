@@ -21,9 +21,14 @@ class TapisTokenRefreshMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        ignore_paths = [
+            reverse("portal_auth:tapis_oauth_callback"),
+            reverse("portal_auth:tapis_oauth"),
+            reverse("portal_accounts:logout"),
+            reverse("login"),
+        ]
         if (
-            request.path != reverse("portal_accounts:logout")
-            and request.path != reverse("login")
+            request.path not in ignore_paths
             and not request.path.startswith("/static/")
             and request.user.is_authenticated
         ):
