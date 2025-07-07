@@ -24,8 +24,8 @@ export default function DataFilesForDPMRead() {
           <span>11 Sandstones: Raw, Filtered and Segmented Data</span>{' '}
           <a
             className="c-button c-button--primary  project-download-button"
-            data-target="#project-download-modal"
-            data-toggle="modal"
+            data-bs-target="#project-download-modal"
+            data-bs-toggle="modal"
             href="#"
             target="_blank"
           >
@@ -100,8 +100,8 @@ export default function DataFilesForDPMRead() {
           <strong>
             <a
               className="c-button c-button--as-link"
-              data-target="#project-metrics-modal"
-              data-toggle="modal"
+              data-bs-target="#project-metrics-modal"
+              data-bs-toggle="modal"
               href="./metrics/"
             >
               Details
@@ -695,7 +695,7 @@ export default function DataFilesForDPMRead() {
               <button
                 type="button"
                 className="close"
-                data-dismiss="modal"
+                data-bs-dismiss="modal"
                 aria-label="Close"
               >
                 <i aria-hidden="true">×</i>

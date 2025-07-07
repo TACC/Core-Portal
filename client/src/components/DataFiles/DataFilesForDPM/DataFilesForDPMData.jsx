@@ -99,7 +99,7 @@ export default function DataFilesForDPMData() {
             <p className="dropdown" data-tag-change-from="div">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 type="button"
               >
                 Action
@@ -219,7 +219,7 @@ export default function DataFilesForDPMData() {
             <p className="dropdown" data-tag-change-from="div">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 type="button"
               >
                 Action
@@ -339,7 +339,7 @@ export default function DataFilesForDPMData() {
             <p className="dropdown" data-tag-change-from="div">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 type="button"
               >
                 Action
@@ -459,7 +459,7 @@ export default function DataFilesForDPMData() {
             <p className="dropdown" data-tag-change-from="div">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 type="button"
               >
                 Action
@@ -578,7 +578,7 @@ export default function DataFilesForDPMData() {
             <p className="dropdown" data-tag-change-from="div">
               <button
                 className="dropdown-toggle  c-button c-button--primary"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 type="button"
               >
                 Action

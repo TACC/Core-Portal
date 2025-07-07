@@ -15,7 +15,7 @@ export default function DataFilesForDPMViews({
             <a
               className={`nav-link${view === tab.view ? ' active' : ''}`}
               id={tab.id}
-              data-toggle="tab"
+              data-bs-toggle="tab"
               href={`#${tab.contentId}`}
               role="tab"
               aria-controls={tab.contentId}
