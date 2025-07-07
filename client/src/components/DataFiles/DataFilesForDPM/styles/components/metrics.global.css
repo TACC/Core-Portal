@@ -14,7 +14,7 @@
 }
 /* To undo CMS size of interactive elements */
 @layer mimic-cms.base {
-    .metrics-table :is(input, select, textarea) {
+    body.has-cms-ui .metrics-table :is(input, select, textarea) {
         padding: revert-layer;
     }
 }
