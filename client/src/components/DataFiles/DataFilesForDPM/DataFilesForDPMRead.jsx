@@ -3,6 +3,15 @@ import React, { useEffect } from 'react';
 // TODO: Replace use of this with component(s) from WC-219
 export default function DataFilesForDPMRead() {
   useEffect(() => {
+    // To trigger tooltips
+    let tooltipInstances = [];
+    if (window.bootstrap && window.bootstrap.Tooltip) {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipInstances = [...tooltipTriggerList].map(
+        (el) => new window.bootstrap.Tooltip(el)
+      );
+    }
+
     // Or use `ShowMore` common component instead of `js-show-more` class
     import(
       'https://cdn.jsdelivr.net/gh/TACC/Core-Styles@v2/src/lib/_imports/components/c-show-more/c-show-more.js'
@@ -15,6 +24,11 @@ export default function DataFilesForDPMRead() {
       .catch((err) => {
         console.error('Failed to load c-show-more module:', err);
       });
+
+    // To clean up
+    return () => {
+      tooltipInstances.forEach((instance) => instance.dispose && instance.dispose());
+    };
   }, []);
 
   return (
@@ -806,12 +820,15 @@ export default function DataFilesForDPMRead() {
                     <tr>
                       <td>
                         Unique Investigations
+                        {' '}
                         <small className="metrics-note">(views)</small>
+                        {' '}
                         <i
                           title="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
-                          data-title="Unique Investigations (Views)"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
                         >
-                          ?
+                          ⓘ
                         </i>
                       </td>
                       <td>0</td>
@@ -819,12 +836,16 @@ export default function DataFilesForDPMRead() {
                     <tr>
                       <td>
                         Unique Requests
+                        {' '}
                         <small className="metrics-note">(downloads)</small>
+                        {' '}
                         <i
                           title="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
                           data-title="Unique Requests (Downloads)"
                         >
-                          ?
+                          ⓘ
                         </i>
                       </td>
                       <td>0</td>
@@ -832,11 +853,14 @@ export default function DataFilesForDPMRead() {
                     <tr>
                       <td>
                         Total Requests
+                        {' '}
                         <i
                           title="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
                           data-title="Total Requests"
                         >
-                          ?
+                          ⓘ
                         </i>
                       </td>
                       <td>0</td>

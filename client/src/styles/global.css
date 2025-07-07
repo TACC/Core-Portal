@@ -30,6 +30,7 @@
 @import url('./components/bootstrap.nav.css');
 @import url('./components/bootstrap.utils.css');
 @import url('./components/bootstrap.button.css');
+@import url('./components/bootstrap.tooltip.css');
 @import url('./components/mui.tabs.css');
 
 /* TRUMPS */
