@@ -62,8 +62,4 @@ PublishedDatasetBreadcrumbs.propTypes = {
   }),
 };
 
-PublishedDatasetBreadcrumbs.defaultProps = {
-  params: {},
-};
-
 export default PublishedDatasetBreadcrumbs;
