@@ -52,18 +52,6 @@
     const media = (enabled) ? 'all' : 'not all';
     document.getElementById('cms-ui-styles').media = media;
 
-    const cmsLinkSelectors = [
-      'link[href*="/static/site_cms/css/"]',
-      'link[href*="Core-CMS-Custom"]'
-    ];
-    
-    cmsLinkSelectors.forEach(selector => {
-      document.querySelectorAll(selector).forEach(link => {
-        link.media = media;
-      });
-    });
-  };
-
   const toggleLayout = (enabled) => {
     document.body.classList.toggle('has-cms-ui', enabled);
   };
