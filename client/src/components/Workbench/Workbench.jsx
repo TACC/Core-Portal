@@ -56,6 +56,11 @@ function Workbench() {
     shallowEqual
   );
 
+  // Ensure CMS styles are deactivated when entering workbench
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('cms-styles-deactivated'));
+  }, []);
+
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({
