@@ -1,0 +1,27 @@
+/* to position nav to the right of breadcrumbs */
+:global(#mimic-cms) {
+    position: relative;
+}
+
+.nav {
+    position: absolute;
+    right: var(--bs-gutter-x);
+    top: 0;
+}
+
+/* to remove styles from tab-pane */
+.content :global(.tab-pane) {
+    /* overrides core-styles */
+    border-top: none;
+    padding-inline: unset;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+
+    nav button {
+        font-size: 14px !important;
+    }
+}
