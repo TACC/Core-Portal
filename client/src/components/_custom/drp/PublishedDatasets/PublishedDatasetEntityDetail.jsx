@@ -147,18 +147,14 @@ function PublishedDatasetEntityDetail({ params }) {
                             const isValidImage = validImageExtensions.some(ext => 
                                 raw.name.toLowerCase().endsWith(ext)
                             );
-
-                            console.log(isValidImage);
                             
                             if (isValidImage) {
                                 imageSrc = `${projectUrl}/${raw.path}`;
-                                // imageSrc = `${projectUrl}/Berea%20Sandstone/Berea%3A%2086%25%20air%20saturation/Berea_86sat.ubc.thumb.jpg`;
                             } else {
-                                imageSrc = `${BASE_ASSET_URL}/media/default_logo.png`;
+                                imageSrc = `${BASE_ASSET_URL}/media/default/cover_image/default_logo.png`;
                             }
                         } else {
-                            // Default fallback
-                            imageSrc = `${BASE_ASSET_URL}/media/default_logo.png`;
+                            imageSrc = `${BASE_ASSET_URL}/media/default/cover_image/default_logo.png`;
                         }
                         
                         return (
