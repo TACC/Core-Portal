@@ -136,6 +136,7 @@ OR
 -  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
 -  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][3]._
+
 #### Initialize the application in the `core_portal_django` container:
 
     docker exec -it core_portal_django /bin/bash
@@ -149,9 +150,8 @@ OR
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
-    python3 manage.py createsuperuser
 
-To be able to create pages in the CMS, [set your (automatically-created) CMS user as Staff and Superuser](https://github.com/TACC/Core-CMS/wiki/How-to-Set-Your-User-as-Staff-or-Superuser).
+To be able to create pages in the CMS: first (if you have not already) [log in to the portal](https://cep.test/login), then [set your (automatically-created) CMS user as Staff and Superuser](https://github.com/TACC/Core-CMS/wiki/How-to-Set-Your-User-as-Staff-or-Superuser), finally visit https://cep.test/.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
