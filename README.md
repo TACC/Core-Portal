@@ -151,7 +151,7 @@ OR
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser
 
-Finally, create a home page in the CMS.
+To be able to create pages in the CMS, [set your (automatically-created) CMS user as Staff and Superuser](https://github.com/TACC/Core-CMS/wiki/How-to-Set-Your-User-as-Staff-or-Superuser).
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
