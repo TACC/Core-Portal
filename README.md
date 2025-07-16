@@ -150,6 +150,7 @@ OR
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
+    python3 manage.py createsuperuser  # Unless you will only login with your TACC account
 
 You may optionally create sample pages in the CMS.[^1]
 
