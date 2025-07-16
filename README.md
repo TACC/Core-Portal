@@ -153,7 +153,7 @@ OR
 
 You may optionally create sample pages in the CMS.[^1]
 
-[^1]: First (if you have not already) [log in to the portal](https://cep.test/login), then [set your (automatically-created) CMS user as Staff and Superuser](https://github.com/TACC/Core-CMS/wiki/How-to-Set-Your-User-as-Staff-or-Superuser), finally visit https://cep.test/.
+[^1]: First (if you have not already) [log in to the portal](https://cep.test/login). Then, [set your (automatically-created) CMS user as Staff and Superuser](https://github.com/TACC/Core-CMS/wiki/How-to-Set-Your-User-as-Staff-or-Superuser). Finally, follow instructions at https://cep.test/.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
