@@ -53,9 +53,9 @@ function PublishedDatasetEntityDetail({ params }) {
 
 
     const groupFilesByBaseName = (files) => {
-        const processedFileSuffixes = ['.thumb.jpg', '.histogram.jpg', '.histogram.csv', '.gif'];
+        const processedFileSuffixes = ['.thumb.jpg', '.histogram.jpg', '.histogram.csv', '.gif', '.jpg'];
     
-        return Object.values(files.reduce((map, file) => {
+        const groups = files.reduce((map, file) => {
             const suffix = processedFileSuffixes.find(suf => file.name.endsWith(suf));
             const baseName = suffix
                 ? file.name.slice(0, -suffix.length)
@@ -72,7 +72,18 @@ function PublishedDatasetEntityDetail({ params }) {
             }
     
             return map;
-        }, {}));
+        }, {});
+
+        // Handle standalone processed files (e.g., standalone .gif files)
+        // If a group has no raw file but has processed files, treat the first processed file as raw
+        Object.values(groups).forEach(group => {
+            if (!group.raw && group.processed.length > 0) {
+                group.raw = group.processed[0];
+                group.processed = group.processed.slice(1);
+            }
+        });
+
+        return Object.values(groups);
     };
 
     useEffect(() => {
@@ -132,7 +143,7 @@ function PublishedDatasetEntityDetail({ params }) {
                 <h3>Data</h3>
                 <ul className="c-card-list">
                     {paginationData.currentFileGroups.map(({ raw, processed }) => {
-                        const thumbnailFile = processed.find(file => file.name.endsWith('.thumb.jpg'));
+                        const thumbnailFile = processed.find(file => file.name.endsWith('.thumb.jpg') || file.name.endsWith('.jpg'));
                         const gifFile = processed.find(file => file.name.endsWith('.gif'));
                         const histogramFile = processed.find(file => file.name.endsWith('.histogram.jpg'));
                         const histogramCsvFile = processed.find(file => file.name.endsWith('.histogram.csv'));
