@@ -105,5 +105,10 @@ body:not(.has-cms-ui) #react-root > :only-child {
   bottom: 0;
 }
 
+body > footer {
+    position: sticky;
+    top: 100vh;
+}
+
 /* end @layer portal */
 }
