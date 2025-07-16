@@ -103,3 +103,8 @@ body > .content {
   top: 0;
   bottom: 0;
 }
+
+body > footer {
+    position: sticky;
+    top: 100vh;
+}
