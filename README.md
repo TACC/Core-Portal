@@ -12,12 +12,11 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prerequisites for running the portal application
 
-* Docker > 20.10.7
-* Docker Compose > 1.29.x
-* Python 3.7.x
-* Nodejs 16.x (LTS)
+* Docker > 28
+* Python 3.11.x
+* Nodejs 22.x (LTS)
 
-The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
+The Core Portal can be run using [Docker][1]. You will
 need both Docker and Docker Compose pre-installed on the system you wish to run the portal
 on.
 
@@ -135,7 +134,7 @@ OR
 
 -  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
--  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][3]._
+-  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
 #### Initialize the application in the `core_portal_django` container:
 
     docker exec -it core_portal_django /bin/bash
@@ -299,5 +298,4 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Core Portal]: https://github.com/TACC/Core-Portal
 [Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
-[2]: https://docs.docker.com/compose/install/
-[3]: https://vitejs.dev/
+[2]: https://vitejs.dev/
