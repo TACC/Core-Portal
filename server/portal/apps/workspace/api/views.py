@@ -221,7 +221,6 @@ class JobsView(BaseApiView):
         offset - offset param from request, otherwise default to 0
         '''
         query_string = request.GET.get('query_string')
-
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
@@ -231,8 +230,13 @@ class JobsView(BaseApiView):
             f"((name like '%{query_string}%') OR",
             f"(archiveSystemDir like '%{query_string}%') OR",
             f"(appId like '%{query_string}%') OR",
-            f"(archiveSystemId like '%{query_string}%'))",
+            f"(archiveSystemId like '%{query_string}%') OR",
+            f"(status = '{query_string.upper()}'))",        
         ]
+
+
+        #f"(archiveSystemId like '%{query_string}%'))",
+        print("DEBUG SQL:", sql_queries)
 
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
@@ -243,6 +247,9 @@ class JobsView(BaseApiView):
             },
             select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
+
+        for job in data:
+            print("JOB OBJECT:", job)
         return data
 
     def delete(self, request, *args, **kwargs):
@@ -642,3 +649,59 @@ class TapisAppsView(BaseApiView):
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({'data': response})
+
+
+
+
+    # def search(self, client, request):
+    #     '''
+    #     Search using tapis in specific portal with providing query string.
+    #     Additonal parameters for search:
+    #     limit - limit param from request, otherwise default to 10
+    #     offset - offset param from request, otherwise default to 0
+    #     '''
+    #     query_string = request.GET.get('query_string')
+    #     limit = int(request.GET.get('limit', 10))
+    #     offset = int(request.GET.get('offset', 0))
+    #     portal_name = settings.PORTAL_NAMESPACE
+
+    #     #just getting entire things, filtering in python fdown below
+    #     sql_queries = [
+    #         f"(tags IN ('portalName: {portal_name}'))"
+    #     ]
+
+    #     print("DEBUG SQL:", sql_queries)
+
+    #     data = client.jobs.getJobSearchListByPostSqlStr(
+    #         limit=limit,
+    #         startAfter=offset,
+    #         orderBy='lastUpdated(desc),name(asc)',
+    #         request_body={
+    #             "search": sql_queries
+    #         },
+    #         select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+    #     )
+
+    #     #runing check jobs for all timeout jobs
+    #     processed_jobs = [check_job_for_timeout(job) for job in data]
+
+    #     # Filter jobs to match search input, status, and remote status
+    #     search_term = (query_string or '').strip().upper()
+    #     if search_term:
+    #         filtered_jobs = [
+    #             job for job in processed_jobs
+    #             if (
+    #                 (hasattr(job, 'status') and search_term in (job.status or '').upper()) or
+    #                 (hasattr(job, 'remoteOutcome') and search_term in (job.remoteOutcome or '').upper()) or
+    #                 (search_term in (job.name or '').upper()) or
+    #                 (search_term in (job.archiveSystemDir or '').upper()) or
+    #                 (search_term in (job.appId or '').upper()) or
+    #                 (search_term in (job.archiveSystemId or '').upper())
+    #             )
+    #         ]
+    #     else:
+    #         filtered_jobs = processed_jobs
+
+    #     for job in filtered_jobs:
+    #         print("JOB OBJECT:", job)
+    #     return filtered_jobs
