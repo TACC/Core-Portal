@@ -44,7 +44,7 @@ function useExtract() {
   const extract = ({ file }: { file: TTapisFile }) => {
     setStatus({ type: 'RUNNING' });
 
-    if (!false) {
+    if (!allocationForExtract) {
       setStatus({
         type: 'ERROR',
         message: 'You need an allocation to extract.',
