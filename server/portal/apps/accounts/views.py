@@ -24,23 +24,14 @@ logger = logging.getLogger(__name__)
 class LogoutView(DjangoLogoutView):
     def dispatch(self, request, *args, **kwargs):
         token = request.user.tapis_oauth.access_token
+        logger.info('Attempting logout via Tapis with token "%s"' % token[:8].ljust(len(token), '-'))
 
-        logger.info('Attempting to revoke JWT token for user: ' + request.user.username)
-        self.revoke_token(token)
+        logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url={settings.LOGOUT_REDIRECT_URL}"
 
         logout(request)
 
-        redirect_uri = getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
-        response = HttpResponseRedirect(redirect_uri)
+        response = HttpResponseRedirect(logout_endpoint)
         return response
-
-    def revoke_token(self, token):
-        revoke_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/tokens/revoke"
-        try:
-            response = requests.post(revoke_endpoint, json={'token': token})
-            response.raise_for_status()
-        except requests.RequestException as e:
-            logger.exception(f"Token revocation failed: {e}")
 
 
 def accounts(request):
