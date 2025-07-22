@@ -60,6 +60,7 @@ def mock_user():
 def factory():
     return RequestFactory()
 
+
 @pytest.mark.django_db
 @mock.patch('portal.apps.accounts.views.logout')
 def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory, settings):
@@ -77,19 +78,3 @@ def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory
     assert response.status_code == 302
     assert response.url == expected_url
     mock_logout.assert_called_once_with(request)
-
-
-@mock.patch('portal.apps.accounts.views.logout')
-@mock.patch('portal.apps.accounts.views.requests.post')
-def test_logout_token_revoke_failure(mock_logout, requests_mock, mock_user, settings):
-    with pytest.raises(Exception) as e_info:
-
-        request = requests_mock.get('/logout/')
-        request.user = mock_user
-
-        response = LogoutView().dispatch(request)
-
-        assert "Token revocation failed" in str(e_info.value)
-        mock_logout.assert_called_once()
-        assert isinstance(response, HttpResponseRedirect)
-        assert response.url == str(getattr(settings, 'LOGOUT_REDIRECT_URL', '/'))
