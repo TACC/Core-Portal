@@ -1,9 +1,7 @@
 import pytest
 from django.conf import settings
-from unittest import mock
 from django.http import HttpResponseRedirect
-from portal.apps.accounts.views import LogoutView
-from django.test import RequestFactory
+from django.contrib.auth import get_user
 
 
 def test_account_redirect(client):
@@ -44,37 +42,14 @@ def test_profile_data_unexpected(client, tas_client, tas_user_history_request):
     assert response.json() == {'message': 'Unable to get profile.'}
 
 
-@pytest.fixture
-def mock_user():
-    class MockAccessToken:
-        access_token = 'fake_token'
-
-    class MockUser:
-        tapis_oauth = MockAccessToken()
-        username = 'mockuser'
-
-    return MockUser()
-
-
-@pytest.fixture
-def factory():
-    return RequestFactory()
-
-
 @pytest.mark.django_db
-@mock.patch('portal.apps.accounts.views.logout')
-def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory, settings):
-    settings.TAPIS_TENANT_BASEURL = 'https://tapis.io'
-    settings.LOGOUT_REDIRECT_URL = 'https://example.com/logout-success'
+def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, settings):
+    response = client.get('/accounts/logout')
 
-    request = factory.get('/logout')
-    request.user = mock_user
-
-    response = LogoutView().dispatch(request)
-
-    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}/{settings.LOGOUT_REDIRECT_URL}"
+    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver/{settings.LOGOUT_REDIRECT_URL}"
 
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
     assert response.url == expected_url
-    mock_logout.assert_called_once_with(request)
+    # Verify user is no longer logged in
+    assert not get_user(client).is_authenticated
