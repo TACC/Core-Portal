@@ -37,3 +37,15 @@ describe('CustomMessage', () => {
     });
   });
 });
+
+describe('CustomMessage edge‐cases', () => {
+  it('renders nothing when customMessages.messages is undefined', () => {
+    const badStore = mockStore({ customMessages: { lastFetched: Date.now() } });
+    const { container } = render(
+      <Provider store={badStore}>
+        <CustomMessage messageComponentName="TEST" />
+      </Provider>
+    );
+    expect(container.firstChild).toBeNull();
+  });
+});
