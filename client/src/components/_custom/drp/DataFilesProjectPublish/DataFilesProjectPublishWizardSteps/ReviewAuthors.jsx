@@ -84,7 +84,7 @@ export const MLACitation = ({ project, authors }) => {
   const projectUrl = project.doi
     ? `https://www.doi.org/${project.doi}`
     : `DOI link will appear after publication`;
-  const createdDate = new Date(project.created).toLocaleDateString('en-GB', {
+  const createdDate = new Date(project.publication_date).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
