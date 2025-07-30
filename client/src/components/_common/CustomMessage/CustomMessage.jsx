@@ -23,8 +23,7 @@ function CustomMessage({ messageComponentName }) {
     const all = state.customMessages?.messages || [];
     return all.filter((message) => {
       return (
-        message.unread &&
-        message.template.component === messageComponentName
+        message.unread && message.template.component === messageComponentName
       );
     });
   });
