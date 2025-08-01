@@ -30,6 +30,7 @@ ul.data-tree {
 .data-tree__item summary.u-summary-fake-marker::before {
     width: var(--indent);
     display: inline-block;
+    font-size: 20px;
 }
 
 
