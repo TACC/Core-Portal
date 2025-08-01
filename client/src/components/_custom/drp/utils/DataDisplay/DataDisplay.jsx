@@ -4,13 +4,7 @@ import { Section, SectionContent, LoadingSpinner, Button } from '_common';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './DataDisplay.module.scss';
 import { useDispatch } from 'react-redux';
-
-// Function to format the dict key from snake_case to Label Case i.e. data_type -> Data Type
-const formatLabel = (key) =>
-  key
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+import { formatLabel } from '../utils';
 
 const processSampleAndOriginData = (data, path) => {
   // use the path to get sample and origin data names

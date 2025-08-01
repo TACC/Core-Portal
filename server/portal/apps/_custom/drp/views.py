@@ -53,7 +53,11 @@ class DigitalRocksTreeView(BaseApiView):
     def get(self, request):
 
         project_id = request.GET.get('project_id')
-        full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
+
+        if project_id.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX):
+            full_project_id = project_id
+        else:
+            full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
         graph_model = ProjectMetadata.objects.get(
         name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
