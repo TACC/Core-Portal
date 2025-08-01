@@ -22,6 +22,11 @@ vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
           execSystemId: 'frontera',
         },
       },
+      execSystems: [
+        {
+          host: 'frontera.tacc.utexas.edu',
+        },
+      ],
     }),
   };
 });
