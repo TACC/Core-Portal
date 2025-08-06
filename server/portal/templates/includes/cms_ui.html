@@ -5,43 +5,13 @@
   @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
   @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
 
-  /* To mimic a CMS idiosyncrasy */
-  /* https://github.com/TACC/Core-CMS/blob/v4.31.0/taccsite_cms/templates/base.html#L73-L76 */
-  #cms-content-container.container .container { padding-inline: 0; }
-
   /* To mimic Bootstrap v4 (which CMS uses) */
-  .workbench-content .container { --bs-gutter-x: 15px; }
-  .workbench-content .row { --bs-gutter-x: 30px; }
+  .container { --bs-gutter-x: 15px; }
+  .row { --bs-gutter-x: 30px; }
 
   /* To change high-level styles to match CMS */
-  .workbench-wrapper { color: var(--global-color-primary--x-dark); }
-  .workbench-content .container {
-    margin-left: revert-layer;
-    max-width: revert-layer;
-  }
-  .workbench-content .row {
-    margin-right: revert-layer;
-    margin-left: revert-layer;
-  }
   body { -webkit-font-smoothing: revert; }
   .c-button { --max-width: auto; }
-
-  /* To change Portal's Bootstrap styles to match CMS */
-  .workbench-wrapper .dropdown-menu,
-  .workbench-wrapper .dropdown-menu::before,
-  .workbench-wrapper .dropdown-menu::after,
-  .workbench-wrapper .dropdown-item,
-  .workbench-wrapper .dropdown-item:focus,
-  .workbench-wrapper .dropdown-item:hover,
-  .workbench-wrapper .dropdown-divider {
-    all: revert-layer;
-  }
-
-  /* To hide navbar */
-  /* TODO: Instead of this, component using CMS styles should not use navbar */
-  #react-root:has(#mimic-cms) .nav-sidebar {
-    display: none;
-  }
 </style>
 
 <script id="cms-ui-script" type="module">
