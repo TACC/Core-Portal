@@ -59,7 +59,7 @@ function PublishedDatasetsBrowse() {
     return (
         <div className={'o-section'}>
             <h1>Browse Datasets</h1>
-            {loading && !filteredPublications.length ? (
+            {loading || !filteredPublications.length ? (
                 <LoadingSpinner />
             ) : (
             <div className={'c-card-list'}>
