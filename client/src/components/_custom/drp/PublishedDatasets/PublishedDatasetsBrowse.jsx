@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingSpinner } from '_common';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,8 @@ const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
 function PublishedDatasetsBrowse() {
     const dispatch = useDispatch();
+
+    const [filteredPublications, setFilteredPublications] = useState([]);
 
     const { error, loading, publications } = useSelector(
         (state) => state.publications.listing
@@ -21,6 +23,29 @@ function PublishedDatasetsBrowse() {
     const selectedSystem = systems.find(
         (s) => s.scheme === 'projects' && s.publicationProject === true
     );
+
+    // Workaround to filter out publications that don't have a cover image
+    // Mainly done so we can test pprd properly
+    useEffect(() => {
+        if (!publications) return;
+    
+        Promise.all(
+            publications.map(pub => {
+                return new Promise(resolve => {
+                    if (!pub.cover_image || pub.cover_image.includes('media/default/cover_image/default_logo.png')) {
+                        return resolve(null);
+                    }
+
+                    const img = new Image();
+                    img.onload = () => resolve(pub);
+                    img.onerror = () => resolve(null);
+                    img.src = `${BASE_ASSET_URL}/${pub.cover_image}`;
+                });
+            })
+        ).then(results => {
+            setFilteredPublications(results.filter(Boolean));
+        });
+    }, [publications]);
 
     useEffect(() => {
         dispatch({
@@ -38,7 +63,7 @@ function PublishedDatasetsBrowse() {
                 <LoadingSpinner />
             ) : (
             <div className={'c-card-list'}>
-                {publications.map((publication) => {
+                {filteredPublications.map((publication) => {
 
                     const coverImage = publication.cover_image;
 
