@@ -12,28 +12,26 @@ export const getAppUtil = async function fetchAppDefinitionUtil(
   return result.response;
 };
 
+export function hasAvailCompute(allocSys: any) {
+  const availCompute =
+    allocSys.allocation.computeAllocated - allocSys.allocation.computeUsed;
+  if (availCompute > 0) {
+    return true;
+  }
+  return false;
+};
+
 function getAvailableHPCAlloc(
   activeAllocations: any,
-  portalAllocName: string | null,
+  portalAllocName: string,
   appExecHostname: string
 ) {
   // Returns the project name of the first available HPC allocation matching the
   // exec system for the app with remaining compute time (checking portal allocation
   // first), or undefined if none found
-  function hasAvailCompute(allocSys: any) {
-    const availCompute =
-      allocSys.allocation.computeAllocated - allocSys.allocation.computeUsed;
-    if (availCompute > 0) {
-      return true;
-    }
-    return false;
-  }
-
-  const portalAlloc = portalAllocName
-    ? activeAllocations.find(
-        (activeAlloc: any) => activeAlloc.projectName === portalAllocName
-      )
-    : null;
+  const portalAlloc = activeAllocations.find(
+    (activeAlloc: any) => activeAlloc.projectName === portalAllocName
+  )
   if (portalAlloc) {
     // prioritize portal allocation
     let matchingAllocatedExecSys = portalAlloc.systems.find(
@@ -59,8 +57,7 @@ export function getAllocationForToolbarAction(
   allocationsState: any,
   appObj: any
 ) {
-  const portalAllocName = allocationsState.portal_alloc;
-  const activeAllocations = allocationsState.active;
+  const { portal_alloc: portalAllocName, active: activeAllocations } = allocationsState;
   if (
     Array.isArray(activeAllocations) &&
     activeAllocations.length > 0 &&
