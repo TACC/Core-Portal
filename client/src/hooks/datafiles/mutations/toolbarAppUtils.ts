@@ -1,4 +1,10 @@
 import { fetchUtil } from 'utils/fetchUtil';
+import {
+  TTasAllocation,
+  TTasAllocatedSystem,
+  TPortalApp,
+  TUserAllocations,
+} from 'utils/types';
 
 export const getAppUtil = async function fetchAppDefinitionUtil(
   appId: string,
@@ -12,17 +18,17 @@ export const getAppUtil = async function fetchAppDefinitionUtil(
   return result.response;
 };
 
-export function hasAvailCompute(allocSys: any) {
+export function hasAvailCompute(allocSys: TTasAllocatedSystem) {
   const availCompute =
     allocSys.allocation.computeAllocated - allocSys.allocation.computeUsed;
   if (availCompute > 0) {
     return true;
   }
   return false;
-};
+}
 
 function getAvailableHPCAlloc(
-  activeAllocations: any,
+  activeAllocations: TTasAllocation[],
   portalAllocName: string,
   appExecHostname: string
 ) {
@@ -30,12 +36,13 @@ function getAvailableHPCAlloc(
   // exec system for the app with remaining compute time (checking portal allocation
   // first), or undefined if none found
   const portalAlloc = activeAllocations.find(
-    (activeAlloc: any) => activeAlloc.projectName === portalAllocName
-  )
+    (activeAlloc: TTasAllocation) => activeAlloc.projectName === portalAllocName
+  );
   if (portalAlloc) {
     // prioritize portal allocation
     let matchingAllocatedExecSys = portalAlloc.systems.find(
-      (system: any) => system.type === 'HPC' && system.host === appExecHostname
+      (system: TTasAllocatedSystem) =>
+        system.type === 'HPC' && system.host === appExecHostname
     );
     if (matchingAllocatedExecSys && hasAvailCompute(matchingAllocatedExecSys)) {
       return portalAllocName;
@@ -44,7 +51,8 @@ function getAvailableHPCAlloc(
 
   for (let activeAlloc of activeAllocations) {
     let matchingAllocatedExecSys = activeAlloc.systems.find(
-      (system: any) => system.type === 'HPC' && system.host === appExecHostname
+      (system: TTasAllocatedSystem) =>
+        system.type === 'HPC' && system.host === appExecHostname
     );
     if (matchingAllocatedExecSys && hasAvailCompute(matchingAllocatedExecSys)) {
       return matchingAllocatedExecSys.allocation.project; // allocation name
@@ -54,10 +62,11 @@ function getAvailableHPCAlloc(
 }
 
 export function getAllocationForToolbarAction(
-  allocationsState: any,
-  appObj: any
+  allocationsState: TUserAllocations,
+  appObj: TPortalApp
 ) {
-  const { portal_alloc: portalAllocName, active: activeAllocations } = allocationsState;
+  const { portal_alloc: portalAllocName, active: activeAllocations } =
+    allocationsState;
   if (
     Array.isArray(activeAllocations) &&
     activeAllocations.length > 0 &&

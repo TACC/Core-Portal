@@ -131,10 +131,81 @@ export type TTapisApp = {
   updated: string;
 };
 
-export type TTasAllocations = {
-  hosts: {
-    [hostname: string]: string[];
+export type TPortalApp = {
+  loading: boolean;
+  error: {};
+  definition: {
+    id: string;
+    label: string;
+    description: string;
+    defaultQueue: string;
+    nodeCount: number;
+    coresPerNode: number;
+    maxMinutes: number;
+    tags: string[];
   };
+  systemNeedsKeys: boolean;
+  pushKeysSystem: {};
+  execSystems: {
+    host: string;
+    scheduler: string;
+    batchLogicalQueues: {}[];
+  }[];
+  license: {
+    type: string;
+    enabled: boolean;
+  };
+  appListing: {}[];
+};
+
+export type TTasAllocationDetails = {
+  computeAllocated: number;
+  computeRequested: number;
+  computeUsed: number;
+  dateRequested: string;
+  dateReviewed: string | null;
+  decisionSummary: string | null;
+  end: string;
+  id: number;
+  justification: string;
+  memoryAllocated: number;
+  memoryRequested: number;
+  project: string;
+  projectId: number;
+  requestor: string;
+  requestorId: number;
+  resource: string;
+  resourceId: number;
+  reviewer: string | null;
+  reviewerId: number;
+  start: string;
+  status: string;
+  storageAllocated: number;
+  storageRequested: number;
+};
+
+export type TTasAllocatedSystem = {
+  allocation: TTasAllocationDetails;
+  host: string;
+  name: string;
+  type: string;
+};
+
+export type TTasAllocation = {
+  pi: string;
+  projectId: number;
+  projectName: string;
+  title: string;
+  systems: TTasAllocatedSystem[];
+};
+
+export type TUserAllocations = {
+  active: TTasAllocation[];
+  inactive: TTasAllocation[];
+  hosts: {
+    [key: string]: string[];
+  };
+  portal_alloc: string;
 };
 
 export type TTapisJob = {
