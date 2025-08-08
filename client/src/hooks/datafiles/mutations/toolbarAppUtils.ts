@@ -1,4 +1,10 @@
 import { fetchUtil } from 'utils/fetchUtil';
+import {
+  TTasAllocation,
+  TTasAllocatedSystem,
+  TPortalApp,
+  TUserAllocations,
+} from 'utils/types';
 
 export const getAppUtil = async function fetchAppDefinitionUtil(
   appId: string,
@@ -12,43 +18,64 @@ export const getAppUtil = async function fetchAppDefinitionUtil(
   return result.response;
 };
 
-function getAvailableHPCAlloc(activeAllocations: any, appExecSysId: string) {
+export function hasAvailCompute(allocSys: TTasAllocatedSystem) {
+  const availCompute =
+    allocSys.allocation.computeAllocated - allocSys.allocation.computeUsed;
+  if (availCompute > 0) {
+    return true;
+  }
+  return false;
+}
+
+function getAvailableHPCAlloc(
+  activeAllocations: TTasAllocation[],
+  portalAllocName: string,
+  appExecHostname: string
+) {
   // Returns the project name of the first available HPC allocation matching the
-  // exec system for the app with remaining compute time, or undefined if none found
-  for (let activeAlloc of activeAllocations) {
-    for (let allocSys of activeAlloc.systems) {
-      if (
-        allocSys.type === 'HPC' &&
-        allocSys.name.toLowerCase() === appExecSysId
-      ) {
-        const availCompute =
-          allocSys.allocation.computeAllocated -
-          allocSys.allocation.computeUsed;
-        if (availCompute > 0) {
-          return allocSys.allocation.project; // allocation name
-        }
-      }
+  // exec system for the app with remaining compute time (checking portal allocation
+  // first), or undefined if none found
+  const portalAlloc = activeAllocations.find(
+    (activeAlloc: TTasAllocation) => activeAlloc.projectName === portalAllocName
+  );
+  if (portalAlloc) {
+    // prioritize portal allocation
+    let matchingAllocatedExecSys = portalAlloc.systems.find(
+      (system: TTasAllocatedSystem) =>
+        system.type === 'HPC' && system.host === appExecHostname
+    );
+    if (matchingAllocatedExecSys && hasAvailCompute(matchingAllocatedExecSys)) {
+      return portalAllocName;
     }
   }
+
+  for (let activeAlloc of activeAllocations) {
+    let matchingAllocatedExecSys = activeAlloc.systems.find(
+      (system: TTasAllocatedSystem) =>
+        system.type === 'HPC' && system.host === appExecHostname
+    );
+    if (matchingAllocatedExecSys && hasAvailCompute(matchingAllocatedExecSys)) {
+      return matchingAllocatedExecSys.allocation.project; // allocation name
+    }
+  }
+  return null;
 }
 
 export function getAllocationForToolbarAction(
-  allocationsState: any,
-  appObj: any
+  allocationsState: TUserAllocations,
+  appObj: TPortalApp
 ) {
-  if (allocationsState.portal_alloc) {
-    return allocationsState.portal_alloc;
-  }
+  const { portal_alloc: portalAllocName, active: activeAllocations } =
+    allocationsState;
   if (
-    Array.isArray(allocationsState.active) &&
-    allocationsState.active.length > 0 &&
+    Array.isArray(activeAllocations) &&
+    activeAllocations.length > 0 &&
     appObj
   ) {
-    return (
-      getAvailableHPCAlloc(
-        allocationsState.active,
-        appObj.definition.jobAttributes.execSystemId
-      ) || null
+    return getAvailableHPCAlloc(
+      activeAllocations,
+      portalAllocName,
+      appObj.execSystems[0].host
     );
   }
   return null;
