@@ -134,23 +134,10 @@ export type TTapisApp = {
 export type TPortalApp = {
   loading: boolean;
   error: {};
-  definition: {
-    id: string;
-    label: string;
-    description: string;
-    defaultQueue: string;
-    nodeCount: number;
-    coresPerNode: number;
-    maxMinutes: number;
-    tags: string[];
-  };
+  definition: TTapisApp;
   systemNeedsKeys: boolean;
   pushKeysSystem: {};
-  execSystems: {
-    host: string;
-    scheduler: string;
-    batchLogicalQueues: {}[];
-  }[];
+  execSystems: TTapisSystem[];
   license: {
     type: string;
     enabled: boolean;
