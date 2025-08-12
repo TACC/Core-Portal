@@ -72,6 +72,9 @@ export function getAllocationForToolbarAction(
     activeAllocations.length > 0 &&
     appObj
   ) {
+    if (!appObj.execSystems[0].canRunBatch) {
+      return 'VM'; // if app runs on VM, no allocation needed, so bypass allocation check
+    }
     return getAvailableHPCAlloc(
       activeAllocations,
       portalAllocName,
