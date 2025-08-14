@@ -4,6 +4,7 @@ import {
   TTasAllocatedSystem,
   TPortalApp,
   TUserAllocations,
+  TTapisSystem,
 } from 'utils/types';
 
 export const getAppUtil = async function fetchAppDefinitionUtil(
@@ -72,11 +73,20 @@ export function getAllocationForToolbarAction(
     activeAllocations.length > 0 &&
     appObj
   ) {
-    return getAvailableHPCAlloc(
-      activeAllocations,
-      portalAllocName,
-      appObj.execSystems[0].host
+    const appExecSys = appObj.execSystems.find(
+      (execSys: TTapisSystem) =>
+        execSys.id === appObj.definition.jobAttributes.execSystemId
     );
+    if (appExecSys) {
+      if (!appExecSys.canRunBatch) {
+        return 'VM'; // if app runs on VM, no allocation needed, so bypass allocation check
+      }
+      return getAvailableHPCAlloc(
+        activeAllocations,
+        portalAllocName,
+        appExecSys.host
+      );
+    }
   }
   return null;
 }
