@@ -20,14 +20,11 @@ import styles from './CustomMessage.module.scss';
 function CustomMessage({ messageComponentName }) {
   const dispatch = useDispatch();
   const messages = useSelector((state) => {
-    return state.customMessages
-      ? state.customMessages.messages.filter((message) => {
-          return (
-            message.unread &&
-            message.template.component === messageComponentName
-          );
-        })
-      : [];
+    return (state.customMessages?.messages || []).filter((message) => {
+      return (
+        message.unread && message.template.component === messageComponentName
+      );
+    });
   });
 
   function onDismiss(dismissMessage) {
