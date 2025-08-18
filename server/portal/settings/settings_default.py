@@ -199,14 +199,17 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         "step": "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep",
         "settings": {
-            # List of TAS project SQL IDs to check membership against for
-            # portal access. Only one is required.
-            "project_sql_id": [12345, 66858],
-            # TAS project SQL Id to set upon approval as the default project
-            # for users in this portal if user does not have membership in any
-            # project in the project_sql_id list.
-            "default_project_sql_id": 66858,
-            # Defaults to 'Accounting' if left blank
+            # `project_sql_id`:
+            #       List of TAS project SQL IDs to check membership against for
+            #       portal access. Only one is required.
+            "project_sql_id": [9192, 66858],
+            # `default_project_sql_id`:
+            #       The TAS project SQL Id to set upon approval as the default project
+            #       for users in this portal if user does not have membership in any
+            #       project in the project_sql_id list.
+            "default_project_sql_id": 66858,  # 66858 is the TACC-ACI-DEMO project SQL ID
+            # `rt_queue`:
+            #       Defaults to 'Accounting' if left blank
             "rt_queue": _RT_QUEUE,
         },
     },
