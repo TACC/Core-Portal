@@ -31,6 +31,12 @@
 .c-data-list__key { color: var(--global-color-primary--dark); }
 .c-data-list__value { color: var(--global-color-primary--x-dark) }
 
+/* to not truncate label text */
+.c-data-list__key {
+    overflow: visible;
+    white-space: normal;
+}
+
 /* to arrange and truncate links in value column */
 .c-data-list__value nav {
     display: flex;
