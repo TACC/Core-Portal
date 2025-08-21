@@ -81,6 +81,7 @@ function PublishedDatasetDetail({ params }) {
     const portalName = useSelector((state) => state.workbench.portalName);
     const { value: tree, loading, error } = useSelector((state) => state.publications.tree);
     const metadata = useSelector((state) => state.projects.metadata);
+    const imageUrl = `${BASE_ASSET_URL}/${metadata.cover_image}`;
 
     useEffect(() => {
         dispatch({
@@ -145,7 +146,9 @@ function PublishedDatasetDetail({ params }) {
                         <div className={'row project-overview'}>
                             <div className={'col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3'}>
                                 {metadata.cover_image && (
-                                    <img src={`${BASE_ASSET_URL}/${metadata.cover_image}`} alt={metadata.title} className={`align-left img-fluid ${styles.image}`} />
+                                    <a href={imageUrl} target="_blank">
+                                        <img src={imageUrl} alt={metadata.title} className={`align-left img-fluid ${styles.image}`} />
+                                    </a>
                                 )}
                             </div>
                             <div className={'col project-desc'}>
