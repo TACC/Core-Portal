@@ -145,7 +145,6 @@ function PublishedDatasetEntityDetail({ params }) {
             </section>
 
             <section id="data" className="o-section">
-                <h3>Data</h3>
                 <ul className="c-card-list">
                     {paginationData.currentFileGroups.map(({ raw, processed }) => {
                         const thumbnailFile = processed.find(file => file.name.endsWith('.thumb.jpg') || file.name.endsWith('.jpg'));
