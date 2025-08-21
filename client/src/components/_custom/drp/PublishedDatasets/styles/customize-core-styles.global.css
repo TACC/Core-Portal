@@ -32,8 +32,9 @@
 .c-data-list__key { color: var(--global-color-primary--dark); }
 .c-data-list__value { color: var(--global-color-primary--x-dark) }
 
-/* to not truncate label text */
-.c-data-list__key {
+/* to not truncate text */
+.c-data-list__key,
+.c-data-list__label {
     overflow: visible;
     white-space: normal;
 }
