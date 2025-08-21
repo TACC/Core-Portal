@@ -119,7 +119,7 @@ function PublishedDatasetEntityDetail({ params }) {
             <>
             <section className={'o-section'}>
                     <h3 className={"u-title-needs-colon"}>
-                        <span>{formatLabel(entityType)}</span> <strong>{selectedEntity.label}</strong>
+                        <abbr title="DESCRIBE ENTITY TYPE HERE">{formatLabel(entityType)}</abbr> <strong>{selectedEntity.label}</strong>
                     </h3>
                     <p>{selectedEntity?.description}</p>
                     <table className="c-data-list c-data-list--horizontal c-data-list--is-narrow">

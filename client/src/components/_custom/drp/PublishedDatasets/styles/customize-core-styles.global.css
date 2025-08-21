@@ -65,5 +65,5 @@
     gap: 1ch;
 }
 
-.u-title-needs-colon span { font-weight: normal; }
-.u-title-needs-colon span::after { content: ':'; }
+.u-title-needs-colon :first-child { font-weight: normal; }
+.u-title-needs-colon :first-child::after { content: ':'; }
