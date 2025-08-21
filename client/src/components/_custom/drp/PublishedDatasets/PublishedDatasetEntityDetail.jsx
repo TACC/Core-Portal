@@ -126,12 +126,17 @@ function PublishedDatasetEntityDetail({ params }) {
                         <tbody>
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
                                 if (excludedEntityMetadataFields.includes(key)) return null;
+
+                                const title = "GET A LABEL DESCRIPTION";
+                                const label = formatLabel(key);
+                                const labelNode = title ? <abbr title={title}>{label}</abbr> : label;
+
                                 return (
                                     <tr key={key}>
-                                        <th className="c-data-list__key">{formatLabel(key)}</th>
-                                    <td className="c-data-list__value">
-                                        {formatLabel(value)}
-                                    </td>
+                                        <th className="c-data-list__key">{labelNode}</th>
+                                        <td className="c-data-list__value">
+                                            {formatLabel(value)}
+                                        </td>
                                     </tr>
                                 );
                             })}
