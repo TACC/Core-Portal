@@ -119,19 +119,24 @@ function PublishedDatasetEntityDetail({ params }) {
             <>
             <section className={'o-section'}>
                     <h3 className={"u-title-needs-colon"}>
-                        <span>{formatLabel(entityType)}</span> <strong>{selectedEntity.label}</strong>
+                        <abbr title="DESCRIBE ENTITY TYPE HERE">{formatLabel(entityType)}</abbr> <strong>{selectedEntity.label}</strong>
                     </h3>
                     <p>{selectedEntity?.description}</p>
                     <table className="c-data-list c-data-list--horizontal c-data-list--is-narrow">
                         <tbody>
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
                                 if (excludedEntityMetadataFields.includes(key)) return null;
+
+                                const title = "GET A LABEL DESCRIPTION";
+                                const label = formatLabel(key);
+                                const labelNode = title ? <abbr title={title}>{label}</abbr> : label;
+
                                 return (
                                     <tr key={key}>
-                                        <th className="c-data-list__key">{formatLabel(key)}</th>
-                                    <td className="c-data-list__value">
-                                        {formatLabel(value)}
-                                    </td>
+                                        <th className="c-data-list__key">{labelNode}</th>
+                                        <td className="c-data-list__value">
+                                            {formatLabel(value)}
+                                        </td>
                                     </tr>
                                 );
                             })}
@@ -140,7 +145,6 @@ function PublishedDatasetEntityDetail({ params }) {
             </section>
 
             <section id="data" className="o-section">
-                <h3>Data</h3>
                 <ul className="c-card-list">
                     {paginationData.currentFileGroups.map(({ raw, processed }) => {
                         const thumbnailFile = processed.find(file => file.name.endsWith('.thumb.jpg') || file.name.endsWith('.jpg'));
