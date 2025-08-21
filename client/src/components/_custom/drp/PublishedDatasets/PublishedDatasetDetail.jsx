@@ -6,6 +6,7 @@ import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishW
 import * as ROUTES from '../../../../constants/routes';
 import { Link } from 'react-router-dom';
 import { formatLabel } from '../utils/utils';
+import styles from './PublishedDatasetDetail.module.css';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -144,7 +145,7 @@ function PublishedDatasetDetail({ params }) {
                         <div className={'row project-overview'}>
                             <div className={'col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3'}>
                                 {metadata.cover_image && (
-                                    <img src={`${BASE_ASSET_URL}/${metadata.cover_image}`} alt={metadata.title} className={'align-left img-fluid'} />
+                                    <img src={`${BASE_ASSET_URL}/${metadata.cover_image}`} alt={metadata.title} className={`align-left img-fluid ${styles.image}`} />
                                 )}
                             </div>
                             <div className={'col project-desc'}>
