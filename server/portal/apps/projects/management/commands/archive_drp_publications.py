@@ -6,7 +6,7 @@ import time
 from django.db import close_old_connections
 
 class Command(BaseCommand):
-    help = "Archive Digital Rocks publications."
+    help = "Archive Digital Porous Media publications."
 
     def add_arguments(self, parser):
         parser.add_argument(

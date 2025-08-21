@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=2.1.1 \
+ENV POETRY_VERSION=2.1.3 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     PYSETUP_PATH="/opt/pysetup" \
@@ -38,7 +38,7 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
 # Install poetry version $POETRY_VERSION to $POETRY_HOME
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel \
     && python3 -m venv "$POETRY_HOME" \
-    && "$POETRY_HOME/bin/pip" install --no-cache-dir poetry=="$POETRY_VERSION"
+    && "$POETRY_HOME/bin/pip" install --no-cache-dir poetry~="$POETRY_VERSION"
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
