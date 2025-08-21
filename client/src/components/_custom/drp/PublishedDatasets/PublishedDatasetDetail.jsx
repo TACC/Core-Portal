@@ -181,7 +181,7 @@ function PublishedDatasetDetail({ params }) {
                         </div>
                         <div className={'project-content'}>
                             <div id="files">
-                                <h3>Files</h3>
+                                <h3>Files and Metadata</h3>
                                 {tree?.children?.length > 0 ? (
                                     <ul className="data-tree">
                                         {tree.children.map((child, index) => (
