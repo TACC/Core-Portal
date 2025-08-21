@@ -192,8 +192,9 @@ class PublicationListingView(BaseApiView):
         else:
             publications = Publication.objects.filter(is_published=True).order_by("-created")
         
-        publications_data = [
-            {
+        publications_data = []
+        for publication in publications:
+            publication_data = {
                 'id': publication.value.get('projectId'),
                 'title': publication.value.get('title'),
                 'description': publication.value.get('description'),
@@ -201,8 +202,18 @@ class PublicationListingView(BaseApiView):
                 'authors': publication.value.get('authors'),
                 'publication_date': publication.created,
             }
-            for publication in publications
-        ]
+
+            try:
+                project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=publication.value.get('projectId')))
+
+                if project_meta.value.get('coverImage'):
+                    publication_data['cover_image'] = project_meta.value['coverImage']
+                else:
+                    publication_data['cover_image'] = 'media/default/cover_image/default_logo.png'
+            except ProjectMetadata.DoesNotExist:
+                pass
+
+            publications_data.append(publication_data)
         
         return JsonResponse({'response': publications_data}, safe=False)
 
