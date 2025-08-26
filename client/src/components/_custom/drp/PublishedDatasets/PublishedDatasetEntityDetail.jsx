@@ -114,13 +114,20 @@ function PublishedDatasetEntityDetail({ params }) {
         setCurrentPage(page);
     }, []);
 
+    const entityTypeWithDesc = (
+        <NameWithDesc desc="SAMPLE ENTITY DESCRIPTION">
+            {formatLabel(entityType)}
+        </NameWithDesc>
+    );
+
     return (
         <>
         {tree && !loading && !error && selectedEntity && (
             <>
             <section className={'o-section'}>
                     <h3 className={"u-title-needs-colon"}>
-                        <abbr title="DESCRIBE ENTITY TYPE HERE">{formatLabel(entityType)}</abbr> <strong>{selectedEntity.label}</strong>
+                        <span>{entityTypeWithDesc}</span>{` `}
+                        <strong>{selectedEntity.label}</strong>
                     </h3>
                     <p>{selectedEntity?.description}</p>
                     <table className="c-data-list c-data-list--horizontal c-data-list--is-narrow">
