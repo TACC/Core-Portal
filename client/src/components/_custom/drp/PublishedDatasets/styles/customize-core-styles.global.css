@@ -22,6 +22,9 @@
     object-fit: cover;
     max-height: 300px;
     width: 100%;
+
+    /* to avoid cutting off words in an image */
+    object-position: left;
 }
 
 /* to allow long file names to wrap */
