@@ -26,7 +26,9 @@ function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
 
     const nodeNameWithDesc = (
-        <NameWithDesc desc="SAMPLE NAME DESCRIPTION">{node.name.split('.').pop()}</NameWithDesc>
+        <NameWithDesc desc="SAMPLE NAME DESCRIPTION">
+            {formatLabel(node.name.split('.').pop())}
+        </NameWithDesc>
     );
 
     return (
