@@ -80,5 +80,5 @@
     gap: 1ch;
 }
 
-.u-title-needs-colon :first-child { font-weight: normal; }
-.u-title-needs-colon :first-child::after { content: ':'; }
+.u-title-needs-colon > :first-child { font-weight: normal; }
+.u-title-needs-colon > :first-child::after { content: ':'; }
