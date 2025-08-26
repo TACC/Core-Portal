@@ -5,6 +5,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { fetchUtil } from 'utils/fetchUtil';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
+import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
 import { formatLabel, findNodeInTree } from '../utils/utils';
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -127,13 +128,13 @@ function PublishedDatasetEntityDetail({ params }) {
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
                                 if (excludedEntityMetadataFields.includes(key)) return null;
 
-                                const keyText = formatLabel(key);
-                                const keyDesc = "SAMPLE KEY DESCRIPTION";
-                                const keyMarkup = keyDesc ? <abbr title={keyDesc}>{keyText}</abbr> : keyText;
+                                const keyNameWithDesc = (
+                                    <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
+                                );
 
                                 return (
                                     <tr key={key}>
-                                        <th className="c-data-list__key">{keyMarkup}</th>
+                                        <th className="c-data-list__key">{keyNameWithDesc}</th>
                                         <td className="c-data-list__value">
                                             {formatLabel(value)}
                                         </td>
