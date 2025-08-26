@@ -23,7 +23,11 @@ const excludedEntityMetadataFields = [
 
 function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
-    
+
+    const nameText = node.name.split('.').pop();
+    const nameDesc = "SAMPLE NAME DESCRIPTION";
+    const nameMarkup = nameDesc ? <abbr title={nameDesc}>{nameText}</abbr> : nameText;
+
     return (
         <>
             {node.metadata && node.metadata.data_type === 'sample' ? (
@@ -31,7 +35,7 @@ function TreeNode({ node, system }) {
                     <details>
                         <summary className="u-summary-with-a-link">
                             <a className="u-title-needs-colon">
-                                <span>{formatLabel(node.name.split('.').pop())}</span>
+                                <span>{nameMarkup}</span>
                                 <strong>{' '}{formatLabel(node.label)}</strong>
                             </a>
                         </summary>   
@@ -40,9 +44,14 @@ function TreeNode({ node, system }) {
                             <tbody>
                                 {Object.entries(node.metadata).map(([key, value]) => {
                                     if (excludedEntityMetadataFields.includes(key)) return null;
+
+                                    const keyText = formatLabel(key);
+                                    const keyDesc = "SAMPLE KEY DESCRIPTION";
+                                    const keyMarkup = keyDesc ? <abbr title={keyDesc}>{keyText}</abbr> : keyText;
+
                                     return (
                                         <tr key={key}>
-                                            <th className="c-data-list__key">{formatLabel(key)}</th>
+                                            <th className="c-data-list__key">{keyMarkup}</th>
                                         <td className="c-data-list__value">
                                             {formatLabel(value)}
                                         </td>
@@ -56,7 +65,7 @@ function TreeNode({ node, system }) {
             ) : (
                 <li>
                     <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.uuid}`}>
-                        <span>{formatLabel(node.name.split('.').pop())}</span>
+                        <span>{nameMarkup}</span>
                         <strong>{' '}{formatLabel(node.label)}</strong>
                     </Link>
                 </li>

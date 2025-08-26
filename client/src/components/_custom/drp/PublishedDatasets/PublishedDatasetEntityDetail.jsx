@@ -127,13 +127,13 @@ function PublishedDatasetEntityDetail({ params }) {
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
                                 if (excludedEntityMetadataFields.includes(key)) return null;
 
-                                const title = "GET A LABEL DESCRIPTION";
-                                const label = formatLabel(key);
-                                const labelNode = title ? <abbr title={title}>{label}</abbr> : label;
+                                const keyText = formatLabel(key);
+                                const keyDesc = "SAMPLE KEY DESCRIPTION";
+                                const keyMarkup = keyDesc ? <abbr title={keyDesc}>{keyText}</abbr> : keyText;
 
                                 return (
                                     <tr key={key}>
-                                        <th className="c-data-list__key">{labelNode}</th>
+                                        <th className="c-data-list__key">{keyMarkup}</th>
                                         <td className="c-data-list__value">
                                             {formatLabel(value)}
                                         </td>
