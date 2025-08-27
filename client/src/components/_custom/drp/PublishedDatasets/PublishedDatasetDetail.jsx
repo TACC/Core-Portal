@@ -2,11 +2,11 @@ import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Section, Button, LoadingSpinner } from '_common';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { MLACitation, APACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import * as ROUTES from '../../../../constants/routes';
 import { Link } from 'react-router-dom';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
-import { formatLabel } from '../utils/utils';
+import { formatLabel, getTooltipDescription } from '../utils/utils';
 import styles from './PublishedDatasetDetail.module.css';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
@@ -26,7 +26,7 @@ function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
 
     const nodeNameWithDesc = (
-        <NameWithDesc desc="SAMPLE NAME DESCRIPTION">
+        <NameWithDesc desc={getTooltipDescription(node.name.split('.').pop())}>
             {formatLabel(node.name.split('.').pop())}
         </NameWithDesc>
     );
@@ -126,23 +126,38 @@ function PublishedDatasetDetail({ params }) {
                     <div className={'o-section project-title'}>
                         <h1>
                             <span>{metadata.title}</span>
-                            <a
-                                className="c-button c-button--primary project-download-button"
-                                href={`${BASE_ASSET_URL}/archive/${projectId}/${projectId}_archive.zip`}
-                            >
-                                <i
-                                    className="icon icon-download c-button__icon--before"
+                            <div className="dropdown project-download-button">
+                                <button
+                                    className="dropdown-toggle c-button c-button--primary"
+                                    data-bs-toggle="dropdown"
+                                    type="button"
                                 >
-                                ↓
-                                </i>{' '}
-                                Download Dataset
-                            </a>
+                                    <i
+                                        className="icon icon-download c-button__icon--before"
+                                    >
+                                    ↓
+                                    </i>{' '}
+                                    Download
+                                </button>
+                                <menu className="dropdown-menu" style={{ fontSize: '14px', textTransform: 'none' }}>
+                                   <li>
+                                      <a className="dropdown-item" target="_blank" href={`${BASE_ASSET_URL}/archive/${projectId}/${projectId}_archive.zip`} rel="noreferrer">
+                                          Download Dataset{' '}
+                                      </a>
+                                   </li>
+                                   <li>
+                                      <a className="dropdown-item" target="_blank" href={`${BASE_ASSET_URL}/archive/${projectId}/${projectId}_metadata.json`} rel="noreferrer">
+                                          Download Metadata{' '}
+                                      </a>
+                                   </li>
+                               </menu>
+                            </div>
                         </h1>
                     </div>
-                    <div className={'o-section o-section--style-muted project-citation'}>
+                    <div className={'o-section o-section--style-muted proj dect-citation'}>
                         <h3>Cite This Dataset</h3>
                         <p>
-                            <MLACitation project={metadata} authors={metadata.authors} />
+                            <APACitation project={metadata} authors={metadata.authors} />
                         </p>
                         <p>
                             <strong>Download Citation:</strong>{' '}
@@ -173,15 +188,42 @@ function PublishedDatasetDetail({ params }) {
                                                 Author
                                             </th>
                                             <td className={'c-data-list__value'}>
-                                                {metadata.authors[0].first_name} {metadata.authors[0].last_name}
+                                                {metadata.authors[0].first_name} {metadata.authors[0].last_name} {`(${metadata?.institution})`}
+                                            </td>
+                                        </tr>
+                                        {metadata.authors.length > 1 && (
+                                            <tr>
+                                                <th className={'c-data-list__key'}>
+                                                    Collaborators
+                                                </th>
+                                                <td className={'c-data-list__value'}>
+                                                    {metadata.authors.slice(1).map((author, index) => (
+                                                        <>
+                                                            {index > 0 && <br />}
+                                                            {`${author.first_name} ${author.last_name}`}
+                                                        </>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        <tr>
+                                            <th className={'c-data-list__key'}>
+                                                Published
+                                            </th>
+                                            <td className={'c-data-list__value'}>
+                                                {new Date(metadata.publication_date).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th className={'c-data-list__key'}>
-                                                Created
+                                                License
                                             </th>
                                             <td className={'c-data-list__value'}>
-                                                {metadata.created}
+                                                {metadata.license}
                                             </td>
                                         </tr>
                                         <tr>
@@ -192,6 +234,31 @@ function PublishedDatasetDetail({ params }) {
                                                 {metadata.doi}
                                             </td>
                                         </tr>
+                                        {metadata.keywords && (
+                                            <tr>
+                                                <th className={'c-data-list__key'}>
+                                                    Keywords
+                                                </th>
+                                                <td className={'c-data-list__value'}>
+                                                    {metadata.keywords}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {metadata.related_publications && metadata.related_publications.length > 0 && (
+                                            <tr>
+                                                <th className={'c-data-list__key'}>
+                                                    Related Publications
+                                                </th>
+                                                <td className={'c-data-list__value'}>
+                                                    {metadata.related_publications.map((publication, index) => (
+                                                        <>
+                                                            {index > 0 && <br />}
+                                                            <a href={publication.publication_link} target="_blank" rel="noreferrer">{publication.publication_title}</a>
+                                                        </>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>

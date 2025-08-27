@@ -6,7 +6,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
-import { formatLabel, findNodeInTree } from '../utils/utils';
+import { formatLabel, findNodeInTree, getTooltipDescription } from '../utils/utils';
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
 const excludedImageMetadataFields = ['is_advanced_image_file', 'data_type', 'name'];
@@ -115,7 +115,7 @@ function PublishedDatasetEntityDetail({ params }) {
     }, []);
 
     const entityTypeWithDesc = (
-        <NameWithDesc desc="SAMPLE ENTITY DESCRIPTION">
+        <NameWithDesc desc={getTooltipDescription(entityType)}>
             {formatLabel(entityType)}
         </NameWithDesc>
     );
