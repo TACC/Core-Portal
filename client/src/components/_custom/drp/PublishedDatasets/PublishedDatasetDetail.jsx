@@ -48,13 +48,14 @@ function TreeNode({ node, system }) {
                                 {Object.entries(node.metadata).map(([key, value]) => {
                                     if (excludedEntityMetadataFields.includes(key)) return null;
 
-                                    const keyNameWithDesc = (
-                                        <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
-                                    );
+                                    // TODO: Add description to key if needed by PI
+                                    // const keyNameWithDesc = (
+                                    //     <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
+                                    // );
 
                                     return (
                                         <tr key={key}>
-                                            <th className="c-data-list__key">{keyNameWithDesc}</th>
+                                            <th className="c-data-list__key">{formatLabel(key)}</th>
                                         <td className="c-data-list__value">
                                             {formatLabel(value)}
                                         </td>
@@ -68,7 +69,7 @@ function TreeNode({ node, system }) {
             ) : (
                 <li>
                     <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.uuid}`}>
-                        <span>{nodeNameWithDesc}</span>
+                        <span>{formatLabel(node.name.split('.').pop())}</span>
                         <strong>{' '}{formatLabel(node.label)}</strong>
                     </Link>
                 </li>

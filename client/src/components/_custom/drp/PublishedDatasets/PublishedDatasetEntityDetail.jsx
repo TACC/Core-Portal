@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Section, Button, Paginator } from '_common';
+import { Section, Button, Paginator, LoadingSpinner } from '_common';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { fetchUtil } from 'utils/fetchUtil';
 import createSizeString from 'utils/sizeFormat';
@@ -122,7 +122,13 @@ function PublishedDatasetEntityDetail({ params }) {
 
     return (
         <>
-        {tree && !loading && !error && selectedEntity && (
+        {loading || !selectedEntity ? (
+            <LoadingSpinner />
+        ) : error ? (
+            <div className="alert alert-danger">
+                Error loading data. Please try again.
+            </div>
+        ) : (
             <>
             <section className={'o-section'}>
                     <h3 className={"u-title-needs-colon"}>
@@ -135,13 +141,14 @@ function PublishedDatasetEntityDetail({ params }) {
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
                                 if (excludedEntityMetadataFields.includes(key)) return null;
 
-                                const keyNameWithDesc = (
-                                    <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
-                                );
+                                // TODO: Add description to key if needed by PI
+                                // const keyNameWithDesc = (
+                                //     <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
+                                // );
 
                                 return (
                                     <tr key={key}>
-                                        <th className="c-data-list__key">{keyNameWithDesc}</th>
+                                        <th className="c-data-list__key">{formatLabel(key)}</th>
                                         <td className="c-data-list__value">
                                             {formatLabel(value)}
                                         </td>
@@ -260,7 +267,7 @@ function PublishedDatasetEntityDetail({ params }) {
                 />
             </div>
             </>
-            )}
+        )}
         </>
 
     )
