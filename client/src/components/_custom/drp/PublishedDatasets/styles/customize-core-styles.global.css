@@ -17,6 +17,14 @@
 .c-card-list [class*="card--"] img {
     padding: 20px;
     aspect-ratio: 1 / 1;
+
+    /* to prevent giant image */
+    object-fit: cover;
+    max-height: 300px;
+    width: 100%;
+
+    /* to avoid cutting off words in an image */
+    object-position: left;
 }
 
 /* to allow long file names to wrap */
@@ -30,6 +38,13 @@
 /* to swap colors for key and value (design request specific to projects) */
 .c-data-list__key { color: var(--global-color-primary--dark); }
 .c-data-list__value { color: var(--global-color-primary--x-dark) }
+
+/* to not truncate text */
+.c-data-list__key,
+.c-data-list__label {
+    overflow: visible;
+    white-space: normal;
+}
 
 /* to arrange and truncate links in value column */
 .c-data-list__value nav {
@@ -65,5 +80,5 @@
     gap: 1ch;
 }
 
-.u-title-needs-colon span { font-weight: normal; }
-.u-title-needs-colon span::after { content: ':'; }
+.u-title-needs-colon > :first-child { font-weight: normal; }
+.u-title-needs-colon > :first-child::after { content: ':'; }

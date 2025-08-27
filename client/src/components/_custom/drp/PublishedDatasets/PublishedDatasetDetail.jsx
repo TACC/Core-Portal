@@ -5,7 +5,9 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import * as ROUTES from '../../../../constants/routes';
 import { Link } from 'react-router-dom';
+import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
 import { formatLabel } from '../utils/utils';
+import styles from './PublishedDatasetDetail.module.css';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -22,7 +24,13 @@ const excludedEntityMetadataFields = [
 
 function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
-    
+
+    const nodeNameWithDesc = (
+        <NameWithDesc desc="SAMPLE NAME DESCRIPTION">
+            {formatLabel(node.name.split('.').pop())}
+        </NameWithDesc>
+    );
+
     return (
         <>
             {node.metadata && node.metadata.data_type === 'sample' ? (
@@ -30,7 +38,7 @@ function TreeNode({ node, system }) {
                     <details>
                         <summary className="u-summary-with-a-link">
                             <a className="u-title-needs-colon">
-                                <span>{formatLabel(node.name.split('.').pop())}</span>
+                                <span>{nodeNameWithDesc}</span>
                                 <strong>{' '}{formatLabel(node.label)}</strong>
                             </a>
                         </summary>   
@@ -39,6 +47,12 @@ function TreeNode({ node, system }) {
                             <tbody>
                                 {Object.entries(node.metadata).map(([key, value]) => {
                                     if (excludedEntityMetadataFields.includes(key)) return null;
+
+                                    // TODO: Add description to key if needed by PI
+                                    // const keyNameWithDesc = (
+                                    //     <NameWithDesc desc="SAMPLE KEY DESCRIPTION">{formatLabel(key)}</NameWithDesc>
+                                    // );
+
                                     return (
                                         <tr key={key}>
                                             <th className="c-data-list__key">{formatLabel(key)}</th>
@@ -80,6 +94,7 @@ function PublishedDatasetDetail({ params }) {
     const portalName = useSelector((state) => state.workbench.portalName);
     const { value: tree, loading, error } = useSelector((state) => state.publications.tree);
     const metadata = useSelector((state) => state.projects.metadata);
+    const imageUrl = `${BASE_ASSET_URL}/${metadata.cover_image}`;
 
     useEffect(() => {
         dispatch({
@@ -144,7 +159,9 @@ function PublishedDatasetDetail({ params }) {
                         <div className={'row project-overview'}>
                             <div className={'col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3'}>
                                 {metadata.cover_image && (
-                                    <img src={`${BASE_ASSET_URL}/${metadata.cover_image}`} alt={metadata.title} className={'align-left img-fluid'} />
+                                    <a href={imageUrl} target="_blank">
+                                        <img src={imageUrl} alt={metadata.title} className={`align-left img-fluid ${styles.image}`} />
+                                    </a>
                                 )}
                             </div>
                             <div className={'col project-desc'}>
@@ -181,7 +198,7 @@ function PublishedDatasetDetail({ params }) {
                         </div>
                         <div className={'project-content'}>
                             <div id="files">
-                                <h3>Files</h3>
+                                <h3>Files and Metadata</h3>
                                 {tree?.children?.length > 0 ? (
                                     <ul className="data-tree">
                                         {tree.children.map((child, index) => (
