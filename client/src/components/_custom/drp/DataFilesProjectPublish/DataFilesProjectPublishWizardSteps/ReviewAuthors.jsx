@@ -58,7 +58,7 @@ export const APACitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString} (${createdDate}). ${project.title} [Dataset]. Retrieved ${accessDate}, from `}
+      {`${authorString} (${createdDate}). ${project.title} [Dataset]. Digital Porous Media Portal. `}
       <DOILink project={project} />
     </div>
   );
@@ -103,7 +103,7 @@ export const MLACitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString}. "${project.title}."`} <em>Digital Porous Media,</em>{' '}
+      {`${authorString}. "${project.title}."`} <em>Digital Porous Media Portal,</em>{' '}
       {` Digital Porous Media, ${createdDate}, `}
       <DOILink project={project} />
       {` Accessed ${accessDate}.`}
@@ -123,7 +123,7 @@ const IEEECitation = ({ project, authors }) => {
   return (
     <div>
       {`[1] ${authorString}, "${project.title}",`}{' '}
-      <em>Digital Porous Media,</em>{' '}
+      <em>Digital Porous Media Portal,</em>{' '}
       {` ${year}. [Online]. Available: `}
       <DOILink project={project} />
       {`. [Accessed: ${day}-${month}-${year}]`}
