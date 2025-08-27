@@ -27,7 +27,7 @@ const ACMCitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name} ${a.last_name}`)
     .join(', ');
-  const createdDate = new Date(project.created).toLocaleDateString('en-US', {
+  const createdDate = new Date(project.publication_date || project.created).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
@@ -45,7 +45,7 @@ export const APACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name.charAt(0)}.`)
     .join(', ');
-  const createdDateObj = new Date(project.created);
+  const createdDateObj = new Date(project.publication_date || project.created);
   const createdDate = `${createdDateObj.getFullYear()}, ${createdDateObj.toLocaleString(
     'en-US',
     { month: 'long' }
@@ -72,7 +72,7 @@ const BibTeXCitation = ({ project, authors }) => {
   const projectUrl = project.doi
     ? `https://www.doi.org/${project.doi}`
     : `DOI link will appear after publication`;
-  const year = new Date(project.created).getFullYear();
+  const year = new Date(project.publication_date || project.created).getFullYear();
 
   return (
     <pre>{`@misc{dataset,
@@ -115,7 +115,7 @@ const IEEECitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name[0]}. ${a.last_name}`)
     .join(', ');
-  const date = new Date(project.created);
+  const date = new Date(project.publication_date || project.created);
   const year = date.getFullYear();
   const day = date.getDate();
   const month = date.toLocaleString('en-GB', { month: 'short' });
