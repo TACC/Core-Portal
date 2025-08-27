@@ -24,7 +24,7 @@ const ACMCitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString}. ${project.title}. `} <em>Digital Rocks Portal</em>{' '}
+      {`${authorString}. ${project.title}. `} <em>Digital Porous Media</em>{' '}
       {` (${createdDate}). ${projectUrl}`}{' '}
     </div>
   );
@@ -69,7 +69,7 @@ const BibTeXCitation = ({ project, authors }) => {
   author = {${authorString}},
   title = {${project.title}},
   year = {${year}},
-  publisher = {Digital Rocks Portal},
+  publisher = {Digital Porous Media},
   doi = {},
   howpublished = {\\url{${projectUrl}}}
 }`}</pre>
@@ -84,7 +84,7 @@ export const MLACitation = ({ project, authors }) => {
   const projectUrl = project.doi
     ? `https://www.doi.org/${project.doi}`
     : `DOI link will appear after publication`;
-  const createdDate = new Date(project.created).toLocaleDateString('en-GB', {
+  const createdDate = new Date(project.publication_date).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -97,8 +97,8 @@ export const MLACitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString}. "${project.title}."`} <em>Digital Rocks Portal,</em>{' '}
-      {` Digital Rocks Portal, ${createdDate}, ${projectUrl} Accessed ${accessDate}.`}
+      {`${authorString}. "${project.title}."`} <em>Digital Porous Media,</em>{' '}
+      {` Digital Porous Media, ${createdDate}, ${projectUrl} Accessed ${accessDate}.`}
     </div>
   );
 };
@@ -119,7 +119,7 @@ const IEEECitation = ({ project, authors }) => {
   return (
     <div>
       {`[1] ${authorString}, "${project.title}",`}{' '}
-      <em>Digital Rocks Portal,</em>{' '}
+      <em>Digital Porous Media,</em>{' '}
       {` ${year}. [Online]. Available: ${projectUrl}. [Accessed: ${day}-${month}-${year}]`}
     </div>
   );

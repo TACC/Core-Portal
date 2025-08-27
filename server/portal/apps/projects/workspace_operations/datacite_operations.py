@@ -41,7 +41,7 @@ def get_datacite_json(pub_graph: nx.DiGraph):
     datacite_json["creators"] = author_attr
     datacite_json["titles"] = [{"title": base_meta["title"]}]
 
-    datacite_json["publisher"] = "Digital Rocks Portal"
+    datacite_json["publisher"] = "Digital Porous Media"
 
     datacite_json["publicationYear"] = datetime.datetime.now().year
 
