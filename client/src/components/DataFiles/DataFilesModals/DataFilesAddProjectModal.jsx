@@ -84,7 +84,7 @@ const DataFilesAddProjectModal = () => {
         onCreate,
       },
     });
-  };  
+  };
 
   const onAdd = (newUser) => {
     setMembers([...members, newUser]);
@@ -102,9 +102,9 @@ const DataFilesAddProjectModal = () => {
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
     description: Yup.string()
-      .max(800, 'Description must be at most 800 characters')
+      .min(1000, 'Description must be at least 1000 characters')
+      .max(5000, 'Description must be at most 5000 characters'),
   });
-  
 
   return (
     <>
@@ -125,7 +125,7 @@ const DataFilesAddProjectModal = () => {
               Add {sharedWorkspacesDisplayName}
             </ModalHeader>
             <ModalBody>
-            <FormField
+              <FormField
                 name="title"
                 label={
                   <div>

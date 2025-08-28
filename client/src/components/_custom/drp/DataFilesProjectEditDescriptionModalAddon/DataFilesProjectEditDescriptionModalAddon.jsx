@@ -81,6 +81,18 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
                   subAcc[subField.name] || Yup.string()
                 ).required(`${subField.label} is required`);
               }
+              let other_descriptions = ['software_description'];
+              if (other_descriptions.includes(subField.name)) {
+                subAcc[subField.name] = (subAcc[subField.name] || Yup.string())
+                  .min(
+                    50,
+                    `${subField.label} must be greater than or equal to 50 characters`
+                  )
+                  .max(
+                    5000,
+                    `${subField.label} must be less than or equal to 5000 characters`
+                  )
+              }
 
               return subAcc;
             }, {})

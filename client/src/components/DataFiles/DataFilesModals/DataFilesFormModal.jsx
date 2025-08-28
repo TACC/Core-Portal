@@ -13,15 +13,15 @@ const DataFilesFormModal = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const reloadPage = (updatedPath = '') => {  
+  const reloadPage = (updatedPath = '') => {
     const match = location.pathname.match(/^\/workbench\/data\/tapis\/[^\/]+\/[^\/]+\/[^\/]+/);
     if (!match) return;
 
     const projectUrl = match[0];
-  
+
     const cleanProjectUrl = projectUrl.replace(/\/$/, '');
     const cleanUpdatedPath = updatedPath.replace(/^\/+/, '');
-  
+
     history.replace(`${cleanProjectUrl}/${cleanUpdatedPath}`);
   };
 
@@ -71,7 +71,7 @@ const DataFilesFormModal = () => {
 
   const validationSchema = Yup.object().shape({
     ...(form?.form_fields ?? []).reduce((schema, field) => {
-      
+
       let validator;
 
       if (field.type === 'number') {
@@ -107,6 +107,19 @@ const DataFilesFormModal = () => {
             field.validation?.min ?? -Infinity,
             `${field.label} must be greater than or equal to ${field.validation?.min}`
           );
+      }
+
+      let descriptions = ['algorithm_description', 'description', 'porous_media_other_description'];
+      if ((field.type === 'textarea') && (descriptions.includes(field.name))) {
+        validator = validator
+          .min(
+            50,
+            `${field.label} must be greater than or equal to 50 characters`
+          )
+          .max(
+            5000,
+            `${field.label} must be less than or equal to 5000 characters`
+          )
       }
 
       schema[field.name] = validator;
