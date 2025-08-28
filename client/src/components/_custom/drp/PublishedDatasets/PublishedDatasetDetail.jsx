@@ -188,7 +188,7 @@ function PublishedDatasetDetail({ params }) {
                                                 Author
                                             </th>
                                             <td className={'c-data-list__value'}>
-                                                {metadata.authors[0].first_name} {metadata.authors[0].last_name} {`(${metadata?.institution})`}
+                                                {metadata.authors[0].first_name} {metadata.authors[0].last_name} {metadata.institution ? `(${metadata.institution})` : ''}
                                             </td>
                                         </tr>
                                         {metadata.authors.length > 1 && (

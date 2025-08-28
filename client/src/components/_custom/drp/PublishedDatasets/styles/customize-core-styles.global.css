@@ -19,7 +19,7 @@
     aspect-ratio: 1 / 1;
 
     /* to prevent giant image */
-    object-fit: cover;
+    object-fit: fill;
     max-height: 300px;
     width: 100%;
 

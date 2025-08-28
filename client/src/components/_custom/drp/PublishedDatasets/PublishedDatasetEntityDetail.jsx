@@ -162,7 +162,9 @@ function PublishedDatasetEntityDetail({ params }) {
             <section id="data" className="o-section">
                 <ul className="c-card-list">
                     {paginationData.currentFileGroups.map(({ raw, processed }) => {
-                        const thumbnailFile = processed.find(file => file.name.endsWith('.thumb.jpg') || file.name.endsWith('.jpg'));
+                        const thumbnailFile =
+                            processed.find(file => file.name.endsWith('.thumb.jpg')) ||
+                            processed.find(file => file.name.endsWith('.jpg'));
                         const gifFile = processed.find(file => file.name.endsWith('.gif'));
                         const histogramFile = processed.find(file => file.name.endsWith('.histogram.jpg'));
                         const histogramCsvFile = processed.find(file => file.name.endsWith('.histogram.csv'));
@@ -227,6 +229,14 @@ function PublishedDatasetEntityDetail({ params }) {
                                                   Download File{' '}
                                               </a>
                                            </li>
+
+                                           {thumbnailFile && (
+                                            <li>
+                                                <a className="dropdown-item" target="_blank" href={`${projectUrl}/${thumbnailFile.path}`} rel="noreferrer">
+                                                    View Thumbnail
+                                                </a>
+                                            </li>
+                                           )}
                                            
                                            {gifFile && (
                                                <li>
