@@ -109,8 +109,8 @@ const DataFilesFormModal = () => {
           );
       }
 
-      let descriptions = ['algorithm_description', 'description', 'porous_media_other_description'];
-      if ((field.type === 'textarea') && (descriptions.includes(field.name))) {
+      let other_descriptions = ['algorithm_description', 'description', 'porous_media_other_description'];
+      if ((field.type === 'textarea') && (other_descriptions.includes(field.name))) {
         validator = validator
           .min(
             50,
