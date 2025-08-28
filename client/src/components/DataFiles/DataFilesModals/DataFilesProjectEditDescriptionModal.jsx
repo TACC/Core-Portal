@@ -73,10 +73,9 @@ const DataFilesProjectEditDescriptionModal = () => {
         .min(3, 'Title must be at least 3 characters')
         .max(150, 'Title must be at most 150 characters')
         .required('Please enter a title.'),
-      description: Yup.string().max(
-        800,
-        'Description must be at most 800 characters'
-      ),
+      description: Yup.string()
+        .min(1000, 'Description must be minimum 1000 characters')
+        .max(5000, 'Description must be at most 5000 characters'),
     })
   );
 
@@ -112,7 +111,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Dataset Description{' '}
                     <small>
-                      <em>(Maximum 800 characters)</em>
+                      <em>(Provide 200-300 words clearly describing the data as an independent output; do not copy related publication abstract.)</em>
                     </small>
                   </div>
                 }
