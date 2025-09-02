@@ -690,6 +690,22 @@ export const AppSchemaForm = ({ app }) => {
             delete job.allocation;
           }
 
+          // Add reservation scheduler option
+          if (job.reservation) {
+            job.parameterSet.schedulerOptions.push({
+              name: 'TACC Reservation',
+              description:
+                'If you have a TACC reservation, enter the reservation string here.',
+              include: true,
+              arg: `--reservation=${job.reservation}`,
+              notes:
+                {
+                  isReservation: true,
+                },
+            });
+            delete job.reservation;
+          }
+
           dispatch({
             type: 'SUBMIT_JOB',
             payload: {
@@ -866,6 +882,15 @@ export const AppSchemaForm = ({ app }) => {
                         </option>
                       ))}
                     </FormField>
+                  )}
+                  {app.definition.jobType === 'BATCH' &&
+                    app.definition.notes.showReservation && (
+                      <FormField
+                        label='TACC Reservation'
+                        name='reservation'
+                        description='If you have a TACC reservation, enter the reservation string here.'
+                        type='text'
+                     />
                   )}
                   <FormField
                     label="Maximum Job Runtime (minutes)"
