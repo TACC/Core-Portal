@@ -73,8 +73,6 @@ export function getReservationFromArg(arg) {
   return null;
 }
 
-
-
 /**
  * Get display values from job, app and execution system info
  */
