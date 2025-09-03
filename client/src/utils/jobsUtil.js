@@ -60,6 +60,21 @@ export function getAllocatonFromDirective(directive) {
   return null;
 }
 
+export function getReservationFromArg(arg) {
+  /**
+   * Extracts the reservation value from a string like '--reservation=foobar'
+   */
+  const reservationPrefix = '--reservation=';
+
+  if (typeof arg === 'string' && arg.trim().startsWith(reservationPrefix)) {
+    return arg.slice(reservationPrefix.length);
+  }
+
+  return null;
+}
+
+
+
 /**
  * Get display values from job, app and execution system info
  */
@@ -120,6 +135,16 @@ export function getJobDisplayInformation(job, app) {
           display.allocation = allocation;
         }
         display.queue = job.execSystemLogicalQueue;
+      }
+
+      if (app.definition.notes?.showReservation) {
+        const reservationParam = schedulerOptions.find(
+          (opt) => opt?.name === 'TACC Reservation'
+        );
+        const reservation = getReservationFromArg(reservationParam?.arg);
+        if (reservation) {
+          display.reservation = reservation;
+        }
       }
 
       if (!app.definition.notes.hideNodeCountAndCoresPerNode) {
