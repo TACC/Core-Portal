@@ -46,7 +46,7 @@ def test_profile_data_unexpected(client, tas_client, tas_user_history_request):
 def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, settings):
     response = client.get('/accounts/logout')
 
-    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver/{settings.LOGOUT_REDIRECT_URL}"
+    expected_url = "https://example.tapis.io/v3/oauth2/logout?redirect_url=https://testserver/cms/logout/"
 
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
