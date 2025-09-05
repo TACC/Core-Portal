@@ -73,13 +73,13 @@ const appDetailFixture = {
         containerArgs: [],
         schedulerOptions: [
           {
-            "name": "TACC Reservation",
-            "description": "Reservation input string",
-            "inputMode": "INCLUDE_ON_DEMAND",
-            "arg": null,
-            "notes": {
-                "isHidden": true
-            }
+            name: 'TACC Reservation',
+            description: 'Reservation input string',
+            inputMode: 'INCLUDE_ON_DEMAND',
+            arg: null,
+            notes: {
+              isHidden: true,
+            },
           },
           {
             arg: '--tapis-profile tacc',

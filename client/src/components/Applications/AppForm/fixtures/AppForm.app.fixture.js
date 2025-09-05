@@ -89,13 +89,13 @@ export const helloWorldAppFixture = {
             notes: {},
           },
           {
-            name: "TACC Reservation",
-            description: "Reservation input string",
-            inputMode: "INCLUDE_ON_DEMAND",
-            arg: "--reservation=foobar",
+            name: 'TACC Reservation',
+            description: 'Reservation input string',
+            inputMode: 'INCLUDE_ON_DEMAND',
+            arg: '--reservation=foobar',
             notes: {
-                isHidden: true
-            }
+              isHidden: true,
+            },
           },
         ],
         envVariables: [],

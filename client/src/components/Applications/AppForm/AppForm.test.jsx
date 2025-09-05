@@ -1046,5 +1046,4 @@ describe('AppSchemaForm queueFilter tests', () => {
     expect(reservationFieldInput).toBeInTheDocument();
     expect(reservationFieldInput.type).toBe('text');
   });
-
 });

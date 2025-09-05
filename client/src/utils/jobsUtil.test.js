@@ -27,7 +27,9 @@ describe('jobsUtil', () => {
   });
 
   it('gets reservation from schedulerOption arg', () => {
-    expect(getReservationFromArg('--reservation=my_reservation')).toEqual('my_reservation');
+    expect(getReservationFromArg('--reservation=my_reservation')).toEqual(
+      'my_reservation'
+    );
     expect(getReservationFromArg('--reservation=')).toEqual('');
     expect(getReservationFromArg('--foo=bar')).toEqual(null);
     expect(getReservationFromArg(null)).toEqual(null);
