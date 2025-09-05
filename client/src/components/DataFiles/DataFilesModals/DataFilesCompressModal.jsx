@@ -121,12 +121,9 @@ const DataFilesCompressModal = () => {
                 >
                   Successfully started compress job
                 </InlineMessage>
-                <InlineMessage isVisible={status.type === 'ERROR'} type="error">
-                  {status.message}
-                </InlineMessage>
                 <Button
                   disabled={buttonDisabled}
-                  isLoading={true}
+                  isLoading={status.type === 'RUNNING'}
                   type="primary"
                   size={status.type === 'ERROR' ? 'long' : 'medium'}
                   iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
