@@ -191,6 +191,9 @@ function JobHistoryContent({
     configDataObj.notes = jobDisplay.notes;
   }
 
+  if ('reservation' in jobDisplay) {
+    configDataObj.Reservation = jobDisplay.reservation;
+  }
   // TODOv3: dropV2Jobs
   if (version === 'v3') {
     configDataObj['Execution Directory'] = jobDetails.execSystemExecDir;
