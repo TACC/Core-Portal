@@ -126,7 +126,7 @@ const DataFilesCompressModal = () => {
                 </InlineMessage>
                 <Button
                   disabled={buttonDisabled}
-                  isLoading={status.type === 'RUNNING'}
+                  isLoading={true}
                   type="primary"
                   size={status.type === 'ERROR' ? 'long' : 'medium'}
                   iconNameBefore={status.type === 'ERROR' ? 'alert' : null}
