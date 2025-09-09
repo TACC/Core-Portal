@@ -73,6 +73,15 @@ const appDetailFixture = {
         containerArgs: [],
         schedulerOptions: [
           {
+            name: 'TACC Reservation',
+            description: 'Reservation input string',
+            inputMode: 'INCLUDE_ON_DEMAND',
+            arg: null,
+            notes: {
+              isHidden: true,
+            },
+          },
+          {
             arg: '--tapis-profile tacc',
             name: 'tacc Scheduler Profile',
             description: 'Scheduler profile for HPC clusters at TACC',
@@ -116,6 +125,7 @@ const appDetailFixture = {
       label: 'Hello World (Sleep 3m)',
       helpUrl: 'https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/',
       hideNodeCountAndCoresPerNode: true,
+      showReservation: true,
     },
     uuid: 'de2bce33-8dbc-479e-b8a2-6a9d27d583d1',
     deleted: false,

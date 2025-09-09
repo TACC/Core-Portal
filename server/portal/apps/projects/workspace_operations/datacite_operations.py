@@ -20,28 +20,49 @@ def get_datacite_json(pub_graph: nx.DiGraph):
 
     author_attr = []
     institutions = []
+
+    institution = base_meta.get("institution")
+
     for author in base_meta.get("authors", []):
         author_attr.append(
             {
                 "nameType": "Personal",
                 "givenName": author.get("first_name", ""),
                 "familyName": author.get("last_name", ""),
+                "affiliation": [
+                    {
+                        "name": institution,
+                        "schemeUri": None,
+                        "affiliationIdentifier": None,
+                        "affiliationIdentifierScheme": None,
+                    }
+                ],
             }
         )
         institutions.append(author.get("inst", ""))
 
-    datacite_json["contributors"] = [
-        {
-            "contributorType": "HostingInstitution",
-            "nameType": "Organizational",
-            "name": institution,
-        }
-        for institution in list(set(institutions))
-    ]
+    if institution:
+        datacite_json["contributors"] = [
+            {
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": institution,
+            }
+        ]
     datacite_json["creators"] = author_attr
     datacite_json["titles"] = [{"title": base_meta["title"]}]
 
-    datacite_json["publisher"] = "Digital Porous Media"
+    datacite_json["descriptions"] = [
+        {
+            "descriptionType": "Abstract",
+            "description": base_meta["description"],
+            "lang": "en-Us",
+        }
+    ]
+
+    datacite_json["types"] = {}
+    datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
+    datacite_json["publisher"] = "Digital Porous Media Portal"
 
     datacite_json["publicationYear"] = datetime.datetime.now().year
 
@@ -50,6 +71,15 @@ def get_datacite_json(pub_graph: nx.DiGraph):
 
     datacite_json["url"] = datacite_url
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
+
+    datacite_json["language"] = "English"
+
+    datacite_json["identifiers"] = [
+        {
+            "identifierType": "Project ID",
+            "identifier": base_meta["projectId"],
+        }
+    ]
 
     datacite_json["relatedIdentifiers"] = []
     for r_data in base_meta.get("relatedDatasets", []):
