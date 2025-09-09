@@ -1032,4 +1032,18 @@ describe('AppSchemaForm queueFilter tests', () => {
     expect(options[1].textContent).toBe('rtx');
     expect(options[2].textContent).toBe('small');
   });
+
+  it('should have a TACC Reservation text field', () => {
+    const { container } = renderAppSchemaFormComponent(
+      mockStore(initialMockState),
+      helloWorldAppFixture
+    );
+
+    const reservationFieldInput = container.querySelector(
+      'input[name="reservation"]'
+    );
+
+    expect(reservationFieldInput).toBeInTheDocument();
+    expect(reservationFieldInput.type).toBe('text');
+  });
 });
