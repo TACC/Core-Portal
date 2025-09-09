@@ -12,14 +12,11 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prerequisites for running the portal application:
 
-* Docker > 20.10.7
-* Docker Compose > 1.29.x
-* Python 3.7.x
-* Nodejs 16.x (LTS)
+* Docker > 28
+* Python 3.11.x
+* Nodejs 22.x (LTS)
 
-The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
-need both Docker and Docker Compose pre-installed on the system you wish to run the portal
-on.
+The Core Portal can be run using [Docker][1].
 
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop](https://www.docker.com/products/docker-desktop), which will install both Docker and Docker Compose as well as Docker
@@ -102,8 +99,8 @@ After you clone the repository locally, there are several configuration steps re
 
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
 
-- Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally_
+- Copy `server/conf/env_files/ngrok.sample.env` to `server/conf/env_files/ngrok.env`
+    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
 
 ##### CMS
 
@@ -117,14 +114,14 @@ After you clone the repository locally, there are several configuration steps re
     make build
 OR
 
-    docker-compose -f ./server/conf/docker/docker-compose.yml build
+    docker compose -f ./server/conf/docker/docker-compose.yml build
 
 
 #### Start the development environment:
     make start
 OR
 
-    docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
+    docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
 
 
 #### Install client-side dependencies and bundle code:
@@ -135,7 +132,8 @@ OR
 
 -  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
--  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][3]._
+-  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
+
 #### Initialize the application in the `core_portal_django` container:
 
     docker exec -it core_portal_django /bin/bash
@@ -149,9 +147,9 @@ OR
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
-    python3 manage.py createsuperuser
+    python3 manage.py createsuperuser  # Unless you will only login with your TACC account
 
-Finally, create a home page in the CMS.
+You may optionally create sample pages in the CMS at https://cep.test/.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
@@ -187,9 +185,14 @@ setup_allocations_index(force=True)
 
 ### Setting up notifications locally:
 
-1. Setup an account in ngrok, https://dashboard.ngrok.com/signup. Run the auth setup the signup steps suggest.
-2. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `core_portal_nginx`:
-   
+1. Configure ngrok
+
+   a. Install [ngrok](https://ngrok.com/docs/getting-started/), and create an ngrok account.
+
+   b. Copy [server/conf/env_files/ngrok.sample.env](server/conf/env_files/ngrok.sample.env) to `server/conf/env_files/ngrok.env`.
+
+   c. In `server/conf/env_files/ngrok.env`, set the `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` variables using your authtoken and static ngrok domain found in your [ngrok dashboard](https://dashboard.ngrok.com/).
+
 ```
 ngrok http 443
 ```
@@ -294,5 +297,4 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 [Core Portal]: https://github.com/TACC/Core-Portal
 [Core Styles]: https://github.com/TACC/tup-ui/tree/main/libs/core-styles
 [1]: https://docs.docker.com/get-docker/
-[2]: https://docs.docker.com/compose/install/
-[3]: https://vitejs.dev/
+[2]: https://vitejs.dev/

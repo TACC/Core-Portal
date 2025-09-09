@@ -1,4 +1,6 @@
-@import url('./styles/global.css');
+@import url('./styles/global.css') layer(portal);
+
+@layer portal {
 
 /*
   Sectioning Root
@@ -51,8 +53,7 @@ code {
 /* FAQ: The `html` and `body` boxes are only as tall as their content
         (which may be shorter than window height), cannot have siblings elements
         (would be influenced by force stretch), so force stretch outward. */
-html,
-body {
+body:not(.has-cms-ui) {
   /* As a stretched item */
   position: absolute;
   left: 0;
@@ -75,12 +76,12 @@ body {
 /* FAQ: The `.content` and `#react-root` boxes are only as tall as their content
         (which may be shorter than window height), can have siblings elements
         (would be influenced by force stretch), so gently stretch outward. */
-body {
+body:not(.has-cms-ui) {
   /* As a flex container */
   display: flex;
   flex-direction: column;
 }
-body > .content {
+body:not(.has-cms-ui) .content {
   /* As a flex item */
   flex-grow: 1;
 
@@ -88,18 +89,21 @@ body > .content {
   display: flex;
   flex-direction: column;
 }
-#react-root {
+body:not(.has-cms-ui) #react-root {
   /* As a flex item */
   flex-grow: 1;
 
   /* As a stretched item container */
   position: relative;
 }
-#react-root > :only-child {
+body:not(.has-cms-ui) #react-root > :only-child {
   /* As a stretched item */
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
+}
+
+/* end @layer portal */
 }

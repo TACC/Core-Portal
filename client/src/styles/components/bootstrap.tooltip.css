@@ -1,0 +1,7 @@
+i[data-bs-toggle="tooltip"] {
+  font-style: normal;
+}
+
+.tooltip-inner {
+    font-size: var(--global-font-size--medium);
+}
