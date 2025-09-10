@@ -369,7 +369,9 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
-    reservation: '',
+    ...(app.definition.jobAttributes?.notes?.showReservation && {
+      reservation: '',
+    }),
   };
 
   let missingAllocation = false;
