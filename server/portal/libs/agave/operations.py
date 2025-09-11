@@ -38,7 +38,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     """
     pattern = 'regex:^(?!.Trash)' if 'hideTrash' in kwargs and kwargs['hideTrash'] else ''
-    
+
     raw_listing = client.files.listFiles(systemId=system,
                                          path=path,
                                          pattern=pattern,
@@ -143,9 +143,7 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
     if filter:
         search = search.filter(filter_query)
     if 'hideTrash' in kwargs and kwargs['hideTrash']:
-        hide_trash_query = ~Q("query_string", query='\\/.Trash\\/',
-                           fields=[
-                        "path"])
+        hide_trash_query = ~Q("query_string", query='\\/.Trash\\/', fields=["path"])
         search = search.filter(hide_trash_query)
 
     search = search.filter('prefix', **{'path._exact': path.strip('/')})
