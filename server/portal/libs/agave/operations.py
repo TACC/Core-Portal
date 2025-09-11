@@ -37,9 +37,11 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         List of dicts containing file metadata from Elasticsearch
 
     """
+    pattern = 'regex:^(?!.Trash)' if 'hideTrash' in kwargs and kwargs['hideTrash'] else ''
+    
     raw_listing = client.files.listFiles(systemId=system,
                                          path=path,
-                                         pattern=kwargs.get("pattern", ""),
+                                         pattern=pattern,
                                          offset=int(offset),
                                          limit=int(limit),
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
@@ -140,6 +142,11 @@ def search(client, system, path='', offset=0, limit=100, query_string='', filter
         search = search.filter('term', **{'basePath._exact': path.strip('/')})
     if filter:
         search = search.filter(filter_query)
+    if 'hideTrash' in kwargs and kwargs['hideTrash']:
+        hide_trash_query = ~Q("query_string", query='\\/.Trash\\/',
+                           fields=[
+                        "path"])
+        search = search.filter(hide_trash_query)
 
     search = search.filter('prefix', **{'path._exact': path.strip('/')})
     search = search.filter('term', **{'system._exact': system})
