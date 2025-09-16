@@ -13,7 +13,8 @@ export const formatLabel = (key) => {
     return withSpaces
         .split(/[_\s]+/)
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        .join(' ')
+        .replace('Uri', 'URI'); // Fix for URI
 };
 
 // Find a node in a tree structure by UUID
