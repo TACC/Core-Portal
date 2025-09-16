@@ -369,6 +369,9 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
+    ...(app.definition.jobAttributes?.notes?.showReservation && {
+      reservation: '',
+    }),
   };
 
   let missingAllocation = false;
@@ -690,6 +693,21 @@ export const AppSchemaForm = ({ app }) => {
             delete job.allocation;
           }
 
+          // Add reservation scheduler option
+          if (job.reservation) {
+            job.parameterSet.schedulerOptions.push({
+              name: 'TACC Reservation',
+              description:
+                'If you have a TACC reservation, enter the reservation string here.',
+              include: true,
+              arg: `--reservation=${job.reservation}`,
+              notes: {
+                isReservation: true,
+              },
+            });
+            delete job.reservation;
+          }
+
           dispatch({
             type: 'SUBMIT_JOB',
             payload: {
@@ -867,6 +885,15 @@ export const AppSchemaForm = ({ app }) => {
                       ))}
                     </FormField>
                   )}
+                  {app.definition.jobType === 'BATCH' &&
+                    app.definition.notes.showReservation && (
+                      <FormField
+                        label="TACC Reservation"
+                        name="reservation"
+                        description="If you have a TACC reservation, enter the reservation string here."
+                        type="text"
+                      />
+                    )}
                   <FormField
                     label="Maximum Job Runtime (minutes)"
                     description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
