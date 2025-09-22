@@ -213,8 +213,342 @@ class JobsView(BaseApiView):
 
         return data
 
+    # def search(self, client, request):
+    #     STATUS_TEXT_MAP = {
+    #         'PENDING': 'Processing',
+    #         'PROCESSING_INPUTS': 'Processing',
+    #         'STAGING_INPUTS': 'Queueing',
+    #         'STAGING_JOB': 'Queueing',
+    #         'SUBMITTING_JOB': 'Queueing',
+    #         'QUEUED': 'Queueing',
+    #         'RUNNING': 'Running',
+    #         'ARCHIVING': 'Finishing',
+    #         'FINISHED': 'Finished',
+    #         'STOPPED': 'Stopped',
+    #         'FAILED': 'Failure',
+    #         'BLOCKED': 'Blocked',
+    #         'PAUSED': 'Paused',
+    #         'CANCELLED': 'Cancelled',
+    #         'ARCHIVED': 'Archived',
+    #     }
 
+    #     def get_statuses_for_label(label):      #converts user friendly label to tapis statuses
+    #         label = label.lower()
+    #         statuses = []
+    #         for status, ui_label in STATUS_TEXT_MAP.items():
+    #             if ui_label.lower() == label:
+    #                 statuses.append(status)
+    #         if label == "finished" and "FAILED" not in statuses:
+    #             statuses.append("FAILED")
+    #         return statuses
+
+    #     def get_label(status):     #converts tapis status to user friendly label
+    #         return STATUS_TEXT_MAP.get((status or '').upper(), '')
+
+    #     query_string = request.GET.get('query_string')
+    #     limit = int(request.GET.get('limit', 10))
+    #     offset = int(request.GET.get('offset', 0))
+    #     portal_name = settings.PORTAL_NAMESPACE
+
+    #     status_searches = get_statuses_for_label(query_string or '')
+
+    #     if status_searches:
+    #         status_conditions = " OR ".join([f"(status = '{status}')" for status in status_searches])  #if
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%') OR",
+    #             f"{status_conditions})",
+    #         ]
+
+    #     else:
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%'))",
+    #         ]
+
+    #     data = client.jobs.getJobSearchListByPostSqlStr(
+    #         limit=limit,
+    #         startAfter=offset,
+    #         orderBy='lastUpdated(desc),name(asc)',
+    #         request_body={
+    #             "search": sql_queries
+    #         },
+    #         select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+    #     )
+
+    #     processed_jobs = [check_job_for_timeout(job) for job in data]
+    #     # processed_jobs = []
+    #     # for job in data:
+    #     #     processed_job = check_job_for_timeout(job)
+    #     #     processed_jobs.append(processed_job)
+
+    #     search_term = (query_string or '').strip().lower()
+    #     if search_term:
+    #         filtered_jobs = [
+    #             job for job in processed_jobs
+    #             if (
+    #                 get_label(getattr(job, 'status', '')).lower() == search_term
+    #                 or (query_string in (job.name or ''))
+    #                 or (query_string in (job.archiveSystemDir or ''))
+    #                 or (query_string in (job.appId or ''))
+    #                 or (query_string in (job.archiveSystemId or ''))
+    #             )
+    #         ]
+    #     else:
+    #         filtered_jobs = processed_jobs
+
+    #     for job in filtered_jobs:
+    #         print(job)
+
+    #     return filtered_jobs
+
+
+    #So wouldnt it make more sense to have that check_for_job_timeout function before we actaully pass it in the getJObSerachlistbtypostsqlstr?? wouldnt that be better, wouldn the infitie scroill be messed if we keep it how it is right now??  becuase were basiclalt doing this fine tuning after we get back results from the actual database in a way
+
+
+
+
+
+
+#====================================================================================================================================
+#SEMI GOOD ATTEMPT?
+
+#best attempt so far, uncomment if need to start anew
+    # def search(self, client, request):
+    #     #first declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
+    #     STATUS_TEXT_MAP = {
+    #         'PENDING': 'Processing',
+    #         'PROCESSING_INPUTS': 'Processing',
+    #         'STAGING_INPUTS': 'Queueing',
+    #         'STAGING_JOB': 'Queueing',
+    #         'SUBMITTING_JOB': 'Queueing',
+    #         'QUEUED': 'Queueing',
+    #         'RUNNING': 'Running',
+    #         'ARCHIVING': 'Finishing',
+    #         'FINISHED': 'Finished',
+    #         'STOPPED': 'Stopped',
+    #         'FAILED': 'Failure',
+    #         'BLOCKED': 'Blocked',
+    #         'PAUSED': 'Paused',
+    #         'CANCELLED': 'Cancelled',
+    #         'ARCHIVED': 'Archived',
+    #     }
+
+    #     def get_statuses_for_label(label):
+    #         """
+    #         Given a UI status label (e.g., "Finished" or "Queueing"), return all
+    #         TAPIS job statuses that map to that label
+    #         """
+    #         label = label.lower()
+    #         statuses = []
+    #         for status, ui_label in STATUS_TEXT_MAP.items():
+    #             if ui_label.lower() == label:
+    #                 statuses.append(status)
+    #         # if label == "finished" and "FAILED" not in statuses:
+    #         #     statuses.append("FAILED")
+    #         return statuses
+
+    #     # def get_label(status):
+    #     #     return STATUS_TEXT_MAP.get((status or '').upper(), '')
+
+    #     query_string = request.GET.get('query_string') #getting user input
+    #     limit = int(request.GET.get('limit', 10))#getting limit
+    #     offset = int(request.GET.get('offset', 0))#getting offset
+    #     portal_name = settings.PORTAL_NAMESPACE
+
+    #     #will populate if query_string is a job status under STATUS_TEXT_MAP
+    #     status_searches = get_statuses_for_label(query_string or '')
+
+    #     if status_searches: #search accouting for statuses searches by user
+    #         enhanced_status_conditions = []
+
+    #         for status in status_searches:
+    #             if status == 'FINISHED':
+    #                 # region
+    #                 #for (finished) search, include-
+    #                 #-Normal FINISHED jobs
+    #                 #-FAILED jobs that are interactive AND have timeout messages (will be changed to FINISHED)
+    #                 # enhanced_status_conditions.append(
+    #                 #     #"(status = 'FINISHED' OR (status = 'FAILED' AND notes->>'isInteractive' = 'true' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+    #                 #     #"(status = 'FINISHED' OR (status = 'FAILED' AND (appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+    #                 #     enhanced_status_conditions.append("(status = 'FAILED')")
+    #                 # )
+    #                 # "(status = 'FINISHED' OR (status = 'FAILED' AND notes->>'isInteractive' = 'true' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+    #                 # "(status = 'FINISHED' OR (status = 'FAILED' AND (appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+    #                 # endregion
+    #                 enhanced_status_conditions.append("(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))")
+    #                 #FOR NOW enhanced_status_conditions.append("(status = 'FAILED')")
+    #             elif status == 'FAILED':
+    #                 # region
+    #                 #for (failed) search, include:
+    #                 #-FAILED jobs that are NOT interactive
+    #                 #-FAILED jobs that are interactive but DONT have timeout messages
+    #                 #-Exclude FAILED jobs that are interactive AND have timeout messages ---------------------> will be changed to FINISHED
+    #                 # enhanced_status_conditions.append(
+    #                 #     #"(status = 'FAILED' AND (notes NOT LIKE '%isInteractive%true%' OR (notes LIKE '%isInteractive%true%' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+    #                 #     #"(status = 'FAILED' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')"
+    #                 #     #"(status = 'FAILED' AND ((appId != 'jupyter-lab-hpc-cuda-ds' AND appId != 'alignem_swiftng_dev') OR ((appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+    #                 #     enhanced_status_conditions.append("(status = 'FAILED')")
+    #                 # )
+
+    #                 # "(status = 'FAILED' AND (notes NOT LIKE '%isInteractive%true%' OR (notes LIKE '%isInteractive%true%' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+    #                 # "(status = 'FAILED' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')"
+    #                 # "(status = 'FAILED' AND ((appId != 'jupyter-lab-hpc-cuda-ds' AND appId != 'alignem_swiftng_dev') OR ((appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+    #                 # endregion
+    #                 enhanced_status_conditions.append("(status = 'FAILED')")
+    #             else:
+    #                 #normal for other statuses
+    #                 enhanced_status_conditions.append(f"(status = '{status}')")
+
+    #         status_conditions = " OR ".join(enhanced_status_conditions)
+
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%') OR",
+    #             f"{status_conditions})",
+    #         ]
+
+    #     # If status_search is not populated, just do regular search, need to make this part case insensitive
+    #     else:
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%'))",
+    #         ]
+
+    #     data = client.jobs.getJobSearchListByPostSqlStr(
+    #         limit=limit,
+    #         startAfter=offset,
+    #         orderBy='lastUpdated(desc),name(asc)',
+    #         request_body={
+    #             "search": sql_queries
+    #         },
+    #         select="allAttributes",
+    #         headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+    #     )
+
+    #     print("Type of data:", type(data))
+    #     if isinstance(data, list) and len(data) > 0:
+    #         print("Type of first item:", type(data[0]))
+
+    #     return data
+
+#====================================================================================
+#END OF SEMI GOOD ATTEMPT
+
+
+
+
+
+
+
+
+    # def search(self, client, request):
+    #     '''
+    #     Search using tapis in specific portal with providing query string.
+    #     Additonal parameters for search:
+    #     limit - limit param from request, otherwise default to 10
+    #     offset - offset param from request, otherwise default to 0
+    #     '''
+    #     STATUS_TEXT_MAP = {
+    #         'PENDING': 'Processing',
+    #         'PROCESSING_INPUTS': 'Processing',
+    #         'STAGING_INPUTS': 'Queueing',
+    #         'STAGING_JOB': 'Queueing',
+    #         'SUBMITTING_JOB': 'Queueing',
+    #         'QUEUED': 'Queueing',
+    #         'RUNNING': 'Running',
+    #         'ARCHIVING': 'Finishing',
+    #         'FINISHED': 'Finished',
+    #         'STOPPED': 'Stopped',
+    #         'FAILED': 'Failure',
+    #         'BLOCKED': 'Blocked',
+    #         'PAUSED': 'Paused',
+    #         'CANCELLED': 'Cancelled',
+    #         'ARCHIVED': 'Archived',
+    #     }
+
+    #     def get_statuses_for_label(label):
+    #         """
+    #         Given a UI status label (e.g., "Finished" or "Queueing"), return all
+    #         TAPIS job statuses that map to that label
+    #         """
+    #         label = label.lower()
+    #         statuses = []
+    #         for status, ui_label in STATUS_TEXT_MAP.items():
+    #             if ui_label.lower() == label:
+    #                 statuses.append(status)
+
+    #         return statuses
+
+    #     query_string = request.GET.get('query_string')
+    #     limit = int(request.GET.get('limit', 10))
+    #     offset = int(request.GET.get('offset', 0))
+    #     portal_name = settings.PORTAL_NAMESPACE
+
+    #     #if populated, then we do different type of search
+    #     status_search = get_statuses_for_label(query_string or '')
+
+
+    #     if status_search:
+    #         #modify sql_queries that is going to be passed into getJobSearchListByPostSqlStr
+    #         enhanced_status_conditions = []
+    #         for status in status_search:
+    #             if status == 'FINISHED':
+
+
+
+    #             elif status == "FAILED":
+
+
+
+
+
+
+
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%') OR",
+    #             f"{status_conditions})"
+    #         ]
+    #         continue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #third attempt GOOD ATTEMPT UNCOMMENT RN
     def search(self, client, request):
+        #first declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
         STATUS_TEXT_MAP = {
             'PENDING': 'Processing',
             'PROCESSING_INPUTS': 'Processing',
@@ -234,39 +568,158 @@ class JobsView(BaseApiView):
         }
 
         def get_statuses_for_label(label):
+            """
+            Given a UI status label (e.g., "Finished" or "Queueing"), return all
+            TAPIS job statuses that map to that label
+            """
             label = label.lower()
             statuses = []
             for status, ui_label in STATUS_TEXT_MAP.items():
                 if ui_label.lower() == label:
                     statuses.append(status)
-            if label == "finished" and "FAILED" not in statuses:
-                statuses.append("FAILED")
             return statuses
 
-        def get_label(status):
-            return STATUS_TEXT_MAP.get((status or '').upper(), '')
+        def is_interactive(job):
+            """Return True only if notes.isInteractive is true"""
+            notes = getattr(job, 'notes', None)
+            if not notes:
+                return False
+            if isinstance(notes, str):
+                try:
+                    notes = json.loads(notes)
+                except Exception:
+                    return False
+            val = notes.get('isInteractive')
+            if isinstance(val, str):
+                return val.strip().lower() == 'true'
+            return bool(val)
 
-        query_string = request.GET.get('query_string')
-        limit = int(request.GET.get('limit', 10))
-        offset = int(request.GET.get('offset', 0))
+        def has_timeout_message(job):
+            """Return True if lastMessage mentions TIME_EXPIRED or TIMEOUT."""
+            msg = getattr(job, 'lastMessage', '') or ''
+            msg = msg.upper()
+            return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
+
+
+        query_string = request.GET.get('query_string') #getting user input
+        limit = int(request.GET.get('limit', 10))#getting limit
+        offset = int(request.GET.get('offset', 0))#getting offset
         portal_name = settings.PORTAL_NAMESPACE
 
+        #will populate if query_string is a job status under STATUS_TEXT_MAP
         status_searches = get_statuses_for_label(query_string or '')
 
-        if status_searches:
-            status_conditions = " OR ".join([f"(status = '{status}')" for status in status_searches])
+        if status_searches: #search accouting for statuses searches by user
+            enhanced_status_conditions = []
+
+            for status in status_searches:
+                if status == 'FINISHED':
+                    # region
+                    #for (finished) search, include-
+                    #-Normal FINISHED jobs
+                    #-FAILED jobs that are interactive AND have timeout messages (will be changed to FINISHED)
+                    # enhanced_status_conditions.append(
+                    #     #"(status = 'FINISHED' OR (status = 'FAILED' AND notes->>'isInteractive' = 'true' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    #     #"(status = 'FINISHED' OR (status = 'FAILED' AND (appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    #     enhanced_status_conditions.append("(status = 'FAILED')")
+                    # )
+                    # "(status = 'FINISHED' OR (status = 'FAILED' AND notes->>'isInteractive' = 'true' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    # "(status = 'FINISHED' OR (status = 'FAILED' AND (appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    # endregion
+                    enhanced_status_conditions.append("(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))")
+                    #FOR NOW enhanced_status_conditions.append("(status = 'FAILED')")
+                elif status == 'FAILED':
+                    # region
+                    #for (failed) search, include:
+                    #-FAILED jobs that are NOT interactive
+                    #-FAILED jobs that are interactive but DONT have timeout messages
+                    #-Exclude FAILED jobs that are interactive AND have timeout messages ---------------------> will be changed to FINISHED
+                    # enhanced_status_conditions.append(
+                    #     #"(status = 'FAILED' AND (notes NOT LIKE '%isInteractive%true%' OR (notes LIKE '%isInteractive%true%' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+                    #     #"(status = 'FAILED' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')"
+                    #     #"(status = 'FAILED' AND ((appId != 'jupyter-lab-hpc-cuda-ds' AND appId != 'alignem_swiftng_dev') OR ((appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+                    #     enhanced_status_conditions.append("(status = 'FAILED')")
+                    # )
+
+                    # "(status = 'FAILED' AND (notes NOT LIKE '%isInteractive%true%' OR (notes LIKE '%isInteractive%true%' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+                    # "(status = 'FAILED' AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')"
+                    # "(status = 'FAILED' AND ((appId != 'jupyter-lab-hpc-cuda-ds' AND appId != 'alignem_swiftng_dev') OR ((appId = 'jupyter-lab-hpc-cuda-ds' OR appId = 'alignem_swiftng_dev') AND lastMessage NOT LIKE '%TIME_EXPIRED%' AND lastMessage NOT LIKE '%TIMEOUT%')))"
+                    # endregion
+                        enhanced_status_conditions.append("(status = 'FAILED')")
+                else:
+                    #normal for other statuses
+                    enhanced_status_conditions.append(f"(status = '{status}')")
+
+            status_conditions = " OR ".join(enhanced_status_conditions)
+
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{query_string}%') OR",
+                f"{status_conditions})",
+            ]
+
+        # If status_search is not populated, just do regular search, need to make this part case insensitive
         else:
-            status_conditions = f"(status = '{(query_string or '').upper()}')"
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{query_string}%'))",
+            ]
 
-        sql_queries = [
-            f"(tags IN ('portalName: {portal_name}')) AND",
-            f"((name like '%{query_string}%') OR",
-            f"(archiveSystemDir like '%{query_string}%') OR",
-            f"(appId like '%{query_string}%') OR",
-            f"(archiveSystemId like '%{query_string}%') OR",
-            f"{status_conditions})",
-        ]
 
+
+        # If searching for Finished or Failed, use fill-to-limit with Python filtering
+        if any(s in ('FINISHED', 'FAILED') for s in status_searches):
+            target_offset = offset
+            collected = []
+            skipped = 0
+
+            upstream_page_size = max(limit, 50)
+            upstream_offset = 0
+
+            while len(collected) < limit:
+                page = client.jobs.getJobSearchListByPostSqlStr(
+                    limit=upstream_page_size,
+                    startAfter=upstream_offset,
+                    orderBy='lastUpdated(desc),name(asc)',
+                    request_body={"search": sql_queries},
+                    select="allAttributes",
+                    headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                )
+                if not page:
+                    break
+
+                upstream_offset += len(page)
+
+                for job in page:
+                    # Branch-specific filtering
+                    if any(s == 'FINISHED' for s in status_searches):
+                        if not is_interactive(job):
+                            continue
+                    elif any(s == 'FAILED' for s in status_searches):
+                        if has_timeout_message(job) and is_interactive(job):
+                            continue
+
+                    if skipped < target_offset:
+                        skipped += 1
+                        continue
+
+                    collected.append(job)
+                    if len(collected) == limit:
+                        break
+
+                if len(page) < upstream_page_size:
+                    break
+
+            return collected
+
+
+        #regular search
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
             startAfter=offset,
@@ -274,27 +727,62 @@ class JobsView(BaseApiView):
             request_body={
                 "search": sql_queries
             },
-            select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+            select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
 
-        processed_jobs = [check_job_for_timeout(job) for job in data]
 
-        search_term = (query_string or '').strip().lower()
-        if search_term:
-            filtered_jobs = [
-                job for job in processed_jobs
-                if (
-                    get_label(getattr(job, 'status', '')).lower() == search_term
-                    or (query_string in (job.name or ''))
-                    or (query_string in (job.archiveSystemDir or ''))
-                    or (query_string in (job.appId or ''))
-                    or (query_string in (job.archiveSystemId or ''))
-                )
-            ]
-        else:
-            filtered_jobs = processed_jobs
+        for job in data:
+            print(job, flush=True)
+        return data
 
-        return filtered_jobs
+
+
+
+
+        # data = client.jobs.getJobSearchListByPostSqlStr(
+        #     limit=limit,
+        #     startAfter=offset,
+        #     orderBy='lastUpdated(desc),name(asc)',
+        #     request_body={
+        #         "search": sql_queries
+        #     },
+        #     select="allAttributes",
+        #     headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+        # )
+
+        # print("Type of data:", type(data))
+        # if isinstance(data, list) and len(data) > 0:
+        #     print("Type of first item:", type(data[0]))
+
+        return data
+
+
+
+
+    #     #rigiht here on this one need to find a way to make the search case insensitive
+    #     else:
+    #         sql_queries = [
+    #             f"(tags IN ('portalName: {portal_name}')) AND",
+    #             f"((name like '%{query_string}%') OR",
+    #             f"(archiveSystemDir like '%{query_string}%') OR",
+    #             f"(appId like '%{query_string}%') OR",
+    #             f"(archiveSystemId like '%{query_string}%'))",
+    #         ]
+
+    #     data = client.jobs.getJobSearchListByPostSqlStr(
+    #         limit=limit,
+    #         startAfter=offset,
+    #         orderBy='lastUpdated(desc),name(asc)',
+    #         request_body={
+    #             "search": sql_queries
+    #         },
+    #         select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+    #     )
+
+    #     for job in data:
+    #         print(job)
+    #     return data
 
 
     def delete(self, request, *args, **kwargs):
@@ -694,59 +1182,3 @@ class TapisAppsView(BaseApiView):
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({'data': response})
-
-
-
-
-    # def search(self, client, request):
-    #     '''
-    #     Search using tapis in specific portal with providing query string.
-    #     Additonal parameters for search:
-    #     limit - limit param from request, otherwise default to 10
-    #     offset - offset param from request, otherwise default to 0
-    #     '''
-    #     query_string = request.GET.get('query_string')
-    #     limit = int(request.GET.get('limit', 10))
-    #     offset = int(request.GET.get('offset', 0))
-    #     portal_name = settings.PORTAL_NAMESPACE
-
-    #     #just getting entire things, filtering in python fdown below
-    #     sql_queries = [
-    #         f"(tags IN ('portalName: {portal_name}'))"
-    #     ]
-
-    #     print("DEBUG SQL:", sql_queries)
-
-    #     data = client.jobs.getJobSearchListByPostSqlStr(
-    #         limit=limit,
-    #         startAfter=offset,
-    #         orderBy='lastUpdated(desc),name(asc)',
-    #         request_body={
-    #             "search": sql_queries
-    #         },
-    #         select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
-    #     )
-
-    #     #runing check jobs for all timeout jobs
-    #     processed_jobs = [check_job_for_timeout(job) for job in data]
-
-    #     # Filter jobs to match search input, status, and remote status
-    #     search_term = (query_string or '').strip().upper()
-    #     if search_term:
-    #         filtered_jobs = [
-    #             job for job in processed_jobs
-    #             if (
-    #                 (hasattr(job, 'status') and search_term in (job.status or '').upper()) or
-    #                 (hasattr(job, 'remoteOutcome') and search_term in (job.remoteOutcome or '').upper()) or
-    #                 (search_term in (job.name or '').upper()) or
-    #                 (search_term in (job.archiveSystemDir or '').upper()) or
-    #                 (search_term in (job.appId or '').upper()) or
-    #                 (search_term in (job.archiveSystemId or '').upper())
-    #             )
-    #         ]
-    #     else:
-    #         filtered_jobs = processed_jobs
-
-    #     for job in filtered_jobs:
-    #         print("JOB OBJECT:", job)
-    #     return filtered_jobs
