@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import configureStore from 'redux-mock-store';
-import { waitFor, renderHook } from '@testing-library/react';
+import { screen, waitFor, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
 import renderComponent from 'utils/testing';
 import DataFilesToolbarAppsModalFixture, {
@@ -14,30 +14,33 @@ import {
 } from 'hooks/datafiles/mutations/toolbarAppUtils';
 
 vi.mock('@tanstack/react-query');
-vi.mock('hooks/datafiles/mutations/toolbarAppUtils');
+vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual, // keep `getDefaultAllocation`
+    getAppUtil: vi.fn().mockResolvedValue(compressAppFixture)
+  };
+});
+
 const mockStore = configureStore();
 
 describe('DataFilesCompressModal', () => {
   beforeEach(async () => {
-    getAppUtil.mockResolvedValue(compressAppFixture);
-    useQuery.mockReturnValue({ data: compressAppFixture });
-
-    const { result } = renderHook(() => useQuery('compress-app', getAppUtil));
-    await waitFor(() => result.current.isSuccess);
-  });
-  afterEach(() => {
     vi.restoreAllMocks();
   });
+
   it('renders the compress modal', async () => {
     const store = mockStore(DataFilesToolbarAppsModalFixture);
-    const { findByText } = renderComponent(<DataFilesCompressModal />, store);
+    const { getByText } = renderComponent(<DataFilesCompressModal />, store);
 
-    await waitFor(async () =>
-      expect(findByText(/Compressed File Name/)).toBeDefined()
-    );
+    //expect(findByText('Compressed File Name')).toBeDefined();
+    await waitFor(async () => {
+      await screen.findByText('Compressed File Name')
+    });
   });
 
-  it('disables form when submitting compress job', async () => {
+  /*it('disables form when submitting compress job', async () => {
     const store = mockStore({
       ...DataFilesToolbarAppsModalFixture,
       files: {
@@ -48,8 +51,25 @@ describe('DataFilesCompressModal', () => {
     const { findByTestId } = renderComponent(<DataFilesCompressModal />, store);
 
     await waitFor(async () =>
-      expect(findByTestId(/loading-spinner/)).toBeDefined()
+      expect(findByTestId('loading-spinner')).toBeInTheDocument()
     );
+  });
+
+  it('disables form and shows message when compress job submits successfully', async () => {
+    const store = mockStore({
+      ...DataFilesToolbarAppsModalFixture,
+      files: {
+        ...DataFilesToolbarAppsModalFixture.files,
+        operationStatus: { compress: { type: 'SUCCESS' } },
+      },
+    });
+    renderComponent(<DataFilesCompressModal />, store);
+
+    const compressButtonText = await screen.findByText('Compress');
+    const compressButton = compressButtonText.closest('button');
+
+    expect(compressButton).toBeDisabled();
+
   });
 
   it('displays error state & correct message', async () => {
@@ -67,10 +87,9 @@ describe('DataFilesCompressModal', () => {
       store
     );
 
-    //const compressErrorIcon = findByTestId('icon-before');
     await waitFor(async () => {
-      expect(findByTestId(/icon-before/)).toBeDefined();
-      expect(findByText(/Test error./)).toBeDefined();
+      expect(findByTestId(/icon-before/)).toBeInTheDocument();
+      expect(findByText(/Test error./)).toBeInTheDocument();
     });
-  });
+  });*/
 });

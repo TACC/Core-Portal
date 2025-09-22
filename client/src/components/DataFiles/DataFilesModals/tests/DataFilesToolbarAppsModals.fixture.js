@@ -1,12 +1,18 @@
 export const compressAppFixture = {
+  id: 'compress-express',
+  version: '0.0.1',
   definition: {
     jobAttributes: {
-      description: 'Compress a file or folder for download.',
-      dynamicExecSystem: false,
-      execSystemConstraints: null,
       execSystemId: 'cloud.data.exec',
     },
   },
+  execSystems: [
+    {
+      id: '',
+      canRunBatch: false,
+      host: 'cloud.data.tacc.utexas.edu',
+    }
+  ],
 };
 
 export const extractAppFixture = {
@@ -18,6 +24,13 @@ export const extractAppFixture = {
       execSystemId: 'cloud.data.exec',
     },
   },
+  execSystems: [
+    {
+      id: '',
+      canRunBatch: false,
+      host: '',
+    }
+  ],
 };
 
 const testFileSize1 = 1.5 * 1024 * 1024 * 1024;
@@ -28,6 +41,8 @@ const DataFilesToolbarAppsModalFixture = {
     operationStatus: {
       copy: {},
       compress: {},
+      extract: {},
+      pushKeys: {},
     },
     listing: {
       FilesListing: [
@@ -84,7 +99,9 @@ const DataFilesToolbarAppsModalFixture = {
       modal: [],
     },
     modals: {
+      copy: true,
       compress: true,
+      extract: true,
     },
   },
   workbench: {
@@ -97,6 +114,7 @@ const DataFilesToolbarAppsModalFixture = {
     portal_alloc: '',
     active: [
       {
+        projectName: '',
         systems: [
           {
             allocation: {
@@ -105,6 +123,7 @@ const DataFilesToolbarAppsModalFixture = {
               project: '',
             },
             type: '',
+            host: ''
           },
         ],
       },
@@ -112,7 +131,11 @@ const DataFilesToolbarAppsModalFixture = {
   },
   systems: {
     storage: {
-      configuration: [],
+      configuration: [
+        {
+          default: true
+        }
+      ],
     },
   },
 };
