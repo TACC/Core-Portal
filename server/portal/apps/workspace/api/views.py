@@ -213,7 +213,6 @@ class JobsView(BaseApiView):
 
         return data
 
-
     def search(self, client, request):
         # declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
         STATUS_TEXT_MAP = {
@@ -276,9 +275,11 @@ class JobsView(BaseApiView):
 
             for status in status_searches:
                 if status == 'FINISHED':
-                    enhanced_status_conditions.append("(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))")
+                    enhanced_status_conditions.append(
+                        "(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    )
                 elif status == 'FAILED':
-                        enhanced_status_conditions.append("(status = 'FAILED')")
+                    enhanced_status_conditions.append("(status = 'FAILED')")
                 else:
                     enhanced_status_conditions.append(f"(status = '{status}')")
             status_conditions = " OR ".join(enhanced_status_conditions)
@@ -347,7 +348,7 @@ class JobsView(BaseApiView):
 
             return collected
 
-        #regular search
+        # regular search
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
             startAfter=offset,
