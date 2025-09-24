@@ -319,7 +319,9 @@ def list_projects(client):
         "title": getattr(prj.notes, "title", None),
         "description": getattr(prj.notes, "description", None)
     }, listing)
-    return list(serialized_listing)
+    projects = list(serialized_listing)
+    projects.sort(key=lambda p: p.get("updated") or "", reverse=True)
+    return projects
 
 
 def get_project(client, workspace_id):
