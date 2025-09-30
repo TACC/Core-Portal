@@ -445,25 +445,26 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
 
         # Assertions
         assert len(projects) == 2
-        assert projects[0]["id"] == "test.project.test.project-2"
-        assert projects[0]["title"] == "Test Workspace 1"
+
+        assert projects[0]["id"] == "test.project.test.project-3"
+        assert projects[0]["title"] == "Test Workspace 2"
         assert projects[0]["description"] == "Description of Test Workspace"
         assert projects[0]["owner"]["username"] == "owner_username"
         assert (
-            projects[0]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-2"
+            projects[0]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-3"
         )
         assert projects[0]["host"] == "cloud.data.tacc.utexas.edu"
-        assert projects[0]["updated"] == "2023-03-07T19:31:17.292220Z"
+        assert projects[0]["updated"] == "2023-03-08T19:31:17.292220Z"
 
-        assert projects[1]["id"] == "test.project.test.project-3"
-        assert projects[1]["title"] == "Test Workspace 2"
+        assert projects[1]["id"] == "test.project.test.project-2"
+        assert projects[1]["title"] == "Test Workspace 1"
         assert projects[1]["description"] == "Description of Test Workspace"
         assert projects[1]["owner"]["username"] == "owner_username"
         assert (
-            projects[1]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-3"
+            projects[1]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-2"
         )
         assert projects[1]["host"] == "cloud.data.tacc.utexas.edu"
-        assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
+        assert projects[1]["updated"] == "2023-03-07T19:31:17.292220Z"
 
 
 # Test adding a member to a project
