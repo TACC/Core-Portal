@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-import { compressAppFixture } from './DataFilesCompressModal.fixture';
+import { compressAppFixture } from './DataFilesToolbarAppsModals.fixture';
 import { fireEvent, screen, waitFor, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
@@ -22,6 +22,11 @@ vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
           execSystemId: 'frontera',
         },
       },
+      execSystems: [
+        {
+          host: 'frontera.tacc.utexas.edu',
+        },
+      ],
     }),
   };
 });

@@ -88,6 +88,15 @@ export const helloWorldAppFixture = {
             inputMode: 'FIXED',
             notes: {},
           },
+          {
+            name: 'TACC Reservation',
+            description: 'Reservation input string',
+            inputMode: 'INCLUDE_ON_DEMAND',
+            arg: '--reservation=foobar',
+            notes: {
+              isHidden: true,
+            },
+          },
         ],
         envVariables: [],
         archiveFilter: {
@@ -120,6 +129,7 @@ export const helloWorldAppFixture = {
       label: 'Hello World (Sleep 3m)',
       helpUrl: 'https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/',
       hideNodeCountAndCoresPerNode: true,
+      showReservation: true,
     },
     uuid: 'de2bce33-8dbc-479e-b8a2-6a9d27d583d1',
     deleted: false,

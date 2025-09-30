@@ -1,5 +1,6 @@
 import {
   getAllocatonFromDirective,
+  getReservationFromArg,
   getJobDisplayInformation,
   getOutputPath,
   getExecutionPath,
@@ -23,6 +24,15 @@ describe('jobsUtil', () => {
     );
     expect(getAllocatonFromDirective('-Ab Test')).toEqual(null);
     expect(getAllocatonFromDirective('')).toEqual(null);
+  });
+
+  it('gets reservation from schedulerOption arg', () => {
+    expect(getReservationFromArg('--reservation=my_reservation')).toEqual(
+      'my_reservation'
+    );
+    expect(getReservationFromArg('--reservation=')).toEqual('');
+    expect(getReservationFromArg('--foo=bar')).toEqual(null);
+    expect(getReservationFromArg(null)).toEqual(null);
   });
 
   it('get job display information', () => {
