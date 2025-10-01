@@ -9,7 +9,6 @@ import logging
 import requests
 
 from portal.exceptions.api import ApiException
-from portal.apps.search.tasks import index_allocations
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +138,6 @@ def get_allocations(username, force=False):
         if force:
             logger.info("Forcing TAS allocation retrieval for user:{}".format(username))
             raise NotFoundError
-        index_allocations.apply_async(args=[username])
         result = {
             'hosts': {},
             'portal_alloc': None,

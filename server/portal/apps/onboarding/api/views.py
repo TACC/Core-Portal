@@ -61,7 +61,6 @@ def get_user_onboarding(user):
             and step["retry"]
             and step_instance.state
             not in [
-                SetupState.PENDING,
                 SetupState.USERWAIT,
                 SetupState.STAFFWAIT,
                 SetupState.COMPLETED,
