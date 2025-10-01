@@ -70,7 +70,7 @@ def get_user_onboarding(user):
         ):
             retried_step = step_instance
             step_instance.state = SetupState.PROCESSING
-            execute_single_step.apply_async(args=[user.username, step["step"]], countdown=2) # slight delay to allow client to render
+            execute_single_step.apply_async(args=[user.username, step["step"]], countdown=2)  # slight delay to allow client to render
             logger.info(
                 "Retrying setup step %s for %s", step["step"], user.username
             )

@@ -130,7 +130,7 @@ class ProjectMembershipStep(AbstractStep):
         # in the address bar. This is the SQL ID
         try:
             tas_client.add_project_user(self.default_project_sql_id, self.user.username)
-            index_allocations.apply_async(args=[username])
+            index_allocations.apply_async(args=[self.user.username])
         except Exception as e:
             error, reason = e.args
             if "is already a member" in reason:
