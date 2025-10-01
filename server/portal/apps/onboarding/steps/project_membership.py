@@ -5,6 +5,7 @@ from pytas.http import TASClient
 from rt import Rt
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
+from portal.apps.search.tasks import index_allocations
 
 
 logger = logging.getLogger(__name__)
@@ -129,6 +130,7 @@ class ProjectMembershipStep(AbstractStep):
         # in the address bar. This is the SQL ID
         try:
             tas_client.add_project_user(self.default_project_sql_id, self.user.username)
+            index_allocations.apply_async(args=[username])
         except Exception as e:
             error, reason = e.args
             if "is already a member" in reason:
@@ -244,7 +246,7 @@ class ProjectMembershipStep(AbstractStep):
                 )
         elif action == "staff_deny":
             self.deny_project_request()
-            self.fail(
+            self.deny(
                 "Portal access request has not been approved."
             )
         else:
