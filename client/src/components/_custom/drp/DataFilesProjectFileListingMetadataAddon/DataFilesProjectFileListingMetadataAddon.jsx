@@ -7,17 +7,7 @@ import { formatDate } from 'utils/timeFormat';
 import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
 import { Button } from '_common';
 import { useDispatch } from 'react-redux';
-
-const excludeKeys = [
-  'name',
-  'description',
-  'data_type',
-  'sample',
-  'digital_dataset',
-  'file_objs',
-  'cover_image',
-  'file_url',
-];
+import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const DataFilesProjectFileListingMetadataAddon = ({
   folderMetadata,
@@ -87,7 +77,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
             <DataDisplay
               data={folderMetadata}
               path={path}
-              excludeKeys={excludeKeys}
+              excludeKeys={EXCLUDED_METADATA_FIELDS}
             />
           </>
         ) : (
@@ -111,7 +101,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
             <DataDisplay
               data={getProjectMetadata(metadata)}
               path={path}
-              excludeKeys={excludeKeys}
+              excludeKeys={EXCLUDED_METADATA_FIELDS}
               modalData={getProjectModalMetadata(metadata)}
               coverImage={metadata.cover_image}
             />

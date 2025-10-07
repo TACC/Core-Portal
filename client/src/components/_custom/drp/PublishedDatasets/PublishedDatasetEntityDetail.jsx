@@ -7,19 +7,11 @@ import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
 import { formatLabel, findNodeInTree, getTooltipDescription } from '../utils/utils';
+import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
+
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
 const excludedImageMetadataFields = ['is_advanced_image_file', 'data_type', 'name'];
-const excludedEntityMetadataFields = [
-    'name',
-    'description',
-    'data_type',
-    'sample',
-    'digital_dataset',
-    'file_objs',
-    'cover_image',
-    'file_url',
-  ];
 
 function PublishedDatasetEntityDetail({ params }) {
 
@@ -139,7 +131,7 @@ function PublishedDatasetEntityDetail({ params }) {
                     <table className="c-data-list c-data-list--horizontal c-data-list--is-narrow">
                         <tbody>
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
-                                if (excludedEntityMetadataFields.includes(key)) return null;
+                                if (EXCLUDED_METADATA_FIELDS.includes(key)) return null;
 
                                 // TODO: Add description to key if needed by PI
                                 // const keyNameWithDesc = (

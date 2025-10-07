@@ -190,6 +190,7 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     collection_method: Optional[str] = None
     onshore_offshore: Optional[Literal["onshore", "offshore"]] = None
     depth: Optional[str] = None
+    total_vertical_depth: Optional[str] = None
     water_depth: Optional[str] = None
     geographic_origin: Optional[str] = None
     procedure: Optional[str] = None

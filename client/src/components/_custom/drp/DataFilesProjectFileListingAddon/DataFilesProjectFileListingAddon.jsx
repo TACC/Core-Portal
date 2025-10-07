@@ -120,7 +120,7 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
               type="link"
               onClick={() => createSampleModal('ADD_SAMPLE_DATA')}
             >
-              Add Sample Data
+              Add Sample Information
             </Button>
           )}
           <span className={styles.separator}>|</span>

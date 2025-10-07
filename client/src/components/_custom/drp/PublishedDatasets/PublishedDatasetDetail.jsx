@@ -8,19 +8,10 @@ import { Link } from 'react-router-dom';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
 import { formatLabel, getTooltipDescription } from '../utils/utils';
 import styles from './PublishedDatasetDetail.module.css';
+import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
-const excludedEntityMetadataFields = [
-    'name',
-    'description',
-    'data_type',
-    'sample',
-    'digital_dataset',
-    'file_objs',
-    'cover_image',
-    'file_url',
-  ];
 
 function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
@@ -46,7 +37,7 @@ function TreeNode({ node, system }) {
                         <table className="c-data-list c-data-list--is-vert c-data-list--is-narrow c-data-list--should-truncate-values">
                             <tbody>
                                 {Object.entries(node.metadata).map(([key, value]) => {
-                                    if (excludedEntityMetadataFields.includes(key)) return null;
+                                    if (EXCLUDED_METADATA_FIELDS.includes(key)) return null;
 
                                     // TODO: Add description to key if needed by PI
                                     // const keyNameWithDesc = (
@@ -174,7 +165,7 @@ function PublishedDatasetDetail({ params }) {
                         <div className={'row project-overview'}>
                             <div className={'col col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3'}>
                                 {metadata.cover_image && (
-                                    <a href={imageUrl} target="_blank">
+                                    <a href={imageUrl} target="_blank" rel="noreferrer">
                                         <img src={imageUrl} alt={metadata.title} className={`align-left img-fluid ${styles.image}`} />
                                     </a>
                                 )}

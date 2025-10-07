@@ -5,6 +5,20 @@ export const formatLabel = (key) => {
     if (typeof key !== 'string') {
         return key;
     }
+
+    // Check if it's a valid URL
+    const isValidUrl = (str) => {
+        try {
+            const url = new URL(str);
+            return url.protocol === 'http:' || url.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    };
+
+    if (isValidUrl(key)) {
+        return key;
+    }
     
     // Handle camelCase by inserting spaces before uppercase letters
     const withSpaces = key.replace(/([a-z])([A-Z])/g, '$1 $2');
