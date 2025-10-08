@@ -29,8 +29,8 @@ class AllocationStep(AbstractStep):
         self.log("Retrieving your allocations")
         # Force allocation retrieval from TAS and refresh elasticsearch
         allocations = get_allocations(self.user.username, force=True)
-        if not allocations.get('active'):
-            self.state = SetupState.USERWAIT
+        if not allocations.get("active"):
+            self.state = SetupState.FAILED
             self.log(
                 """User {0} does not have any allocations""".format(self.user.username),
             )
