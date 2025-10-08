@@ -72,6 +72,7 @@ def test_launch_setup_checks(regular_user, mocker):
     mock_execute_setup_steps = mocker.patch(
         "portal.apps.auth.views.execute_setup_steps"
     )
+    mocker.patch('portal.apps.auth.views.index_allocations')
     launch_setup_checks(regular_user)
     mock_execute_setup_steps.apply_async.assert_called_with(
         args=[regular_user.username]

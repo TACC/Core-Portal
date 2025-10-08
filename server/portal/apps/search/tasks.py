@@ -61,14 +61,6 @@ def index_allocations(self, username):
     doc = IndexedAllocation(username=username, value=allocations)
     doc.meta.id = get_sha256_hash(username)
     doc.save()
-    """
-    try:
-            doc = IndexedAllocation.from_username(username)
-            doc.update(value=allocations)
-    except NotFoundError:
-            doc = IndexedAllocation(username=username, value=allocations)
-            doc.save()
-    """
 
 
 @shared_task(bind=True, max_retries=3, queue='indexing')

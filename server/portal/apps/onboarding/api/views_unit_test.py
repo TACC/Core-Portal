@@ -89,7 +89,7 @@ def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocke
     mock_execute_single_step.apply_async.assert_called_with(args=[
         authenticated_user.username,
         'portal.apps.onboarding.steps.test_steps.MockStep'
-    ])
+    ], countdown=2)
     result = json.loads(response.content)
     assert result["username"] == authenticated_user.username
     assert "steps" in result
