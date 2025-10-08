@@ -53,6 +53,7 @@ describe('Job History Modal', () => {
     expect(getByText(/Target/)).toBeDefined();
     expect(getByText(/Last Status Message/)).toBeDefined();
     expect(getByText(/Max Minutes/)).toBeDefined();
+    expect(getByText(/Reservation/)).toBeDefined();
   });
 
   // TODOv3: dropV2Jobs

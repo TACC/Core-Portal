@@ -23,6 +23,7 @@ export type TConfigurationValues = {
   coresPerNode?: number;
   allocation?: string;
   memoryMB?: number;
+  reservation?: string;
 };
 
 export type TOutputValues = {
