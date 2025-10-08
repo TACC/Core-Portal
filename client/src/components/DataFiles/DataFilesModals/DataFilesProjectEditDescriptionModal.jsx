@@ -111,7 +111,8 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Dataset Description{' '}
                     <small>
-                      <em>(Provide 200-300 words clearly describing the data as an independent output; do not copy related publication abstract.)</em>
+                      <em>Provide 200-300 words clearly describing the data as an independent output; do not copy related publication abstract.
+                        If you need help, go <a href='https://digital-porous-media.github.io/dpm_docs/upload_data/'>here</a>.</em>
                     </small>
                   </div>
                 }
