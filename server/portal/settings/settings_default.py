@@ -170,7 +170,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 """
 
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {"step": "portal.apps.onboarding.steps.allocation.AllocationStep", "settings": {}},
     {
         "step": "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep",
         "settings": {
@@ -187,10 +186,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             #       Defaults to 'Accounting' if left blank
             "rt_queue": _RT_QUEUE,
         },
-    },
-    {
-        "step": "portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-        "settings": {"credentials_systems": ["cloud.data"]},
+        "retry": True,
     },
 ]
 
