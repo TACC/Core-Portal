@@ -66,7 +66,7 @@ class TestOperations(TestCase):
             .return_value = mock_result
 
         mock_search = MagicMock(side_effect=search)
-        search_res = mock_search(None, 'test.system', '/path', query_string='query', kwargs={'hideTrash': 'True'})
+        search_res = mock_search(client=None, system='test.system', path='/path', query_string='query', kwargs={'hideTrash': 'True'})
 
         mock_search().query.assert_called_with(Q("query_string", query='query',
                                                  fields=["name"],
