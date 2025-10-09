@@ -62,10 +62,10 @@ class TestOperations(TestCase):
         mock_result = MagicMock()
         mock_result.__iter__.return_value = [mock_hit]
         mock_result.hits.total.value = 1
-        mock_search().query().filter().filter().extra().execute\
+        mock_search().query().filter().filter().filter().extra().execute\
             .return_value = mock_result
 
-        search_res = search(None, 'test.system', '/path', query_string='query', kwargs={'hideTrash': 'True'})
+        search_res = search(None, 'test.system', '/path', query_string='query', hideTrash='True')
 
         mock_search().query.assert_called_with(Q("query_string", query='query',
                                                  fields=["name"],
@@ -76,9 +76,10 @@ class TestOperations(TestCase):
                                                      "name._exact, name._pattern"],
                                                  default_operator='and'))
 
-        mock_search().query().filter.assert_called_with('prefix', **{'path._exact': 'path'})
-        mock_search().query().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
-        mock_search().query().filter().filter().extra.assert_called_with(from_=int(0), size=int(100))
+        mock_search().query().filter.assert_called_with(~Q("query_string", query='\\/.Trash\\/', fields=["path"]))
+        mock_search().query().filter().filter.assert_called_with('prefix', **{'path._exact': 'path'})
+        mock_search().query().filter().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
+        mock_search().query().filter().filter().filter().extra.assert_called_with(from_=int(0), size=int(100))
         self.assertEqual(search_res, {'listing':
                                       [{'system': 'test.system',
                                         'path': '/path/to/file'}],
