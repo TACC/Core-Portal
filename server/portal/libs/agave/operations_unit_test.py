@@ -65,8 +65,7 @@ class TestOperations(TestCase):
         mock_search().query().filter().filter().extra().execute\
             .return_value = mock_result
 
-        mock_search = MagicMock(side_effect=search)
-        search_res = mock_search(client=None, system='test.system', path='/path', query_string='query', kwargs={'hideTrash': 'True'})
+        search_res = search(None, 'test.system', '/path', query_string='query', kwargs={'hideTrash': 'True'})
 
         mock_search().query.assert_called_with(Q("query_string", query='query',
                                                  fields=["name"],
@@ -75,9 +74,7 @@ class TestOperations(TestCase):
                                                Q("query_string", query='query',
                                                  fields=[
                                                      "name._exact, name._pattern"],
-                                                 default_operator='and'),
-                                               ~Q("query_string", query='\\/.Trash\\/',
-                                                  fields=["path"]))
+                                                 default_operator='and'))
 
         mock_search().query().filter.assert_called_with('prefix', **{'path._exact': 'path'})
         mock_search().query().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
