@@ -209,10 +209,9 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     return system_id
 
 
-def add_users_to_workspace(client: Tapis,
-                          workspace_id: str,
-                          usernames: list[str],
-                          role="writer"):
+def add_users_to_workspace(
+    client: Tapis, workspace_id: str, usernames: list[str], role="writer"
+):
     """
     Give a list of users POSIX and Tapis permissions on a workspace system.
     """
