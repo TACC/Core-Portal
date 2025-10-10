@@ -381,7 +381,7 @@ def get_project(client, workspace_id):
     system = client.systems.getSystem(systemId=system_id)
 
     users = [{"user": get_project_user(system.owner), "access": "owner"}]
-    share_users = [u for u in shares.users if u != system.owner]
+    share_users = [u for u in shares.users if u not in [system.owner, settings.PORTAL_ADMIN_USERNAME]]
     for username in share_users:
         perms = client.files.getPermissions(systemId=system_id,
                                             path="/",
