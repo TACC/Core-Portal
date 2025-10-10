@@ -4,20 +4,6 @@
 <!-- FAQ: This template loads independently at a unique url (see `urls.py`)
           so CMS and User Guide can render this markup into their markup. -->
 
-{# GH-101: Remove style tag i.e. rely only on `site.header.css` #}
-<style type="text/css">
-  .s-portal-nav .icon {
-    margin-right: 0.25em;
-
-    /* Copied from FontAwesome `.fa-lg` */
-    font-size: 1.3em;
-    vertical-align: text-bottom; /* tweaked to align better */
-  }
-  .s-portal-nav .nav-link .icon {
-      font-size: 1.5em;
-      vertical-align: middle; /* tweaked to align better */
-  }
-</style>
 {% if user.is_authenticated %}
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
