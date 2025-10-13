@@ -210,27 +210,6 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     return system_id
 
 
-# def add_users_to_workspace(
-#     client: Tapis, workspace_id: str, usernames: list[str], role="writer"
-# ) -> None:
-#     """
-#     Give a list of users POSIX and Tapis permissions on a workspace system.
-#     """
-#     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-#     prj = client.systems.getSystem(systemId=system_id)
-#     set_workspace_acls(client,
-#                        system_id,
-#                        prj.rootDir,
-#                        ",".join(usernames),
-#                        "add",
-#                        role)
-
-#     # Share system to allow listing of users
-#     client.systems.shareSystem(systemId=system_id, users=usernames)
-#     for username in usernames:
-#         set_workspace_permissions(client, username, system_id, role)
-
-
 def add_user_to_workspace(client: Tapis,
                           workspace_id: str,
                           username: str,
