@@ -126,7 +126,8 @@ def test_send_project_request(rf, project_membership_step, project_membership_lo
     mock_rt.return_value.create_ticket.assert_called()
 
 
-def test_add_to_project(regular_user, project_membership_step, tas_client):
+def test_add_to_project(regular_user, project_membership_step, tas_client, mocker):
+    mocker.patch('portal.apps.onboarding.steps.project_membership.index_allocations')
     project_membership_step.add_to_project()
     tas_client.return_value.add_project_user.assert_called_with(
         12345,

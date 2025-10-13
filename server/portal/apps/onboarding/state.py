@@ -32,3 +32,6 @@ class SetupState:
     # generated an exception. This state will also cause the front end
     # to display a "submit a ticket" link to the user
     ERROR = "error"
+
+    # Steps in STAFFDENY have been explicitly denied by staff
+    STAFFDENY = "staffdenied"

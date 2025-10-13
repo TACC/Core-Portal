@@ -49,12 +49,13 @@ class TestRequestAccessStep(TestCase):
         mock_complete.assert_called_with(ANY)
 
     @patch('portal.apps.onboarding.steps.access.RequestAccessStep.fail')
-    def test_fail_actions(self, mock_fail):
+    @patch('portal.apps.onboarding.steps.access.RequestAccessStep.deny')
+    def test_fail_actions(self, mock_deny, mock_fail):
         # staff_approve should log a FAILED state
         step = RequestAccessStep(self.user)
         request = RequestFactory().post('/api/setup/test')
         request.user = self.staff
         step.client_action("staff_deny", None, request)
-        mock_fail.assert_called_with(ANY)
+        mock_deny.assert_called_with(ANY)
         step.client_action("invalid", None, request)
         mock_fail.assert_called_with(ANY)
