@@ -53,6 +53,7 @@ def get_acl_string(usernames: str, role: str) -> str:
     acl_string_map = {
         "reader": "d:u:{username}:rX,u:{username}:rX",
         "writer": "d:u:{username}:rwX,u:{username}:rwX",
+        "admin": "d:u:{username}:rwx,u:{username}:rwx",
         "none": "d:u:{username},u:{username}",
     }
 
@@ -64,14 +65,15 @@ def get_acl_string(usernames: str, role: str) -> str:
     )
 
 
-def set_workspace_acls(client, system_id, path, usernames, operation, role):
+def set_workspace_acls(client, system_id, path, root_dir, usernames, operation, role):
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
+        absolute_path = f"{root_dir}/{path}" if path != "/" else root_dir
         logger.info(
             f"""Using setfacl job to submit ACL change for project: {system_id},
-                    path: {path}, username: {usernames}, operation: {operation}, role: {role}"""
+                    path: {absolute_path}, username: {usernames}, operation: {operation}, role: {role}"""
         )
-        submit_workspace_acls_job(client, usernames, system_id, role, operation)
+        submit_workspace_acls_job(client, usernames, system_id, absolute_path, role, operation)
 
     else:
         logger.info(
@@ -81,8 +83,7 @@ def set_workspace_acls(client, system_id, path, usernames, operation, role):
 
         operation_map = {"add": "ADD", "remove": "REMOVE"}
 
-        service_client = service_account()
-        service_client.files.setFacl(
+        client.files.setFacl(
             systemId=system_id,
             path=path,
             operation=operation_map[operation],
@@ -92,7 +93,7 @@ def set_workspace_acls(client, system_id, path, usernames, operation, role):
 
 
 def submit_workspace_acls_job(
-    client, usernames, system_id, role, action=Literal["add", "remove"]
+    client, usernames, system_id, path, role, action=Literal["add", "remove"]
 ):
     """
     Submit a job to set ACLs on a project for a list of comma-separated users. This should be used if
@@ -101,10 +102,8 @@ def submit_workspace_acls_job(
     """
     portal_name = settings.PORTAL_NAMESPACE
 
-    prj = client.systems.getSystem(systemId=system_id)
-
     job_body = {
-        "name": f"setfacl-project-{system_id}-{action}-{role}",
+        "name": f"setfacl-project-{system_id}-{usernames}-{action}-{role}"[:64],
         "appId": "setfacl-corral-wmaprtl",
         "appVersion": "0.0.1",
         "description": "Add/Remove ACLs on a directory",
@@ -116,7 +115,7 @@ def submit_workspace_acls_job(
                 {"key": "usernames", "value": usernames},
                 {
                     "key": "directory",
-                    "value": f"{prj.rootDir}",
+                    "value": path,
                 },
                 {"key": "action", "value": action},
                 {"key": "role", "value": role},
@@ -125,8 +124,7 @@ def submit_workspace_acls_job(
         "tags": [f"portalName:{portal_name}"],
     }
 
-    service_client = service_account()
-    job_res = service_client.jobs.submitJob(**job_body)
+    job_res = client.jobs.submitJob(**job_body)
     logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
 
 
@@ -196,6 +194,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     set_workspace_acls(service_client,
                        settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
                        workspace_id,
+                       f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
                        owner,
                        "add",
                        "writer")
@@ -203,32 +202,33 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
     # User creates the system and adds their credential
     system_id = create_workspace_system(client, workspace_id, title)
 
-    # Give owner and portal admin full permissions
-    add_users_to_workspace(client, workspace_id, [owner, settings.PORTAL_ADMIN_USERNAME], "admin")
+    # Give portal admin full permissions
+    portal_admin = settings.PORTAL_ADMIN_USERNAME
+    client.systems.shareSystem(systemId=system_id, users=[portal_admin])
+    set_workspace_permissions(client, portal_admin, system_id, "admin")
 
     return system_id
 
 
-def add_users_to_workspace(
-    client: Tapis, workspace_id: str, usernames: list[str], role="writer"
-):
-    """
-    Give a list of users POSIX and Tapis permissions on a workspace system.
-    """
-    system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(client,
-                       system_id,
-                       "/",
-                       ",".join(usernames),
-                       "add",
-                       role)
+# def add_users_to_workspace(
+#     client: Tapis, workspace_id: str, usernames: list[str], role="writer"
+# ) -> None:
+#     """
+#     Give a list of users POSIX and Tapis permissions on a workspace system.
+#     """
+#     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+#     prj = client.systems.getSystem(systemId=system_id)
+#     set_workspace_acls(client,
+#                        system_id,
+#                        prj.rootDir,
+#                        ",".join(usernames),
+#                        "add",
+#                        role)
 
-    # Share system to allow listing of users
-    client.systems.shareSystem(systemId=system_id, users=usernames)
-    for username in usernames:
-        set_workspace_permissions(client, username, system_id, role)
-
-    return get_project(client, workspace_id)
+#     # Share system to allow listing of users
+#     client.systems.shareSystem(systemId=system_id, users=usernames)
+#     for username in usernames:
+#         set_workspace_permissions(client, username, system_id, role)
 
 
 def add_user_to_workspace(client: Tapis,
@@ -238,10 +238,14 @@ def add_user_to_workspace(client: Tapis,
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
+
+    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(client,
+    prj = client.systems.getSystem(systemId=system_id)
+    set_workspace_acls(service_client,
                        system_id,
                        "/",
+                       prj.rootDir,
                        username,
                        "add",
                        role)
@@ -257,10 +261,14 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     """
     New role is one of ["reader", "writer"]
     """
+
+    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(client,
+    prj = client.systems.getSystem(systemId=system_id)
+    set_workspace_acls(service_client,
                        system_id,
                        "/",
+                       prj.rootDir,
                        username,
                        "add",
                        new_role)
@@ -272,10 +280,13 @@ def remove_user(client, workspace_id: str, username: str):
     Unshare the system and remove all permissions and credentials.
     """
 
+    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(client,
+    prj = client.systems.getSystem(systemId=system_id)
+    set_workspace_acls(service_client,
                        system_id,
                        "/",
+                       prj.rootDir,
                        username,
                        "remove",
                        "none")
@@ -295,10 +306,13 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     """
     Set a new owner on a system.
     """
+    service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    set_workspace_acls(client,
+    prj = client.systems.getSystem(systemId=system_id)
+    set_workspace_acls(service_client,
                        system_id,
                        "/",
+                       prj.rootDir,
                        new_owner,
                        "add",
                        "writer")
@@ -306,7 +320,6 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
 
     # Ensure old owner retains access to Tapis system, as `changeSystemOwner` removes access for old owner
-    service_client = service_account()
     service_client.systems.shareSystem(systemId=system_id, users=[old_owner])
     service_client.systems.grantUserPerms(
         systemId=system_id,
