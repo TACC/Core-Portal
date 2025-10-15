@@ -11,7 +11,6 @@ from portal.apps._custom.drp import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp.models import PartialEntityWithFiles, FileObj
 from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_node_from_uuid, get_root_node, update_node_in_project
-import re
 
 portal = settings.PORTAL_NAMESPACE.lower()
 
@@ -60,58 +59,43 @@ def get_value(project_id, path):
 
 def get_ordered_value(name, value):
     """
-    Return the metadata in the order defined in the Pydantic model.
-    - Always outputs keys using the model's alias (converted to camelCase). This is a temporary workaround until fields 
-    in settings_forms.py can be updated to use camelCase.
-    - Accepts values that may use either camelCase, snake_case, or aliases.
-    """
+        Return the metadata in the order defined in the Pydantic model.
+        Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be updated to use camelCase.
+        """
     schema = SCHEMA_MAPPING.get(name)
+
     if not schema:
-        return value
+        return value  # Return the field value directly if no schema is found
 
     ordered_value = {}
 
-    for field_name, field_info in schema.model_fields.items():
+    # Iterate through the model fields to preserve the order
+    for field in schema.model_fields.keys():
+        camel_field = snake_to_camel(field)
+        field_value = value.get(camel_field)
 
-        # Determine the alias name (always use this for output)
-        alias = field_info.alias or field_name
-        output_key = re.sub(r'(?<!^)(?=[A-Z])', '_', alias).lower()
-
-        # Accept any of these as possible input key variants
-        possible_input_keys = [
-            snake_to_camel(field_info.alias or field_name),
-            snake_to_camel(field_name),
-            field_info.alias,
-            field_name,
-        ]
-
-        # Pick the first matching key in the input
-        field_value = next((value.get(k) for k in possible_input_keys if k in value), None)
+        # Skip the field if there is no value (None or not present)
         if field_value is None:
             continue
 
-        # Handle lists of nested models
+        # if the fiels is a list, then we need to get the model of the list and process it
         if isinstance(field_value, list):
-            field_annotation = field_info.annotation
-            item_type = get_args(field_annotation)[0] if get_args(field_annotation) else None
+            field_annotation = schema.model_fields[field].annotation
+            item_type = get_args(field_annotation)[0] if get_args(field_annotation) else None # returns the model class of the list
 
+            # Check if the item type is a Pydantic model
             if item_type and hasattr(item_type, "model_fields"):
-                ordered_value[output_key] = [
-                    {
-                        # Always output using alias (camelCase)
-                        snake_to_camel(item_type.model_fields[k].alias or k): item.get(
-                            snake_to_camel(item_type.model_fields[k].alias or k)
-                        )
-                        for k in item_type.model_fields.keys()
-                        if item.get(snake_to_camel(item_type.model_fields[k].alias or k)) is not None
-                    }
+                # Re-order each item in the list if it's a list of Pydantic models
+                ordered_value[field] = [
+                    {k: item.get(snake_to_camel(k)) 
+                     for k in item_type.model_fields.keys() 
+                     if item.get(snake_to_camel(k)) is not None}
                     for item in field_value
                 ]
             else:
-                ordered_value[output_key] = field_value
-
+                ordered_value[field] = field_value
         else:
-            ordered_value[output_key] = field_value
+            ordered_value[field] = field_value
 
     return ordered_value
 

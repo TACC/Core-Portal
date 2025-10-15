@@ -199,6 +199,8 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                   <ShowMore>{node.metadata.description}</ShowMore>
                   <DataDisplay
                     data={node.metadata}
+                    tree={tree[0]}
+                    system={projectId}
                     excludeKeys={EXCLUDED_METADATA_FIELDS}
                   />
                 </div>
