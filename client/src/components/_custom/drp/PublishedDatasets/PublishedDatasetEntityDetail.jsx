@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Section, Button, Paginator, LoadingSpinner } from '_common';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { fetchUtil } from 'utils/fetchUtil';
+import { Paginator, LoadingSpinner } from '_common';
+import { useSelector, useDispatch } from 'react-redux';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
@@ -16,6 +16,7 @@ const excludedImageMetadataFields = ['is_advanced_image_file', 'data_type', 'nam
 function PublishedDatasetEntityDetail({ params }) {
 
     const dispatch = useDispatch();
+    const location = useLocation();
 
     const { system, entity_type: entityType, entity_id: entityID } = params;
     const projectId = system.split('.').pop();
@@ -96,7 +97,6 @@ function PublishedDatasetEntityDetail({ params }) {
     useEffect(() => {
         if (selectedEntity) {
             const groups = groupFilesByBaseName(selectedEntity.fileObjs);
-            console.log(groups);
             setFileGroups(groups);
             setCurrentPage(1); // Reset to first page when data changes
         }
@@ -111,6 +111,23 @@ function PublishedDatasetEntityDetail({ params }) {
             {formatLabel(entityType)}
         </NameWithDesc>
     );
+
+    const getDigitalDatasetLink = (digitalDataset) => {
+        // Only construct link if digitalDataset is a valid UUID
+        
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+        if (!uuidRegex.test(digitalDataset)) {
+            return formatLabel(digitalDataset);
+        }
+    
+        const digitalDatasetEntity = findNodeInTree(tree, digitalDataset);
+    
+        const index = location.pathname.indexOf(system) + system.length;
+        const digitalDatasetUrl = `${location.pathname.slice(0, index)}/digital_dataset/${digitalDataset}`;
+    
+        return <Link to={digitalDatasetUrl}>{digitalDatasetEntity.label}</Link>;
+    };
 
     return (
         <>
@@ -131,6 +148,16 @@ function PublishedDatasetEntityDetail({ params }) {
                     <table className="c-data-list c-data-list--horizontal c-data-list--is-narrow">
                         <tbody>
                             {Object.entries(selectedEntity.metadata).map(([key, value]) => {
+
+                                if (key === 'digital_dataset') {
+                                    return (
+                                        <tr key={key}>
+                                            <th className="c-data-list__key">{formatLabel(key)}</th>
+                                            <td className="c-data-list__value">{getDigitalDatasetLink(value)}</td>
+                                        </tr>
+                                    );
+                                }
+
                                 if (EXCLUDED_METADATA_FIELDS.includes(key)) return null;
 
                                 // TODO: Add description to key if needed by PI

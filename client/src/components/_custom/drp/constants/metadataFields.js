@@ -3,6 +3,7 @@ export const EXCLUDED_METADATA_FIELDS = [
   'description',
   'data_type',
   'sample',
+  'digital_dataset',
   'file_objs',
   'cover_image',
   'file_url',

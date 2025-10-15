@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator, Field
 from typing import Optional, Literal
 from pydantic.alias_generators import to_camel
 from functools import partial
@@ -232,7 +232,7 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
         "other"
     ]] = None
     dimensionality: Optional[str] = None
-    digital_dataset: Optional[str] = None
+    digital_dataset: Optional[str] = Field(None, alias="reference_digital_dataset")
     external_uri: Optional[str] = None # TODO_DRP: Remove in new model
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
@@ -251,4 +251,4 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     sample: str
     # base_origin_data: Optional[str] = None
     digital_dataset: Optional[str] = None
-    digital_dataset_other_information: Optional[str] = None
+    digital_dataset_other_information: Optional[str] = Field(None, alias="reference_digital_dataset")
