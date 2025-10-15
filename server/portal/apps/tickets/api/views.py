@@ -19,14 +19,6 @@ SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
 METADATA_HEADER = "*** Ticket Metadata ***"
 
-#"RT_System" -> "RT System"
-CREATOR_DISPLAY_OVERRIDE = getattr(
-    settings,
-    "TICKETS_CREATOR_DISPLAY_OVERRIDE",
-    {
-        "RT_System": "RT System",
-    },
-)
 
 class TicketsView(BaseApiView):
     def get(self, request, ticket_id=None):
@@ -140,7 +132,7 @@ class TicketsHistoryView(BaseApiView):
             if entry['Type'] == "Create":
                 entry["Content"] = entry['Content'][:entry['Content'].rfind(METADATA_HEADER)]
 
-            entry['Creator'] = CREATOR_DISPLAY_OVERRIDE.get(entry['Creator'], entry['Creator'])
+            entry['Creator'] = "RT System" if entry['Creator'] == "RT_System" else entry['Creator']
 
             entry["IsCreator"] = True if requesting_username == entry['Creator'] else False
 
