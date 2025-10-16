@@ -304,14 +304,28 @@ class JobsView(BaseApiView):
             ]
 
         # If searching for Finished or Failed,  fill-to-limit
-        if ('FINISHED' in status_searches) or ('FAILED' in status_searches):
+        # We have to handle our jobs query for "Finished" or "Failed" uniquely as
+        # there we treat some jobs with tapis status of FAILED as being non-failures if they
+        # are interactive jobs that just timed-out.
+        #
+        # We are unable to query the `notes` field to determine if jobs are interactive,
+        # so we manually have to make requests to get jobs and filter them ourselves
+        #
+        # For "Finished" search, want to get all
+        # (i) FINISHED jobs
+        # and
+        # (ii) FAILED jobs that are interactive and have the timeout/expired message (will be shown as FINISHED on UI)
+        #
+        # For "Failed" search, want to get all
+        # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
+        is_finished = 'FINISHED' in status_searches
+        is_failed = 'FAILED' in status_searches
+
+        if is_finished or is_failed:
             target_offset = offset
-            collected = []
-            skipped = 0
+            collected, skipped = [], 0
             upstream_page_size = max(limit, 50)
             upstream_offset = 0
-            is_finished = 'FINISHED' in status_searches
-            is_failed = 'FAILED' in status_searches
 
             while len(collected) < limit:
                 page = client.jobs.getJobSearchListByPostSqlStr(
@@ -328,10 +342,25 @@ class JobsView(BaseApiView):
                 upstream_offset += len(page)
 
                 for job in page:
+                    status = getattr(job, 'status', None)
+
                     if is_finished:
-                        if not is_interactive(job):
+                        # Keep all FINISHED
+                        if status == 'FINISHED':
+                            pass
+                        # For FAILED, keep only (timeout AND interactive)
+                        elif status == 'FAILED':
+                            if not (has_timeout_message(job) and is_interactive(job)):
+                                continue
+                        else:
+                            # anything else isin't part of FINISHED
                             continue
+
+
                     elif is_failed:
+                        # Keep FAILED except interactive timeouts
+                        if status != 'FAILED':
+                            continue
                         if has_timeout_message(job) and is_interactive(job):
                             continue
 
