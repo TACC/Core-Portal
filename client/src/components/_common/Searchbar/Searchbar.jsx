@@ -131,8 +131,10 @@ const Searchbar = ({
           </DropdownSelector>
         </div>
       )}
+      {/*
       {((hasQuery && !siteSearch) ||
         (filterType && filterType !== allFilterTypesValue)) && (
+      */}
         <div
           aria-label="Summary of Search Results"
           className={`${styles.results} ${disabled ? styles.hidden : ''}`}
@@ -140,9 +142,11 @@ const Searchbar = ({
         >
           {resultCount} results in {sectionName || dataType}
         </div>
+      {/*
       )}
       {((hasQuery && !siteSearch) ||
         (filterType && filterType !== allFilterTypesValue && filterTypes)) && (
+      */}
         <Button
           attr="reset"
           type="link"
@@ -151,7 +155,9 @@ const Searchbar = ({
         >
           {`Back to All ${dataType ? dataType : 'Results'}`}
         </Button>
+      {/*
       )}
+      */}
     </form>
   );
 };
