@@ -16,6 +16,8 @@ ul.data-tree {
     padding-left: calc(var(--indent)* 2);
 }
 
+/* Items */
+
 /* To indent all expanded content */
 .data-tree {
     --indent: 1.5rem;
