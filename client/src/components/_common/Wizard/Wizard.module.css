@@ -7,7 +7,7 @@
   background-color: var(--global-color-primary--x-light);
   border: 1px solid var(--global-color-primary--light);
   margin-right: 1em;
-  padding: 1em 1em 1em 1em;
+  padding: 1em;
 }
 
 .step-summary {
@@ -22,7 +22,7 @@
   padding-left: 1em;
 }
 .step-summary > .edit {
-  padding: 0 0 0 0 !important;
+  padding: 0 !important;
 }
 
 .step {
