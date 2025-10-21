@@ -4,6 +4,8 @@ import Searchbar from '_common/Searchbar';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
+import queryStringParser from 'query-string';
+import { useLocation } from 'react-router-dom';
 
 import styles from './PublishedDatasetsBrowse.module.css';
 
@@ -13,6 +15,7 @@ function PublishedDatasetsBrowse() {
     const dispatch = useDispatch();
 
     const [filteredPublications, setFilteredPublications] = useState([]);
+    const query = queryStringParser.parse(useLocation().search);
 
     const { error, loading, publications } = useSelector(
         (state) => state.publications.listing
@@ -26,6 +29,16 @@ function PublishedDatasetsBrowse() {
     const selectedSystem = systems.find(
         (s) => s.scheme === 'projects' && s.publicationProject === true
     );
+
+    useEffect(() => {
+        dispatch({
+            type: 'PUBLICATIONS_GET_PUBLICATIONS',
+            payload: {
+                queryString: query.query_string,
+                system: selectedSystem?.system,
+            },
+        });
+    }, [dispatch, query.query_string]);
 
     // Workaround to filter out publications that don't have a cover image
     // Mainly done so we can test pprd properly
@@ -50,50 +63,45 @@ function PublishedDatasetsBrowse() {
         });
     }, [publications]);
 
-    useEffect(() => {
-        dispatch({
-            type: 'PUBLICATIONS_GET_PUBLICATIONS',
-            payload: {
-                system: selectedSystem?.system,
-            },
-        });
-    }, [dispatch]);
 
     return (
         <div className={'o-section'}>
             <header className={'header'}>
                 <h1>Browse Datasets</h1>
                 <Searchbar
-                    api="test-api"
-                    scheme="test-scheme"
-                    system="test-system"
+                    api="tapis"
+                    scheme="projects"
+                    sectionName="Datasets"
+                    resultCount={ filteredPublications.length }
                     className={`header__action ${styles['searchbar']}`}
+                    disabled={loading}
                 />
             </header>
-            {loading || !filteredPublications.length ? (
+            {loading ? (
                 <LoadingSpinner />
             ) : (
-            <div className={'c-card-list'}>
-                {filteredPublications.map((publication) => {
+            filteredPublications.length > 0 && (
+                <div className={'c-card-list'}>
+                    {filteredPublications.map((publication) => {
 
-                    const coverImage = publication.cover_image;
+                        const coverImage = publication.cover_image;
 
-                    const thumbnailFile = `${BASE_ASSET_URL}/${coverImage}`;
+                        const thumbnailFile = `${BASE_ASSET_URL}/${coverImage}`;
 
-                    return (
-                    <li key={publication.id} className={'c-card--image-top c-card--plain'}>
-                        <h3>{publication.title}</h3>
-                        <p>
-                            <strong>{publication.authors[0].first_name} {publication.authors[0].last_name}</strong>
-                        </p>
-                        <p>
-                            <Link className={'c-button c-button--primary'} to={`${ROUTES.PUBLICATIONS}/${publication.id}`}>View Dataset</Link>
-                        </p>
-                        <img src={thumbnailFile} alt={publication.title} className={'img-fluid'} />
-                    </li>
-                )})}
-            </div>
-            )}
+                        return (
+                        <li key={publication.id} className={'c-card--image-top c-card--plain'}>
+                            <h3>{publication.title}</h3>
+                            <p>
+                                <strong>{publication.authors[0].first_name} {publication.authors[0].last_name}</strong>
+                            </p>
+                            <p>
+                                <Link className={'c-button c-button--primary'} to={`${ROUTES.PUBLICATIONS}/${publication.id}`}>View Dataset</Link>
+                            </p>
+                            <img src={thumbnailFile} alt={publication.title} className={'img-fluid'} />
+                        </li>
+                    )})}
+                </div>
+            ))}
         </div>
     );
 }
