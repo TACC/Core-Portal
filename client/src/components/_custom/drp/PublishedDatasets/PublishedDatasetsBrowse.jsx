@@ -79,7 +79,7 @@ function PublishedDatasetsBrowse() {
                     sectionName="Datasets"
                     resultCount={ filteredPublications.length }
                     className={`header__action ${styles['searchbar']}`}
-                    disabled={loading}
+                    disabled={loading || filteredPublicationsLoading}
                 />
             </header>
             {loading || filteredPublicationsLoading ? (
