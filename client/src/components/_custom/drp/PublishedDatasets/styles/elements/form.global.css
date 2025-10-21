@@ -1,6 +1,5 @@
 /* To add enough specificity to overwrite styles from anonymous-layers */
 .has-cms-ui {
-
   /* BOOTSTRAP */
 
   /* FAQ: Dropped in Bootstrap 5 */
@@ -11,7 +10,7 @@
 
   /* C-BUTTON--NEW.CSS */
 
-  [class*="_c-button"] {
+  [class*='_c-button'] {
     font-size: inherit;
   }
 
@@ -19,9 +18,8 @@
 
   /* Hacks */
 
-  [class*="_container"],
-  [class*="_input"] {
+  [class*='_container'],
+  [class*='_input'] {
     font-size: inherit;
   }
-
 }
