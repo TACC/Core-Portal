@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { LoadingSpinner } from '_common';
+import Searchbar from '_common/Searchbar';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
+
+import styles from './PublishedDatasetsBrowse.module.css';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -58,7 +61,15 @@ function PublishedDatasetsBrowse() {
 
     return (
         <div className={'o-section'}>
-            <h1>Browse Datasets</h1>
+            <header className={'header'}>
+                <h1>Browse Datasets</h1>
+                <Searchbar
+                    api="test-api"
+                    scheme="test-scheme"
+                    system="test-system"
+                    className={`header__action ${styles['searchbar']}`}
+                />
+            </header>
             {loading || !filteredPublications.length ? (
                 <LoadingSpinner />
             ) : (

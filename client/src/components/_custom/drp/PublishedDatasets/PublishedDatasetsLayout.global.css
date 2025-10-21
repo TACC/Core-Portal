@@ -1,3 +1,5 @@
 @import url('@tacc/core-styles/dist/components/bootstrap.pagination.css');
+
+@import url('./styles/elements.global.css');
 @import url('./styles/components.global.css');
 @import url('./styles/customize-core-styles.global.css');
