@@ -6,12 +6,12 @@
     "input input"
     "count clear";
 }
-.searchbar :where(
+.searchbar > :where(
   [type="search"],
   *:has([type="search"])
 )                                 { grid-area: input; }
-.searchbar [class*="results"]     { grid-area: count; }
-.searchbar [type="reset"]         { grid-area: clear; }
+.searchbar > [class*="results"]     { grid-area: count; }
+.searchbar > [type="reset"]         { grid-area: clear; }
 
 /* To tweak existing styles */
 .searchbar [type="reset"] {
