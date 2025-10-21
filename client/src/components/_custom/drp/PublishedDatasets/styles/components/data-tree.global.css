@@ -9,12 +9,6 @@ ul.data-tree,
 ul.data-tree {
     padding-left: unset;
 }
-.data-tree ul:has(details) {
-    padding-left: var(--indent);
-}
-.data-tree ul:not(:has(details)) {
-    padding-left: calc(var(--indent) * 2);
-}
 
 /* Items */
 
@@ -37,6 +31,13 @@ ul.data-tree {
 
 
 /* Elements */
+
+.data-tree ul:has(details) {
+    padding-left: var(--indent);
+}
+.data-tree ul:not(:has(details)) {
+    padding-left: calc(var(--indent) * 2);
+}
 
 .data-tree__item ul {
     margin-block: 1rem;
