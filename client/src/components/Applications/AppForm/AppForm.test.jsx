@@ -957,6 +957,37 @@ describe('AppSchemaForm', () => {
     });
   });
 
+  it('should have a TACC Reservation text field', () => {
+    const { container } = renderAppSchemaFormComponent(
+      mockStore(initialMockState),
+      helloWorldAppFixture
+    );
+
+    const reservationFieldInput = container.querySelector(
+      'input[name="reservation"]'
+    );
+
+    expect(reservationFieldInput).toBeInTheDocument();
+    expect(reservationFieldInput.type).toBe('text');
+  });
+
+  it('should clear the TACC Reservation text field', () => {
+    const { getByText, container } = renderAppSchemaFormComponent(
+      mockStore(initialMockState),
+      helloWorldAppFixture
+    );
+
+    const reservationFieldInput = container.querySelector(
+      'input[name="reservation"]'
+    );
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+
+    expect(reservationFieldInput).toBeInTheDocument();
+    expect(reservationFieldInput.textContent).toBe('');
+  });
+
   afterAll(() => {
     timekeeper.reset();
   });

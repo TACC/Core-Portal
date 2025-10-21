@@ -219,9 +219,6 @@ def test_projects_post(
 def test_projects_post_setfacl_job(
     authenticated_user, client, mock_service_account, mock_tapis_client
 ):
-
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
-
     response = client.post(
         "/api/projects/",
         {
@@ -254,7 +251,7 @@ def test_projects_post_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'username'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
+                {'key': 'directory', 'value':  '/path/to/root/test.project-2/test.project-2'},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
             ],
@@ -436,7 +433,7 @@ def test_project_change_system_role(
 def test_project_change_system_role_setfacl_job(
     client, mock_service_account, mock_tapis_client, project_list
 ):
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
+    mock_rootDir = mock_tapis_client.systems.getSystem().rootDir
 
     # USER translates to writer role
     patch_body = {
@@ -461,7 +458,7 @@ def test_project_change_system_role_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
+                {'key': 'directory', 'value': mock_rootDir},
                 {'key': 'action', 'value': 'add'},
                 {'key': 'role', 'value': 'writer'},
             ],
@@ -483,7 +480,7 @@ def test_project_change_system_role_setfacl_job(
 
 
 def test_members_view_add(
-    authenticated_user, client, mock_tapis_client, project_list
+    authenticated_user, client, mock_tapis_client, project_list, mock_service_account
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
@@ -531,7 +528,7 @@ def test_members_view_add(
         },
     }
 
-    mock_tapis_client.files.setFacl.assert_called_with(
+    mock_service_account().files.setFacl.assert_called_with(
         systemId="test.project.PRJ-123",
         path="/",
         operation="ADD",
@@ -694,7 +691,6 @@ def test_members_view_remove_setfacl_job(
     client, mock_service_account, mock_tapis_client, project_list
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
     patch_body = {"action": "remove_member", "username": "test_user"}
 
     response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
@@ -731,7 +727,7 @@ def test_members_view_remove_setfacl_job(
             'schedulerOptions': [],
             'envVariables': [
                 {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
+                {'key': 'directory', 'value':  '/corral-repl/tacc/aci/CEP/projects/CEP-1018'},
                 {'key': 'action', 'value': 'remove'},
                 {'key': 'role', 'value': 'none'},
             ],

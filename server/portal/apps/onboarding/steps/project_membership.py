@@ -1,15 +1,14 @@
 import logging
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from requests.auth import HTTPBasicAuth
 from pytas.http import TASClient
 from rt import Rt
+from portal.apps.onboarding.steps.abstract import AbstractStep
+from portal.apps.onboarding.state import SetupState
+from portal.apps.search.tasks import index_allocations
 
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 class ProjectMembershipStep(AbstractStep):
@@ -18,9 +17,19 @@ class ProjectMembershipStep(AbstractStep):
         Call super class constructor
         """
         super(ProjectMembershipStep, self).__init__(user)
-        self.project = self.get_tas_project()
+        self.project_sql_ids = (
+            self.settings["project_sql_id"]
+            if isinstance(self.settings["project_sql_id"], list)
+            else [self.settings["project_sql_id"]]
+        )
+        self.default_project_sql_id = self.settings.get(
+            "default_project_sql_id", self.project_sql_ids[0]
+        )
+        self.default_project = self.get_tas_project(self.default_project_sql_id)
         self.user_confirm = "Request Project Access"
-        self.staff_approve = "Add to {project}".format(project=self.project['title'])
+        self.staff_approve = "Add to {project}".format(
+            project=self.default_project["title"]
+        )
         self.staff_deny = "Deny Project Access Request"
 
     def get_tas_client(self):
@@ -33,8 +42,8 @@ class ProjectMembershipStep(AbstractStep):
         )
         return tas_client
 
-    def get_tas_project(self):
-        return self.get_tas_client().project(self.settings['project_sql_id'])
+    def get_tas_project(self, project_sql_id):
+        return self.get_tas_client().project(project_sql_id)
 
     def description(self):
         if self.settings is not None and 'description' in self.settings:
@@ -63,8 +72,11 @@ class ProjectMembershipStep(AbstractStep):
     def is_project_member(self):
         username = self.user.username
         tas_client = self.get_tas_client()
-        project_users = tas_client.get_project_users(self.settings['project_sql_id'])
-        return any([u['username'] == username for u in project_users])
+        for project_id in self.project_sql_ids:
+            project_users = tas_client.get_project_users(project_id)
+            if any([u['username'] == username for u in project_users]):
+                return True
+        return False
 
     def send_project_request(self, request):
         tracker = self.get_tracker()
@@ -72,7 +84,7 @@ class ProjectMembershipStep(AbstractStep):
         ticket_text += '{onboarding_url} to complete this request.'
         ticket_text = ticket_text.format(
             username=self.user.username,
-            project=self.project['title'],
+            project=self.default_project['title'],
             onboarding_url=request.build_absolute_uri(
                 '/workbench/onboarding/setup/{username}'.format(
                     username=self.user.username
@@ -85,7 +97,7 @@ class ProjectMembershipStep(AbstractStep):
                 result = tracker.create_ticket(
                     Queue=self.settings.get('rt_queue') or 'Accounting',
                     Subject='{project} Project Membership Request for {username}'.format(
-                        project=self.project['title'],
+                        project=self.default_project['title'],
                         username=self.user.username
                     ),
                     Text=ticket_text,
@@ -117,20 +129,21 @@ class ProjectMembershipStep(AbstractStep):
         # When viewing a project in tas.tacc.utexas.edu, you should see "?id=xxxxx"
         # in the address bar. This is the SQL ID
         try:
-            tas_client.add_project_user(self.settings['project_sql_id'], self.user.username)
+            tas_client.add_project_user(self.default_project_sql_id, self.user.username)
+            index_allocations.apply_async(args=[self.user.username])
         except Exception as e:
             error, reason = e.args
             if "is already a member" in reason:
                 self.complete(
                     "{username} is already a member of the {project}".format(
                         username=self.user.username,
-                        project=self.project['title']
+                        project=self.default_project['title']
                     )
                 )
             else:
                 self.fail(
                     "{username} could not be added to {project} due to error {reason}".format(
-                        project=self.project['title'],
+                        project=self.default_project['title'],
                         username=self.user.username,
                         reason=reason
                     )
@@ -146,16 +159,16 @@ class ProjectMembershipStep(AbstractStep):
         request_text = """Your request for membership on the {project} project has been
         denied. If you believe this is an error, please submit a help ticket.
         """.format(
-            project=self.project['title']
+            project=self.default_project['title']
         )
         if tracker.login():
             tracker.reply(ticket_id, text=request_text)
             tracker.comment(
                 ticket_id,
                 text="User was not added to the {project} TAS Project (GID {gid}) at {base_url}".format(
-                    project=self.project['title'],
-                    gid=self.project['gid'],
-                    base_url=settings.WH_BASE_URL
+                    project=self.default_project['title'],
+                    gid=self.default_project['gid'],
+                    base_url=settings.VANITY_BASE_URL
                 )
             )
             tracker.edit_ticket(ticket_id, Status='resolved')
@@ -175,17 +188,17 @@ class ProjectMembershipStep(AbstractStep):
         request_text = """Your request for membership on the {project} project has been
         granted. Please login at {base_url}/workbench/onboarding/setup to continue setting up your account.
         """.format(
-            project=self.project['title'],
-            base_url=settings.WH_BASE_URL
+            project=self.default_project['title'],
+            base_url=settings.VANITY_BASE_URL
         )
         if tracker.login():
             tracker.reply(ticket_id, text=request_text)
             tracker.comment(
                 ticket_id,
                 text="User has been added to the {project} TAS Project (GID {gid}) via {base_url}".format(
-                    project=self.project['title'],
-                    gid=self.project['gid'],
-                    base_url=settings.WH_BASE_URL
+                    project=self.default_project['title'],
+                    gid=self.default_project['gid'],
+                    base_url=settings.VANITY_BASE_URL
                 )
             )
             tracker.edit_ticket(ticket_id, Status='resolved')
@@ -233,7 +246,7 @@ class ProjectMembershipStep(AbstractStep):
                 )
         elif action == "staff_deny":
             self.deny_project_request()
-            self.fail(
+            self.deny(
                 "Portal access request has not been approved."
             )
         else:

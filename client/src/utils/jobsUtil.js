@@ -12,10 +12,14 @@ export function isOutputState(status) {
   return isTerminalState(status) && status !== 'CANCELLED';
 }
 
+export function getParentPath(file) {
+  return `${file.path.slice(0, -file.name.length)}` || '.'; // set parent path to root if no enclosing folder
+}
+
 export function getArchivePath(job) {
   return `${job.archiveSystemId}${
     job.archiveSystemDir.charAt(0) === '/' ? '' : '/'
-  }${job.archiveSystemDir}`;
+  }${job.archiveSystemDir === '/.' ? '' : job.archiveSystemDir}`;
 }
 
 export function getExecutionPath(job) {
@@ -53,6 +57,19 @@ export function getAllocatonFromDirective(directive) {
   if (allocationArgIndex !== 0 && allocationArgIndex < parts.length) {
     return parts[allocationArgIndex];
   }
+  return null;
+}
+
+export function getReservationFromArg(arg) {
+  /**
+   * Extracts the reservation value from a string like '--reservation=foobar'
+   */
+  const reservationPrefix = '--reservation=';
+
+  if (typeof arg === 'string' && arg.trim().startsWith(reservationPrefix)) {
+    return arg.slice(reservationPrefix.length);
+  }
+
   return null;
 }
 
@@ -116,6 +133,16 @@ export function getJobDisplayInformation(job, app) {
           display.allocation = allocation;
         }
         display.queue = job.execSystemLogicalQueue;
+      }
+
+      if (app.definition.notes?.showReservation) {
+        const reservationParam = schedulerOptions.find(
+          (opt) => opt?.name === 'TACC Reservation'
+        );
+        const reservation = getReservationFromArg(reservationParam?.arg);
+        if (reservation) {
+          display.reservation = reservation;
+        }
       }
 
       if (!app.definition.notes.hideNodeCountAndCoresPerNode) {

@@ -1,3 +1,4 @@
+import { getParentPath } from './jobsUtil';
 import { TTapisFile } from './types';
 
 export const getExtractParams = (
@@ -10,7 +11,7 @@ export const getExtractParams = (
   defaultAllocation: string
 ) => {
   const inputFile = `tapis://${file.system}/${file.path}`;
-  const archivePath = `${file.path.slice(0, -file.name.length)}`;
+  const archivePath = getParentPath(file);
   return {
     fileInputs: [
       {
@@ -28,14 +29,19 @@ export const getExtractParams = (
     appVersion: extractApp.version,
     parameterSet: {
       appArgs: [],
-      schedulerOptions: [
-        {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
-          include: true,
-          arg: `-A ${defaultAllocation}`,
-        },
-      ],
+      schedulerOptions:
+        defaultAllocation === 'VM'
+          ? []
+          : [
+              // if running on VM, no need to pass allocation param
+              {
+                name: 'TACC Allocation',
+                description:
+                  'The TACC allocation associated with this job execution',
+                include: true,
+                arg: `-A ${defaultAllocation}`,
+              },
+            ],
     },
   };
 };

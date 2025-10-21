@@ -143,6 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
 LOGIN_REDIRECT_URL = '/index/'
+LOGOUT_REDIRECT_URL = "/cms/logout/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -520,7 +521,7 @@ TACC_EXEC_SYSTEMS = {
     },
 }
 
-WH_BASE_URL = "https://testserver"
+VANITY_BASE_URL = "https://testserver"
 
 WORKBENCH_SETTINGS = {
     "debug": False

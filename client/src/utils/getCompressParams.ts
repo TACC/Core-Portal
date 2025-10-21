@@ -1,3 +1,4 @@
+import { getParentPath } from './jobsUtil';
 import { TPortalSystem, TTapisFile } from './types';
 
 export const getCompressParams = (
@@ -15,7 +16,7 @@ export const getCompressParams = (
     },
   ];
 
-  let archivePath = `${files[0].path.slice(0, -files[0].name.length)}`;
+  let archivePath = getParentPath(files[0]);
   let archiveSystem = files[0].system;
 
   return {
@@ -39,14 +40,19 @@ export const getCompressParams = (
           arg: compressionType,
         },
       ],
-      schedulerOptions: [
-        {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
-          include: true,
-          arg: `-A ${defaultAllocation}`,
-        },
-      ],
+      schedulerOptions:
+        defaultAllocation === 'VM'
+          ? []
+          : [
+              // if running on VM, no need to pass allocation param
+              {
+                name: 'TACC Allocation',
+                description:
+                  'The TACC allocation associated with this job execution',
+                include: true,
+                arg: `-A ${defaultAllocation}`,
+              },
+            ],
     },
   };
 };
