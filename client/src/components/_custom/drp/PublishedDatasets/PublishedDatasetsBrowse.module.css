@@ -9,7 +9,7 @@
 .searchbar > :where(
   [type="search"],
   *:has([type="search"])
-)                               { grid-area: input; }
+)                                 { grid-area: input; }
 .searchbar > [class*="results"]     { grid-area: count; }
 .searchbar > [type="reset"]         { grid-area: clear; }
 
