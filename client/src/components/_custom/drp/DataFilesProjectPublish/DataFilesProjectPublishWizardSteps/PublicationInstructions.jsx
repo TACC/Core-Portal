@@ -12,8 +12,7 @@ const PublicationInstructions = () => {
           You are requesting to publish this project. By publishing your
           project, it will be available to anyone to view and download the
           project data and metadata.
-          <b> Please note:</b> once a project is published it is no longer
-          editable!
+          <b> Please note:</b> Once a project is published, any changes to published files/data requires a new version
         </p>
         <p>
           You will begin the process of reviewing your data publication. This

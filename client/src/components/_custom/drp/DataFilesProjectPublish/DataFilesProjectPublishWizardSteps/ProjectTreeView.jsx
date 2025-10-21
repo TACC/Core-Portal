@@ -13,6 +13,7 @@ import { useFileListing } from 'hooks/datafiles';
 import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
 import { fetchUtil } from 'utils/fetchUtil';
 import { createTheme, ThemeProvider } from '@mui/material';
+import { EXCLUDED_METADATA_FIELDS } from '../../constants/metadataFields';
 
 const theme = createTheme({
   components: {
@@ -72,7 +73,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     if (tree && tree.length > 0) {
       setExpandedNodes([tree[0].id]);
     }
-  }, []);
+  }, [tree]);
 
   const handleNodeToggle = (event, node) => {
     // Update the list of expanded nodes
@@ -198,14 +199,9 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                   <ShowMore>{node.metadata.description}</ShowMore>
                   <DataDisplay
                     data={node.metadata}
-                    excludeKeys={[
-                      'description',
-                      'data_type',
-                      'sample',
-                      'digital_dataset',
-                      'file_objs',
-                      'is_advanced_image_file'
-                    ]}
+                    tree={tree[0]}
+                    system={projectId}
+                    excludeKeys={EXCLUDED_METADATA_FIELDS}
                   />
                 </div>
               </div>
