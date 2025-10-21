@@ -32,15 +32,17 @@ ul.data-tree {
 
 /* Elements */
 
+/* for nested lists */
+.data-tree__item ul {
+    margin-block: 1rem;
+}
+
+/* for parent list (if not root) and nested lists */
 .data-tree ul:has(details) {
     padding-left: var(--indent);
 }
 .data-tree ul:not(:has(details)) {
     padding-left: calc(var(--indent) * 2);
-}
-
-.data-tree__item ul {
-    margin-block: 1rem;
 }
 
 
