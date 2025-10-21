@@ -16,10 +16,6 @@
 
 /* DOWNLOAD BUTTON */
 
-.project-download-button {
-    /* to align as if it were a far-right tab */
-    float: right;
-}
 p:has(.project-download-button) {
     text-align: center;
 }

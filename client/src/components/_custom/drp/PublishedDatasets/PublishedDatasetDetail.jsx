@@ -114,10 +114,10 @@ function PublishedDatasetDetail({ params }) {
                 </div>
             ) : (
                 <>
-                    <div className={'o-section project-title'}>
+                    <header className={'o-section project-title header'}>
                         <h1>
                             <span>{metadata.title}</span>
-                            <div className="dropdown project-download-button">
+                            <div className="dropdown project-download-button header__action">
                                 <button
                                     className="dropdown-toggle c-button c-button--primary"
                                     data-bs-toggle="dropdown"
@@ -144,7 +144,7 @@ function PublishedDatasetDetail({ params }) {
                                </menu>
                             </div>
                         </h1>
-                    </div>
+                    </header>
                     <div className={'o-section o-section--style-muted proj dect-citation'}>
                         <h3>Cite This Dataset</h3>
                         <p>
