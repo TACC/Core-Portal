@@ -27,11 +27,11 @@ p:has(.project-download-button) {
 /* CONTENT */
 
 .project-content.row {
-    gap: calc( var(--global-space--bootstrap-gap) / 2 );
+    gap: calc(var(--global-space--bootstrap-gap) / 2);
 }
 
 .project-content {
     display: grid;
-    grid-template-columns: repeat( auto-fit, minmax( min( 100%, 40ch ), 1fr ));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 40ch), 1fr));
     gap: var(--global-space--bootstrap-gap);
 }

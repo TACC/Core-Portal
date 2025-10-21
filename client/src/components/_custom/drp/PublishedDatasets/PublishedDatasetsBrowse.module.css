@@ -3,18 +3,18 @@
   display: grid;
   row-gap: 5px;
   grid-template-areas:
-    "input input"
-    "count clear";
+    'input input'
+    'count clear';
 }
 .searchbar > :where(
-  [type="search"],
-  *:has([type="search"])
+  [type='search'],
+  *:has([type='search'])
 )                                   { grid-area: input; }
-.searchbar > [class*="results"]     { grid-area: count; }
-.searchbar > [type="reset"]         { grid-area: clear; }
+.searchbar > [class*='results']     { grid-area: count; }
+.searchbar > [type='reset']         { grid-area: clear; }
 
 /* To tweak existing styles */
-.searchbar [type="reset"] {
+.searchbar [type='reset'] {
     text-align: right; /* overwrites browser */
 }
 .searchbar > *:not(:last-child) {
