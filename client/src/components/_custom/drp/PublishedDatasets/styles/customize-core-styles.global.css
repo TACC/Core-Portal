@@ -1,16 +1,5 @@
 /* TWEAK CORE-STYLES */
 
-/* Card */
-
-/* To make project link align across cards */
-/* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
-[class*='card--image-top'] {
-    grid-template-rows: repeat(3, min-content) 1fr;
-}
-[class*='card--image-top'] > p:has(a:only-child) {
-    align-self: end;
-}
-
 
 /* Card List */
 
@@ -30,6 +19,18 @@
 /* to allow long file names to wrap */
 .c-card-list p {
     word-break: break-word;
+}
+
+
+/* Card */
+
+/* To make project link align across cards */
+/* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
+[class*='card--image-top'] {
+    grid-template-rows: repeat(3, min-content) 1fr;
+}
+[class*='card--image-top'] > p:has(a:only-child) {
+    align-self: end;
 }
 
 
