@@ -4,17 +4,17 @@
 
 /* To make project link align across cards */
 /* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
-[class*="card--image-top"] {
+[class*='card--image-top'] {
     grid-template-rows: repeat(3, min-content) 1fr;
 }
-[class*="card--image-top"] > p:has(a:only-child) {
+[class*='card--image-top'] > p:has(a:only-child) {
     align-self: end;
 }
 
 
 /* Card List */
 
-.c-card-list [class*="card--"] img {
+.c-card-list [class*='card--'] img {
     padding: 20px;
     aspect-ratio: 1 / 1;
 
@@ -37,7 +37,7 @@
 
 /* to swap colors for key and value (design request specific to projects) */
 .c-data-list__key { color: var(--global-color-primary--dark); }
-.c-data-list__value { color: var(--global-color-primary--x-dark) }
+.c-data-list__value { color: var(--global-color-primary--x-dark); }
 
 /* to not truncate text */
 .c-data-list__key,
