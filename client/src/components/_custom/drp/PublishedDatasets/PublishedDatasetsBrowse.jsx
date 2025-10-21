@@ -15,6 +15,7 @@ function PublishedDatasetsBrowse() {
     const dispatch = useDispatch();
 
     const [filteredPublications, setFilteredPublications] = useState([]);
+    const [filteredPublicationsLoading, setFilteredPublicationsLoading] = useState(false);
     const query = queryStringParser.parse(useLocation().search);
 
     const { error, loading, publications } = useSelector(
@@ -44,7 +45,7 @@ function PublishedDatasetsBrowse() {
     // Mainly done so we can test pprd properly
     useEffect(() => {
         if (!publications) return;
-    
+        setFilteredPublicationsLoading(true);
         Promise.all(
             publications.map(pub => {
                 return new Promise(resolve => {
@@ -60,6 +61,10 @@ function PublishedDatasetsBrowse() {
             })
         ).then(results => {
             setFilteredPublications(results.filter(Boolean));
+            setFilteredPublicationsLoading(false);
+        }).catch(error => {
+            console.error(error);
+            setFilteredPublicationsLoading(false);
         });
     }, [publications]);
 
@@ -77,7 +82,7 @@ function PublishedDatasetsBrowse() {
                     disabled={loading}
                 />
             </header>
-            {loading ? (
+            {loading || filteredPublicationsLoading ? (
                 <LoadingSpinner />
             ) : (
             filteredPublications.length > 0 && (
