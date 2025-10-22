@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
-import styles from './RequestAccessForm.module.scss';
+import styles from './RequestAccessForm.module.css';
 
 const formSchema = Yup.object().shape({
   username: Yup.string().required('Required'),

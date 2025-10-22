@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pill, LoadingSpinner } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
-import styles from './OnboardingStatus.module.scss';
-import './OnboardingStatus.scss';
+import styles from './OnboardingStatus.module.css';
+import './OnboardingStatus.css';
 
 const getContents = (step) => {
   let type = '';

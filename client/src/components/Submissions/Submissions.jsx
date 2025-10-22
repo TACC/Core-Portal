@@ -7,7 +7,7 @@ import { FileInputDropZone, Section, LoadingSpinner } from '_common';
 import { useSystems } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from '../DataFiles/DataFilesModals/DataFilesUploadModalListing/DataFilesUploadModalListingTable.jsx';
-import styles from './Submissions.module.scss';
+import styles from './Submissions.module.css';
 import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../constants/routes';
 

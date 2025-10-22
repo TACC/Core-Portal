@@ -2,7 +2,10 @@
   "plugins": {
     "postcss-preset-env": {
       "stage": false,
-      "features": { "custom-media-queries": true, "media-query-ranges": true },
+      "features": {
+        "custom-media-queries": true, "media-query-ranges": true,
+        "nesting-rules": true
+      },
       "postcss-extend-rule": {}
     }
   }

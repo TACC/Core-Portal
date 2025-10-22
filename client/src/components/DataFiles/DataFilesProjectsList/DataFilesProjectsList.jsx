@@ -8,8 +8,8 @@ import {
   SectionMessage,
   SectionTableWrapper,
 } from '_common';
-import styles from './DataFilesProjectsList.module.scss';
-import './DataFilesProjectsList.scss';
+import styles from './DataFilesProjectsList.module.css';
+import './DataFilesProjectsList.css';
 import Searchbar from '_common/Searchbar';
 
 const DataFilesProjectsList = ({ modal }) => {

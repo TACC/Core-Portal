@@ -18,7 +18,7 @@ import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import SystemStatus from '../SystemStatus';
-import './Workbench.scss';
+import './Workbench.css';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
 

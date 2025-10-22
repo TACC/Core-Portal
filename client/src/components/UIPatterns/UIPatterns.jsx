@@ -8,7 +8,7 @@ import UIPatternsPill from './UIPatternsPill';
 import UIPatternsShowMore from './UIPatternsShowMore';
 import UIPatternsPaginator from './UIPatternsPaginator';
 import UIPatternsButton from './UIPatternsButton';
-import styles from './UIPatterns.module.scss';
+import styles from './UIPatterns.module.css';
 import UIPatternsSidebar from './UIPatternsSidebar';
 
 function UIPatterns() {

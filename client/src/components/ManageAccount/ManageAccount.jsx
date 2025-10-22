@@ -10,7 +10,7 @@ import {
   Integrations,
 } from './ManageAccountTables';
 
-import './ManageAccount.scss';
+import './ManageAccount.css';
 import './ManageAccount.global.css';
 import styles from './ManageAccount.module.css';
 import { INTEGRATION_SETUP_ERROR } from '../../constants/messages';

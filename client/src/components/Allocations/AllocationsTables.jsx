@@ -6,7 +6,7 @@ import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
-import styles from './AllocationsTables.module.scss';
+import styles from './AllocationsTables.module.css';
 
 export const useAllocations = (page) => {
   const allocations = useSelector((state) => {

@@ -3,7 +3,7 @@ import renderHtml from 'utils/renderHtml';
 import { stepPropType } from './OnboardingPropTypes';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingActions from './OnboardingActions';
-import styles from './OnboardingStep.module.scss';
+import styles from './OnboardingStep.module.css';
 
 const OnboardingStep = ({ step }) => {
   const styleName = `${styles.root} ${

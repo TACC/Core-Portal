@@ -14,8 +14,8 @@ import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
-import styles from './OnboardingAdmin.module.scss';
-import './OnboardingAdmin.scss';
+import styles from './OnboardingAdmin.module.css';
+import './OnboardingAdmin.css';
 
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (

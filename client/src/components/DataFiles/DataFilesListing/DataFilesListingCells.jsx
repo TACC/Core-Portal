@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, Icon, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
-import './DataFilesListingCells.scss';
-import '../../Onboarding/OnboardingStep.module.scss';
+import './DataFilesListingCells.css';
+import '../../Onboarding/OnboardingStep.module.css';
 
 import { useSelectedFiles } from 'hooks/datafiles';
 import formatSize from 'utils/sizeFormat';

@@ -15,7 +15,7 @@ import { Sidebar } from '_common';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
-import './DataFilesSidebar.scss';
+import './DataFilesSidebar.css';
 
 const DataFilesAddButton = ({ readOnly }) => {
   const dispatch = useDispatch();

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Button } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 
-import styles from './OnboardingAdminSearchbar.module.scss';
+
+import styles from './OnboardingAdminSearchbar.module.css';
 
 const OnboardingAdminSearchbar = ({ className, disabled }) => {
   const { query } = useSelector((state) => state.onboarding.admin);

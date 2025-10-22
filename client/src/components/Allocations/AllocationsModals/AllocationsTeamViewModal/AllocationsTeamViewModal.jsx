@@ -10,7 +10,7 @@ import AllocationsTeamTable from './AllocationsTeamTable';
 import AllocationsManageTeamTable from '../AllocationsManageTeamTable';
 import AllocationsContactCard from './AllocationsContactCard';
 import { UserSearchbar } from '_common';
-import styles from './AllocationsTeamViewModal.module.scss';
+import styles from './AllocationsTeamViewModal.module.css';
 import manageStyles from '../AllocationsManageTeamTable/AllocationsManageTeamTable.module.scss';
 
 const AllocationsTeamViewModal = ({ isOpen, toggle }) => {

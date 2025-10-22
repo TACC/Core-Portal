@@ -9,7 +9,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import { AppIcon, Icon, Message } from '_common';
-import './AppBrowser.scss';
+import './AppBrowser.css';
 import * as ROUTES from '../../../constants/routes';
 
 const findAppTab = (categoryDict, appId) => {

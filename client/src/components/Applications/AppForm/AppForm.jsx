@@ -12,7 +12,7 @@ import {
 } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
-import './AppForm.scss';
+import './AppForm.css';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';

@@ -9,7 +9,7 @@ import Sysmon from '../SystemMonitor';
 import { SystemStatusQueueTable } from './SystemStatusQueueTable/SystemStatusQueueTable';
 
 import './SystemStatus.global.css';
-import styles from './SystemStatus.module.scss';
+import styles from './SystemStatus.module.css';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.SYSTEM_STATUS}`;
 

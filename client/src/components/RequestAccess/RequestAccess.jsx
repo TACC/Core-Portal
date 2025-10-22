@@ -3,7 +3,7 @@ import { Navbar } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import RequestAccessForm from './RequestAccessForm';
 import BrowserChecker from '../_common/BrowserChecker';
-import styles from './RequestAccess.module.scss';
+import styles from './RequestAccess.module.css';
 
 function RequestAccess() {
   const portalName = useSelector((state) => state.workbench.portalName);

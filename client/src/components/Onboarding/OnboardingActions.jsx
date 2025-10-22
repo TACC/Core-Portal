@@ -5,7 +5,7 @@ import { Button, LoadingSpinner, Message } from '_common';
 import { Button as ReactstrapButton } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import styles from './OnboardingActions.module.scss';
-import './OnboardingActions.scss';
+import './OnboardingActions.css';
 
 const OnboardingActions = ({ step }) => {
   const dispatch = useDispatch();

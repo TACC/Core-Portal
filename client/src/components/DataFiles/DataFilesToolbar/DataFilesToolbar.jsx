@@ -6,7 +6,7 @@ import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
 import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
-import './DataFilesToolbar.scss';
+import './DataFilesToolbar.css';
 import { useTrash } from 'hooks/datafiles/mutations';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {

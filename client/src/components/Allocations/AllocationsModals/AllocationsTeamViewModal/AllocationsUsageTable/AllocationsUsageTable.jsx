@@ -4,7 +4,7 @@ import { capitalize } from 'lodash';
 import { useLocation } from 'react-router-dom';
 import { arrayOf, shape, string } from 'prop-types';
 import { getSystemName } from 'utils/systems';
-import styles from './AllocationsUsageTable.module.scss';
+import styles from './AllocationsUsageTable.module.css';
 
 const AllocationsUsageTable = ({ rawData }) => {
   const location = useLocation();
