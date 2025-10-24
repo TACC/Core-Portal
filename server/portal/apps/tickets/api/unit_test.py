@@ -166,7 +166,7 @@ def test_tickets_get_history(client, authenticated_user, mock_rtutil):
     assert len(result["ticket_history"]) == 5
     full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
     assert result["ticket_history"][2]["Creator"] == full_name
-    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][3]["Creator"] == "RT System"
     assert result["ticket_history"][4]["Creator"] == full_name
 
 
@@ -183,7 +183,7 @@ def test_tickets_get_history_handle_service_accounts(service_account, client, au
     result = json.loads(response.content)
     full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
     assert result["ticket_history"][2]["Creator"] == full_name
-    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][3]["Creator"] == "RT System"
     assert result["ticket_history"][4]["Creator"] == full_name
 
 
