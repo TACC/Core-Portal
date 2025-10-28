@@ -136,7 +136,7 @@ OR
 
 #### Initialize the application in the `core_portal_django` container:
 
-    docker exec -it core_portal_django /bin/bash
+    docker debug core_portal_django
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
@@ -144,7 +144,7 @@ OR
 
 #### Initialize the CMS in the `core_portal_cms` container:
 
-    docker exec -it core_portal_cms /bin/bash
+    docker debug core_portal_cms
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
@@ -167,13 +167,11 @@ Requirements:
 
 First, rebuild the cms search index:
 
-    docker exec -it core_portal_cms /bin/bash
-    python3 manage.py rebuild_index
+    docker exec -it core_portal_cms sh -c "python3 manage.py rebuild_index"
 
 Then, use the django shell in the `core_portal_django` container—
 
-    docker exec -it core_portal_django /bin/bash
-    python3 manage.py shell
+    docker exec -it core_portal_django sh -c "python3 manage.py shell"
 
 —to run the following code to set up the search index:
 ```
@@ -223,7 +221,7 @@ flake8
 
 ### Testing
 
-Server-side python testing is run through pytest. Start docker container first by `docker exec -it core_portal_django bash`, Then run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
+Server-side python testing is run through pytest. Start/Enter docker container via `docker debug core_portal_django`, navigate to `server` folder, then run `pytest -ra` to run backend tests and display a report at the bottom of the output.
 
 Client-side javascript testing is run through Jest. Run `npm run test`* from the `client` folder to ensure tests are running correctly.
 
