@@ -4,6 +4,7 @@
 """
 import logging
 import json
+import unicodedata
 from urllib.parse import urlparse
 from django.http import JsonResponse
 from django.conf import settings
@@ -264,6 +265,28 @@ class JobsView(BaseApiView):
             msg = msg.upper()
             return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
 
+        # Case-insensitive matching functions (only for regular search)
+        def _norm(s: str) -> str:
+            if not s:
+                return ''
+            s = unicodedata.normalize('NFKD', str(s))
+            s = ''.join(ch for ch in s if not unicodedata.combining(ch))
+            return s.casefold()
+
+        def _matches_job(job, q_norm: str) -> bool:
+            if not q_norm:
+                return True
+            fields = (
+                getattr(job, 'name', ''),
+                getattr(job, 'archiveSystemDir', ''),
+                getattr(job, 'appId', ''),
+                getattr(job, 'archiveSystemId', ''),
+            )
+            return any(q_norm in _norm(val) for val in fields)
+
+        def _esc_sql_literal(s: str) -> str:
+            return (s or '').replace("'", "''")
+
         query_string = request.GET.get('query_string')
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
@@ -293,31 +316,113 @@ class JobsView(BaseApiView):
                 f"{status_conditions})",
             ]
 
-        # If status_search is not populated, just do regular search, need to make this part case insensitive
         else:
+            q_raw = (query_string or '').strip()
+
+            # If no query provided, use regular call to not get issues
+            if not q_raw:
+                data = client.jobs.getJobSearchList(
+                    limit=limit,
+                    skip=offset,
+                    orderBy='lastUpdated(desc),name(asc)',
+                    _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
+                    select='allAttributes', headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                )
+                return data
+
+            # Build LIKE query (multi-variant) inline
+            # building the lower, upper, and title common cases
+            q_variants = []
+            for v in {q_raw, q_raw.lower(), q_raw.upper(), q_raw.title()}:
+                if v:
+                    q_variants.append(_esc_sql_literal(v))
+
+            field_conditions = []
+            for field in ('name', 'archiveSystemDir', 'appId', 'archiveSystemId'):
+                likes = " OR ".join([f"({field} like '%{v}%')" for v in q_variants])
+                field_conditions.append(f"({likes})")
+            combined_fields = " OR ".join(field_conditions)
+
             sql_queries = [
                 f"(tags IN ('portalName: {portal_name}')) AND",
-                f"((name like '%{query_string}%') OR",
-                f"(archiveSystemDir like '%{query_string}%') OR",
-                f"(appId like '%{query_string}%') OR",
-                f"(archiveSystemId like '%{query_string}%'))",
+                f"({combined_fields})",
             ]
 
-        # If searching for Finished or Failed,  fill-to-limit
-        # We have to handle our jobs query for "Finished" or "Failed" uniquely as
-        # there we treat some jobs with tapis status of FAILED as being non-failures if they
-        # are interactive jobs that just timed-out.
-        #
-        # We are unable to query the `notes` field to determine if jobs are interactive,
-        # so we manually have to make requests to get jobs and filter them ourselves
-        #
-        # For "Finished" search, want to get all
-        # (i) FINISHED jobs
-        # and
-        # (ii) FAILED jobs that are interactive and have the timeout/expired message (will be shown as FINISHED on UI)
-        #
-        # For "Failed" search, want to get all
-        # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
+            # Collect: Python casefold filter, de-dup, then tag-only fallback
+            q_norm = _norm(q_raw)
+            target_offset = offset
+            collected = []
+            skipped = 0
+            seen_job_uuids = set()
+            upstream_page_size = max(limit, 50)
+            upstream_offset = 0
+
+            # Pass 1: LIKE results
+            while len(collected) < limit:
+                page = client.jobs.getJobSearchListByPostSqlStr(
+                    limit=upstream_page_size,
+                    startAfter=upstream_offset,
+                    orderBy='lastUpdated(desc),name(asc)',
+                    request_body={"search": sql_queries},
+                    select="allAttributes",
+                    headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                )
+                if not page:
+                    break
+                upstream_offset += len(page)
+                for job in page:
+                    job_uuid = getattr(job, 'uuid', None)
+                    if job_uuid in seen_job_uuids:
+                        continue
+                    if not _matches_job(job, q_norm):
+                        continue
+                    if skipped < target_offset:
+                        skipped += 1
+                        continue
+                    seen_job_uuids.add(job_uuid)
+                    collected.append(job)
+                    if len(collected) == limit:
+                        break
+                if len(page) < upstream_page_size:
+                    break
+
+            # Optional Pass 2: minimal tag-only fallback to catch mixed-case misses
+            if len(collected) < limit:
+                tag_only_search = [f"(tags IN ('portalName: {portal_name}'))"]
+                safety_pages = 5  # keep small for performance
+                for _ in range(safety_pages):
+                    if len(collected) >= limit:
+                        break
+                    page = client.jobs.getJobSearchListByPostSqlStr(
+                        limit=upstream_page_size,
+                        startAfter=upstream_offset,
+                        orderBy='lastUpdated(desc),name(asc)',
+                        request_body={"search": tag_only_search},
+                        select="allAttributes",
+                        headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                    )
+                    if not page:
+                        break
+                    upstream_offset += len(page)
+                    for job in page:
+                        job_uuid = getattr(job, 'uuid', None)
+                        if job_uuid in seen_job_uuids:
+                            continue
+                        if not _matches_job(job, q_norm):
+                            continue
+                        if skipped < target_offset:
+                            skipped += 1
+                            continue
+                        seen_job_uuids.add(job_uuid)
+                        collected.append(job)
+                        if len(collected) == limit:
+                            break
+                    if len(page) < upstream_page_size:
+                        break
+
+            return collected
+
+        # Keep the fill-to-limit logic ONLY for Finished/Failed status searches
         is_finished = 'FINISHED' in status_searches
         is_failed = 'FAILED' in status_searches
 
@@ -353,9 +458,8 @@ class JobsView(BaseApiView):
                             if not (has_timeout_message(job) and is_interactive(job)):
                                 continue
                         else:
-                            # anything else isin't part of FINISHED
+                            # anything else isn't part of FINISHED
                             continue
-
 
                     elif is_failed:
                         # Keep FAILED except interactive timeouts
@@ -377,7 +481,7 @@ class JobsView(BaseApiView):
 
             return collected
 
-        # regular search
+        # Fallback/simple call for non Finished/Failed, for other status labels
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
             startAfter=offset,
