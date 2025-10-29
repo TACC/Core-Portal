@@ -3,121 +3,121 @@ name: CI
 # Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ '**' ]
+    branches: ["**"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   Server_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry
+      - name: Fetch base and install Poetry
+        run: |
+          git fetch origin ${{github.base_ref}}
+          pipx install poetry
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
-        cache: 'poetry'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+          cache: "poetry"
 
-    - name: Install Python Packages
-      run:  |
-        cd server
-        poetry install --with dev
+      - name: Install Python Packages
+        run: |
+          cd server
+          poetry install --with dev
 
-    - name: Run Server-side unit tests and generate coverage report
-      run: |
-        cd server
-        cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
-        poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+      - name: Run Server-side unit tests and generate coverage report
+        run: |
+          cd server
+          cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
+          poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./server/coverage.xml
-        flags: unittests
-        name: cep-server-side
-        fail_ci_if_error: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./server/coverage.xml
+          flags: unittests
+          name: cep-server-side
+          fail_ci_if_error: true
 
   Server_Side_Linting:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry
+      - name: Fetch base and install Poetry
+        run: |
+          git fetch origin ${{github.base_ref}}
+          pipx install poetry
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
-        cache: 'poetry'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+          cache: "poetry"
 
-    - name: Install Python Packages
-      run:  |
-        cd server
-        poetry install --with dev
+      - name: Install Python Packages
+        run: |
+          cd server
+          poetry install --with dev
 
-    - name: Server-Side Linting
-      run: |
-        cd server
-        poetry run flake8
+      - name: Server-Side Linting
+        run: |
+          cd server
+          poetry run flake8
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: '**/package-lock.json'
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
 
-    - name: npm ci
-      run: |
-        cd client
-        npm ci
-    - name: Client Side Unit Tests
-      run: |
-        cd client
-        npm run test
+      - name: npm ci
+        run: |
+          cd client
+          npm ci
+      - name: Client Side Unit Tests
+        run: |
+          cd client
+          npm run test
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        flags: javascript
-        fail_ci_if_error: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: javascript
+          fail_ci_if_error: true
 
   Client_Side_Linting:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: '**/package-lock.json'
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
 
-    - name: npm ci
-      run: |
-        cd client
-        npm ci
+      - name: npm ci
+        run: |
+          cd client
+          npm ci
 
-    - name: Client Side Linting
-      run: |
-        cd client
-        npm run lint
+      - name: Client Side Linting
+        run: |
+          cd client
+          npm run lint

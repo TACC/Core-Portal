@@ -196,7 +196,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 
 _PORTAL_PROJECTS_SYSTEM_PREFIX = "cep.project"
 _PORTAL_PROJECTS_ID_PREFIX = "CEP"
-_PORTAL_PROJECTS_ROOT_DIR = "/corral-repl/tacc/aci/CEP/projects"
+_PORTAL_PROJECTS_ROOT_DIR = "/corral/tacc/aci/CEP/projects"
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = "cep.project.root"
 _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
