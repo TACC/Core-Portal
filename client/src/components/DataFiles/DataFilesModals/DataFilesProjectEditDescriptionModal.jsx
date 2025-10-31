@@ -64,10 +64,9 @@ const DataFilesProjectEditDescriptionModal = () => {
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
-    description: Yup.string().max(
-      800,
-      'Description must be at most 800 characters'
-    ),
+    description: Yup.string()
+      .max(800, 'Description must be at most 800 characters')
+      .required('Please enter a description.'),
   });
 
   return (

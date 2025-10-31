@@ -138,7 +138,7 @@ def create_workspace_dir(workspace_id: str, **kwargs) -> str:
     return path
 
 
-def create_workspace_system(client, workspace_id: str, title: str, description="", owner=None) -> str:
+def create_workspace_system(client, workspace_id: str, title: str, description: str, owner=None) -> str:
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     system_args = {
         "id": system_id,
@@ -181,7 +181,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
+def create_shared_workspace(client: Tapis, title: str, description: str, owner: str, **kwargs):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -200,7 +200,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, **kwargs):
                        "writer")
 
     # User creates the system and adds their credential
-    system_id = create_workspace_system(client, workspace_id, title)
+    system_id = create_workspace_system(client, workspace_id, title, description)
 
     # Give portal admin full permissions
     portal_admin = settings.PORTAL_ADMIN_USERNAME
