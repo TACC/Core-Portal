@@ -374,7 +374,7 @@ def send_publication_accept_email(self, project_id):
             """
 
         send_mail(
-            "DigitalRocks Alert: Your Publication Request has been Accepted",
+            "DigitalPorousMedia Alert: Your Publication Request has been Accepted",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
@@ -404,7 +404,7 @@ def send_publication_reject_email(self, project_id: str):
             """
 
         send_mail(
-            "DigitalRocks Alert: Your Publication Request has been Rejected",
+            "DigitalPorousMedia Alert: Your Publication Request has been Rejected",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
