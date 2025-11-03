@@ -4,7 +4,6 @@
 """
 import logging
 import json
-import unicodedata
 from urllib.parse import urlparse
 from django.http import JsonResponse
 from django.conf import settings

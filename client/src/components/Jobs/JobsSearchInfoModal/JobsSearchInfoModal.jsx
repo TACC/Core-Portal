@@ -1,3 +1,4 @@
+import React from 'react';
 import { bool, func } from 'prop-types';
 import { Modal, ModalHeader, ModalBody} from 'reactstrap'
 
