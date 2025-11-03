@@ -229,7 +229,7 @@ def create_shared_workspace_2_user(
         description="Test Workspace 1 description",
         notes={
             "title": title,
-            "description": "Description of Test Workspace",
+            "description": description,
         },
         updated="2023-03-07T19:31:17.292220Z",
         owner="username",

@@ -109,7 +109,7 @@ const DataFilesAddProjectModal = () => {
             <ModalBody>
               <FormField
                 name="title"
-                id="title"
+                aria-label="title"
                 label={
                   <div>
                     Workspace Title{' '}
@@ -121,7 +121,7 @@ const DataFilesAddProjectModal = () => {
               />
               <FormField
                 name="description"
-                id="description"
+                aria-label="description"
                 label={
                   <div>
                     Workspace Description{' '}
@@ -130,6 +130,7 @@ const DataFilesAddProjectModal = () => {
                     </small>
                   </div>
                 }
+                type="textarea"
               />
               <DataFilesProjectMembers
                 members={members}
