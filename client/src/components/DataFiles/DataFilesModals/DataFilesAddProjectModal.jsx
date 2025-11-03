@@ -53,11 +53,12 @@ const DataFilesAddProjectModal = () => {
     history.push(`${match.path}/tapis/projects/${system}`);
   };
 
-  const addproject = ({ title }) => {
+  const addproject = ({ title, description }) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
         title,
+        description,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -82,6 +83,9 @@ const DataFilesAddProjectModal = () => {
       .min(3, 'Title must be at least 3 characters')
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
+    description: Yup.string()
+      .max(800, 'Description must be at most 800 characters')
+      .required('Please enter a description.'),
   });
 
   return (
@@ -94,7 +98,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', description: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -105,6 +109,7 @@ const DataFilesAddProjectModal = () => {
             <ModalBody>
               <FormField
                 name="title"
+                aria-label="title"
                 label={
                   <div>
                     Workspace Title{' '}
@@ -113,6 +118,19 @@ const DataFilesAddProjectModal = () => {
                     </small>
                   </div>
                 }
+              />
+              <FormField
+                name="description"
+                aria-label="description"
+                label={
+                  <div>
+                    Workspace Description{' '}
+                    <small>
+                      <em>(Maximum 800 characters)</em>
+                    </small>
+                  </div>
+                }
+                type="textarea"
               />
               <DataFilesProjectMembers
                 members={members}
