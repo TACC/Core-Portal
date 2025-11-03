@@ -1,0 +1,85 @@
+/* TWEAK CORE-STYLES */
+
+
+/* Card List */
+
+.c-card-list [class*='card--'] img {
+    padding: 20px;
+    aspect-ratio: 1 / 1;
+
+    /* to prevent giant image */
+    object-fit: fill;
+    max-height: 300px;
+    width: 100%;
+
+    /* to avoid cutting off words in an image */
+    object-position: left;
+}
+
+/* to allow long file names to wrap */
+.c-card-list p {
+    word-break: break-word;
+}
+
+
+/* Card */
+
+/* To make project link align across cards */
+/* FAQ: Card layout is inconsistent cuz headings can span few to many lines */
+[class*='card--image-top'] {
+    grid-template-rows: repeat(3, min-content) 1fr;
+}
+[class*='card--image-top'] > p:has(a:only-child) {
+    align-self: end;
+}
+
+
+/* Data List */
+
+/* to swap colors for key and value (design request specific to projects) */
+.c-data-list__key { color: var(--global-color-primary--dark); }
+.c-data-list__value { color: var(--global-color-primary--x-dark); }
+
+/* to not truncate text */
+.c-data-list__key,
+.c-data-list__label {
+    overflow: visible;
+    white-space: normal;
+}
+
+/* to arrange and truncate links in value column */
+.c-data-list__value nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.c-data-list__value nav a {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+.c-data-list__value nav a span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Modal */
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+
+
+
+/* CUSTOM UTILITIES */
+
+.u-thead-content-with-input {
+    display: flex;
+    gap: 1ch;
+}
+
+.u-title-needs-colon > :first-child { font-weight: normal; }
+.u-title-needs-colon > :first-child::after { content: ':'; }
