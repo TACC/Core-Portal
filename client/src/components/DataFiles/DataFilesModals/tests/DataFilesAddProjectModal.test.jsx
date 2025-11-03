@@ -67,7 +67,7 @@ describe('DataFilesAddProjectModal', () => {
       history
     );
 
-    const inputField = getByRole('textbox', { name: '' });
+    const inputField = getByRole('textbox', { name: /workspace title/i });
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
@@ -89,7 +89,7 @@ describe('DataFilesAddProjectModal', () => {
       history
     );
 
-    const inputField = getByRole('textbox', { name: '' });
+    const inputField = getByRole('textbox', { name: /workspace title/i });
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
