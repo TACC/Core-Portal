@@ -63,7 +63,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   });
 
-  const { projectId } = useSelector((state) => state.projects.metadata);
+  const { projectId, is_published_project: isPublishedProject } = useSelector(
+    (state) => state.projects.metadata
+  );
 
   // defaults to return true if no custom permission check is provided
   const [customPermissionCheck, setCustomPermissionCheck] = useState(
@@ -258,13 +260,24 @@ const DataFilesToolbar = ({ scheme, api }) => {
     'areMultipleFilesOrFolderSelected',
     permissionParams
   );
-  const canRename = getFilePermissions('rename', permissionParams) && !isGuest;
-  const canMove = getFilePermissions('move', permissionParams) && !isGuest;
+  const canRename =
+    getFilePermissions('rename', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject;
+  const canMove =
+    getFilePermissions('move', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject;
   const canCopy =
     getFilePermissions('copy', permissionParams) && !!authenticatedUser;
-  const canTrash = getFilePermissions('trash', permissionParams) && !isGuest;
-  const canCompress = getFilePermissions('compress', permissionParams);
-  const canExtract = getFilePermissions('extract', permissionParams);
+  const canTrash =
+    getFilePermissions('trash', permissionParams) &&
+    !isGuest &&
+    !isPublishedProject;
+  const canCompress =
+    getFilePermissions('compress', permissionParams) && !isPublishedProject;
+  const canExtract =
+    getFilePermissions('extract', permissionParams) && !isPublishedProject;
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
   const canEmpty = trashedFiles.length > 0;
