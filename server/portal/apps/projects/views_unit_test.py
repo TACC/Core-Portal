@@ -185,6 +185,7 @@ def test_projects_post(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",
@@ -226,6 +227,7 @@ def test_projects_post_setfacl_job(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",

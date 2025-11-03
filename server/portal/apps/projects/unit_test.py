@@ -103,6 +103,7 @@ def patch_workspace_operations():
 def create_shared_workspace(
     client,
     title,
+    description,
     mock_service_account,
     mock_owner,
     mock_create_shared_workspace,
@@ -112,8 +113,8 @@ def create_shared_workspace(
     workspace_num,
 ):
     # Create project
-    project = mock_create_shared_workspace(client, title, mock_owner)
-    mock_create_shared_workspace.assert_called_with(client, title, mock_owner)
+    project = mock_create_shared_workspace(client, title, description, mock_owner)
+    mock_create_shared_workspace.assert_called_with(client, title, description, mock_owner)
     assert project == f"test.project.test.project-{workspace_num}"
     client.systems.getSystem.return_value = TapisResult(
         id=f"test.project.test.project-{workspace_num}",
@@ -184,6 +185,7 @@ def create_shared_workspace_2_user(
     create_shared_workspace(
         client,
         title,
+        description,
         mock_service_account,
         mock_owner,
         mock_create_shared_workspace,
@@ -344,9 +346,11 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
+        description = "A test workspace"
         create_shared_workspace(
             client,
             title,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -358,7 +362,7 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         # Expected TapisResult return
         expected_result = TapisResult(
             id="test.project.test.project-2",
-            notes={"title": title, "description": ""},
+            notes={"title": title, "description": description},
             effectiveUserId="wma_prtl",
             port=22,
             authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
@@ -391,6 +395,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title1 = "Test Workspace 1"
         title2 = "Test Workspace 2"
+        description = "Description of Test Workspace"
 
         # Mock return of getSystems based on views_unit_test.py
         mock_tapis_client.systems.getSystems.return_value = [
@@ -400,7 +405,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 description="Test Workspace 1 description",
                 notes={
                     "title": title1,
-                    "description": "Description of Test Workspace",
+                    "description": description,
                 },
                 updated="2023-03-07T19:31:17.292220Z",
                 owner="owner_username",
@@ -412,7 +417,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 description="Test Workspace 2 description",
                 notes={
                     "title": title2,
-                    "description": "Description of Test Workspace",
+                    "description": description,
                 },
                 updated="2023-03-08T19:31:17.292220Z",
                 owner="owner_username",
@@ -424,6 +429,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         create_shared_workspace(
             client,
             title1,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -436,6 +442,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         create_shared_workspace(
             client,
             title2,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -488,9 +495,11 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = client
 
         title = "Test Workspace"
+        description = "Description of Test Workspace"
         workspace_id = create_shared_workspace(
             client,
             title,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -595,9 +604,11 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
         mock_service_account.return_value = client
 
         title = "Test Workspace"
+        description = "Description of Test Workspace"
         workspace_id = create_shared_workspace(
             client,
             title,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -693,12 +704,13 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
-        description = ""
+        description = "Description of Test Workspace"
         # Create first project
         workspace_number = 2
         create_shared_workspace(
             client,
             title,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -973,7 +985,7 @@ def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
-        description = ""
+        description = "Description of Test Workspace"
         # Create first project
         workspace_number = 2
 
@@ -1039,9 +1051,11 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         client = mock_tapis_client
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
+        description = "Description of Test Workspace"
         create_shared_workspace(
             client,
             title,
+            description,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -1053,7 +1067,7 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         # Expected TapisResult return
         expected_result = TapisResult(
             id="test.project.test.project-2",
-            notes={"title": title, "description": ""},
+            notes={"title": title, "description": description},
             effectiveUserId="wma_prtl",
             port=22,
             authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
