@@ -1,1 +1,1 @@
-export { default } from './JobsSearchInfoModal'
+export { default } from './JobsSearchInfoModal';
