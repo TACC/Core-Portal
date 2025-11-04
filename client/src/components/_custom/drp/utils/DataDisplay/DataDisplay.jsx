@@ -79,19 +79,22 @@ const DataDisplay = ({
 
     if (data[key] && uuidRegex.test(data[key])) {
       const entity = findNodeInTree(tree, data[key]);
-      const index = location.pathname.indexOf(system) + system.length;
-      const url = `${location.pathname.slice(0, index)}/${entity.path}`;
 
-      processedData = processedData.filter((entry) => entry.label !== label);
-
-      processedData.unshift({
-        label,
-        value: (
-          <Link className={`${styles['dataset-link']}`} to={url}>
-            {entity.label}
-          </Link>
-        ),
-      });
+      if (entity) {
+        const index = location.pathname.indexOf(system) + system.length;
+        const url = `${location.pathname.slice(0, index)}/${entity.path}`;
+  
+        processedData = processedData.filter((entry) => entry.label !== label);
+  
+        processedData.unshift({
+          label,
+          value: (
+            <Link className={`${styles['dataset-link']}`} to={url}>
+              {entity.label}
+            </Link>
+          ),
+        });
+      }
     }
   };
 

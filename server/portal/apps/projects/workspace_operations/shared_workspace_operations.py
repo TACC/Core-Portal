@@ -270,7 +270,7 @@ def remove_user(client, workspace_id: str, username: str, system_id=None, system
     system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
     prj = client.systems.getSystem(systemId=system_id)
-    
+
     set_workspace_acls(service_client,
                        system_id,
                        "/",
@@ -486,9 +486,6 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
     # Set up the target workspace directory
     create_workspace_dir(target_workspace_id, root_system_name)
 
-    # Configure workspace ACLs
-    set_workspace_acls(service_client, root_system_name, target_workspace_id, portal_admin_username, "add", "writer")
-
     query = f"(id.eq.{target_system_id})"
     listing = service_client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
                                             showDeleted=True, limit=-1)
@@ -505,3 +502,6 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
             f"{system_prefix}.{target_workspace_id}",
             f"{root_dir}/{target_workspace_id}"
         )
+
+     # Configure workspace ACLs
+    set_workspace_acls(service_client, target_system_id, "/", root_dir, portal_admin_username, "add", "writer")
