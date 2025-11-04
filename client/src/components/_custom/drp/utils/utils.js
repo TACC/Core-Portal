@@ -34,7 +34,7 @@ export const formatLabel = (key) => {
 // Find a node in a tree structure by UUID
 // Returns the node if found, null otherwise
 export const findNodeInTree = (node, uuid) => {
-    if (node.uuid === uuid) {
+    if (node?.uuid === uuid) {
         return node;
     }
     if (node.children) {
