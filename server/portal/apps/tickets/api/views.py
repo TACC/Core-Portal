@@ -132,6 +132,8 @@ class TicketsHistoryView(BaseApiView):
             if entry['Type'] == "Create":
                 entry["Content"] = entry['Content'][:entry['Content'].rfind(METADATA_HEADER)]
 
+            entry['Creator'] = "RT System" if entry['Creator'] == "RT_System" else entry['Creator']
+
             entry["IsCreator"] = True if requesting_username == entry['Creator'] else False
 
             known_user = get_user_model().objects.filter(username=entry['Creator']).first()

@@ -6,7 +6,7 @@ authors = [
   { name = "TACC-WMA", email = "wma-portals@tacc.utexas.edu" },
 ]
 readme = "README.md"
-requires-python = "^3.11"
+requires-python = "^3.12"
 dynamic = [ "dependencies" ]
 
 [tool.poetry]
@@ -48,7 +48,7 @@ pymemcache = "^4.0.0"
 twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
 pydantic = "^2.5.0"
 networkx = "^3.2.1"
-numpy = "^2.2.1"
+numpy = "<2.0"
 matplotlib = "^3.10.0"
 tifffile = "^2025.1.10"
 mysqlclient = "^2.2.7"
