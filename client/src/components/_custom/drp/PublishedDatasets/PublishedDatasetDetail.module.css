@@ -1,0 +1,9 @@
+.image {
+    /* to prevent giant image */
+    object-fit: fill;
+    max-height: 300px;
+    width: 100%;
+
+    /* to avoid cutting off words in an image */
+    object-position: left;
+}

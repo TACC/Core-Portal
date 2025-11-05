@@ -458,6 +458,7 @@ export const helloWorldAppSubmissionPayloadFixture = {
     appVersion: '0.0.1',
     execSystemId: 'frontera',
     execSystemLogicalQueue: 'development',
+    reservation: '',
   },
   licenseType: null,
   isInteractive: false,

@@ -195,6 +195,34 @@ export function* versionPublication(action) {
   }
 }
 
+export async function fetchTree(portalName, system) {
+  const result = await fetchUtil({
+    url: `api/${portalName.toLowerCase()}/tree`,
+    params: {
+      project_id: system,
+    },
+  });
+  return result[0];
+}
+
+export function* getTree(action) {
+  yield put({
+    type: 'PUBLICATIONS_GET_TREE_STARTED',
+  });
+  try {
+    const tree = yield call(fetchTree, action.payload.portalName, action.payload.system);
+    yield put({
+      type: 'PUBLICATIONS_GET_TREE_SUCCESS',
+      payload: tree,
+    });
+  } catch (error) {
+    yield put({
+      type: 'PUBLICATIONS_GET_TREE_FAILED',
+      payload: error,
+    });
+  }
+}
+
 export function* watchPublications() {
   yield takeLatest('PUBLICATIONS_GET_PUBLICATIONS', getPublications);
   yield takeLatest('PUBLICATIONS_APPROVE_PUBLICATION', approvePublication);
@@ -208,4 +236,5 @@ export function* watchPublications() {
     'PUBLICATIONS_GET_PUBLICATION_REQUESTS',
     getPublicationRequests
   );
+  yield takeLatest('PUBLICATIONS_GET_TREE', getTree);
 }

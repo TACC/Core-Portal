@@ -9,15 +9,25 @@ import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
 import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersList';
 import { useDispatch, useSelector } from 'react-redux';
 
+const DOILink = ({ project }) => {
+  const projectUrl = project.doi
+    ? `https://www.doi.org/${project.doi}`
+    : `DOI link will appear after publication`;
+
+  return project.doi ? (
+    <a href={projectUrl} target="_blank" rel="noopener noreferrer">
+      {projectUrl}
+    </a>
+  ) : (
+    projectUrl
+  );
+};
+
 const ACMCitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name} ${a.last_name}`)
     .join(', ');
-  // Use DOI if available, fallback to project URL
-  const projectUrl = project.doi
-    ? `https://www.doi.org/${project.doi}`
-    : `DOI link will appear after publication`;
-  const createdDate = new Date(project.created).toLocaleDateString('en-US', {
+  const createdDate = new Date(project.publication_date || project.created).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
@@ -25,20 +35,17 @@ const ACMCitation = ({ project, authors }) => {
   return (
     <div>
       {`${authorString}. ${project.title}. `} <em>Digital Porous Media</em>{' '}
-      {` (${createdDate}). ${projectUrl}`}{' '}
+      {` (${createdDate}). `}
+      <DOILink project={project} />{' '}
     </div>
   );
 };
 
-const APACitation = ({ project, authors }) => {
+export const APACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name.charAt(0)}.`)
     .join(', ');
-  // Use DOI if available, fallback to project URL
-  const projectUrl = project.doi
-    ? `https://www.doi.org/${project.doi}`
-    : `DOI link will appear after publication`;
-  const createdDateObj = new Date(project.created);
+  const createdDateObj = new Date(project.publication_date || project.created);
   const createdDate = `${createdDateObj.getFullYear()}, ${createdDateObj.toLocaleString(
     'en-US',
     { month: 'long' }
@@ -50,7 +57,10 @@ const APACitation = ({ project, authors }) => {
   });
 
   return (
-    <div>{`${authorString} (${createdDate}). ${project.title}. Retrieved ${accessDate}, from ${projectUrl}`}</div>
+    <div>
+      {`${authorString} (${createdDate}). ${project.title} [Dataset]. Digital Porous Media Portal. `}
+      <DOILink project={project} />
+    </div>
   );
 };
 
@@ -62,7 +72,7 @@ const BibTeXCitation = ({ project, authors }) => {
   const projectUrl = project.doi
     ? `https://www.doi.org/${project.doi}`
     : `DOI link will appear after publication`;
-  const year = new Date(project.created).getFullYear();
+  const year = new Date(project.publication_date || project.created).getFullYear();
 
   return (
     <pre>{`@misc{dataset,
@@ -80,10 +90,6 @@ export const MLACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name}`)
     .join(', ');
-  // Use DOI if available, fallback to project URL
-  const projectUrl = project.doi
-    ? `https://www.doi.org/${project.doi}`
-    : `DOI link will appear after publication`;
   const createdDate = new Date(project.publication_date).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -97,8 +103,10 @@ export const MLACitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString}. "${project.title}."`} <em>Digital Porous Media,</em>{' '}
-      {` Digital Porous Media, ${createdDate}, ${projectUrl} Accessed ${accessDate}.`}
+      {`${authorString}. "${project.title}."`} <em>Digital Porous Media Portal,</em>{' '}
+      {` Digital Porous Media, ${createdDate}, `}
+      <DOILink project={project} />
+      {` Accessed ${accessDate}.`}
     </div>
   );
 };
@@ -107,11 +115,7 @@ const IEEECitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name[0]}. ${a.last_name}`)
     .join(', ');
-  // Use DOI if available, fallback to project URL
-  const projectUrl = project.doi
-    ? `https://www.doi.org/${project.doi}`
-    : `DOI link will appear after publication`;
-  const date = new Date(project.created);
+  const date = new Date(project.publication_date || project.created);
   const year = date.getFullYear();
   const day = date.getDate();
   const month = date.toLocaleString('en-GB', { month: 'short' });
@@ -119,8 +123,10 @@ const IEEECitation = ({ project, authors }) => {
   return (
     <div>
       {`[1] ${authorString}, "${project.title}",`}{' '}
-      <em>Digital Porous Media,</em>{' '}
-      {` ${year}. [Online]. Available: ${projectUrl}. [Accessed: ${day}-${month}-${year}]`}
+      <em>Digital Porous Media Portal,</em>{' '}
+      {` ${year}. [Online]. Available: `}
+      <DOILink project={project} />
+      {`. [Accessed: ${day}-${month}-${year}]`}
     </div>
   );
 };

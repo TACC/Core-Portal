@@ -37,40 +37,54 @@ def get_user_onboarding(user):
         "email": user.email,
         "isStaff": user.is_staff,
         "steps": [],
-        "setupComplete": user.profile.setup_complete
+        "setupComplete": user.profile.setup_complete,
     }
 
     # Populate steps list in result dictionary, in order of
     # steps as listed in PORTAL_USER_ACCOUNT_SETUP_STEPS
-    account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    account_setup_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
+    retried_step = None
     for step in account_setup_steps:
         # Get step events in descending order of time
-        step_events = SetupEvent.objects.all().filter(
-            user=user, step=step['step']
-        ).order_by('-time')
+        step_events = SetupEvent.objects.filter(user=user, step=step["step"]).order_by(
+            "-time"
+        )
 
-        step_instance = load_setup_step(user, step['step'])
+        step_instance = load_setup_step(user, step["step"])
 
         # Upon retrieving step data such as viewing the Onboarding page,
-        # If a step has the 'retry' setting set to True and the step is not completed,
+        # for the first step that has the 'retry' setting set to True and the step is eligible,
         # retry the step with asynchronous processing.
-        if 'retry' in step and step['retry'] \
-                and step_instance.state != SetupState.PENDING \
-                and step_instance.state != SetupState.COMPLETED:
+        if (
+            retried_step is None
+            and "retry" in step
+            and step["retry"]
+            and step_instance.state
+            not in [
+                SetupState.USERWAIT,
+                SetupState.STAFFWAIT,
+                SetupState.COMPLETED,
+                SetupState.PROCESSING,
+                SetupState.STAFFDENY,
+            ]
+        ):
+            retried_step = step_instance
             step_instance.state = SetupState.PROCESSING
-            execute_single_step.apply_async(args=[user.username, step['step']])
-            logger.info("Retrying setup step {} for {}".format(step['step'], user.username))
+            execute_single_step.apply_async(args=[user.username, step["step"]], countdown=2)  # slight delay to allow client to render
+            logger.info(
+                "Retrying setup step %s for %s", step["step"], user.username
+            )
 
         step_data = {
-            "step": step['step'],
+            "step": step["step"],
             "displayName": step_instance.display_name(),
             "description": step_instance.description(),
             "userConfirm": step_instance.user_confirm,
             "staffApprove": step_instance.staff_approve,
             "staffDeny": step_instance.staff_deny,
             "state": step_instance.state,
-            "events": [event for event in step_events],
-            "data": None
+            "events": list(step_events),
+            "data": None,
         }
         custom_status = step_instance.custom_status()
         if custom_status:
@@ -81,7 +95,7 @@ def get_user_onboarding(user):
 
         # Append all events. SetupEventEncoder will serialize
         # SetupEvent objects later
-        result['steps'].append(step_data)
+        result["steps"].append(step_data)
 
     return result
 
