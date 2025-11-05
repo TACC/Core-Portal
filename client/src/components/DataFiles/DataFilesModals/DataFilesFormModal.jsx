@@ -109,16 +109,15 @@ const DataFilesFormModal = () => {
           );
       }
 
-      let other_descriptions = ['algorithm_description', 'description', 'porous_media_other_description'];
-      if ((field.type === 'textarea') && (other_descriptions.includes(field.name))) {
+      if (field.type === 'textarea') {
         validator = validator
           .min(
-            50,
-            `${field.label} must be greater than or equal to 50 characters`
+            field.validation?.min ?? -Infinity,
+            `${field.label} must be greater than or equal to ${field.validation?.min} characters`
           )
           .max(
-            5000,
-            `${field.label} must be less than or equal to 5000 characters`
+            field.validation?.max ?? Infinity,
+            `${field.label} must be less than or equal to ${field.validation?.max} characters`
           )
       }
 

@@ -81,16 +81,15 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
                   subAcc[subField.name] || Yup.string()
                 ).required(`${subField.label} is required`);
               }
-              let other_descriptions = ['software_description'];
-              if (other_descriptions.includes(subField.name)) {
+              if (subField.type === 'textarea') {
                 subAcc[subField.name] = (subAcc[subField.name] || Yup.string())
                   .min(
-                    50,
-                    `${subField.label} must be greater than or equal to 50 characters`
+                    subField.validation?.min ?? -Infinity,
+                    `${subField.label} must be greater than or equal to ${subField.validation?.min} characters`
                   )
                   .max(
-                    5000,
-                    `${subField.label} must be less than or equal to 5000 characters`
+                    subField.validation?.max ?? Infinity,
+                    `${subField.label} must be less than or equal to ${subField.validation?.max} characters`
                   )
               }
 
