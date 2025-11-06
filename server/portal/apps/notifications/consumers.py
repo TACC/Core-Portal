@@ -1,6 +1,6 @@
+import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -27,18 +27,16 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
 
         # Add channel connection to staff and superuser groups if applicable
         if user.is_staff:
-            await self.channel_layer.group_add('portal_staff',
-                                               self.channel_name)
+            await self.channel_layer.group_add("portal_staff", self.channel_name)
         if user.is_superuser:
-            await self.channel_layer.group_add('portal_superusers',
-                                               self.channel_name)
+            await self.channel_layer.group_add("portal_superusers", self.channel_name)
 
         # Add channel connection to username and general groups
         await self.channel_layer.group_add(user.username, self.channel_name)
-        await self.channel_layer.group_add('portal_events', self.channel_name)
+        await self.channel_layer.group_add("portal_events", self.channel_name)
         await self.accept()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, code):
         """
         Called when the WebSocket closes for any reason.
         """
@@ -47,12 +45,10 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
             # Connection has no logged in user, nothing to disconnect
             return
         await self.channel_layer.group_discard(
-            group=user.username,
-            channel=self.channel_name
+            group=user.username, channel=self.channel_name
         )
         await self.channel_layer.group_discard(
-            group='portal_events',
-            channel=self.channel_name
+            group="portal_events", channel=self.channel_name
         )
 
     async def portal_notification(self, event):
@@ -61,9 +57,9 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
 
         ** Note: send_json automatically encodes the dict to json
         """
-        await self.send_json(event['body'])
+        await self.send_json(event["body"])
 
-    async def receive_json(self, content):
+    async def receive_json(self, content, *args, **kwargs):
         """
         Called when we get a text frame. Channels will JSON-decode the payload
         for us and pass it as the first argument.
