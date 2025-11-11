@@ -70,7 +70,7 @@ function TreeNode({ node, system }) {
                 </li>
             ) : (
                 <li>
-                    <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.uuid}`}>
+                    <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.id.split('_').pop()}`}>
                         <span>{formatLabel(node.name.split('.').pop())}</span>
                         <strong>{' '}{formatLabel(node.label)}</strong>
                     </Link>

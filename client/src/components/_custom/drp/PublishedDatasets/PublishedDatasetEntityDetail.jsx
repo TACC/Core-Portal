@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
-import { formatLabel, findNodeInTree, getTooltipDescription } from '../utils/utils';
+import { formatLabel, findNodeInTreeById, getTooltipDescription } from '../utils/utils';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
@@ -89,7 +89,7 @@ function PublishedDatasetEntityDetail({ params }) {
 
     useEffect(() => {
         if (tree && !loading && !error && entityID) {
-            const entity = findNodeInTree(tree, entityID);
+            const entity = findNodeInTreeById(tree, entityID);
             setSelectedEntity(entity);
         }
     }, [tree, loading, error, entityID]);
@@ -121,7 +121,7 @@ function PublishedDatasetEntityDetail({ params }) {
             return formatLabel(digitalDataset);
         }
     
-        const digitalDatasetEntity = findNodeInTree(tree, digitalDataset);
+        const digitalDatasetEntity = findNodeInTreeById(tree, digitalDataset);
     
         const index = location.pathname.indexOf(system) + system.length;
         const digitalDatasetUrl = `${location.pathname.slice(0, index)}/digital_dataset/${digitalDataset}`;
