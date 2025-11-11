@@ -12,6 +12,17 @@ import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
+function formatPublicationLink(link) {
+    if (!link) return null;
+
+    const doiPattern = /^10\.\d+\/.+$/;
+
+    if (doiPattern.test(link)) {
+        return `https://doi.org/${link}`;
+    }
+
+    return link;
+}
 
 function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
@@ -244,7 +255,7 @@ function PublishedDatasetDetail({ params }) {
                                                     {metadata.related_publications.map((publication, index) => (
                                                         <>
                                                             {index > 0 && <br />}
-                                                            <a href={publication.publication_link} target="_blank" rel="noreferrer">{publication.publication_title}</a>
+                                                            <a href={formatPublicationLink(publication.publication_link)} target="_blank" rel="noreferrer">{publication.publication_title}</a>
                                                         </>
                                                     ))}
                                                 </td>
