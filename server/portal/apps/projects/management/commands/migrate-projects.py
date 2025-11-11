@@ -3,7 +3,7 @@
 from django.core.management.base import BaseCommand
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.search.tasks import index_project
 from django.contrib.auth import get_user_model
 import logging
@@ -24,7 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle command."""
         agc = service_account()
-        metadatas = ProjectMetadata.objects.all()
+        metadatas = LegacyProjectMetadata.objects.all()
         for meta in metadatas:
             if not meta.pi:
                 try:

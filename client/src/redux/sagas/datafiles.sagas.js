@@ -108,6 +108,15 @@ export async function fetchFilesUtil(
     filter,
     nextPageToken,
   });
+
+  path = path.split('/').map(p => {
+    try {
+      return encodeURIComponent(decodeURIComponent(p));
+    } catch {
+      return encodeURIComponent(p);
+    }
+  }).join('/');
+
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
   );
@@ -154,6 +163,7 @@ export function* fetchFiles(action) {
       type: 'FETCH_FILES_SUCCESS',
       payload: {
         files: listingResponse.listing,
+        folderMetadata: listingResponse.folder_metadata,
         reachedEnd: listingResponse.reachedEnd,
         nextPageToken: listingResponse.nextPageToken,
         section: action.payload.section,
@@ -223,13 +233,20 @@ export function* scrollFiles(action) {
   }
 }
 
-export async function renameFileUtil(api, scheme, system, path, newName) {
+export async function renameFileUtil(
+  api,
+  scheme,
+  system,
+  path,
+  newName,
+  metadata
+) {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ new_name: newName }),
+    body: JSON.stringify({ new_name: newName, metadata: metadata ?? null }),
   });
   if (!response.ok) {
     throw new Error(response.status);
@@ -256,7 +273,8 @@ export function* renameFile(action) {
       action.payload.scheme,
       file.system,
       '/' + file.path,
-      action.payload.newName
+      action.payload.newName,
+      file.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -286,14 +304,20 @@ export async function moveFileUtil(
   system,
   path,
   destSystem,
-  destPath
+  destPath,
+  index,
+  metadata
 ) {
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath }),
+    body: JSON.stringify({
+      dest_system: destSystem,
+      dest_path: destPath,
+      metadata: metadata ?? null,
+    }),
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -319,7 +343,8 @@ export function* moveFile(src, dest, index) {
       src.path,
       dest.system,
       dest.path,
-      index
+      index,
+      src.metadata
     );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -370,7 +395,8 @@ export async function copyFileUtil(
   destApi,
   destSystem,
   destPath,
-  destPathName
+  destPathName,
+  metadata
 ) {
   let url, body;
   if (api === destApi) {
@@ -383,6 +409,7 @@ export async function copyFileUtil(
       file_name: filename,
       filetype,
       dest_path_name: destPathName,
+      metadata: metadata ?? null,
     };
   } else {
     url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
@@ -433,6 +460,7 @@ export function* copyFile(src, dest, index) {
       dest.system,
       dest.path,
       dest.name,
+      src.metadata,
       index
     );
     yield put({
@@ -474,13 +502,26 @@ export function* copyFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export async function uploadFileUtil(api, scheme, system, path, file) {
+export async function uploadFileUtil(
+  api,
+  scheme,
+  system,
+  path,
+  file,
+  metadata
+) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
   }
   const formData = new FormData();
   formData.append('uploaded_file', file);
+  formData.append(
+    'metadata',
+    metadata && !system.includes('community')
+      ? JSON.stringify({ data_type: 'file', ...metadata })
+      : null
+  );
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`
@@ -518,7 +559,8 @@ export function* uploadFiles(action) {
       action.payload.system,
       action.payload.path,
       file.data,
-      file.id
+      file.id,
+      file.metadata
     );
   });
 
@@ -538,15 +580,19 @@ export function* uploadFiles(action) {
     });
 
   yield call(action.payload.reloadCallback);
+  yield put({
+    type: 'DATA_FILES_TOGGLE_MODAL',
+    payload: { operation: 'upload', props: {} },
+  });
 }
 
-export function* uploadFile(api, scheme, system, path, file, index) {
+export function* uploadFile(api, scheme, system, path, file, index, metadata) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'UPLOADING', key: index, operation: 'upload' },
   });
   try {
-    yield call(uploadFileUtil, api, scheme, system, path, file);
+    yield call(uploadFileUtil, api, scheme, system, path, file, metadata);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: index, operation: 'upload' },
@@ -608,7 +654,7 @@ export async function previewUtil(api, scheme, system, path) {
   return requestJson.data;
 }
 
-export async function mkdirUtil(api, scheme, system, path, dirname) {
+export async function mkdirUtil(api, scheme, system, path, dirname, metadata) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
     apiPath = '';
@@ -622,7 +668,7 @@ export async function mkdirUtil(api, scheme, system, path, dirname) {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dir_name: dirname }),
+    body: JSON.stringify({ dir_name: dirname, metadata: metadata ?? null }),
   });
 
   return request;
@@ -763,7 +809,7 @@ export function* download(action) {
   );
 }
 
-export async function trashUtil(api, scheme, system, path, homeDir) {
+export async function trashUtil(api, scheme, system, path, homeDir, metadata) {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
@@ -771,6 +817,7 @@ export async function trashUtil(api, scheme, system, path, homeDir) {
     credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
+      metadata: metadata ?? null,
     }),
   });
 
@@ -786,7 +833,13 @@ export function* watchTrash() {
 
 export function* trashFiles(action) {
   const trashCalls = action.payload.src.map((file) => {
-    return call(trashFile, file.system, file.path, action.payload.homeDir);
+    return call(
+      trashFile,
+      file.system,
+      file.path,
+      action.payload.homeDir,
+      file.metadata
+    );
   });
   const { result } = yield race({
     result: all(trashCalls),
@@ -809,13 +862,13 @@ export function* trashFiles(action) {
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, homeDir) {
+export function* trashFile(system, path, homeDir, metadata) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: system + path, operation: 'trash' },
   });
   try {
-    yield call(trashUtil, 'tapis', 'private', system, path, homeDir);
+    yield call(trashUtil, 'tapis', 'private', system, path, homeDir, metadata);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -1112,4 +1165,34 @@ export function* doMakePublic(action) {
 
 export function* watchMakePublic() {
   yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
+}
+
+export async function updateMetadataUtil(
+  api,
+  scheme,
+  system,
+  path,
+  newPath,
+  oldName,
+  newName,
+  metadata
+) {
+  const url = `/api/datafiles/${api}/update_metadata/${scheme}/${system}/${path}/`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      new_path: newPath,
+      old_name: oldName,
+      new_name: newName,
+      metadata: metadata ?? null,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+
+  const responseJson = await response.json();
+  return responseJson.data;
 }
