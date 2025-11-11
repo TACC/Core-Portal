@@ -9,6 +9,10 @@ import networkx as nx
 from networkx import shortest_path
 from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+import logging
+
+logger = logging.getLogger(__name__)
+
 class DigitalRocksSampleView(BaseApiView):
 
     def get(self, request):
@@ -53,15 +57,32 @@ class DigitalRocksTreeView(BaseApiView):
     def get(self, request):
 
         project_id = request.GET.get('project_id')
+        
+        # Enhanced logging for debugging
+        logger.info(
+            f'DigitalRocksTreeView request - '
+            f'project_id: {project_id}, '
+            f'user: {request.user.username if request.user.is_authenticated else "anonymous"}, '
+            f'user_agent: {request.META.get("HTTP_USER_AGENT", "unknown")}, '
+            f'referer: {request.META.get("HTTP_REFERER", "none")}, '
+            f'ip: {request.META.get("REMOTE_ADDR", "unknown")}'
+        )
 
         if project_id.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX):
             full_project_id = project_id
         else:
             full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
 
-        graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
-        )
+        try:
+            graph_model = ProjectMetadata.objects.get(
+                name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
+            )
+        except ProjectMetadata.DoesNotExist:
+            logger.error(
+                f'Project metadata does not exist for project ID: {full_project_id} '
+                f'(original: {project_id}), user: {request.user.username if request.user.is_authenticated else "anonymous"}'
+            )
+            return JsonResponse({'error': 'Project metadata does not exist'}, status=404)
 
         graph = nx.node_link_graph(graph_model.value)
 
