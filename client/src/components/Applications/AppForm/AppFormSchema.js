@@ -101,9 +101,6 @@ const FormSchema = (app) => {
     }
   );
 
-  // The default is to not show target path for file inputs.
-  const showTargetPathForFileInputs =
-    app.definition.notes.showTargetPath ?? false;
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
     if (input.notes?.isHidden) {
@@ -139,31 +136,31 @@ const FormSchema = (app) => {
         : input.sourceUrl;
 
     // Add targetDir for all sourceUrl
-    if (!showTargetPathForFileInputs) {
-      return;
-    }
-    const targetPathName = getTargetPathFieldName(input.name);
-    appFields.schema.fileInputs[targetPathName] = Yup.string();
-    appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
-      targetPathName
-    ].matches(
-      /^tapis:\/\//g,
-      "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
-    );
+    // The default is to not show target path for file inputs.
+    if (app.definition.notes?.showTargetPath || input.notes?.showTargetPath) {
+      const targetPathName = getTargetPathFieldName(input.name);
+      appFields.schema.fileInputs[targetPathName] = Yup.string();
+      appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
+        targetPathName
+      ].matches(
+        /^tapis:\/\//g,
+        "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
+      );
 
-    appFields.schema.fileInputs[targetPathName] = false;
-    appFields.fileInputs[targetPathName] = {
-      label: 'Target Path for ' + input.name,
-      description:
-        'The name of the ' +
-        input.name +
-        ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
-      required: false,
-      readOnly: field.readOnly,
-      type: 'text',
-    };
-    appFields.defaults.fileInputs[targetPathName] =
-      checkAndSetDefaultTargetPath(input.targetPath);
+      appFields.schema.fileInputs[targetPathName] = false;
+      appFields.fileInputs[targetPathName] = {
+        label: 'Target Path for ' + input.name,
+        description:
+          'The name of the ' +
+          input.name +
+          ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
+        required: false,
+        readOnly: field.readOnly,
+        type: 'text',
+      };
+      appFields.defaults.fileInputs[targetPathName] =
+        checkAndSetDefaultTargetPath(input.targetPath);
+    }
   });
   return appFields;
 };
