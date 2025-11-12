@@ -98,7 +98,7 @@ services:
     # ** NOTE: Run this daphne command below to run a production-ready daphne server,
     # ** matching deployed configurations. Be aware there is no autoreload for local
     # ** development with this enabled.
-    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/cep.test.key:certKey=/etc/ssl/cep.test.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
+    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/cep.test.key:certKey=/etc/ssl/cep.test.crt --access-log - --proxy-headers portal.asgi:application'
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
