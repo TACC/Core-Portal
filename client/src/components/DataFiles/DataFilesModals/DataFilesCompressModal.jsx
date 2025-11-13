@@ -109,8 +109,9 @@ const DataFilesCompressModal = () => {
                   }
                 />
                 <p>
-                  A job to compress these files will be submitted. The
-                  compressed file archive will appear in this directory.
+                  A job to compress these files will be submitted. You can check
+                  the status of this job on your Dashboard, and the compressed
+                  file archive will appear in this directory.
                 </p>
               </ModalBody>
               <ModalFooter>
@@ -119,6 +120,9 @@ const DataFilesCompressModal = () => {
                   type="success"
                 >
                   Successfully started compress job
+                </InlineMessage>
+                <InlineMessage isVisible={status.type === 'ERROR'} type="error">
+                  {status.message}
                 </InlineMessage>
                 <Button
                   disabled={buttonDisabled}

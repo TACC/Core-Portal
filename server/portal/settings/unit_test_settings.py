@@ -143,6 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
 LOGIN_REDIRECT_URL = '/index/'
+LOGOUT_REDIRECT_URL = "/cms/logout/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

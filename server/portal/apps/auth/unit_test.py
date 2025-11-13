@@ -14,6 +14,7 @@ pytestmark = pytest.mark.django_db
 
 def test_launch_setup_checks(mocker, regular_user, settings):
     mocker.patch('portal.apps.auth.views.new_user_setup_check')
+    mocker.patch('portal.apps.auth.views.index_allocations')
     mock_execute = mocker.patch('portal.apps.auth.views.execute_setup_steps')
     regular_user.profile.setup_complete = False
     launch_setup_checks(regular_user)

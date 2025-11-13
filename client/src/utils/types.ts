@@ -51,6 +51,24 @@ export type TAppFileInput = {
   targetPath?: string;
 };
 
+type TAppNotes = {
+  label?: string;
+  shortLabel?: string;
+  helpUrl?: string;
+  category?: string;
+  isInteractive?: boolean;
+  hideNodeCountAndCoresPerNode?: boolean;
+  icon?: string;
+  dynamicExecSystems?: string[];
+  queueFilter?: string[];
+  hideQueue?: boolean;
+  hideAllocation?: boolean;
+  hideMaxMinutes?: boolean;
+  jobLaunchDescription?: string;
+  showReservation?: boolean;
+  showTargetPath?: boolean;
+};
+
 export type TTapisApp = {
   sharedAppCtx: string;
   isPublic: boolean;
@@ -110,31 +128,75 @@ export type TTapisApp = {
     tags: string[];
   };
   tags: string[];
-  notes: {
-    label?: string;
-    shortLabel?: string;
-    helpUrl?: string;
-    category?: string;
-    isInteractive?: boolean;
-    hideNodeCountAndCoresPerNode?: boolean;
-    icon?: string;
-    dynamicExecSystems?: string[];
-    queueFilter?: string[];
-    hideQueue?: boolean;
-    hideAllocation?: boolean;
-    hideMaxMinutes?: boolean;
-    jobLaunchDescription?: string;
-  };
+  notes: TAppNotes;
   uuid: string;
   deleted: boolean;
   created: string;
   updated: string;
 };
 
-export type TTasAllocations = {
-  hosts: {
-    [hostname: string]: string[];
+export type TPortalApp = {
+  loading: boolean;
+  error: {};
+  definition: TTapisApp;
+  systemNeedsKeys: boolean;
+  pushKeysSystem: {};
+  execSystems: TTapisSystem[];
+  license: {
+    type: string;
+    enabled: boolean;
   };
+  appListing: {}[];
+};
+
+export type TTasAllocationDetails = {
+  computeAllocated: number;
+  computeRequested: number;
+  computeUsed: number;
+  dateRequested: string;
+  dateReviewed: string | null;
+  decisionSummary: string | null;
+  end: string;
+  id: number;
+  justification: string;
+  memoryAllocated: number;
+  memoryRequested: number;
+  project: string;
+  projectId: number;
+  requestor: string;
+  requestorId: number;
+  resource: string;
+  resourceId: number;
+  reviewer: string | null;
+  reviewerId: number;
+  start: string;
+  status: string;
+  storageAllocated: number;
+  storageRequested: number;
+};
+
+export type TTasAllocatedSystem = {
+  allocation: TTasAllocationDetails;
+  host: string;
+  name: string;
+  type: string;
+};
+
+export type TTasAllocation = {
+  pi: string;
+  projectId: number;
+  projectName: string;
+  title: string;
+  systems: TTasAllocatedSystem[];
+};
+
+export type TUserAllocations = {
+  active: TTasAllocation[];
+  inactive: TTasAllocation[];
+  hosts: {
+    [key: string]: string[];
+  };
+  portal_alloc: string;
 };
 
 export type TTapisJob = {
@@ -181,7 +243,7 @@ export type TTapisJob = {
   mpiCmd?: string;
   name: string;
   nodeCount: number;
-  notes: string;
+  notes: TAppNotes;
   owner: string;
   parameterSet: string;
   remoteChecksFailed: number;
@@ -213,6 +275,7 @@ export type TTapisJob = {
 
 export type TTapisSystemQueue = {
   name: string;
+  description: string;
   hpcQueueName: string;
   maxJobs: number;
   maxJobsPerUser: number;

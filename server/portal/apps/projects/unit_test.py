@@ -13,8 +13,9 @@ from django.conf import settings  # pyright: ignore
 from tapipy.tapis import TapisResult
 
 from portal.apps.projects.exceptions import NotAuthorizedError
-from portal.apps.projects.workspace_operations import \
-    shared_workspace_operations as ws_o
+from portal.apps.projects.workspace_operations import (
+    shared_workspace_operations as ws_o,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -125,7 +126,7 @@ def create_shared_workspace(
         },
         updated="2023-03-07T19:31:17.292220Z",
         owner=mock_owner,
-        rootDir=f"/corral-repl/tacc/aci/CEP/projects/test.project-{workspace_num}",
+        rootDir=f"/corral/tacc/aci/CEP/projects/test.project-{workspace_num}",
     )
     client.systems.getSystem.assert_called_with(
         systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
@@ -146,7 +147,9 @@ def create_shared_workspace(
     mock_create_workspace_dir.assert_called()
     mock_service_account.assert_called()
     mock_service_account().files.mkdir.assert_called_with(
-        systemId="projects.system.name", path=f"test.project-{workspace_num}", headers={'X-Tapis-Tracking-ID': ''}
+        systemId="projects.system.name",
+        path=f"test.project-{workspace_num}",
+        headers={"X-Tapis-Tracking-ID": ""},
     )
     # Set Workspace ACLS
     # Authenticated_user is whoever the mock_owner or creator of the project is
@@ -228,7 +231,7 @@ def create_shared_workspace_2_user(
         },
         updated="2023-03-07T19:31:17.292220Z",
         owner="username",
-        rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+        rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
     )
 
     # Add new user
@@ -401,7 +404,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 },
                 updated="2023-03-07T19:31:17.292220Z",
                 owner="owner_username",
-                rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+                rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
             ),
             TapisResult(
                 id="test.project.test.project-3",
@@ -413,7 +416,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 },
                 updated="2023-03-08T19:31:17.292220Z",
                 owner="owner_username",
-                rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-3",
+                rootDir="/corral/tacc/aci/CEP/projects/test.project-3",
             ),
         ]
 
@@ -445,25 +448,22 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
 
         # Assertions
         assert len(projects) == 2
-        assert projects[0]["id"] == "test.project.test.project-2"
-        assert projects[0]["title"] == "Test Workspace 1"
+
+        assert projects[0]["id"] == "test.project.test.project-3"
+        assert projects[0]["title"] == "Test Workspace 2"
         assert projects[0]["description"] == "Description of Test Workspace"
         assert projects[0]["owner"]["username"] == "owner_username"
-        assert (
-            projects[0]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-2"
-        )
+        assert projects[0]["path"] == "/corral/tacc/aci/CEP/projects/test.project-3"
         assert projects[0]["host"] == "cloud.data.tacc.utexas.edu"
-        assert projects[0]["updated"] == "2023-03-07T19:31:17.292220Z"
+        assert projects[0]["updated"] == "2023-03-08T19:31:17.292220Z"
 
-        assert projects[1]["id"] == "test.project.test.project-3"
-        assert projects[1]["title"] == "Test Workspace 2"
+        assert projects[1]["id"] == "test.project.test.project-2"
+        assert projects[1]["title"] == "Test Workspace 1"
         assert projects[1]["description"] == "Description of Test Workspace"
         assert projects[1]["owner"]["username"] == "owner_username"
-        assert (
-            projects[1]["path"] == "/corral-repl/tacc/aci/CEP/projects/test.project-3"
-        )
+        assert projects[1]["path"] == "/corral/tacc/aci/CEP/projects/test.project-2"
         assert projects[1]["host"] == "cloud.data.tacc.utexas.edu"
-        assert projects[1]["updated"] == "2023-03-08T19:31:17.292220Z"
+        assert projects[1]["updated"] == "2023-03-07T19:31:17.292220Z"
 
 
 # Test adding a member to a project
@@ -512,7 +512,7 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
             },
             updated="2023-03-07T19:31:17.292220Z",
             owner="username",
-            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+            rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
         )
         # Mock Project Before Adding
         mock_get_project.return_value = {
@@ -619,7 +619,7 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
             },
             updated="2023-03-07T19:31:17.292220Z",
             owner="username",
-            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+            rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
         )
         # Mock Project Before Adding
         mock_get_project.return_value = {
@@ -746,7 +746,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             },
             updated="2023-03-07T19:31:17.292220Z",
             owner="username",
-            rootDir="/corral-repl/tacc/aci/CEP/projects/test.project-2",
+            rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
         )
 
         # Add new user
