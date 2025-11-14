@@ -38,11 +38,11 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   // Toggles the Large Download Modal when a user selects files to download totaling more than 2 GB
-  const toggleDataFilesLargeDownloadModal = () => {
+  const toggleDataFilesUnavailDownloadModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
-        operation: 'largeDownload',
+        operation: 'unavailDownload',
         props: {},
       },
     });
@@ -60,36 +60,12 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   const compressCallback = ({ filenameDisplay, compressionType }) => {
-    let containsFolder = false;
-    let totalFileSize = 0;
-    const maxFileSize = 2 * 1024 * 1024 * 1024;
-
-    // Add up the file sizes of all files and shows if the user selected a folder
-    for (let i = 0; i < selectedFiles.length; i++) {
-      totalFileSize = totalFileSize + selectedFiles[i].length;
-      if (selectedFiles[i].format == 'folder') {
-        containsFolder = true;
-      }
-    }
-
-    // Run the dispatch if the user does not select any folders...
-    if (containsFolder === false) {
-      // ...and if the total file size is below 2 GB
-      if (totalFileSize < maxFileSize) {
-        compress({
-          filename: filenameDisplay,
-          files: selectedFiles,
-          compressionType,
-          fromDownload: true,
-        });
-        // Prevent the compression process and redirect the user to Globus otherwise
-      } else {
-        toggleDataFilesLargeDownloadModal();
-      }
-      // Prevents compression of folders if a folder is among the selected files
-    } else {
-      toggleDataFilesNoFoldersModal();
-    }
+    compress({
+      filename: filenameDisplay,
+      files: selectedFiles,
+      compressionType,
+      fromDownload: true,
+    });
   };
 
   const initialValues = {
