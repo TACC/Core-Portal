@@ -187,7 +187,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
       });
     } else if (containsFolder && !exceedsSizeLimit) {
       toggleNoFoldersModal();
-    } else if (exceedsSizeLimit || params.scheme === 'community' || params.scheme === 'public' ) {
+    } else if (
+      exceedsSizeLimit ||
+      params.scheme === 'community' ||
+      params.scheme === 'public'
+    ) {
       //public and community data downloads need to be treated as large downloads
       let customMessage = null;
       // prevent running compress job in public or community data
