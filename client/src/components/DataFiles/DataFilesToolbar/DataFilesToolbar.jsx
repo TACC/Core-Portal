@@ -177,15 +177,18 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
   const download = () => {
+    // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays an alert/prompts to compress if false
     const { exceedsSizeLimit, containsFolder } =
       canCompressForDownload(selectedFiles);
     if (canDownload && !exceedsSizeLimit && !containsFolder) {
-      // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
       dispatch({
         type: 'DATA_FILES_DOWNLOAD',
         payload: { file: selectedFiles[0] },
       });
-    } else if (exceedsSizeLimit || !containsFolder) {
+    } else if (containsFolder && !exceedsSizeLimit) {
+      toggleNoFoldersModal();
+    } else if (exceedsSizeLimit || params.scheme === 'community' || params.scheme === 'public' ) {
+      //public and community data downloads need to be treated as large downloads
       let customMessage = null;
       // prevent running compress job in public or community data
       if (params.scheme === 'community' || params.scheme === 'public') {
@@ -193,8 +196,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
           'Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.';
       }
       toggleUnavailDownloadModal(customMessage);
-    } else if (containsFolder) {
-      toggleNoFoldersModal();
     } else {
       toggle({
         operation: 'downloadMessage',

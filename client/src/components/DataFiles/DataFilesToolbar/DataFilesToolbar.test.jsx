@@ -281,11 +281,11 @@ describe('DataFilesToolbar', () => {
     );
     // Click on the download button to try and download the file
     fireEvent.click(getByText('Download'));
-    // Wait for the Large Download Modal
+    // Wait for the Unavailable Download Modal
     await waitFor(() => screen.queryByText('Download Unavailable'));
-    // Assign the Large Download Modal to a variable
+    // Assign the Unavailable Download Modal to a variable
     const testModal = screen.queryByText('Download Unavailable');
-    // Test for the Large Download Modal
+    // Test for the Unavailable Download Modal
     expect(testModal).toBeDefined();
   });
 
@@ -327,12 +327,116 @@ describe('DataFilesToolbar', () => {
     );
     // Click on the download button to try and download the file
     fireEvent.click(getByText('Download'));
-    // Wait for the Large Download Modal
+    // Wait for the No Folders Modal
     await waitFor(() => screen.queryByText('No Folders'));
-    // Assign the Large Download Modal to a variable
+    // Assign the No Folders Modal to a variable
     const testModal = screen.queryByText('No Folders');
-    // Test for the Large Download Modal
+    // Test for the No Folders Modal
     expect(testModal).toBeDefined();
+  });
+
+  it('prompts compress for download of >1 files', async () => {
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: 1500,
+      path: '/test.txt',
+    };
+    const testFile2 = {
+      name: 'test2.txt',
+      type: 'file',
+      length: 1500,
+      path: '/test2.txt',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFile, testFile2] },
+          selected: { FilesListing: [0,1] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the Download Message Modal
+    await waitFor(() => screen.queryByText('Folders and multiple files must be compressed before downloading.'));
+    // Assign the Download Message Modal to a variable
+    const testModalText = screen.queryByText('Folders and multiple files must be compressed before downloading.');
+    // Test for the Large Download Modal
+    expect(testModalText).toBeDefined();
+  });
+
+
+  // Test to prevent compress in public/community data
+  it('prevents compress for download of >1 files in community data', async () => {
+    const testFile = {
+      name: 'test.txt',
+      type: 'file',
+      length: 1500,
+      path: '/test.txt',
+    };
+    const testFile2 = {
+      name: 'test2.txt',
+      type: 'file',
+      length: 1500,
+      path: '/test2.txt',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'test',
+              path: 'test',
+              scheme: 'community',
+            },
+          },
+          listing: { FilesListing: [testFile, testFile2] },
+          selected: { FilesListing: [0,1] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the Large Download Modal
+    await waitFor(() => screen.queryByText('Download Unavailable'));
+    // Assign the Large Download Modal to a variable
+    const testModalText = screen.queryByText('Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.');
+    // Test for the Large Download Modal
+    expect(testModalText).toBeDefined();
   });
 
   // Test that allows downloads of files less than 2 GB
