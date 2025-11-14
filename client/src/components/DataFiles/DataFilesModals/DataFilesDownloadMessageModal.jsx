@@ -37,28 +37,6 @@ const DataFilesDownloadMessageModal = () => {
     }
   };
 
-  // Toggles the Large Download Modal when a user selects files to download totaling more than 2 GB
-  const toggleDataFilesUnavailDownloadModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'unavailDownload',
-        props: {},
-      },
-    });
-  };
-
-  // Toggles the No Folders Modal when a user selects 1 or more folders to download
-  const toggleDataFilesNoFoldersModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'noFolders',
-        props: {},
-      },
-    });
-  };
-
   const compressCallback = ({ filenameDisplay, compressionType }) => {
     compress({
       filename: filenameDisplay,
