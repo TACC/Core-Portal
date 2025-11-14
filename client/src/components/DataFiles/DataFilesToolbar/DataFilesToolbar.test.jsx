@@ -282,9 +282,55 @@ describe('DataFilesToolbar', () => {
     // Click on the download button to try and download the file
     fireEvent.click(getByText('Download'));
     // Wait for the Large Download Modal
-    await waitFor(() => screen.queryByText('Large Download'));
+    await waitFor(() => screen.queryByText('Download Unavailable'));
     // Assign the Large Download Modal to a variable
-    const testModal = screen.queryByText('Large Download');
+    const testModal = screen.queryByText('Download Unavailable');
+    // Test for the Large Download Modal
+    expect(testModal).toBeDefined();
+  });
+
+  it('prevents downloads of folders through TAPIS directly', async () => {
+    // Create a test folder
+    const testFolder = {
+      name: 'test',
+      type: 'folder',
+      length: 4000,
+      path: '/test',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'frontera.home.username',
+              path: 'home/username',
+              scheme: 'private',
+            },
+          },
+          listing: { FilesListing: [testFolder] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the Large Download Modal
+    await waitFor(() => screen.queryByText('No Folders'));
+    // Assign the Large Download Modal to a variable
+    const testModal = screen.queryByText('No Folders');
     // Test for the Large Download Modal
     expect(testModal).toBeDefined();
   });

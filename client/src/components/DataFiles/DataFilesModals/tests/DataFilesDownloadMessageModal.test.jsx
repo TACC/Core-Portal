@@ -15,16 +15,16 @@ vi.mock('hooks/datafiles/mutations/toolbarAppUtils', async (importOriginal) => {
   return {
     ...actual, // keep `getDefaultAllocation`
     getAppUtil: vi.fn().mockResolvedValue({
-      id: 'compress',
-      version: '0.0.4',
+      id: 'compress-express',
+      version: '0.0.1',
       definition: {
         jobAttributes: {
-          execSystemId: 'frontera',
+          execSystemId: 'cloud.data',
         },
       },
       execSystems: [
         {
-          host: 'frontera.tacc.utexas.edu',
+          host: 'cloud.data.tacc.utexas.edu',
         },
       ],
     }),
@@ -56,92 +56,6 @@ describe('DataFilesDownloadMessageModal', () => {
 
     await waitFor(async () => {
       await screen.findByText('Download');
-    });
-  });
-
-  it('checks for a folder among the selected files', async () => {
-    // Mock the dispatch call
-    const mockDispatch = vi.fn();
-    // Create a spy that watches for the dispatch call
-    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      mockDispatch
-    );
-
-    const store = mockStore({
-      ...DataFilesDownloadMessageModalFixture,
-      files: {
-        ...DataFilesDownloadMessageModalFixture.files,
-        selected: { FilesListing: [4] } /*single folder*/,
-      },
-    });
-
-    // Render the Download Message Modal
-    renderComponent(<DataFilesDownloadMessageModal />, store);
-
-    // Wait for modal content
-    const warningMessage = await screen.findByText(
-      /Folders and multiple files must be compressed before downloading./
-    );
-    expect(warningMessage).toBeInTheDocument();
-
-    // Click on the Compress button to try and download the folder
-    const compressButton = await screen.findByText('Compress');
-    fireEvent.click(compressButton);
-
-    await waitFor(() => {
-      // Test for the dispatch call that would toggle a different modal
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: {
-          operation: 'noFolders',
-          props: {},
-        },
-      });
-    });
-  });
-
-  it('prevents the compression of multiple files that total more than 2 GB in size', async () => {
-    // Mock the dispatch call
-    const mockDispatch = vi.fn();
-    // Create a spy that watches for the dispatch call
-    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      mockDispatch
-    );
-    renderComponent(
-      <DataFilesDownloadMessageModal />,
-      mockStore({
-        ...DataFilesDownloadMessageModalFixture,
-        allocations: {
-          /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
-          portal_alloc: '',
-          active: [],
-        },
-        files: {
-          ...DataFilesDownloadMessageModalFixture.files,
-          selected: { FilesListing: [1, 2, 3] },
-        },
-      })
-    );
-
-    // Wait for modal content
-    const warningMessage = await screen.findByText(
-      /Folders and multiple files must be compressed before downloading./
-    );
-    expect(warningMessage).toBeInTheDocument();
-
-    // Click on the Compress button to try and download the large files
-    const compressButton = await screen.findByText('Compress');
-    fireEvent.click(compressButton);
-
-    await waitFor(() => {
-      // Test for the dispatch call that would toggle a different modal for large files downloading
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: {
-          operation: 'largeDownload',
-          props: {},
-        },
-      });
     });
   });
 
