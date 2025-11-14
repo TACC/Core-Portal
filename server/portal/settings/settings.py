@@ -389,6 +389,12 @@ LOGGING = {
 }
 
 """
+SETTINGS: TACC
+"""
+
+IS_TACC_PORTAL = getattr(settings_custom, '_IS_TACC_PORTAL', True)
+
+"""
 SETTINGS: TAPIS
 """
 

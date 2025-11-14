@@ -296,15 +296,14 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
                        "add",
                        "writer")
 
-    client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
-
     # Ensure old owner retains access to Tapis system, as `changeSystemOwner` removes access for old owner
-    service_client.systems.shareSystem(systemId=system_id, users=[old_owner])
-    service_client.systems.grantUserPerms(
+    client.systems.shareSystem(systemId=system_id, users=[old_owner])
+    client.systems.grantUserPerms(
         systemId=system_id,
         userName=old_owner,
         permissions=["READ", "EXECUTE"])
 
+    client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
     return get_project(client, workspace_id)
 
 

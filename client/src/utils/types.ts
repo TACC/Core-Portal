@@ -289,6 +289,11 @@ export type TTapisSystemQueue = {
   maxMinutes: number;
 };
 
+type TTapisSystemQueueFilter = {
+  portalName: string;
+  queues: [];
+};
+
 export type TTapisSystem = {
   isPublic: boolean;
   isDynamicEffectiveUser: boolean;
@@ -335,10 +340,11 @@ export type TTapisSystem = {
   tags: [];
   notes: {
     label?: string;
-    keyservice?: boolean;
     isMyData?: boolean;
     hasWork?: boolean;
+    queueFilter?: TTapisSystemQueueFilter[];
     portalNames: string[];
+    noAllocationRequired?: boolean;
   };
   importRefId?: string;
   uuid: string;
