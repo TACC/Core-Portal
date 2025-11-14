@@ -33,6 +33,7 @@ import {
   isAppUsingDynamicExecSystem,
   getAllocationValidation,
   isJobTypeBATCH,
+  isSystemTypeSLURM,
   buildMapOfAllocationsToExecSystems,
   getAllocationList,
   getDefaultAllocation,
@@ -284,7 +285,8 @@ export const AppSchemaForm = ({ app }) => {
         state.allocations.loading ||
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
-        hasCorral,
+        hasCorral ||
+        defaultSystem?.notes?.noAllocationRequired,
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
@@ -535,7 +537,9 @@ export const AppSchemaForm = ({ app }) => {
               archiveSystemId: Yup.string().notRequired(),
               archiveSystemDir: Yup.string().notRequired(),
               allocation:
-                isJobTypeBATCH(app) && isTACCHost(exec_sys?.host)
+                isJobTypeBATCH(app) &&
+                isTACCHost(exec_sys?.host) &&
+                isSystemTypeSLURM(exec_sys)
                   ? getAllocationValidation(allocations).test(
                       'exec-systems-check',
                       'You need an allocation with access to at least one system to run this application.',
@@ -651,9 +655,9 @@ export const AppSchemaForm = ({ app }) => {
               job.parameterSet.schedulerOptions = [];
             }
             job.parameterSet.schedulerOptions.push({
-              name: 'TACC Allocation',
+              name: 'Allocation Account',
               description:
-                'The TACC allocation associated with this job execution',
+                'The SLURM allocation account associated with this job execution',
               include: true,
               arg: `-A ${job.allocation}`,
             });
@@ -705,11 +709,6 @@ export const AppSchemaForm = ({ app }) => {
             formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
-          const readOnly =
-            missingLicense ||
-            !hasStorageSystems ||
-            jobSubmission.submitting ||
-            (app.definition.jobType === 'BATCH' && missingAllocation);
           React.useEffect(() => {
             isFirstRender.current = false;
           }, []);
@@ -718,21 +717,34 @@ export const AppSchemaForm = ({ app }) => {
             app,
             values.execSystemId
           );
+
           let missingAllocationMessage = '';
           if (!hasDefaultAllocation && hasStorageSystems) {
+            // Check if allocation required for default storage system, aka archive system
             missingAllocationMessage = `You need an allocation on ${getSystemName(
               defaultStorageHost
             )} to run this application.`;
           } else if (
+            // Check if allocation required for execution system
             !allocations.length &&
-            isTACCHost(selectedExecSystem?.host)
+            isTACCHost(selectedExecSystem?.host) &&
+            isJobTypeBATCH(app) &&
+            isSystemTypeSLURM(selectedExecSystem)
           ) {
             missingAllocationMessage = isAppUsingDynamicExecSystem(app)
               ? `You need an allocation to run this application.`
-              : `You need an allocation on ${getSystemName(
-                  selectedExecSystem?.host
-                )} to run this application.`;
+              : `You need an allocation on ${
+                  selectedExecSystem?.notes?.label ??
+                  getSystemName(selectedExecSystem?.host)
+                } to run this application.`;
           }
+
+          const readOnly =
+            missingLicense ||
+            !hasStorageSystems ||
+            jobSubmission.submitting ||
+            missingAllocationMessage;
+
           return (
             <>
               {missingAllocationMessage && (
@@ -837,8 +849,9 @@ export const AppSchemaForm = ({ app }) => {
                     <div className="appSchema-header">
                       <span>Configuration</span>
                     </div>
-                    {app.definition.jobType === 'BATCH' &&
-                      isTACCHost(selectedExecSystem?.host) && (
+                    {isJobTypeBATCH(app) &&
+                      isSystemTypeSLURM(selectedExecSystem) &&
+                      (isTACCHost(selectedExecSystem?.host) ? (
                         <FormField
                           label="Allocation"
                           name="allocation"
@@ -855,8 +868,15 @@ export const AppSchemaForm = ({ app }) => {
                             </option>
                           ))}
                         </FormField>
-                      )}
-                    {app.definition.jobType === 'BATCH' &&
+                      ) : (
+                        <FormField
+                          label="Allocation"
+                          name="allocation"
+                          description="Enter the project allocation you would like to use with this job submission."
+                          type="text"
+                        />
+                      ))}
+                    {isJobTypeBATCH(app) &&
                       isAppUsingDynamicExecSystem(app) && (
                         <FormField
                           label="System"
@@ -886,7 +906,7 @@ export const AppSchemaForm = ({ app }) => {
                             ))}
                         </FormField>
                       )}
-                    {app.definition.jobType === 'BATCH' && (
+                    {isJobTypeBATCH(app) && (
                       <FormField
                         label="Queue"
                         name="execSystemLogicalQueue"
@@ -901,7 +921,7 @@ export const AppSchemaForm = ({ app }) => {
                         ))}
                       </FormField>
                     )}
-                    {app.definition.jobType === 'BATCH' &&
+                    {isJobTypeBATCH(app) &&
                       app.definition.notes.showReservation && (
                         <FormField
                           label="TACC Reservation"

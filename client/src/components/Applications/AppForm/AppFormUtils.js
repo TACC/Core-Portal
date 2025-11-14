@@ -399,6 +399,19 @@ export const isJobTypeBATCH = (app) => {
 };
 
 /**
+ * @param {*} system
+ * @returns true, if the system requires an allocation, can exec, and the batchScheduler is SLURM, otherwise false.
+ */
+export const isSystemTypeSLURM = (system) => {
+  return (
+    !system.notes?.noAllocationRequired &&
+    system.canExec &&
+    system.canRunBatch &&
+    system.batchScheduler === 'SLURM'
+  );
+};
+
+/**
  * If using dynamic exec system,
  *   build list of all allocations with available hosts.
  * Otherwise, only provide allocation list matching
