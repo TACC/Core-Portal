@@ -10,7 +10,7 @@ import styles from './DataFilesProjectEditDescription.module.scss';
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.files.modals.editproject);
-  const { title, description, projectId } = useSelector(
+  const { title, description, projectId, keywords } = useSelector(
     (state) => state.projects.metadata
   );
   const isUpdating = useSelector((state) => {
@@ -32,8 +32,9 @@ const DataFilesProjectEditDescriptionModal = () => {
     () => ({
       title,
       description: description || '',
+      keywords: keywords || '',
     }),
-    [title, description]
+    [title, description, keywords]
   );
 
   const toggle = () => {
@@ -52,6 +53,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
+            keywords: values.keywords || '',
           },
         },
       });
@@ -67,6 +69,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     description: Yup.string()
       .max(800, 'Description must be at most 800 characters')
       .required('Please enter a description.'),
+    keywords: Yup.string(),
   });
 
   return (
@@ -102,6 +105,20 @@ const DataFilesProjectEditDescriptionModal = () => {
                     Workspace Description{' '}
                     <small>
                       <em>(Maximum 800 characters)</em>
+                    </small>
+                  </div>
+                }
+                type="textarea"
+                className={styles['description-textarea']}
+              />
+              <FormField
+                name="keywords"
+                aria-label="keywords"
+                label={
+                  <div>
+                    Workspace Keywords{' '}
+                    <small>
+                      <em>(Optional)</em>
                     </small>
                   </div>
                 }

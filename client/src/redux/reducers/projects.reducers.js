@@ -14,6 +14,7 @@ export const initialState = {
     title: '',
     description: '',
     projectId: '',
+    keywords: '',
     members: [],
     loading: false,
     error: null,
