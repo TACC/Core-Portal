@@ -107,17 +107,17 @@ function PublishedDatasetDetail({ params }) {
     }, [system]);
 
     useEffect(() => {
-        if (system && portalName) {
+        if (system && portalName && !error) {
             dispatch({
                 type: 'PUBLICATIONS_GET_TREE',
                 payload: { portalName, system },
             });
         }
-    }, [system, portalName]);
+    }, [system, portalName, error]);
 
     return (
         <div className={'container'}>
-            {(metadata.loading || loading || !metadata.title) ? (
+            {(metadata.loading || loading) ? (
                 <LoadingSpinner />
             ) : (metadata.error || error) ? (
                 <div className="alert alert-danger">

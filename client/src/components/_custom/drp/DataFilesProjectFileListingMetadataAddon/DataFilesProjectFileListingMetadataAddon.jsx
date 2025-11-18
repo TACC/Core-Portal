@@ -19,15 +19,17 @@ const DataFilesProjectFileListingMetadataAddon = ({
 
   const { portalName } = useSelector((state) => state.workbench);
   const { project_id: system } = useSelector((state) => state.projects.metadata);
-  const { value: tree } = useSelector((state) => state.publications.tree);
+  const { value: tree, error } = useSelector((state) => state.publications.tree);
   const { loading } = useFileListing('FilesListing');
 
   useEffect(() => {
-    dispatch({
-        type: 'PUBLICATIONS_GET_TREE',
-        payload: { portalName, system },
-    });
-}, [system, portalName]);
+    if (system && portalName && !error) {
+      dispatch({
+          type: 'PUBLICATIONS_GET_TREE',
+          payload: { portalName, system },
+      });
+    }
+  }, [system, portalName]);
 
   const getProjectMetadata = ({
     publication_date,

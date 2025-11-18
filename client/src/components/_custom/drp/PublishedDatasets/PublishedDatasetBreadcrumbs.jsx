@@ -9,19 +9,19 @@ const PublishedDatasetBreadcrumbs = ({ params }) => {
   
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { value: tree, loading: treeLoading } = useSelector((state) => state.publications.tree);
+  const { value: tree, loading: treeLoading, error: treeError } = useSelector((state) => state.publications.tree);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
   useEffect(() => {
     if (params?.system) {
-      if (!tree && !treeLoading && portalName) {
+      if (!tree && !treeLoading && !treeError && portalName) {
         dispatch({
           type: 'PUBLICATIONS_GET_TREE',
           payload: { portalName, system: params.system },
         });
       }
     }
-  }, [params, tree, treeLoading, portalName, dispatch]);
+  }, [params, tree, treeLoading, treeError, portalName, dispatch]);
 
   useEffect(() => {
     const buildBreadcrumbs = () => {
