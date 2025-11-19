@@ -124,6 +124,7 @@ function PublishedDatasetDetail({ params }) {
                     Error loading data. Please try again.
                 </div>
             ) : (
+                metadata?.title && ( 
                 <>
                     <header className={'o-section project-title header'}>
                         <h1>
@@ -281,7 +282,7 @@ function PublishedDatasetDetail({ params }) {
                         </div>
                     </div>
                 </>
-            )}
+            ))}
         </div>
     );
 }
