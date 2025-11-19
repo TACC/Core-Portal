@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import CMSBreadcrumbs from '_common/CMSBreadcrumbs';
 import * as ROUTES from '../../../../constants/routes';
-import { findNodeInTree } from '../utils/utils';
+import { findNodeInTreeById } from '../utils/utils';
 
 const PublishedDatasetBreadcrumbs = ({ params }) => {
   
@@ -39,7 +39,7 @@ const PublishedDatasetBreadcrumbs = ({ params }) => {
           href: `${ROUTES.PUBLICATIONS}/${params.system}` 
         });
         crumbs.push({ 
-          name: findNodeInTree(tree, params.entity_id)?.label || 'Entity'
+          name: findNodeInTreeById(tree, params.entity_id)?.label || 'Entity'
         });
       }
 
