@@ -127,7 +127,8 @@ function PublishedDatasetEntityDetail({ params }) {
     
         if (digitalDatasetEntity) {
             const index = location.pathname.indexOf(system) + system.length;
-            const digitalDatasetUrl = `${location.pathname.slice(0, index)}/digital_dataset/${digitalDataset}`;
+            const id = digitalDatasetEntity.id.split('_').pop();
+            const digitalDatasetUrl = `${location.pathname.slice(0, index)}/digital_dataset/${id}`;
             return <Link to={digitalDatasetUrl}>{digitalDatasetEntity.label}</Link>;
         }
 
