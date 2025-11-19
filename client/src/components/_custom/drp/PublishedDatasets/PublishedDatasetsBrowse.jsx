@@ -13,6 +13,7 @@ const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
 function PublishedDatasetsBrowse() {
     const dispatch = useDispatch();
+    const { debug: isDebug } = useSelector((state) => state.workbench.config);
 
     const [filteredPublications, setFilteredPublications] = useState([]);
     const [filteredPublicationsLoading, setFilteredPublicationsLoading] = useState(false);
@@ -45,27 +46,34 @@ function PublishedDatasetsBrowse() {
     // Mainly done so we can test pprd properly
     useEffect(() => {
         if (!publications) return;
-        setFilteredPublicationsLoading(true);
-        Promise.all(
-            publications.map(pub => {
-                return new Promise(resolve => {
-                    if (!pub.cover_image || pub.cover_image.includes('media/default/cover_image/default_logo.png')) {
-                        return resolve(null);
-                    }
+        
+        // Only perform image validation in pprd and dev environment
+        if (isDebug) {
+            setFilteredPublicationsLoading(true);
+            Promise.all(
+                publications.map(pub => {
+                    return new Promise(resolve => {
+                        if (!pub.cover_image || pub.cover_image.includes('media/default/cover_image/default_logo.png')) {
+                            return resolve(null);
+                        }
 
-                    const img = new Image();
-                    img.onload = () => resolve(pub);
-                    img.onerror = () => resolve(null);
-                    img.src = `${BASE_ASSET_URL}/${pub.cover_image}`;
-                });
-            })
-        ).then(results => {
-            setFilteredPublications(results.filter(Boolean));
-            setFilteredPublicationsLoading(false);
-        }).catch(error => {
-            console.error(error);
-            setFilteredPublicationsLoading(false);
-        });
+                        const img = new Image();
+                        img.onload = () => resolve(pub);
+                        img.onerror = () => resolve(null);
+                        img.src = `${BASE_ASSET_URL}/${pub.cover_image}`;
+                    });
+                })
+            ).then(results => {
+                setFilteredPublications(results.filter(Boolean));
+                setFilteredPublicationsLoading(false);
+            }).catch(error => {
+                console.error(error);
+                setFilteredPublicationsLoading(false);
+            });
+        } else {
+            // In production, use all publications without validation
+            setFilteredPublications(publications);
+        }
     }, [publications]);
 
 
