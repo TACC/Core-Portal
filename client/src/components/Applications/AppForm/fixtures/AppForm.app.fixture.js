@@ -439,7 +439,8 @@ export const helloWorldAppSubmissionPayloadFixture = {
       schedulerOptions: [
         {
           name: 'Project Allocation Account',
-          description: 'The project allocation account associated with this job execution.',
+          description:
+            'The project allocation account associated with this job execution.',
           include: true,
           arg: '-A TACC-ACI',
         },

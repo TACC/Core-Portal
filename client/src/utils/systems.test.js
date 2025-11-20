@@ -21,9 +21,9 @@ describe('systems utility functions', () => {
         'private'
       )
     ).toEqual('My Data (Frontera)');
-    expect(findSystemDisplayName(systemList, 'frontera.tacc.utexas.edu')).toEqual(
-      'Frontera'
-    );
+    expect(
+      findSystemDisplayName(systemList, 'frontera.tacc.utexas.edu')
+    ).toEqual('Frontera');
     expect(findSystemDisplayName(systemList, 'frontera.foo.bar')).toEqual(
       'frontera.foo.bar'
     );

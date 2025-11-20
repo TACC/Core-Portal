@@ -718,7 +718,6 @@ export const AppSchemaForm = ({ app }) => {
             app,
             values.execSystemId
           );
-          console.log('Selected Exec System:', selectedExecSystem);
           let missingAllocationMessage = '';
           if (!hasDefaultAllocation && hasStorageSystems) {
             // Check if allocation required for default storage system, aka archive system
@@ -733,7 +732,6 @@ export const AppSchemaForm = ({ app }) => {
             isJobTypeBATCH(app) &&
             isSystemTypeSLURM(selectedExecSystem)
           ) {
-            console.log('No allocations found for user.');
             missingAllocationMessage = isAppUsingDynamicExecSystem(app)
               ? `You need an allocation to run this application.`
               : `You need an allocation on ${

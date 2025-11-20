@@ -29,18 +29,12 @@ export const getDefaultExecSystem = (
   preferredSystemId: string | undefined = undefined
 ): TTapisSystem | undefined => {
   // If dynamic exec system is not setup, use from job attributes.
-  console.log('app:', app);
-  console.log('App dynamicExecSystems:', app.definition.notes.dynamicExecSystems);
-  console.log('Provided execSystems:', execSystems);
-  console.log('Preferred System ID:', preferredSystemId);
   if (!app.definition.notes.dynamicExecSystems) {
-    console.log('Dynamic exec systems not enabled, using job attribute exec system.');
     return getExecSystemFromId(app, app.definition.jobAttributes.execSystemId);
   }
 
   if (execSystems?.length) {
     if (preferredSystemId && execSystems.includes(preferredSystemId)) {
-      console.log('Using preferred system ID:', preferredSystemId);
       return getExecSystemFromId(app, preferredSystemId);
     }
 
@@ -49,7 +43,7 @@ export const getDefaultExecSystem = (
     if (execSystems.includes(execSystemId)) {
       return getExecSystemFromId(app, execSystemId);
     }
-    console.log(`Exec system ID ${execSystemId} from job attributes not found in provided list.`);
+
     // If not found, return the first execSystem from the provided list
     return getExecSystemFromId(app, execSystems[0]);
   }
