@@ -81,6 +81,17 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
                   subAcc[subField.name] || Yup.string()
                 ).required(`${subField.label} is required`);
               }
+              if (subField.type === 'textarea') {
+                subAcc[subField.name] = (subAcc[subField.name] || Yup.string())
+                  .min(
+                    subField.validation?.min ?? -Infinity,
+                    `${subField.label} must be greater than or equal to ${subField.validation?.min} characters`
+                  )
+                  .max(
+                    subField.validation?.max ?? Infinity,
+                    `${subField.label} must be less than or equal to ${subField.validation?.max} characters`
+                  )
+              }
 
               return subAcc;
             }, {})

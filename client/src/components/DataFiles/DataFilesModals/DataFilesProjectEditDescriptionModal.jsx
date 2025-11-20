@@ -73,10 +73,10 @@ const DataFilesProjectEditDescriptionModal = () => {
         .min(3, 'Title must be at least 3 characters')
         .max(150, 'Title must be at most 150 characters')
         .required('Please enter a title.'),
-      description: Yup.string().max(
-        800,
-        'Description must be at most 800 characters'
-      ),
+      description: Yup.string()
+        .min(1000, 'Description must be minimum 1000 characters')
+        .max(5000, 'Description must be at most 5000 characters')
+        .required('Please enter a description'),
     })
   );
 
@@ -112,7 +112,11 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Dataset Description{' '}
                     <small>
-                      <em>(Maximum 800 characters)</em>
+                      <em>
+                        Provide 200-300 words that describe the dataset as a self-contained research product.
+                        Go <a href='https://digital-porous-media.github.io/dpm_docs/upload_data/'>here</a> for
+                        instructions on how to write a good dataset description.
+                      </em>
                     </small>
                   </div>
                 }
