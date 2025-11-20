@@ -537,6 +537,7 @@ export const AppSchemaForm = ({ app }) => {
               archiveSystemId: Yup.string().notRequired(),
               archiveSystemDir: Yup.string().notRequired(),
               allocation:
+                exec_sys &&
                 isJobTypeBATCH(app) &&
                 isTACCHost(exec_sys?.host) &&
                 isSystemTypeSLURM(exec_sys)
@@ -655,9 +656,9 @@ export const AppSchemaForm = ({ app }) => {
               job.parameterSet.schedulerOptions = [];
             }
             job.parameterSet.schedulerOptions.push({
-              name: 'Allocation Account',
+              name: 'Project Allocation Account',
               description:
-                'The SLURM allocation account associated with this job execution',
+                'The project allocation account associated with this job execution.',
               include: true,
               arg: `-A ${job.allocation}`,
             });
@@ -717,7 +718,7 @@ export const AppSchemaForm = ({ app }) => {
             app,
             values.execSystemId
           );
-
+          console.log('Selected Exec System:', selectedExecSystem);
           let missingAllocationMessage = '';
           if (!hasDefaultAllocation && hasStorageSystems) {
             // Check if allocation required for default storage system, aka archive system
@@ -726,11 +727,13 @@ export const AppSchemaForm = ({ app }) => {
             )} to run this application.`;
           } else if (
             // Check if allocation required for execution system
+            selectedExecSystem &&
             !allocations.length &&
             isTACCHost(selectedExecSystem?.host) &&
             isJobTypeBATCH(app) &&
             isSystemTypeSLURM(selectedExecSystem)
           ) {
+            console.log('No allocations found for user.');
             missingAllocationMessage = isAppUsingDynamicExecSystem(app)
               ? `You need an allocation to run this application.`
               : `You need an allocation on ${
@@ -850,6 +853,7 @@ export const AppSchemaForm = ({ app }) => {
                       <span>Configuration</span>
                     </div>
                     {isJobTypeBATCH(app) &&
+                      selectedExecSystem &&
                       isSystemTypeSLURM(selectedExecSystem) &&
                       (isTACCHost(selectedExecSystem?.host) ? (
                         <FormField
