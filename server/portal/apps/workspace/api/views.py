@@ -214,25 +214,162 @@ class JobsView(BaseApiView):
         return data
 
     def search(self, client, request):
-        '''
-        Search using tapis in specific portal with providing query string.
-        Additonal parameters for search:
-        limit - limit param from request, otherwise default to 10
-        offset - offset param from request, otherwise default to 0
-        '''
-        query_string = request.GET.get('query_string')
+        # declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
+        STATUS_TEXT_MAP = {
+            'PENDING': 'Processing',
+            'PROCESSING_INPUTS': 'Processing',
+            'STAGING_INPUTS': 'Queueing',
+            'STAGING_JOB': 'Queueing',
+            'SUBMITTING_JOB': 'Queueing',
+            'QUEUED': 'Queueing',
+            'RUNNING': 'Running',
+            'ARCHIVING': 'Finishing',
+            'FINISHED': 'Finished',
+            'STOPPED': 'Stopped',
+            'FAILED': 'Failure',
+            'BLOCKED': 'Blocked',
+            'PAUSED': 'Paused',
+            'CANCELLED': 'Cancelled',
+            'ARCHIVED': 'Archived',
+        }
 
+        def get_statuses_for_label(label):
+            """
+            Given a UI status label (e.g., "Finished" or "Queueing"), return all
+            TAPIS job statuses that map to that label
+            """
+            label = label.lower()
+            statuses = []
+            for status, ui_label in STATUS_TEXT_MAP.items():
+                if ui_label.lower() == label:
+                    statuses.append(status)
+            return statuses
+
+        def is_interactive(job):
+            notes = getattr(job, 'notes', None)
+            if not notes:
+                return False
+            if isinstance(notes, str):
+                try:
+                    notes = json.loads(notes)
+                except Exception:
+                    return False
+            val = notes.get('isInteractive')
+            if isinstance(val, str):
+                return val.strip().lower() == 'true'
+            return bool(val)
+
+        def has_timeout_message(job):
+            msg = getattr(job, 'lastMessage', '') or ''
+            msg = msg.upper()
+            return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
+
+        query_string = request.GET.get('query_string')
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
+        status_searches = get_statuses_for_label(query_string or '')
+        qs_lower = query_string.lower() if query_string else ''
+        qs_upper = query_string.upper() if query_string else ''
+        qs_title = query_string.title() if query_string else ''
 
-        sql_queries = [
-            f"(tags IN ('portalName: {portal_name}')) AND",
-            f"((name like '%{query_string}%') OR",
-            f"(archiveSystemDir like '%{query_string}%') OR",
-            f"(appId like '%{query_string}%') OR",
-            f"(archiveSystemId like '%{query_string}%'))",
-        ]
+        if status_searches:
+            enhanced_status_conditions = []
+
+            for status in status_searches:
+                if status == 'FINISHED':
+                    enhanced_status_conditions.append(
+                        "(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    )
+                elif status == 'FAILED':
+                    enhanced_status_conditions.append("(status = 'FAILED')")
+                else:
+                    enhanced_status_conditions.append(f"(status = '{status}')")
+            status_conditions = " OR ".join(enhanced_status_conditions)
+
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{query_string}%') OR",
+                f"{status_conditions})",
+            ]
+        else:
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(name like '%{qs_lower}%') OR",
+                f"(name like '%{qs_upper}%') OR",
+                f"(name like '%{qs_title}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{qs_lower}%') OR",
+                f"(archiveSystemDir like '%{qs_upper}%') OR",
+                f"(archiveSystemDir like '%{qs_title}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(appId like '%{qs_lower}%') OR",
+                f"(appId like '%{qs_upper}%') OR",
+                f"(appId like '%{qs_title}%') OR",
+                f"(archiveSystemId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{qs_lower}%') OR",
+                f"(archiveSystemId like '%{qs_upper}%') OR",
+                f"(archiveSystemId like '%{qs_title}%'))",
+            ]
+
+        # Keep the fill-to-limit logic ONLY for Finished/Failed status searches
+        is_finished = 'FINISHED' in status_searches
+        is_failed = 'FAILED' in status_searches
+
+        if is_finished or is_failed:
+            target_offset = offset
+            collected, skipped = [], 0
+            upstream_page_size = max(limit, 50)
+            upstream_offset = 0
+
+            while len(collected) < limit:
+                page = client.jobs.getJobSearchListByPostSqlStr(
+                    limit=upstream_page_size,
+                    startAfter=upstream_offset,
+                    orderBy='lastUpdated(desc),name(asc)',
+                    request_body={"search": sql_queries},
+                    select="allAttributes",
+                    headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                )
+                if not page:
+                    break
+
+                upstream_offset += len(page)
+
+                for job in page:
+                    status = getattr(job, 'status', None)
+
+                    if is_finished:
+                        if status == 'FINISHED':
+                            pass
+                        elif status == 'FAILED':
+                            if not (has_timeout_message(job) and is_interactive(job)):
+                                continue
+                        else:
+                            continue
+
+                    elif is_failed:
+                        if status != 'FAILED':
+                            continue
+                        if has_timeout_message(job) and is_interactive(job):
+                            continue
+
+                    if skipped < target_offset:
+                        skipped += 1
+                        continue
+
+                    collected.append(job)
+                    if len(collected) == limit:
+                        break
+
+                if len(page) < upstream_page_size:
+                    break
+
+            return collected
 
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
@@ -241,8 +378,10 @@ class JobsView(BaseApiView):
             request_body={
                 "search": sql_queries
             },
-            select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+            select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
+
         return data
 
     def delete(self, request, *args, **kwargs):
