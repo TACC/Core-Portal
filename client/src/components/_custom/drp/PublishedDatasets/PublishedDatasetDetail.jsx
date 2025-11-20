@@ -12,6 +12,17 @@ import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
+function formatPublicationLink(link) {
+    if (!link) return null;
+
+    const doiPattern = /^10\.\d+\/.+$/;
+
+    if (doiPattern.test(link)) {
+        return `https://doi.org/${link}`;
+    }
+
+    return link;
+}
 
 function TreeNode({ node, system }) {
     const hasChildren = node.children && node.children.length > 0;
@@ -59,7 +70,7 @@ function TreeNode({ node, system }) {
                 </li>
             ) : (
                 <li>
-                    <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.uuid}`}>
+                    <Link className="u-title-needs-colon" to={`${ROUTES.PUBLICATIONS}/${system}/${node.name.split('.').pop()}/${node.id.split('_').pop()}`}>
                         <span>{formatLabel(node.name.split('.').pop())}</span>
                         <strong>{' '}{formatLabel(node.label)}</strong>
                     </Link>
@@ -96,23 +107,24 @@ function PublishedDatasetDetail({ params }) {
     }, [system]);
 
     useEffect(() => {
-        if (system && portalName) {
+        if (system && portalName && !error) {
             dispatch({
                 type: 'PUBLICATIONS_GET_TREE',
                 payload: { portalName, system },
             });
         }
-    }, [system, portalName]);
+    }, [system, portalName, error]);
 
     return (
         <div className={'container'}>
-            {(metadata.loading || loading || !metadata.title) ? (
+            {(metadata.loading || loading) ? (
                 <LoadingSpinner />
             ) : (metadata.error || error) ? (
                 <div className="alert alert-danger">
                     Error loading data. Please try again.
                 </div>
             ) : (
+                metadata?.title && ( 
                 <>
                     <header className={'o-section project-title header'}>
                         <h1>
@@ -244,7 +256,7 @@ function PublishedDatasetDetail({ params }) {
                                                     {metadata.related_publications.map((publication, index) => (
                                                         <>
                                                             {index > 0 && <br />}
-                                                            <a href={publication.publication_link} target="_blank" rel="noreferrer">{publication.publication_title}</a>
+                                                            <a href={formatPublicationLink(publication.publication_link)} target="_blank" rel="noreferrer">{publication.publication_title}</a>
                                                         </>
                                                     ))}
                                                 </td>
@@ -270,7 +282,7 @@ function PublishedDatasetDetail({ params }) {
                         </div>
                     </div>
                 </>
-            )}
+            ))}
         </div>
     );
 }

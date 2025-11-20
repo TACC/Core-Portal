@@ -46,6 +46,20 @@ export const findNodeInTree = (node, uuid) => {
     return null;
 };
 
+export const findNodeInTreeById = (node, id) => {
+    const nodeUuid = node?.id?.split('_').pop();
+    if (nodeUuid === id) {
+        return node;
+    }
+    if (node.children) {
+        for (const child of node.children) {
+            const result = findNodeInTreeById(child, id);
+            if (result) return result;
+        }
+    }
+    return null;
+};
+
 export const getTooltipDescription = (key) => {
     switch (key) {
         case 'sample':

@@ -3,25 +3,25 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import CMSBreadcrumbs from '_common/CMSBreadcrumbs';
 import * as ROUTES from '../../../../constants/routes';
-import { findNodeInTree } from '../utils/utils';
+import { findNodeInTreeById } from '../utils/utils';
 
 const PublishedDatasetBreadcrumbs = ({ params }) => {
   
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { value: tree, loading: treeLoading } = useSelector((state) => state.publications.tree);
+  const { value: tree, loading: treeLoading, error: treeError } = useSelector((state) => state.publications.tree);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
   useEffect(() => {
     if (params?.system) {
-      if (!tree && !treeLoading && portalName) {
+      if (!tree && !treeLoading && !treeError && portalName) {
         dispatch({
           type: 'PUBLICATIONS_GET_TREE',
           payload: { portalName, system: params.system },
         });
       }
     }
-  }, [params, tree, treeLoading, portalName, dispatch]);
+  }, [params, tree, treeLoading, treeError, portalName, dispatch]);
 
   useEffect(() => {
     const buildBreadcrumbs = () => {
@@ -39,7 +39,7 @@ const PublishedDatasetBreadcrumbs = ({ params }) => {
           href: `${ROUTES.PUBLICATIONS}/${params.system}` 
         });
         crumbs.push({ 
-          name: findNodeInTree(tree, params.entity_id)?.label || 'Entity'
+          name: findNodeInTreeById(tree, params.entity_id)?.label || 'Entity'
         });
       }
 

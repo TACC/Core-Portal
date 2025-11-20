@@ -165,6 +165,7 @@ export default function publications(state = initialState, action) {
         ...state,
         tree: {
           ...state.tree,
+          value: null,
           error: action.payload,
           loading: false,
         },
