@@ -1,12 +1,17 @@
+import { TTapisSystem, TPortalApp } from 'utils/types';
+
 /**
  * Get the execution system object for a given id of the execution system.
  */
-export const getExecSystemFromId = (app, execSystemId) => {
+export const getExecSystemFromId = (
+  app: TPortalApp,
+  execSystemId: string
+): TTapisSystem | undefined => {
   if (app.execSystems?.length) {
     return app.execSystems.find((exec_sys) => exec_sys.id === execSystemId);
   }
 
-  return null;
+  return undefined;
 };
 
 /**
@@ -19,10 +24,10 @@ export const getExecSystemFromId = (app, execSystemId) => {
  * @returns exec system object
  */
 export const getDefaultExecSystem = (
-  app,
-  execSystems,
-  preferredSystemId = null
-) => {
+  app: TPortalApp,
+  execSystems: string[],
+  preferredSystemId: string | undefined = undefined
+): TTapisSystem | undefined => {
   // If dynamic exec system is not setup, use from job attributes.
   if (!app.definition.notes.dynamicExecSystems) {
     return getExecSystemFromId(app, app.definition.jobAttributes.execSystemId);
@@ -43,5 +48,5 @@ export const getDefaultExecSystem = (
     return getExecSystemFromId(app, execSystems[0]);
   }
 
-  return null;
+  return undefined;
 };
