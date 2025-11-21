@@ -27,6 +27,9 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
+  const maxDescriptionLength = useSelector(
+    (state) => state.workbench.config.maxDescriptionLength
+  );
 
   const initialValues = useMemo(
     () => ({
@@ -67,7 +70,10 @@ const DataFilesProjectEditDescriptionModal = () => {
       .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
     description: Yup.string()
-      .max(800, 'Description must be at most 800 characters')
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
       .required('Please enter a description.'),
     keywords: Yup.string(),
   });
@@ -97,20 +103,22 @@ const DataFilesProjectEditDescriptionModal = () => {
                   </div>
                 }
               />
-              <FormField
-                name="description"
-                aria-label="description"
-                label={
-                  <div>
-                    Workspace Description{' '}
-                    <small>
-                      <em>(Maximum 800 characters)</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
-                className={styles['description-textarea']}
-              />
+              {!!maxDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Workspace Description{' '}
+                      <small>
+                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
+              )}
               <FormField
                 name="keywords"
                 aria-label="keywords"
