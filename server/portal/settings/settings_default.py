@@ -255,6 +255,7 @@ _WORKBENCH_SETTINGS = {
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
     "maxDescriptionLength": 800,
+    "maxTitleLength": 150,
     "noPHISystem": "",
     "customDashboardSection": None,
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",

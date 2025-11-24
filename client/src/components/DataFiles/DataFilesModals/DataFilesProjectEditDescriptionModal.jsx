@@ -30,6 +30,9 @@ const DataFilesProjectEditDescriptionModal = () => {
   const maxDescriptionLength = useSelector(
     (state) => state.workbench.config.maxDescriptionLength
   );
+  const maxTitleLength = useSelector(
+    (state) => state.workbench.config.maxTitleLength
+  );
 
   const initialValues = useMemo(
     () => ({
@@ -67,7 +70,7 @@ const DataFilesProjectEditDescriptionModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
     description: Yup.string()
       .max(
@@ -98,7 +101,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Title{' '}
                     <small>
-                      <em>(Maximum 150 characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                   </div>
                 }

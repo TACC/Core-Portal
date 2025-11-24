@@ -16,6 +16,12 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
+  const maxDescriptionLength = useSelector(
+    (state) => state.workbench.config.maxDescriptionLength
+  );
+  const maxTitleLength = useSelector(
+    (state) => state.workbench.config.maxTitleLength
+  );
 
   useEffect(() => {
     setMembers([
@@ -82,10 +88,13 @@ const DataFilesAddProjectModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
     description: Yup.string()
-      .max(800, 'Description must be at most 800 characters')
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
       .required('Please enter a description.'),
     keywords: Yup.string(),
   });
@@ -116,7 +125,7 @@ const DataFilesAddProjectModal = () => {
                   <div>
                     Title{' '}
                     <small>
-                      <em>(Maximum 150 characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                   </div>
                 }
@@ -128,7 +137,7 @@ const DataFilesAddProjectModal = () => {
                   <div>
                     Description{' '}
                     <small>
-                      <em>(Maximum 800 characters)</em>
+                      <em>(Maximum {maxDescriptionLength} characters)</em>
                     </small>
                   </div>
                 }
