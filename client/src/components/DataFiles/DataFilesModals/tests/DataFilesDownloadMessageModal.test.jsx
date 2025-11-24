@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
-import { compressAppFixture } from './DataFilesToolbarAppsModals.fixture';
+import { useCompress } from 'hooks/datafiles/mutations';
 import { fireEvent, screen, waitFor, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
@@ -59,14 +59,15 @@ describe('DataFilesDownloadMessageModal', () => {
     });
   });
 
-  it('allows direct file downloads when the file size is below 2 GB'),
+  it('calls compress'),
     async () => {
       // Mock the dispatch action
-      const mockDispatch = vi.fn();
+      const mockCompress = vi.fn();
+      const { compress, status, setStatus } = useCompress();
       // Create a spy that watches for the dispatch call
-      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-        mockDispatch
-      );
+      //vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      //  mockDispatch
+      //);
 
       renderComponent(
         <DataFilesDownloadMessageModal />,
@@ -80,32 +81,34 @@ describe('DataFilesDownloadMessageModal', () => {
           },
           files: {
             ...DataFilesDownloadMessageModalFixture.files,
-            selected: { FilesListing: [3] },
+            selected: { FilesListing: [3, 4] },
           },
         })
       );
 
-      const compressButton = await screen.findByText('Compress');
-      fireEvent.click(compressButton);
+      const downloadButton = await screen.findByText('Download');
+      fireEvent.click(downloadButton);
 
       // Click on the Compress button to try and download the folder
       fireEvent.click(getByText('Compress'));
 
-      await waitFor(() => {
-        // Test for the dispatch call
-        expect(mockDispatch).toHaveBeenCalledWith({
-          type: 'DATA_FILES_COMPRESS',
-          payload: {
-            file: {
-              name: 'tests.txt',
-              type: 'file',
-              length: testFileSize2,
-              path: '/test3.txt',
-              id: 234,
-            },
-          },
-        });
-      });
+      //await waitFor(() => {
+      // Test for the dispatch call
+      expect(mockCompress).toHaveBeenCalledWith(
+        compress({
+          filename: `Archive_${new Date().toISOString().split('.')[0]}`,
+          files:
+            DataFilesDownloadMessageModalFixture.files.selected.FilesListing.map(
+              (i) => ({
+                ...DataFilesDownloadMessageModalFixture.files.listing
+                  .FilesListing[i],
+              })
+            ),
+          compressionType: 'zip',
+          fromDownload: true,
+        })
+      );
+      //});
     };
 
   it('toggles modal correctly'),
