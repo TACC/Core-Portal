@@ -59,15 +59,11 @@ describe('DataFilesDownloadMessageModal', () => {
     });
   });
 
-  it('calls compress'),
+  it('calls compress mutation'),
     async () => {
-      // Mock the dispatch action
+      // Mock the compress mutation
       const mockCompress = vi.fn();
       const { compress, status, setStatus } = useCompress();
-      // Create a spy that watches for the dispatch call
-      //vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      //  mockDispatch
-      //);
 
       renderComponent(
         <DataFilesDownloadMessageModal />,
@@ -92,8 +88,6 @@ describe('DataFilesDownloadMessageModal', () => {
       // Click on the Compress button to try and download the folder
       fireEvent.click(getByText('Compress'));
 
-      //await waitFor(() => {
-      // Test for the dispatch call
       expect(mockCompress).toHaveBeenCalledWith(
         compress({
           filename: `Archive_${new Date().toISOString().split('.')[0]}`,
@@ -108,7 +102,6 @@ describe('DataFilesDownloadMessageModal', () => {
           fromDownload: true,
         })
       );
-      //});
     };
 
   it('toggles modal correctly'),
