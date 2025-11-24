@@ -114,7 +114,7 @@ const DataFilesAddProjectModal = () => {
                 aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
@@ -126,7 +126,7 @@ const DataFilesAddProjectModal = () => {
                 aria-label="description"
                 label={
                   <div>
-                    Workspace Description{' '}
+                    Description{' '}
                     <small>
                       <em>(Maximum 800 characters)</em>
                     </small>
@@ -139,9 +139,9 @@ const DataFilesAddProjectModal = () => {
                 aria-label="keywords"
                 label={
                   <div>
-                    Workspace Keywords{' '}
+                    Keywords{' '}
                     <small>
-                      <em>(Optional)</em>
+                      <em>(Optional, should be comma-separated)</em>
                     </small>
                   </div>
                 }

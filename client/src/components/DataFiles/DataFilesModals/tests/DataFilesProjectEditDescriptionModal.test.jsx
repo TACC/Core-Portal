@@ -53,10 +53,10 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       <DataFilesProjectEditDescriptionModal />,
       store
     );
-    expect(getAllByText(/Edit Descriptions/)).toBeDefined();
-    expect(getAllByText(/Workspace Title/)).toBeDefined();
+    expect(getAllByText(/Edit Project/)).toBeDefined();
+    expect(getAllByText(/Title/)).toBeDefined();
     expect(getByDisplayValue(projectMetadataFixture.title)).toBeDefined();
-    expect(getAllByText(/Workspace Description/)).toBeDefined();
+    expect(getAllByText(/Description/)).toBeDefined();
     expect(getAllByText(projectMetadataFixture.description)).toBeDefined();
     expect(getAllByText(/Update Changes/)).toBeDefined();
   });

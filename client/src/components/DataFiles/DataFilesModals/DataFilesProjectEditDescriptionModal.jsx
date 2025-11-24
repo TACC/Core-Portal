@@ -81,7 +81,7 @@ const DataFilesProjectEditDescriptionModal = () => {
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Descriptions
+        Edit Project
       </ModalHeader>
       <ModalBody>
         <Formik
@@ -96,7 +96,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Title{' '}
                     <small>
                       <em>(Maximum 150 characters)</em>
                     </small>
@@ -109,7 +109,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   aria-label="description"
                   label={
                     <div>
-                      Workspace Description{' '}
+                      Description{' '}
                       <small>
                         <em>(Maximum {maxDescriptionLength} characters)</em>
                       </small>
@@ -124,9 +124,9 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="keywords"
                 label={
                   <div>
-                    Workspace Keywords{' '}
+                    Keywords{' '}
                     <small>
-                      <em>(Optional)</em>
+                      <em>(Optional, should be comma-separated)</em>
                     </small>
                   </div>
                 }
