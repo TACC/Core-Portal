@@ -30,6 +30,11 @@ _RT_TAG = "core_portal"
 _CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
 
 ########################
+# TACC SETTINGS
+########################
+_IS_TACC_PORTAL = True
+
+########################
 # TAPIS SETTINGS
 ########################
 

@@ -923,9 +923,9 @@ const getExtractParams = (file, latestExtract, defaultAllocation) => {
         appArgs: [],
         schedulerOptions: [
           {
-            name: 'TACC Allocation',
+            name: 'Project Allocation Account',
             description:
-              'The TACC allocation associated with this job execution',
+              'The project allocation account associated with this job execution.',
             include: true,
             arg: `-A ${defaultAllocation}`,
           },
