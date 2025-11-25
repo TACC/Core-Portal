@@ -39,6 +39,12 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {
+      maxDescriptionLength: 800,
+      maxTitleLength: 150,
+    },
+  },
 };
 
 describe('DataFilesAddProjectModal', () => {

@@ -44,6 +44,12 @@ const initialMockState = {
       email: 'user@name.com',
     },
   },
+  workbench: {
+    config: {
+      maxDescriptionLength: 800,
+      maxTitleLength: 150,
+    },
+  },
 };
 
 describe('DataFilesProjectEditDescriptionModal', () => {
