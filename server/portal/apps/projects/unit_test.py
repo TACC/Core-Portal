@@ -104,6 +104,7 @@ def create_shared_workspace(
     client,
     title,
     description,
+    keywords,
     mock_service_account,
     mock_owner,
     mock_create_shared_workspace,
@@ -113,8 +114,8 @@ def create_shared_workspace(
     workspace_num,
 ):
     # Create project
-    project = mock_create_shared_workspace(client, title, description, mock_owner)
-    mock_create_shared_workspace.assert_called_with(client, title, description, mock_owner)
+    project = mock_create_shared_workspace(client, title, description, keywords, mock_owner)
+    mock_create_shared_workspace.assert_called_with(client, title, description, keywords, mock_owner)
     assert project == f"test.project.test.project-{workspace_num}"
     client.systems.getSystem.return_value = TapisResult(
         id=f"test.project.test.project-{workspace_num}",
@@ -171,6 +172,7 @@ def create_shared_workspace_2_user(
     client,
     title,
     description,
+    keywords,
     mock_service_account,
     mock_owner,
     mock_create_shared_workspace,
@@ -186,6 +188,7 @@ def create_shared_workspace_2_user(
         client,
         title,
         description,
+        keywords,
         mock_service_account,
         mock_owner,
         mock_create_shared_workspace,
@@ -214,7 +217,7 @@ def create_shared_workspace_2_user(
             "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
             "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
         },
-        "notes": {"title": title, "description": description},
+        "notes": {"title": title, "description": description, "keywords": keywords},
     }
     # Asserting roles for Owner, User, Guest, and Unknown
     client.systems.createSystem.assert_called_with(**system_args)
@@ -230,6 +233,7 @@ def create_shared_workspace_2_user(
         notes={
             "title": title,
             "description": description,
+            "keywords": keywords,
         },
         updated="2023-03-07T19:31:17.292220Z",
         owner="username",
@@ -241,6 +245,7 @@ def create_shared_workspace_2_user(
     mock_get_project.return_value = {
         "title": mock_system_result.notes.title,
         "description": getattr(mock_system_result.notes, "description", None),
+        "keywords": getattr(mock_system_result.notes, "keywords", None),
         "created": mock_system_result.updated,
         "projectId": "test.project-2",
         "members": [
@@ -267,6 +272,7 @@ def create_shared_workspace_2_user(
     mock_get_project.return_value = {
         "title": mock_system_result.notes.title,
         "description": getattr(mock_system_result.notes, "description", None),
+        "keywords": getattr(mock_system_result.notes, "keywords", None),
         "created": mock_system_result.updated,
         "projectId": workspace_id,
         "members": [
@@ -291,11 +297,13 @@ def test_project_init(mock_tapis_client, mock_owner):
         workspace_id = "test_workspace"
         title = "Test Workspace"
         description = "A test workspace"
+        keywords = "test1, test2, test3"
         system_id = ws_o.create_workspace_system(
             client,
             workspace_id,
             title,
             description,
+            keywords,
             owner=mock_owner,
         )
         mock_create_workspace_system.assert_called_once_with(
@@ -303,6 +311,7 @@ def test_project_init(mock_tapis_client, mock_owner):
             workspace_id,
             title,
             description,
+            keywords,
             owner=mock_owner,
         )
         assert system_id == f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
@@ -320,7 +329,7 @@ def test_project_init(mock_tapis_client, mock_owner):
                 "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
                 "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
             },
-            "notes": {"title": title, "description": description},
+            "notes": {"title": title, "description": description, "keywords": keywords},
             "owner": mock_owner,
         }
         client.systems.createSystem.assert_called_with(**system_args)
@@ -333,6 +342,7 @@ def test_project_init(mock_tapis_client, mock_owner):
         assert prj["id"] == system_id
         assert prj["notes"]["title"] == title
         assert prj["notes"]["description"] == description
+        assert prj["notes"]["keywords"] == keywords
 
 
 # Test for creating a shared workspace and if it creates a new project
@@ -347,10 +357,12 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
         description = "A test workspace"
+        keywords = "test1, test2, test3"
         create_shared_workspace(
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -396,6 +408,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         title1 = "Test Workspace 1"
         title2 = "Test Workspace 2"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
 
         # Mock return of getSystems based on views_unit_test.py
         mock_tapis_client.systems.getSystems.return_value = [
@@ -406,6 +419,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 notes={
                     "title": title1,
                     "description": description,
+                    "keywords": keywords,
                 },
                 updated="2023-03-07T19:31:17.292220Z",
                 owner="owner_username",
@@ -418,6 +432,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
                 notes={
                     "title": title2,
                     "description": description,
+                    "keywords": keywords,
                 },
                 updated="2023-03-08T19:31:17.292220Z",
                 owner="owner_username",
@@ -430,6 +445,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
             client,
             title1,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -443,6 +459,7 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
             client,
             title2,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -496,10 +513,12 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
 
         title = "Test Workspace"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
         workspace_id = create_shared_workspace(
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -605,10 +624,12 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
 
         title = "Test Workspace"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
         workspace_id = create_shared_workspace(
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -627,6 +648,7 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
             notes={
                 "title": title,
                 "description": "Description of Test Workspace 1",
+                "keywords": keywords,
             },
             updated="2023-03-07T19:31:17.292220Z",
             owner="username",
@@ -636,6 +658,7 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
         mock_get_project.return_value = {
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
+            "keywords": getattr(mock_system_result.notes, "keywords", None),
             "created": mock_system_result.updated,
             "projectId": "test.project-2",
             "members": [
@@ -677,6 +700,7 @@ def test_add_member_unauthorized(mock_tapis_client, mock_owner, authenticated_us
             mock_get_project.return_value = {
                 "title": mock_system_result.notes.title,
                 "description": getattr(mock_system_result.notes, "description", None),
+                "keywords": getattr(mock_system_result.notes, "keywords", None),
                 "created": mock_system_result.updated,
                 "projectId": workspace_id,
                 "members": [
@@ -705,19 +729,21 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
         # Create first project
         workspace_number = 2
         create_shared_workspace(
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
             mock_increment_workspace_count,
             mock_create_workspace_dir,
             authenticated_user,
-            workspace_num=workspace_number,
+            workspace_num=2,
         )
         workspace_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
         # Get workspace role of the owner
@@ -739,7 +765,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
                 "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
                 "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY,
             },
-            "notes": {"title": title, "description": description},
+            "notes": {"title": title, "description": description, "keywords": keywords},
         }
         # Asserting roles for Owner, User, Guest, and Unknown
         client.systems.createSystem.assert_called_with(**system_args)
@@ -755,6 +781,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             notes={
                 "title": title,
                 "description": "Description of Test Workspace",
+                "keywords": keywords,
             },
             updated="2023-03-07T19:31:17.292220Z",
             owner="username",
@@ -766,6 +793,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         mock_get_project.return_value = {
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
+            "keywords": getattr(mock_system_result.notes, "keywords", None),
             "created": mock_system_result.updated,
             "projectId": "test.project-2",
             "members": [
@@ -791,6 +819,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         mock_get_project.return_value = {
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
+            "keywords": getattr(mock_system_result.notes, "keywords", None),
             "created": mock_system_result.updated,
             "projectId": workspace_id,
             "members": [
@@ -824,6 +853,7 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         mock_get_project.return_value = {
             "title": mock_system_result.notes.title,
             "description": getattr(mock_system_result.notes, "description", None),
+            "keywords": getattr(mock_system_result.notes, "keywords", None),
             "created": mock_system_result.updated,
             "projectId": workspace_id,
             "members": [
@@ -859,6 +889,7 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
         description = ""
+        keywords = "test1, test2, test3"
         # Create first project
         workspace_number = 2
 
@@ -867,6 +898,7 @@ def test_change_user_role(mock_tapis_client, mock_owner, authenticated_user):
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -927,6 +959,7 @@ def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
         description = ""
+        keywords = "test1, test2, test3"
         # Create first project
         workspace_number = 2
 
@@ -935,6 +968,7 @@ def test_remove_user(mock_tapis_client, mock_owner, authenticated_user):
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -986,6 +1020,7 @@ def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace 1"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
         # Create first project
         workspace_number = 2
 
@@ -994,6 +1029,7 @@ def test_transfer_ownership(mock_tapis_client, mock_owner, authenticated_user):
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -1052,10 +1088,12 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         mock_service_account.return_value = mock_tapis_client
         title = "Test Workspace"
         description = "Description of Test Workspace"
+        keywords = "test1, test2, test3"
         create_shared_workspace(
             client,
             title,
             description,
+            keywords,
             mock_service_account,
             mock_owner,
             mock_create_shared_workspace,
@@ -1067,7 +1105,7 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         # Expected TapisResult return
         expected_result = TapisResult(
             id="test.project.test.project-2",
-            notes={"title": title, "description": description},
+            notes={"title": title, "description": description, "keywords": keywords},
             effectiveUserId="wma_prtl",
             port=22,
             authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
@@ -1079,6 +1117,7 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         assert (
             created_project["notes"]["description"] == expected_result.notes.description
         )
+        assert created_project["notes"]["keywords"] == expected_result.notes.keywords
         assert created_project["effectiveUserId"] == expected_result.effectiveUserId
         assert created_project["port"] == expected_result.port
         assert (
@@ -1090,16 +1129,17 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         # Change the title and description
         new_title = "Updated Test Workspace"
         new_description = "Updated Description"
+        new_keywords = "Updated Keywords"
         client.systems.updateSystem.return_value = TapisResult(
             id="test.project.test.project-2",
-            notes={"title": new_title, "description": new_description},
+            notes={"title": new_title, "description": new_description, "keywords": new_keywords},
             effectiveUserId="wma_prtl",
             port=22,
             authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
         )
         client.systems.updateSystem(
             systemId="test.project.test.project-2",
-            notes={"title": new_title, "description": new_description},
+            notes={"title": new_title, "description": new_description, "keywords": new_keywords},
         )
 
         # Validate updateSystem call arguments
@@ -1107,3 +1147,4 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         assert updated_project["systemId"] == "test.project.test.project-2"
         assert updated_project["notes"]["title"] == new_title
         assert updated_project["notes"]["description"] == new_description
+        assert updated_project["notes"]["keywords"] == new_keywords
