@@ -126,7 +126,7 @@ export function getJobDisplayInformation(job, app) {
 
       if (app.definition.jobType === 'BATCH') {
         const allocationParam = schedulerOptions.find(
-          (opt) => opt.name === 'TACC Allocation'
+          (opt) => opt.name === 'Project Allocation Account'
         );
         const allocation = getAllocatonFromDirective(allocationParam.arg);
         if (allocation) {

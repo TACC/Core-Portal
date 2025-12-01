@@ -21,8 +21,11 @@ describe('systems utility functions', () => {
         'private'
       )
     ).toEqual('My Data (Frontera)');
+    expect(
+      findSystemDisplayName(systemList, 'frontera.tacc.utexas.edu')
+    ).toEqual('Frontera');
     expect(findSystemDisplayName(systemList, 'frontera.foo.bar')).toEqual(
-      'Frontera'
+      'frontera.foo.bar'
     );
   });
   it('gets system name when path is part of system homeDir', () => {
@@ -49,7 +52,7 @@ describe('systems utility functions', () => {
         'private',
         '/'
       )
-    ).toEqual('Corral');
+    ).toEqual('corral.home.username');
   });
   it('get project title from host', () => {
     expect(
@@ -93,7 +96,7 @@ describe('systems utility functions', () => {
         'private',
         systemList,
         projectsListingFixture,
-        'frontera.foo.bar'
+        'frontera.tacc.utexas.edu'
       )
     ).toEqual('Frontera');
   });
