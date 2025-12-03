@@ -82,7 +82,7 @@ describe('DataFilesProjectFileListing', () => {
     expect(getByText(/Show More/)).toBeDefined();
   });
 
-  it('hides Edit Project and Manage Team when readOnly is true or user is not owner', () => {
+  it('hides Edit Workspace and Manage Team when readOnly is true or user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
@@ -94,11 +94,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(queryByText(/Edit Project/)).toBeNull();
+    expect(queryByText(/Edit Workspace/)).toBeNull();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Project and Manage Team when readOnly is false and user is owner', () => {
+  it('shows Edit Workspace and Manage Team when readOnly is false and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
@@ -110,11 +110,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(getByText(/Edit Project/)).toBeDefined();
+    expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(getByText(/Manage Team/)).toBeDefined();
   });
 
-  it('hides Edit Project and Manage Team when readOnly is false and user is not owner', () => {
+  it('hides Edit Workspace and Manage Team when readOnly is false and user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
@@ -126,11 +126,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(queryByText(/Edit Project/)).toBeNull();
+    expect(queryByText(/Edit Workspace/)).toBeNull();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Project and hides Manage Team when readOnly is true and user is owner', () => {
+  it('shows Edit Workspace and hides Manage Team when readOnly is true and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
@@ -142,7 +142,7 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(getByText(/Edit Project/)).toBeDefined();
+    expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 });

@@ -78,13 +78,16 @@ const DataFilesProjectEditDescriptionModal = () => {
         `Description must be at most ${maxDescriptionLength} characters`
       )
       .required('Please enter a description.'),
-    keywords: Yup.string(),
+    keywords: Yup.string().matches(
+      /^\w+(\s*,\s*\w+)*$/,
+      'Please separate keywords with commas.'
+    ),
   });
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Project
+        Edit Workspace
       </ModalHeader>
       <ModalBody>
         <Formik

@@ -91,7 +91,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Project
+                Edit Workspace
               </Button>
               <span className={styles.separator}>|</span>
             </>
