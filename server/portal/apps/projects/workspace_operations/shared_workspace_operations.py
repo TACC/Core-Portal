@@ -181,7 +181,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, description: str, keywords: str, owner: str,  **kwargs):
+def create_shared_workspace(client: Tapis, title: str, description: str, keywords: str, owner: str, **kwargs):
     """
     Create a workspace system owned by user whose client is passed.
     """
