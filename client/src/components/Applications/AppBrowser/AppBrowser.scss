@@ -8,24 +8,27 @@
   flex-direction: row;
   align-items: stretch;
 
-  border-bottom: 1px solid #707070;
-}
-#appBrowser-sidebar,
-#appBrowser-tray .apps-grid-list {
-  --vertical-buffer: 10px;
-  --max-item-count: 5;
-  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
-  /* i.e. ( items * item height ) + ( top space & bottom space ) */
-  --height: calc(
-    (var(--max-item-count) * var(--item-height)) + (var(--vertical-buffer) * 2)
+  --panel-vertical-buffer: 10px;
+  --panel-max-item-count: 5;
+  --panel-item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
+  --panel-height: calc(
+    (var(--panel-max-item-count) * var(--panel-item-height)) +
+      (var(--panel-vertical-buffer) * 2)
   );
 
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(var(--max-item-count), min-content);
-  height: var(--height);
-  padding-top: var(--vertical-buffer);
-  padding-bottom: var(--vertical-buffer);
+  border-bottom: 1px solid #707070;
+}
+#appBrowser-sidebar {
+  --min-width: 200px;
+
+  display: block;
+  box-sizing: border-box;
+  height: var(--panel-height);
+  max-height: var(--panel-height);
+  min-width: var(--min-width);
+  max-width: 300px;
+  padding-top: var(--panel-vertical-buffer);
+  padding-bottom: var(--panel-vertical-buffer);
 }
 
 #appBrowser-sidebar,
@@ -33,10 +36,10 @@
   --horizontal-buffer: var(--global-space--section-left);
 }
 #appBrowser-sidebar {
-  --min-width: 200px;
-
   margin-left: calc(var(--horizontal-buffer) * -1);
   border-right: 1px solid rgb(112 112 112 / 25%);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
@@ -48,16 +51,29 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link,
 #appBrowser-tray .nav-link {
-  min-width: var(--min-width);
   padding-left: var(--horizontal-buffer);
   color: var(--global-color-primary--dark);
-
-  white-space: nowrap;
+}
+#appBrowser-sidebar .nav-item {
+  width: 100%;
 }
 #appBrowser-sidebar .nav-link {
+  display: block;
+  width: 100%;
+  min-width: var(--min-width);
+  white-space: nowrap;
   /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
   font-weight: 500;
   cursor: pointer;
+}
+
+#appBrowser-tray .nav-link {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #appBrowser-sidebar .nav-link.active,
@@ -78,9 +94,34 @@ ul#appBrowser-sidebar {
 }
 
 #appBrowser-tray {
+  --grid-gap-x: 0;
+  --grid-gap-y: 0;
+  --grid-min: 250px;
+
   flex-grow: 1;
 
   background-color: #f4f4f4;
+  box-sizing: border-box;
+  height: var(--panel-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--panel-vertical-buffer) var(--horizontal-buffer);
+}
+
+#appBrowser-tray .apps-grid-list {
+  display: grid;
+  gap: var(--grid-gap-y) var(--grid-gap-x);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(var(--grid-min), 100%), 1fr)
+  );
+  align-content: start;
+  overflow-x: hidden;
+}
+
+#appBrowser-tray .apps-grid-item {
+  min-width: 0;
+  overflow: hidden;
 }
 
 #appBrowser-tray .nav-text {
