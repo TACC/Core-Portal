@@ -1,27 +1,35 @@
 .dataFilesModalColHeader {
   font-weight: bold;
   padding-bottom: 10px;
+  height: 2lh;
+  display: flex;
+  align-items: end;
 }
 
 .dataFilesModal {
   color: var(--global-color-primary--xx-dark);
   padding: 20px;
+
   .h-100 {
     padding: 0 10px;
   }
+
   .breadcrumb-container {
     font-size: 0.75rem;
   }
+
   .breadcrumbs {
     padding-top: 5px;
     padding-bottom: 5px;
     color: #707070;
   }
+
   .filesListing {
     flex-grow: 1;
     outline: 1px solid #707070;
     overflow-y: auto;
   }
+
   .tr-header {
     border-bottom-color: #c6c6c6;
   }
@@ -44,12 +52,15 @@
     tr > *:first-child {
       padding-left: 15px;
     }
+
     tr > *:last-child {
       padding-right: 15px;
     }
+
     th {
       height: 25px;
     }
+
     td {
       height: 45px;
     }
