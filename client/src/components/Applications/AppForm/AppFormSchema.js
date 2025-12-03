@@ -42,7 +42,7 @@ const FormSchema = (app) => {
           return;
         }
 
-        const fieldName = param.key ?? param.name ?? param.notes?.label;
+        const fieldName = param.key ?? param.name;
         const fieldLabel = param.notes?.label ?? fieldName;
         const field = {
           label: fieldLabel,
