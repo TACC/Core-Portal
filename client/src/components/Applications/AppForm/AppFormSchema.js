@@ -42,8 +42,10 @@ const FormSchema = (app) => {
           return;
         }
 
+        const fieldName = param.key ?? param.name;
+        const fieldLabel = param.notes?.label ?? fieldName;
         const field = {
-          label: param.notes?.label ?? param.name ?? param.key,
+          label: fieldLabel,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',
@@ -53,7 +55,7 @@ const FormSchema = (app) => {
         if (param.notes?.enum_values) {
           field.type = 'select';
           field.options = param.notes?.enum_values;
-          appFields.schema.parameterSet[parameterSet][field.label] =
+          appFields.schema.parameterSet[parameterSet][fieldName] =
             Yup.string().oneOf(
               field.options.map((enumVal) => {
                 if (typeof enumVal === 'string') {
@@ -64,29 +66,29 @@ const FormSchema = (app) => {
             );
         } else {
           if (param.notes?.fieldType === 'email') {
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.string().email('Must be a valid email.');
           } else if (param.notes?.fieldType === 'number') {
             field.type = 'number';
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.number();
           } else {
             field.type = 'text';
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.string();
           }
         }
         if (field.required) {
-          appFields.schema.parameterSet[parameterSet][field.label] =
-            appFields.schema.parameterSet[parameterSet][field.label].required(
+          appFields.schema.parameterSet[parameterSet][fieldName] =
+            appFields.schema.parameterSet[parameterSet][fieldName].required(
               'Required'
             );
         }
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
-            appFields.schema.parameterSet[parameterSet][field.label] =
-              appFields.schema.parameterSet[parameterSet][field.label].matches(
+            appFields.schema.parameterSet[parameterSet][fieldName] =
+              appFields.schema.parameterSet[parameterSet][fieldName].matches(
                 regex,
                 param.notes.validator.message
               );
@@ -94,8 +96,8 @@ const FormSchema = (app) => {
             console.warn('Invalid regex pattern for app');
           }
         }
-        appFields.parameterSet[parameterSet][field.label] = field;
-        appFields.defaults.parameterSet[parameterSet][field.label] =
+        appFields.parameterSet[parameterSet][fieldName] = field;
+        appFields.defaults.parameterSet[parameterSet][fieldName] =
           param.arg ?? param.value ?? '';
       });
     }
