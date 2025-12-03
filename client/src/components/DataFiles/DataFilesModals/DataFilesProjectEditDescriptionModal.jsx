@@ -27,12 +27,10 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
-  const maxDescriptionLength = useSelector(
-    (state) => state.workbench.config.maxDescriptionLength
-  );
-  const maxTitleLength = useSelector(
-    (state) => state.workbench.config.maxTitleLength
-  );
+  const maxDescriptionLength =
+    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const maxTitleLength =
+    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
 
   const initialValues = useMemo(
     () => ({

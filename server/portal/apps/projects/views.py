@@ -121,8 +121,8 @@ class ProjectsApiView(BaseApiView):
         """POST handler."""
         data = json.loads(request.body)
         title = data['title']
-        description = data['description']
-        keywords = data['keywords']
+        description = getattr(data, "description", None)
+        keywords = getattr(data, "keywords", None)
 
         client = request.user.tapis_oauth.client
         session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
