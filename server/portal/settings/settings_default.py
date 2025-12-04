@@ -77,7 +77,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "system": "frontera",
         "scheme": "private",
         "api": "tapis",
-        "homeDir": "/scratch1/{tasdir}",
+        "hostEval": "SCRATCH",
         "icon": None,
     },
     {
