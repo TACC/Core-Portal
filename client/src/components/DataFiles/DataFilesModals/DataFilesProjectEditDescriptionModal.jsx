@@ -33,7 +33,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    False;
+    false;
 
   const initialValues = useMemo(
     () => ({

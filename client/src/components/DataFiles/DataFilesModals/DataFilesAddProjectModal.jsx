@@ -22,7 +22,7 @@ const DataFilesAddProjectModal = () => {
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    False;
+    false;
 
   useEffect(() => {
     setMembers([
