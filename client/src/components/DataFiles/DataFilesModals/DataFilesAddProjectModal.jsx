@@ -20,6 +20,9 @@ const DataFilesAddProjectModal = () => {
     useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
   const maxTitleLength =
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    False;
 
   useEffect(() => {
     setMembers([
@@ -131,32 +134,36 @@ const DataFilesAddProjectModal = () => {
                   </div>
                 }
               />
-              <FormField
-                name="description"
-                aria-label="description"
-                label={
-                  <div>
-                    Description{' '}
-                    <small>
-                      <em>(Maximum {maxDescriptionLength} characters)</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
-              />
-              <FormField
-                name="keywords"
-                aria-label="keywords"
-                label={
-                  <div>
-                    Keywords{' '}
-                    <small>
-                      <em>(Optional, should be comma-separated)</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
-              />
+              {!!maxDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Description{' '}
+                      <small>
+                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  label={
+                    <div>
+                      Keywords{' '}
+                      <small>
+                        <em>(Optional, should be comma-separated)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
