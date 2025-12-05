@@ -9,12 +9,13 @@ export default function canCompressForDownload(
   const maxFileSize = 2 * 1024 * 1024 * 1024;
 
   // Add up the file sizes of all files and shows if the user selected a folder
-  for (let i = 0; i < selectedFiles.length; i++) {
-    totalFileSize = totalFileSize + selectedFiles[i].length;
-    if (selectedFiles[i].format == 'folder') {
+  selectedFiles.forEach((selectedFile) => {
+    if (selectedFile.format == 'folder') {
       containsFolder = true;
+      return { exceedsSizeLimit, containsFolder };
     }
-  }
+    totalFileSize = totalFileSize + selectedFile.length;
+  });
 
   if (totalFileSize > maxFileSize) {
     exceedsSizeLimit = true;
