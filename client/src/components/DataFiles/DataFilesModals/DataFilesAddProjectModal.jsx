@@ -22,7 +22,7 @@ const DataFilesAddProjectModal = () => {
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    false;
+    true;
 
   useEffect(() => {
     setMembers([
@@ -96,7 +96,11 @@ const DataFilesAddProjectModal = () => {
         maxDescriptionLength,
         `Description must be at most ${maxDescriptionLength} characters`
       )
-      .required('Please enter a description.'),
+      .when([], {
+        is: () => maxDescriptionLength > 0,
+        then: (schema) => schema.required('Please enter a description.'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     keywords: Yup.string().matches(
       /^\w+(\s*,\s*\w+)*$/,
       'Please separate keywords with commas.'
