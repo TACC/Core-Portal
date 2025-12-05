@@ -533,7 +533,7 @@ TACC_EXEC_SYSTEMS = {
     },
     'frontera': {
         'work_dir': '/work2/{}',
-        'scratch_dir': '/scratch1/{}',
+        'scratch_dir': 'HOST_EVAL(SCRATCH)',
         'home_dir': '/home1/{}'
     },
     'ls6': {
