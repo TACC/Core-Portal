@@ -112,7 +112,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
-    largeDownload: {},
+    unavailDownload: {},
     noFolders: {},
   },
   loadingScroll: {
@@ -164,7 +164,7 @@ export const initialFilesState = {
     editproject: false,
     makePublic: false,
     downloadMessage: false,
-    largeDownload: false,
+    unavailDownload: false,
     noFolders: false,
   },
   modalProps: {
@@ -179,6 +179,7 @@ export const initialFilesState = {
     showpath: {},
     makePublic: {},
     downloadMessage: {},
+    unavailDownload: {},
   },
   refs: {},
   preview: {

@@ -134,6 +134,7 @@ function useCompress() {
               },
             });
             setStatus({}); // clear compress status after successful submission
+            // now close modal that compress job was submitted from
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',
