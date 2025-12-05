@@ -515,7 +515,12 @@ export const AppSchemaForm = ({ app }) => {
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
+                .trim()
                 .max(64, 'Must be 64 characters or less')
+                .matches(
+                  /^\S+$/,
+                  'Job name cannot contain spaces. Use hyphens or underscores instead.'
+                )
                 .required('Required'),
               execSystemId: getExecSystemIdValidation(app),
               execSystemLogicalQueue: isJobTypeBATCH(app)
@@ -558,6 +563,7 @@ export const AppSchemaForm = ({ app }) => {
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
+          job.name = job.name.trim();
 
           // Transform input field values into format that jobs service wants.
           // File Input structure will have 2 fields if target path is required by the app.
