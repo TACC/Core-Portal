@@ -121,10 +121,11 @@ class ProjectsApiView(BaseApiView):
         """POST handler."""
         data = json.loads(request.body)
         title = data['title']
+        description = data['description']
 
         client = request.user.tapis_oauth.client
         session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-        system_id = create_shared_workspace(client, title, request.user.username, tapis_tracking_id=f"portals.{session_key_hash}")
+        system_id = create_shared_workspace(client, title, description, request.user.username, tapis_tracking_id=f"portals.{session_key_hash}")
 
         METRICS.info(
             "Projects",
