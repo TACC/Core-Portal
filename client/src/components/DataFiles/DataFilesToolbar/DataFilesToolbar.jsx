@@ -180,13 +180,13 @@ const DataFilesToolbar = ({ scheme, api }) => {
     // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays an alert/prompts to compress if false
     const { exceedsSizeLimit, containsFolder } =
       canCompressForDownload(selectedFiles);
-    if (canDownload && !exceedsSizeLimit && !containsFolder) {
+    if (containsFolder) {
+      toggleNoFoldersModal();
+    } else if (canDownload && !exceedsSizeLimit) {
       dispatch({
         type: 'DATA_FILES_DOWNLOAD',
         payload: { file: selectedFiles[0] },
       });
-    } else if (containsFolder && !exceedsSizeLimit) {
-      toggleNoFoldersModal();
     } else if (
       exceedsSizeLimit ||
       params.scheme === 'community' ||
