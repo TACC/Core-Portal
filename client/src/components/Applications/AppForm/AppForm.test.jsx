@@ -242,6 +242,29 @@ describe('AppSchemaForm', () => {
     });
   });
 
+  it('renders validation error when job name contains spaces', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      helloWorldAppFixture
+    );
+
+    const jobNameField = container.querySelector('input[name="name"]');
+    fireEvent.change(jobNameField, { target: { value: 'name with space' } });
+    fireEvent.blur(jobNameField);
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          /Job name cannot contain spaces. Use hyphens or underscores instead./
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
   it('displays an error if no storage systems are enabled', async () => {
     const store = mockStore({
       ...initialMockState,
