@@ -44,6 +44,12 @@ const initialMockState = {
       email: 'user@name.com',
     },
   },
+  workbench: {
+    config: {
+      maxDescriptionLength: 800,
+      maxTitleLength: 150,
+    },
+  },
 };
 
 describe('DataFilesProjectEditDescriptionModal', () => {
@@ -53,10 +59,10 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       <DataFilesProjectEditDescriptionModal />,
       store
     );
-    expect(getAllByText(/Edit Descriptions/)).toBeDefined();
-    expect(getAllByText(/Workspace Title/)).toBeDefined();
+    expect(getAllByText(/Edit Workspace/)).toBeDefined();
+    expect(getAllByText(/Title/)).toBeDefined();
     expect(getByDisplayValue(projectMetadataFixture.title)).toBeDefined();
-    expect(getAllByText(/Workspace Description/)).toBeDefined();
+    expect(getAllByText(/Description/)).toBeDefined();
     expect(getAllByText(projectMetadataFixture.description)).toBeDefined();
     expect(getAllByText(/Update Changes/)).toBeDefined();
   });

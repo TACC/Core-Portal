@@ -59,7 +59,7 @@ const DataFilesProjectsList = ({ modal }) => {
 
   const columns = [
     {
-      Header: 'Workspace Title',
+      Header: 'Title',
       headerStyle: { textAlign: 'left' },
       accessor: 'title',
       Cell: (el) => (
