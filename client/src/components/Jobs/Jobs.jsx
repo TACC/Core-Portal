@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
@@ -9,11 +9,13 @@ import {
   Message,
   SectionMessage,
   Section,
+  Button,
 } from '_common';
 import { formatDateTime } from 'utils/timeFormat';
 import { getOutputPath } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
+import JobsSearchInfoModal from './JobsSearchInfoModal';
 import * as ROUTES from '../../constants/routes';
 import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
@@ -28,6 +30,7 @@ function JobsView({
   const location = useLocation();
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const { error, jobs } = useSelector((state) => {
     return version === 'v3'
       ? { ...state.jobs, jobs: state.jobs.list }
@@ -228,14 +231,30 @@ function JobsView({
   return (
     <>
       {includeSearchbar && (
-        <Searchbar
-          api="tapis"
-          resultCount={jobs.length}
-          dataType="Jobs"
-          infiniteScroll
-          disabled={isJobLoading || isNotificationLoading}
-        />
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+          <Searchbar
+            api="tapis"
+            resultCount={jobs.length}
+            dataType="Jobs"
+            infiniteScroll
+            disabled={isJobLoading || isNotificationLoading}
+          />
+          <Button
+            attr="button"
+            type="secondary"
+            size="small"
+            onClick={() => setIsInfoModalOpen(true)}
+          >
+            ?
+          </Button>
+        </div>
       )}
+
+      <JobsSearchInfoModal
+        isOpen={isInfoModalOpen}
+        toggle={() => setIsInfoModalOpen(!isInfoModalOpen)}
+      />
+
       <InfiniteScrollTable
         tableColumns={filterColumns}
         tableData={jobs}
