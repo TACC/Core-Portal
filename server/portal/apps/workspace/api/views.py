@@ -215,6 +215,7 @@ class JobsView(BaseApiView):
 
     def search(self, client, request):
         # declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
+        # all status search features to be moved to frontend in WP-1116
         STATUS_TEXT_MAP = {
             'PENDING': 'Processing',
             'PROCESSING_INPUTS': 'Processing',
@@ -265,14 +266,19 @@ class JobsView(BaseApiView):
             return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
 
         query_string = request.GET.get('query_string')
+        # limiting search down to the first word if multiple words are inputted
+        if query_string:
+            query_string = query_string.split()[0]
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
         status_searches = get_statuses_for_label(query_string or '')
+        # 3 most common cases for case insensitivity
         qs_lower = query_string.lower() if query_string else ''
         qs_upper = query_string.upper() if query_string else ''
         qs_title = query_string.title() if query_string else ''
 
+        # all status search add-ons to be removed and added to drop-down feature on frontend
         if status_searches:
             enhanced_status_conditions = []
 
@@ -316,7 +322,22 @@ class JobsView(BaseApiView):
                 f"(archiveSystemId like '%{qs_title}%'))",
             ]
 
-        # Keep the fill-to-limit logic ONLY for Finished/Failed status searches
+        # This status search workaround to be removed when status filtering is moved to frontend WP-1116
+        # (Keep the fill-to-limit logic ONLY for Finished/Failed status searches) more info below
+        # We have to handle our jobs query for "Finished" or "Failed" uniquely as
+        # there we treat some jobs with tapis status of FAILED as being non-failures if they
+        # are interactive jobs that just timed-out.
+
+        # We are unable to query the `notes` field to determine if jobs are interactive,
+        # so we manually have to make requests to get jobs and filter them ourselves
+
+        # For "Finished" search, want to get all
+        # (i) FINISHED jobs
+        # and
+        # (ii) FAILED jobs that are interactive and have the timeout/expired message (will be shown as FINISHED on UI)
+
+        # For "Failed" search, want to get all
+        # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
         is_finished = 'FINISHED' in status_searches
         is_failed = 'FAILED' in status_searches
 
@@ -329,7 +350,7 @@ class JobsView(BaseApiView):
             while len(collected) < limit:
                 page = client.jobs.getJobSearchListByPostSqlStr(
                     limit=upstream_page_size,
-                    startAfter=upstream_offset,
+                    skip=upstream_offset,
                     orderBy='lastUpdated(desc),name(asc)',
                     request_body={"search": sql_queries},
                     select="allAttributes",
@@ -373,7 +394,7 @@ class JobsView(BaseApiView):
 
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
-            startAfter=offset,
+            skip=offset,
             orderBy='lastUpdated(desc),name(asc)',
             request_body={
                 "search": sql_queries
