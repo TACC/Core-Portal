@@ -30,6 +30,11 @@ _RT_TAG = "core_portal"
 _CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
 
 ########################
+# TACC SETTINGS
+########################
+_IS_TACC_PORTAL = True
+
+########################
 # TAPIS SETTINGS
 ########################
 
@@ -72,7 +77,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "system": "frontera",
         "scheme": "private",
         "api": "tapis",
-        "homeDir": "/scratch1/{tasdir}",
+        "hostEval": "SCRATCH",
         "icon": None,
     },
     {

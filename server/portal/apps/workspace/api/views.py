@@ -29,6 +29,7 @@ from portal.apps.workspace.api.utils import (
     push_keys_required_if_not_credentials_ensured
 )
 from portal.utils import get_client_ip
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
 
 
 logger = logging.getLogger(__name__)
@@ -506,11 +507,11 @@ class JobsView(BaseApiView):
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
+                default_system = evaluate_datafiles_storage_system(request.user.tapis_oauth, settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM)
                 if not job_post.get('archiveSystemId'):
-                    job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
+                    job_post['archiveSystemId'] = default_system['system']
                 if not job_post.get('archiveSystemDir'):
-                    tasdir = get_user_data(username)['homeDirectory']
-                    homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
+                    homeDir = default_system['homeDir']
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             execSystemId = job_post.get("execSystemId")

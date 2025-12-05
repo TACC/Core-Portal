@@ -875,14 +875,14 @@ files = [
 
 [[package]]
 name = "django"
-version = "4.2.25"
+version = "4.2.27"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "django-4.2.25-py3-none-any.whl", hash = "sha256:9584cf26b174b35620e53c2558b09d7eb180a655a3470474f513ff9acb494f8c"},
-    {file = "django-4.2.25.tar.gz", hash = "sha256:2391ab3d78191caaae2c963c19fd70b99e9751008da22a0adcc667c5a4f8d311"},
+    {file = "django-4.2.27-py3-none-any.whl", hash = "sha256:f393a394053713e7d213984555c5b7d3caeee78b2ccb729888a0774dff6c11a8"},
+    {file = "django-4.2.27.tar.gz", hash = "sha256:b865fbe0f4a3d1ee36594c5efa42b20db3c8bbb10dff0736face1c6e4bda5b92"},
 ]
 
 [package.dependencies]
@@ -3046,14 +3046,14 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
 name = "tapipy"
-version = "1.9.1"
+version = "25.4.0"
 description = "Python lib for interacting with an instance of the Tapis API Framework"
 optional = false
 python-versions = "<4.0,>=3.8"
 groups = ["main"]
 files = [
-    {file = "tapipy-1.9.1-py3-none-any.whl", hash = "sha256:cf53c2966936fa493220652fe063ffa994935eba45ecee0b65c17e8986ffdee3"},
-    {file = "tapipy-1.9.1.tar.gz", hash = "sha256:cc46197afc1bf2ffbaa8cbb25891dd06132a49e4208b2f35cfcaddd175593a77"},
+    {file = "tapipy-25.4.0-py3-none-any.whl", hash = "sha256:a3e193d512a0ed42e90c5040f0ae467e55a341c4157e4122aa45b8e37879f6f4"},
+    {file = "tapipy-25.4.0.tar.gz", hash = "sha256:f2a2410e7a3c3b3b9d1223a244d61b968dbb0537989446ccb43eece61ead27c7"},
 ]
 
 [package.dependencies]
@@ -3237,18 +3237,18 @@ files = [
 
 [[package]]
 name = "werkzeug"
-version = "3.1.3"
+version = "3.1.4"
 description = "The comprehensive WSGI web application library."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "werkzeug-3.1.3-py3-none-any.whl", hash = "sha256:54b78bf3716d19a65be4fceccc0d1d7b89e608834989dfae50ea87564639213e"},
-    {file = "werkzeug-3.1.3.tar.gz", hash = "sha256:60723ce945c19328679790e3282cc758aa4a6040e4bb330f53d30fa546d44746"},
+    {file = "werkzeug-3.1.4-py3-none-any.whl", hash = "sha256:2ad50fb9ed09cc3af22c54698351027ace879a0b60a3b5edf5730b2f7d876905"},
+    {file = "werkzeug-3.1.4.tar.gz", hash = "sha256:cd3cd98b1b92dc3b7b3995038826c68097dcb16f9baa63abe35f20eafeb9fe5e"},
 ]
 
 [package.dependencies]
-MarkupSafe = ">=2.1.1"
+markupsafe = ">=2.1.1"
 
 [package.extras]
 watchdog = ["watchdog (>=2.3)"]
@@ -3349,4 +3349,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "5fbeb7c151062025dccf6ee5df192450447460bb7126e26123ec8742e2b3a929"
+content-hash = "a40b24927bc1efdff56b3301d9386aaba2c277036b55e955fbfcc66d5cab16f7"

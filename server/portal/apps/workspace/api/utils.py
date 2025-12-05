@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Union
 from tapipy.tapis import TapisResult
-from tapipy.errors import BaseTapyException, UnauthorizedError
+from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.exceptions.api import ApiException
 
@@ -77,7 +77,7 @@ def system_credentials_ok(user: object, system_id: str, path: str = "/") -> bool
     try:
         tapis.systems.checkUserCredential(systemId=system_id, userName=user.username)
         return True
-    except UnauthorizedError:
+    except (UnauthorizedError, ForbiddenError):
         # If a system does not have a static effectiveUserId, it may not have a user credential.
         # In this case, we can test access to the system with a file listing.
         return test_system_access_ok(user, system_id, path)
@@ -118,7 +118,12 @@ def push_keys_required_if_not_credentials_ensured(
             system_id,
         )
         system_def = tapis.systems.getSystem(systemId=system_id)
-        if should_push_keys(system_def, user.username):
+        if is_tms_system(system_def):
+            create_system_credentials(
+                tapis, user.username, system_id, createTmsKeys=True
+            )
+
+        elif should_push_keys(system_def, user.username):
             logger.info(
                 "user: %s is missing system credentials and must push keys for system: %s",
                 user.username,
@@ -126,10 +131,6 @@ def push_keys_required_if_not_credentials_ensured(
             )
             return True
 
-        if is_tms_system(system_def):
-            create_system_credentials(
-                tapis, user.username, system_id, createTmsKeys=True
-            )
         else:
             raise ApiException(
                 f"User {user.username} does not have system credentials and \
