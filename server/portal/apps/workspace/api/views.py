@@ -215,8 +215,8 @@ class JobsView(BaseApiView):
         return data
 
     def search(self, client, request):
-        # declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
-        # all status search features to be moved to frontend in WP-1116
+        # TODO WP-1116: declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
+        # all status search features to be moved to frontend
         STATUS_TEXT_MAP = {
             'PENDING': 'Processing',
             'PROCESSING_INPUTS': 'Processing',
@@ -279,7 +279,7 @@ class JobsView(BaseApiView):
         qs_upper = query_string.upper() if query_string else ''
         qs_title = query_string.title() if query_string else ''
 
-        # all status search add-ons to be removed and added to drop-down feature on frontend
+        # TODO WP-1116: all status search add-ons to be removed and added to drop-down feature on frontend
         if status_searches:
             enhanced_status_conditions = []
 
@@ -323,7 +323,7 @@ class JobsView(BaseApiView):
                 f"(archiveSystemId like '%{qs_title}%'))",
             ]
 
-        # This status search workaround to be removed when status filtering is moved to frontend WP-1116
+        # TODO WP-1116: This status search workaround to be removed when status filtering is moved to frontend WP-1116
         # (Keep the fill-to-limit logic ONLY for Finished/Failed status searches) more info below
         # We have to handle our jobs query for "Finished" or "Failed" uniquely as
         # there we treat some jobs with tapis status of FAILED as being non-failures if they
