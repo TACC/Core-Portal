@@ -28,7 +28,7 @@ const JobsSearchInfoModal = ({ isOpen, toggle }) => {
             that you know for sure
           </li>
           <li>
-            You can also search by job status (Finished, Running, Failed, etc.)
+            You can also search by job status (Finished, Running, Failure, etc.)
           </li>
         </ul>
       </ModalBody>

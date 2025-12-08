@@ -2,8 +2,6 @@
 
 import json
 import logging
-from typing import Union
-from tapipy.tapis import TapisResult
 from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.exceptions.api import ApiException
