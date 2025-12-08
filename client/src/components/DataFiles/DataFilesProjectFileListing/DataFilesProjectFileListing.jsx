@@ -27,6 +27,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }, [system, path, fetchListing]);
 
   const metadata = useSelector((state) => state.projects.metadata);
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   const canEditSystem = useSelector(
     (state) =>
@@ -110,9 +113,13 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        <b>Keywords</b>
-        {metadata.keywords && <ShowMore>{metadata.keywords}</ShowMore>}
-        <br></br>
+        {!!enableWorkspaceKeywords && (
+          <>
+            <b>Keywords</b>
+            {metadata.keywords && <ShowMore>{metadata.keywords}</ShowMore>}
+            <br />
+          </>
+        )}
         <b>Description</b>
         {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
       </div>
