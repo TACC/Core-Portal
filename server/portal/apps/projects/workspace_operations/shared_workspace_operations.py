@@ -140,7 +140,7 @@ def create_workspace_dir(workspace_id: str, system_id=settings.PORTAL_PROJECTS_R
     return path
 
 
-def create_workspace_system(client, workspace_id: str, title: str, description="", owner=None, system_id=None, root_dir=None) -> str:
+def create_workspace_system(client, workspace_id: str, title: str, description: str, keywords: str, owner=None, system_id=None, root_dir=None) -> str:
     system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     root_dir = root_dir or f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}"
 
@@ -157,7 +157,7 @@ def create_workspace_system(client, workspace_id: str, title: str, description="
             "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
             "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY
         },
-        "notes": {"title": title, "description": description}
+        "notes": {"title": title, "description": description, "keywords": keywords}
     }
     if owner:
         system_args["owner"] = owner
@@ -185,7 +185,7 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def create_shared_workspace(client: Tapis, title: str, owner: str, description="", predefind_workspace_number=None, **kwargs):
+def create_shared_workspace(client: Tapis, title: str, description: str, keywords: str, owner: str, predefind_workspace_number=None, **kwargs):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -205,7 +205,7 @@ def create_shared_workspace(client: Tapis, title: str, owner: str, description="
                        "writer")
 
     # User creates the system and adds their credential
-    system_id = create_workspace_system(client, workspace_id, title, description)
+    system_id = create_workspace_system(client, workspace_id, title, description, keywords)
 
     # Give portal admin full permissions
     portal_admin = settings.PORTAL_ADMIN_USERNAME
@@ -305,23 +305,23 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
                        "add",
                        "writer")
 
-    client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
-
     # Ensure old owner retains access to Tapis system, as `changeSystemOwner` removes access for old owner
-    service_client.systems.shareSystem(systemId=system_id, users=[old_owner])
-    service_client.systems.grantUserPerms(
+    client.systems.shareSystem(systemId=system_id, users=[old_owner])
+    client.systems.grantUserPerms(
         systemId=system_id,
         userName=old_owner,
         permissions=["READ", "EXECUTE"])
 
+    client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
     return get_project(client, workspace_id)
 
 
-def update_project(client, workspace_id: str, title: str, description: str):
+def update_project(client, workspace_id: str, title: str, description: str, keywords: str):
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     client.systems.patchSystem(systemId=system_id,
                                notes={"title": title,
-                                      "description": description})
+                                      "description": description,
+                                      "keywords": keywords})
 
     return get_project(client, workspace_id)
 
@@ -430,7 +430,8 @@ def get_project(client, workspace_id, system_id=None):
         "description": getattr(system.notes, "description", None),
         "created": system.created,
         "projectId": workspace_id,
-        "members": users
+        "members": users,
+        "keywords": getattr(system.notes, "keywords", None),
 
     }
 

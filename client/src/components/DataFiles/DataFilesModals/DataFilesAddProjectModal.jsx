@@ -17,6 +17,13 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
+  const maxDescriptionLength =
+    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const maxTitleLength =
+    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   // logic to render addonComponents for DRP
   const portalName = useSelector((state) => state.workbench.portalName);
@@ -70,17 +77,18 @@ const DataFilesAddProjectModal = () => {
     history.push(`${match.path}/tapis/projects/${rootSystem}/${system}`);
   };
 
-  const addproject = (values) => {
+  const addproject = ({ title, description, keywords, ...values }) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
-        title: values.title,
-        description: values.description || null,
+        title,
+        description,
+        keywords,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
         })),
-        metadata: DataFilesAddProjectModalAddon ? values : null,
+        metadata: DataFilesAddProjectModalAddon ? { title, description, ...values } : null,
         onCreate,
       },
     });
@@ -99,11 +107,23 @@ const DataFilesAddProjectModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
     description: Yup.string()
       .min(1000, 'Description must be at least 1000 characters')
-      .max(5000, 'Description must be at most 5000 characters'),
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
+      .when([], {
+        is: () => maxDescriptionLength > 0,
+        then: (schema) => schema.required('Please enter a description.'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    keywords: Yup.string().matches(
+      /^\w+(\s*,\s*\w+)*$/,
+      'Please separate keywords with commas.'
+    ),
   });
 
   return (
@@ -116,7 +136,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '', description: '' }}
+          initialValues={{ title: '', description: '', keywords: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -127,19 +147,54 @@ const DataFilesAddProjectModal = () => {
             <ModalBody>
               <FormField
                 name="title"
+                aria-label="title"
                 label={
                   <div>
-                    {sharedWorkspacesDisplayName} Title{' '}
+                    Title{' '}
                     <small>
-                      <em>(Maximum 150 characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                     <br />
                   </div>
                 }
                 description={'The title should be descriptive and distinctive from related publications.'}
               />
+              {!!maxDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Description{' '}
+                      <small>
+                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  label={
+                    <div>
+                      Keywords{' '}
+                      <small>
+                        <em>(Optional, should be comma-separated)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
               {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
-              <DataFilesProjectMembers members={members} onAdd={onAdd} onRemove={onRemove} />
+              <DataFilesProjectMembers
+                members={members}
+                onAdd={onAdd}
+                onRemove={onRemove}
+              />
             </ModalBody>
             <ModalFooter>
               {error ? (

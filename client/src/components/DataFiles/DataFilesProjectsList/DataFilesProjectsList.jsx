@@ -76,7 +76,7 @@ const DataFilesProjectsList = ({ modal, rootSystem }) => {
 
   const columns = [
     {
-      Header: `${sharedWorkspacesDisplayName} Title`,
+      Header: 'Title',
       headerStyle: { textAlign: 'left' },
       accessor: 'title',
       Cell: (el) => (

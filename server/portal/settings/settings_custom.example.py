@@ -72,7 +72,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "system": "frontera",
         "scheme": "private",
         "api": "tapis",
-        "homeDir": "/scratch1/{tasdir}",
+        "hostEval": "SCRATCH",
         "icon": None,
     },
     {
@@ -263,6 +263,9 @@ _WORKBENCH_SETTINGS = {
     "hideSystemStatus": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
+    "maxDescriptionLength": 800,
+    "maxTitleLength": 150,
+    "enableWorkspaceKeywords": True,
     "noPHISystem": "",
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
