@@ -185,6 +185,8 @@ def test_projects_post(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
+            "keywords": "test1, test2, test3",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",
@@ -226,6 +228,8 @@ def test_projects_post_setfacl_job(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
+            "keywords": "test1, test2, test3",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",
@@ -288,6 +292,7 @@ def test_project_instance_get_by_id(
         "response": {
             "title": project_list["api_response"][0]["title"],
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "projectId": project_list["api_response"][0]["name"],
             "members": [
@@ -321,6 +326,7 @@ def test_project_instance_get_by_system(
         "response": {
             "title": project_list["api_response"][0]["title"],
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "projectId": project_list["api_response"][0]["name"],
             "members": [
@@ -351,12 +357,12 @@ def test_project_instance_patch(
 
     response = client.patch(
         "/api/projects/PRJ-123/",
-        json.dumps({"title": "New Title", "description": "new description"}),
+        json.dumps({"title": "New Title", "description": "new description", "keywords": None}),
     )
 
     mock_tapis_client.systems.patchSystem.assert_called_with(
         systemId="test.project.PRJ-123",
-        notes={"title": "New Title", "description": "new description"},
+        notes={"title": "New Title", "description": "new description", "keywords": None},
     )
 
     assert response.status_code == 200
@@ -365,6 +371,7 @@ def test_project_instance_patch(
         "response": {
             "title": "New Title",
             "description": "new description",
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "members": [
                 {
@@ -512,6 +519,7 @@ def test_members_view_add(
         "response": {
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "projectId": "PRJ-123",
             "members": [
                 {
@@ -585,6 +593,7 @@ def test_members_view_add_setfacl_job(
         "response": {
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "projectId": "PRJ-123",
             "members": [
                 {
@@ -658,6 +667,7 @@ def test_members_view_remove(
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
             "projectId": "PRJ-123",
+            "keywords": None,
             "title": project_list["api_response"][0]["title"],
             "members": [
                 {
@@ -710,6 +720,7 @@ def test_members_view_remove_setfacl_job(
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
             "projectId": "PRJ-123",
+            "keywords": None,
             "title": project_list["api_response"][0]["title"],
             "members": [
                 {

@@ -16,7 +16,7 @@ import DataFilesLinkModal from './DataFilesLinkModal';
 import DataFilesShowPathModal from './DataFilesShowPathModal';
 import DataFilesMakePublicModal from './DataFilesMakePublicModal';
 import DataFilesDownloadMessageModal from './DataFilesDownloadMessageModal';
-import DataFilesLargeDownloadModal from './DataFilesLargeDownloadModal';
+import DataFilesUnavailDownloadModal from './DataFilesUnavailDownloadModal';
 import DataFilesNoFoldersModal from './DataFilesNoFoldersModal';
 import './DataFilesModals.scss';
 
@@ -40,7 +40,7 @@ export default function DataFilesModals() {
       <DataFilesProjectEditDescriptionModal />
       <DataFilesMakePublicModal />
       <DataFilesDownloadMessageModal />
-      <DataFilesLargeDownloadModal />
+      <DataFilesUnavailDownloadModal />
       <DataFilesNoFoldersModal />
     </>
   );
