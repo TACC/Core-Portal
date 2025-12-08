@@ -2,8 +2,6 @@
 
 import json
 import logging
-from typing import Union
-from tapipy.tapis import TapisResult
 from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.exceptions.api import ApiException
@@ -18,32 +16,21 @@ def get_tapis_timeout_error_messages(job_id):
     ]
 
 
-def _get_job_notes(job_notes: Union[str, TapisResult]):
-    """
-    Normalize `job.notes` as in older version of Tapis `notes` is a JSON-formatted string
-    but this is being changed to a TapisResult object. Once all tenants are migrated to
-    return structured (non-string) 'notes', this can be
-    removed
-    """
-    if isinstance(job_notes, str):
-        return json.loads(job_notes)
-    return job_notes
-
-
 def check_job_for_timeout(job):
     """
     Check an interactive job for timeout status and mark it as finished
     since Tapis does not have native support for interactive jobs yet
     """
 
-    if hasattr(job, "notes"):
-        notes = _get_job_notes(job.notes)
+    if (hasattr(job, 'notes')):
+        if isinstance(job.notes, str):
+            notes = json.loads(job.notes)
+        else:
+            notes = job.notes if isinstance(job.notes, dict) else getattr(job.notes, '__dict__', {})
 
-        is_failed = job.status == "FAILED"
-        is_interactive = notes.get("isInteractive", False)
-        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(
-            job.remoteJobId
-        )
+        is_failed = job.status == 'FAILED'
+        is_interactive = notes.get('isInteractive', False) if isinstance(notes, dict) else False
+        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(job.remoteJobId)
 
         if is_failed and is_interactive and has_timeout_message:
             job.status = "FINISHED"
