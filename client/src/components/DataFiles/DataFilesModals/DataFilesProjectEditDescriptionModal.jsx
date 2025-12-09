@@ -84,7 +84,7 @@ const DataFilesProjectEditDescriptionModal = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
     keywords: Yup.string().matches(
-      /^\w+(\s*,\s*\w+)*$/,
+      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
       'Please separate keywords with commas.'
     ),
   });
