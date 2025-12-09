@@ -112,6 +112,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
+    dynamicform: {},
     unavailDownload: {},
     noFolders: {},
   },
@@ -124,6 +125,7 @@ export const initialFilesState = {
     modal: false,
     message: '',
   },
+  folderMetadata: null,
   listing: {
     FilesListing: [],
     modal: [],
@@ -164,6 +166,8 @@ export const initialFilesState = {
     editproject: false,
     makePublic: false,
     downloadMessage: false,
+    dynamicform: false,
+    publicationRequest: false,
     unavailDownload: false,
     noFolders: false,
   },
@@ -179,6 +183,8 @@ export const initialFilesState = {
     showpath: {},
     makePublic: {},
     downloadMessage: {},
+    dynamicform: {},
+    publicationRequest: {},
     unavailDownload: {},
   },
   refs: {},
@@ -199,6 +205,10 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: true },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {
+          ...state.folderMetadata,
+          [action.payload.section]: null,
+        },
         listing: { ...state.listing, [action.payload.section]: [] },
         params: {
           ...state.params,
@@ -222,6 +232,10 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {
+          ...state.folderMetadata,
+          [action.payload.section]: action.payload.folderMetadata,
+        },
         listing: {
           ...state.listing,
           [action.payload.section]: [...action.payload.files],
@@ -418,7 +432,7 @@ export function files(state = initialFilesState, action) {
           FilesListing: {
             api: 'tapis',
             scheme: 'projects',
-            system: '',
+            system: action.payload.system ?? '',
             path: '',
           },
         },

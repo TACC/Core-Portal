@@ -1,0 +1,116 @@
+@import '../../../../../styles/tools/mixins.scss';
+
+.root {
+  /* As a flex child */
+  flex-grow: 1;
+
+  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+}
+
+.title {
+  @include truncate-with-ellipsis;
+  max-width: 1400px;
+  font-size: 18px;
+}
+
+.controls {
+  display: flex;
+  align-items: flex-start;
+}
+
+.project-expand-card {
+  padding-top: 20px;
+}
+
+.project-expand-card > div:first-child {
+  padding-bottom: 20px;
+}
+
+.section-project-structure main {
+  margin-right: 0;
+  margin-bottom: 10px;
+}
+
+.tree-label {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid var(--global-color-primary--light);
+
+  // &:hover {
+  //     background-color: white;
+  // }
+}
+
+.metadata-description-div {
+  border: 1px solid var(--global-color-primary--light);
+  margin-left: 20px;
+  margin-right: 8px;
+  padding: 10px;
+  margin-top: -4px;
+}
+
+.description {
+  font-size: 0.875rem;
+}
+
+.description-section main {
+  padding-left: 1px;
+}
+
+.edit-button {
+  font-size: 0.875rem;
+  padding-bottom: 5px;
+}
+
+.node-name-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.data-type-box {
+  display: inline-block;
+  background-color: #808080; /* Light grey background */
+  color: #fff; /* Dark text color */
+  padding: 2px 8px; /* Small top/bottom padding, larger left/right padding */
+  border-radius: 12px; /* Rounded corners */
+  font-size: 0.875rem; /* Smaller font size */
+  margin: 8px 8px;
+  font-weight: bold;
+}
+
+.citation-box {
+  border: 1px solid var(--global-color-primary--light);
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.required-text {
+  color: var(--global-color-danger--normal);
+}
+
+.submit-div {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-button {
+  min-width: 200px !important;
+  margin: 20px;
+}
+
+.errors-div {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.88);
+  border: 1px solid #ffdcd6;
+  background-color: #fff3f0;
+}

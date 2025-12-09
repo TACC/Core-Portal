@@ -1,0 +1,13 @@
+.metadata-section main {
+  padding-left: 0;
+}
+
+.dataset-link {
+  composes: c-button from '../../../../../styles/components/c-button--new.css';
+  composes: c-button--size-small from '../../../../../styles/components/c-button--new.css';
+  composes: c-button__text from '../../../../../styles/components/c-button--new.css';
+  composes: c-button--as-link from '../../../../../styles/components/c-button--new.css';
+  font-size: 14px;
+  padding: 0;
+  margin-bottom: -3px;
+}

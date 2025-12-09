@@ -1,6 +1,6 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +10,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useAddonComponents,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
@@ -30,6 +31,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const reloadCallback = () => {
     history.push(location.pathname);
   };
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
 
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
@@ -118,7 +121,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       >
         Upload Files
       </ModalHeader>
-      <ModalBody className={containerStyleNames}>
+      <ModalBody className={`${containerStyleNames} ${styles['modal-body']}`}>
         <div className={styles.dropzone} disabled={dropZoneDisabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
@@ -141,6 +144,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
               setUploadedFiles={setUploadedFiles}
             />
           </div>
+        )}
+        {DataFilesUploadModalAddon && params.scheme === 'projects' && (
+          <DataFilesUploadModalAddon
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+          />
         )}
       </ModalBody>
       <ModalFooter>
