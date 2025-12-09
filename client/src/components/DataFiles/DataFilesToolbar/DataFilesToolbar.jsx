@@ -180,13 +180,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
     // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays an alert/prompts to compress if false
     const { exceedsSizeLimit, containsFolder } =
       canCompressForDownload(selectedFiles);
-    if (containsFolder) {
+    // no folders modal is not necessary to show in community + public data areas as downloading multiple files at once isn't possible
+    // there anyways
+    if (
+      containsFolder &&
+      params.scheme !== 'community' &&
+      params.scheme !== 'public'
+    ) {
       toggleNoFoldersModal();
-    } else if (canDownload && !exceedsSizeLimit) {
-      dispatch({
-        type: 'DATA_FILES_DOWNLOAD',
-        payload: { file: selectedFiles[0] },
-      });
     } else if (
       exceedsSizeLimit ||
       params.scheme === 'community' ||
@@ -200,6 +201,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
           'Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.';
       }
       toggleUnavailDownloadModal(customMessage);
+    } else if (canDownload && !exceedsSizeLimit) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: selectedFiles[0] },
+      });
     } else {
       toggle({
         operation: 'downloadMessage',
