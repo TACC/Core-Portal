@@ -66,7 +66,7 @@ const DataFilesAddProjectModal = () => {
       payload: {
         title,
         description,
-        keywords,
+        keywords: keywords.trim(),
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,

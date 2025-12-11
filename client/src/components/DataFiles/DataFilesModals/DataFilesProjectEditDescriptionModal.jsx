@@ -60,7 +60,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            keywords: values.keywords || '',
+            keywords: values.keywords.trim() || '',
           },
         },
       });
