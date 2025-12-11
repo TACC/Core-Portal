@@ -113,15 +113,21 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        {!!enableWorkspaceKeywords && (
+        {!!enableWorkspaceKeywords && !!metadata.keywords && (
           <>
             <b>Keywords</b>
             {metadata.keywords && <ShowMore>{metadata.keywords}</ShowMore>}
             <br />
           </>
         )}
-        <b>Description</b>
-        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
+        {!!metadata.description && (
+          <>
+            <b>Description</b>
+            {metadata.description && (
+              <ShowMore>{metadata.description}</ShowMore>
+            )}
+          </>
+        )}
       </div>
       <DataFilesListing
         api="tapis"
