@@ -83,7 +83,7 @@ const DataFilesAddProjectModal = () => {
       payload: {
         title,
         description,
-        keywords,
+        keywords: keywords.trim(),
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -121,7 +121,7 @@ const DataFilesAddProjectModal = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
     keywords: Yup.string().matches(
-      /^\w+(\s*,\s*\w+)*$/,
+      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
       'Please separate keywords with commas.'
     ),
   });

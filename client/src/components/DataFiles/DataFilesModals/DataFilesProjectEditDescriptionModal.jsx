@@ -66,7 +66,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            keywords: values.keywords || '',
+            keywords: values.keywords.trim() || '',
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
           modal: 'editproject',
@@ -93,7 +93,7 @@ const DataFilesProjectEditDescriptionModal = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
     keywords: Yup.string().matches(
-      /^\w+(\s*,\s*\w+)*$/,
+      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
       'Please separate keywords with commas.'
     ),
   }));
