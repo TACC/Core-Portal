@@ -165,7 +165,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
 
     await waitFor(() => getAllByText(/Title must be at most 150 characters/));
     await waitFor(() =>
-      getAllByText(/Description must be at most 800 characters/)
+      getAllByText(/Description must be minimum 1000 characters/)
     );
   });
 });

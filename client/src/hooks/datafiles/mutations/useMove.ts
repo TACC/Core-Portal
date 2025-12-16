@@ -11,6 +11,7 @@ export async function moveFileUtil({
   path,
   destSystem,
   destPath,
+  metadata
 }: {
   api: string;
   scheme: string;
@@ -18,10 +19,12 @@ export async function moveFileUtil({
   path: string;
   destSystem: string;
   destPath: string;
+  metadata?: Record<string, any>;
 }): Promise<{ name: string; path: string }> {
   const body = {
     dest_system: destSystem,
     dest_path: destPath,
+    metadata: metadata ?? null,
   };
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await apiClient.put(url, body);
@@ -79,6 +82,7 @@ function useMove() {
           path: file.path,
           destSystem: destSystem,
           destPath: destPath,
+          metadata: file.metadata,
         },
         {
           onSuccess: () => {

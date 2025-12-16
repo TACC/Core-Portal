@@ -294,3 +294,7 @@ _PORTAL_ELEVATED_ROLES = {
 # PORTAL INTERNAL DOCS SETTINGS
 ##################################
 _INTERNAL_DOCS_URL = "core/internal-docs/"
+
+
+_SMTP_HOST = "relay.tacc.utexas.edu"
+_DEFAULT_FROM_EMAIL="no-reply@digitalrocksportal.org"

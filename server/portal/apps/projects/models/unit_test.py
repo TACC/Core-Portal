@@ -4,7 +4,7 @@
    :synopsis: Projects app unit tests.
 """
 
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.utils import get_latest_project_storage
 # TODOv3: deprecate with projects
@@ -34,7 +34,7 @@ def test_create_metadata(mock_owner, mock_project_save_signal):
         'title': 'Project Title',
         'owner': mock_owner
     }
-    (meta, result) = ProjectMetadata.objects.get_or_create(
+    (meta, result) = LegacyProjectMetadata.objects.get_or_create(
         project_id=project_id,
         defaults=defaults
     )
@@ -52,7 +52,7 @@ def test_metadata_str(mock_owner, mock_project_save_signal):
     defaults = {
         'title': 'Project Title',
     }
-    meta = ProjectMetadata.objects.get_or_create(
+    meta = LegacyProjectMetadata.objects.get_or_create(
         project_id=project_id,
         defaults=defaults
     )
@@ -63,7 +63,7 @@ def test_metadata_str(mock_owner, mock_project_save_signal):
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
 def test_project_create(mock_owner, portal_project, agave_client, mock_project_save_signal):
     Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
-    assert ProjectMetadata.objects.all().count() == 1
+    assert LegacyProjectMetadata.objects.all().count() == 1
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
@@ -71,7 +71,7 @@ def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mo
     portal_project._create_dir.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
-    assert ProjectMetadata.objects.all().count() == 0
+    assert LegacyProjectMetadata.objects.all().count() == 0
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
@@ -79,7 +79,7 @@ def test_project_create_storage_failure(mock_owner, portal_project, agave_client
     portal_project._create_storage.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
-    assert ProjectMetadata.objects.all().count() == 0
+    assert LegacyProjectMetadata.objects.all().count() == 0
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
@@ -95,8 +95,8 @@ def test_metadata_create_on_project_load(agave_client, mock_owner, mock_project_
     #     'PRJ-123',
     #     storage=sys
     # )
-    assert ProjectMetadata.objects.all().count() == 1
-    assert ProjectMetadata.objects.last().pi == mock_owner
+    assert LegacyProjectMetadata.objects.all().count() == 1
+    assert LegacyProjectMetadata.objects.last().pi == mock_owner
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
