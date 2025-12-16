@@ -73,22 +73,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "default": True,
     },
     {
-        "name": "My Data (Frontera Scratch)",
-        "system": "frontera",
-        "scheme": "private",
-        "api": "tapis",
-        "hostEval": "SCRATCH",
-        "icon": None,
-    },
-    {
-        "name": "My Data (Frontera Home)",
-        "system": "frontera",
-        "scheme": "private",
-        "api": "tapis",
-        "homeDir": "/home1/{tasdir}",
-        "icon": None,
-    },
-    {
         'name': 'Public Data',
         'system': 'cloud.data',
         'scheme': 'public',
