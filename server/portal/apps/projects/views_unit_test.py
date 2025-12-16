@@ -689,9 +689,6 @@ def test_members_view_remove(
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user,u:test_user",
     )
-    mock_tapis_client.systems.removeUserCredential.assert_called_with(
-        systemId="test.project.PRJ-123", userName="test_user"
-    )
     mock_tapis_client.systems.unShareSystem.assert_called_with(
         systemId="test.project.PRJ-123", users=["test_user"]
     )
@@ -753,9 +750,6 @@ def test_members_view_remove_setfacl_job(
             ],
         },
         tags=["portalName:test"],
-    )
-    mock_tapis_client.systems.removeUserCredential.assert_called_with(
-        systemId="test.project.PRJ-123", userName="test_user"
     )
     mock_tapis_client.systems.unShareSystem.assert_called_with(
         systemId="test.project.PRJ-123", users=["test_user"]
