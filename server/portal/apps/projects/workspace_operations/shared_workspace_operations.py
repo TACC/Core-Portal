@@ -269,7 +269,6 @@ def remove_user(client, workspace_id: str, username: str):
                        username,
                        "remove",
                        "none")
-    client.systems.removeUserCredential(systemId=system_id, userName=username)
     client.systems.unShareSystem(systemId=system_id, users=[username])
     client.systems.revokeUserPerms(systemId=system_id,
                                    userName=username,
