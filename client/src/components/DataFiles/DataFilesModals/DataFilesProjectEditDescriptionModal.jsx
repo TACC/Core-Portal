@@ -66,7 +66,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            keywords: values.keywords.trim() || '',
+            keywords: values?.keywords.trim() || '',
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
           modal: 'editproject',
