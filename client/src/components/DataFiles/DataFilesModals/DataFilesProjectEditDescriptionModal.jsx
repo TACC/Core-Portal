@@ -92,10 +92,12 @@ const DataFilesProjectEditDescriptionModal = () => {
         then: (schema) => schema.required('Please enter a description.'),
         otherwise: (schema) => schema.notRequired(),
       }),
-    keywords: Yup.string().matches(
-      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
-      'Please separate keywords with commas.'
-    ),
+    ...(enableWorkspaceKeywords && {
+      keywords: Yup.string().matches(
+        /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
+        'Please separate keywords with commas.'
+      ),
+    }),
   }));
 
   return (
