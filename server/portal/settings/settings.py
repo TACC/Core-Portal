@@ -677,7 +677,7 @@ SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_
 
 SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
-DOCS_CHATBOT_URL=getattr(settings_custom, '_DOCS_CHATBOT_URL', None)
+DOCS_CHATBOT_URL = getattr(settings_custom, '_DOCS_CHATBOT_URL', None)
 
 """
 SETTINGS: EXPORTS
