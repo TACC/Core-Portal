@@ -677,6 +677,8 @@ SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_
 
 SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
+DOCS_CHATBOT_URL=getattr(settings_custom, '_DOCS_CHATBOT_URL', None)
+
 """
 SETTINGS: EXPORTS
 """
@@ -687,7 +689,8 @@ SETTINGS_EXPORT = [
     'DEBUG',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE',
-    'WORKBENCH_SETTINGS'
+    'WORKBENCH_SETTINGS',
+    'DOCS_CHATBOT_URL'
 ]
 
 """
