@@ -14,7 +14,7 @@
 </li>
 {% endif %}
 {% if user.is_authenticated %}
-<li class="nav-item dropdown">
+<li class="nav-item dropdown" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="icon icon-user"></i>
     <span>{{ user.get_username }}</span>
@@ -45,7 +45,7 @@
   </nav>
 </li>
 {% else %}
-<li class="nav-item">
+<li class="nav-item" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link" href="{% url 'portal_auth:tapis_oauth' %}">
     <i class="icon icon-user"></i> Log in
   </a>
@@ -86,5 +86,6 @@
     background-clip: padding-box !important;
     color: #fff !important;
     margin-left: 10px;
+    margin-right: 10px;
   }
 </style>
