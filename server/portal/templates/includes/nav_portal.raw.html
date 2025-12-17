@@ -4,8 +4,17 @@
 <!-- FAQ: This template loads independently at a unique url (see `urls.py`)
           so CMS and User Guide can render this markup into their markup. -->
 
+<div style="display:flex; flex-direction: row; align-items: center;">
+{% if settings.DOCS_CHATBOT_URL %}
+<li>
+  <a href="{{settings.DOCS_CHATBOT_URL}}" target="_blank" rel="noopener noreferrer">
+  <button class="ai-button">
+    <b><i class="icon icon-bulb" aria-label="Ask AI"></i>Ask AI (Beta)</b>
+  </button>
+</li>
+{% endif %}
 {% if user.is_authenticated %}
-<li class="nav-item dropdown">
+<li class="nav-item dropdown" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="icon icon-user"></i>
     <span>{{ user.get_username }}</span>
@@ -36,9 +45,47 @@
   </nav>
 </li>
 {% else %}
-<li class="nav-item">
+<li class="nav-item" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link" href="{% url 'portal_auth:tapis_oauth' %}">
     <i class="icon icon-user"></i> Log in
   </a>
 </li>
 {% endif %}
+</div>
+
+
+<style>
+  .ai-button {
+    margin: 0;
+    overflow: visible;
+    text-transform: none;
+    line-height: inherit;
+    vertical-align: baseline;
+    -webkit-appearance: button;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    box-sizing: border-box;
+    outline: none;
+    position: relative;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    white-space: nowrap;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    user-select: none;
+    touch-action: manipulation;
+    font-size: 14px;
+    height: 32px;
+    padding: 0px 15px;
+    border-radius: 0;
+    background: linear-gradient(135deg, #47a59d, #337ab7) !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+    color: #fff !important;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+</style>
