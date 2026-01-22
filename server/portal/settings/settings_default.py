@@ -30,6 +30,11 @@ _RT_TAG = "core_portal"
 _CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
 
 ########################
+# TACC SETTINGS
+########################
+_IS_TACC_PORTAL = True
+
+########################
 # TAPIS SETTINGS
 ########################
 
@@ -66,22 +71,6 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/work/{tasdir}",
         "icon": None,
         "default": True,
-    },
-    {
-        "name": "My Data (Frontera Scratch)",
-        "system": "frontera",
-        "scheme": "private",
-        "api": "tapis",
-        "homeDir": "/scratch1/{tasdir}",
-        "icon": None,
-    },
-    {
-        "name": "My Data (Frontera Home)",
-        "system": "frontera",
-        "scheme": "private",
-        "api": "tapis",
-        "homeDir": "/home1/{tasdir}",
-        "icon": None,
     },
     {
         'name': 'Public Data',
@@ -195,7 +184,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 """
 
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {"step": "portal.apps.onboarding.steps.allocation.AllocationStep", "settings": {}},
     {
         "step": "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep",
         "settings": {
@@ -212,10 +200,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             #       Defaults to 'Accounting' if left blank
             "rt_queue": _RT_QUEUE,
         },
-    },
-    {
-        "step": "portal.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-        "settings": {"credentials_systems": ["cloud.data"]},
+        "retry": True,
     },
 ]
 
@@ -307,6 +292,9 @@ _WORKBENCH_SETTINGS = {
                'DataFilesManageProjectModalAddon', 'DataFilesUploadModalListingTableAddon'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
+    "maxDescriptionLength": 5000,
+    "maxTitleLength": 150,
+    "enableWorkspaceKeywords": False,
     "noPHISystem": "",
     "customDashboardSection": None,
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",

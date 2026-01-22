@@ -102,7 +102,6 @@ function useUpload() {
             });
           },
           onError: (error) => {
-            console.log('The Error is', error);
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: { status: 'ERROR', key: index, operation: 'upload' },

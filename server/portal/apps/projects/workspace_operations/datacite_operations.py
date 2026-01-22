@@ -133,7 +133,7 @@ def upsert_datacite_json(datacite_json: dict, doi: Optional[str] = None):
         "data": {
             "type": "dois",
             "relationships": {
-                "client": {"data": {"type": "clients", "id": "tdl.tacc"}}
+                "client": {"data": {"type": "clients", "id": settings.DATACITE_USER}}
             },
             "attributes": datacite_json,
         }

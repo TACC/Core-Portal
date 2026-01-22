@@ -198,12 +198,19 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
         source_project = ProjectMetadata.get_project_by_id(source_project_id)
 
-        # Mint a DataCite DOI
-        existing_doi = source_project.value.get("doi", None)
+        try:
+            # Mint a DataCite DOI
+            existing_doi = source_project.value.get("doi", None)
+            logger.info(f'Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}')
 
-        datacite_json = get_datacite_json(publication_tree)
-        datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
-        doi = datacite_resp["data"]["id"]
+            datacite_json = get_datacite_json(publication_tree)
+            datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+            doi = datacite_resp["data"]["id"]
+            logger.info(f'Successfully minted DataCite DOI for project {project_id}: {doi}')
+        except Exception as e:
+            logger.error(f'Error minting DataCite DOI for project {project_id}: {e}')
+            raise Exception(f'Error minting DOI for project {project_id}: {e}')
+            
 
         # Update project metadata with datacite doi
         source_project.value['doi'] = doi
@@ -224,7 +231,11 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         )
 
         if not settings.DEBUG:
-            publish_datacite_doi(doi)
+            try:
+                publish_datacite_doi(doi)
+            except Exception as e:
+                logger.error(f'Error publishing DataCite DOI for project {project_id}: {e}')
+                raise Exception(f'Error publishing DOI for project {project_id}: {e}')
 
         upload_metadata_file(published_workspace_id, pub_metadata.tree)
 

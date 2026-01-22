@@ -13,8 +13,11 @@ export function getSystemName(host) {
   ) {
     return 'Corral';
   }
-  const systemName = host.split('.')[0];
-  return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
+  if (isTACCHost(host)) {
+    const systemName = host.split('.')[0];
+    return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
+  }
+  return host;
 }
 
 /**
@@ -102,3 +105,5 @@ export function findSystemOrProjectDisplayName(
       return findSystemDisplayName(systemList, system, isRoot, scheme, path);
   }
 }
+
+export const isTACCHost = (host) => host.endsWith('.tacc.utexas.edu');

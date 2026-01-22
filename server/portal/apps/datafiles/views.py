@@ -22,13 +22,13 @@ from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
-from portal.apps.users.utils import get_user_data
 from portal.apps.workspace.api.utils import (
     push_keys_required_if_not_credentials_ensured
 )
 from .utils import notify, NOTIFY_ACTIONS
 import dateutil.parser
 from portal.utils.decorators import retry
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -43,16 +43,10 @@ class SystemListingView(BaseApiView):
         response = {}
         if request.user.is_authenticated:
 
-            # Evaluate user home dir via TAS
-            username = request.user.username
-            tasdir = get_user_data(username)['homeDirectory']
-            response['system_list'] = [
-                {
-                    **system,
-                    'homeDir': system['homeDir'].format(tasdir=tasdir, username=username)
-                }
-                if 'homeDir' in system else system for system in portal_systems
-            ]
+            tapis_oauth = request.user.tapis_oauth
+            response["system_list"] = evaluate_datafiles_storage_systems(
+               tapis_oauth, portal_systems
+            )
 
             default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
             if default_system and default_system.get('scheme') != 'projects':

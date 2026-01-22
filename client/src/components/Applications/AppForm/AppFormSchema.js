@@ -42,8 +42,10 @@ const FormSchema = (app) => {
           return;
         }
 
+        const fieldName = param.key ?? param.name;
+        const fieldLabel = param.notes?.label ?? fieldName;
         const field = {
-          label: param.notes?.label ?? param.name ?? param.key,
+          label: fieldLabel,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',
@@ -53,7 +55,7 @@ const FormSchema = (app) => {
         if (param.notes?.enum_values) {
           field.type = 'select';
           field.options = param.notes?.enum_values;
-          appFields.schema.parameterSet[parameterSet][field.label] =
+          appFields.schema.parameterSet[parameterSet][fieldName] =
             Yup.string().oneOf(
               field.options.map((enumVal) => {
                 if (typeof enumVal === 'string') {
@@ -64,29 +66,29 @@ const FormSchema = (app) => {
             );
         } else {
           if (param.notes?.fieldType === 'email') {
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.string().email('Must be a valid email.');
           } else if (param.notes?.fieldType === 'number') {
             field.type = 'number';
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.number();
           } else {
             field.type = 'text';
-            appFields.schema.parameterSet[parameterSet][field.label] =
+            appFields.schema.parameterSet[parameterSet][fieldName] =
               Yup.string();
           }
         }
         if (field.required) {
-          appFields.schema.parameterSet[parameterSet][field.label] =
-            appFields.schema.parameterSet[parameterSet][field.label].required(
+          appFields.schema.parameterSet[parameterSet][fieldName] =
+            appFields.schema.parameterSet[parameterSet][fieldName].required(
               'Required'
             );
         }
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
-            appFields.schema.parameterSet[parameterSet][field.label] =
-              appFields.schema.parameterSet[parameterSet][field.label].matches(
+            appFields.schema.parameterSet[parameterSet][fieldName] =
+              appFields.schema.parameterSet[parameterSet][fieldName].matches(
                 regex,
                 param.notes.validator.message
               );
@@ -94,16 +96,13 @@ const FormSchema = (app) => {
             console.warn('Invalid regex pattern for app');
           }
         }
-        appFields.parameterSet[parameterSet][field.label] = field;
-        appFields.defaults.parameterSet[parameterSet][field.label] =
+        appFields.parameterSet[parameterSet][fieldName] = field;
+        appFields.defaults.parameterSet[parameterSet][fieldName] =
           param.arg ?? param.value ?? '';
       });
     }
   );
 
-  // The default is to not show target path for file inputs.
-  const showTargetPathForFileInputs =
-    app.definition.notes.showTargetPath ?? false;
   (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
     if (input.notes?.isHidden) {
@@ -139,31 +138,31 @@ const FormSchema = (app) => {
         : input.sourceUrl;
 
     // Add targetDir for all sourceUrl
-    if (!showTargetPathForFileInputs) {
-      return;
-    }
-    const targetPathName = getTargetPathFieldName(input.name);
-    appFields.schema.fileInputs[targetPathName] = Yup.string();
-    appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
-      targetPathName
-    ].matches(
-      /^tapis:\/\//g,
-      "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
-    );
+    // The default is to not show target path for file inputs.
+    if (app.definition.notes?.showTargetPath || input.notes?.showTargetPath) {
+      const targetPathName = getTargetPathFieldName(input.name);
+      appFields.schema.fileInputs[targetPathName] = Yup.string();
+      appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
+        targetPathName
+      ].matches(
+        /^tapis:\/\//g,
+        "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
+      );
 
-    appFields.schema.fileInputs[targetPathName] = false;
-    appFields.fileInputs[targetPathName] = {
-      label: 'Target Path for ' + input.name,
-      description:
-        'The name of the ' +
-        input.name +
-        ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
-      required: false,
-      readOnly: field.readOnly,
-      type: 'text',
-    };
-    appFields.defaults.fileInputs[targetPathName] =
-      checkAndSetDefaultTargetPath(input.targetPath);
+      appFields.schema.fileInputs[targetPathName] = false;
+      appFields.fileInputs[targetPathName] = {
+        label: 'Target Path for ' + input.name,
+        description:
+          'The name of the ' +
+          input.name +
+          ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
+        required: false,
+        readOnly: field.readOnly,
+        type: 'text',
+      };
+      appFields.defaults.fileInputs[targetPathName] =
+        checkAndSetDefaultTargetPath(input.targetPath);
+    }
   });
   return appFields;
 };

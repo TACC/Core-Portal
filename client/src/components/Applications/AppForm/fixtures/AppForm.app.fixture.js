@@ -438,8 +438,9 @@ export const helloWorldAppSubmissionPayloadFixture = {
       containerArgs: [],
       schedulerOptions: [
         {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
+          name: 'Project Allocation Account',
+          description:
+            'The project allocation account associated with this job execution.',
           include: true,
           arg: '-A TACC-ACI',
         },
@@ -458,6 +459,7 @@ export const helloWorldAppSubmissionPayloadFixture = {
     appVersion: '0.0.1',
     execSystemId: 'frontera',
     execSystemLogicalQueue: 'development',
+    reservation: '',
   },
   licenseType: null,
   isInteractive: false,

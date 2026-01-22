@@ -54,6 +54,9 @@ const DataFilesProjectFileListing = ({
   const folderMetadata = useSelector(
     (state) => state.files.folderMetadata?.FilesListing
   );
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   const canEditSystem = useSelector(
     (state) =>
@@ -160,7 +163,7 @@ const DataFilesProjectFileListing = ({
       <div className={styles.description}>
         <>
           {DataFilesProjectFileListingMetadataAddon ? (
-            <ShowMore key={`${system}-${path}`}>
+            <ShowMore key={`${system}`}>
               <DataFilesProjectFileListingMetadataAddon
                 folderMetadata={folderMetadata}
                 metadata={metadata}

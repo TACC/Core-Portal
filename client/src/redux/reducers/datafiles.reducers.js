@@ -113,7 +113,7 @@ export const initialFilesState = {
       loading: false,
     },
     dynamicform: {},
-    largeDownload: {},
+    unavailDownload: {},
     noFolders: {},
   },
   loadingScroll: {
@@ -168,7 +168,7 @@ export const initialFilesState = {
     downloadMessage: false,
     dynamicform: false,
     publicationRequest: false,
-    largeDownload: false,
+    unavailDownload: false,
     noFolders: false,
   },
   modalProps: {
@@ -185,6 +185,7 @@ export const initialFilesState = {
     downloadMessage: {},
     dynamicform: {},
     publicationRequest: {},
+    unavailDownload: {},
   },
   refs: {},
   preview: {

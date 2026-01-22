@@ -11,7 +11,7 @@ import { useAddonComponents } from 'hooks/datafiles';
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.files.modals.editproject);
-  const { title, description, projectId } = useSelector(
+  const { title, description, projectId, keywords } = useSelector(
     (state) => state.projects.metadata
   );
   const isUpdating = useSelector((state) => {
@@ -28,6 +28,13 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
+  const maxDescriptionLength =
+    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const maxTitleLength =
+    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
@@ -38,8 +45,9 @@ const DataFilesProjectEditDescriptionModal = () => {
     () => ({
       title,
       description: description || '',
+      keywords: keywords || '',
     }),
-    [title, description]
+    [title, description, keywords]
   );
 
   const toggle = () => {
@@ -58,6 +66,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
+            keywords: values?.keywords.trim() || '',
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
           modal: 'editproject',
@@ -67,87 +76,115 @@ const DataFilesProjectEditDescriptionModal = () => {
     [projectId, dispatch]
   );
 
-  const [validationSchema, setValidationSchema] = useState(
-    Yup.object().shape({
-      title: Yup.string()
-        .min(3, 'Title must be at least 3 characters')
-        .max(150, 'Title must be at most 150 characters')
-        .required('Please enter a title.'),
-      description: Yup.string().max(
-        800,
-        'Description must be at most 800 characters'
+  const [validationSchema, setValidationSchema] = useState(Yup.object().shape({
+    title: Yup.string()
+      .min(3, 'Title must be at least 3 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
+      .required('Please enter a title.'),
+    description: Yup.string()
+      .min(1000, 'Description must be minimum 1000 characters')
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
+      .when([], {
+        is: () => maxDescriptionLength > 0,
+        then: (schema) => schema.required('Please enter a description.'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    ...(enableWorkspaceKeywords && {
+      keywords: Yup.string().matches(
+        /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
+        'Please separate keywords with commas.'
       ),
-    })
-  );
+    }),
+  }));
 
   return (
     <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <Formik
-        initialValues={initialValues}
-        onSubmit={setProjectTitleDescription}
-        validationSchema={validationSchema}
-      >
-        {({ isValid, dirty }) => (
-          <Form>
-            <ModalHeader toggle={toggle} charCode="&#xe912;">
-              Edit Dataset
-            </ModalHeader>
-            <ModalBody className={styles['modal-body']}>
-              <FormField
-                name="title"
-                aria-label="title"
-                label={
-                  <div>
-                    Dataset Title{' '}
-                    <small>
-                      <em>(Maximum 150 characters)</em>
-                    </small>
-                  </div>
-                }
-              />
-              <FormField
-                name="description"
-                aria-label="description"
-                label={
-                  <div>
-                    Dataset Description{' '}
-                    <small>
-                      <em>(Maximum 800 characters)</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
-                rows={5}
-                className={styles['description-textarea']}
-              />
-              {DataFilesProjectEditDescriptionModalAddon && (
-                <DataFilesProjectEditDescriptionModalAddon
-                  setValidationSchema={setValidationSchema}
+      {/* <ModalBody> */}
+        <Formik
+          initialValues={initialValues}
+          onSubmit={setProjectTitleDescription}
+          validationSchema={validationSchema}
+        >
+          {({ isValid, dirty }) => (
+            <Form>
+              <ModalHeader toggle={toggle} charCode="&#xe912;">
+                Edit Dataset
+              </ModalHeader>
+              <ModalBody className={styles['modal-body']}>
+                <FormField
+                  name="title"
+                  aria-label="title"
+                  label={
+                    <div>
+                      Title{' '}
+                      <small>
+                        <em>(Maximum {maxTitleLength} characters)</em>
+                      </small>
+                    </div>
+                  }
                 />
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <div className={styles['button-container']}>
-                {updatingError && (
-                  <Message type="error" dataTestid="updating-error">
-                    Something went wrong.
-                  </Message>
+                {!!maxDescriptionLength && (
+                  <FormField
+                    name="description"
+                    aria-label="description"
+                    label={
+                      <div>
+                        Description{' '}
+                        <small>
+                          <em>(Maximum {maxDescriptionLength} characters)</em>
+                        </small>
+                      </div>
+                    }
+                    type="textarea"
+                    className={styles['description-textarea']}
+                  />
                 )}
-                <Button
-                  attr="submit"
-                  type="primary"
-                  size="long"
-                  className={styles['update-button']}
-                  disabled={!isValid || !dirty}
-                  isLoading={isUpdating}
-                >
-                  Update Changes
-                </Button>
-              </div>
-            </ModalFooter>
+                {!!enableWorkspaceKeywords && (
+                  <FormField
+                    name="keywords"
+                    aria-label="keywords"
+                    label={
+                      <div>
+                        Keywords{' '}
+                        <small>
+                          <em>(Optional, should be comma-separated)</em>
+                        </small>
+                      </div>
+                    }
+                    type="textarea"
+                    className={styles['description-textarea']}
+                  />
+                )}
+                {DataFilesProjectEditDescriptionModalAddon && (
+                  <DataFilesProjectEditDescriptionModalAddon
+                    setValidationSchema={setValidationSchema}
+                  />
+                )}
+                <div className={styles['button-container']}>
+                  {updatingError && (
+                    <Message type="error" dataTestid="updating-error">
+                      Something went wrong.
+                    </Message>
+                  )}
+                  <Button
+                    attr="submit"
+                    type="primary"
+                    size="long"
+                    className={styles['update-button']}
+                    disabled={!isValid || !dirty}
+                    isLoading={isUpdating}
+                  >
+                    Update Changes
+                  </Button>
+                </div>
+              </ModalBody>
           </Form>
         )}
       </Formik>
+      {/* </ModalBody> */}
     </Modal>
   );
 };

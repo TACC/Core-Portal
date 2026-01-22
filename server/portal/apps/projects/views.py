@@ -154,6 +154,7 @@ class ProjectsApiView(BaseApiView):
         description = request.POST.get('description')
         metadata = request.POST.get('metadata')
         cover_image = request.FILES.get('cover_image')
+        keywords = request.POST.get('keywords')
 
         workspace_number = increment_workspace_count()
         system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
@@ -170,7 +171,7 @@ class ProjectsApiView(BaseApiView):
 
         client = request.user.tapis_oauth.client
         session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-        system_id = create_shared_workspace(client, title, request.user.username, description, workspace_number, tapis_tracking_id=f"portals.{session_key_hash}")
+        system_id = create_shared_workspace(client, title, description, keywords, request.user.username, workspace_number, tapis_tracking_id=f"portals.{session_key_hash}")
 
         # Upload cover image to media folder
         if cover_image: 
@@ -313,6 +314,7 @@ class ProjectInstanceApiView(BaseApiView):
         description = query_dict.get('description')
         metadata = query_dict.get('metadata')
         cover_image = multi_value_dict.get('cover_image')
+        keywords = query_dict.get('keywords')
         
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         
@@ -330,7 +332,7 @@ class ProjectInstanceApiView(BaseApiView):
 
         client = request.user.tapis_oauth.client
 
-        workspace_def = update_project(client, project_id, title, description)
+        workspace_def = update_project(client, project_id, title, description, keywords)
 
         if metadata is not None:
             metadata = json.loads(metadata)

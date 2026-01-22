@@ -42,6 +42,13 @@ const DataFilesDownloadMessageModalFixture = {
           id: 234,
         },
         {
+          name: 'test4.txt',
+          type: 'file',
+          length: 500,
+          path: '/test4.txt',
+          id: 234,
+        },
+        {
           name: 'testFolder',
           format: 'folder',
           type: 'dir',

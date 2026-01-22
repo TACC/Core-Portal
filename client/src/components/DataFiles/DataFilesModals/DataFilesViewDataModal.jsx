@@ -3,12 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesViewDataModal.module.scss';
 import DescriptionList from '_common/DescriptionList';
-
-const formatLabel = (key) =>
-  key
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+import { formatLabel } from '../../_custom/drp/utils/utils';
 
 const DataFilesViewDataModal = () => {
   const dispatch = useDispatch();

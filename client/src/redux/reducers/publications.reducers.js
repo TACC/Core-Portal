@@ -10,6 +10,11 @@ export const initialState = {
     error: null,
     result: null,
   },
+  tree: {
+    error: null,
+    loading: false,
+    value: null,
+  },
 };
 
 export default function publications(state = initialState, action) {
@@ -137,6 +142,34 @@ export default function publications(state = initialState, action) {
         ...state,
         operation: initialState.operation,
       };
+    case 'PUBLICATIONS_GET_TREE_STARTED':
+      return {
+        ...state,
+        tree: {
+          loading: true,
+          error: null,
+          value: null,
+        },
+      };
+    case 'PUBLICATIONS_GET_TREE_SUCCESS':
+      return {
+        ...state,
+        tree: {
+          value: action.payload,
+          loading: false,
+          error: null,
+        },
+      };
+    case 'PUBLICATIONS_GET_TREE_FAILED':
+      return {
+        ...state,
+        tree: {
+          ...state.tree,
+          value: null,
+          error: action.payload,
+          loading: false,
+        },
+      };  
     default:
       return state;
   }

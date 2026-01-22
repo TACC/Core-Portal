@@ -10,7 +10,7 @@ import DataFilesViewDataModal from '../DataFiles/DataFilesModals/DataFilesViewDa
 import DataFilesProjectFileListing from '../DataFiles/DataFilesProjectFileListing/DataFilesProjectFileListing';
 import DataFilesToolbar from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import NotificationToast from '../Toasts';
-import DataFilesLargeDownloadModal from '../DataFiles/DataFilesModals/DataFilesLargeDownloadModal';
+import DataFilesUnavailDownloadModal from '../DataFiles/DataFilesModals/DataFilesUnavailDownloadModal';
 import DataFilesPublicationDownloadModal from '../DataFiles/DataFilesModals/DataFilesPublicationDownloadModal';
 import { getDecodedPath } from '../../utils/datafilesUtil';
 import { PUBLICATIONS } from '../../constants/routes'
@@ -51,7 +51,7 @@ function PublicationDetailPublicView({ params }) {
       <DataFilesProjectCitationModal />
       <DataFilesViewDataModal />
       <DataFilesCopyModal />
-      <DataFilesLargeDownloadModal />
+      <DataFilesUnavailDownloadModal />
       <DataFilesPublicationDownloadModal />
     </div>
   );

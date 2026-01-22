@@ -48,8 +48,8 @@ const DataFilesPreviewModal = () => {
 
   const togglePreview = () => toggle({ operation: 'preview', props: {} });
 
-  const toggleLargeDownloadModal = () =>
-    toggle({ operation: 'largeDownload', props: {} });
+  const toggleUnavailDownloadModal = () =>
+    toggle({ operation: 'unavailDownload', props: {} });
 
   const download = () => {
     // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
@@ -60,7 +60,7 @@ const DataFilesPreviewModal = () => {
         payload: { file: params },
       });
     } else {
-      toggleLargeDownloadModal();
+      toggleUnavailDownloadModal();
     }
   };
 

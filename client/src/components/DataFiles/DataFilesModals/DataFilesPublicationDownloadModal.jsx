@@ -40,7 +40,7 @@ const DataFilesPublicationDownloadModal = () => {
   const maxFileSize = 2 * 1024 * 1024 * 1024;
   useEffect(() => {
     if (isOpen && archiveSize > maxFileSize) {
-      toggleModal({ operation: 'largeDownload' });
+      toggleModal({ operation: 'unavailDownload' });
       toggleModal({ operation: 'publicationDownload', props: {} });
     }
   }, [archiveSize, maxFileSize]);
