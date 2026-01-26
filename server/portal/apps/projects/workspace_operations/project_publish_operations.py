@@ -256,6 +256,9 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             'archive_project_id': published_workspace_id
         }, countdown=30)
 
+        if not settings.DEBUG:
+            send_publication_accept_email.apply_async(args=[project_id])
+
 @shared_task(bind=True, max_retries=3, queue='default')
 def copy_graph_and_files_for_review_system(self, user_access_token, source_workspace_id, review_workspace_id, source_system_id, review_system_id):    
     logger.info(f'Starting copy task for system {source_system_id} to system {review_system_id}')

@@ -497,7 +497,7 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
     else:
     # Create the target workspace system
         create_workspace_system(
-            service_client, target_workspace_id, title, description, None,
+            service_client, target_workspace_id, title, description, None, None,
             f"{system_prefix}.{target_workspace_id}",
             f"{root_dir}/{target_workspace_id}"
         )
