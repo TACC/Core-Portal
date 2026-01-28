@@ -16,7 +16,7 @@ import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { getSystemName } from 'utils/systems';
+import { getSystemName, isTACCHost } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
   isTargetPathEmpty,
@@ -33,6 +33,7 @@ import {
   isAppUsingDynamicExecSystem,
   getAllocationValidation,
   isJobTypeBATCH,
+  isSystemTypeSLURM,
   buildMapOfAllocationsToExecSystems,
   getAllocationList,
   getDefaultAllocation,
@@ -284,7 +285,8 @@ export const AppSchemaForm = ({ app }) => {
         state.allocations.loading ||
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
-        hasCorral,
+        hasCorral ||
+        defaultSystem?.notes?.noAllocationRequired,
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
@@ -296,7 +298,7 @@ export const AppSchemaForm = ({ app }) => {
         getDefaultExecSystem(
           app,
           allocationToExecSysMap.get(state.allocations.portal_alloc) ?? []
-        ) ?? '',
+        ) ?? null,
       defaultSystemId,
       defaultArchivePath,
       keyService,
@@ -369,9 +371,9 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
+    reservation: '',
   };
 
-  let missingAllocation = false;
   if (isJobTypeBATCH(app)) {
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
@@ -384,25 +386,6 @@ export const AppSchemaForm = ({ app }) => {
       app,
       getExecSystemFromId(app, initialValues.execSystemId)
     )?.name;
-    if (!hasDefaultAllocation && hasStorageSystems) {
-      jobSubmission.error = true;
-      jobSubmission.response = {
-        message: `You need an allocation on ${getSystemName(
-          defaultStorageHost
-        )} to run this application.`,
-      };
-      missingAllocation = true;
-    } else if (!allocations.length) {
-      jobSubmission.error = true;
-      jobSubmission.response = {
-        message: isAppUsingDynamicExecSystem(app)
-          ? `You need an allocation to run this application.`
-          : `You need an allocation on ${getSystemName(
-              app.execSystems[0].host
-            )} to run this application.`,
-      };
-      missingAllocation = true;
-    }
   }
 
   const sectionMessage = keyService ? (
@@ -481,18 +464,6 @@ export const AppSchemaForm = ({ app }) => {
             <div className="appDetail-error">
               <SectionMessage type="warning">
                 Error: {jobSubmission.response.message}
-                {missingAllocation && (
-                  <>
-                    &nbsp;Please click&nbsp;
-                    <Link
-                      to="/workbench/allocations/manage"
-                      className="wb-link"
-                    >
-                      here
-                    </Link>
-                    &nbsp;to request access.
-                  </>
-                )}
               </SectionMessage>
             </div>
           ) : (
@@ -544,7 +515,12 @@ export const AppSchemaForm = ({ app }) => {
               fileInputs: Yup.object({ ...appFields.schema.fileInputs }),
               // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
               name: Yup.string()
+                .trim()
                 .max(64, 'Must be 64 characters or less')
+                .matches(
+                  /^\S+$/,
+                  'Job name cannot contain spaces. Use hyphens or underscores instead.'
+                )
                 .required('Required'),
               execSystemId: getExecSystemIdValidation(app),
               execSystemLogicalQueue: isJobTypeBATCH(app)
@@ -565,24 +541,29 @@ export const AppSchemaForm = ({ app }) => {
               ),
               archiveSystemId: Yup.string().notRequired(),
               archiveSystemDir: Yup.string().notRequired(),
-              allocation: isJobTypeBATCH(app)
-                ? getAllocationValidation(allocations).test(
-                    'exec-systems-check',
-                    'You need an allocation with access to at least one system to run this application.',
-                    function (value) {
-                      const isValidExecSystems =
-                        !isAppUsingDynamicExecSystem(app) ||
-                        (isAppUsingDynamicExecSystem(app) &&
-                          currentExecSystems.length > 0);
-                      return isValidExecSystems;
-                    }
-                  )
-                : Yup.string().notRequired(),
+              allocation:
+                exec_sys &&
+                isJobTypeBATCH(app) &&
+                isTACCHost(exec_sys?.host) &&
+                isSystemTypeSLURM(exec_sys)
+                  ? getAllocationValidation(allocations).test(
+                      'exec-systems-check',
+                      'You need an allocation with access to at least one system to run this application.',
+                      function (value) {
+                        const isValidExecSystems =
+                          !isAppUsingDynamicExecSystem(app) ||
+                          (isAppUsingDynamicExecSystem(app) &&
+                            currentExecSystems.length > 0);
+                        return isValidExecSystems;
+                      }
+                    )
+                  : Yup.string().notRequired(),
             });
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const job = cloneDeep(values);
+          job.name = job.name.trim();
 
           // Transform input field values into format that jobs service wants.
           // File Input structure will have 2 fields if target path is required by the app.
@@ -681,13 +662,28 @@ export const AppSchemaForm = ({ app }) => {
               job.parameterSet.schedulerOptions = [];
             }
             job.parameterSet.schedulerOptions.push({
-              name: 'TACC Allocation',
+              name: 'Project Allocation Account',
               description:
-                'The TACC allocation associated with this job execution',
+                'The project allocation account associated with this job execution.',
               include: true,
               arg: `-A ${job.allocation}`,
             });
             delete job.allocation;
+          }
+
+          // Add reservation scheduler option
+          if (job.reservation) {
+            job.parameterSet.schedulerOptions.push({
+              name: 'TACC Reservation',
+              description:
+                'If you have a TACC reservation, enter the reservation string here.',
+              include: true,
+              arg: `--reservation=${job.reservation}`,
+              notes: {
+                isReservation: true,
+              },
+            });
+            delete job.reservation;
           }
 
           dispatch({
@@ -720,234 +716,311 @@ export const AppSchemaForm = ({ app }) => {
             formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
+          React.useEffect(() => {
+            isFirstRender.current = false;
+          }, []);
+
+          const selectedExecSystem = getExecSystemFromId(
+            app,
+            values.execSystemId
+          );
+          let missingAllocationMessage = '';
+          if (!hasDefaultAllocation && hasStorageSystems) {
+            // Check if allocation required for default storage system, aka archive system
+            missingAllocationMessage = `You need an allocation on ${getSystemName(
+              defaultStorageHost
+            )} to run this application.`;
+          } else if (
+            // Check if allocation required for execution system
+            selectedExecSystem &&
+            !allocations.length &&
+            isTACCHost(selectedExecSystem?.host) &&
+            isJobTypeBATCH(app) &&
+            isSystemTypeSLURM(selectedExecSystem)
+          ) {
+            missingAllocationMessage = isAppUsingDynamicExecSystem(app)
+              ? `You need an allocation to run this application.`
+              : `You need an allocation on ${
+                  selectedExecSystem?.notes?.label ??
+                  getSystemName(selectedExecSystem?.host)
+                } to run this application.`;
+          }
+
           const readOnly =
             missingLicense ||
             !hasStorageSystems ||
             jobSubmission.submitting ||
-            (app.definition.jobType === 'BATCH' && missingAllocation);
-          React.useEffect(() => {
-            isFirstRender.current = false;
-          }, []);
+            missingAllocationMessage;
+
           return (
-            <Form>
-              <HandleDependentFieldChanges
-                app={app}
-                formStateUpdateHandler={formStateUpdateHandler}
-              />
-              <FormGroup tag="fieldset" disabled={readOnly || systemNeedsKeys}>
-                {Object.keys(appFields.fileInputs).length > 0 && (
-                  <div className="appSchema-section">
-                    <div className="appSchema-header">
-                      <span>Inputs</span>
-                    </div>
-                    {Object.entries(appFields.fileInputs).map(
-                      ([name, field]) => {
-                        // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
-                        return isTargetPathField(name) ? (
-                          <FormField
-                            {...field}
-                            name={`fileInputs.${name}`}
-                            placeholder="Target Path Name"
-                            key={`fileInputs.${name}`}
-                          />
-                        ) : (
-                          <FormField
-                            {...field}
-                            name={`fileInputs.${name}`}
-                            tapisFile
-                            SelectModal={DataFilesSelectModal}
-                            placeholder="Browse Data Files"
-                            key={`fileInputs.${name}`}
-                          />
-                        );
-                      }
-                    )}
-                  </div>
-                )}
-                {Object.entries(appFields.parameterSet)
-                  .map(
-                    ([parameterSet, parameterValue]) =>
-                      Object.keys(parameterValue).length
-                  )
-                  .reduce((a, b) => a + b) > 0 && (
-                  <div className="appSchema-section">
-                    <div className="appSchema-header">
-                      <span>Parameters</span>
-                    </div>
-                    {Object.entries(appFields.parameterSet).map(
-                      ([parameterSet, parameterValue]) => {
-                        return Object.entries(parameterValue).map(
-                          ([name, field]) => (
+            <>
+              {missingAllocationMessage && (
+                <div className="appDetail-error">
+                  <SectionMessage type="warning">
+                    {missingAllocationMessage}
+                    <>
+                      &nbsp;Please click&nbsp;
+                      <Link
+                        to="/workbench/allocations/manage"
+                        className="wb-link"
+                      >
+                        here
+                      </Link>
+                      &nbsp;to request access.
+                    </>
+                  </SectionMessage>
+                </div>
+              )}
+              <Form>
+                <HandleDependentFieldChanges
+                  app={app}
+                  formStateUpdateHandler={formStateUpdateHandler}
+                />
+                <FormGroup
+                  tag="fieldset"
+                  disabled={readOnly || systemNeedsKeys}
+                >
+                  {Object.keys(appFields.fileInputs).length > 0 && (
+                    <div className="appSchema-section">
+                      <div className="appSchema-header">
+                        <span>Inputs</span>
+                      </div>
+                      {Object.entries(appFields.fileInputs).map(
+                        ([name, field]) => {
+                          // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
+                          return isTargetPathField(name) ? (
                             <FormField
                               {...field}
-                              name={`parameterSet.${parameterSet}.${name}`}
-                              key={`parameterSet.${parameterSet}.${name}`}
-                            >
-                              {field.options
-                                ? field.options.map((item) => {
-                                    let val = item;
-                                    if (val instanceof String) {
-                                      const tmp = {};
-                                      tmp[val] = val;
-                                      val = tmp;
-                                    }
-                                    return Object.entries(val).map(
-                                      ([key, value]) => (
-                                        <option key={key} value={key}>
-                                          {value}
-                                        </option>
-                                      )
-                                    );
-                                  })
-                                : null}
-                            </FormField>
-                          )
-                        );
-                      }
-                    )}
-                  </div>
-                )}
-                <div className="appSchema-section">
-                  <div className="appSchema-header">
-                    <span>Configuration</span>
-                  </div>
-                  {app.definition.jobType === 'BATCH' && (
-                    <FormField
-                      label="Allocation"
-                      name="allocation"
-                      description="Select the project allocation you would like to use with this job submission."
-                      type="select"
-                      required
-                    >
-                      <option hidden disabled>
-                        {' '}
-                      </option>
-                      {allocations.sort().map((projectId) => (
-                        <option key={projectId} value={projectId}>
-                          {projectId}
-                        </option>
-                      ))}
-                    </FormField>
+                              name={`fileInputs.${name}`}
+                              placeholder="Target Path Name"
+                              key={`fileInputs.${name}`}
+                            />
+                          ) : (
+                            <FormField
+                              {...field}
+                              name={`fileInputs.${name}`}
+                              tapisFile
+                              SelectModal={DataFilesSelectModal}
+                              placeholder="Browse Data Files"
+                              key={`fileInputs.${name}`}
+                            />
+                          );
+                        }
+                      )}
+                    </div>
                   )}
-                  {app.definition.jobType === 'BATCH' &&
-                    isAppUsingDynamicExecSystem(app) && (
+                  {Object.entries(appFields.parameterSet)
+                    .map(
+                      ([parameterSet, parameterValue]) =>
+                        Object.keys(parameterValue).length
+                    )
+                    .reduce((a, b) => a + b) > 0 && (
+                    <div className="appSchema-section">
+                      <div className="appSchema-header">
+                        <span>Parameters</span>
+                      </div>
+                      {Object.entries(appFields.parameterSet).map(
+                        ([parameterSet, parameterValue]) => {
+                          return Object.entries(parameterValue).map(
+                            ([name, field]) => (
+                              <FormField
+                                {...field}
+                                name={`parameterSet.${parameterSet}.${name}`}
+                                key={`parameterSet.${parameterSet}.${name}`}
+                              >
+                                {field.options
+                                  ? field.options.map((item) => {
+                                      let val = item;
+                                      if (val instanceof String) {
+                                        const tmp = {};
+                                        tmp[val] = val;
+                                        val = tmp;
+                                      }
+                                      return Object.entries(val).map(
+                                        ([key, value]) => (
+                                          <option key={key} value={key}>
+                                            {value}
+                                          </option>
+                                        )
+                                      );
+                                    })
+                                  : null}
+                              </FormField>
+                            )
+                          );
+                        }
+                      )}
+                    </div>
+                  )}
+                  <div className="appSchema-section">
+                    <div className="appSchema-header">
+                      <span>Configuration</span>
+                    </div>
+                    {isJobTypeBATCH(app) &&
+                      selectedExecSystem &&
+                      isSystemTypeSLURM(selectedExecSystem) &&
+                      (isTACCHost(selectedExecSystem?.host) ? (
+                        <FormField
+                          label="Allocation"
+                          name="allocation"
+                          description="Select the project allocation you would like to use with this job submission."
+                          type="select"
+                          required
+                        >
+                          <option hidden disabled>
+                            {' '}
+                          </option>
+                          {allocations.sort().map((projectId) => (
+                            <option key={projectId} value={projectId}>
+                              {projectId}
+                            </option>
+                          ))}
+                        </FormField>
+                      ) : (
+                        <FormField
+                          label="Allocation"
+                          name="allocation"
+                          description="Enter the project allocation you would like to use with this job submission."
+                          type="text"
+                        />
+                      ))}
+                    {isJobTypeBATCH(app) &&
+                      isAppUsingDynamicExecSystem(app) && (
+                        <FormField
+                          label="System"
+                          name="execSystemId"
+                          description="Select the system this job will execute on. The systems available to run the job is dependent on allocation."
+                          type="select"
+                          required
+                        >
+                          <option hidden disabled>
+                            {' '}
+                          </option>
+                          {formState.execSystems
+                            .sort()
+                            .map((exec_system_id) => (
+                              <option
+                                key={exec_system_id}
+                                value={exec_system_id}
+                              >
+                                {app.execSystems.find(
+                                  (e) => e.id == exec_system_id
+                                )?.notes?.label ??
+                                  getSystemName(
+                                    getExecSystemFromId(app, exec_system_id)
+                                      ?.host
+                                  )}
+                              </option>
+                            ))}
+                        </FormField>
+                      )}
+                    {isJobTypeBATCH(app) && (
                       <FormField
-                        label="System"
-                        name="execSystemId"
-                        description="Select the system this job will execute on. The systems available to run the job is dependent on allocation."
+                        label="Queue"
+                        name="execSystemLogicalQueue"
+                        description="Select the queue this job will execute on."
                         type="select"
                         required
                       >
-                        <option hidden disabled>
-                          {' '}
-                        </option>
-                        {formState.execSystems.sort().map((exec_system_id) => (
-                          <option key={exec_system_id} value={exec_system_id}>
-                            {app.execSystems.find((e) => e.id == exec_system_id)
-                              ?.notes?.label ??
-                              getSystemName(
-                                getExecSystemFromId(app, exec_system_id)?.host
-                              )}
+                        {formState.appQueueValues.map((queueName) => (
+                          <option key={queueName} value={queueName}>
+                            {queueName}
                           </option>
                         ))}
                       </FormField>
                     )}
-                  {app.definition.jobType === 'BATCH' && (
+                    {isJobTypeBATCH(app) &&
+                      app.definition.notes.showReservation && (
+                        <FormField
+                          label="TACC Reservation"
+                          name="reservation"
+                          description="If you have a TACC reservation, enter the reservation string here."
+                          type="text"
+                        />
+                      )}
                     <FormField
-                      label="Queue"
-                      name="execSystemLogicalQueue"
-                      description="Select the queue this job will execute on."
-                      type="select"
+                      label="Maximum Job Runtime (minutes)"
+                      description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+                        app,
+                        getExecSystemFromId(app, values.execSystemId),
+                        values.execSystemLogicalQueue
+                      )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                      name="maxMinutes"
+                      type="number"
                       required
-                    >
-                      {formState.appQueueValues.map((queueName) => (
-                        <option key={queueName} value={queueName}>
-                          {queueName}
-                        </option>
-                      ))}
-                    </FormField>
-                  )}
-                  <FormField
-                    label="Maximum Job Runtime (minutes)"
-                    description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
-                      app,
-                      getExecSystemFromId(app, values.execSystemId),
-                      values.execSystemLogicalQueue
-                    )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                    name="maxMinutes"
-                    type="number"
-                    required
-                  />
-                  {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
-                    <>
-                      <FormField
-                        label="Cores Per Node"
-                        description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
-                        name="coresPerNode"
-                        type="number"
-                      />
-                      <FormField
-                        label="Node Count"
-                        description="Number of requested process nodes for the job."
-                        name="nodeCount"
-                        type="number"
-                      />
-                    </>
-                  ) : null}
-                </div>
-                <div className="appSchema-section">
-                  <div className="appSchema-header">
-                    <span>Output</span>
+                    />
+                    {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
+                      <>
+                        <FormField
+                          label="Cores Per Node"
+                          description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
+                          name="coresPerNode"
+                          type="number"
+                        />
+                        <FormField
+                          label="Node Count"
+                          description="Number of requested process nodes for the job."
+                          name="nodeCount"
+                          type="number"
+                        />
+                      </>
+                    ) : null}
                   </div>
-                  <FormField
-                    label="Job Name"
-                    description="A recognizable name for this job."
-                    name="name"
-                    type="text"
-                    required
-                  />
-                  {!app.definition.notes.isInteractive ? (
-                    <>
-                      <FormField
-                        label="Archive System"
-                        description="System into which output files are archived after application execution."
-                        name="archiveSystemId"
-                        type="text"
-                        placeholder={
-                          defaultSystemId || app.definition.archiveSystemId
-                        }
-                      />
-                      <FormField
-                        label="Archive Directory"
-                        description="Directory into which output files are archived after application execution."
-                        name="archiveSystemDir"
-                        type="text"
-                        placeholder={
-                          defaultArchivePath || app.definition.archiveSystemDir
-                        }
-                      />
-                    </>
-                  ) : null}
-                </div>
-                <Button
-                  attr="submit"
-                  size="medium"
-                  type="primary"
-                  disabled={!isValid}
-                  isLoading={jobSubmission.submitting}
-                  iconNameBefore={jobSubmission.error ? 'alert' : null}
-                >
-                  Submit
-                </Button>
-                <Button
-                  onClick={handleReset}
-                  className="btn-resetForm"
-                  type="link"
-                >
-                  Reset Fields to Defaults
-                </Button>
-              </FormGroup>
-            </Form>
+                  <div className="appSchema-section">
+                    <div className="appSchema-header">
+                      <span>Output</span>
+                    </div>
+                    <FormField
+                      label="Job Name"
+                      description="A recognizable name for this job."
+                      name="name"
+                      type="text"
+                      required
+                    />
+                    {!app.definition.notes.isInteractive ? (
+                      <>
+                        <FormField
+                          label="Archive System"
+                          description="System into which output files are archived after application execution."
+                          name="archiveSystemId"
+                          type="text"
+                          placeholder={
+                            defaultSystemId || app.definition.archiveSystemId
+                          }
+                        />
+                        <FormField
+                          label="Archive Directory"
+                          description="Directory into which output files are archived after application execution."
+                          name="archiveSystemDir"
+                          type="text"
+                          placeholder={
+                            defaultArchivePath ||
+                            app.definition.archiveSystemDir
+                          }
+                        />
+                      </>
+                    ) : null}
+                  </div>
+                  <Button
+                    attr="submit"
+                    size="medium"
+                    type="primary"
+                    disabled={!isValid}
+                    isLoading={jobSubmission.submitting}
+                    iconNameBefore={jobSubmission.error ? 'alert' : null}
+                  >
+                    Submit
+                  </Button>
+                  <Button
+                    onClick={handleReset}
+                    className="btn-resetForm"
+                    type="link"
+                  >
+                    Reset Fields to Defaults
+                  </Button>
+                </FormGroup>
+              </Form>
+            </>
           );
         }}
       </Formik>

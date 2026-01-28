@@ -16,7 +16,7 @@ describe('app utility to get Execution System from Id', () => {
       ...helloWorldAppFixture,
       execSystems: [],
     };
-    expect(getExecSystemFromId(app, 'foobar')).toBeNull();
+    expect(getExecSystemFromId(app, 'foobar')).toBeUndefined();
   });
 });
 
@@ -59,6 +59,6 @@ describe('app utility to get Default Execution System from Id', () => {
       ...helloWorldAppFixture,
       execSystems: [],
     };
-    expect(getDefaultExecSystem(app)).toBeNull();
+    expect(getDefaultExecSystem(app)).toBeUndefined();
   });
 });

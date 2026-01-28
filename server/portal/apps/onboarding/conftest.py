@@ -38,7 +38,7 @@ def mock_retry_step(regular_user, settings):
     retry_step = SetupEvent.objects.create(
         user=regular_user,
         step="portal.apps.onboarding.steps.test_steps.MockStep",
-        state=SetupState.USERWAIT,
+        state=SetupState.PENDING,
         message="message"
     )
     yield retry_step

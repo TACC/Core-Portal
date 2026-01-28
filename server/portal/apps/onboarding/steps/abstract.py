@@ -64,6 +64,13 @@ class AbstractStep:
         self.state = SetupState.FAILED
         self.log(message, data)
 
+    def deny(self, message, data=None):
+        """
+        Mark this setup step as denied by staff.
+        """
+        self.state = SetupState.STAFFDENY
+        self.log(message, data)
+
     def complete(self, message, data=None):
         """
         Mark this setup step as completed

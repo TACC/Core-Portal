@@ -15,13 +15,13 @@ services:
       - postgrescms
 
   redis:
-    image: redis:latest
+    image: redis:7
     volumes:
       - core_portal_redis_data:/data
     container_name: core_portal_redis
 
   rabbitmq:
-    image: rabbitmq:3.7.17-management
+    image: rabbitmq:4-management
     volumes:
       - core_portal_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_portal_rabbitmq
     env_file: ../env_files/rabbitmq.env

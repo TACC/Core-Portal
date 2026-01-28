@@ -6,6 +6,7 @@ const allocationsFixture = {
     'stampede2.tacc.utexas.edu': ['TACC-ACI'],
     'maverick2.tacc.utexas.edu': ['TACC-ACI'],
     'frontera.tacc.utexas.edu': ['TACC-ACI'],
+    'vista.tacc.utexas.edu': ['TACC-ACI'],
   },
   portal_alloc: 'TACC-ACI',
   active: [
@@ -21,6 +22,10 @@ const allocationsFixture = {
         {
           name: 'frontera',
           host: 'frontera.tacc.utexas.edu',
+        },
+        {
+          name: 'vista',
+          host: 'vista.tacc.utexas.edu',
         },
       ],
     },

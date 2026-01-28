@@ -10,7 +10,7 @@ import styles from './DataFilesProjectEditDescription.module.scss';
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.files.modals.editproject);
-  const { title, description, projectId } = useSelector(
+  const { title, description, projectId, keywords } = useSelector(
     (state) => state.projects.metadata
   );
   const isUpdating = useSelector((state) => {
@@ -27,13 +27,21 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
+  const maxDescriptionLength =
+    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const maxTitleLength =
+    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   const initialValues = useMemo(
     () => ({
       title,
       description: description || '',
+      keywords: keywords || '',
     }),
-    [title, description]
+    [title, description, keywords]
   );
 
   const toggle = () => {
@@ -52,6 +60,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
+            keywords: values.keywords.trim() || '',
           },
         },
       });
@@ -62,18 +71,28 @@ const DataFilesProjectEditDescriptionModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
-    description: Yup.string().max(
-      800,
-      'Description must be at most 800 characters'
+    description: Yup.string()
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
+      .when([], {
+        is: () => maxDescriptionLength > 0,
+        then: (schema) => schema.required('Please enter a description.'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    keywords: Yup.string().matches(
+      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
+      'Please separate keywords with commas.'
     ),
   });
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Descriptions
+        Edit Workspace
       </ModalHeader>
       <ModalBody>
         <Formik
@@ -88,27 +107,45 @@ const DataFilesProjectEditDescriptionModal = () => {
                 aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Title{' '}
                     <small>
-                      <em>(Maximum 150 characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                   </div>
                 }
               />
-              <FormField
-                name="description"
-                aria-label="description"
-                label={
-                  <div>
-                    Workspace Description{' '}
-                    <small>
-                      <em>(Maximum 800 characters)</em>
-                    </small>
-                  </div>
-                }
-                type="textarea"
-                className={styles['description-textarea']}
-              />
+              {!!maxDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Description{' '}
+                      <small>
+                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
+              )}
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  label={
+                    <div>
+                      Keywords{' '}
+                      <small>
+                        <em>(Optional, should be comma-separated)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
+              )}
               <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">

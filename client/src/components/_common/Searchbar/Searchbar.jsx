@@ -48,7 +48,7 @@ const Searchbar = ({
     const prevQuery = queryString.parse(location.search);
     const updatedQuery = queryString.stringify({
       ...prevQuery,
-      query_string: query || undefined,
+      query_string: query?.trim() || undefined,
       page: !infiniteScroll ? 1 : undefined,
     });
     history.push(`${location.pathname}?${updatedQuery}`);

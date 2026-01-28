@@ -88,6 +88,15 @@ export const helloWorldAppFixture = {
             inputMode: 'FIXED',
             notes: {},
           },
+          {
+            name: 'TACC Reservation',
+            description: 'Reservation input string',
+            inputMode: 'INCLUDE_ON_DEMAND',
+            arg: '--reservation=foobar',
+            notes: {
+              isHidden: true,
+            },
+          },
         ],
         envVariables: [],
         archiveFilter: {
@@ -120,6 +129,7 @@ export const helloWorldAppFixture = {
       label: 'Hello World (Sleep 3m)',
       helpUrl: 'https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/',
       hideNodeCountAndCoresPerNode: true,
+      showReservation: true,
     },
     uuid: 'de2bce33-8dbc-479e-b8a2-6a9d27d583d1',
     deleted: false,
@@ -428,8 +438,9 @@ export const helloWorldAppSubmissionPayloadFixture = {
       containerArgs: [],
       schedulerOptions: [
         {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
+          name: 'Project Allocation Account',
+          description:
+            'The project allocation account associated with this job execution.',
           include: true,
           arg: '-A TACC-ACI',
         },
@@ -448,6 +459,7 @@ export const helloWorldAppSubmissionPayloadFixture = {
     appVersion: '0.0.1',
     execSystemId: 'frontera',
     execSystemLogicalQueue: 'development',
+    reservation: '',
   },
   licenseType: null,
   isInteractive: false,

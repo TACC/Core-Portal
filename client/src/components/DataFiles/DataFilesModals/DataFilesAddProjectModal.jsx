@@ -16,6 +16,13 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
+  const maxDescriptionLength =
+    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const maxTitleLength =
+    useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   useEffect(() => {
     setMembers([
@@ -53,11 +60,13 @@ const DataFilesAddProjectModal = () => {
     history.push(`${match.path}/tapis/projects/${system}`);
   };
 
-  const addproject = ({ title }) => {
+  const addproject = ({ title, description, keywords }) => {
     dispatch({
       type: 'PROJECTS_CREATE',
       payload: {
         title,
+        description,
+        keywords: keywords.trim(),
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -80,8 +89,22 @@ const DataFilesAddProjectModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(150, 'Title must be at most 150 characters')
+      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
+    description: Yup.string()
+      .max(
+        maxDescriptionLength,
+        `Description must be at most ${maxDescriptionLength} characters`
+      )
+      .when([], {
+        is: () => maxDescriptionLength > 0,
+        then: (schema) => schema.required('Please enter a description.'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    keywords: Yup.string().matches(
+      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
+      'Please separate keywords with commas.'
+    ),
   });
 
   return (
@@ -94,7 +117,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '' }}
+          initialValues={{ title: '', description: '', keywords: '' }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -105,15 +128,46 @@ const DataFilesAddProjectModal = () => {
             <ModalBody>
               <FormField
                 name="title"
+                aria-label="title"
                 label={
                   <div>
-                    Workspace Title{' '}
+                    Title{' '}
                     <small>
-                      <em>(Maximum 150 characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                   </div>
                 }
               />
+              {!!maxDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Description{' '}
+                      <small>
+                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  label={
+                    <div>
+                      Keywords{' '}
+                      <small>
+                        <em>(Optional, should be comma-separated)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                />
+              )}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}

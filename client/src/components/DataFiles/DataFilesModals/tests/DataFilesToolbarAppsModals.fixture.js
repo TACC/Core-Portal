@@ -4,7 +4,18 @@ export const compressAppFixture = {
       description: 'Compress a file or folder for download.',
       dynamicExecSystem: false,
       execSystemConstraints: null,
-      execSystemId: 'frontera',
+      execSystemId: 'cloud.data.exec',
+    },
+  },
+};
+
+export const extractAppFixture = {
+  definition: {
+    jobAttributes: {
+      description: 'Extract a tar, tar.gz, tgz, gz, or zip file.',
+      dynamicExecSystem: false,
+      execSystemConstraints: null,
+      execSystemId: 'cloud.data.exec',
     },
   },
 };
@@ -12,7 +23,7 @@ export const compressAppFixture = {
 const testFileSize1 = 1.5 * 1024 * 1024 * 1024;
 const testFileSize2 = 1 * 1024 * 1024 * 1024;
 
-const DataFilesCompressModalFixture = {
+const DataFilesToolbarAppsModalFixture = {
   files: {
     operationStatus: {
       copy: {},
@@ -78,7 +89,8 @@ const DataFilesCompressModalFixture = {
   },
   workbench: {
     config: {
-      compressApp: { id: 'compress', version: '0.0.4' },
+      compressApp: { id: 'compress-express', version: '0.0.1' },
+      extractApp: { id: 'extract-express', version: '0.0.1' },
     },
   },
   allocations: {
@@ -105,4 +117,4 @@ const DataFilesCompressModalFixture = {
   },
 };
 
-export default DataFilesCompressModalFixture;
+export default DataFilesToolbarAppsModalFixture;
