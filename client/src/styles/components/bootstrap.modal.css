@@ -1,5 +1,4 @@
-/* TODO: Migrate any other should-be-global modal styles to here */
-/* FP-344: Consider a Modal component and a CSS module */
+/* TODO: Use Core-Styles' bootstrap.modal.css instead */
 /*
 Modal (Bootstrap)
 
@@ -38,7 +37,7 @@ Styleguide Components.Bootstrap.Modal
   font-weight: normal;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
 
-  @extend .x-truncate--one-line;
+  @mixin truncate--one-line;
 }
 
 /* To darken close button */
@@ -56,7 +55,7 @@ Styleguide Components.Bootstrap.Modal
 /* To render modal close button icon as a Cortal icon */
 /* CAVEAT: Pass `charCode="&#xe912;"` to `<ModalHeader>` */
 .modal-header .close span {
-  /* To mimic `.icon` styles without `@extend` or `composes` (unavailable) */
+  /* TODO: Use `.icon` styles via a `@mixin` instead */
   /* HACK: Copied (and reduced and edited) from `src/styles/trumps/icon...` */
   font-size: 1.5rem; /* bigger to match header text font height (like design) */
   font-family: Cortal-Icons !important;

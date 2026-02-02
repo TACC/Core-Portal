@@ -46,6 +46,7 @@ Markup:
 
 Styleguide Components.Button
 */
+@import url('@tacc/core-styles/src/lib/_imports/tools/x-truncate.css');
 
 /* BASE */
 
@@ -63,11 +64,7 @@ Styleguide Components.Button
   font-weight: 500;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 
-  /* When possible: @extend %x-truncate--one-line; */
-  /* SEE: https://github.com/tacc-wbomar/Core-Styles/blob/20e4cb7/source/_imports/tools/x-truncate.css#L36-L41 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  @mixin truncate--one-line;
 }
 
 .c-button:not(:disabled) {
