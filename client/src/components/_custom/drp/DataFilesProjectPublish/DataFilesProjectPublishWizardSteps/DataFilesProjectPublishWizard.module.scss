@@ -59,9 +59,15 @@
   padding-left: 1px;
 }
 
+.tree-button-div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .edit-button {
   font-size: 0.875rem;
-  padding-bottom: 5px;
 }
 
 .node-name-div {
