@@ -1,5 +1,5 @@
 import { expectSaga } from 'redux-saga-test-plan';
-import { pushSystemKeys } from 'redux-saga/effects';
+import { pushSystemKeys } from '../sagas/systems.sagas';
 import { fetchUtil } from 'utils/fetchUtil';
 import { vi } from 'vitest';
 
@@ -15,7 +15,18 @@ describe('pushSystemKeys', () => {
       token: 'mockToken',
       hostname: 'mockHostname',
     };
-    expectSaga(pushSystemKeys, {})
+    const action = {
+      type: 'SYSTEMS_PUSH_KEYS',
+      payload: {
+        systemId: 'test.system',
+        hostname: 'mockHostname',
+        password: 'mockPassword',
+        token: 'mockToken',
+        reloadCallback: () => {},
+        onSuccess: () => {},
+      },
+    };
+    expectSaga(pushSystemKeys, action)
       // Sends the call to update the systems modal
       .put({
         type: 'SYSTEMS_MODAL_UPDATE',
@@ -26,7 +37,7 @@ describe('pushSystemKeys', () => {
       })
       // Sends the form information to the API url indicated
       .call(fetchUtil, {
-        url: `/api/accounts/systems/${action.payload.systemId}/keys/`,
+        url: `/api/accounts/systems/test.system/keys/`,
         body: JSON.stringify({ mockForm, action: 'push' }),
         method: 'PUT',
       })
@@ -38,7 +49,5 @@ describe('pushSystemKeys', () => {
           props: {},
         },
       });
-    // Check for action.payload.onSuccess
-    expect(action.payload).toBe(onSuccess);
   });
 });
