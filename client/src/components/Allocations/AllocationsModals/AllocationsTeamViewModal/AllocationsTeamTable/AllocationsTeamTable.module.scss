@@ -9,14 +9,14 @@
     font-size: 14px;
     vertical-align: middle;
   }
-
-  &:hover {
-    background-color: var(--global-color-accent--weak);
-  }
-}
-.content {
-  margin-left: 1.5rem;
 }
 .active-user {
   background-color: var(--global-color-accent--weak);
+}
+.row:hover,
+.active-user:hover {
+  background-color: var(--global-color-accent--weak);
+}
+.content {
+  margin-left: 1.5rem;
 }
