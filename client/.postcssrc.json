@@ -1,5 +1,6 @@
 {
   "plugins": {
+    "postcss-mixins": {},
     "postcss-preset-env": {
       "stage": false,
       "features": { "custom-media-queries": true, "media-query-ranges": true },
