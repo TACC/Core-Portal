@@ -59,83 +59,81 @@ describe('DataFilesDownloadMessageModal', () => {
     });
   });
 
-  it('calls compress mutation'),
-    async () => {
-      // Mock the compress mutation
-      const mockCompress = vi.fn();
-      const { compress, status, setStatus } = useCompress();
+  it('calls compress mutation', async () => {
+    // Mock the compress mutation
+    const mockCompress = vi.fn();
+    const { compress, status, setStatus } = useCompress();
 
-      renderComponent(
-        <DataFilesDownloadMessageModal />,
-        // Create the store
-        mockStore({
-          ...DataFilesDownloadMessageModalFixture,
-          allocations: {
-            /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
-            portal_alloc: '',
-            active: [],
-          },
-          files: {
-            ...DataFilesDownloadMessageModalFixture.files,
-            selected: { FilesListing: [3, 4] },
-          },
-        })
-      );
+    renderComponent(
+      <DataFilesDownloadMessageModal />,
+      // Create the store
+      mockStore({
+        ...DataFilesDownloadMessageModalFixture,
+        allocations: {
+          /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
+          portal_alloc: '',
+          active: [],
+        },
+        files: {
+          ...DataFilesDownloadMessageModalFixture.files,
+          selected: { FilesListing: [3, 4] },
+        },
+      })
+    );
 
-      const downloadButton = await screen.findByText('Download');
-      fireEvent.click(downloadButton);
+    const downloadButton = await screen.findByText('Download');
+    fireEvent.click(downloadButton);
 
-      // Click on the Compress button to try and download the folder
-      fireEvent.click(getByText('Compress'));
+    // Click on the Compress button to try and download the folder
+    fireEvent.click(getByText('Compress'));
 
-      expect(mockCompress).toHaveBeenCalledWith(
-        compress({
-          filename: `Archive_${new Date().toISOString().split('.')[0]}`,
-          files:
-            DataFilesDownloadMessageModalFixture.files.selected.FilesListing.map(
-              (i) => ({
-                ...DataFilesDownloadMessageModalFixture.files.listing
-                  .FilesListing[i],
-              })
-            ),
-          compressionType: 'zip',
-          fromDownload: true,
-        })
-      );
-    };
+    expect(mockCompress).toHaveBeenCalledWith(
+      compress({
+        filename: `Archive_${new Date().toISOString().split('.')[0]}`,
+        files:
+          DataFilesDownloadMessageModalFixture.files.selected.FilesListing.map(
+            (i) => ({
+              ...DataFilesDownloadMessageModalFixture.files.listing
+                .FilesListing[i],
+            })
+          ),
+        compressionType: 'zip',
+        fromDownload: true,
+      })
+    );
+  });
 
-  it('toggles modal correctly'),
-    async () => {
-      // Mock the dispatch action
-      const mockDispatch = vi.fn();
-      // Create a spy that watches for the dispatch call
-      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-        mockDispatch
-      );
-      renderComponent(
-        <DataFilesDownloadMessageModal />,
-        mockStore({
-          ...DataFilesDownloadMessageModalFixture,
-          allocations: {
-            /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
-            portal_alloc: '',
-            active: [],
-          },
-        })
-      );
+  it('toggles modal correctly', async () => {
+    // Mock the dispatch action
+    const mockDispatch = vi.fn();
+    // Create a spy that watches for the dispatch call
+    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+      mockDispatch
+    );
+    renderComponent(
+      <DataFilesDownloadMessageModal />,
+      mockStore({
+        ...DataFilesDownloadMessageModalFixture,
+        allocations: {
+          /*TODO fix DataFilesDownloadMessageModalFixture fixture*/
+          portal_alloc: '',
+          active: [],
+        },
+      })
+    );
 
-      const closeButton = await screen.findByLabelText('Close');
-      fireEvent.click(closeButton);
+    const closeButton = await screen.findByLabelText('Close');
+    fireEvent.click(closeButton);
 
-      await waitFor(() => {
-        // Test for the dispatch call that would toggle this modal
-        expect(mockDispatch).toHaveBeenCalledWith({
-          type: 'DATA_FILES_TOGGLE_MODAL',
-          payload: {
-            operation: 'downloadMessage',
-            props: {},
-          },
-        });
+    await waitFor(() => {
+      // Test for the dispatch call that would toggle this modal
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'downloadMessage',
+          props: {},
+        },
       });
-    };
+    });
+  });
 });

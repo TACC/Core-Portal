@@ -43,6 +43,7 @@
     "lint": "npm run lint:js && npm run lint:css && npm run prettier:check",
     "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:css": "stylelint '**/*.{css,scss,sass}'",
+    "lint:js:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prettier:check": "prettier --check src",
     "prettier:fix": "prettier --write src",
     "build": "vite build",
