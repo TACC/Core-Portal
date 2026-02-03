@@ -120,6 +120,10 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
                 settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
             )
             logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
+        
+        if not settings.DEBUG:
+            send_publication_review_email.apply_async(args=[source_system_id])
+            send_reviewer_notification_email.apply_async(args=[review_system_id])
 
 def upload_metadata_file(project_id: str, project_json: str):
     """
@@ -365,6 +369,11 @@ def get_project_user_emails(project_id):
     prj = ProjectMetadata.get_project_by_id(project_id)
     return [user["email"] for user in prj.value["authors"] if user.get("email")]
 
+def get_reviewer_emails():
+    """Return a list of emails for reviewers."""
+    reviewers = get_user_model().objects.filter(groups__name=settings.PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME)
+    return [reviewer.email for reviewer in reviewers if reviewer.email]
+
 @shared_task(bind=True, queue='default')
 def send_publication_accept_email(self, project_id):
     """
@@ -422,5 +431,71 @@ def send_publication_reject_email(self, project_id: str):
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
+            html_message=email_body,
+        )
+
+@shared_task(bind=True, queue='default')
+def send_publication_review_email(self, project_id):
+    """
+    Alert dataset authors that their dataset is in review.
+    """
+    user_emails = get_project_user_emails(project_id)
+
+    logger.info(f"Sending publication review email to {user_emails}")
+
+    for user_email in user_emails:
+        email_body = f"""
+            <p>Hello,</p>
+            <p>
+                Your dataset is currently in review.
+                <br/>
+                <b>{project_id}</b>
+                <br/>
+            </p>
+            <p>
+            You will be notified when the review is complete.
+            </p>
+
+            This is a programmatically generated message. Do NOT reply to this message.
+            """
+
+        send_mail(
+            "DigitalPorousMedia Alert: Your Dataset is in Review",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user_email],
+            html_message=email_body,
+        )
+
+@shared_task(bind=True, queue='default')
+def send_reviewer_notification_email(self, project_id):
+    """
+    Alert dataset reviewers that a dataset has been submitted for review.
+    """
+    reviewer_emails = get_reviewer_emails()
+
+    logger.info(f"Sending reviewer notification email to {reviewer_emails}")
+
+    for reviewer_email in reviewer_emails:
+        email_body = f"""
+            <p>Hello,</p>
+            <p>
+                A new dataset has been submitted for review:
+                <br/>
+                <b>{project_id}</b>
+                <br/>
+            </p>
+            <p>
+            Please review the dataset and approve or reject it.
+            </p>
+
+            This is a programmatically generated message. Do NOT reply to this message.
+            """
+
+        send_mail(
+            "DigitalPorousMedia Alert: A New Dataset has been Submitted for Review",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [reviewer_email],
             html_message=email_body,
         )
