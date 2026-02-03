@@ -3,7 +3,8 @@
   height: 35px;
   cursor: pointer;
   color: var(--global-color-primary--xx-dark);
-  td {
+
+  & td {
     font-weight: 500;
     font-size: 14px;
     vertical-align: middle;
