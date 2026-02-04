@@ -191,6 +191,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         project_meta = ProjectMetadata.get_project_by_id(review_system_id)
         publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
 
+        publication_tree.nodes["NODE_ROOT"]["value"]["projectId"] = published_system_id
+
         published_project = ProjectMetadata.get_project_by_id(published_system_id)
 
         ProjectMetadata.objects.create(
@@ -270,8 +272,11 @@ def copy_graph_and_files_for_review_system(self, user_access_token, source_works
     with transaction.atomic():
         pub_tree = _add_values_to_tree(source_system_id)
 
+        pub_tree.nodes["NODE_ROOT"]["value"]["projectId"] = review_system_id
+
         graph_model_value = nx.node_link_data(pub_tree)
         review_project = ProjectMetadata.get_project_by_id(review_system_id)
+
         ProjectMetadata.objects.update_or_create(
             name=constants.PROJECT_GRAPH,
             base_project=review_project,
