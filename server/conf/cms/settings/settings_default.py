@@ -1,4 +1,6 @@
-SECRET_KEY = 'replacethiswithareallysecureandcomplexsecretkeystring'
+########################
+# DJANGO
+########################
 
 LOGIN_REDIRECT_URL = '/workbench/dashboard/'
 
