@@ -9,11 +9,11 @@ To create your own CMS test **content**, [learn Django CMS as we use it](https:/
 To **emulate** a specific project's CMS **settings**:
 1. Visit https://github.com/TACC/Core-Portal-Resources/blob/main/.
 2. Navigate to specific project.
-3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings_custom.py`.
+3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings/settings_custom.py`.
 
-To **override** any CMS **secrets**, edit `server/conf/cms/settings_local.py`.
+To **override** any CMS **secrets**, edit `server/conf/cms/settings/settings_local.py`.
 
-To **override** any CMS **settings**, edit `server/conf/cms/settings_local.py`.
+To **override** any CMS **settings**, edit `server/conf/cms/settings/settings_local.py`.
 
 ## Advanced
 

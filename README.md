@@ -104,7 +104,7 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### CMS
 
-- Create `server/conf/cms/` settings and secrets files e.g. `touch server/conf/cms/settings_{custom,local}.py && touch server/conf/cms/secrets.py`.
+- Create `server/conf/cms/settings/` settings and secrets files e.g. `touch server/conf/cms/settings/settings_{custom,local}.py && touch server/conf/cms/settings/secrets.py`.
 
 To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
 
