@@ -266,7 +266,9 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                         : 'View'}
                     </Button>
                   )}
-                  <span className={styles['separator']}>|</span>
+                  {(!readOnly || node.metadata.data_type === 'file') && (
+                    <span className={styles['separator']}>|</span>
+                  )}
                   {(
                     <Button
                       className={styles['edit-button']}
