@@ -2,6 +2,8 @@
 # DJANGO
 ########################
 
+CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
+
 LOGIN_REDIRECT_URL = '/workbench/dashboard/'
 
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
