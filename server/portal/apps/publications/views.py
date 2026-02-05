@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
-from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project, send_publication_accept_email, send_publication_reject_email
+from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project, send_publication_rejected_email_to_authors, send_publication_reviewed_email_to_reviewers
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import transaction
 from portal.apps.notifications.models import Notification
@@ -368,7 +368,8 @@ class PublicationRejectView(BaseApiView):
             raise ApiException("Missing project ID", status=400)
         
         if not settings.DEBUG:
-            send_publication_reject_email.apply_async(args=[full_project_id])
+            send_publication_rejected_email_to_authors.apply_async(args=[full_project_id])
+            send_publication_reviewed_email_to_reviewers.apply_async(args=[full_project_id, 'REJECTED', request.user.username])
         
         update_and_cleanup_review_project(full_project_id, PublicationRequest.Status.REJECTED)
 

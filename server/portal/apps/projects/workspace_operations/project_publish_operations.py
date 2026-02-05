@@ -122,8 +122,8 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
             logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
         
         if not settings.DEBUG:
-            send_publication_review_email.apply_async(args=[source_system_id])
-            send_reviewer_notification_email.apply_async(args=[review_system_id])
+            send_publication_in_review_email_to_authors.apply_async(args=[source_system_id])
+            send_publication_submitted_for_review_email_to_reviewers.apply_async(args=[review_system_id])
 
 def upload_metadata_file(project_id: str, project_json: str):
     """
@@ -263,7 +263,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         }, countdown=30)
 
         if not settings.DEBUG:
-            send_publication_accept_email.apply_async(args=[project_id])
+            send_publication_accepted_email_to_authors.apply_async(args=[project_id])
+            send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, 'APPROVED', None])
 
 @shared_task(bind=True, max_retries=3, queue='default')
 def copy_graph_and_files_for_review_system(self, user_access_token, source_workspace_id, review_workspace_id, source_system_id, review_system_id):    
@@ -380,7 +381,7 @@ def get_reviewer_emails():
     return [reviewer.email for reviewer in reviewers if reviewer.email]
 
 @shared_task(bind=True, queue='default')
-def send_publication_accept_email(self, project_id):
+def send_publication_accepted_email_to_authors(self, project_id):
     """
     Alert project authors that their request has been accepted.
     """
@@ -410,7 +411,7 @@ def send_publication_accept_email(self, project_id):
         )
 
 @shared_task(bind=True, queue='default')
-def send_publication_reject_email(self, project_id: str):
+def send_publication_rejected_email_to_authors(self, project_id: str):
     """
     Alert project authors that their request has been rejected.
     """
@@ -440,7 +441,7 @@ def send_publication_reject_email(self, project_id: str):
         )
 
 @shared_task(bind=True, queue='default')
-def send_publication_review_email(self, project_id):
+def send_publication_in_review_email_to_authors(self, project_id):
     """
     Alert dataset authors that their dataset is in review.
     """
@@ -473,7 +474,37 @@ def send_publication_review_email(self, project_id):
         )
 
 @shared_task(bind=True, queue='default')
-def send_reviewer_notification_email(self, project_id):
+def send_publication_reviewed_email_to_reviewers(self, project_id, status, reviewer):
+    """
+    Alert dataset reviewers that a dataset has received feedback.
+    """
+    reviewer_emails = get_reviewer_emails()
+
+    logger.info(f"Sending reviewer notification email to {reviewer_emails}")
+
+    for reviewer_email in reviewer_emails:
+        email_body = f"""
+            <p>Hello,</p>
+            <p>
+                The dataset {project_id} has received a review from {reviewer}:
+                <br/>
+                <b>Feedback: {status}</b>
+                <br/>
+            </p>
+
+            This is a programmatically generated message. Do NOT reply to this message.
+            """
+
+        send_mail(
+            "DigitalPorousMedia Alert: A Dataset has Received Review",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [reviewer_email],
+            html_message=email_body,
+        ) 
+
+@shared_task(bind=True, queue='default')
+def send_publication_submitted_for_review_email_to_reviewers(self, project_id):
     """
     Alert dataset reviewers that a dataset has been submitted for review.
     """
