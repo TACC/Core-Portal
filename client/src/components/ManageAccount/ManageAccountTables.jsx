@@ -106,7 +106,7 @@ export const ProfileInformation = () => {
     </SectionTableWrapper>
   );
 };
-/* eslint-disable react/no-danger */
+
 const LicenseCell = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
@@ -158,7 +158,7 @@ LicenseCell.propTypes = {
     }),
   }).isRequired,
 };
-/* eslint-enable react/no-danger */
+
 export const Licenses = () => {
   const { licenses } = useSelector((state) => state.profile.data);
 
