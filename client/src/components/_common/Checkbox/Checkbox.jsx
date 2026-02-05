@@ -25,7 +25,7 @@ const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
       role={role}
       // FAQ: `DataFilesListingCells` needs to pass `onClick` and `onKeyDown`,
       //      but adding those props introduces a mistaken jsx-a11y lint error
-      // eslint-disable-next-line react/jsx-props-no-spreading
+
       {...props}
     >
       <Icon className={styles['check']} name="approved-boxed-reverse" />
