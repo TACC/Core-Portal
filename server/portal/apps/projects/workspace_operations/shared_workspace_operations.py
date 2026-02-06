@@ -68,12 +68,11 @@ def get_acl_string(usernames: str, role: str) -> str:
 def set_workspace_acls(client, system_id, path, root_dir, usernames, operation, role):
 
     if settings.PORTAL_PROJECTS_USE_SET_FACL_JOB:
-        absolute_path = f"{root_dir}/{path}" if path != "/" else root_dir
         logger.info(
             f"""Using setfacl job to submit ACL change for project: {system_id},
-                    path: {absolute_path}, username: {usernames}, operation: {operation}, role: {role}"""
+                    path: {root_dir}, username: {usernames}, operation: {operation}, role: {role}"""
         )
-        submit_workspace_acls_job(client, usernames, system_id, absolute_path, role, operation)
+        submit_workspace_acls_job(client, usernames, system_id, root_dir, role, operation)
 
     else:
         logger.info(
@@ -269,7 +268,6 @@ def remove_user(client, workspace_id: str, username: str):
                        username,
                        "remove",
                        "none")
-    client.systems.removeUserCredential(systemId=system_id, userName=username)
     client.systems.unShareSystem(systemId=system_id, users=[username])
     client.systems.revokeUserPerms(systemId=system_id,
                                    userName=username,
