@@ -51,7 +51,7 @@ def project_list(authenticated_user):
             TapisResult(
                 **{
                     "id": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123",
-                    "rootDir": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                    "rootDir": "/corral/tacc/aci/CEP/projects/CEP-1018",
                     "host": "cloud.data.tacc.utexas.edu",
                     "created": "2023-01-07T19:31:17.292220Z",
                     "updated": "2023-03-07T19:31:17.292220Z",
@@ -62,7 +62,7 @@ def project_list(authenticated_user):
             TapisResult(
                 **{
                     "id": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-456",
-                    "rootDir": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                    "rootDir": "/corral/tacc/aci/CEP/projects/CEP-1018",
                     "host": "cloud.data.tacc.utexas.edu",
                     "created": "2023-01-07T19:31:17.292220Z",
                     "updated": "2023-03-07T19:31:17.292220Z",
@@ -83,7 +83,7 @@ def project_list(authenticated_user):
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
                 },
-                "path": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                "path": "/corral/tacc/aci/CEP/projects/CEP-1018",
                 "title": "Foo title",
                 "updated": "2023-03-07T19:31:17.292220Z",
             },
@@ -98,7 +98,7 @@ def project_list(authenticated_user):
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
                 },
-                "path": "/corral-repl/tacc/aci/CEP/projects/CEP-1018",
+                "path": "/corral/tacc/aci/CEP/projects/CEP-1018",
                 "title": "Bar title",
                 "updated": "2023-03-07T19:31:17.292220Z",
             },
@@ -185,6 +185,8 @@ def test_projects_post(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
+            "keywords": "test1, test2, test3",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",
@@ -199,8 +201,11 @@ def test_projects_post(
     # 2. service account client sets client.files.setFacl
     # 3. standard client creates workspace client.systems.createSystem
     mock_service_account().files.mkdir.assert_called_with(
-        systemId="projects.system.name", path="test.project-2",
-        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"}
+        systemId="projects.system.name",
+        path="test.project-2",
+        headers={
+            "X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"
+        },
     )
     mock_service_account().files.setFacl.assert_called_with(
         systemId="projects.system.name",
@@ -219,13 +224,12 @@ def test_projects_post(
 def test_projects_post_setfacl_job(
     authenticated_user, client, mock_service_account, mock_tapis_client
 ):
-
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
-
     response = client.post(
         "/api/projects/",
         {
             "title": "Test Title",
+            "description": "A test workspace",
+            "keywords": "test1, test2, test3",
             "members": [{"username": authenticated_user.username, "access": "owner"}],
         },
         content_type="application/json",
@@ -239,27 +243,33 @@ def test_projects_post_setfacl_job(
     # 2. service account client sets client.files.setFacl
     # 3. standard client creates workspace client.systems.createSystem
     mock_service_account().files.mkdir.assert_called_with(
-        systemId="projects.system.name", path="test.project-2",
-        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"}
+        systemId="projects.system.name",
+        path="test.project-2",
+        headers={
+            "X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"
+        },
     )
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-projects.system.name-username-add-writer',
-        appId='setfacl-corral-wmaprtl',
-        appVersion='0.0.1',
-        description='Add/Remove ACLs on a directory',
+        name="setfacl-project-projects.system.name-username-add-writer",
+        appId="setfacl-corral-wmaprtl",
+        appVersion="0.0.1",
+        description="Add/Remove ACLs on a directory",
         fileInputs=[],
         parameterSet={
-            'appArgs': [],
-            'schedulerOptions': [],
-            'envVariables': [
-                {'key': 'usernames', 'value': 'username'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
-                {'key': 'action', 'value': 'add'},
-                {'key': 'role', 'value': 'writer'},
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {"key": "usernames", "value": "username"},
+                {
+                    "key": "directory",
+                    "value": "/path/to/root/test.project-2",
+                },
+                {"key": "action", "value": "add"},
+                {"key": "role", "value": "writer"},
             ],
         },
-        tags=['portalName:test'],
+        tags=["portalName:test"],
     )
     mock_tapis_client.systems.createSystem.assert_called()
     assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
@@ -282,6 +292,7 @@ def test_project_instance_get_by_id(
         "response": {
             "title": project_list["api_response"][0]["title"],
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "projectId": project_list["api_response"][0]["name"],
             "members": [
@@ -315,6 +326,7 @@ def test_project_instance_get_by_system(
         "response": {
             "title": project_list["api_response"][0]["title"],
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "projectId": project_list["api_response"][0]["name"],
             "members": [
@@ -345,12 +357,12 @@ def test_project_instance_patch(
 
     response = client.patch(
         "/api/projects/PRJ-123/",
-        json.dumps({"title": "New Title", "description": "new description"}),
+        json.dumps({"title": "New Title", "description": "new description", "keywords": None}),
     )
 
     mock_tapis_client.systems.patchSystem.assert_called_with(
         systemId="test.project.PRJ-123",
-        notes={"title": "New Title", "description": "new description"},
+        notes={"title": "New Title", "description": "new description", "keywords": None},
     )
 
     assert response.status_code == 200
@@ -359,6 +371,7 @@ def test_project_instance_patch(
         "response": {
             "title": "New Title",
             "description": "new description",
+            "keywords": None,
             "created": project_list["tapis_response"][0].created,
             "members": [
                 {
@@ -436,7 +449,7 @@ def test_project_change_system_role(
 def test_project_change_system_role_setfacl_job(
     client, mock_service_account, mock_tapis_client, project_list
 ):
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
+    mock_rootDir = mock_tapis_client.systems.getSystem().rootDir
 
     # USER translates to writer role
     patch_body = {
@@ -451,22 +464,22 @@ def test_project_change_system_role_setfacl_job(
     # System Id used in setFacl is project root system name
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-test.project.PRJ-123-test_user-add-writer',
-        appId='setfacl-corral-wmaprtl',
-        appVersion='0.0.1',
-        description='Add/Remove ACLs on a directory',
+        name="setfacl-project-test.project.PRJ-123-test_user-add-writer",
+        appId="setfacl-corral-wmaprtl",
+        appVersion="0.0.1",
+        description="Add/Remove ACLs on a directory",
         fileInputs=[],
         parameterSet={
-            'appArgs': [],
-            'schedulerOptions': [],
-            'envVariables': [
-                {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
-                {'key': 'action', 'value': 'add'},
-                {'key': 'role', 'value': 'writer'},
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {"key": "usernames", "value": "test_user"},
+                {"key": "directory", "value": mock_rootDir},
+                {"key": "action", "value": "add"},
+                {"key": "role", "value": "writer"},
             ],
         },
-        tags=['portalName:test'],
+        tags=["portalName:test"],
     )
     # Grant request are on the specific project system id
     mock_tapis_client.systems.grantUserPerms.assert_called_with(
@@ -483,7 +496,7 @@ def test_project_change_system_role_setfacl_job(
 
 
 def test_members_view_add(
-    authenticated_user, client, mock_tapis_client, project_list
+    authenticated_user, client, mock_tapis_client, project_list, mock_service_account
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
@@ -506,6 +519,7 @@ def test_members_view_add(
         "response": {
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "projectId": "PRJ-123",
             "members": [
                 {
@@ -531,7 +545,7 @@ def test_members_view_add(
         },
     }
 
-    mock_tapis_client.files.setFacl.assert_called_with(
+    mock_service_account().files.setFacl.assert_called_with(
         systemId="test.project.PRJ-123",
         path="/",
         operation="ADD",
@@ -579,6 +593,7 @@ def test_members_view_add_setfacl_job(
         "response": {
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
+            "keywords": None,
             "projectId": "PRJ-123",
             "members": [
                 {
@@ -605,22 +620,22 @@ def test_members_view_add_setfacl_job(
     }
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-test.project.PRJ-123-test_user-add-writer',
-        appId='setfacl-corral-wmaprtl',
-        appVersion='0.0.1',
-        description='Add/Remove ACLs on a directory',
+        name="setfacl-project-test.project.PRJ-123-test_user-add-writer",
+        appId="setfacl-corral-wmaprtl",
+        appVersion="0.0.1",
+        description="Add/Remove ACLs on a directory",
         fileInputs=[],
         parameterSet={
-            'appArgs': [],
-            'schedulerOptions': [],
-            'envVariables': [
-                {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': '/corral-repl/tacc/aci/CEP/projects/CEP-1018'},
-                {'key': 'action', 'value': 'add'},
-                {'key': 'role', 'value': 'writer'},
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {"key": "usernames", "value": "test_user"},
+                {"key": "directory", "value": "/corral/tacc/aci/CEP/projects/CEP-1018"},
+                {"key": "action", "value": "add"},
+                {"key": "role", "value": "writer"},
             ],
         },
-        tags=['portalName:test'],
+        tags=["portalName:test"],
     )
     mock_tapis_client.systems.shareSystem.assert_called_with(
         systemId="test.project.PRJ-123", users=["test_user"]
@@ -652,6 +667,7 @@ def test_members_view_remove(
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
             "projectId": "PRJ-123",
+            "keywords": None,
             "title": project_list["api_response"][0]["title"],
             "members": [
                 {
@@ -673,9 +689,6 @@ def test_members_view_remove(
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user,u:test_user",
     )
-    mock_tapis_client.systems.removeUserCredential.assert_called_with(
-        systemId="test.project.PRJ-123", userName="test_user"
-    )
     mock_tapis_client.systems.unShareSystem.assert_called_with(
         systemId="test.project.PRJ-123", users=["test_user"]
     )
@@ -694,7 +707,6 @@ def test_members_view_remove_setfacl_job(
     client, mock_service_account, mock_tapis_client, project_list
 ):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_rootDir = mock_service_account().systems.getSystem().rootDir
     patch_body = {"action": "remove_member", "username": "test_user"}
 
     response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
@@ -705,6 +717,7 @@ def test_members_view_remove_setfacl_job(
             "created": project_list["tapis_response"][0].created,
             "description": project_list["api_response"][0]["description"],
             "projectId": "PRJ-123",
+            "keywords": None,
             "title": project_list["api_response"][0]["title"],
             "members": [
                 {
@@ -721,25 +734,22 @@ def test_members_view_remove_setfacl_job(
     }
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
-        name='setfacl-project-test.project.PRJ-123-test_user-remove-none',
-        appId='setfacl-corral-wmaprtl',
-        appVersion='0.0.1',
-        description='Add/Remove ACLs on a directory',
+        name="setfacl-project-test.project.PRJ-123-test_user-remove-none",
+        appId="setfacl-corral-wmaprtl",
+        appVersion="0.0.1",
+        description="Add/Remove ACLs on a directory",
         fileInputs=[],
         parameterSet={
-            'appArgs': [],
-            'schedulerOptions': [],
-            'envVariables': [
-                {'key': 'usernames', 'value': 'test_user'},
-                {'key': 'directory', 'value': str(mock_rootDir)},
-                {'key': 'action', 'value': 'remove'},
-                {'key': 'role', 'value': 'none'},
+            "appArgs": [],
+            "schedulerOptions": [],
+            "envVariables": [
+                {"key": "usernames", "value": "test_user"},
+                {"key": "directory", "value": "/corral/tacc/aci/CEP/projects/CEP-1018"},
+                {"key": "action", "value": "remove"},
+                {"key": "role", "value": "none"},
             ],
         },
-        tags=['portalName:test'],
-    )
-    mock_tapis_client.systems.removeUserCredential.assert_called_with(
-        systemId="test.project.PRJ-123", userName="test_user"
+        tags=["portalName:test"],
     )
     mock_tapis_client.systems.unShareSystem.assert_called_with(
         systemId="test.project.PRJ-123", users=["test_user"]

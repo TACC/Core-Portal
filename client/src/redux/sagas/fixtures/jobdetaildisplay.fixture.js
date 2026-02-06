@@ -34,6 +34,7 @@ const jobDetailDisplayFixture = {
   systemName: 'Frontera',
   workPath:
     '/scratch1/12345/user/tapis/e929ad16-adc5-4bd4-b84f-d41d1b67e5ee-007',
+  reservation: 'foobar',
 };
 
 export default jobDetailDisplayFixture;

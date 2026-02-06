@@ -343,9 +343,9 @@ describe('Test extract with different file names', () => {
               appArgs: [],
               schedulerOptions: [
                 {
-                  name: 'TACC Allocation',
+                  name: 'Project Allocation Account',
                   description:
-                    'The TACC allocation associated with this job execution',
+                    'The project allocation account associated with this job execution.',
                   include: true,
                   arg: '-A TACC-ACI',
                 },
@@ -475,9 +475,9 @@ describe('compressFiles', () => {
           ],
           schedulerOptions: [
             {
-              name: 'TACC Allocation',
+              name: 'Project Allocation Account',
               description:
-                'The TACC allocation associated with this job execution',
+                'The project allocation account associated with this job execution.',
               include: true,
               arg: '-A TACC-ACI',
             },

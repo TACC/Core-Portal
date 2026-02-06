@@ -27,6 +27,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }, [system, path, fetchListing]);
 
   const metadata = useSelector((state) => state.projects.metadata);
+  const enableWorkspaceKeywords =
+    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
+    true;
 
   const canEditSystem = useSelector(
     (state) =>
@@ -91,7 +94,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Descriptions
+                Edit Workspace
               </Button>
               <span className={styles.separator}>|</span>
             </>
@@ -110,7 +113,21 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
-        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
+        {!!enableWorkspaceKeywords && !!metadata.keywords && (
+          <>
+            <b>Keywords</b>
+            {metadata.keywords && <ShowMore>{metadata.keywords}</ShowMore>}
+            <br />
+          </>
+        )}
+        {!!metadata.description && (
+          <>
+            <b>Description</b>
+            {metadata.description && (
+              <ShowMore>{metadata.description}</ShowMore>
+            )}
+          </>
+        )}
       </div>
       <DataFilesListing
         api="tapis"

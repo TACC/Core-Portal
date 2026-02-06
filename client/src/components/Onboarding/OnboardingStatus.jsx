@@ -13,6 +13,7 @@ const getContents = (step) => {
       break;
     case 'failed':
     case 'error':
+    case 'staffdenied':
       type = 'danger';
       break;
     case 'staffwait':
@@ -45,6 +46,8 @@ const getContents = (step) => {
       return <Pill type={type}>Unavailable</Pill>;
     case 'completed':
       return <Pill type={type}>Completed</Pill>;
+    case 'staffdenied':
+      return <Pill type={type}>Denied</Pill>;
     case 'processing':
       return (
         <span className={styles.processing}>

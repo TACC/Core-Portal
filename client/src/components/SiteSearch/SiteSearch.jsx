@@ -15,7 +15,6 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   const { filter } = useParams();
   const history = useHistory();
   const {
-    // eslint-disable-next-line camelcase
     query_string,
     page,
     filter: filetypeFilter,
@@ -26,14 +25,12 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   );
   const { user } = useSelector((state) => state.authenticatedUser);
 
-  /* eslint-disable camelcase */
   useEffect(() => {
     dispatch({
       type: 'FETCH_SITE_SEARCH',
       payload: { page, query_string, filter: filetypeFilter },
     });
   }, [query_string, page, filetypeFilter]);
-  /* eslint-disable camelcase */
 
   useEffect(() => {
     if (completed && !filter) {

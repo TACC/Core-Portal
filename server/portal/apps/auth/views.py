@@ -69,14 +69,13 @@ def launch_setup_checks(user):
     """
 
     # Check onboarding settings
+    if settings.IS_TACC_PORTAL:
+        index_allocations.apply_async(args=[user.username])
+
     new_user_setup_check(user)
     if not user.profile.setup_complete:
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
-    else:
-        logger.info("Already onboarded, running non-onboarding steps (e.g. update cached "
-                    "allocation information) for %s", user.username)
-        index_allocations.apply_async(args=[user.username])
 
     portal_roles = settings.PORTAL_ELEVATED_ROLES
     for role, groups_and_users in portal_roles.items():

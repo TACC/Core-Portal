@@ -49,7 +49,7 @@ class RequestAccessStep(AbstractStep):
                 )
             )
         elif action == "staff_deny":
-            self.fail(
+            self.deny(
                 "Portal access request has not been approved."
             )
         else:

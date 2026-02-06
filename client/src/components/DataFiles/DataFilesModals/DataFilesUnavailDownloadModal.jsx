@@ -3,18 +3,19 @@ import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, SectionMessage } from '_common';
 import { useModal } from 'hooks/datafiles';
-import styles from './DataFilesLargeDownloadModal.module.scss';
+import styles from './DataFilesUnavailDownloadModal.module.scss';
 
-const DataFilesLargeDownloadModal = () => {
+const DataFilesUnavailDownloadModal = () => {
   const dispatch = useDispatch();
-  const { getStatus: getModalStatus } = useModal();
-  const isOpen = getModalStatus('largeDownload');
+  const { getStatus: getModalStatus, getProps } = useModal();
+  const isOpen = getModalStatus('unavailDownload');
+  const customMessage = getProps('unavailDownload').customMessage ?? null;
 
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
-        operation: 'largeDownload',
+        operation: 'unavailDownload',
         props: {},
       },
     });
@@ -27,11 +28,11 @@ const DataFilesLargeDownloadModal = () => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Large Download
+        Download Unavailable
       </ModalHeader>
       <ModalBody>
         <SectionMessage type="warn">
-          Your download is larger than 2 gigabytes.
+          {customMessage ?? 'Your download is larger than 2 gigabytes.'}
         </SectionMessage>
         <p className={styles['info']}>
           Use Globus to quickly transfer large volumes of data.
@@ -51,4 +52,4 @@ const DataFilesLargeDownloadModal = () => {
   );
 };
 
-export default DataFilesLargeDownloadModal;
+export default DataFilesUnavailDownloadModal;

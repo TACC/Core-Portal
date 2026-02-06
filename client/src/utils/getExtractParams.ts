@@ -29,14 +29,19 @@ export const getExtractParams = (
     appVersion: extractApp.version,
     parameterSet: {
       appArgs: [],
-      schedulerOptions: [
-        {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
-          include: true,
-          arg: `-A ${defaultAllocation}`,
-        },
-      ],
+      schedulerOptions:
+        defaultAllocation === 'VM'
+          ? []
+          : [
+              // if running on VM, no need to pass allocation param
+              {
+                name: 'Project Allocation Account',
+                description:
+                  'The project allocation account associated with this job execution.',
+                include: true,
+                arg: `-A ${defaultAllocation}`,
+              },
+            ],
     },
   };
 };

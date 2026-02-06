@@ -52,7 +52,7 @@ describe('DataFilesBreadcrumbs', () => {
     );
 
     // Check if the system name is rendered as text when in the root of the system
-    expect(getByText('Frontera')).toBeDefined();
+    expect(getByText('frontera.home.username')).toBeDefined();
   });
 
   it('render breadcrumbs for projects', () => {
