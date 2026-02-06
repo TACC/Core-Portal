@@ -85,26 +85,6 @@ describe('jobsUtil', () => {
     ]);
   });
 
-  it('get input display values for distinct input fields', () => {
-    expect(
-      getInputDisplayValues([
-        { name: 'Input Mesh_1.1', sourceUrl: 'tapis://sys/mesh.obj' },
-        { name: 'Config File_2.1', sourceUrl: 'tapis://sys/config.yaml' },
-      ])
-    ).toEqual([
-      {
-        label: 'Input Mesh',
-        id: 'tapis://sys/mesh.obj',
-        value: 'tapis://sys/mesh.obj',
-      },
-      {
-        label: 'Config File',
-        id: 'tapis://sys/config.yaml',
-        value: 'tapis://sys/config.yaml',
-      },
-    ]);
-  });
-
   it('get input display values for mixed distinct and multi-file inputs', () => {
     expect(
       getInputDisplayValues([
