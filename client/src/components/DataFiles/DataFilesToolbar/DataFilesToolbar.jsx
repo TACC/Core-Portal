@@ -188,9 +188,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       params.scheme !== 'public'
     ) {
       toggleNoFoldersModal();
-    } else if (
-      exceedsSizeLimit || !canDownload
-    ) {
+    } else if (exceedsSizeLimit || !canDownload) {
       //public and community data downloads need to be treated with this logic due to compress restrictions
       let customMessage = null;
       // prevent running compress job in public or community data
