@@ -131,7 +131,7 @@ describe('jobsUtil', () => {
     ]);
   });
 
-    it('get input display values for mixed distinct and multi-file inputs', () => {
+  it('get input display values for mixed distinct and multi-file inputs', () => {
     expect(
       getInputDisplayValues([
         { name: 'Target path_1.1', sourceUrl: 'tapis://sys/file1.zip' },
