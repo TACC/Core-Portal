@@ -326,7 +326,7 @@ export type TTapisSystem = {
     {
       runtimeType: string;
       version?: string;
-    }
+    },
   ];
   jobWorkingDir: string;
   jobEnvVariables: [];

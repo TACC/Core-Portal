@@ -37,7 +37,7 @@ const SectionMessage = (props) => {
   }
 
   // Avoid manually syncing <Message>'s props
-  // eslint-disable-next-line react/jsx-props-no-spreading
+
   return <Message {...messageProps} />;
 };
 SectionMessage.propTypes = Message.propTypes;

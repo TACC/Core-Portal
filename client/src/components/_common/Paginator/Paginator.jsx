@@ -57,7 +57,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       <Button
         type="link"
         className={styles.endcap}
-        onClick={() => callback(current - 1)} // eslint-disable-line
+        onClick={() => callback(current - 1)}
         disabled={current === 1}
       >
         <span>&lt; Previous</span>
@@ -81,7 +81,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
       <Button
         type="link"
         className={styles.endcap}
-        onClick={() => callback(current + 1)} // eslint-disable-line
+        onClick={() => callback(current + 1)}
         disabled={current === pages}
       >
         <span>Next &gt;</span>

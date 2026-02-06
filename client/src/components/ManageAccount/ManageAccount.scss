@@ -74,7 +74,9 @@
   display: flex;
   width: fit-content;
   border-radius: 0;
-  font: bold 12px Roboto, sans-serif;
+  font:
+    bold 12px Roboto,
+    sans-serif;
   padding: 0.5rem 1rem;
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
   background-color: var(

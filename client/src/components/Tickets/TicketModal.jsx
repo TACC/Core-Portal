@@ -367,7 +367,6 @@ function TicketModal({ history }) {
 }
 
 TicketModal.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object.isRequired,
 };
 
