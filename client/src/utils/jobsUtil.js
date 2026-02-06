@@ -85,13 +85,17 @@ function _getCleanInputLabel(inputName) {
 /**
  * Returns a grouping key for a Tapis input name.
  *
- * If the name ends with `_<field>.<index>` (e.g. "Target path_1.1", "_1.2"),
+ * Tapis adds `_X.Y` suffixes to inputs defined via `fileInputArrays`
+ * in the Tapis app definition and Tapis does not add suffixes for
+ * `fileInputs`.  So we figure out a "grouping" the following way:
+ *
+ * 1) If the name ends with `_<field>.<index>` (e.g. "Target path_1.1", "_1.2"),
  * returns `<field>` (e.g. "1") so all files for the same input field group together:
  *     "Target path_1.1" → "1"  (field 1, file 1)
  *     "_1.2"            → "1"  (field 1, file 2)
  *     "_2.1"            → "2"  (field 2, file 1)
  *
- * Otherwise (no Tapis suffix), falls back to the original name so single-file
+ * 2) Otherwise (no Tapis suffix), falls back to the original name so single-file
  * inputs still have a stable grouping key:
  *     "Other target path" → "Other target path"
  */
