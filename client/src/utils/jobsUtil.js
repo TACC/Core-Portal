@@ -75,10 +75,6 @@ export function getReservationFromArg(arg) {
 
 /**
  * Strips trailing suffixes like `_1.2` which Tapis adds to file names.
- *
- * Examples:
- * - "Input File_1.1" → "Input File"
- * - null / "" → "Unnamed Input"
  */
 function _getCleanInputLabel(inputName) {
   const original = inputName || '';
@@ -87,12 +83,15 @@ function _getCleanInputLabel(inputName) {
 }
 
 /**
- * Extract the input field group key from a Tapis input name.
- * Tapis suffixes follow the pattern `_X.Y` where X identifies the
- * input field and Y is the file index within that field.
+ * Extract the input field identifier from a Tapis input name.
+ * Tapis names follow `_X.Y` where X is the input field number
+ * and Y is the file number within that field. For example:
+ *   "Target path_1.1" → "1"  (field 1, file 1)
+ *   "_1.2"            → "1"  (field 1, file 2)
+ *   "_2.1"            → "2"  (field 2, file 1)
  *
- * @param {string} inputName - Raw Tapis input name
- * @returns {string} Group key (e.g. "1" from "_1.2"), or "0" as fallback
+ * This allows grouping files that belong to the same input field,
+ * even when only the first file carries a meaningful name.
  */
 function _getInputGroupKey(inputName) {
   const match = (inputName || '').match(/_(\d+)\.\d+$/);
@@ -119,6 +118,8 @@ export function getInputDisplayValues(fileInputs) {
   });
 
   return [...groups.values()].flatMap((inputs) => {
+    // First entry in each group carries the meaningful name;
+    // subsequent entries are just suffixes like "_1.2"
     const baseLabel = _getCleanInputLabel(inputs[0].name);
 
     if (inputs.length === 1) {
