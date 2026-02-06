@@ -87,30 +87,56 @@ function _getCleanInputLabel(inputName) {
 }
 
 /**
+ * Extract the input field group key from a Tapis input name.
+ * Tapis suffixes follow the pattern `_X.Y` where X identifies the
+ * input field and Y is the file index within that field.
+ *
+ * @param {string} inputName - Raw Tapis input name
+ * @returns {string} Group key (e.g. "1" from "_1.2"), or "0" as fallback
+ */
+function _getInputGroupKey(inputName) {
+  const match = (inputName || '').match(/_(\d+)\.\d+$/);
+  return match ? match[1] : '0';
+}
+
+/**
  * Build display-friendly input labels from job file inputs.
- * Single input uses the clean label as-is; multiple inputs
- * append "(1/N)", "(2/N)", etc. to distinguish them.
+ * Groups inputs by their Tapis field index (the X in `_X.Y`),
+ * derives the label from the first entry in each group, and
+ * appends "(1/N)", "(2/N)" when a group has multiple files.
+ *
+ * @param {Array} fileInputs - Filtered (non-hidden) file inputs from job
+ * @returns {Array<{label: string, id: string, value: string}>}
  */
 export function getInputDisplayValues(fileInputs) {
   if (!fileInputs.length) return [];
 
-  const baseLabel = _getCleanInputLabel(fileInputs[0].name);
+  const groups = new Map();
+  fileInputs.forEach((input) => {
+    const key = _getInputGroupKey(input.name);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(input);
+  });
 
-  if (fileInputs.length === 1) {
-    return [
-      {
-        label: baseLabel,
-        id: fileInputs[0].sourceUrl,
-        value: fileInputs[0].sourceUrl,
-      },
-    ];
-  }
+  return [...groups.values()].flatMap((inputs) => {
+    const baseLabel = _getCleanInputLabel(inputs[0].name);
 
-  return fileInputs.map((input, index) => ({
-    label: `${baseLabel} (${index + 1}/${fileInputs.length})`,
-    id: input.sourceUrl,
-    value: input.sourceUrl,
-  }));
+    if (inputs.length === 1) {
+      return [
+        {
+          label: baseLabel,
+          id: inputs[0].sourceUrl,
+          value: inputs[0].sourceUrl,
+        },
+      ];
+    }
+
+    return inputs.map((input, index) => ({
+      label: `${baseLabel} (${index + 1}/${inputs.length})`,
+      id: input.sourceUrl,
+      value: input.sourceUrl,
+    }));
+  });
 }
 
 /**
