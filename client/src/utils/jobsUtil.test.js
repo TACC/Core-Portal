@@ -85,12 +85,32 @@ describe('jobsUtil', () => {
     ]);
   });
 
-  it('get input display values for mixed distinct and multi-file inputs', () => {
+  it('get input display values for distinct input fields', () => {
+    expect(
+      getInputDisplayValues([
+        { name: 'Input Mesh', sourceUrl: 'tapis://sys/mesh.obj' },
+        { name: 'Config File', sourceUrl: 'tapis://sys/config.yaml' },
+      ])
+    ).toEqual([
+      {
+        label: 'Input Mesh',
+        id: 'tapis://sys/mesh.obj',
+        value: 'tapis://sys/mesh.obj',
+      },
+      {
+        label: 'Config File',
+        id: 'tapis://sys/config.yaml',
+        value: 'tapis://sys/config.yaml',
+      },
+    ]);
+  });
+
+  it('get input display values for multi-file input and single input', () => {
     expect(
       getInputDisplayValues([
         { name: 'Target path_1.1', sourceUrl: 'tapis://sys/file1.zip' },
         { name: '_1.2', sourceUrl: 'tapis://sys/file2.zip' },
-        { name: 'Config File_2.1', sourceUrl: 'tapis://sys/config.yaml' },
+        { name: 'Config File', sourceUrl: 'tapis://sys/config.yaml' },
       ])
     ).toEqual([
       {
@@ -107,6 +127,38 @@ describe('jobsUtil', () => {
         label: 'Config File',
         id: 'tapis://sys/config.yaml',
         value: 'tapis://sys/config.yaml',
+      },
+    ]);
+  });
+
+    it('get input display values for mixed distinct and multi-file inputs', () => {
+    expect(
+      getInputDisplayValues([
+        { name: 'Target path_1.1', sourceUrl: 'tapis://sys/file1.zip' },
+        { name: '_1.2', sourceUrl: 'tapis://sys/file2.zip' },
+        { name: 'Config File_2.1', sourceUrl: 'tapis://sys/config1.yaml' },
+        { name: '_2.2', sourceUrl: 'tapis://sys/config2.yaml' },
+      ])
+    ).toEqual([
+      {
+        label: 'Target path (1/2)',
+        id: 'tapis://sys/file1.zip',
+        value: 'tapis://sys/file1.zip',
+      },
+      {
+        label: 'Target path (2/2)',
+        id: 'tapis://sys/file2.zip',
+        value: 'tapis://sys/file2.zip',
+      },
+      {
+        label: 'Config File (1/2)',
+        id: 'tapis://sys/config1.yaml',
+        value: 'tapis://sys/config1.yaml',
+      },
+      {
+        label: 'Config File (2/2)',
+        id: 'tapis://sys/config2.yaml',
+        value: 'tapis://sys/config2.yaml',
       },
     ]);
   });

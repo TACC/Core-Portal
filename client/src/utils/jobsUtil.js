@@ -83,19 +83,21 @@ function _getCleanInputLabel(inputName) {
 }
 
 /**
- * Extract the input field identifier from a Tapis input name.
- * Tapis names follow `_X.Y` where X is the input field number
- * and Y is the file number within that field. For example:
- *   "Target path_1.1" → "1"  (field 1, file 1)
- *   "_1.2"            → "1"  (field 1, file 2)
- *   "_2.1"            → "2"  (field 2, file 1)
+ * Returns a grouping key for a Tapis input name.
  *
- * This allows grouping files that belong to the same input field,
- * even when only the first file carries a meaningful name.
+ * If the name ends with `_<field>.<index>` (e.g. "Target path_1.1", "_1.2"),
+ * returns `<field>` (e.g. "1") so all files for the same input field group together:
+ *     "Target path_1.1" → "1"  (field 1, file 1)
+ *     "_1.2"            → "1"  (field 1, file 2)
+ *     "_2.1"            → "2"  (field 2, file 1)
+ *
+ * Otherwise (no Tapis suffix), falls back to the original name so single-file
+ * inputs still have a stable grouping key:
+ *     "Other target path" → "Other target path"
  */
 function _getInputGroupKey(inputName) {
   const match = (inputName || '').match(/_(\d+)\.\d+$/);
-  return match ? match[1] : '0';
+  return match ? match[1] : inputName || 'unkown';
 }
 
 /**
