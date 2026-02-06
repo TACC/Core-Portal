@@ -74,6 +74,46 @@ export function getReservationFromArg(arg) {
 }
 
 /**
+ * Strips trailing suffixes like `_1.2` which Tapis adds to file names.
+ *
+ * Examples:
+ * - "Input File_1.1" → "Input File"
+ * - null / "" → "Unnamed Input"
+ */
+function _getCleanInputLabel(inputName) {
+  const original = inputName || '';
+  const stripped = original.replace(/_\d+\.\d+$/, '').trim();
+  return stripped || 'Unnamed Input';
+}
+
+/**
+ * Build display-friendly input labels from job file inputs.
+ * Single input uses the clean label as-is; multiple inputs
+ * append "(1/N)", "(2/N)", etc. to distinguish them.
+ */
+export function getInputDisplayValues(fileInputs) {
+  if (!fileInputs.length) return [];
+
+  const baseLabel = _getCleanInputLabel(fileInputs[0].name);
+
+  if (fileInputs.length === 1) {
+    return [
+      {
+        label: baseLabel,
+        id: fileInputs[0].sourceUrl,
+        value: fileInputs[0].sourceUrl,
+      },
+    ];
+  }
+
+  return fileInputs.map((input, index) => ({
+    label: `${baseLabel} (${index + 1}/${fileInputs.length})`,
+    id: input.sourceUrl,
+    value: input.sourceUrl,
+  }));
+}
+
+/**
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
@@ -89,15 +129,11 @@ export function getJobDisplayInformation(job, app) {
 
   const envVariables = parameterSet.envVariables;
   const schedulerOptions = parameterSet.schedulerOptions;
+
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
-    inputs: fileInputs.map((input) => ({
-      label: input.name || 'Unnamed Input',
-      id: input.sourceUrl,
-      value: input.sourceUrl,
-    })),
-
+    inputs: getInputDisplayValues(fileInputs),
     parameters: parameters.map((parameter) => ({
       label: parameter.name,
       id: parameter.name,
