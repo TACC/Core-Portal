@@ -22,12 +22,12 @@ describe('DataFiles', () => {
       workbench: {
         config: {
           extract: {
-            id: 'extract',
+            id: 'extract-express',
             version: '0.0.1',
           },
           compress: {
-            id: 'compress',
-            version: '0.0.4',
+            id: 'compress-express',
+            version: '0.0.1',
           },
         },
       },

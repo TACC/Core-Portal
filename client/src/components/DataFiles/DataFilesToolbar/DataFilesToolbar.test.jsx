@@ -560,8 +560,8 @@ describe('DataFilesToolbar', () => {
         allocations: { portal_alloc: undefined, active: [] },
         workbench: {
           config: {
-            extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.4' },
+            extractApp: { id: 'extract-express', version: '0.0.1' },
+            compressApp: { id: 'compress-express', version: '0.0.1' },
           },
         },
         files: {
@@ -592,8 +592,8 @@ describe('DataFilesToolbar', () => {
         allocations: { portal_alloc: undefined, active: ['foo'] },
         workbench: {
           config: {
-            extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.4' },
+            extractApp: { id: 'extract-express', version: '0.0.1' },
+            compressApp: { id: 'compress-express', version: '0.0.1' },
           },
         },
         files: {
