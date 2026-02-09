@@ -5,10 +5,12 @@ from celery import shared_task
 from portal.libs.agave.utils import user_account, service_account
 from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 from portal.apps.users.utils import get_tas_allocations
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.libs.elasticsearch.docs.base import (IndexedAllocation,
-                                                 IndexedProject)
+                                                 IndexedProject, IndexedPublication)
 from portal.libs.elasticsearch.utils import get_sha256_hash
+from portal.apps.publications.models import Publication
+from elasticsearch.exceptions import NotFoundError
 logger = logging.getLogger(__name__)
 
 
@@ -65,7 +67,7 @@ def index_allocations(self, username):
 
 @shared_task(bind=True, max_retries=3, queue='indexing')
 def index_project(self, project_id):
-    project = ProjectMetadata.objects.get(project_id=project_id)
+    project = LegacyProjectMetadata.objects.get(project_id=project_id)
     project_dict = project.to_dict()
     project_doc = IndexedProject(**project_dict)
     project_doc.meta.id = project_id
@@ -75,3 +77,15 @@ def index_project(self, project_id):
 @shared_task(bind=True, max_retries=3, queue='default')
 def tapis_project_listing_indexer(self, projects):
     index_project_listing(projects)
+
+def index_publication(project_id):
+    """Util to index a publication by its project ID"""
+    pub = Publication.objects.get(project_id=project_id)
+    try:
+        pub_es = IndexedPublication.get(project_id)
+        pub_es.update(**pub.tree, created=pub.created)
+
+    except NotFoundError:
+        pub_es = IndexedPublication(**pub.tree, created=pub.created)
+        pub_es.meta["id"] = project_id
+        pub_es.save()

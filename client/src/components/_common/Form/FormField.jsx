@@ -124,6 +124,7 @@ const FormField = ({
       {label && hasAddon ? <FieldLabel /> : null}
       <FormFieldWrapper type={wrapperType}>
         {label && !hasAddon ? <FieldLabel /> : null}
+        {!hasAddon ? <FieldNote /> : null}
         {tapisFile ? (
           <>
             <SelectModal
@@ -135,7 +136,6 @@ const FormField = ({
                 helpers.setValue(`tapis://${system}/${path}`);
               }}
             />
-
             <InputGroup>
               <Button
                 size="middle"
@@ -154,7 +154,6 @@ const FormField = ({
             {hasAddon && addonType === 'append' ? addon : null}
           </>
         )}
-        {!hasAddon ? <FieldNote /> : null}
       </FormFieldWrapper>
       {hasAddon ? <FieldNote /> : null}
     </>

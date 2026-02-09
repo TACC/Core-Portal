@@ -91,6 +91,8 @@ urlpatterns = [
     path('api/jupyter_mounts/', include('portal.apps.jupyter_mounts.api.urls', namespace='jupyter_mounts_api')),
     path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
     path('api/site-search/', include('portal.apps.site_search.api.urls', namespace='site_search_api')),
+    path('api/forms/', include('portal.apps.forms.urls', namespace='forms')),
+    path('api/publications/', include('portal.apps.publications.urls', namespace='publications_api')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
@@ -102,6 +104,7 @@ urlpatterns = [
                  namespace='googledrive-privacy-policy')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
     path('public-data/', include('portal.apps.public_data.urls', namespace='public')),
+    path('published-datasets/', include('portal.apps.public_data.urls', namespace='publications')),
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 
@@ -120,6 +123,14 @@ urlpatterns = [
 
 ]
 
+# custom endpoint
+if settings.WORKBENCH_SETTINGS.get('hasCustomEndpoints'):
+    urlpatterns.append(
+        path(
+            f'api/{settings.PORTAL_NAMESPACE.lower()}/', 
+            include(f'portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.urls', namespace='custom')
+        )
+    )
 # internal docs
 if settings.INTERNAL_DOCS_URL and settings.INTERNAL_DOCS_ROOT:
     urlpatterns.append(re_path(f"^{settings.INTERNAL_DOCS_URL}(?P<path>.*)$", serve_docs))
