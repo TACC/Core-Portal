@@ -14,6 +14,7 @@ import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
 import { fetchUtil } from 'utils/fetchUtil';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { EXCLUDED_METADATA_FIELDS } from '../../constants/metadataFields';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const theme = createTheme({
   components: {
@@ -30,6 +31,8 @@ const theme = createTheme({
 })
 
 export const ProjectTreeView = ({ projectId, readOnly = false }) => {
+  const history = useHistory();
+  const location = useLocation();
   const [expandedNodes, setExpandedNodes] = useState([]);
 
   const dispatch = useDispatch();
@@ -37,9 +40,10 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
 
   const [tree, setTree] = useState([]);
 
-  const { dynamicFormModal, previewModal, metadata } = useSelector((state) => ({
+  const { dynamicFormModal, previewModal, projectTreeModal, metadata } = useSelector((state) => ({
     dynamicFormModal: state.files.modals.dynamicform,
     previewModal: state.files.modals.preview,
+    projectTreeModal: state.files.modals.projectTree,
     metadata: state.projects.metadata,
   }));
 
@@ -69,11 +73,58 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
 
   const { params } = useFileListing('FilesListing');
 
+  // Helper function to find a node by path and collect all parent node IDs
+  const findNodeByPath = (nodes, targetPath, parentIds = []) => {
+    if (!nodes || !Array.isArray(nodes)) return null;
+
+    targetPath = targetPath.replace(/\/+$/, '')
+
+    for (const node of nodes) {
+      const currentPath = (node.path || '').replace(/\/+$/, '');
+      const currentParentIds = [...parentIds, node.id];
+
+      if (currentPath === targetPath) {
+        return currentParentIds;
+      }
+
+      // search in children
+      if (node.children && node.children.length > 0) {
+        const result = findNodeByPath(node.children, targetPath, currentParentIds);
+        if (result) return result;
+      }
+
+      // search in fileObjs
+      if (node.fileObjs && node.fileObjs.length > 0) {
+        const result = findNodeByPath(node.fileObjs, targetPath, currentParentIds);
+        if (result) return result;
+      }
+    }
+
+    return null;
+  };
+
   useEffect(() => {
     if (tree && tree.length > 0) {
-      setExpandedNodes([tree[0].id]);
+      const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
+      const baseUrlMatch = location.pathname.match(regex);
+      
+      if (baseUrlMatch) {
+        const baseUrl = baseUrlMatch[0];
+        const nodePath = location.pathname.substring(baseUrl.length + 1);
+        
+        // Find the node by path and get all parent IDs
+        const parentIds = findNodeByPath(tree, nodePath);
+        
+        if (parentIds && parentIds.length > 0) {
+          setExpandedNodes(parentIds);
+        } else {
+          setExpandedNodes([tree[0].id]);
+        }
+      } else {
+        setExpandedNodes([tree[0].id]);
+      }
     }
-  }, [tree]);
+  }, [tree, location.pathname]);
 
   const handleNodeToggle = (event, node) => {
     // Update the list of expanded nodes
@@ -135,6 +186,25 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     }
   };
 
+  const onGoTo = (node) => {
+
+    const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
+    const baseUrl = location.pathname.match(regex)[0];
+
+    if (node.metadata.data_type === 'file') {
+      history.push(`${baseUrl}/${node.path.split('/').slice(0, -1).join('/')}`);
+    } else {
+      history.push(`${baseUrl}/${node.path}`);
+    }
+
+    if (projectTreeModal) {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'projectTree', props: {} },
+      });
+    }
+  };
+
   const formatDatatype = (data_type) =>
     data_type
       .split('_')
@@ -184,17 +254,31 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
           >
             {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
               <div className={styles['metadata-description-div']}>
-                {(!readOnly || node.metadata.data_type === 'file') && (
-                  <Button
-                    className={styles['edit-button']}
-                    type="link"
-                    onClick={() => onEditData(node)}
-                  >
-                    {!readOnly && node.metadata.data_type !== 'file'
-                      ? 'Edit'
-                      : 'View'}
-                  </Button>
-                )}
+                <div className={styles['tree-button-div']}>
+                  {(!readOnly || node.metadata.data_type === 'file') && (
+                    <Button
+                      className={styles['edit-button']}
+                      type="link"
+                      onClick={() => onEditData(node)}
+                    >
+                      {!readOnly && node.metadata.data_type !== 'file'
+                        ? 'Edit'
+                        : 'View'}
+                    </Button>
+                  )}
+                  {(!readOnly || node.metadata.data_type === 'file') && (
+                    <span className={styles['separator']}>|</span>
+                  )}
+                  {(
+                    <Button
+                      className={styles['edit-button']}
+                      type="link"
+                      onClick={() => onGoTo(node)}
+                    >
+                      Go To {formatDatatype(node.metadata.data_type)}
+                    </Button>
+                  )}
+                </div>
                 <div className={styles['description']}>
                   <ShowMore>{node.metadata.description}</ShowMore>
                   <DataDisplay
