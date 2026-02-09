@@ -39,7 +39,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     () => ({
       title,
       description: description || '',
-      keywords: keywords || '',
+      keywords: keywords || [],
     }),
     [title, description, keywords]
   );
@@ -134,6 +134,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 <FormField
                   name="keywords"
                   aria-label="keywords"
+                  tags
                   label={
                     <div>
                       Keywords{' '}

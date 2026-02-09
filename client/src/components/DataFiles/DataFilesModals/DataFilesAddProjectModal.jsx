@@ -117,7 +117,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '', description: '', keywords: '' }}
+          initialValues={{ title: '', description: '', keywords: [] }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -157,6 +157,7 @@ const DataFilesAddProjectModal = () => {
                 <FormField
                   name="keywords"
                   aria-label="keywords"
+                  tags
                   label={
                     <div>
                       Keywords{' '}
