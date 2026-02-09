@@ -4,11 +4,8 @@ from django.conf import settings
 from celery import shared_task
 from portal.libs.agave.utils import user_account, service_account
 from portal.libs.elasticsearch.utils import index_listing, index_project_listing
-from portal.apps.users.utils import get_tas_allocations
 from portal.apps.projects.models.metadata import ProjectMetadata
-from portal.libs.elasticsearch.docs.base import (IndexedAllocation,
-                                                 IndexedProject)
-from portal.libs.elasticsearch.utils import get_sha256_hash
+from portal.libs.elasticsearch.docs.base import  IndexedProject
 logger = logging.getLogger(__name__)
 
 
@@ -53,14 +50,6 @@ def index_community_data(self, reindex=False):
         if sys['api'] == 'tapis' and sys['scheme'] in ['community', 'public']:
             logger.info('INDEXING {} SYSTEM with file path {}'.format(sys['name'], sys.get("homeDir", "/")))
             tapis_indexer.apply_async(args=[sys['system']], kwargs={'filePath': sys.get("homeDir", "/"), 'reindex': reindex})
-
-
-@shared_task(bind=True, max_retries=3, queue='api')
-def index_allocations(self, username):
-    allocations = get_tas_allocations(username)
-    doc = IndexedAllocation(username=username, value=allocations)
-    doc.meta.id = get_sha256_hash(username)
-    doc.save()
 
 
 @shared_task(bind=True, max_retries=3, queue='indexing')

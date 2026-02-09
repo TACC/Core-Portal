@@ -16,7 +16,7 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps,
     new_user_setup_check
 )
-from portal.apps.search.tasks import index_allocations
+from portal.apps.users.tasks import index_allocations
 from portal.apps.users.utils import check_user_groups
 from portal.utils import get_client_ip
 

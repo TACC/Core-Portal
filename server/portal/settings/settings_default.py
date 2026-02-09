@@ -251,6 +251,7 @@ _WORKBENCH_SETTINGS = {
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
     "jobsv2Title": "Historic Jobs",
+    "isTACCPortal": _IS_TACC_PORTAL,
 }
 
 _PORTAL_ELEVATED_ROLES = {

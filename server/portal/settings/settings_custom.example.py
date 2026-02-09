@@ -30,6 +30,11 @@ _RT_TAG = "core_portal"
 _CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
 
 ########################
+# TACC SETTINGS
+########################
+_IS_TACC_PORTAL = True
+
+########################
 # TAPIS SETTINGS
 ########################
 
@@ -283,6 +288,7 @@ _WORKBENCH_SETTINGS = {
         ],
     },
     "jobsv2Title": "Historic Jobs",
+    "isTACCPortal": _IS_TACC_PORTAL,
 }
 
 _PORTAL_ELEVATED_ROLES = {

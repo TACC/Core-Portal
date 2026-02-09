@@ -65,7 +65,7 @@ class TapisOAuthToken(models.Model):
         }
 
     @property
-    def client(self):
+    def client(self) -> Tapis:
         """Tapis client.
 
         :return: Tapis client using refresh token.
