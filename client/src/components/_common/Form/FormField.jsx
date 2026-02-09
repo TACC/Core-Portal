@@ -156,6 +156,7 @@ const FormField = ({
             {props.tags ? (
               <Select
                 mode="tags"
+                tokenSeparators={[',']}
                 style={{
                   width: '100%',
                   minHeight: '31px',
