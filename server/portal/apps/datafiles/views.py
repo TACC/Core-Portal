@@ -131,15 +131,16 @@ class TapisFilesView(BaseApiView):
                 logger.info(e)
                 # In case of 500 determine cause
                 system_def = client.systems.getSystem(systemId=system)
-                allocations = get_allocations(request.user.username)
 
-                # If user is missing a non-corral allocation mangle error to a 403
-                if not any(
-                    system_def.host.endswith(ele)
-                    for ele in list(allocations["hosts"].keys())
-                    + ["corral.tacc.utexas.edu", "data.tacc.utexas.edu"]
-                ):
-                    raise PermissionDenied from e
+                if settings.IS_TACC_PORTAL:
+                    # If user is missing a non-corral allocation mangle error to a 403
+                    allocations = get_allocations(request.user.username)
+                    if not any(
+                        system_def.host.endswith(ele)
+                        for ele in list(allocations["hosts"].keys())
+                        + ["corral.tacc.utexas.edu", "data.tacc.utexas.edu"]
+                    ):
+                        raise PermissionDenied from e
 
                 if push_keys_required_if_not_credentials_ensured(request.user, system, path):
                     # If a user needs to push keys, return a response specifying the system

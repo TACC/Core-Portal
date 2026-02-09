@@ -104,7 +104,6 @@ function DataFilesUploadModalListingTable({
 }
 
 DataFilesUploadModalListingTable.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   uploadedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   setUploadedFiles: PropTypes.func.isRequired,

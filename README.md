@@ -13,8 +13,8 @@ The base Portal code for TACC WMA Workspace Portals
 ## Prerequisites for running the portal application:
 
 * Docker > 28
-* Python 3.11.x
-* Nodejs 22.x (LTS)
+* Python 3.12.x
+* Nodejs 24.x (LTS)
 
 The Core Portal can be run using [Docker][1].
 
