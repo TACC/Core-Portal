@@ -67,3 +67,28 @@ def evaluate_datafiles_storage_systems(tapis: TapisOAuthToken, systems: list) ->
     """
 
     return [evaluate_datafiles_storage_system(tapis, system) for system in systems]
+
+
+def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
+    """Get evaluated storage systems for user
+
+    Args:
+        tapis (TapisOAuthToken): Tapis OAuth token object
+    Returns:
+        list: List of evaluated storage system definitions
+    """
+
+    systems = tapis.client.systems.getSystems(listType="OWNED", limit="-1", select="id,notes", orderBy="id")
+
+    return [
+        {
+            "name": system.notes.get("label", system.notes.get("title", system.id)),
+            "system": system.id,
+            "scheme": "private",
+            "api": "tapis",
+            "homeDir": "/",
+            "icon": None,
+            "default": False,
+        }
+        for system in systems
+    ]
