@@ -266,9 +266,9 @@ function JobHistoryContent({
 
 JobHistoryContent.propTypes = {
   jobName: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
+
   jobDetails: PropTypes.object.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
+
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
   // TODOv3: dropV2Jobs

@@ -26,6 +26,15 @@ function Dashboard() {
     ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
   );
 
+  const contentLayoutName =
+    panelCount === 1
+      ? 'oneColumn'
+      : panelCount === 2 && customDashboardSection
+        ? 'twoColumnUnequal'
+        : panelCount === 2 && !customDashboardSection
+          ? 'twoColumn'
+          : 'twoColumnUnequal';
+
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -40,7 +49,7 @@ function Dashboard() {
         )
       }
       contentClassName={`${styles['panels']} count--${panelCount}`}
-      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
+      contentLayoutName={contentLayoutName}
       contentShouldScroll
       content={
         <>

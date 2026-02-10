@@ -263,7 +263,7 @@ def test_projects_post_setfacl_job(
                 {"key": "usernames", "value": "username"},
                 {
                     "key": "directory",
-                    "value": "/path/to/root/test.project-2/test.project-2",
+                    "value": "/path/to/root/test.project-2",
                 },
                 {"key": "action", "value": "add"},
                 {"key": "role", "value": "writer"},
