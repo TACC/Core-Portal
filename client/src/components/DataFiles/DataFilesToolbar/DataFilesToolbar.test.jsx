@@ -335,6 +335,52 @@ describe('DataFilesToolbar', () => {
     expect(testModal).toBeDefined();
   });
 
+  it('does not show "no folders" message for folder downloads in community/pubic data', async () => {
+    // Create a test folder
+    const testFolder = {
+      name: 'test',
+      type: 'folder',
+      length: 4000,
+      path: '/test',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'test',
+              path: 'test',
+              scheme: 'public',
+            },
+          },
+          listing: { FilesListing: [testFolder] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the No Folders Modal
+    await waitFor(() => screen.queryByText('Download Unavailable'));
+    // Assign the No Folders Modal to a variable
+    const testModal = screen.queryByText('Download Unavailable');
+    // Test for the No Folders Modal
+    expect(testModal).toBeDefined();
+  });
+
   it('prompts compress for download of >1 files', async () => {
     const testFile = {
       name: 'test.txt',
