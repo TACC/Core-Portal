@@ -12,12 +12,14 @@ export async function uploadUtil({
   system,
   path,
   file,
+  metadata,
 }: {
   api: string;
   scheme: string;
   system: string;
   path: string;
   file: FormData;
+  metadata?: Record<string, any>;
 }): Promise<{ file: any; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
@@ -26,8 +28,15 @@ export async function uploadUtil({
   const formData = new FormData();
   const fileField = file.get('uploaded_file') as Blob;
   formData.append('uploaded_file', fileField);
+  
+  // Append metadata as a JSON string
+  if (metadata && !system.includes('community')) {
+    formData.append('metadata', JSON.stringify({ data_type: 'file', ...metadata }));
+  }
+
   let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
   url = url.replace(/\/{2,}/g, '/');
+
   const response = await apiClient.post(url, formData, {
     headers: {
       'X-CSRFToken': Cookies.get('csrftoken') || '',
@@ -61,19 +70,21 @@ function useUpload() {
   }: {
     system: string;
     path: string;
-    files: { data: File; id: string }[];
+    files: { data: File; id: string, metadata: Record<string, any> }[];
     reloadCallback: () => void;
   }) => {
     const api = 'tapis';
     const scheme = 'private';
     const uploadCalls: Promise<any>[] = files.map((fileObj) => {
-      const { data: file, id: index } = fileObj;
+      const { data: file, id: index, metadata } = fileObj;
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'UPLOADING', key: index, operation: 'upload' },
       });
+
       const formData = new FormData();
       formData.append('uploaded_file', file);
+
       return mutateAsync(
         {
           api,
@@ -81,6 +92,7 @@ function useUpload() {
           system,
           path,
           file: formData,
+          metadata: metadata,
         },
         {
           onSuccess: () => {
@@ -114,6 +126,8 @@ function useUpload() {
       reloadCallback();
     });
   };
+
   return { upload, status, setStatus };
 }
+
 export default useUpload;

@@ -7,7 +7,7 @@ import logging
 import datetime
 import json
 from django.contrib.auth import get_user_model
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.libs.agave.utils import to_camel_case
 
 LOGGER = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class MetadataJSONSerializer(json.JSONEncoder):
 
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
         """Default."""
-        if isinstance(obj, ProjectMetadata):
+        if isinstance(obj, LegacyProjectMetadata):
             ret = {}
             for field in obj._meta.fields:
                 if not field.serialize:

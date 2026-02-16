@@ -33,7 +33,7 @@ const Actions = () => {
           },
         });
       }}
-      disabled={!unread}
+      disabled={unread}
     >
       Mark All as Viewed
     </Button>

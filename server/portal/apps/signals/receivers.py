@@ -3,7 +3,7 @@ from portal.apps.signals.signals import portal_event
 from django.db.models.signals import post_save
 from portal.apps.notifications.models import Notification
 from portal.apps.onboarding.models import SetupEvent
-from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.search.tasks import index_project
 from django.contrib.auth import get_user_model
 import logging
@@ -66,7 +66,7 @@ def send_notification_ws(sender, instance, created, **kwargs):
     return
 
 
-@receiver(post_save, sender=ProjectMetadata, dispatch_uid='index_project')
+@receiver(post_save, sender=LegacyProjectMetadata, dispatch_uid='index_project')
 def index_project_on_save(sender, instance, created, **kwargs):
     index_project.apply_async(args=[instance.project_id])
 
