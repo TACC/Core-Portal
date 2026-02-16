@@ -64,12 +64,6 @@ const DataFilesCopyModal = React.memo(() => {
 
   const toggle = () => toggleModal({ operation: 'copy', props: {} });
 
-  const onOpened = () => {
-    fetchListing({
-      ...params,
-    });
-  };
-
   const excludedSystems = systems
     .filter(
       (s) =>
@@ -154,7 +148,6 @@ const DataFilesCopyModal = React.memo(() => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       size="xl"
@@ -185,7 +178,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemAndHomeDirId={
+                defaultSystemAndHomeDirPath={
                   params.scheme === 'projects'
                     ? 'shared'
                     : `${selectedSystem?.system}${
@@ -225,7 +218,7 @@ const DataFilesCopyModal = React.memo(() => {
           </div>
         </div>
       </ModalBody>
-      {modalParams.scheme === 'public' && (
+      {!showProjects && modalParams.scheme === 'public' && (
         <ModalFooter className="d-flex justify-content-start">
           <SectionMessage type="warning">
             Files copied to Public Data will be avaliable to general public.{' '}
