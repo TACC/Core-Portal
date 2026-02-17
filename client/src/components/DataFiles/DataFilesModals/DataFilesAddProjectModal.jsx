@@ -66,7 +66,7 @@ const DataFilesAddProjectModal = () => {
       payload: {
         title,
         description,
-        keywords: keywords.trim(),
+        keywords: keywords,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -101,10 +101,7 @@ const DataFilesAddProjectModal = () => {
         then: (schema) => schema.required('Please enter a description.'),
         otherwise: (schema) => schema.notRequired(),
       }),
-    keywords: Yup.string().matches(
-      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
-      'Please separate keywords with commas.'
-    ),
+    keywords: Yup.array().of(Yup.string()),
   });
 
   return (
