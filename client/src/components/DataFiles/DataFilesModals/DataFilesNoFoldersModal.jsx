@@ -27,7 +27,7 @@ const DataFilesNoFoldersModal = () => {
       </ModalHeader>
       <ModalBody>
         <SectionMessage type="warn">
-          Folders can no longer be compressed.
+          Folders can no longer be downloaded.
         </SectionMessage>
         <p className={styles['info']}>
           Please individually select which files you would like to download.
