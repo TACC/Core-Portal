@@ -5,7 +5,7 @@ import { DropdownSelector } from '_common';
 import styles from './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({
-  systemAndHomeDirId,
+  defaultSystemAndHomeDirPath,
   section,
   disabled,
   operation,
@@ -17,50 +17,65 @@ const DataFilesSystemSelector = ({
     (state) => state.systems.storage.configuration
   );
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
-  const findSystem = (systemAndHomeDirPath) =>
-    systemList.find(
-      (system) =>
-        `${system.system}${system.homeDir || ''}` === systemAndHomeDirPath
-    );
-  const [selectedSystem, setSelectedSystem] = useState(systemAndHomeDirId);
 
-  const openSystem = useCallback(
-    (event) => {
-      if (event.target.value === 'shared') {
-        setSelectedSystem('shared');
-        dispatch({
-          type: 'DATA_FILES_SET_MODAL_PROPS',
-          payload: {
-            operation,
-            props: { ...modalProps, showProjects: true },
-          },
-        });
-        return;
-      }
+  const availableSystems = systemList
+    .map((s) => ({
+      systemAndHomeDirPath:
+        s.scheme === 'projects' ? 'shared' : `${s.system}${s.homeDir || ''}`,
+      systemConf: s,
+    }))
+    .filter((s) => !excludedSystems.includes(s.systemAndHomeDirPath));
 
-      const system = findSystem(event.target.value);
-      setSelectedSystem(`${system.system}${system.homeDir || ''}`);
-      dispatch({
-        type: 'FETCH_FILES',
-        payload: {
-          ...system,
-          path: system.homeDir || '',
-          section,
-        },
-      });
-      dispatch({
-        type: 'FETCH_SYSTEM_DEFINITION',
-        payload: system.system,
-      });
+  const defaultSystem = availableSystems.reduce(
+    (prev, s) =>
+      s.systemAndHomeDirPath === defaultSystemAndHomeDirPath ? s : prev,
+    availableSystems[0]
+  );
+
+  const [selectedDropdownSystem, setSelectedDropdownSystem] =
+    useState(defaultSystem);
+
+  useEffect(() => {
+    if (selectedDropdownSystem.systemAndHomeDirPath === 'shared') {
       dispatch({
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
-          props: { ...modalProps, showProjects: false },
+          props: { ...modalProps, showProjects: true },
         },
       });
+      return;
+    }
+
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        ...selectedDropdownSystem.systemConf,
+        path: selectedDropdownSystem.systemConf.homeDir || '',
+        section,
+      },
+    });
+    dispatch({
+      type: 'FETCH_SYSTEM_DEFINITION',
+      payload: selectedDropdownSystem.systemConf.system,
+    });
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation,
+        props: { ...modalProps, showProjects: false },
+      },
+    });
+  }, [selectedDropdownSystem]);
+
+  const openSystem = useCallback(
+    (event) => {
+      const dropdownSystem = availableSystems.find(
+        (s) => s.systemAndHomeDirPath === event.target.value
+      );
+      setSelectedDropdownSystem(dropdownSystem);
     },
-    [dispatch, section, findSystem, setSelectedSystem]
+    [dispatch, section, setSelectedDropdownSystem]
   );
 
   const resetProjects = () => {
@@ -73,50 +88,36 @@ const DataFilesSystemSelector = ({
     });
   };
 
-  useEffect(() => {
-    setSelectedSystem(systemAndHomeDirId);
-  }, []);
-
-  const dropdownSystems = systemList.filter(
-    (s) => !excludedSystems.includes(`${s.system}${s.homeDir || ''}`)
-  );
-
   return (
     <>
       <DropdownSelector
         onChange={openSystem}
-        value={selectedSystem}
+        value={selectedDropdownSystem.systemAndHomeDirPath}
         className={styles['system-select']}
-        disabled={disabled || !dropdownSystems.length}
+        disabled={disabled || !availableSystems.length}
       >
-        {dropdownSystems.map((s) => (
-          <option
-            key={s.name}
-            value={
-              s.scheme === 'projects'
-                ? 'shared'
-                : `${s.system}${s.homeDir || ''}`
-            }
-          >
-            {s.name}
+        {availableSystems.map((s) => (
+          <option key={s.systemAndHomeDirPath} value={s.systemAndHomeDirPath}>
+            {s.systemConf.name}
           </option>
         ))}
       </DropdownSelector>
-      {selectedSystem === 'shared' && !showProjects && (
-        <button
-          type="button"
-          className={`btn btn-link ${styles['btn-shared']}`}
-          onClick={resetProjects}
-        >
-          Return to Shared Workspaces
-        </button>
-      )}
+      {selectedDropdownSystem.systemAndHomeDirPath === 'shared' &&
+        !showProjects && (
+          <button
+            type="button"
+            className={`btn btn-link ${styles['btn-shared']}`}
+            onClick={resetProjects}
+          >
+            Return to Shared Workspaces
+          </button>
+        )}
     </>
   );
 };
 
 DataFilesSystemSelector.propTypes = {
-  systemAndHomeDirId: PropTypes.string,
+  defaultSystemAndHomeDirPath: PropTypes.string,
   section: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   operation: PropTypes.string.isRequired,
@@ -125,7 +126,7 @@ DataFilesSystemSelector.propTypes = {
 };
 
 DataFilesSystemSelector.defaultProps = {
-  systemAndHomeDirId: '',
+  defaultSystemAndHomeDirPath: '',
   disabled: false,
   showProjects: false,
   excludedSystems: [],
