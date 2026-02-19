@@ -68,7 +68,7 @@ export const projectsFixture = {
     title: '',
     description: '',
     projectId: '',
-    keywords: [],
+    keywords: '',
     members: [],
     loading: false,
     error: null,
