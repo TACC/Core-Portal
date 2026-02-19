@@ -163,8 +163,6 @@ const FormField = ({
                 }}
                 value={field.value || []}
                 onChange={(value) => helpers.setValue(value)}
-                onBlur={() => helpers.setTouched(true)}
-                placeholder={props.placeholder}
                 className="form-field-antd-tags"
               />
             ) : (
