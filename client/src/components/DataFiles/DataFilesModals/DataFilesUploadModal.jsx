@@ -1,6 +1,6 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,6 +30,13 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const reloadCallback = () => {
     history.push(location.pathname);
   };
+
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
+  );
+  const maxSize = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeValue
+  );
 
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
@@ -123,8 +130,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
-            maxSize={524288000}
-            maxSizeMessage="Max File Size: 500MB"
+            maxSizeMessage={maxSizeLabel || 'Max File Size: 2GB'}
+            maxSize={maxSize || 2 * 1024 * 1024 * 1024}
           />
         </div>
         {showListing && (
