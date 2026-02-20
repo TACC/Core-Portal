@@ -130,7 +130,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
-            maxSizeMessage={maxSizeLabel || 'Max File Size: 2GB'}
+            maxSizeMessage={`Max File Size: ${maxSizeLabel || '2GB'}`}
             maxSize={maxSize || 2 * 1024 * 1024 * 1024}
           />
         </div>
