@@ -35,6 +35,9 @@ const DataFilesAddButton = ({ readOnly }) => {
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
+  );
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
 
@@ -94,7 +97,7 @@ const DataFilesAddButton = ({ readOnly }) => {
             <i className={`icon-upload`} />
             <span className="multiline-menu-item-wrapper">
               Upload
-              <small> Up to 500mb </small>
+              <small> Up to {maxSizeLabel || '2GB'} </small>
             </span>
           </DropdownItem>
         </DropdownMenu>
