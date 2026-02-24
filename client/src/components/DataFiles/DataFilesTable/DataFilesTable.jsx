@@ -335,7 +335,7 @@ const DataFilesTable = ({
     setTableHeight(height);
   };
 
-  const { reachedEnd } = useFileListing(section);
+  const { reachedEnd, loadingScroll } = useFileListing(section);
 
   const sizedColumns = useMemo(
     () => columns.map((col) => ({ ...col, width: col.width * tableWidth })),
@@ -358,11 +358,13 @@ const DataFilesTable = ({
     ({ scrollOffset }) => {
       const diff =
         scrollOffset - itemCount * rowHeight + (tableHeight - headerHeight);
-      if (diff === 0 && !reachedEnd) {
+      const threshold = rowHeight * 10;
+
+      if (diff >= -threshold && !reachedEnd && !loadingScroll) {
         scrollBottomCallback();
       }
     },
-    [rowHeight, itemCount, tableHeight, headerHeight, reachedEnd]
+    [rowHeight, itemCount, tableHeight, headerHeight, reachedEnd, loadingScroll]
   );
 
   // only bind render function when table data changes
