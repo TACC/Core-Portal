@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
-import { useSystems } from 'hooks/datafiles';
+import { useSystems, useTapisToken } from 'hooks/datafiles';
 import Dashboard from '../Dashboard';
 import TicketCreateModal from '../Tickets/TicketCreateModal';
 import ManageAccount from '../ManageAccount';
@@ -26,6 +26,7 @@ function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const { loading: loadingSystems } = useSystems();
+  useTapisToken();
 
   // showUIPatterns: Show some entries only in local development
   const {

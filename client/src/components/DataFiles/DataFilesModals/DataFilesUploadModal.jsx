@@ -10,6 +10,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useTapisToken,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
@@ -41,6 +42,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
   const { params } = useFileListing('FilesListing');
+  const { data: tapisToken } = useTapisToken();
   const { status, upload, setStatus } = useUpload();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
@@ -55,6 +57,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
         path: params.path || '',
         files: filteredFiles,
         reloadCallback,
+        tapisToken,
       });
   };
   const dropZoneDisabled =
