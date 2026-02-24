@@ -470,6 +470,7 @@ def upload(client, system, path, uploaded_file, *args, **kwargs):
                      files={'file': uploaded_file},
                      timeout=600)
     res.raise_for_status()
+    # NOTE: tapipy causing issues currently by reading file into memory, so not using it for uploads at the moment
     # response_json = client.files.insert(systemId=system,
     #                                    path=dest_path,
     #                                    file=uploaded_file,
