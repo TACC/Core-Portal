@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
@@ -17,37 +17,14 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const { showProjects } = useSelector(
     (state) => state.files.modalProps.select
   );
-  const dispatch = useDispatch();
+
   const modalParams = useSelector(
     (state) => state.files.params.modal,
     shallowEqual
   );
 
   const selectRef = React.useRef();
-  const onOpened = () => {
-    const systemParams = {
-      api: 'tapis',
-      scheme: 'private',
-      system: systems.filter((s) => !s.hidden)[0].system,
-      path: systems.filter((s) => !s.hidden)[0]?.homeDir || '',
-    };
 
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...systemParams, section: 'modal' },
-    });
-    dispatch({
-      type: 'DATA_FILES_SET_MODAL_PROPS',
-      payload: {
-        operation: 'select',
-        props: {},
-      },
-    });
-    dispatch({
-      type: 'FETCH_SYSTEM_DEFINITION',
-      payload: systemParams.system,
-    });
-  };
   const selectCallback = (system, path) => {
     onSelect(system, path);
     toggle();
@@ -57,13 +34,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     .filter((s) => s.api !== 'tapis' || s.hidden)
     .map((s) => `${s.system}${s.homeDir || ''}`);
 
-  const selectedSystem =
-    systems.filter((s) => s.api === 'tapis' && !s.hidden)[0] || modalParams;
-
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       toggle={toggle}
       size="xl"
       className="dataFilesModal"
@@ -79,9 +52,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemAndHomeDirId={`${selectedSystem?.system}${
-                  selectedSystem?.homeDir || ''
-                }`}
+                initialParams={modalParams}
                 section="modal"
                 excludedSystems={excludedSystems}
                 showProjects={showProjects}
