@@ -32,7 +32,13 @@ export async function uploadUtil({
 
   if (api === 'tapis') {
     formData.append('file', fileField);
-    url = `${tapisToken.baseUrl}/v3/files/ops/${system}/${apiPath}/${fileField.name}`;
+    const endpoint =
+      `/v3/files/ops/${system}/${apiPath}/${fileField.name}`.replace(
+        /\/{2,}/g,
+        '/'
+      );
+
+    url = `${tapisToken.baseUrl}${endpoint}`;
     config = {
       headers: {
         'content-type': 'multipart/form-data',

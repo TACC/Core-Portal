@@ -25,7 +25,7 @@ class TapisToken(BaseApiView):
             )
             raise PermissionDenied
 
-        # By accessing client(), we ensure that that there is a non-expired access_token which can be immediately used
+        # By accessing client(), we ensure that there is a non-expired access_token which can be immediately used
         client = request.user.tapis_oauth.client
         session_key_hash = sha256(
             (request.session.session_key or "").encode()
