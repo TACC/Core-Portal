@@ -16,38 +16,38 @@
 {% if user.is_authenticated %}
 <li class="nav-item dropdown" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="icon icon-user"></i>
+    <i class="icon icon-user" role="presentation"></i>
     <span>{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
   </a>
   <nav class="dropdown-menu dropdown-menu-end">
     <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
-      <i class="icon icon-dashboard"></i> My Dashboard
+      <i class="icon icon-dashboard" role="presentation"></i> My Dashboard
     </a>
     {% if user.is_staff %}
     <a class="dropdown-item" href="{% url 'workbench:onboarding_admin' %}">
-      <i class="icon icon-approved-boxed"></i> Onboarding Admin
+      <i class="icon icon-approved-boxed" role="presentation"></i> Onboarding Admin
     </a>
     {% endif %}
     {% if not settings.WORKBENCH_SETTINGS.hideManageAccount %}
     <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
-      <i class="icon icon-user"></i> My Account
+      <i class="icon icon-user" role="presentation"></i> My Account
     </a>
     {% endif %}
     {% if user.is_impersonate %}
     <a class="dropdown-item" href="{% url 'impersonate-stop' %}">
-      <i class="icon icon-user-reverse"></i> Stop impersonating {{user.get_username}}
+      <i class="icon icon-user-reverse" role="presentation"></i> Stop impersonating {{user.get_username}}
     </a>
     {% endif %}
     <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-      <i class="icon icon-exit"></i> Log Out
+      <i class="icon icon-exit" role="presentation"></i> Log Out
     </a>
   </nav>
 </li>
 {% else %}
 <li class="nav-item" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
   <a class="nav-link" href="{% url 'portal_auth:tapis_oauth' %}">
-    <i class="icon icon-user"></i> Log in
+    <i class="icon icon-user" role="presentation"></i> Log in
   </a>
 </li>
 {% endif %}
