@@ -243,7 +243,7 @@ _WORKBENCH_SETTINGS = {
     "hideSystemStatus": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
-    "maxDescriptionLength": 800,
+    "minDescriptionLength": 50,
     "maxTitleLength": 150,
     "enableWorkspaceKeywords": True,
     "noPHISystem": "",
