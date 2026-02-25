@@ -15,7 +15,12 @@ def authenticated_user_and_setup_complete(authenticated_user, mocker):
     mock_tapis = mocker.MagicMock(spec=Tapis, base_url="https://mock-tapis-api.com")
 
     # Patch just the client method of TapisOAuthToken as we don't want to actually check token and refresh
-    mocker.patch.object(TapisOAuthToken, "client", return_value=mock_tapis)
+    mocker.patch.object(
+        TapisOAuthToken,
+        "client",
+        new_callable=mocker.PropertyMock,
+        return_value=mock_tapis,
+    )
 
     yield authenticated_user
 
