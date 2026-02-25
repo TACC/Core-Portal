@@ -26,6 +26,8 @@ function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const { loading: loadingSystems } = useSystems();
+
+  // Prefetch the user's Tapis token so it's ready to go when the user tries to upload files
   useTapisToken();
 
   // showUIPatterns: Show some entries only in local development

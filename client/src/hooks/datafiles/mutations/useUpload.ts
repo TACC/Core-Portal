@@ -30,7 +30,7 @@ export async function uploadUtil({
   let url: string = '';
   let config: AxiosRequestConfig = {};
 
-  if (api === 'tapis') {
+  if (api === 'tapis' && tapisToken) {
     formData.append('file', fileField);
     const endpoint =
       `/v3/files/ops/${system}/${apiPath}/${fileField.name}`.replace(
