@@ -12,3 +12,15 @@
   color: #eb6e6e;
   padding-top: 5px;
 }
+
+.form-field-antd-tags {
+  & .ant-select-selector {
+    min-height: 31px !important;
+    padding: 2px 8px !important;
+    border-radius: 0 !important;
+  }
+
+  & .ant-select-selection-item {
+    line-height: 24px;
+  }
+}

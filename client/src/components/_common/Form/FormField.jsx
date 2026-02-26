@@ -13,6 +13,9 @@ import { useField } from 'formik';
 import PropTypes from 'prop-types';
 import './FormField.scss';
 
+import { Select } from 'antd';
+import 'antd/dist/reset.css';
+
 /** A limited-choice wrapper for `FormField` */
 const FormFieldWrapper = ({ children, type }) => {
   let wrapper;
@@ -150,7 +153,21 @@ const FormField = ({
         ) : (
           <>
             {hasAddon && addonType === 'prepend' ? addon : null}
-            <Input {...field} {...props} bsSize="sm" />
+            {props.tags ? (
+              <Select
+                mode="tags"
+                tokenSeparators={[',']}
+                style={{
+                  width: '100%',
+                  minHeight: '31px',
+                }}
+                value={field.value || []}
+                onChange={(value) => helpers.setValue(value)}
+                className="form-field-antd-tags"
+              />
+            ) : (
+              <Input {...field} {...props} bsSize="sm" />
+            )}
             {hasAddon && addonType === 'append' ? addon : null}
           </>
         )}
@@ -172,6 +189,7 @@ FormField.propTypes = {
   addon: PropTypes.node,
   /** The [`<InputGroupAddon>` `addonType`](https://reactstrap.github.io/components/input-group/) to add */
   addonType: PropTypes.oneOf(['prepend', 'append']),
+  tags: PropTypes.bool,
 };
 FormField.defaultProps = {
   id: undefined,
@@ -183,6 +201,7 @@ FormField.defaultProps = {
   SelectModal: undefined,
   addon: undefined,
   addonType: undefined,
+  tags: false,
 };
 
 export default FormField;

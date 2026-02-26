@@ -39,7 +39,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     () => ({
       title,
       description: description || '',
-      keywords: keywords || '',
+      keywords: keywords || [],
     }),
     [title, description, keywords]
   );
@@ -60,7 +60,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            keywords: values.keywords.trim() || '',
+            keywords: values.keywords || [],
           },
         },
       });
@@ -83,10 +83,7 @@ const DataFilesProjectEditDescriptionModal = () => {
         then: (schema) => schema.required('Please enter a description.'),
         otherwise: (schema) => schema.notRequired(),
       }),
-    keywords: Yup.string().matches(
-      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
-      'Please separate keywords with commas.'
-    ),
+    keywords: Yup.array().of(Yup.string()),
   });
 
   return (
@@ -134,6 +131,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 <FormField
                   name="keywords"
                   aria-label="keywords"
+                  tags
                   label={
                     <div>
                       Keywords{' '}
