@@ -13,8 +13,14 @@ describe('uploadUtil', () => {
   const file = new FormData();
   file.append(
     'uploaded_file',
-    new Blob(['test content'], { type: 'text/plain' })
+    new File(['test content'], 'testfile.txt', { type: 'text/plain' })
   );
+
+  const mockTapisToken = {
+    token: 'mockToken',
+    baseUrl: 'https://mock-tapis-api.com',
+    tapisTrackingId: 'portals.mockSessionKeyHash',
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,14 +32,24 @@ describe('uploadUtil', () => {
       data: { file: 'mockFile', path: '' },
     });
 
-    await uploadUtil({ api, scheme, system, path: '', file });
+    await uploadUtil({
+      api,
+      scheme,
+      system,
+      path: '',
+      file,
+      tapisToken: mockTapisToken,
+    });
 
     expect(apiClient.post).toHaveBeenCalledWith(
-      '/api/datafiles/tapis/upload/private/apcd.submissions/',
+      'https://mock-tapis-api.com/v3/files/ops/apcd.submissions/testfile.txt',
       expect.any(FormData),
       expect.objectContaining({
-        headers: { 'X-CSRFToken': 'mockCsrfToken' },
-        withCredentials: true,
+        headers: {
+          'X-Tapis-Token': mockTapisToken.token,
+          'X-Tapis-Tracking-ID': mockTapisToken.tapisTrackingId,
+          'content-type': 'multipart/form-data',
+        },
       })
     );
   });
@@ -42,7 +58,14 @@ describe('uploadUtil', () => {
     vi.mocked(apiClient.post).mockResolvedValue({
       data: { file: 'mockFile', path: '' },
     });
-    await uploadUtil({ api, scheme, system, path: '/', file });
+    await uploadUtil({
+      api,
+      scheme,
+      system,
+      path: '/',
+      file,
+      tapisToken: mockTapisToken,
+    });
     expect(apiClient.post).toHaveBeenCalled();
   });
 
@@ -51,14 +74,24 @@ describe('uploadUtil', () => {
       data: { file: 'mockFile', path: '/subdir' },
     });
 
-    await uploadUtil({ api, scheme, system, path: 'subdir', file });
+    await uploadUtil({
+      api,
+      scheme,
+      system,
+      path: 'subdir',
+      file,
+      tapisToken: mockTapisToken,
+    });
 
     expect(apiClient.post).toHaveBeenCalledWith(
-      '/api/datafiles/tapis/upload/private/apcd.submissions/subdir/',
+      'https://mock-tapis-api.com/v3/files/ops/apcd.submissions/subdir/testfile.txt',
       expect.any(FormData),
       expect.objectContaining({
-        headers: { 'X-CSRFToken': 'mockCsrfToken' },
-        withCredentials: true,
+        headers: {
+          'X-Tapis-Token': mockTapisToken.token,
+          'X-Tapis-Tracking-ID': mockTapisToken.tapisTrackingId,
+          'content-type': 'multipart/form-data',
+        },
       })
     );
   });
@@ -68,14 +101,24 @@ describe('uploadUtil', () => {
       data: { file: 'mockFile', path: '/nested/path' },
     });
 
-    await uploadUtil({ api, scheme, system, path: 'nested//path', file });
+    await uploadUtil({
+      api,
+      scheme,
+      system,
+      path: 'nested//path',
+      file,
+      tapisToken: mockTapisToken,
+    });
 
     expect(apiClient.post).toHaveBeenCalledWith(
-      '/api/datafiles/tapis/upload/private/apcd.submissions/nested/path/',
+      'https://mock-tapis-api.com/v3/files/ops/apcd.submissions/nested/path/testfile.txt',
       expect.any(FormData),
       expect.objectContaining({
-        headers: { 'X-CSRFToken': 'mockCsrfToken' },
-        withCredentials: true,
+        headers: {
+          'X-Tapis-Token': mockTapisToken.token,
+          'X-Tapis-Tracking-ID': mockTapisToken.tapisTrackingId,
+          'content-type': 'multipart/form-data',
+        },
       })
     );
   });

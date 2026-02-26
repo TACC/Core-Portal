@@ -37,6 +37,12 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {
+      uploadModalMaxSizeLabel: '2GB',
+      uploadModalMaxSizeValue: 2 * 1024 * 1024 * 1024,
+    },
+  },
 };
 
 describe('DataFilesUploadModal', () => {

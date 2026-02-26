@@ -269,6 +269,8 @@ _WORKBENCH_SETTINGS = {
     "noPHISystem": "",
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
+    "uploadModalMaxSizeLabel": "2GB",
+    "uploadModalMaxSizeValue": 2147483648,
     "customDashboardSection": {
         "header": "My Account",
         "links": [
