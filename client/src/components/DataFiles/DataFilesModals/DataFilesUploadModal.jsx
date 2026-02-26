@@ -1,6 +1,6 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +10,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useTapisToken,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
@@ -31,9 +32,17 @@ const DataFilesUploadModal = ({ className, layout }) => {
     history.push(location.pathname);
   };
 
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
+  );
+  const maxSize = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeValue
+  );
+
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
   const { params } = useFileListing('FilesListing');
+  const { data: tapisToken } = useTapisToken();
   const { status, upload, setStatus } = useUpload();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
@@ -48,6 +57,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
         path: params.path || '',
         files: filteredFiles,
         reloadCallback,
+        tapisToken,
       });
   };
   const dropZoneDisabled =
@@ -123,8 +133,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
-            maxSize={524288000}
-            maxSizeMessage="Max File Size: 500MB"
+            maxSizeMessage={`Max File Size: ${maxSizeLabel || '2GB'}`}
+            maxSize={maxSize || 2 * 1024 * 1024 * 1024}
           />
         </div>
         {showListing && (
