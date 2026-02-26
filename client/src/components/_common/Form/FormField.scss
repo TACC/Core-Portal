@@ -14,7 +14,7 @@
 }
 
 .form-field-antd-tags {
-  .ant-select-selector {
+  & .ant-select-selector {
     min-height: 31px !important;
     padding: 2px 8px !important;
     border-radius: 0 !important;
