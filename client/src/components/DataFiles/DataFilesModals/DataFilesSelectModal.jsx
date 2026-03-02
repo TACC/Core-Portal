@@ -34,9 +34,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     .filter((s) => s.api !== 'tapis' || s.hidden)
     .map((s) => `${s.system}${s.homeDir || ''}`);
 
-  const selectedSystem =
-    systems.filter((s) => s.api === 'tapis' && !s.hidden)[0] || modalParams;
-
   return (
     <Modal
       isOpen={isOpen}
@@ -55,9 +52,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                defaultSystemAndHomeDirPath={`${selectedSystem?.system}${
-                  selectedSystem?.homeDir || ''
-                }`}
+                initialParams={modalParams}
                 section="modal"
                 excludedSystems={excludedSystems}
                 showProjects={showProjects}
