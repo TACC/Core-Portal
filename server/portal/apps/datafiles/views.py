@@ -213,20 +213,26 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden("This data requires authentication to upload.")
 
         try:
-            METRICS.info('Data Files',
-                         extra={
-                             'user': request.user.username,
-                             'sessionId': getattr(request.session, 'session_key', ''),
-                             'operation': operation,
-                             'agent': request.META.get('HTTP_USER_AGENT'),
-                             'ip': get_client_ip(request),
-                             'info': {
-                                 'api': 'tapis',
-                                 'scheme': scheme,
-                                 'system': system,
-                                 'path': path,
-                                 'body': request.POST.dict()
-                             }})
+            METRICS.info(
+                "Data Files",
+                extra={
+                    "user": request.user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": operation,
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {
+                        "api": "tapis",
+                        "scheme": scheme,
+                        "system": system,
+                        "path": path,
+                        "body": {
+                            "files": [f.name for f in request.FILES.values()],
+                            **request.POST.dict(),
+                        },
+                    },
+                },
+            )
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
             response = tapis_post_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}",  body=body)
         except Exception as exc:
