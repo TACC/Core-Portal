@@ -275,7 +275,7 @@ export const AppSchemaForm = ({ app }) => {
       defaultSystem?.homeDir || '$WORK'
     }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
 
-    const isTACCPortal = state.workbench.config.isTACCPortal ?? true;
+    const isTACCPortal = state.workbench.isTACCPortal;
 
     return {
       allocations: getAllocationList(
