@@ -289,7 +289,7 @@ export const AppSchemaForm = ({ app }) => {
         state.allocations.hosts[defaultHost] ||
         hasCorral ||
         defaultSystem?.notes?.noAllocationRequired ||
-        !isTACCPortal,
+        isTACCPortal === false,
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
