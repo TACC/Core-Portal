@@ -53,6 +53,7 @@ const initialMockState = {
   },
   workbench: {
     config: { hideManageAccount: false },
+    isTACCPortal: true,
   },
 };
 
