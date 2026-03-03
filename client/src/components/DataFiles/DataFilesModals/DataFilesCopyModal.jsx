@@ -29,7 +29,7 @@ const DataFilesCopyModal = React.memo(() => {
     fetchListing,
   } = useFileListing('modal');
 
-  const { fetchSelectedSystem } = useSystems();
+  const { data: systems } = useSystems();
 
   const dispatch = useDispatch();
 
@@ -42,18 +42,11 @@ const DataFilesCopyModal = React.memo(() => {
   const { showProjects, canMakePublic } = getProps('copy');
 
   const [disabled, setDisabled] = useState(false);
-  const { data: systems } = useSystems();
 
   const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
 
   const toggle = () => toggleModal({ operation: 'copy', props: {} });
-
-  const onOpened = () => {
-    fetchListing({
-      ...params,
-    });
-  };
 
   const excludedSystems = systems
     .filter(
@@ -61,8 +54,6 @@ const DataFilesCopyModal = React.memo(() => {
     )
     .filter((s) => !(s.scheme === 'public' && canMakePublic))
     .map((s) => `${s.system}${s.homeDir || ''}`);
-
-  const selectedSystem = fetchSelectedSystem(params);
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -111,7 +102,6 @@ const DataFilesCopyModal = React.memo(() => {
   return (
     <Modal
       isOpen={isOpen}
-      onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
       size="xl"
@@ -142,13 +132,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemAndHomeDirId={
-                  params.scheme === 'projects'
-                    ? 'shared'
-                    : `${selectedSystem?.system}${
-                        selectedSystem?.homeDir || ''
-                      }`
-                }
+                initialParams={params}
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
@@ -182,7 +166,7 @@ const DataFilesCopyModal = React.memo(() => {
           </div>
         </div>
       </ModalBody>
-      {modalParams.scheme === 'public' && (
+      {!showProjects && modalParams.scheme === 'public' && (
         <ModalFooter className="d-flex justify-content-start">
           <SectionMessage type="warning">
             Files copied to Public Data will be avaliable to general public.{' '}

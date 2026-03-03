@@ -46,6 +46,7 @@ tapipy = "^25.4.0"
 gevent = "^23.9.1"
 pymemcache = "^4.0.0"
 twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev]
 optional = true
