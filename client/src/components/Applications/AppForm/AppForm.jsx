@@ -275,7 +275,7 @@ export const AppSchemaForm = ({ app }) => {
       defaultSystem?.homeDir || '$WORK'
     }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
 
-    const isTACCPortal = state.workbench.config.isTACCPortal;
+    const isTACCPortal = state.workbench.config.isTACCPortal ?? true;
 
     return {
       allocations: getAllocationList(
@@ -549,6 +549,7 @@ export const AppSchemaForm = ({ app }) => {
                 exec_sys &&
                 isJobTypeBATCH(app) &&
                 isTACCHost(exec_sys?.host) &&
+                isTACCPortal &&
                 isSystemTypeSLURM(exec_sys)
                   ? getAllocationValidation(allocations).test(
                       'exec-systems-check',
@@ -863,7 +864,7 @@ export const AppSchemaForm = ({ app }) => {
                     {isJobTypeBATCH(app) &&
                       selectedExecSystem &&
                       isSystemTypeSLURM(selectedExecSystem) &&
-                      (isTACCHost(selectedExecSystem?.host) ? (
+                      (isTACCHost(selectedExecSystem?.host) && isTACCPortal ? (
                         <FormField
                           label="Allocation"
                           name="allocation"
