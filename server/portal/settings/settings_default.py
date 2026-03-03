@@ -253,6 +253,7 @@ _WORKBENCH_SETTINGS = {
     "uploadModalMaxSizeLabel": "2GB",
     "uploadModalMaxSizeValue": 2147483648,
     "jobsv2Title": "Historic Jobs",
+    "isTACCPortal": _IS_TACC_PORTAL,
 }
 
 _PORTAL_ELEVATED_ROLES = {
