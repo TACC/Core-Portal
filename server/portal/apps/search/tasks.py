@@ -1,11 +1,12 @@
-
 import logging
 from django.conf import settings
 from celery import shared_task
 from portal.libs.agave.utils import user_account, service_account
 from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 from portal.apps.projects.models.metadata import ProjectMetadata
-from portal.libs.elasticsearch.docs.base import  IndexedProject
+from portal.libs.elasticsearch.docs.base import IndexedProject
+
+
 logger = logging.getLogger(__name__)
 
 
