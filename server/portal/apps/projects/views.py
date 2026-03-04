@@ -332,7 +332,12 @@ class ProjectInstanceApiView(BaseApiView):
 
         client = request.user.tapis_oauth.client
 
-        workspace_def = update_project(client, project_id, title, description, keywords)
+        system_details = client.systems.getSystem(systemId=project_id_full)
+
+        if (system_details.owner == request.user.username):
+            workspace_def = update_project(client, project_id, title, description, keywords)
+        else: 
+            workspace_def = get_project(client, project_id)
 
         if metadata is not None:
             metadata = json.loads(metadata)

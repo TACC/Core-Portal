@@ -66,7 +66,7 @@ const DataFilesProjectFileListing = ({
             ? member.user.username === state.authenticatedUser?.user?.username
             : { access: null }
         )
-        .map((currentUser) => currentUser.access === 'owner')[0]
+        .map((currentUser) => currentUser.access === 'owner' || currentUser.access === 'edit')[0]
   );
 
   const readOnlyTeam = useSelector((state) => {
