@@ -243,7 +243,7 @@ _WORKBENCH_SETTINGS = {
     "hideSystemStatus": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
-    "maxDescriptionLength": 800,
+    "minDescriptionLength": 50,
     "maxTitleLength": 150,
     "enableWorkspaceKeywords": True,
     "noPHISystem": "",
@@ -253,6 +253,7 @@ _WORKBENCH_SETTINGS = {
     "uploadModalMaxSizeLabel": "2GB",
     "uploadModalMaxSizeValue": 2147483648,
     "jobsv2Title": "Historic Jobs",
+    "isTACCPortal": _IS_TACC_PORTAL,
 }
 
 _PORTAL_ELEVATED_ROLES = {

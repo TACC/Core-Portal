@@ -252,6 +252,8 @@ export const AppSchemaForm = ({ app }) => {
     defaultArchivePath,
     keyService,
     allocationToExecSysMap,
+    hideManageAccount,
+    isTACCPortal,
   } = useSelector((state) => {
     const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
       app,
@@ -273,6 +275,8 @@ export const AppSchemaForm = ({ app }) => {
       defaultSystem?.homeDir || '$WORK'
     }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
 
+    const isTACCPortal = state.workbench.config.isTACCPortal;
+
     return {
       allocations: getAllocationList(
         app,
@@ -286,7 +290,8 @@ export const AppSchemaForm = ({ app }) => {
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
         hasCorral ||
-        defaultSystem?.notes?.noAllocationRequired,
+        defaultSystem?.notes?.noAllocationRequired ||
+        isTACCPortal === false,
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
@@ -303,11 +308,10 @@ export const AppSchemaForm = ({ app }) => {
       defaultArchivePath,
       keyService,
       allocationToExecSysMap,
+      hideManageAccount: state.workbench.config.hideManageAccount,
+      isTACCPortal,
     };
   }, shallowEqual);
-  const hideManageAccount = useSelector(
-    (state) => state.workbench.config.hideManageAccount
-  );
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
