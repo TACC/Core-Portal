@@ -10,12 +10,27 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link, useLocation } from 'react-router-dom';
-import { useFileListing, useSystems } from 'hooks/datafiles';
+import { Link } from 'react-router-dom';
+import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
 import * as ROUTES from '../../../constants/routes';
+
+/**
+ * Returns true if scroll position is within threshold pixels of the bottom of a list.
+ */
+export const isNearBottom = ({
+  scrollOffset,
+  itemCount,
+  rowHeight,
+  listHeight,
+  threshold,
+}) => {
+  const distanceFromBottom = itemCount * rowHeight - listHeight - scrollOffset;
+  return distanceFromBottom <= threshold;
+};
+
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
@@ -335,7 +350,7 @@ const DataFilesTable = ({
     setTableHeight(height);
   };
 
-  const { reachedEnd } = useFileListing(section);
+  const { reachedEnd, loadingScroll } = useFileListing(section);
 
   const sizedColumns = useMemo(
     () => columns.map((col) => ({ ...col, width: col.width * tableWidth })),
@@ -356,13 +371,29 @@ const DataFilesTable = ({
   const itemCount = rows.length ? rows.length + 1 : 0;
   const onScroll = useCallback(
     ({ scrollOffset }) => {
-      const diff =
-        scrollOffset - itemCount * rowHeight + (tableHeight - headerHeight);
-      if (diff === 0 && !reachedEnd) {
+      if (
+        isNearBottom({
+          scrollOffset,
+          itemCount,
+          rowHeight,
+          listHeight: tableHeight - headerHeight,
+          threshold: rowHeight * 10,
+        }) &&
+        !reachedEnd &&
+        !loadingScroll
+      ) {
         scrollBottomCallback();
       }
     },
-    [rowHeight, itemCount, tableHeight, headerHeight, reachedEnd]
+    [
+      rowHeight,
+      itemCount,
+      tableHeight,
+      headerHeight,
+      reachedEnd,
+      loadingScroll,
+      scrollBottomCallback,
+    ]
   );
 
   // only bind render function when table data changes
