@@ -269,7 +269,7 @@ export const AppSchemaForm = ({ app }) => {
         defaultHost?.endsWith(s)
       );
     const defaultSystem = configuration.find(
-      (system) => system.id === defaultSystemId
+      (system) => system.system === defaultSystemId
     );
     const defaultArchivePath = `${
       defaultSystem?.homeDir || '$WORK'
