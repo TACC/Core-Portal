@@ -5,3 +5,8 @@
   height: 300px;
   overflow: auto;
 }
+
+.badge-success {
+  background-color: var(--global-color-success--normal);
+  color: white;
+}

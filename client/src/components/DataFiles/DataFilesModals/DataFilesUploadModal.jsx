@@ -48,6 +48,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
+    debugger;
     const filteredFiles = uploadedFiles.filter(
       (f) => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
     );

@@ -30,6 +30,9 @@ export default defineConfig({
     cors: {
       origin: ['https://cep.test'],
     },
+    watch: {
+      usePolling: true,
+    },
     hmr: {
       protocol: 'ws',
       host: 'localhost',

@@ -8,16 +8,17 @@ import styles from './DataFilesUploadModalListingTable.module.scss';
 import { useSelector } from 'react-redux';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
+  const errorMessage = useSelector((state) => state.files.error.message);
+  const status = useUpload().status[i];
+
   if (rejectedFiles.filter((f) => f.id === i).length > 0) {
     return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
-  const errorMessage = useSelector((state) => state.files.error.message);
-  const status = useUpload().status[i];
   switch (status) {
     case 'UPLOADING':
       return <LoadingSpinner placement="inline" />;
     case 'SUCCESS':
-      return <span className="badge badge-success">SUCCESS</span>;
+      return <span className={styles['badge-success']}>SUCCESS</span>;
     case 'ERROR':
       return (
         <InlineMessage type="error">
@@ -64,14 +65,12 @@ function DataFilesUploadModalListingTable({
               <td style={{ verticalAlign: 'middle' }}>
                 <FileLengthCell cell={{ value: file.data.size }} />
               </td>
-              <td>
-                <span className="float-right">
+              <td style={{ verticalAlign: 'middle', textAlign: 'right',  width: '150px' }}>
                   <DataFilesUploadStatus
                     i={file.id}
                     removeCallback={removeFile}
                     rejectedFiles={rejectedFiles}
                   />
-                </span>
               </td>
             </tr>
           ))}
