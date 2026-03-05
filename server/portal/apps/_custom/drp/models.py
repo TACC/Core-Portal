@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict, model_validator, Field
-from typing import Optional, Literal
+from pydantic import BaseModel, ConfigDict, model_validator, Field, AfterValidator
+from typing import Optional, Literal, Annotated
 from pydantic.alias_generators import to_camel
 from functools import partial
+from portal.apps.custom.drp._validators import is_positive_number
 
 """
 Pydantic models for DRP Metadata
@@ -196,9 +197,18 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     procedure: Optional[str] = None
     equipment: Optional[str] = None
     algorithm_description: Optional[str] = None
-    grain_size_min: Optional[float] = None
-    grain_size_max: Optional[float] = None
-    grain_size_avg: Optional[float] = None
+    grain_size_min: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
+    grain_size_max: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
+    grain_size_avg: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
     grain_size_units: Optional[Literal[
         "nanometer",
         "micrometer",
@@ -222,9 +232,18 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     image_format: Optional[str] = None
     image_dimensions: Optional[str] = None
     image_byte_order: Optional[str] = None
-    voxel_x: Optional[float] = None
-    voxel_y: Optional[float] = None
-    voxel_z: Optional[float] = None
+    voxel_x: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
+    voxel_y: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
+    voxel_z: Annotated[
+        Optional[float],
+        AfterValidator(is_positive_number)
+    ] = None
     voxel_units: Optional[Literal[
         "nanometer",
         "micrometer",
