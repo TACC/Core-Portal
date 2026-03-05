@@ -290,7 +290,6 @@ _WORKBENCH_SETTINGS = {
         ],
     },
     "jobsv2Title": "Historic Jobs",
-    "isTACCPortal": _IS_TACC_PORTAL,
 }
 
 _PORTAL_ELEVATED_ROLES = {

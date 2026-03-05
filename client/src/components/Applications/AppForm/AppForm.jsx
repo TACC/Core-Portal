@@ -268,14 +268,14 @@ export const AppSchemaForm = ({ app }) => {
       ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
         defaultHost?.endsWith(s)
       );
-    const defaultSystem =
-      configuration.find((system) => system.id === defaultSystemId) ||
-      configuration[0];
+    const defaultSystem = configuration.find(
+      (system) => system.system === defaultSystemId
+    );
     const defaultArchivePath = `${
       defaultSystem?.homeDir || '$WORK'
     }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
 
-    const isTACCPortal = state.workbench.config.isTACCPortal;
+    const isTACCPortal = state.workbench.isTACCPortal;
 
     return {
       allocations: getAllocationList(
@@ -288,10 +288,12 @@ export const AppSchemaForm = ({ app }) => {
       hasDefaultAllocation:
         state.allocations.loading ||
         state.systems.storage.loading ||
-        state.allocations.hosts[defaultHost] ||
-        hasCorral ||
-        defaultSystem?.notes?.noAllocationRequired ||
-        isTACCPortal === false,
+        state.allocations.hosts[defaultHost] || // User has allocation on default storage system
+        hasCorral || // If default storage system is Corral, no allocation needed
+        !defaultSystem || // If default storage system is not found, assume no allocation needed
+        defaultSystem?.notes?.noAllocationRequired || // If default storage system has note that allocation is not required, no allocation needed
+        (defaultSystem?.host && !isTACCHost(defaultSystem?.host)) || // If default storage system is not on TACC, no allocation needed
+        isTACCPortal === false, // If not a TACC portal, we are not tracking allocations
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
       downSystems: state.systemMonitor
@@ -549,6 +551,7 @@ export const AppSchemaForm = ({ app }) => {
                 exec_sys &&
                 isJobTypeBATCH(app) &&
                 isTACCHost(exec_sys?.host) &&
+                isTACCPortal &&
                 isSystemTypeSLURM(exec_sys)
                   ? getAllocationValidation(allocations).test(
                       'exec-systems-check',
@@ -729,13 +732,14 @@ export const AppSchemaForm = ({ app }) => {
             values.execSystemId
           );
           let missingAllocationMessage = '';
-          if (!hasDefaultAllocation && hasStorageSystems) {
-            // Check if allocation required for default storage system, aka archive system
+          // Check if allocation required for default storage system, aka archive system
+          if (!hasDefaultAllocation && defaultStorageHost) {
             missingAllocationMessage = `You need an allocation on ${getSystemName(
               defaultStorageHost
             )} to run this application.`;
           } else if (
-            // Check if allocation required for execution system
+            // Check if allocation required for execution system, only if isTACCPortal is true, and we are tracking allocations
+            isTACCPortal &&
             selectedExecSystem &&
             !allocations.length &&
             isTACCHost(selectedExecSystem?.host) &&
@@ -863,7 +867,7 @@ export const AppSchemaForm = ({ app }) => {
                     {isJobTypeBATCH(app) &&
                       selectedExecSystem &&
                       isSystemTypeSLURM(selectedExecSystem) &&
-                      (isTACCHost(selectedExecSystem?.host) ? (
+                      (isTACCHost(selectedExecSystem?.host) && isTACCPortal ? (
                         <FormField
                           label="Allocation"
                           name="allocation"
