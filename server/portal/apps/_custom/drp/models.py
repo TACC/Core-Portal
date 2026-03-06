@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, model_validator, Field, NonNegativeInt, NonNegativeFloat
-from typing import Optional, Literal, Annotated
+from typing import Optional, Literal
 from pydantic.alias_generators import to_camel
 from functools import partial
 
