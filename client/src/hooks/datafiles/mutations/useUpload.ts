@@ -101,16 +101,23 @@ function useUpload() {
       const formData = new FormData();
       formData.append('uploaded_file', file);
 
-      return mutateAsync({ api, scheme, system, path, file: formData, tapisToken })
+      return mutateAsync({
+        api,
+        scheme,
+        system,
+        path,
+        file: formData,
+        tapisToken,
+      })
         .then(() => {
-          console.log("got a file2222");
-                    console.log("got a file2222");
+          console.log('got a file2222');
+          console.log('got a file2222');
 
-          tapisToken,
-          dispatch({
-            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-            payload: { status: 'SUCCESS', key: index, operation: 'upload' },
-          });
+          (tapisToken,
+            dispatch({
+              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+              payload: { status: 'SUCCESS', key: index, operation: 'upload' },
+            }));
         })
         .catch(() => {
           dispatch({

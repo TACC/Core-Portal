@@ -65,12 +65,18 @@ function DataFilesUploadModalListingTable({
               <td style={{ verticalAlign: 'middle' }}>
                 <FileLengthCell cell={{ value: file.data.size }} />
               </td>
-              <td style={{ verticalAlign: 'middle', textAlign: 'right',  width: '150px' }}>
-                  <DataFilesUploadStatus
-                    i={file.id}
-                    removeCallback={removeFile}
-                    rejectedFiles={rejectedFiles}
-                  />
+              <td
+                style={{
+                  verticalAlign: 'middle',
+                  textAlign: 'right',
+                  width: '150px',
+                }}
+              >
+                <DataFilesUploadStatus
+                  i={file.id}
+                  removeCallback={removeFile}
+                  rejectedFiles={rejectedFiles}
+                />
               </td>
             </tr>
           ))}
