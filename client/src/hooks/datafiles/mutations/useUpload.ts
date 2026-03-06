@@ -110,9 +110,6 @@ function useUpload() {
         tapisToken,
       })
         .then(() => {
-          console.log('got a file2222');
-          console.log('got a file2222');
-
           (tapisToken,
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
