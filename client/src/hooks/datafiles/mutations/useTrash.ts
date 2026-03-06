@@ -23,7 +23,7 @@ export async function trashUtil({
   };
   const response = await apiClient.put(url, body, {
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken' || ''),
+      'X-CSRFToken': Cookies.get('csrftoken') || '',
     },
     withCredentials: true,
   });
