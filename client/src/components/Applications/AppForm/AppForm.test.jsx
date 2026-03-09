@@ -53,6 +53,7 @@ const initialMockState = {
   },
   workbench: {
     config: { hideManageAccount: false },
+    isTACCPortal: true,
   },
 };
 
@@ -89,7 +90,7 @@ describe('AppSchemaForm', () => {
 
       // use app definition default archive system
       expect(archiveSystemId.value).toBe(
-        helloWorldAppFixture.definition.jobAttributes.archiveSystemId
+        helloWorldAppSubmissionPayloadFixture.job.archiveSystemId
       );
     });
   });

@@ -9,11 +9,12 @@ import {
 } from 'reactstrap';
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
-
+import { useTapisToken } from 'hooks/datafiles';
 import { useRouteMatch } from 'react-router-dom';
 import './DataFilesSidebar.scss';
 
 const DataFilesAddButton = ({ readOnly }) => {
+  const { data: tapisToken } = useTapisToken();
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -30,6 +31,9 @@ const DataFilesAddButton = ({ readOnly }) => {
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
+  );
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
   );
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
@@ -85,12 +89,12 @@ const DataFilesAddButton = ({ readOnly }) => {
           <DropdownItem
             className={`complex-dropdown-item ${styles[writeItemStyle]}`}
             onClick={toggleUploadModal}
-            disabled={disabled}
+            disabled={disabled || !tapisToken}
           >
             <i className={`icon-upload`} />
             <span className="multiline-menu-item-wrapper">
               Upload
-              <small> Up to 500mb </small>
+              <small> Up to {maxSizeLabel || '2GB'} </small>
             </span>
           </DropdownItem>
         </DropdownMenu>

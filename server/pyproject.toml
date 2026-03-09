@@ -13,7 +13,7 @@ dynamic = [ "dependencies" ]
 package-mode = false
 
 [tool.poetry.dependencies]
-Django = "^4.2"
+Django = "^5.2"
 elasticsearch-dsl = "^7.2.1"
 paramiko = "^3.4.0"
 rt = "^2.0.0"
@@ -46,6 +46,7 @@ tapipy = "^25.4.0"
 gevent = "^23.9.1"
 pymemcache = "^4.0.0"
 twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev]
 optional = true

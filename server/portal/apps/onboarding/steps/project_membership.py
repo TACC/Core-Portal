@@ -5,7 +5,7 @@ from pytas.http import TASClient
 from rt import Rt
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
-from portal.apps.search.tasks import index_allocations
+from portal.apps.users.tasks import index_allocations
 
 
 logger = logging.getLogger(__name__)
