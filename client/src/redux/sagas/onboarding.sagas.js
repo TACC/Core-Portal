@@ -75,7 +75,7 @@ export function* getOnboardingAdminIndividualUser(action) {
   }
 }
 
-export function* watchOnboardingAdminIndividualUser(action) {
+export function* watchOnboardingAdminIndividualUser(_action) {
   yield takeLatest(
     'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER',
     getOnboardingAdminIndividualUser
@@ -118,6 +118,6 @@ export function* postOnboardingAction(action) {
   }
 }
 
-export function* watchOnboardingAction(action) {
+export function* watchOnboardingAction(_action) {
   yield takeLatest('POST_ONBOARDING_ACTION', postOnboardingAction);
 }

@@ -36,10 +36,7 @@ describe('SubmissionsUpload', () => {
         operationStatus: { upload: true },
       },
     });
-    const { getAllByText, queryByText } = renderComponent(
-      <SubmissionsUpload />,
-      store
-    );
+    const { queryByText } = renderComponent(<SubmissionsUpload />, store);
     expect(queryByText(/Max File Size: 2GB/)).toBeDefined();
   });
 });

@@ -61,7 +61,7 @@ export const SubmissionsUpload = () => {
   };
 
   const removeFiles = () => {
-    setUploadedFiles((uploadedFiles) => []);
+    setUploadedFiles((_uploadedFiles) => []);
   };
 
   const onRejectedFiles = (oversizedFiles) => {

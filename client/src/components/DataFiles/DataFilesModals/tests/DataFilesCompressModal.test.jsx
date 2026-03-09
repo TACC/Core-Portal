@@ -8,10 +8,7 @@ import DataFilesToolbarAppsModalFixture, {
   compressAppFixture,
 } from './DataFilesToolbarAppsModals.fixture';
 import DataFilesCompressModal from '../DataFilesCompressModal';
-import {
-  getAllocationForToolbarAction,
-  getAppUtil,
-} from 'hooks/datafiles/mutations/toolbarAppUtils';
+import { getAppUtil } from 'hooks/datafiles/mutations/toolbarAppUtils';
 
 vi.mock('@tanstack/react-query');
 vi.mock('hooks/datafiles/mutations/toolbarAppUtils');

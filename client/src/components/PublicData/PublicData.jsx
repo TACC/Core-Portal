@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { parse } from 'query-string';
 import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
 import { useSelectedFiles } from 'hooks/datafiles';
-import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import DataFilesShowPathModal from '../DataFiles/DataFilesModals/DataFilesShowPathModal';

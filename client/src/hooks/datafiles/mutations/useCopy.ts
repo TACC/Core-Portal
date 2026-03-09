@@ -125,7 +125,7 @@ function useCopy() {
               payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
             });
           },
-          onError: (error: any) => {
+          onError: (_error: any) => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: { status: 'ERROR', key: file.id, operation: 'copy' },

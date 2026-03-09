@@ -591,7 +591,7 @@ describe('copyFiles', () => {
   });
 
   it('copy util works when src/dest APIs match', () => {
-    const apiResult = copyFileUtil(
+    const _apiResult = copyFileUtil(
       'tapis',
       'private',
       'test.system',
@@ -615,7 +615,7 @@ describe('copyFiles', () => {
   });
 
   it('copy util works when src/dest APIs differ', () => {
-    const apiResult = copyFileUtil(
+    const _apiResult = copyFileUtil(
       'tapis',
       'private',
       'test.system',

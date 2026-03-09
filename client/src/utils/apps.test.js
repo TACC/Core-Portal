@@ -49,7 +49,6 @@ describe('app utility to get Default Execution System from Id', () => {
         },
       },
     };
-    debugger;
     expect(getDefaultExecSystem(app, ['frontera', 'ls6']).id).toEqual(
       'frontera'
     );

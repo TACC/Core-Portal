@@ -1,5 +1,5 @@
 import React from 'react';
-import { queryByTestId, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Sidebar from './Sidebar';
 import { BrowserRouter } from 'react-router-dom';
 

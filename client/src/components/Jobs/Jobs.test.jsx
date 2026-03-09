@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import Jobs from './Jobs';
 import { createMemoryHistory } from 'history';
 import { default as jobsList } from './Jobs.fixture';

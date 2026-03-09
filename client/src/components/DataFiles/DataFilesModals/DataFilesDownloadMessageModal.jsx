@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage, SectionMessage } from '_common';
@@ -15,11 +15,6 @@ const DataFilesDownloadMessageModal = () => {
   const { compress, status, setStatus } = useCompress();
 
   const isOpen = useSelector((state) => state.files.modals.downloadMessage);
-
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
 
   const selectedFiles = useSelector(
     ({ files: { selected, listing } }) =>

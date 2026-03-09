@@ -1,15 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { useTable, useSortBy } from 'react-table';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTable } from 'react-table';
 import Pill from '_common/Pill';
 
 import styles from './SystemStatusQueueTable.module.scss';
-import {
-  LoadingSpinner,
-  Section,
-  SectionTableWrapper,
-  SectionMessage,
-} from '_common';
+import { LoadingSpinner, Section, SectionMessage } from '_common';
 import { useSystemQueue } from 'hooks/system-monitor/useSystemMonitor';
 
 export const SystemStatusQueueTable = ({ system }) => {
@@ -84,7 +78,7 @@ export const SystemStatusQueueTable = ({ system }) => {
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
-          rows.map((row, idx) => {
+          rows.map((row, _idx) => {
             prepareRow(row);
             return (
               <tr className={styles['rows']} {...row.getRowProps()}>

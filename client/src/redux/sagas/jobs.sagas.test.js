@@ -1,4 +1,4 @@
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { vi } from 'vitest';
@@ -16,7 +16,6 @@ import {
   fetchJobDetailsUtil,
   getJobDetails,
   postSubmitJobUtil,
-  watchJobDetails,
   submitJob,
   getJobs,
   // TODOv3: dropV2Jobs
@@ -28,7 +27,6 @@ import {
   selectorJobsReachedEnd,
   // TODOv3: dropV2Jobs
   selectorJobsV2ReachedEnd,
-  watchJobs,
   LIMIT,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';

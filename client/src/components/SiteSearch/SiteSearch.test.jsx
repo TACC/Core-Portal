@@ -35,7 +35,7 @@ describe('SiteSearchComponent', () => {
     });
     history.push('/search/?page=1&query_string=test');
     const store = mockStore(mockState);
-    const { getAllByRole, getByText, getAllByTestId } = renderComponent(
+    renderComponent(
       <SiteSearchComponent filterPriorityList={['cms']} />,
       store,
       history

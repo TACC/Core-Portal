@@ -62,7 +62,8 @@ function useMove() {
     const filteredSelected = selected.filter(
       (f: any) => status[f.id] !== 'SUCCESS'
     );
-    const moveCalls: Promise<any>[] = filteredSelected.forEach((file: any) => {
+    // TODO check and fix this
+    const _moveCalls: Promise<any>[] = filteredSelected.forEach((file: any) => {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: {

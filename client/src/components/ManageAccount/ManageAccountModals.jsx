@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, Alert, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { bool, func, string } from 'prop-types';
 
 import GoogleDrivePrivacyPolicy from './GoogleDrivePrivacyPolicy';

@@ -1,16 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Link,
-  NavLink as RRNavLink,
-  Route,
-  useHistory,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Link, Route, useHistory, Switch, Redirect } from 'react-router-dom';
 import { string } from 'prop-types';
-import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
+import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { AllocationsTeamViewModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
@@ -29,8 +21,7 @@ export const Header = ({ page }) => {
 };
 Header.propTypes = { page: string.isRequired };
 
-export const Actions = ({ page }) => {
-  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
+export const Actions = ({ _page }) => {
   return (
     <a
       className="btn btn-primary"

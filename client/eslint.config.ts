@@ -11,6 +11,8 @@ export default defineConfig([
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     plugins: { js },
+      languageOptions: { globals: globals.jest, },
+    ...js.configs.recommended,
   },
   // tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
@@ -40,6 +42,11 @@ export default defineConfig([
       'react-hooks/refs': 0,
       'react/display-name': 0,
       'react/prop-types': 0,
+      "no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
     },
   },
 ]);

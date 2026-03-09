@@ -706,10 +706,7 @@ describe('AppSchemaForm', () => {
       },
       execSystems: execSystemsFixture,
     };
-    const { getByText, container } = renderAppSchemaFormComponent(
-      store,
-      appFixture
-    );
+    const { container } = renderAppSchemaFormComponent(store, appFixture);
     const execSystemDropDown = container.querySelector(
       'select[name="execSystemId"]'
     );

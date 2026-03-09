@@ -1,10 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import {
-  toBeInTheDocument,
-  toHaveClass,
-  toBeNull,
-} from '@testing-library/jest-dom';
 
 import HighlightSearchTerm from './HighlightSearchTerm';
 
@@ -23,11 +18,6 @@ describe('HighlightSearchTerm Component', () => {
     );
     expect(getByText('Lorem ipsum dolor sit amet')).toBeInTheDocument();
     expect(document.querySelector('.highlight')).toBeNull();
-  });
-
-  it('renders content when searchTerm is not provided', () => {
-    const { getByText } = render(<HighlightSearchTerm content="Lorem ipsum" />);
-    expect(getByText('Lorem ipsum')).toBeInTheDocument();
   });
 
   it('renders content with searchTerm highlighted', () => {

@@ -181,7 +181,7 @@ export function getJobDisplayInformation(job, app) {
         const execSys = getExecSystemFromId(app, job.execSystemId);
         display.systemName =
           execSys?.notes?.label ?? getSystemName(execSys?.host);
-      } catch (ignore) {
+      } catch (_ignore) {
         // ignore if there is problem improving the system name
       }
 
@@ -218,7 +218,7 @@ export function getJobDisplayInformation(job, app) {
         display.coresPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
       }
-    } catch (ignore) {
+    } catch (_ignore) {
       // ignore if there is problem using the app definition to improve display
     }
   }

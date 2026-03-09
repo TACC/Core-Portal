@@ -40,7 +40,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
           disabled={disabled}
           type="primary"
           size="medium"
-          onClick={(e) => onClick('delete')}
+          onClick={(_e) => onClick('delete')}
         >
           Delete
         </Button>
@@ -48,7 +48,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
           disabled={disabled}
           type="primary"
           size="medium"
-          onClick={(e) => onClick('put')}
+          onClick={(_e) => onClick('put')}
         >
           Replace Link
         </Button>
@@ -61,7 +61,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
       disabled={disabled}
       type="primary"
       size="long"
-      onClick={(e) => onClick('post')}
+      onClick={(_e) => onClick('post')}
     >
       Generate Link
     </Button>

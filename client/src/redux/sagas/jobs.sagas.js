@@ -161,7 +161,7 @@ export function* getJobDetails(action) {
 
     try {
       app = yield call(fetchAppDefinitionUtil, job.appId, job.appVersion);
-    } catch (ignore) {
+    } catch (_ignore) {
       // ignore if we cannot get app or execution system information
     }
 
