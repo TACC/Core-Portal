@@ -1,6 +1,5 @@
 import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from django.contrib.auth import get_user_model
 
 
 logger = logging.getLogger(__name__)
