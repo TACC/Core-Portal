@@ -10,7 +10,7 @@ import {
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import styles from './DataFilesModalListingTable.module.scss';
-import { useSelector, shallowEqual } from 'react-redux';
+import { _useSelector, _shallowEqual } from 'react-redux';
 
 export function getCurrentDirectory(path) {
   return path.split('/').pop();

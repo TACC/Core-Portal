@@ -84,7 +84,7 @@ export const SystemStatusQueueTable = ({ system }) => {
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
-          rows.map((row, idx) => {
+          rows.map((row, _idx) => {
             prepareRow(row);
             return (
               <tr className={styles['rows']} {...row.getRowProps()}>

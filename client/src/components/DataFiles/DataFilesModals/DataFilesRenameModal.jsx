@@ -17,14 +17,14 @@ const DataFilesRenameModal = () => {
     params: { api, scheme },
   } = useFileListing('FilesListing');
 
-  const { rename: renameCallback, setStatus } = useRename();
+  const { rename: renameCallback, _setStatus } = useRename();
 
   const toggle = () => toggleModal({ operation: 'rename', props: {} });
 
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const reloadPage = (name, newPath) => {
+  const reloadPage = (_name, _newPath) => {
     history.push(location.pathname);
   };
 

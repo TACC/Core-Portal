@@ -8,7 +8,7 @@ import profileReducer, { initialState } from '../reducers/profile.reducers';
 import {
   getPasswordStatus,
   getProfileData,
-  watchProfileData,
+  _watchProfileData,
 } from './profile.sagas';
 
 vi.mock('cross-fetch');

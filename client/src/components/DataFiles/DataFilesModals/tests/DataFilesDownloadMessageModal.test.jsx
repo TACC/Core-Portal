@@ -93,7 +93,7 @@ describe('DataFilesDownloadMessageModal', () => {
     // Click on the Compress button to try and download the folder
     fireEvent.click(screen.getByText('Compress'));
 
-    const expectedArg = {
+    const _expectedArg = {
       filename: `Archive_${new Date().toISOString().split('.')[0]}`,
       files:
         DataFilesDownloadMessageModalFixture.files.selected.FilesListing.map(

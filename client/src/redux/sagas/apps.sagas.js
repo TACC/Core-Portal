@@ -36,12 +36,12 @@ export async function fetchAppTrayUtil() {
   return result;
 }
 
-export function* getAppTray(action) {
+export function* getAppTray(_action) {
   yield put({ type: 'GET_APPS_START' });
   try {
     const tray = yield call(fetchAppTrayUtil);
     yield put({ type: 'GET_APPS_SUCCESS', payload: tray });
-  } catch (error) {
+  } catch (_error) {
     yield put({ type: 'GET_APPS_ERROR' });
   }
 }

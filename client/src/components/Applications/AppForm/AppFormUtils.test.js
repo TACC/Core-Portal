@@ -23,7 +23,7 @@ describe('AppFormUtils', () => {
     },
   };
 
-  const serialFronteraApp = {
+  const _serialFronteraApp = {
     ...helloWorldAppFixture,
     definition: {
       ...helloWorldAppFixture.definition,

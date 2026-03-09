@@ -213,7 +213,7 @@ export function* scrollFiles(action) {
         section: action.payload.section,
       },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'SCROLL_FILES_ERR',
       payload: {
@@ -272,7 +272,7 @@ export function* renameFile(action) {
         )}`,
       },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'ERROR', operation: 'rename' },
@@ -325,7 +325,7 @@ export function* moveFile(src, dest, index) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: index, operation: 'move' },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'move' },
@@ -439,7 +439,7 @@ export function* copyFile(src, dest, index) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: index, operation: 'copy' },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'copy' },
@@ -588,7 +588,7 @@ export function* preview(action) {
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
       payload: { ...response, isLoading: false },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
       payload: {
@@ -821,7 +821,7 @@ export function* trashFile(system, path, homeDir) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: system + path, operation: 'trash' },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: system + path, operation: 'trash' },
@@ -887,7 +887,7 @@ export function* emptyFile(system, path) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'SUCCESS', key: system + path, operation: 'empty' },
     });
-  } catch (e) {
+  } catch (_e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: system + path, operation: 'empty' },
@@ -985,7 +985,7 @@ export function* extractFiles(action) {
     if (action.payload.onSuccess) {
       yield put(action.payload.onSuccess);
     }
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'ERROR', operation: 'extract' },

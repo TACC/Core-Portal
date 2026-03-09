@@ -131,11 +131,11 @@ InfiniteScrollTable.propTypes = {
   cell: PropTypes.object,
 };
 InfiniteScrollTable.defaultProps = {
-  onInfiniteScroll: (offset) => {},
+  onInfiniteScroll: (_offset) => {},
   isLoading: false,
   className: '',
   noDataText: '',
-  getRowProps: (row) => {},
+  getRowProps: (_row) => {},
   columnMemoProps: [],
 };
 

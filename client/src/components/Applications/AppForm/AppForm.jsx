@@ -561,7 +561,7 @@ export const AppSchemaForm = ({ app }) => {
             });
           });
         }}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
+        onSubmit={(values, { _setSubmitting, _resetForm }) => {
           const job = cloneDeep(values);
           job.name = job.name.trim();
 
@@ -698,7 +698,7 @@ export const AppSchemaForm = ({ app }) => {
       >
         {({
           values,
-          errors,
+          _errors,
           isValid,
           isSubmitting,
           handleReset,
@@ -811,7 +811,7 @@ export const AppSchemaForm = ({ app }) => {
                   )}
                   {Object.entries(appFields.parameterSet)
                     .map(
-                      ([parameterSet, parameterValue]) =>
+                      ([_parameterSet, parameterValue]) =>
                         Object.keys(parameterValue).length
                     )
                     .reduce((a, b) => a + b) > 0 && (

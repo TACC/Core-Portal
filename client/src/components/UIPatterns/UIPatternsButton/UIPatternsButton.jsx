@@ -5,7 +5,7 @@ import './UIPatternsButton.module.css';
 
 function UIPatternsButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const onClick = (e) => {
+  const onClick = (_e) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);

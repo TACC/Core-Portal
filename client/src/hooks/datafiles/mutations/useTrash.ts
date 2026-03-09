@@ -82,7 +82,7 @@ function useTrash() {
           homeDir: homeDir,
         },
         {
-          onSuccess: (response: any) => {
+          onSuccess: (_response: any) => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: {

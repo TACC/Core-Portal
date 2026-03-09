@@ -160,7 +160,7 @@ const DataFilesProjectMembers = ({
           el.row.original.access !== 'owner' &&
           !readOnlyTeam ? (
             <Button
-              onClick={(e) => onRemove(el.row.original)}
+              onClick={(_e) => onRemove(el.row.original)}
               type="link"
               disabled={loading}
             >

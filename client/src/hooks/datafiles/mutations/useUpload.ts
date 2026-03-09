@@ -89,7 +89,7 @@ function useUpload() {
               payload: { status: 'SUCCESS', key: index, operation: 'upload' },
             });
           },
-          onError: (error) => {
+          onError: (_error) => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: { status: 'ERROR', key: index, operation: 'upload' },

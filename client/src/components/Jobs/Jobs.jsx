@@ -285,7 +285,7 @@ JobsView.propTypes = {
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
-  rowProps: (row) => {},
+  rowProps: (_row) => {},
   includeSearchbar: true,
 };
 
