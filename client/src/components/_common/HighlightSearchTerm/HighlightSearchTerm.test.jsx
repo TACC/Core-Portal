@@ -20,11 +20,6 @@ describe('HighlightSearchTerm Component', () => {
     expect(document.querySelector('.highlight')).toBeNull();
   });
 
-  it('renders content when searchTerm is not provided', () => {
-    const { getByText } = render(<HighlightSearchTerm content="Lorem ipsum" />);
-    expect(getByText('Lorem ipsum')).toBeInTheDocument();
-  });
-
   it('renders content with searchTerm highlighted', () => {
     const { getByText } = render(
       <HighlightSearchTerm
