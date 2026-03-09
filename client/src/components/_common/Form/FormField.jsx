@@ -14,7 +14,6 @@ import PropTypes from 'prop-types';
 import './FormField.scss';
 
 import { Select } from 'antd';
-import 'antd/dist/reset.css';
 
 /** A limited-choice wrapper for `FormField` */
 const FormFieldWrapper = ({ children, type }) => {
