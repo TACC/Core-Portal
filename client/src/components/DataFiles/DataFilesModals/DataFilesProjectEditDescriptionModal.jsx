@@ -132,14 +132,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   name="keywords"
                   aria-label="keywords"
                   tags
-                  label={
-                    <div>
-                      Keywords{' '}
-                      <small>
-                        <em>(Optional, should be comma-separated)</em>
-                      </small>
-                    </div>
-                  }
+                  label={<div>Keywords</div>}
                   type="textarea"
                   className={styles['description-textarea']}
                 />
