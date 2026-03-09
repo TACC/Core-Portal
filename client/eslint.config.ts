@@ -42,6 +42,11 @@ export default defineConfig([
       'react-hooks/refs': 0,
       'react/display-name': 0,
       'react/prop-types': 0,
+      "no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
     },
   },
 ]);
