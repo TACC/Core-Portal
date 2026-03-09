@@ -70,6 +70,7 @@ const initialMockState = {
 
 describe('DataFilesProjectFileListing', () => {
   it('shows uses the Show More component for long descriptions', () => {
+    initialMockState.projects.metadata.keywords = [];
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing
@@ -144,5 +145,33 @@ describe('DataFilesProjectFileListing', () => {
 
     expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(queryByText(/Manage Team/)).toBeNull();
+  });
+
+  it('hides Keywords heading when keyword length is 0', () => {
+    initialMockState.projects.metadata.keywords = [];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/Keywords/)).toBeNull();
+  });
+
+  it('inserts commas between keyword entries', () => {
+    initialMockState.projects.metadata.keywords = ['one', 'two', 'three'];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/one, two, three/)).toBeDefined();
   });
 });
