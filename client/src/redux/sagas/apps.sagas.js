@@ -1,4 +1,4 @@
-import { put, takeLatest, call, select } from 'redux-saga/effects';
+import { put, takeLatest, call } from 'redux-saga/effects';
 import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 

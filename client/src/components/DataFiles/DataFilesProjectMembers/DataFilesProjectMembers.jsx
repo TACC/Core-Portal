@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input, Label } from 'reactstrap';
-import { SystemRoleSelector, ProjectRoleSelector } from './_cells';
+import { SystemRoleSelector } from './_cells';
 import styles from './DataFilesProjectMembers.module.scss';
 import { useSystemRole } from './_cells/SystemRoleSelector';
 import './DataFilesProjectMembers.scss';

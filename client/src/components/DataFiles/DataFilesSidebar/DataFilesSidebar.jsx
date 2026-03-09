@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
-  Nav,
-  NavItem,
-  NavLink,
   Dropdown,
   DropdownMenu,
   DropdownToggle,
@@ -13,8 +10,7 @@ import {
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
 
-import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { Icon } from '_common';
+import { useRouteMatch } from 'react-router-dom';
 import './DataFilesSidebar.scss';
 
 const DataFilesAddButton = ({ readOnly }) => {

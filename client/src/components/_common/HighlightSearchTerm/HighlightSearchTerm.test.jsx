@@ -1,10 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import {
-  toBeInTheDocument,
-  toHaveClass,
-  toBeNull,
-} from '@testing-library/jest-dom';
 
 import HighlightSearchTerm from './HighlightSearchTerm';
 

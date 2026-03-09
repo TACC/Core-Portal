@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import DataFilesMakePublicModalFixture from './DataFilesMakePublicModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 
 const mockStore = configureStore();
 

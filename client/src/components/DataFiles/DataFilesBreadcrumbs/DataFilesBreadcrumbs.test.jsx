@@ -5,7 +5,6 @@ import renderComponent from 'utils/testing';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
-import { initialSystemState } from '../../../redux/reducers/datafiles.reducers';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import { fireEvent } from '@testing-library/react';
 

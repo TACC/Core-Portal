@@ -1,15 +1,10 @@
-import fetch from 'cross-fetch';
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { vi } from 'vitest';
 import { fetchUtil } from '../../utils/fetchUtil';
 import profileReducer, { initialState } from '../reducers/profile.reducers';
-import {
-  getPasswordStatus,
-  getProfileData,
-  _watchProfileData,
-} from './profile.sagas';
+import { getPasswordStatus, getProfileData } from './profile.sagas';
 
 vi.mock('cross-fetch');
 

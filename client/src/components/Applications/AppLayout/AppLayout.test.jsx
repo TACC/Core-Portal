@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import AppsRoutes, { AppsLayout } from './AppLayout';
 import { MemoryRouter, Route } from 'react-router-dom';

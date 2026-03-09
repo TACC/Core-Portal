@@ -2,7 +2,6 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { AllocationsTable } from '../AllocationsTables';
 

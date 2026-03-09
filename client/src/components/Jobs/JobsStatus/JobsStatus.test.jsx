@@ -3,7 +3,6 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
 import JobsStatus, {
   getStatusText,
   getBadgeColor,

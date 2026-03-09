@@ -1,5 +1,5 @@
 /* FP-993: Allow use by DataFilesUploadModal */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button, InlineMessage } from '_common';
 import PropTypes from 'prop-types';

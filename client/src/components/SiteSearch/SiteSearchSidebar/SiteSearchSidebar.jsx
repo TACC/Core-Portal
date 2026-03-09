@@ -1,6 +1,6 @@
 import React from 'react';
 import queryStringParser from 'query-string';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { NavItem, NavLink } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { useLocation, NavLink as RRNavLink } from 'react-router-dom';
 import { Icon, Pill } from '_common';

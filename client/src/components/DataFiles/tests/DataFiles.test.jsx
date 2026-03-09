@@ -1,4 +1,4 @@
-import React, { version } from 'react';
+import React from 'react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import DataFiles from '../DataFiles';

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, Link, useHistory, useLocation } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
