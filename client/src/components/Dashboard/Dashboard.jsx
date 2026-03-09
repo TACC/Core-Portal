@@ -23,7 +23,7 @@ function Dashboard() {
   const panelCount = getPanelCount(
     ['DashboardTickets'],
     [hideApps, hideSystemMonitor].filter((isHidden) => !isHidden),
-    ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
+    ...(customDashboardSection ? [['customDashboardSection']] : [])
   );
 
   const contentLayoutName =
