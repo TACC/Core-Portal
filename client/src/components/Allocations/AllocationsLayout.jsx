@@ -1,12 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Link,
-  Route,
-  useHistory,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
+import { Link, Route, useHistory, Switch, Redirect } from 'react-router-dom';
 import { string } from 'prop-types';
 import { LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
