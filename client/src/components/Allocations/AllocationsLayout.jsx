@@ -21,7 +21,7 @@ export const Header = ({ page }) => {
 };
 Header.propTypes = { page: string.isRequired };
 
-export const Actions = ({ page }) => {
+export const Actions = ({ _page }) => {
   return (
     <a
       className="btn btn-primary"
