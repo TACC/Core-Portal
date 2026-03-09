@@ -9,7 +9,7 @@ import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
 const JobHistory = ({ className }) => {
-  const { notifs, loading } = useSelector(
+  const { notifs } = useSelector(
     (state) => ({
       notifs: state.notifications.list.notifs,
     }),

@@ -16,11 +16,6 @@ const DataFilesDownloadMessageModal = () => {
 
   const isOpen = useSelector((state) => state.files.modals.downloadMessage);
 
-  const params = useSelector(
-    (state) => state.files.params.FilesListing,
-    shallowEqual
-  );
-
   const selectedFiles = useSelector(
     ({ files: { selected, listing } }) =>
       selected.FilesListing.map((i) => ({

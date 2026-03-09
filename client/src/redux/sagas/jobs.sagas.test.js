@@ -16,7 +16,6 @@ import {
   fetchJobDetailsUtil,
   getJobDetails,
   postSubmitJobUtil,
-  watchJobDetails,
   submitJob,
   getJobs,
   // TODOv3: dropV2Jobs
@@ -28,7 +27,6 @@ import {
   selectorJobsReachedEnd,
   // TODOv3: dropV2Jobs
   selectorJobsV2ReachedEnd,
-  watchJobs,
   LIMIT,
 } from './jobs.sagas';
 import { fetchAppDefinitionUtil } from './apps.sagas';

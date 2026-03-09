@@ -156,7 +156,6 @@ export const execSystemsFixture = [
     batchSchedulerProfile: 'tacc-apptainer',
     jobCapabilities: [],
     tags: [],
-    tags: [],
     notes: {
       label: 'Frontera custom',
     },

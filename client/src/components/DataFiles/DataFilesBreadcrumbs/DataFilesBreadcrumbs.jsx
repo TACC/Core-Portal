@@ -116,9 +116,9 @@ const DataFilesBreadcrumbs = ({
   scheme,
   system,
   path,
-  section,
-  operation,
-  isPublic,
+  _section,
+  _operation,
+  _isPublic,
   className,
 }) => {
   const paths = [];

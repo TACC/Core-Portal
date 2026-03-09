@@ -60,7 +60,7 @@ describe('SiteSearchListing', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
     const store = mockStore(mockState);
-    const { getAllByRole, getByText, getByTestId } = renderComponent(
+    const { getByText, getByTestId } = renderComponent(
       <SiteSearchListing
         filter="public"
         loading={false}

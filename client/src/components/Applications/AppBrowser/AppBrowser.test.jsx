@@ -23,7 +23,7 @@ describe('App Browser', () => {
     const store = mockStore({
       apps: { ...appTrayExpectedFixture, defaultTab: 'Simulation' },
     });
-    const { container, getByText } = renderComponent(<AppBrowser />, store);
+    const { getByText } = renderComponent(<AppBrowser />, store);
     expect(
       getByText('Simulation [1]', { selector: '.active.nav-link .nav-text' })
     ).toBeDefined();

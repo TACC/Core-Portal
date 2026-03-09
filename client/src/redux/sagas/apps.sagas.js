@@ -14,8 +14,6 @@ export async function fetchAppDefinitionUtil(appId, appVersion) {
   return result.response;
 }
 
-const getCurrentApp = (state) => state.app;
-
 function* getApp(action) {
   const { appId, appVersion } = action.payload;
 

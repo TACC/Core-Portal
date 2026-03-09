@@ -31,7 +31,7 @@ describe('AppsLayout', () => {
     const store = mockStore({
       apps: { ...appTrayExpectedFixture, loading: true, categoryDict: {} },
     });
-    const { getByText, getByTestId } = renderComponent(<AppsLayout />, store);
+    const { getByTestId } = renderComponent(<AppsLayout />, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {

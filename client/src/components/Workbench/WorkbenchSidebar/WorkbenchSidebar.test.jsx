@@ -95,7 +95,6 @@ describe('workbench sidebar', () => {
       }),
       false
     );
-    const path = getPath(page);
     expect(queryByText(page)).not.toBeInTheDocument();
     expect(queryByRole('status')).toBeNull();
   });

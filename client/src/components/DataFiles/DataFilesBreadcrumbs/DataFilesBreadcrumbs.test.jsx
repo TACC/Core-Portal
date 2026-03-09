@@ -117,7 +117,6 @@ describe('DataFilesBreadcrumbs', () => {
     const store = mockStore({
       systems: systemsFixture,
     });
-    const history = createMemoryHistory();
     const { getByText } = renderComponent(
       <DataFilesBreadcrumbs
         api="tapis"

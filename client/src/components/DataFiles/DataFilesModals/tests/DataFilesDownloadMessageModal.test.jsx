@@ -39,7 +39,6 @@ describe('DataFilesDownloadMessageModal', () => {
   });
 
   it('renders the data files download message modal', async () => {
-    const foo = {};
     const store = mockStore({
       ...DataFilesDownloadMessageModalFixture,
       allocations: {
@@ -48,10 +47,7 @@ describe('DataFilesDownloadMessageModal', () => {
       } /*TODO fix DataFilesDownloadMessageModalFixture fixture*/,
     });
 
-    const { findAllByText } = renderComponent(
-      <DataFilesDownloadMessageModal />,
-      store
-    );
+    renderComponent(<DataFilesDownloadMessageModal />, store);
 
     await waitFor(async () => {
       await screen.findByText('Download');

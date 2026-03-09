@@ -23,17 +23,6 @@ describe('AppFormUtils', () => {
     },
   };
 
-  const _serialFronteraApp = {
-    ...helloWorldAppFixture,
-    definition: {
-      ...helloWorldAppFixture.definition,
-      notes: {
-        ...helloWorldAppFixture.definition.notes,
-        hideNodeCountAndCoresPerNode: true,
-      },
-    },
-  };
-
   const exampleFormValue = {
     execSystemLogicalQueue: 'normal',
     nodeCount: 1,

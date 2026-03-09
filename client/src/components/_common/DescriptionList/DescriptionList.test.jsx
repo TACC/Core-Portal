@@ -29,7 +29,7 @@ describe('Description List', () => {
   it.each(DL.DIRECTIONS)(
     'has accurate className when direction is "%s"',
     (direction) => {
-      const { getByTestId, findAllByTestId } = render(
+      const { getByTestId } = render(
         <DescriptionList data={DATA} direction={direction} />
       );
       const list = getByTestId('list');
@@ -42,7 +42,7 @@ describe('Description List', () => {
   it.each(DL.DENSITIES)(
     'has accurate className when density is "%s"',
     (density) => {
-      const { getByTestId, findAllByTestId } = render(
+      const { getByTestId } = render(
         <DescriptionList data={DATA} density={density} />
       );
       const list = getByTestId('list');

@@ -123,11 +123,7 @@ describe('DataFiles', () => {
         },
       },
     });
-    const { getByText, getAllByText } = renderComponent(
-      <DataFiles />,
-      store,
-      history
-    );
+    const { getAllByText } = renderComponent(<DataFiles />, store, history);
     expect(
       getAllByText(/No storage systems enabled for this portal/)
     ).toBeDefined();

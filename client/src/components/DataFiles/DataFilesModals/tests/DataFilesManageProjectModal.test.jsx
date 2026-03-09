@@ -51,7 +51,7 @@ const initialMockState = {
 describe('DataFilesManageProjectModal', () => {
   it('renders the manage project modal', () => {
     const store = mockStore(initialMockState);
-    const { getAllByText, debug } = renderComponent(
+    const { getAllByText } = renderComponent(
       <DataFilesManageProjectModal />,
       store
     );

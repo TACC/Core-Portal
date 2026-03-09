@@ -26,7 +26,7 @@ const store = mockStore({
 describe('CustomMessage', () => {
   describe('elements', () => {
     it('renders message text, message type, and dismissability correctly', () => {
-      const { container, getByText, getByLabelText, debug } = render(
+      const { _container, getByText, getByLabelText } = render(
         <Provider store={store}>
           <CustomMessage messageComponentName="TEST"></CustomMessage>
         </Provider>

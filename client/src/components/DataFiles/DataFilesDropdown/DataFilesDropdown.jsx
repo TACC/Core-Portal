@@ -16,7 +16,7 @@ const BreadcrumbsDropdown = ({
   scheme,
   system,
   path,
-  section,
+  _section,
   isPublic,
 }) => {
   const paths = [];

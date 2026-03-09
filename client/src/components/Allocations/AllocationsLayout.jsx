@@ -28,7 +28,6 @@ export const Header = ({ page }) => {
 Header.propTypes = { page: string.isRequired };
 
 export const Actions = ({ page }) => {
-  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <a
       className="btn btn-primary"

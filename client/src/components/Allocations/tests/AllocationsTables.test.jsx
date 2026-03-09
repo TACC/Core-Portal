@@ -20,7 +20,7 @@ const mockInitialState = {
 };
 const mockStore = configureStore();
 describe('Allocations Table', () => {
-  let getByText, rerender, debug;
+  let getByText, rerender;
   beforeEach(() => {
     const utils = render(
       <Provider
@@ -35,7 +35,6 @@ describe('Allocations Table', () => {
     );
     getByText = utils.getByText;
     rerender = utils.rerender;
-    debug = utils.debug;
   });
 
   it('should have relevant columns for data for the Allocations Table', () => {
