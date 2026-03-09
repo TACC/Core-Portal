@@ -29,7 +29,8 @@ export const STATUS_TEXT_MAP = {
     switch (mappedStatus) {
       case 'Running':
         return 'is now running';
-      case 'Failure' || 'Stopped':
+      case 'Failure':
+      case 'Stopped':
         return status.toLowerCase();
       case 'Finished':
         return 'finished successfully';
