@@ -930,9 +930,9 @@ export const AppSchemaForm = ({ app }) => {
                         type="select"
                         required
                       >
-                        {formState.appQueueValues.map((queueName) => (
-                          <option key={queueName} value={queueName}>
-                            {queueName}
+                        {formState.appQueueValues.map((q) => (
+                          <option key={q.name} value={q.name}>
+                            {`${!!q.description ? (q.name.startsWith(q.description) ? q.description : `${q.name} (${q.description})`) : q.name}`}
                           </option>
                         ))}
                       </FormField>
@@ -985,7 +985,8 @@ export const AppSchemaForm = ({ app }) => {
                       type="text"
                       required
                     />
-                    {!app.definition.notes.isInteractive ? (
+                    {!app.definition.notes.isInteractive &&
+                    !app.definition.jobAttributes.archiveMode === 'NEVER' ? (
                       <>
                         <FormField
                           label="Archive System"

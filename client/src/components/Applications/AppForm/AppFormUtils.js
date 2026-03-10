@@ -260,10 +260,9 @@ export const getAppQueueValues = (app, queues) => {
         (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
           app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
     )
-    .map((q) => q.name)
-    .filter((queueName) =>
+    .filter((q) =>
       app.definition.notes.queueFilter
-        ? app.definition.notes.queueFilter.includes(queueName)
+        ? app.definition.notes.queueFilter.includes(q.name)
         : true
     )
     .sort();
