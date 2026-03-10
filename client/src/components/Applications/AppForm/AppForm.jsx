@@ -38,6 +38,7 @@ import {
   getAllocationList,
   getDefaultAllocation,
   getExecSystemIdValidation,
+  getQueueSchedulerOptionsValidation,
 } from './AppFormUtils';
 import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
 
@@ -370,9 +371,9 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystemId || app.definition.jobAttributes.archiveSystemId,
+      defaultSystemId || app.definition.jobAttributes.archiveSystemId || '',
     archiveSystemDir:
-      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
+      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir || '',
     archiveOnAppError: true,
     appId: app.definition.id,
     appVersion: app.definition.version,
@@ -381,6 +382,10 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   if (isJobTypeBATCH(app)) {
+    const initialQueue = getQueueValueForExecSystem(
+      app,
+      getExecSystemFromId(app, initialValues.execSystemId)
+    );
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
     initialValues.execSystemId = getDefaultExecSystem(
@@ -388,12 +393,16 @@ export const AppSchemaForm = ({ app }) => {
       formState.execSystems
     )?.id;
     initialValues.allocation = initialAllocation;
-    initialValues.execSystemLogicalQueue = getQueueValueForExecSystem(
-      app,
-      getExecSystemFromId(app, initialValues.execSystemId)
-    )?.name;
+    initialValues.execSystemLogicalQueue = initialQueue?.name;
+    if (initialQueue?.schedulerOptions) {
+      initialValues.queueSchedulerOptions = Object.assign(
+        {},
+        ...initialQueue.schedulerOptions?.map((opt) => ({
+          [opt.name]: opt.fieldType === 'number' ? Number(opt.arg) : opt.arg,
+        }))
+      );
+    }
   }
-
   const sectionMessage = keyService ? (
     <span>
       For help,{' '}
@@ -565,6 +574,7 @@ export const AppSchemaForm = ({ app }) => {
                       }
                     )
                   : Yup.string().notRequired(),
+              queueSchedulerOptions: getQueueSchedulerOptionsValidation(queue),
             });
           });
         }}
@@ -730,6 +740,11 @@ export const AppSchemaForm = ({ app }) => {
           const selectedExecSystem = getExecSystemFromId(
             app,
             values.execSystemId
+          );
+          const selectedQueue = getQueueValueForExecSystem(
+            app,
+            selectedExecSystem,
+            values.execSystemLogicalQueue
           );
           let missingAllocationMessage = '';
           // Check if allocation required for default storage system, aka archive system
@@ -923,19 +938,35 @@ export const AppSchemaForm = ({ app }) => {
                         </FormField>
                       )}
                     {isJobTypeBATCH(app) && (
-                      <FormField
-                        label="Queue"
-                        name="execSystemLogicalQueue"
-                        description="Select the queue this job will execute on."
-                        type="select"
-                        required
-                      >
-                        {formState.appQueueValues.map((q) => (
-                          <option key={q.name} value={q.name}>
-                            {`${!!q.description ? (q.name.startsWith(q.description) ? q.description : `${q.name} (${q.description})`) : q.name}`}
-                          </option>
-                        ))}
-                      </FormField>
+                      <>
+                        <FormField
+                          label="Queue"
+                          name="execSystemLogicalQueue"
+                          description="Select the queue this job will execute on."
+                          type="select"
+                          required
+                        >
+                          {formState.appQueueValues.map((q) => (
+                            <option key={q.name} value={q.name}>
+                              {`${!!q.description ? (q.description.startsWith(q.name) ? q.description : `${q.name} (${q.description})`) : q.name}`}
+                            </option>
+                          ))}
+                        </FormField>
+                        {selectedQueue.schedulerOptions &&
+                          selectedQueue.schedulerOptions.map((opt) => (
+                            <FormField
+                              key={opt.name}
+                              label={opt.notes?.label || opt.name}
+                              name={`queueSchedulerOptions.${opt.name}`}
+                              description={opt.description}
+                              type={
+                                opt.notes?.fieldType === 'number'
+                                  ? 'number'
+                                  : 'text'
+                              }
+                            />
+                          ))}
+                      </>
                     )}
                     {isJobTypeBATCH(app) &&
                       app.definition.notes.showReservation && (
