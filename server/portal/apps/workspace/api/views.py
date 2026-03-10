@@ -675,13 +675,13 @@ class JobHistoryView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class AppsTrayView(BaseApiView):
-    def getPrivateApps(self, user):
+    def getPrivateApps(self, user, show_all_available=False):
         tapis = user.tapis_oauth.client
         # Only shows enabled versions of apps
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
             search="(versionEnabled.eq.true)~(enabled.eq.true)",
-            listType="MINE",
+            listType=f"{'ALL' if show_all_available else 'MINE'}",
             limit=-1,
         )
         my_apps = list(map(lambda app: {
@@ -761,7 +761,9 @@ class AppsTrayView(BaseApiView):
         }
         """
         tabs, html_definitions = self.getPublicApps(request.user)
-        my_apps = self.getPrivateApps(request.user)
+
+        # Add "My Apps" tab with all of the user's private and shared apps that are enabled, or all available apps if no public apps are enabled
+        my_apps = self.getPrivateApps(request.user, show_all_available=bool(tabs))
 
         tabs.insert(
             0,
