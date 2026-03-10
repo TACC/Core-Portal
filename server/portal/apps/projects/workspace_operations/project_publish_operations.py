@@ -420,20 +420,20 @@ def send_publication_rejected_email_to_authors(self, project_id: str):
         email_body = f"""
             <p>Hello,</p>
             <p>
-                The following project has been rejected by a reviewer and cannot be published at this time:
+                The following dataset has received a revision request:
                 <br/>
                 <b>{project_id}</b>
                 <br/>
             </p>
             <p>
-            You are welcome to revise this project and re-submit for publication.
+            You are welcome to revise this dataset and re-submit for publication.
             </p>
 
             This is a programmatically generated message. Do NOT reply to this message.
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: Your Publication Request has been Rejected",
+            "DigitalPorousMedia Alert: Your Dataset needs revision",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
@@ -479,6 +479,9 @@ def send_publication_reviewed_email_to_reviewers(self, project_id, status, revie
     Alert dataset reviewers that a dataset has received feedback.
     """
     reviewer_emails = get_reviewer_emails()
+
+    if status == PublicationRequest.Status.REJECTED:
+        status = 'Revision Required'
 
     logger.info(f"Sending reviewer notification email to {reviewer_emails}")
 
