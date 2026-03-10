@@ -181,27 +181,21 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
   });
 
   useEffect(() => {
-    const owners =
-      project.authors?.length > 0
-        ? project.authors
-        : project.members
-            .filter((user) => user.access === 'owner')
-            .map((user) => ({ ...user.user, isOwner: true }));
-
-    const members = project.members
-      .filter(
-        (user) =>
-          (user.access === 'read' || user.access === 'edit') &&
-          !authors.includes(user.user)
-      )
-      .map((user) => user.user);
-
+    const projectMembers = project.members || [];
     const guestUsers = project.guest_users || [];
 
-    setAuthors(owners);
-    setMembers([...members, ...guestUsers]);
-    onAuthorsUpdate(owners);
-  }, [project]);
+    const initialAuthors = [
+      ...projectMembers.map((member) => ({
+        ...member.user,
+        isOwner: member.access === 'owner',
+      })),
+      ...guestUsers,
+    ];
+
+    setAuthors(initialAuthors);
+    setMembers([]);
+    onAuthorsUpdate(initialAuthors);
+  }, [project?.projectId]);
 
   const onReorder = (authors) => {
     setAuthors(authors);
