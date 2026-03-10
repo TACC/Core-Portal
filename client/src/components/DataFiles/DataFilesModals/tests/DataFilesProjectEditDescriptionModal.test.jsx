@@ -64,6 +64,8 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     expect(getByDisplayValue(projectMetadataFixture.title)).toBeDefined();
     expect(getAllByText(/Description/)).toBeDefined();
     expect(getAllByText(projectMetadataFixture.description)).toBeDefined();
+    expect(getAllByText(/Keywords/)).toBeDefined();
+    expect(getAllByText(projectMetadataFixture.keywords)).toBeDefined();
     expect(getAllByText(/Update Changes/)).toBeDefined();
   });
 
