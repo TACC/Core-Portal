@@ -953,19 +953,22 @@ export const AppSchemaForm = ({ app }) => {
                           ))}
                         </FormField>
                         {selectedQueue.schedulerOptions &&
-                          selectedQueue.schedulerOptions.map((opt) => (
-                            <FormField
-                              key={opt.name}
-                              label={opt.notes?.label || opt.name}
-                              name={`queueSchedulerOptions.${opt.name}`}
-                              description={opt.description}
-                              type={
-                                opt.notes?.fieldType === 'number'
-                                  ? 'number'
-                                  : 'text'
-                              }
-                            />
-                          ))}
+                          selectedQueue.schedulerOptions.map(
+                            (opt) =>
+                              !opt.notes?.isHidden && (
+                                <FormField
+                                  key={opt.name}
+                                  label={opt.notes?.label || opt.name}
+                                  name={`queueSchedulerOptions.${opt.name}`}
+                                  description={opt.description}
+                                  type={
+                                    opt.notes?.fieldType === 'number'
+                                      ? 'number'
+                                      : 'text'
+                                  }
+                                />
+                              )
+                          )}
                       </>
                     )}
                     {isJobTypeBATCH(app) &&
