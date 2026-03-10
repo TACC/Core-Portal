@@ -272,9 +272,7 @@ export const AppSchemaForm = ({ app }) => {
     const defaultSystem = configuration.find(
       (system) => system.system === defaultSystemId
     );
-    const defaultArchivePath = `${
-      defaultSystem?.homeDir || '$WORK'
-    }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
+    const defaultArchivePath = defaultSystem?.homeDir;
 
     const isTACCPortal = state.workbench.isTACCPortal;
 
@@ -374,7 +372,6 @@ export const AppSchemaForm = ({ app }) => {
       defaultSystemId || app.definition.jobAttributes.archiveSystemId || '',
     archiveSystemDir:
       defaultArchivePath || app.definition.jobAttributes.archiveSystemDir || '',
-    archiveOnAppError: true,
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
@@ -685,8 +682,8 @@ export const AppSchemaForm = ({ app }) => {
               include: true,
               arg: `-A ${job.allocation}`,
             });
-            delete job.allocation;
           }
+          delete job.allocation;
 
           // Add reservation scheduler option
           if (job.reservation) {
@@ -700,9 +697,24 @@ export const AppSchemaForm = ({ app }) => {
                 isReservation: true,
               },
             });
-            delete job.reservation;
           }
+          delete job.reservation;
 
+          if (job.queueSchedulerOptions) {
+            Object.entries(job.queueSchedulerOptions).forEach(
+              ([key, value]) => {
+                job.parameterSet.schedulerOptions.push({
+                  name: key,
+                  description: `Queue defined scheduler option: ${key}`,
+                  include: true,
+                  arg: String(value),
+                });
+              }
+            );
+          }
+          delete job.queueSchedulerOptions;
+
+          console.log('Prepared job for submission: ', job);
           dispatch({
             type: 'SUBMIT_JOB',
             payload: {
@@ -1038,7 +1050,8 @@ export const AppSchemaForm = ({ app }) => {
                           type="text"
                           placeholder={
                             defaultArchivePath ||
-                            app.definition.archiveSystemDir
+                            app.definition.archiveSystemDir ||
+                            ''
                           }
                         />
                       </>
