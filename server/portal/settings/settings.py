@@ -51,8 +51,6 @@ SESSION_COOKIE_SECURE = True
 if not DEBUG:
     # Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
     CSRF_COOKIE_SECURE = True
-    # Prevent the cookie's value from being read or set by client-side JavaScript.
-    CSRF_COOKIE_HTTPONLY = True
 
 #
 CSRF_COOKIE_SAMESITE = 'Strict'
