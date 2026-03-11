@@ -42,6 +42,7 @@ function Workbench() {
     showSubmissions,
     hideManageAccount,
     hideSystemStatus,
+    isTACCPortal,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading || loadingSystems,
@@ -55,6 +56,7 @@ function Workbench() {
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
       hideSystemStatus: state.workbench.config.hideSystemStatus,
+      isTACCPortal: state.workbench.isTACCPortal,
     }),
     shallowEqual
   );
@@ -71,7 +73,7 @@ function Workbench() {
     });
 
     if (setupComplete) {
-      dispatch({ type: 'GET_ALLOCATIONS' });
+      isTACCPortal && dispatch({ type: 'GET_ALLOCATIONS' });
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
