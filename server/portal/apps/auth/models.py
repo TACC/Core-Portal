@@ -1,7 +1,9 @@
 """Auth models
 """
+
 import logging
 import time
+from urllib.parse import urlparse
 from django.db import models
 from django.conf import settings
 from tapipy.tapis import Tapis
@@ -68,15 +70,28 @@ class TapisOAuthToken(models.Model):
     def client(self) -> Tapis:
         """Tapis client.
 
+        Note: `tenant_id` is derived from TAPIS_TENANT_BASEURL (e.g. 'https://portals.tapis.io'
+        yields 'portals') and passed explicitly to the Tapis constructor. Without it,
+        tapipy looks it up by fetching all tenants from the Tapis registry
+        (GET /v3/sites + GET /v3/tenants) on every instantiation to derive tenant_id from
+        base_url. We pass `tenant_id` to constructor to avoid those two extra network calls.
+
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
-                     client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
-                     client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
-                     access_token=self.access_token,
-                     refresh_token=self.refresh_token,
-                     )
+        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
+            "."
+        )[0]
+
+        client = Tapis(
+            base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
+            tenant_id=tenant_id,
+            client_id=getattr(settings, "TAPIS_CLIENT_ID"),
+            client_key=getattr(settings, "TAPIS_CLIENT_KEY"),
+            access_token=self.access_token,
+            refresh_token=self.refresh_token,
+        )
+        return client
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -84,10 +99,13 @@ class TapisOAuthToken(models.Model):
         self.save()
 
     def refresh_tokens(self):
-        self.client.refresh_tokens()
-        self.update(created=int(time.time()),
-                    access_token=self.client.access_token.access_token,
-                    expires_in=self.client.access_token.expires_in().total_seconds())
+        client = self.client
+        client.refresh_tokens()
+        self.update(
+            created=int(time.time()),
+            access_token=client.access_token.access_token,
+            expires_in=client.access_token.expires_in().total_seconds(),
+        )
 
     def __str__(self):
         access_token_masked = self.access_token[-5:]

@@ -78,3 +78,4 @@ class TapisTokenRefreshMiddleware:
                 logger.info(
                     "Token updated by another request. Refreshing token from DB."
                 )
+                tapis_oauth.refresh_from_db()
