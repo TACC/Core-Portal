@@ -13,11 +13,6 @@ logger = logging.getLogger(__name__)
 
 TOKEN_EXPIRY_THRESHOLD = 600
 
-# Module-level cache of Tapis clients keyed by user_id. Each uWSGI worker process
-# maintains its own cache in memory, so the first request per user per worker pays
-# the initialization cost
-_tapis_client_cache = {}
-
 
 class TapisOAuthToken(models.Model):
     """Represents an Tapis OAuth Token object.
@@ -84,9 +79,6 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        if self.user_id in _tapis_client_cache:
-            return _tapis_client_cache[self.user_id]
-
         tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
             "."
         )[0]
@@ -99,7 +91,6 @@ class TapisOAuthToken(models.Model):
             access_token=self.access_token,
             refresh_token=self.refresh_token,
         )
-        _tapis_client_cache[self.user_id] = client
         return client
 
     def update(self, **kwargs):
