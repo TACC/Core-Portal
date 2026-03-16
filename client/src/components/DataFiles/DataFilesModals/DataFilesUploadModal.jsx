@@ -10,6 +10,7 @@ import {
   useSystemDisplayName,
   useFileListing,
   useModal,
+  useTapisToken,
   useAddonComponents,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
@@ -34,9 +35,17 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
 
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
+  );
+  const maxSize = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeValue
+  );
+
   const { getStatus: getModalStatus, toggle } = useModal();
   const isOpen = getModalStatus('upload');
   const { params } = useFileListing('FilesListing');
+  const { data: tapisToken } = useTapisToken();
   const { status, upload, setStatus } = useUpload();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
@@ -49,8 +58,10 @@ const DataFilesUploadModal = ({ className, layout }) => {
       upload({
         system: params.system,
         path: params.path || '',
+        scheme: params.scheme,
         files: filteredFiles,
         reloadCallback,
+        tapisToken,
       });
   };
   const dropZoneDisabled =
@@ -126,8 +137,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
-            maxSize={524288000}
-            maxSizeMessage="Max File Size: 500MB"
+            maxSizeMessage={`Max File Size: ${maxSizeLabel || '2GB'}`}
+            maxSize={maxSize || 2 * 1024 * 1024 * 1024}
           />
         </div>
         {showListing && (

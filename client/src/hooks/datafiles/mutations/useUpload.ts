@@ -1,10 +1,10 @@
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { AxiosRequestConfig } from 'axios';
 import { apiClient } from 'utils/apiClient';
 import Cookies from 'js-cookie';
 import truncateMiddle from 'utils/truncateMiddle';
 import { useMutation } from '@tanstack/react-query';
-
-apiClient.defaults.timeout = 5 * 60 * 1000; // 5 minutes
+import { TTapisToken } from '../useTapisToken';
 
 export async function uploadUtil({
   api,
@@ -12,6 +12,7 @@ export async function uploadUtil({
   system,
   path,
   file,
+  tapisToken,
   metadata,
 }: {
   api: string;
@@ -19,6 +20,7 @@ export async function uploadUtil({
   system: string;
   path: string;
   file: FormData;
+  tapisToken: TTapisToken;
   metadata?: Record<string, any>;
 }): Promise<{ file: any; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
@@ -26,23 +28,70 @@ export async function uploadUtil({
     apiPath = '';
   }
   const formData = new FormData();
-  const fileField = file.get('uploaded_file') as Blob;
-  formData.append('uploaded_file', fileField);
-  
-  // Append metadata as a JSON string
-  if (metadata && !system.includes('community')) {
-    formData.append('metadata', JSON.stringify({ data_type: 'file', ...metadata }));
+  const fileField = file.get('uploaded_file') as File;
+  let url: string = '';
+  let config: AxiosRequestConfig = {};
+
+  let metadataUrl: string = '';
+  let metadataBody: any = {};
+
+  if (api === 'tapis' && tapisToken) {
+    formData.append('file', fileField);
+    const endpoint =
+      `/v3/files/ops/${system}/${apiPath}/${fileField.name}`.replace(
+        /\/{2,}/g,
+        '/'
+      );
+
+    url = `${tapisToken.baseUrl}${endpoint}`;
+    config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+        'X-Tapis-Token': tapisToken.token,
+        'X-Tapis-Tracking-ID': tapisToken.tapisTrackingId,
+      },
+    };
+
+    if (metadata && scheme === 'projects') {
+      metadataUrl = `/api/datafiles/${api}/upload_file_metadata/${scheme}/${system}/${apiPath}`;
+      metadataBody = {
+        file_name: fileField.name,
+        file_size: fileField.size,
+        metadata: { data_type: 'file', ...metadata },
+      };
+    }
+  } else {
+    formData.append('uploaded_file', fileField);
+
+    // Append metadata as a JSON string (portal upload only; same as before)
+    if (metadata && !system.includes('community')) {
+      formData.append(
+        'metadata',
+        JSON.stringify({ data_type: 'file', ...metadata })
+      );
+    }
+
+    url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
+    config = {
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken') || '',
+      },
+      withCredentials: true,
+    };
+    url = url.replace(/\/{2,}/g, '/');
   }
 
-  let url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
-  url = url.replace(/\/{2,}/g, '/');
+  const response = await apiClient.post(url, formData, config);
 
-  const response = await apiClient.post(url, formData, {
-    headers: {
-      'X-CSRFToken': Cookies.get('csrftoken') || '',
-    },
-    withCredentials: true,
-  });
+  if (metadataUrl) {
+    await apiClient.put(metadataUrl, metadataBody, {
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken') || '',
+      },
+      withCredentials: true,
+    });
+  }
+
   return response.data;
 }
 
@@ -65,16 +114,19 @@ function useUpload() {
   const upload = ({
     system,
     path,
+    scheme,
     files,
     reloadCallback,
+    tapisToken,
   }: {
     system: string;
     path: string;
-    files: { data: File; id: string, metadata: Record<string, any> }[];
+    scheme: string;
+    files: { data: File; id: string; metadata: Record<string, any> }[];
     reloadCallback: () => void;
+    tapisToken: TTapisToken;
   }) => {
     const api = 'tapis';
-    const scheme = 'private';
     const uploadCalls: Promise<any>[] = files.map((fileObj) => {
       const { data: file, id: index, metadata } = fileObj;
       dispatch({
@@ -92,7 +144,8 @@ function useUpload() {
           system,
           path,
           file: formData,
-          metadata: metadata,
+          tapisToken,
+          metadata,
         },
         {
           onSuccess: () => {

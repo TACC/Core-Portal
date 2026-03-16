@@ -161,6 +161,17 @@ const DataFilesProjectFileListing = ({
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div className={styles.description}>
+        {!!enableWorkspaceKeywords &&
+          !!metadata.keywords &&
+          !!metadata.keywords.length && (
+            <>
+              <b>Keywords</b>
+              {metadata.keywords && (
+                <ShowMore>{metadata.keywords.join(', ')}</ShowMore>
+              )}
+              <br />
+            </>
+          )}
         <>
           {DataFilesProjectFileListingMetadataAddon ? (
             <ShowMore key={`${system}`}>
@@ -172,7 +183,13 @@ const DataFilesProjectFileListing = ({
               />
             </ShowMore>
           ) : (
-            <ShowMore>{metadata.description}</ShowMore>
+            !!metadata.description && (
+              <>
+                <b>Description</b>
+                <ShowMore>{metadata.description}</ShowMore>
+                <br />
+              </>
+            )
           )}
         </>
       </div>
