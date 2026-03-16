@@ -41,6 +41,17 @@ const DataFilesProjectEditDescriptionModal = () => {
     portalName,
   });
 
+  const isOwner = useSelector(
+    (state) =>
+      state.projects.metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser?.user?.username
+            : { access: null }
+        )
+        .map((currentUser) => currentUser.access === 'owner')[0]
+  );
+
   const initialValues = useMemo(
     () => ({
       title,
@@ -114,6 +125,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 <FormField
                   name="title"
                   aria-label="title"
+                  disabled={!isOwner}
                   label={
                     <div>
                       Title{' '}
@@ -127,6 +139,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <FormField
                     name="description"
                     aria-label="description"
+                    disabled={!isOwner}
                     label={
                       <div>
                         Description{' '}
