@@ -11,6 +11,7 @@ import {
   useFileListing,
   useModal,
   useTapisToken,
+  useAddonComponents,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
@@ -31,6 +32,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const reloadCallback = () => {
     history.push(location.pathname);
   };
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
 
   const maxSizeLabel = useSelector(
     (state) => state.workbench.config.uploadModalMaxSizeLabel
@@ -55,6 +58,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       upload({
         system: params.system,
         path: params.path || '',
+        scheme: params.scheme,
         files: filteredFiles,
         reloadCallback,
         tapisToken,
@@ -128,7 +132,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       >
         Upload Files
       </ModalHeader>
-      <ModalBody className={containerStyleNames}>
+      <ModalBody className={`${containerStyleNames} ${styles['modal-body']}`}>
         <div className={styles.dropzone} disabled={dropZoneDisabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
@@ -151,6 +155,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
               setUploadedFiles={setUploadedFiles}
             />
           </div>
+        )}
+        {DataFilesUploadModalAddon && params.scheme === 'projects' && (
+          <DataFilesUploadModalAddon
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+          />
         )}
       </ModalBody>
       <ModalFooter>

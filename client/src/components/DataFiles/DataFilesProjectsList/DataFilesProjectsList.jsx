@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import queryStringParser from 'query-string';
 import {
   InfiniteScrollTable,
@@ -12,12 +12,28 @@ import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 import Searchbar from '_common/Searchbar';
 
-const DataFilesProjectsList = ({ modal }) => {
+const DataFilesProjectsList = ({ modal, rootSystem }) => {
   const { error, loading, projects } = useSelector(
     (state) => state.projects.listing
   );
   const modalProps = useSelector((state) => state.files.modalProps[modal]);
   const query = queryStringParser.parse(useLocation().search);
+
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  let selectedSystem;
+
+  if (rootSystem) {
+    selectedSystem = systems.find((s) => s.system === rootSystem);
+  } else {
+    selectedSystem = systems.find((s) => s.scheme === 'projects');
+  }
+
+  const sharedWorkspacesDisplayName =
+    selectedSystem?.name || 'Shared Workspaces';
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
@@ -30,10 +46,11 @@ const DataFilesProjectsList = ({ modal }) => {
       type: actionType,
       payload: {
         queryString: modal ? null : query.query_string,
+        rootSystem: selectedSystem.system,
         modal,
       },
     });
-  }, [dispatch, query.query_string]);
+  }, [dispatch, query.query_string, rootSystem]);
 
   const listingCallback = (e, el) => {
     if (!modal) return;
@@ -65,7 +82,7 @@ const DataFilesProjectsList = ({ modal }) => {
       Cell: (el) => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/tapis/projects/${el.row.original.id}`}
+          to={`/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`}
           onClick={(e) => listingCallback(e, el)}
         >
           {el.value}
@@ -92,14 +109,14 @@ const DataFilesProjectsList = ({ modal }) => {
   ];
 
   const noDataText = query.query_string
-    ? 'No Shared Workspaces match your search term.'
-    : "You don't have any Shared Workspaces.";
+    ? `No ${sharedWorkspacesDisplayName} match your search term.`
+    : `You don't have any ${sharedWorkspacesDisplayName}`;
 
   if (error) {
     return (
       <div className={styles['root-placeholder']}>
         <SectionMessage type="error">
-          There was a problem retrieving your Shared Workspaces.
+          There was a problem retrieving your {sharedWorkspacesDisplayName}.
         </SectionMessage>
       </div>
     );
@@ -123,7 +140,7 @@ const DataFilesProjectsList = ({ modal }) => {
         <Searchbar
           api="tapis"
           scheme="projects"
-          sectionName="Workspace"
+          sectionName={sharedWorkspacesDisplayName}
           resultCount={projects.length}
           infiniteScroll
         />
