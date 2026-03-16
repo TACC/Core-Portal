@@ -85,7 +85,7 @@ describe('Profile Information Component', () => {
 });
 
 describe('Change Password Component', () => {
-  let getByText, getAllByText;
+  let getByText;
   const testStore = mockStore({
     profile: dummyState,
   });
@@ -96,7 +96,6 @@ describe('Change Password Component', () => {
       </Provider>
     );
     getByText = utils.getByText;
-    getAllByText = utils.getAllByText;
   });
 
   it('should show the user the last time they changed their password', () => {
@@ -114,8 +113,6 @@ describe('Change Password Component', () => {
 });
 
 describe('Third Party Apps', () => {
-  let getByText;
-
   it('Shows connect link when not connected', () => {
     const testStore = mockStore({
       profile: dummyState,

@@ -15,7 +15,7 @@ const mockStore = configureStore();
 
 describe('Manage Account Page', () => {
   test('Layout of Manage Account', () => {
-    const { getByText, getAllByText, getByRole } = render(
+    const { getByText, getAllByText } = render(
       <Provider
         store={mockStore({
           profile,

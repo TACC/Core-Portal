@@ -63,7 +63,7 @@ export const Remaining = ({ cell }) => {
   };
   return (
     <div className="sub-table-row">
-      {cell.value.map(({ remaining, ratio, type, id }) => (
+      {cell.value.map(({ remaining, ratio, type, _id }) => (
         <div key={uuidv4()} className="sub-table-cell">
           <span>
             <Badge

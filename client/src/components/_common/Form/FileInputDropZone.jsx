@@ -1,5 +1,5 @@
 /* FP-993: Allow use by DataFilesUploadModal */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button, InlineMessage } from '_common';
 import PropTypes from 'prop-types';
@@ -17,7 +17,6 @@ function FileInputDropZone({
   maxSize,
   maxSizeMessage,
   onRemoveFile,
-  isSubmitted,
 }) {
   const [rejectedFiles, setRejectedFiles] = useState([]);
 
@@ -119,14 +118,12 @@ FileInputDropZone.propTypes = {
   onSetFiles: PropTypes.func.isRequired,
   onRejectedFiles: PropTypes.func,
   onRemoveFile: PropTypes.func,
-  isSubmitted: PropTypes.bool,
   maxSizeMessage: PropTypes.string.isRequired,
   maxSize: PropTypes.number.isRequired,
 };
 
 FileInputDropZone.defaultProps = {
   files: null,
-  isSubmitted: false,
   onRejectedFiles: null,
   onRemoveFile: null,
 };

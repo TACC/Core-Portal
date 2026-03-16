@@ -1,7 +1,7 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 
-function* getSystemMonitor(action) {
+function* getSystemMonitor(_action) {
   yield put({ type: 'SYSTEM_MONITOR_LOAD' });
   try {
     const result = yield call(fetchUtil, {

@@ -9,7 +9,7 @@ export async function fetchSiteSearchUtil(page, query_string, filter) {
     let json;
     try {
       json = await response.json();
-    } catch (e) {
+    } catch (_e) {
       json = { message: 'An unknown error has occurred.' };
     }
     throw new FetchError(json, response);

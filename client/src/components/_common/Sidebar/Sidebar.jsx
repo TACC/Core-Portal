@@ -6,7 +6,7 @@ import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
 import emptyStringValidator from '_common/CommonUtils';
 
-const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
+const SidebarItem = ({ to, iconName, label, children, disabled }) => {
   return (
     <NavItem>
       <NavLink
@@ -35,12 +35,10 @@ SidebarItem.propTypes = {
   label: emptyStringValidator,
   children: PropTypes.node,
   disabled: PropTypes.bool,
-  hidden: PropTypes.bool,
 };
 SidebarItem.defaultProps = {
   children: null,
   disabled: false,
-  hidden: false,
 };
 
 const Sidebar = ({

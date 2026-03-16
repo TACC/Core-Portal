@@ -1,7 +1,7 @@
 import { fetchUtil } from 'utils/fetchUtil';
 import { call, put, takeLeading } from 'redux-saga/effects';
 
-export function* fetchWorkbench(action) {
+export function* fetchWorkbench(_action) {
   yield put({ type: 'WORKBENCH_INIT' });
   try {
     const res = yield call(fetchUtil, {
@@ -11,7 +11,7 @@ export function* fetchWorkbench(action) {
       type: 'WORKBENCH_SUCCESS',
       payload: res.response,
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'WORKBENCH_FAILURE',
     });

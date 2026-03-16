@@ -1,5 +1,4 @@
 import React from 'react';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from '_common';
 import PropTypes from 'prop-types';
@@ -117,9 +116,9 @@ const DataFilesBreadcrumbs = ({
   scheme,
   system,
   path,
-  section,
-  operation,
-  isPublic,
+  _section,
+  _operation,
+  _isPublic,
   className,
 }) => {
   const paths = [];

@@ -11,7 +11,7 @@ describe('Dashboard', () => {
       value: dummyAgent,
       writable: true,
     });
-    const { getByText, debug } = render(<BrowserChecker />);
+    const { getByText } = render(<BrowserChecker />);
     expect(getByText(/Your browser is not supported./)).toBeDefined();
   });
   it('should show nothing when the browser is supported', () => {

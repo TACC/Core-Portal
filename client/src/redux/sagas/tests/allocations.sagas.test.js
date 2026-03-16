@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { vi } from 'vitest';
@@ -14,8 +14,6 @@ import {
   getUsernames,
   removeUser,
   manageUtil,
-  watchAllocationData,
-  watchTeams,
   allocationsTeamSelector,
 } from '../allocations.sagas';
 import {

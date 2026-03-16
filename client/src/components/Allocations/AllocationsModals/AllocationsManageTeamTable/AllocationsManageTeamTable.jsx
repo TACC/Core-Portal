@@ -86,7 +86,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
                 <Button
                   type="link"
                   disabled={removingUserOperation.loading}
-                  onClick={(e) => {
+                  onClick={(_e) => {
                     dispatch({
                       type: 'REMOVE_USER_FROM_TAS_PROJECT',
                       payload: {

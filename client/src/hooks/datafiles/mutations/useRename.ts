@@ -51,7 +51,7 @@ function useRename() {
     newName: string;
     api: string;
     scheme: string;
-    callback: (name: string, path: string) => any;
+    callback: (_name: string, _path: string) => any;
   }) => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',

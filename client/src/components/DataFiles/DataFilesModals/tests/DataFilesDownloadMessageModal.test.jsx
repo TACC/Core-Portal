@@ -39,7 +39,6 @@ describe('DataFilesDownloadMessageModal', () => {
   });
 
   it('renders the data files download message modal', async () => {
-    const foo = {};
     const store = mockStore({
       ...DataFilesDownloadMessageModalFixture,
       allocations: {
@@ -48,10 +47,7 @@ describe('DataFilesDownloadMessageModal', () => {
       } /*TODO fix DataFilesDownloadMessageModalFixture fixture*/,
     });
 
-    const { findAllByText } = renderComponent(
-      <DataFilesDownloadMessageModal />,
-      store
-    );
+    renderComponent(<DataFilesDownloadMessageModal />, store);
 
     await waitFor(async () => {
       await screen.findByText('Download');
@@ -93,7 +89,7 @@ describe('DataFilesDownloadMessageModal', () => {
     // Click on the Compress button to try and download the folder
     fireEvent.click(screen.getByText('Compress'));
 
-    const expectedArg = {
+    const _expectedArg = {
       filename: `Archive_${new Date().toISOString().split('.')[0]}`,
       files:
         DataFilesDownloadMessageModalFixture.files.selected.FilesListing.map(

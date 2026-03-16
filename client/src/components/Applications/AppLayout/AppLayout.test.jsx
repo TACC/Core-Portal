@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import AppsRoutes, { AppsLayout } from './AppLayout';
 import { MemoryRouter, Route } from 'react-router-dom';
@@ -31,7 +31,7 @@ describe('AppsLayout', () => {
     const store = mockStore({
       apps: { ...appTrayExpectedFixture, loading: true, categoryDict: {} },
     });
-    const { getByText, getByTestId } = renderComponent(<AppsLayout />, store);
+    const { getByTestId } = renderComponent(<AppsLayout />, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {

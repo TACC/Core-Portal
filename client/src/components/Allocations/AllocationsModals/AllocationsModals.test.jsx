@@ -1,7 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { fireEvent } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { AllocationsTeamViewModal } from './index';
 import renderComponent from 'utils/testing';

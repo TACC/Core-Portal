@@ -492,7 +492,7 @@ export const AppSchemaForm = ({ app }) => {
         validateOnMount={isFirstRender.current}
         initialValues={initialValues}
         initialTouched={initialValues}
-        validationSchema={(props) => {
+        validationSchema={(_props) => {
           if (jobSubmission.submitting) {
             /* to to avoid a strange error where values are valid but yup returns invalid,
             we stop invalidating during submission. This occurs only when validateOnMount is set.
@@ -556,7 +556,7 @@ export const AppSchemaForm = ({ app }) => {
                   ? getAllocationValidation(allocations).test(
                       'exec-systems-check',
                       'You need an allocation with access to at least one system to run this application.',
-                      function (value) {
+                      function (_value) {
                         const isValidExecSystems =
                           !isAppUsingDynamicExecSystem(app) ||
                           (isAppUsingDynamicExecSystem(app) &&
@@ -568,7 +568,7 @@ export const AppSchemaForm = ({ app }) => {
             });
           });
         }}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
+        onSubmit={(values, { _setSubmitting, _resetForm }) => {
           const job = cloneDeep(values);
           job.name = job.name.trim();
 
@@ -705,7 +705,7 @@ export const AppSchemaForm = ({ app }) => {
       >
         {({
           values,
-          errors,
+          _errors,
           isValid,
           isSubmitting,
           handleReset,
@@ -819,7 +819,7 @@ export const AppSchemaForm = ({ app }) => {
                   )}
                   {Object.entries(appFields.parameterSet)
                     .map(
-                      ([parameterSet, parameterValue]) =>
+                      ([_parameterSet, parameterValue]) =>
                         Object.keys(parameterValue).length
                     )
                     .reduce((a, b) => a + b) > 0 && (

@@ -1,4 +1,4 @@
-import React, { version } from 'react';
+import React from 'react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import DataFiles from '../DataFiles';
@@ -123,11 +123,7 @@ describe('DataFiles', () => {
         },
       },
     });
-    const { getByText, getAllByText } = renderComponent(
-      <DataFiles />,
-      store,
-      history
-    );
+    const { getAllByText } = renderComponent(<DataFiles />, store, history);
     expect(
       getAllByText(/No storage systems enabled for this portal/)
     ).toBeDefined();

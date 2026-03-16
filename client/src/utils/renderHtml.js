@@ -3,6 +3,6 @@ import DOMPurify from 'dompurify';
 
 // From https://github.com/remarkablemark/html-react-parser/issues/94#issuecomment-509679484
 
-export default function renderHtml(html, opts = {}) {
+export default function renderHtml(html, _opts = {}) {
   return parse(DOMPurify.sanitize(html));
 }

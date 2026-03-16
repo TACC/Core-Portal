@@ -41,7 +41,7 @@ describe('SiteSearchSidebar', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
     const store = mockStore({});
-    const { getAllByRole, getByText } = renderComponent(
+    const { getByText } = renderComponent(
       <SiteSearchSidebar
         authenticated
         schemes={['public', 'community']}
@@ -86,7 +86,7 @@ describe('SiteSearchSidebar', () => {
   it('searchbar item hides count when waiting for results', () => {
     const isSearching = true;
     const store = mockStore({});
-    const { getByText, getByTestId } = renderComponent(
+    const { getByTestId } = renderComponent(
       <SiteSearchSidebarItem
         to={`/search/cms/?foo`}
         label="Web Content"

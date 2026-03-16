@@ -29,7 +29,7 @@ describe('SectionMessages', () => {
 
   describe('custom messages', () => {
     it('renders custom intro message', () => {
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <Provider store={store}>
           <SectionMessages
             messageComponentName="DASHBOARD"

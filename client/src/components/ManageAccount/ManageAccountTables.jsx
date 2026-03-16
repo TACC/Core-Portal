@@ -52,7 +52,6 @@ export const ProfileInformation = () => {
   const dispatch = useDispatch();
   const {
     data: { demographics },
-    errors,
   } = useSelector((state) => state.profile);
   const columns = useMemo(
     () => [
@@ -68,7 +67,7 @@ export const ProfileInformation = () => {
     []
   );
   const data = useMemo(() => [demographics], []);
-  const openModal = () =>
+  const _openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
   const hiddenColumns = Object.keys(demographics).filter(
     (key) => !demographics[key]

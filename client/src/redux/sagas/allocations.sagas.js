@@ -230,7 +230,7 @@ export function* searchUsers(action) {
       type: 'ADD_SEARCH_RESULTS',
       payload: { data: result },
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({ type: 'SEARCH_ERROR' });
   }
 }
@@ -255,7 +255,7 @@ export function* addUser(action) {
         projectId: action.payload.projectId,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'ALLOCATION_OPERATION_ADD_USER_ERROR',
       payload: {
@@ -301,7 +301,7 @@ export function* removeUser(action) {
         removingUserOperation: { loading: false, error: false, username: '' },
       },
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
       payload: {

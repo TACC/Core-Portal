@@ -2,7 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import DataFilesProjectEditDescriptionModal from '../DataFilesProjectEditDescriptionModal';
 import {
   projectsListingFixture,

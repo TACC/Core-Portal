@@ -34,7 +34,7 @@ export function* fetchIntroMessageComponents() {
       type: 'INTRO_FETCH_SUCCESS',
       payload: messageComponents,
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'INTRO_FETCH_ERROR',
     });
@@ -59,7 +59,7 @@ export function* saveIntroMessageComponents(action) {
       type: 'INTRO_SAVE_SUCCESS',
       payload: action.payload,
     });
-  } catch (error) {
+  } catch (_error) {
     // Return the intended state of intro message components
     // regardless of save success or failure
     yield put({
@@ -90,7 +90,7 @@ export function* fetchCustomMessages() {
       type: 'CUSTOM_MESSAGES_FETCH_SUCCESS',
       payload: customMessages,
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'CUSTOM_MESSAGES_FETCH_ERROR',
     });
@@ -114,7 +114,7 @@ export function* saveCustomMessages(action) {
       type: 'CUSTOM_MESSAGES_SAVE_SUCCESS',
       payload: action.payload,
     });
-  } catch (error) {
+  } catch (_error) {
     yield put({
       type: 'CUSTOM_MESSAGES_SAVE_ERROR',
       payload: action.payload,

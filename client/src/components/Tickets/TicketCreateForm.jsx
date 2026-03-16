@@ -11,7 +11,6 @@ import {
   ModalBody,
   ModalFooter,
   Row,
-  Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
 import { Button, FileInputDropZoneFormField, FormField } from '_common';

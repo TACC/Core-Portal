@@ -7,7 +7,7 @@ export const getCompressParams = (
   compressionType: string,
   compressApp: { id: string; version: string },
   defaultAllocation: string,
-  defaultPrivateSystem?: TPortalSystem
+  _defaultPrivateSystem?: TPortalSystem
 ) => {
   const fileInputs = [
     {

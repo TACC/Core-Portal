@@ -1,13 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import {
-  useSelectedFiles,
-  useFileListing,
-  useSystems,
-  useModal,
-} from 'hooks/datafiles';
+import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
 
 import { useMove } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -28,11 +23,6 @@ const DataFilesMoveModal = React.memo(() => {
   const { move, status, setStatus } = useMove();
 
   const dispatch = useDispatch();
-  const { data: systems } = useSystems();
-
-  const { fetchSelectedSystem } = useSystems();
-
-  const selectedSystem = fetchSelectedSystem(params);
 
   const reloadPage = () => {
     history.push(location.pathname);

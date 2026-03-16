@@ -161,7 +161,7 @@ describe('DataFilesCopyModal', () => {
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);
 
-    const { getByText, getByTestId } = renderComponent(
+    const { getByTestId } = renderComponent(
       <DataFilesCopyModal />,
       store,
       history

@@ -84,7 +84,7 @@ const SystemsList = ({ system }) => {
       </thead>
       <tbody {...getTableBodyProps()} className={styles['rows']}>
         {rows.length ? (
-          rows.map((row, idx) => {
+          rows.map((row, _idx) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>

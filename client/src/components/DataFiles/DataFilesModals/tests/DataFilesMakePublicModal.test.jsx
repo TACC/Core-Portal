@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import DataFilesMakePublicModalFixture from './DataFilesMakePublicModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -25,7 +25,7 @@ describe('DataFilesMakePublicModal', () => {
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);
 
-    const { getAllByText, getAllByRole } = renderComponent(
+    const { getAllByText } = renderComponent(
       <DataFilesMakePublicModal />,
       store,
       history

@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
-export function* fetchTickets(action) {
+export function* fetchTickets(_action) {
   yield put({ type: 'TICKET_LIST_FETCH_STARTED' });
   try {
     const res = yield call(fetchUtil, {
@@ -198,7 +198,7 @@ export function* openTicketModal(action) {
   yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: action.payload });
 }
 
-export function* closeTicketModal(action) {
+export function* closeTicketModal(_action) {
   yield put({ type: 'TICKET_CREATE_SET_MODAL_CLOSE' });
 }
 

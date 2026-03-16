@@ -92,7 +92,7 @@ const FormSchema = (app) => {
                 regex,
                 param.notes.validator.message
               );
-          } catch (SyntaxError) {
+          } catch (_SyntaxError) {
             console.warn('Invalid regex pattern for app');
           }
         }

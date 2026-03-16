@@ -58,7 +58,7 @@ function DataFilesUploadModalListingTable({
           </tr>
         </thead>
         <tbody>
-          {uploadedFiles.map((file, i) => (
+          {uploadedFiles.map((file, _i) => (
             <tr key={file.id}>
               <td style={{ verticalAlign: 'middle' }}>{file.data.name}</td>
               <td style={{ verticalAlign: 'middle' }}>

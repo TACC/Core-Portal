@@ -23,7 +23,7 @@ export async function trashUtil({
   };
   const response = await apiClient.put(url, body, {
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken' || ''),
+      'X-CSRFToken': Cookies.get('csrftoken') || '',
     },
     withCredentials: true,
   });
@@ -82,7 +82,7 @@ function useTrash() {
           homeDir: homeDir,
         },
         {
-          onSuccess: (response: any) => {
+          onSuccess: (_response: any) => {
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: {
