@@ -7,6 +7,7 @@ from django.db import transaction
 import logging
 import urllib
 from elasticsearch_dsl import Q
+import httpx
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
 from portal.exceptions.api import ApiException
@@ -602,17 +603,28 @@ def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
             uploaded_file.seek(0)
             transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token, encoded_file))
 
-    response_json = client.files.insert(systemId=system,
-                                        path=dest_path,
-                                        file=uploaded_file,
-                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    upload_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/{system}/{dest_path.lstrip('/')}"
+    headers = {'x-tapis-token': client.get_access_jwt(),
+               "X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")
+               }
+
+    res = httpx.post(upload_url,
+                     headers=headers,
+                     files={'file': uploaded_file},
+                     timeout=600)
+    res.raise_for_status()
+    # NOTE: tapipy causing issues currently by reading file into memory, so not using it for uploads at the moment
+    # response_json = client.files.insert(systemId=system,
+    #                                    path=dest_path,
+    #                                    file=uploaded_file,
+    #                                    headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
                                       'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
                               )
 
-    return response_json
+    return res.json()
 
 
 def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
@@ -699,6 +711,28 @@ def download_bytes(client, system, path, *args, **kwargs):
     result = io.BytesIO(resp)
     result.name = file_name
     return result
+
+@transaction.atomic
+def upload_file_metadata(client, system, path, file_name, file_size, metadata, **kwargs):
+
+    dest_path = os.path.join(path.strip('/'), file_name)
+    
+    if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
+    
+        parent_node = get_node_from_path(system, path)
+
+        file_obj = create_file_obj(system, file_name, file_size, dest_path, metadata)
+
+        if parent_node and parent_node['id'] != 'NODE_ROOT':
+            add_file_associations(parent_node['uuid'], [file_obj])
+        else: 
+            # Add file association to root node if no parent node/entity exists
+            root_node = get_root_node(system)
+            add_file_associations(root_node['uuid'], [file_obj])
+
+        # additional processing for files
+        if metadata.get('is_advanced_image_file', None):
+            transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token))
 
 @transaction.atomic
 def update_metadata(client, system, path, new_path, old_name, new_name, metadata):

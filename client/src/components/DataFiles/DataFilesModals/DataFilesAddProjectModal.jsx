@@ -17,8 +17,8 @@ const DataFilesAddProjectModal = () => {
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
-  const maxDescriptionLength =
-    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const minDescriptionLength =
+    useSelector((state) => state.workbench.config.minDescriptionLength) ?? 50;
   const maxTitleLength =
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
   const enableWorkspaceKeywords =
@@ -83,7 +83,7 @@ const DataFilesAddProjectModal = () => {
       payload: {
         title,
         description,
-        keywords: keywords.trim(),
+        keywords: keywords,
         members: members.map((member) => ({
           username: member.user.username,
           access: member.access,
@@ -110,20 +110,16 @@ const DataFilesAddProjectModal = () => {
       .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
     description: Yup.string()
-      .min(1000, 'Description must be at least 1000 characters')
-      .max(
-        maxDescriptionLength,
-        `Description must be at most ${maxDescriptionLength} characters`
+      .min(
+        minDescriptionLength,
+        `Description must be at least ${minDescriptionLength} characters`
       )
       .when([], {
-        is: () => maxDescriptionLength > 0,
+        is: () => minDescriptionLength > 0,
         then: (schema) => schema.required('Please enter a description.'),
         otherwise: (schema) => schema.notRequired(),
       }),
-    keywords: Yup.string().matches(
-      /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
-      'Please separate keywords with commas.'
-    ),
+    keywords: Yup.array().of(Yup.string()),
   });
 
   return (
@@ -136,7 +132,7 @@ const DataFilesAddProjectModal = () => {
       >
         {' '}
         <Formik
-          initialValues={{ title: '', description: '', keywords: '' }}
+          initialValues={{ title: '', description: '', keywords: [] }}
           onSubmit={addproject}
           validationSchema={validationSchema}
         >
@@ -159,7 +155,7 @@ const DataFilesAddProjectModal = () => {
                 }
                 description={'The title should be descriptive and distinctive from related publications.'}
               />
-              {!!maxDescriptionLength && (
+              {!!minDescriptionLength && (
                 <FormField
                   name="description"
                   aria-label="description"
@@ -167,7 +163,7 @@ const DataFilesAddProjectModal = () => {
                     <div>
                       Description{' '}
                       <small>
-                        <em>(Maximum {maxDescriptionLength} characters)</em>
+                        <em>(Minimum {minDescriptionLength} characters)</em>
                       </small>
                     </div>
                   }
@@ -178,14 +174,8 @@ const DataFilesAddProjectModal = () => {
                 <FormField
                   name="keywords"
                   aria-label="keywords"
-                  label={
-                    <div>
-                      Keywords{' '}
-                      <small>
-                        <em>(Optional, should be comma-separated)</em>
-                      </small>
-                    </div>
-                  }
+                  tags
+                  label={<div>Keywords </div>}
                   type="textarea"
                 />
               )}

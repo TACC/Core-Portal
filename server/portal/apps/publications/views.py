@@ -369,7 +369,7 @@ class PublicationRejectView(BaseApiView):
         
         if not settings.DEBUG:
             send_publication_rejected_email_to_authors.apply_async(args=[full_project_id])
-            send_publication_reviewed_email_to_reviewers.apply_async(args=[full_project_id, 'REJECTED', request.user.username])
+            send_publication_reviewed_email_to_reviewers.apply_async(args=[full_project_id, PublicationRequest.Status.REJECTED, request.user.username])
         
         update_and_cleanup_review_project(full_project_id, PublicationRequest.Status.REJECTED)
 

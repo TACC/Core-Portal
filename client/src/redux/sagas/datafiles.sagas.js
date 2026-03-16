@@ -118,7 +118,7 @@ export async function fetchFilesUtil(
   }).join('/');
 
   const url = removeDuplicateSlashes(
-    `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
+    `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}/?${q}`
   );
   const response = await fetch(url);
 

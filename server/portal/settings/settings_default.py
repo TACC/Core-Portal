@@ -269,11 +269,11 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": {
         "id": "compress-express",
-        "version": "0.0.1"  # Can be set to "" to use the latest version
+        "version": "0.0.1",  # Can be set to "" to use the latest version
     },
     "extractApp": {
         "id": "extract-express",
-        "version": "0.0.1"  # Can be set to "" to use the latest version
+        "version": "0.0.1",  # Can be set to "" to use the latest version
     },
     "makePublic": True,
     "hideApps": False,
@@ -292,13 +292,15 @@ _WORKBENCH_SETTINGS = {
                'DataFilesManageProjectModalAddon', 'DataFilesUploadModalListingTableAddon'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
-    "maxDescriptionLength": 5000,
+    "minDescriptionLength": 50,
     "maxTitleLength": 150,
     "enableWorkspaceKeywords": False,
     "noPHISystem": "",
     "customDashboardSection": None,
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
+    "uploadModalMaxSizeLabel": "2GB",
+    "uploadModalMaxSizeValue": 2147483648,
     "jobsv2Title": "Historic Jobs",
 }
 
