@@ -1,6 +1,5 @@
 import pytest
 import time
-from datetime import timedelta
 from django.conf import settings
 from portal.apps.auth.models import TapisOAuthToken
 
@@ -50,6 +49,7 @@ def test_client_passes_tenant_id(user_without_client_mock, mocker):
         access_token=tapis_oauth.access_token,
         refresh_token=tapis_oauth.refresh_token,
     )
+
 
 def test_valid_user(client, authenticated_user_with_valid_token):
     tapis_oauth = TapisOAuthToken.objects.filter(user=authenticated_user_with_valid_token).select_for_update().get()
