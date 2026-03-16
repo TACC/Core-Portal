@@ -28,8 +28,8 @@ const DataFilesProjectEditDescriptionModal = () => {
       state.projects.operation.error
     );
   });
-  const maxDescriptionLength =
-    useSelector((state) => state.workbench.config.maxDescriptionLength) ?? 800;
+  const minDescriptionLength =
+    useSelector((state) => state.workbench.config.minDescriptionLength) ?? 50;
   const maxTitleLength =
     useSelector((state) => state.workbench.config.maxTitleLength) ?? 150;
   const enableWorkspaceKeywords =
@@ -45,7 +45,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     () => ({
       title,
       description: description || '',
-      keywords: keywords || '',
+      keywords: keywords || [],
     }),
     [title, description, keywords]
   );
@@ -66,7 +66,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           data: {
             title: values.title,
             description: values.description || '',
-            keywords: values?.keywords.trim() || '',
+            keywords: values.keywords || [],
             metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
           modal: 'editproject',
@@ -82,20 +82,17 @@ const DataFilesProjectEditDescriptionModal = () => {
       .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
       .required('Please enter a title.'),
     description: Yup.string()
-      .min(1000, 'Description must be minimum 1000 characters')
-      .max(
-        maxDescriptionLength,
-        `Description must be at most ${maxDescriptionLength} characters`
+      .min(
+        minDescriptionLength,
+        `Description must be at least ${minDescriptionLength} characters`
       )
       .when([], {
-        is: () => maxDescriptionLength > 0,
+        is: () => minDescriptionLength > 0,
         then: (schema) => schema.required('Please enter a description.'),
         otherwise: (schema) => schema.notRequired(),
       }),
     ...(enableWorkspaceKeywords && {
-      keywords: Yup.string().matches(
-        /^\s*[\w-]+(\s*,\s*[\w-]+)*\s*$/,
-        'Please separate keywords with commas.'
+      keywords: Yup.array().of(Yup.string()
       ),
     }),
   }));
@@ -126,7 +123,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                     </div>
                   }
                 />
-                {!!maxDescriptionLength && (
+                {!!minDescriptionLength && (
                   <FormField
                     name="description"
                     aria-label="description"
@@ -134,7 +131,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                       <div>
                         Description{' '}
                         <small>
-                          <em>(Maximum {maxDescriptionLength} characters)</em>
+                          <em>(Minimum {minDescriptionLength} characters)</em>
                         </small>
                       </div>
                     }
@@ -146,14 +143,8 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <FormField
                     name="keywords"
                     aria-label="keywords"
-                    label={
-                      <div>
-                        Keywords{' '}
-                        <small>
-                          <em>(Optional, should be comma-separated)</em>
-                        </small>
-                      </div>
-                    }
+                    tags
+                    label={<div>Keywords</div>}
                     type="textarea"
                     className={styles['description-textarea']}
                   />

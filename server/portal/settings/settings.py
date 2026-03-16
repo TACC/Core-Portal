@@ -51,12 +51,8 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
-
-if not DEBUG:
-    # Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
-    CSRF_COOKIE_SECURE = True
-    # Prevent the cookie's value from being read or set by client-side JavaScript.
-    CSRF_COOKIE_HTTPONLY = True
+# whether the csrf token cookie should be secure (https:// only)
+CSRF_COOKIE_SECURE = True
 
 #
 CSRF_COOKIE_SAMESITE = 'Strict'
@@ -217,7 +213,6 @@ LOGIN_URL = '/auth/tapis/'
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # LANGUAGES = [

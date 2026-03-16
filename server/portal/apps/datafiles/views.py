@@ -28,7 +28,7 @@ from portal.apps.workspace.api.utils import (
 from .utils import notify, NOTIFY_ACTIONS
 import dateutil.parser
 from portal.utils.decorators import retry
-from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems, get_user_storage_systems
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -44,12 +44,19 @@ class SystemListingView(BaseApiView):
         if request.user.is_authenticated:
 
             tapis_oauth = request.user.tapis_oauth
-            response["system_list"] = evaluate_datafiles_storage_systems(
-               tapis_oauth, portal_systems
-            )
 
-            default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
-            if default_system and default_system.get('scheme') != 'projects':
+            if not portal_systems:
+                response['system_list'] = get_user_storage_systems(tapis_oauth)
+
+                default_system = None
+            else:
+                response["system_list"] = evaluate_datafiles_storage_systems(
+                    tapis_oauth, portal_systems
+                )
+
+                default_system = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM or settings.PORTAL_DATAFILES_STORAGE_SYSTEMS[0]
+
+            if default_system:
                 default_system_id = default_system.get('system')
                 system_def = request.user.tapis_oauth.client.systems.getSystem(systemId=default_system_id, select='host')
                 response['default_host'] = system_def.host
@@ -220,20 +227,26 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden("This data requires authentication to upload.")
 
         try:
-            METRICS.info('Data Files',
-                         extra={
-                             'user': request.user.username,
-                             'sessionId': getattr(request.session, 'session_key', ''),
-                             'operation': operation,
-                             'agent': request.META.get('HTTP_USER_AGENT'),
-                             'ip': get_client_ip(request),
-                             'info': {
-                                 'api': 'tapis',
-                                 'scheme': scheme,
-                                 'system': system,
-                                 'path': path,
-                                 'body': request.POST.dict()
-                             }})
+            METRICS.info(
+                "Data Files",
+                extra={
+                    "user": request.user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": operation,
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {
+                        "api": "tapis",
+                        "scheme": scheme,
+                        "system": system,
+                        "path": path,
+                        "body": {
+                            "files": [f.name for f in request.FILES.values()],
+                            **request.POST.dict(),
+                        },
+                    },
+                },
+            )
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
             response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:

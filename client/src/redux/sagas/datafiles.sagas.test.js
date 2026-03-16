@@ -84,7 +84,7 @@ describe('fetchFiles', () => {
     const fm = fetchMock
       .sandbox()
       .mock(
-        '/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&nextPageToken&offset=0&query_string=',
+        '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string=',
         {
           body: { data: '200 response' },
           status: 200,
@@ -216,7 +216,7 @@ describe('fetchFiles', () => {
     );
     expect(apiResult).resolves.toEqual('200 response');
     expect(fetch).toBeCalledWith(
-      '/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&nextPageToken&offset=0&query_string='
+      '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string='
     );
   });
 });
