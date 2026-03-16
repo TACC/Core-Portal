@@ -17,7 +17,7 @@ const DataFilesSystemSelector = ({
   const modalProps = useSelector((state) => state.files.modalProps[operation]);
 
   const { data: systemList, fetchSelectedSystem } = useSystems();
-  
+
   const dropdownSystems = systemList
     .map((s) => ({
       systemAndHomeDirPath:

@@ -259,7 +259,7 @@ _WORKBENCH_SETTINGS = {
         "id": "extract",
         "version": "latest",  # Can be set to "" to use the latest version
     },
-    "makePublic": True,
+    "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
