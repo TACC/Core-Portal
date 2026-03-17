@@ -49,6 +49,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = True
 # whether the csrf token cookie should be secure (https:// only)
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_NAME = 'csrfcookie'
 
 #
 CSRF_COOKIE_SAMESITE = 'Strict'
