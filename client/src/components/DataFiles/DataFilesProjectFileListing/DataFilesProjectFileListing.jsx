@@ -119,7 +119,13 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             <>
               <b>Keywords</b>
               {metadata.keywords && (
-                <ShowMore>{metadata.keywords.join(', ')}</ShowMore>
+                <ShowMore>
+                  {Array.isArray(metadata.keywords)
+                    ? metadata.keywords.join(', ')
+                    : typeof metadata.keywords === 'string'
+                      ? metadata.keywords
+                      : ''}
+                </ShowMore>
               )}
               <br />
             </>
