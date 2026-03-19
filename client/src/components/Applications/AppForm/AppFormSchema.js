@@ -118,10 +118,7 @@ const FormSchema = (app) => {
 
     field.type = 'text';
 
-    appFields.schema.fileInputs[input.name] = Yup.string();
-    appFields.schema.fileInputs[input.name] = appFields.schema.fileInputs[
-      input.name
-    ].matches(
+    appFields.schema.fileInputs[input.name] = Yup.string().matches(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
@@ -141,15 +138,11 @@ const FormSchema = (app) => {
     // The default is to not show target path for file inputs.
     if (app.definition.notes?.showTargetPath || input.notes?.showTargetPath) {
       const targetPathName = getTargetPathFieldName(input.name);
-      appFields.schema.fileInputs[targetPathName] = Yup.string();
-      appFields.schema.fileInputs[targetPathName] = appFields.schema.fileInputs[
-        targetPathName
-      ].matches(
+      appFields.schema.fileInputs[targetPathName] = Yup.string().matches(
         /^tapis:\/\//g,
         "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
       );
 
-      appFields.schema.fileInputs[targetPathName] = false;
       appFields.fileInputs[targetPathName] = {
         label: 'Target Path for ' + input.name,
         description:
