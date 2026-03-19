@@ -111,13 +111,16 @@ services:
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
       - ../../docs:/var/www/portal/internal-docs/
+      # Below only used when uwsgi is used; see note below by command
+      - ../uwsgi/uwsgi_core.ini:/srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
+      - ../uwsgi/uwsgi_params:/etc/nginx/uwsgi_params
     dns:
       - 8.8.8.8
       - 8.8.4.4
     stdin_open: true
     tty: true
-    # ** NOTE: Run this uwsgi command below to run a uwsgi server instead of http server,
-    # ** matching deployed configurations. You must also edit nginx.conf. Be aware there
+    # ** NOTE: Run this uwsgi command below to run an uwsgi server instead of http server,
+    # ** matching deployed configurations. You **must** also edit nginx.conf. Be aware there
     # ** is no autoreload for local development with this enabled.
     # command: uwsgi --ini /srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
     command: python manage.py runserver --noasgi 0.0.0.0:6000

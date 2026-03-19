@@ -486,7 +486,7 @@ describe('DataFilesToolbar', () => {
     await waitFor(() => screen.queryByText('Download Unavailable'));
     // Assign the Large Download Modal to a variable
     const testModalText = screen.queryByText(
-      'Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.'
+      'Compression is not available in this data system. You may download files individually or transfer to your My Data directory and download them there, but if they are larger than 2GB use Globus below.'
     );
     // Test for the Large Download Modal
     expect(testModalText).toBeDefined();

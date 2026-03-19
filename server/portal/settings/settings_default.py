@@ -234,7 +234,7 @@ _WORKBENCH_SETTINGS = {
         "id": "extract-express",
         "version": "0.0.1",  # Can be set to "" to use the latest version
     },
-    "makePublic": True,
+    "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
     "showSubmissions": False,
