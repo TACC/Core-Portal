@@ -195,7 +195,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       // prevent running compress job in public or community data
       if (isCommunityOrPublicData) {
         customMessage =
-          'Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.';
+          'Compression is not available in this data system. You may download files individually or transfer to your My Data directory and download them there, but if they are larger than 2GB use Globus below.';
       }
       toggleUnavailDownloadModal(customMessage);
     } else if (canDownload && !exceedsSizeLimit) {
