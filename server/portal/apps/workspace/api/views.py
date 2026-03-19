@@ -539,7 +539,7 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
+            for system_id in list(filter(None, [job_post.get('archiveSystemId'), execSystemId])):
                 if push_keys_required_if_not_credentials_ensured(request.user, system_id):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     return JsonResponse(
