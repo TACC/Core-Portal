@@ -71,10 +71,11 @@ class SystemKeysView(BaseApiView):
             )
 
             create_system_credentials_with_keys(request.user.tapis_oauth.client,
-                                                body['form']['username'],
+                                                request.user.username,
                                                 publ_key_str,
                                                 priv_key_str,
-                                                system_id)
+                                                system_id,
+                                                loginUser=body['form']['username'])
 
         return JsonResponse(
             {
