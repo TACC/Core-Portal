@@ -38,6 +38,7 @@ def add_pub_key_to_resource(
         token,
         system_id,
         pub_key,
+        username=None,
         hostname=None,
         port=22,
 ):
@@ -57,7 +58,7 @@ def add_pub_key_to_resource(
     mgr = _lookup_keys_manager(user, password, token)
     message = "add_pub_key_to_resource"
 
-    logger.info(f"Adding public key for user {user.username} on system {system_id}")
+    logger.info(f"Adding public key for user {username if username else user.username} on system {system_id}")
     try:
         if hostname is None:
             sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
