@@ -19,7 +19,7 @@ const SystemsPushKeysModal = () => {
     submitting,
     onCancel,
     isTACCPortal,
-    intitialUsername,
+    initialUsername,
   } = useSelector(
     (state) => ({
       ...state.pushKeys.modalProps.pushKeys,
