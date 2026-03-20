@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
-import { Formik, Form, useFormikContext } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
 import InlineMessage from '../InlineMessage';
@@ -24,7 +24,7 @@ const SystemsPushKeysModal = () => {
     (state) => ({
       ...state.pushKeys.modalProps.pushKeys,
       isTACCPortal: state.workbench.isTACCPortal,
-      intitialUsername: state.authenticatedUser.user.username,
+      initialUsername: state.authenticatedUser.user.username,
     }),
     shallowEqual
   );
@@ -74,7 +74,7 @@ const SystemsPushKeysModal = () => {
   });
 
   const initialValues = {
-    username: isTACCPortal ? initialUsername : '',
+    username:initialUsername,
     password: '',
     token: '',
   };
@@ -119,6 +119,7 @@ const SystemsPushKeysModal = () => {
                   disabled
                   value={system.host}
                 />
+                {isTACCPortal && (
                 <FormField
                   name="username"
                   label="Username"
@@ -126,6 +127,7 @@ const SystemsPushKeysModal = () => {
                   required
                   disabled={submitting}
                 />
+                )}
                 {!isTMSSystem && (
                   <>
                     <FormField
