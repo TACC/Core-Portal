@@ -369,9 +369,13 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystemId || app.definition.jobAttributes.archiveSystemId || undefined,
+      defaultSystemId ||
+      app.definition.jobAttributes.archiveSystemId ||
+      undefined,
     archiveSystemDir:
-      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir || undefined,
+      defaultArchivePath ||
+      app.definition.jobAttributes.archiveSystemDir ||
+      undefined,
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,

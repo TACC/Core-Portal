@@ -74,7 +74,7 @@ const SystemsPushKeysModal = () => {
   });
 
   const initialValues = {
-    username:initialUsername,
+    username: initialUsername,
     password: '',
     token: '',
   };
@@ -102,8 +102,8 @@ const SystemsPushKeysModal = () => {
               <ModalBody>
                 <p>
                   To proceed, you must authenticate to this system with a
-                  six-digit one time passcode from an authentication token app at
-                  least once. A public key will be pushed to your{' '}
+                  six-digit one time passcode from an authentication token app
+                  at least once. A public key will be pushed to your{' '}
                   <code>authorized_keys</code> file on the system below. This
                   will allow you to access this system from this portal.{' '}
                 </p>
@@ -120,13 +120,13 @@ const SystemsPushKeysModal = () => {
                   value={system.host}
                 />
                 {isTACCPortal && (
-                <FormField
-                  name="username"
-                  label="Username"
-                  description="Note: This may be different than your username with CILogon. Please verify your username on this system with the institution."
-                  required
-                  disabled={submitting}
-                />
+                  <FormField
+                    name="username"
+                    label="Username"
+                    description="Note: This may be different than your username with CILogon. Please verify your username on this system with the institution."
+                    required
+                    disabled={submitting}
+                  />
                 )}
                 {!isTMSSystem && (
                   <>
