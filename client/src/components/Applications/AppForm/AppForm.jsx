@@ -369,9 +369,13 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystemId || app.definition.jobAttributes.archiveSystemId || '',
+      defaultSystemId ||
+      app.definition.jobAttributes.archiveSystemId ||
+      undefined,
     archiveSystemDir:
-      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir || '',
+      defaultArchivePath ||
+      app.definition.jobAttributes.archiveSystemDir ||
+      undefined,
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
@@ -551,8 +555,8 @@ export const AppSchemaForm = ({ app }) => {
               maxMinutes: getMaxMinutesValidation(queue, app).required(
                 'Required max minutes'
               ),
-              archiveSystemId: Yup.string().notRequired(),
-              archiveSystemDir: Yup.string().notRequired(),
+              archiveSystemId: Yup.string().nullable(),
+              archiveSystemDir: Yup.string().nullable(),
               allocation:
                 exec_sys &&
                 isJobTypeBATCH(app) &&
