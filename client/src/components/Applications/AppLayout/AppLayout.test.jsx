@@ -53,8 +53,8 @@ describe('AppsHeader', () => {
       files: filesFixture,
       apps: appTrayExpectedFixture,
       allocations: allocationsFixture,
-      authenticatedUser:{
-        user: userFixture
+      authenticatedUser: {
+        user: userFixture,
       },
       app: {
         error: {

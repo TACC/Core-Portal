@@ -38,8 +38,8 @@ const initialMockState = {
   jobs: jobsFixture,
   systems: systemsFixture,
   projects: projectsFixture,
-  authenticatedUser:{
-    user: userFixture
+  authenticatedUser: {
+    user: userFixture,
   },
   files: {
     listing: {
