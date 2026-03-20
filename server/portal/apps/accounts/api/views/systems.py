@@ -47,15 +47,15 @@ class SystemKeysView(BaseApiView):
                     request.user.client, body['form']['username'], system_id, createTmsKeys=True
                 )
                 http_status = 200
-                result='OK'
+                result = 'OK'
             except BaseTapyException as e:
                 logger.exception(
                     "System access check failed for user: %s on system: %s",
                     request.user.username,
                     system_id,
                 )
-                http_status= e.response.status_code
-                result= e.message
+                http_status = e.response.status_code
+                result = e.message
         else:
             logger.info(f"Resetting credentials for user {request.user.username} on system {system_id}")
             (priv_key_str, publ_key_str) = createKeyPair()
