@@ -39,7 +39,7 @@ const convertKeywordsStringToArray = (keywords) => {
       .filter((keyword) => keyword.length > 0);
   }
   return keywords;
-}
+};
 
 export default function projects(state = initialState, action) {
   switch (action.type) {

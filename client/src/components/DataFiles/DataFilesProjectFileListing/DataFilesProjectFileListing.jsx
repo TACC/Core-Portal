@@ -118,7 +118,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           !!metadata.keywords.length && (
             <>
               <b>Keywords</b>
-              {metadata.keywords.join(', ') && (
+              {metadata.keywords && (
                 <ShowMore>{metadata.keywords.join(', ')}</ShowMore>
               )}
               <br />
