@@ -174,5 +174,4 @@ describe('DataFilesProjectFileListing', () => {
 
     expect(queryByText(/one, two, three/)).toBeDefined();
   });
-
 });
