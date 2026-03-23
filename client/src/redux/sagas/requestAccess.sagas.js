@@ -8,7 +8,7 @@ export function* postRequestAccess(action) {
     const res = yield call(fetch, `/api/request-access/`, {
       method: 'POST',
       headers: {
-        'X-CSRFToken': Cookies.get('csrftoken'),
+        'X-CSRFToken': Cookies.get('csrfcookie'),
       },
       credentials: 'same-origin',
       body: action.payload.formData,

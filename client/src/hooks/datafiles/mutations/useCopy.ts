@@ -58,7 +58,7 @@ export async function copyFileUtil({
   }
 
   const response = await apiClient.put(url, body, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') || '' },
     withCredentials: true,
   });
   return response.data;

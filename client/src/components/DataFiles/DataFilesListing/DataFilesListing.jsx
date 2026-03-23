@@ -75,7 +75,7 @@ const DataFilesListing = ({
 
   useLayoutEffect(() => {
     fetchListing({ api, scheme, system, path });
-  }, [api, scheme, system, path, location.search]);
+  }, [api, scheme, system, path, location.key, location.search]);
 
   const checkboxCellCallback = useCallback(
     ({ row }) => (

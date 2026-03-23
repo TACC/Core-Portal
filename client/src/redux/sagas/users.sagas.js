@@ -7,7 +7,7 @@ export async function fetchUserSearch(q) {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken'),
+      'X-CSRFToken': Cookies.get('csrfcookie'),
       'Content-Type': 'application/json',
     },
     credentials: 'same-origin',

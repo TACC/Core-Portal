@@ -244,7 +244,7 @@ export async function renameFileUtil(
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({ new_name: newName, metadata: metadata ?? null }),
   });
@@ -311,7 +311,7 @@ export async function moveFileUtil(
   const url = `/api/datafiles/${api}/move/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({
       dest_system: destSystem,
@@ -427,7 +427,7 @@ export async function copyFileUtil(
 
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify(body),
   });
@@ -530,7 +530,7 @@ export async function uploadFileUtil(
   try {
     const request = await fetch(url, {
       method: 'POST',
-      headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+      headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
       credentials: 'same-origin',
       body: formData,
     });
@@ -666,7 +666,7 @@ export async function mkdirUtil(api, scheme, system, path, dirname, metadata) {
 
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({ dir_name: dirname, metadata: metadata ?? null }),
   });
@@ -813,7 +813,7 @@ export async function trashUtil(api, scheme, system, path, homeDir, metadata) {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({
       homeDir: homeDir,
@@ -1147,7 +1147,7 @@ export async function makePublicUtil(api, scheme, system, path) {
   );
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({}),
   });
