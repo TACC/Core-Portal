@@ -31,6 +31,16 @@ const removeProjectMember = (members, removedMember) => {
   );
 };
 
+const convertKeywordsStringToArray = (keywords) => {
+  if (typeof keywords === 'string') {
+    return keywords
+      .split(',')
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword.length > 0);
+  }
+  return keywords;
+}
+
 export default function projects(state = initialState, action) {
   switch (action.type) {
     case 'PROJECTS_GET_LISTING_STARTED':
@@ -121,6 +131,7 @@ export default function projects(state = initialState, action) {
         ...state,
         metadata: {
           ...action.payload,
+          keywords: convertKeywordsStringToArray(action.payload.keywords),
           loading: false,
           error: null,
         },
