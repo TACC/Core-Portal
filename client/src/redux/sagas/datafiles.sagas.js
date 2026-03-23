@@ -1180,7 +1180,7 @@ export async function updateMetadataUtil(
   const url = `/api/datafiles/${api}/update_metadata/${scheme}/${system}/${path}/`;
   const response = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: JSON.stringify({
       new_path: newPath,

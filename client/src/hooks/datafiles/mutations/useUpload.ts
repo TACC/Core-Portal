@@ -86,7 +86,7 @@ export async function uploadUtil({
   if (metadataUrl) {
     await apiClient.put(metadataUrl, metadataBody, {
       headers: {
-        'X-CSRFToken': Cookies.get('csrftoken') || '',
+        'X-CSRFToken': Cookies.get('csrfcookie') || '',
       },
       withCredentials: true,
     });

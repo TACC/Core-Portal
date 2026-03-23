@@ -83,7 +83,7 @@ export async function fetchCreateProject(project) {
   const result = await fetchUtil({
     url: `/api/projects/`,
     method: 'POST',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: formData,
   });
@@ -202,7 +202,7 @@ export async function setTitleDescriptionUtil(projectId, data) {
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/`,
     method: 'PATCH',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     body: formData,
   });
