@@ -51,7 +51,7 @@ export async function uploadUtil({
     url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
     config = {
       headers: {
-        'X-CSRFToken': Cookies.get('csrftoken') || '',
+        'X-CSRFToken': Cookies.get('csrfcookie') || '',
       },
       withCredentials: true,
     };
