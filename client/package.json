@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-eslint": "^9.2.0",
-    "@tacc/core-styles": "^2.53.3",
+    "@tacc/core-styles": "^2.53.1",
     "@testing-library/jest-dom": "^5.0.2",
     "@testing-library/react": "^16.0.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
