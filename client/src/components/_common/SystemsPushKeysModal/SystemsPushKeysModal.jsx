@@ -74,7 +74,7 @@ const SystemsPushKeysModal = () => {
   });
 
   const initialValues = {
-    username: initialUsername,
+    username: isTACCPortal ? initialUsername : '',
     password: '',
     token: '',
   };

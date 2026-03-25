@@ -718,7 +718,6 @@ export const AppSchemaForm = ({ app }) => {
           }
           delete job.queueSchedulerOptions;
 
-          console.log('Prepared job for submission: ', job);
           dispatch({
             type: 'SUBMIT_JOB',
             payload: {
