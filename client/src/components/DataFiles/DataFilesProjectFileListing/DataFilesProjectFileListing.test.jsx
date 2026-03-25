@@ -161,7 +161,7 @@ describe('DataFilesProjectFileListing', () => {
     expect(queryByText(/Keywords/)).toBeNull();
   });
 
-  it('inserts commas between keyword entries', () => {
+  it('inserts commas between keyword entries if they are in an array', () => {
     initialMockState.projects.metadata.keywords = ['one', 'two', 'three'];
     const store = mockStore(initialMockState);
     const { queryByText } = renderComponent(
