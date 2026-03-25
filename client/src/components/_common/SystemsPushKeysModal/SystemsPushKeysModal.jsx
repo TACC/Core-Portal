@@ -119,7 +119,7 @@ const SystemsPushKeysModal = () => {
                   disabled
                   value={system.host}
                 />
-                {isTACCPortal && (
+                {!isTACCPortal && (
                   <FormField
                     name="username"
                     label="Username"
