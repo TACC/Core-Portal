@@ -356,9 +356,9 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
 
     if metadata is not None:
         if (metadata.get('data_type') == 'file'):
-            patch_file_association(src_system, metadata, src_path, dest_path_full, file_name, 'move')
+            patch_file_association(src_system, metadata, src_path.strip('/'), dest_path_full, file_name, 'move')
         else: 
-            patch_entity_and_node(src_system, metadata, src_path, dest_path, file_name)
+            patch_entity_and_node(src_system, metadata, src_path.strip('/'), dest_path, file_name)
 
     if src_system == dest_system:
         move_result = client.files.moveCopy(systemId=src_system,

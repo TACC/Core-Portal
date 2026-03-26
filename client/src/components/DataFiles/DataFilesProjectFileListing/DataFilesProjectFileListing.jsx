@@ -178,6 +178,7 @@ const DataFilesProjectFileListing = ({
               <DataFilesProjectFileListingMetadataAddon
                 folderMetadata={folderMetadata}
                 metadata={metadata}
+                system={system}
                 path={path}
                 showCitation={isPublicationSystem(rootSystem)}
               />

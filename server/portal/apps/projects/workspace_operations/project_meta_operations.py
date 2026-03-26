@@ -243,7 +243,7 @@ def patch_file_association(project_id, value, source_path_full, dest_path_full, 
     dest_entity = ProjectMetadata.objects.get(uuid=dest_node['uuid'])
 
     file_obj_dict = next(
-        (f for f in source_entity.value.get('fileObjs', []) if f['path'] == source_path_full.strip('/')), None
+        (f for f in source_entity.value.get('fileObjs', []) if f['path'] == source_path_full), None
     )
 
     if not file_obj_dict:

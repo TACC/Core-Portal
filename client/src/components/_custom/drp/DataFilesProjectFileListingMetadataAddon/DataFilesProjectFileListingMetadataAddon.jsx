@@ -12,21 +12,21 @@ import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 const DataFilesProjectFileListingMetadataAddon = ({
   folderMetadata,
   metadata,
+  system,
   path,
   showCitation,
 }) => {
   const dispatch = useDispatch();
 
   const { portalName } = useSelector((state) => state.workbench);
-  const { project_id: system } = useSelector((state) => state.projects.metadata);
   const { value: tree, error } = useSelector((state) => state.publications.tree);
   const { loading } = useFileListing('FilesListing');
 
   useEffect(() => {
     if (system && portalName && !error) {
       dispatch({
-          type: 'PUBLICATIONS_GET_TREE',
-          payload: { portalName, system },
+        type: 'PUBLICATIONS_GET_TREE',
+        payload: { portalName, system },
       });
     }
   }, [system, portalName]);
@@ -82,7 +82,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
 
   return (
     <>
-      {!loading &&
+      {!loading && tree &&
         (folderMetadata ? (
           <>
             {folderMetadata.description}
