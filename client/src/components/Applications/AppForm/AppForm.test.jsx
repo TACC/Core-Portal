@@ -26,6 +26,7 @@ import {
   helloWorldAppSubmissionPayloadFixture,
 } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
+import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
 import timekeeper from 'timekeeper';
@@ -37,6 +38,9 @@ const initialMockState = {
   jobs: jobsFixture,
   systems: systemsFixture,
   projects: projectsFixture,
+  authenticatedUser: {
+    user: userFixture,
+  },
   files: {
     listing: {
       modal: [],

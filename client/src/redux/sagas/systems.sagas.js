@@ -4,9 +4,11 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 function* pushSystemKeys(action) {
   const form = {
+    username: action.payload.username,
     password: action.payload.password,
     token: action.payload.token,
     hostname: action.payload.hostname,
+    isTMSSystem: action.payload.isTMSSystem,
   };
   yield put({
     type: 'SYSTEMS_MODAL_UPDATE',

@@ -2,23 +2,17 @@ from portal.apps.notifications.models import Notification
 from portal.apps.users.utils import get_user_data
 from portal.apps.auth.models import TapisOAuthToken
 
-NOTIFY_ACTIONS = ['move',
-                  'copy',
-                  'rename',
-                  'trash',
-                  'mkdir',
-                  'upload',
-                  'makepublic']
+NOTIFY_ACTIONS = ["move", "copy", "rename", "trash", "mkdir", "upload", "makepublic"]
 
 
 def notify(username, operation, status, extra):
     event_data = {
-        Notification.EVENT_TYPE: 'data_files',
+        Notification.EVENT_TYPE: "data_files",
         Notification.STATUS: getattr(Notification, status.upper()),
         Notification.USER: username,
         Notification.EXTRA: extra,
         Notification.OPERATION: operation,
-        Notification.READ: True
+        Notification.READ: True,
     }
     Notification.objects.create(**event_data)
 
@@ -78,7 +72,9 @@ def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
         list: List of evaluated storage system definitions
     """
 
-    systems = tapis.client.systems.getSystems(listType="OWNED", limit="-1", select="id,notes", orderBy="id")
+    systems = tapis.client.systems.getSystems(
+        listType="ALL", limit="-1", select="id,notes", orderBy="id"
+    )
 
     return [
         {
