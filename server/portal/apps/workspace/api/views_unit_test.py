@@ -239,7 +239,10 @@ def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
             "appId": app.id,
         }
     ]
-    assert view.getPrivateApps(authenticated_user) == expected_list
+    assert view.getPrivateApps(authenticated_user) == {
+        "title": "My Apps",
+        "apps": expected_list,
+    }
 
 
 @pytest.mark.django_db(transaction=True)
@@ -285,7 +288,9 @@ def test_get_app_dynamic_exec_sys(
     with django_db_blocker.unblock():
         call_command("loaddata", "app-tray.json")
 
-    with open(os.path.join(settings.BASE_DIR, "fixtures/tapis/apps/hello-world-app-def.json")) as f:
+    with open(
+        os.path.join(settings.BASE_DIR, "fixtures/tapis/apps/hello-world-app-def.json")
+    ) as f:
         app = json.load(f)
         if dynamic_exec_system:
             app["notes"]["dynamicExecSystems"] = ["frontera", "ls6"]
@@ -305,8 +310,11 @@ def test_get_app_dynamic_exec_sys(
     assert response_json["definition"]["version"] == "0.0.1"
     if dynamic_exec_system:
         assert len(response_json["execSystems"]) == 2
-        mock_tapis_client.systems.getSystems.assert_called_with(listType='ALL', select='allAttributes',
-                                                                search='(id.in.frontera,ls6)~(canExec.eq.true)~(enabled.eq.true)')
+        mock_tapis_client.systems.getSystems.assert_called_with(
+            listType="ALL",
+            select="allAttributes",
+            search="(id.in.frontera,ls6)~(canExec.eq.true)~(enabled.eq.true)",
+        )
     else:
         assert len(response_json["execSystems"]) == 1
         assert response_json["execSystems"][0]["id"] == "frontera"

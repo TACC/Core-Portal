@@ -8,22 +8,31 @@ from portal.utils.encryption import createKeyPair
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials_with_keys(client,
-                                        username,
-                                        public_key,
-                                        private_key,
-                                        system_id,
-                                        skipCredentialCheck=False) -> int:
+def create_system_credentials_with_keys(
+    client,
+    username,
+    public_key,
+    private_key,
+    system_id,
+    skipCredentialCheck=False,
+    loginUser=None,
+) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using keys")
-    data = {'privateKey': private_key, 'publicKey': public_key}
+    logger.info(
+        f"Creating user credential for {username} on Tapis system {system_id} using keys"
+    )
+    data = {
+        "privateKey": private_key,
+        "publicKey": public_key,
+        "loginUser": loginUser or username,
+    }
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
         skipCredentialCheck=skipCredentialCheck,
-        **data
+        **data,
     )
 
 
