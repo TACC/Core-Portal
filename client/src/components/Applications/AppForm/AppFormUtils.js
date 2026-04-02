@@ -270,7 +270,7 @@ export const getAppQueueValues = (app, queues) => {
         ? app.definition.notes.queueFilter.includes(q.name)
         : true
     )
-    .sort();
+    .sort((a, b) => a.name.localeCompare(b.name));
 };
 
 /**

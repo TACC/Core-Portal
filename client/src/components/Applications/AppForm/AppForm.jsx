@@ -272,7 +272,9 @@ export const AppSchemaForm = ({ app }) => {
     const defaultSystem = configuration.find(
       (system) => system.system === defaultSystemId
     );
-    const defaultArchivePath = defaultSystem?.homeDir;
+    const defaultArchivePath = defaultSystem
+      ? `${defaultSystem.homeDir}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`
+      : '';
 
     const isTACCPortal = state.workbench.isTACCPortal;
 
@@ -789,7 +791,6 @@ export const AppSchemaForm = ({ app }) => {
             !hasStorageSystems ||
             jobSubmission.submitting ||
             missingAllocationMessage;
-
           return (
             <>
               {missingAllocationMessage && (
@@ -967,7 +968,7 @@ export const AppSchemaForm = ({ app }) => {
                             </option>
                           ))}
                         </FormField>
-                        {selectedQueue.schedulerOptions &&
+                        {selectedQueue?.schedulerOptions &&
                           selectedQueue.schedulerOptions.map(
                             (opt) =>
                               !opt.notes?.isHidden && (
@@ -1035,7 +1036,7 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                     {!app.definition.notes.isInteractive &&
-                    !app.definition.jobAttributes.archiveMode === 'NEVER' ? (
+                    app.definition.jobAttributes.archiveMode !== 'NEVER' ? (
                       <>
                         <FormField
                           label="Archive System"
