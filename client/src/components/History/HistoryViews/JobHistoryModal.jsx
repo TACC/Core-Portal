@@ -206,8 +206,11 @@ function JobHistoryContent({
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
     Configuration: <DescriptionList data={configDataObj} />,
-    Output: <DescriptionList data={outputDataObj} />,
   };
+
+  if (jobDetails.archiveMode !== 'NEVER') {
+    data.Output = <DescriptionList data={outputDataObj} />;
+  }
 
   return (
     <>

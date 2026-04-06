@@ -38,6 +38,7 @@ import {
   getAllocationList,
   getDefaultAllocation,
   getExecSystemIdValidation,
+  getQueueSchedulerOptionsValidation,
 } from './AppFormUtils';
 import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
 
@@ -271,9 +272,9 @@ export const AppSchemaForm = ({ app }) => {
     const defaultSystem = configuration.find(
       (system) => system.system === defaultSystemId
     );
-    const defaultArchivePath = `${
-      defaultSystem?.homeDir || '$WORK'
-    }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
+    const defaultArchivePath = defaultSystem
+      ? `${defaultSystem.homeDir}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`
+      : '';
 
     const isTACCPortal = state.workbench.isTACCPortal;
 
@@ -370,10 +371,13 @@ export const AppSchemaForm = ({ app }) => {
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystemId || app.definition.jobAttributes.archiveSystemId,
+      defaultSystemId ||
+      app.definition.jobAttributes.archiveSystemId ||
+      undefined,
     archiveSystemDir:
-      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
-    archiveOnAppError: true,
+      defaultArchivePath ||
+      app.definition.jobAttributes.archiveSystemDir ||
+      undefined,
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
@@ -381,6 +385,10 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   if (isJobTypeBATCH(app)) {
+    const initialQueue = getQueueValueForExecSystem(
+      app,
+      getExecSystemFromId(app, initialValues.execSystemId)
+    );
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
     initialValues.execSystemId = getDefaultExecSystem(
@@ -388,12 +396,16 @@ export const AppSchemaForm = ({ app }) => {
       formState.execSystems
     )?.id;
     initialValues.allocation = initialAllocation;
-    initialValues.execSystemLogicalQueue = getQueueValueForExecSystem(
-      app,
-      getExecSystemFromId(app, initialValues.execSystemId)
-    )?.name;
+    initialValues.execSystemLogicalQueue = initialQueue?.name;
+    if (initialQueue?.schedulerOptions) {
+      initialValues.queueSchedulerOptions = Object.assign(
+        {},
+        ...initialQueue.schedulerOptions?.map((opt) => ({
+          [opt.name]: opt.fieldType === 'number' ? Number(opt.arg) : opt.arg,
+        }))
+      );
+    }
   }
-
   const sectionMessage = keyService ? (
     <span>
       For help,{' '}
@@ -545,8 +557,8 @@ export const AppSchemaForm = ({ app }) => {
               maxMinutes: getMaxMinutesValidation(queue, app).required(
                 'Required max minutes'
               ),
-              archiveSystemId: Yup.string().notRequired(),
-              archiveSystemDir: Yup.string().notRequired(),
+              archiveSystemId: Yup.string().nullable(),
+              archiveSystemDir: Yup.string().nullable(),
               allocation:
                 exec_sys &&
                 isJobTypeBATCH(app) &&
@@ -565,6 +577,7 @@ export const AppSchemaForm = ({ app }) => {
                       }
                     )
                   : Yup.string().notRequired(),
+              queueSchedulerOptions: getQueueSchedulerOptionsValidation(queue),
             });
           });
         }}
@@ -675,8 +688,8 @@ export const AppSchemaForm = ({ app }) => {
               include: true,
               arg: `-A ${job.allocation}`,
             });
-            delete job.allocation;
           }
+          delete job.allocation;
 
           // Add reservation scheduler option
           if (job.reservation) {
@@ -690,8 +703,22 @@ export const AppSchemaForm = ({ app }) => {
                 isReservation: true,
               },
             });
-            delete job.reservation;
           }
+          delete job.reservation;
+
+          if (job.queueSchedulerOptions) {
+            Object.entries(job.queueSchedulerOptions).forEach(
+              ([key, value]) => {
+                job.parameterSet.schedulerOptions.push({
+                  name: key,
+                  description: `Queue defined scheduler option: ${key}`,
+                  include: true,
+                  arg: String(value),
+                });
+              }
+            );
+          }
+          delete job.queueSchedulerOptions;
 
           dispatch({
             type: 'SUBMIT_JOB',
@@ -731,6 +758,11 @@ export const AppSchemaForm = ({ app }) => {
             app,
             values.execSystemId
           );
+          const selectedQueue = getQueueValueForExecSystem(
+            app,
+            selectedExecSystem,
+            values.execSystemLogicalQueue
+          );
           let missingAllocationMessage = '';
           // Check if allocation required for default storage system, aka archive system
           if (!hasDefaultAllocation && defaultStorageHost) {
@@ -759,7 +791,6 @@ export const AppSchemaForm = ({ app }) => {
             !hasStorageSystems ||
             jobSubmission.submitting ||
             missingAllocationMessage;
-
           return (
             <>
               {missingAllocationMessage && (
@@ -923,19 +954,38 @@ export const AppSchemaForm = ({ app }) => {
                         </FormField>
                       )}
                     {isJobTypeBATCH(app) && (
-                      <FormField
-                        label="Queue"
-                        name="execSystemLogicalQueue"
-                        description="Select the queue this job will execute on."
-                        type="select"
-                        required
-                      >
-                        {formState.appQueueValues.map((queueName) => (
-                          <option key={queueName} value={queueName}>
-                            {queueName}
-                          </option>
-                        ))}
-                      </FormField>
+                      <>
+                        <FormField
+                          label="Queue"
+                          name="execSystemLogicalQueue"
+                          description="Select the queue this job will execute on."
+                          type="select"
+                          required
+                        >
+                          {formState.appQueueValues.map((q) => (
+                            <option key={q.name} value={q.name}>
+                              {`${!!q.description ? (q.description.startsWith(q.name) ? q.description : `${q.name} (${q.description})`) : q.name}`}
+                            </option>
+                          ))}
+                        </FormField>
+                        {selectedQueue?.schedulerOptions &&
+                          selectedQueue.schedulerOptions.map(
+                            (opt) =>
+                              !opt.notes?.isHidden && (
+                                <FormField
+                                  key={opt.name}
+                                  label={opt.notes?.label || opt.name}
+                                  name={`queueSchedulerOptions.${opt.name}`}
+                                  description={opt.description}
+                                  type={
+                                    opt.notes?.fieldType === 'number'
+                                      ? 'number'
+                                      : 'text'
+                                  }
+                                />
+                              )
+                          )}
+                      </>
                     )}
                     {isJobTypeBATCH(app) &&
                       app.definition.notes.showReservation && (
@@ -985,7 +1035,8 @@ export const AppSchemaForm = ({ app }) => {
                       type="text"
                       required
                     />
-                    {!app.definition.notes.isInteractive ? (
+                    {!app.definition.notes.isInteractive &&
+                    app.definition.jobAttributes.archiveMode !== 'NEVER' ? (
                       <>
                         <FormField
                           label="Archive System"
@@ -1003,7 +1054,8 @@ export const AppSchemaForm = ({ app }) => {
                           type="text"
                           placeholder={
                             defaultArchivePath ||
-                            app.definition.archiveSystemDir
+                            app.definition.archiveSystemDir ||
+                            ''
                           }
                         />
                       </>

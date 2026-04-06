@@ -15,7 +15,7 @@ from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 logger = logging.getLogger(__name__)
 
 
-def _lookup_keys_manager(user, password, token):
+def _lookup_keys_manager(username, password, token):
     """Lookup Keys Manager
     This function allows to use a custom `KeysManager` class
     to handle any special cases for setup.
@@ -29,11 +29,12 @@ def _lookup_keys_manager(user, password, token):
     module_str, cls_str = mgr_str.rsplit('.', 1)
     module = import_module(module_str)
     cls = getattr(module, cls_str)
-    return cls(user.username, password, token)
+    return cls(username, password, token)
 
 
 def add_pub_key_to_resource(
         user,
+        username,
         password,
         token,
         system_id,
@@ -54,10 +55,10 @@ def add_pub_key_to_resource(
 
     """
     success = True
-    mgr = _lookup_keys_manager(user, password, token)
+    mgr = _lookup_keys_manager(username, password, token)
     message = "add_pub_key_to_resource"
 
-    logger.info(f"Adding public key for user {user.username} on system {system_id}")
+    logger.info(f"Adding public key for user {username} on system {system_id}")
     try:
         if hostname is None:
             sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)
