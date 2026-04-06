@@ -97,65 +97,62 @@ const DataFilesProjectEditDescriptionModal = () => {
           onSubmit={setProjectTitleDescription}
           validationSchema={validationSchema}
         >
-          {({ isValid, dirty }) => (
-            <Form>
+          <Form>
+            <FormField
+              name="title"
+              aria-label="title"
+              label={
+                <div>
+                  Title{' '}
+                  <small>
+                    <em>(Maximum {maxTitleLength} characters)</em>
+                  </small>
+                </div>
+              }
+            />
+            {!!minDescriptionLength && (
               <FormField
-                name="title"
-                aria-label="title"
+                name="description"
+                aria-label="description"
                 label={
                   <div>
-                    Title{' '}
+                    Description{' '}
                     <small>
-                      <em>(Maximum {maxTitleLength} characters)</em>
+                      <em>(Minimum {minDescriptionLength} characters)</em>
                     </small>
                   </div>
                 }
+                type="textarea"
+                className={styles['description-textarea']}
               />
-              {!!minDescriptionLength && (
-                <FormField
-                  name="description"
-                  aria-label="description"
-                  label={
-                    <div>
-                      Description{' '}
-                      <small>
-                        <em>(Minimum {minDescriptionLength} characters)</em>
-                      </small>
-                    </div>
-                  }
-                  type="textarea"
-                  className={styles['description-textarea']}
-                />
+            )}
+            {!!enableWorkspaceKeywords && (
+              <FormField
+                name="keywords"
+                aria-label="keywords"
+                tags
+                label={<div>Keywords</div>}
+                type="textarea"
+                className={styles['description-textarea']}
+              />
+            )}
+            <div className={styles['button-container']}>
+              {updatingError && (
+                <Message type="error" dataTestid="updating-error">
+                  Something went wrong.
+                </Message>
               )}
-              {!!enableWorkspaceKeywords && (
-                <FormField
-                  name="keywords"
-                  aria-label="keywords"
-                  tags
-                  label={<div>Keywords</div>}
-                  type="textarea"
-                  className={styles['description-textarea']}
-                />
-              )}
-              <div className={styles['button-container']}>
-                {updatingError && (
-                  <Message type="error" dataTestid="updating-error">
-                    Something went wrong.
-                  </Message>
-                )}
-                <Button
-                  attr="submit"
-                  type="primary"
-                  size="long"
-                  className={styles['update-button']}
-                  disabled={!isValid || !dirty}
-                  isLoading={isUpdating}
-                >
-                  Update Changes
-                </Button>
-              </div>
-            </Form>
-          )}
+              <Button
+                attr="submit"
+                type="primary"
+                size="long"
+                className={styles['update-button']}
+                isLoading={isUpdating}
+              >
+                Update Changes
+              </Button>
+            </div>
+          </Form>
         </Formik>
       </ModalBody>
     </Modal>
