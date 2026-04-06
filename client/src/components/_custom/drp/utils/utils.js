@@ -34,6 +34,11 @@ export const formatLabel = (key) => {
 // Find a node in a tree structure by UUID
 // Returns the node if found, null otherwise
 export const findNodeInTree = (node, uuid) => {
+    //upon refresh, node is null so returning null
+    if (node === null) {
+        return null;
+    }
+
     if (node?.uuid === uuid) {
         return node;
     }
