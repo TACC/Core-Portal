@@ -35,13 +35,16 @@ def evaluate_datafiles_storage_system(
         dict: Evaluated storage system definition
     """
 
-    if "homeDir" in system and "{tasdir}" in system["homeDir"]:
-        tasdir = get_user_data(tapis.user.username)["homeDirectory"]
+    if "homeDir" in system:
+        home_dir_vars = {"username": tapis.user.username}
+        if "{tasdir}" in system["homeDir"]:
+            home_dir_vars["tasdir"] = get_user_data(tapis.user.username)[
+                "homeDirectory"
+            ]
+
         evaluated_system = {
             **system,
-            "homeDir": system["homeDir"].format(
-                tasdir=tasdir, username=tapis.user.username
-            ),
+            "homeDir": system["homeDir"].format(**home_dir_vars),
         }
     elif "hostEval" in system or default_host_eval:
         try:
