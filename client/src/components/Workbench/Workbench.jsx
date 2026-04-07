@@ -137,18 +137,16 @@ function Workbench() {
                   />
                 )}
                 {!hideOnboarding && (
-                  <>
-                    <Route
-                      path={`${path}${ROUTES.ONBOARDING}`}
-                      component={Onboarding}
-                    />
-                    {isStaff && (
-                      <Route
-                        path={`${path}${ROUTES.ONBOARDINGADMIN}`}
-                        component={OnboardingAdmin}
-                      />
-                    )}
-                  </>
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDING}`}
+                    component={Onboarding}
+                  />
+                )}
+                {isStaff && !hideOnboarding && (
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDINGADMIN}`}
+                    component={OnboardingAdmin}
+                  />
                 )}
                 {!hideSystemStatus && (
                   <Route
