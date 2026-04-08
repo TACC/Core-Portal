@@ -42,6 +42,7 @@ function Workbench() {
     showSubmissions,
     hideManageAccount,
     hideSystemStatus,
+    hideOnboarding,
     isTACCPortal,
   } = useSelector(
     (state) => ({
@@ -56,6 +57,7 @@ function Workbench() {
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
       hideSystemStatus: state.workbench.config.hideSystemStatus,
+      hideOnboarding: state.workbench.config.hideOnboarding,
       isTACCPortal: state.workbench.isTACCPortal,
     }),
     shallowEqual
@@ -134,11 +136,13 @@ function Workbench() {
                     component={History}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.ONBOARDING}`}
-                  component={Onboarding}
-                />
-                {isStaff && (
+                {!hideOnboarding && (
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDING}`}
+                    component={Onboarding}
+                  />
+                )}
+                {isStaff && !hideOnboarding && (
                   <Route
                     path={`${path}${ROUTES.ONBOARDINGADMIN}`}
                     component={OnboardingAdmin}
