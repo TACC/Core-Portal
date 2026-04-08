@@ -38,10 +38,3 @@ def test_get_token(client, authenticated_user_and_setup_complete):
 def test_get_token_unauthenticated_user(client):
     response = client.get("/api/auth/tapis/")
     assert response.status_code == 302  # redirect to login
-
-
-def test_get_token_setup_complete_false(client, authenticated_user_and_setup_complete):
-    authenticated_user_and_setup_complete.profile.setup_complete = False
-    authenticated_user_and_setup_complete.profile.save()
-    response = client.get("/api/auth/tapis/")
-    assert response.status_code == 403

@@ -42,6 +42,8 @@ function Workbench() {
     showSubmissions,
     hideManageAccount,
     hideSystemStatus,
+    hideOnboarding,
+    isTACCPortal,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading || loadingSystems,
@@ -55,6 +57,8 @@ function Workbench() {
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
       hideSystemStatus: state.workbench.config.hideSystemStatus,
+      hideOnboarding: state.workbench.config.hideOnboarding,
+      isTACCPortal: state.workbench.isTACCPortal,
     }),
     shallowEqual
   );
@@ -71,7 +75,7 @@ function Workbench() {
     });
 
     if (setupComplete) {
-      dispatch({ type: 'GET_ALLOCATIONS' });
+      isTACCPortal && dispatch({ type: 'GET_ALLOCATIONS' });
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
@@ -132,11 +136,13 @@ function Workbench() {
                     component={History}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.ONBOARDING}`}
-                  component={Onboarding}
-                />
-                {isStaff && (
+                {!hideOnboarding && (
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDING}`}
+                    component={Onboarding}
+                  />
+                )}
+                {isStaff && !hideOnboarding && (
                   <Route
                     path={`${path}${ROUTES.ONBOARDINGADMIN}`}
                     component={OnboardingAdmin}

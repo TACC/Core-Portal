@@ -2,6 +2,7 @@
 
 import json
 import logging
+from django.conf import settings
 from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
 from portal.exceptions.api import ApiException
@@ -22,15 +23,23 @@ def check_job_for_timeout(job):
     since Tapis does not have native support for interactive jobs yet
     """
 
-    if (hasattr(job, 'notes')):
+    if hasattr(job, "notes"):
         if isinstance(job.notes, str):
             notes = json.loads(job.notes)
         else:
-            notes = job.notes if isinstance(job.notes, dict) else getattr(job.notes, '__dict__', {})
+            notes = (
+                job.notes
+                if isinstance(job.notes, dict)
+                else getattr(job.notes, "__dict__", {})
+            )
 
-        is_failed = job.status == 'FAILED'
-        is_interactive = notes.get('isInteractive', False) if isinstance(notes, dict) else False
-        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(job.remoteJobId)
+        is_failed = job.status == "FAILED"
+        is_interactive = (
+            notes.get("isInteractive", False) if isinstance(notes, dict) else False
+        )
+        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(
+            job.remoteJobId
+        )
 
         if is_failed and is_interactive and has_timeout_message:
             job.status = "FINISHED"
@@ -105,6 +114,8 @@ def push_keys_required_if_not_credentials_ensured(
         )
         system_def = tapis.systems.getSystem(systemId=system_id)
         if is_tms_system(system_def):
+            if settings.IS_TACC_PORTAL is False:
+                return True
             create_system_credentials(
                 tapis, user.username, system_id, createTmsKeys=True
             )
