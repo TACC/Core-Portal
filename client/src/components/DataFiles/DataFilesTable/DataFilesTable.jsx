@@ -70,7 +70,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const pushKeys = (e) => {
     e.preventDefault();
     const props = {
-      onSuccess: {},
+      onSuccess: {}, // TODO refresh datafiles root route if non tacc system
       system,
     };
     if (modalRefs.FileSelector) {
