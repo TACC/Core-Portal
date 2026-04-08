@@ -145,5 +145,5 @@ export const appTrayExpectedFixture = {
     isError: false,
   },
   loading: false,
-  defaultTab: appTrayFixture.tabs[0],
+  defaultTab: '',
 };

@@ -27,11 +27,6 @@ function unpackCategoryDict(tabs) {
   return categoryDict;
 }
 
-function unpackDefaultTab(tabs) {
-  if (!tabs || tabs.length === 0) return '';
-  return tabs[0] ?? '';
-}
-
 export function apps(state = initialState, action) {
   switch (action.type) {
     case 'GET_APPS_SUCCESS': {
@@ -41,7 +36,6 @@ export function apps(state = initialState, action) {
         htmlDict: action.payload.htmlDefinitions,
         appIcons: unpackAppIcons(action.payload.tabs),
         loading: false,
-        defaultTab: unpackDefaultTab(action.payload.tabs),
       };
     }
     case 'GET_APPS_START':
