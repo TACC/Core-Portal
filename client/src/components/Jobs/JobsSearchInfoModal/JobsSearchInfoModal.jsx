@@ -10,6 +10,7 @@ const JobsSearchInfoModal = ({ isOpen, toggle }) => {
       </ModalHeader>
       <ModalBody>
         <ul>
+          <li>Only the first word will be used in the search.</li>
           <li>
             Search is case-sensitive, meaning it looks for names that match
             exactly how they&apos;re written.
