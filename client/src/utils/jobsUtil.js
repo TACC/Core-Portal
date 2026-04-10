@@ -150,9 +150,21 @@ export function getInputDisplayValues(fileInputs) {
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
+  const parseNotes = (notes) => {
+    if (!notes) return null;
+    if (typeof notes === 'string') {
+      try {
+        return JSON.parse(notes);
+      } catch (ignore) {
+        return null;
+      }
+    }
+    return notes;
+  };
+
   const filterHiddenObjects = (objects) =>
     objects.filter((obj) => {
-      const notes = obj.notes ? JSON.parse(obj.notes) : null;
+      const notes = parseNotes(obj.notes);
       return !notes || !notes.isHidden;
     });
 
@@ -162,16 +174,44 @@ export function getJobDisplayInformation(job, app) {
 
   const envVariables = parameterSet.envVariables;
   const schedulerOptions = parameterSet.schedulerOptions;
+  const visibleAppEnvVariables =
+    app?.definition?.jobAttributes?.parameterSet?.envVariables
+      ?.filter((envVar) => {
+        const notes = parseNotes(envVar.notes);
+        return !notes || !notes.isHidden;
+      })
+      ?.map((envVar) => ({
+        key: envVar.key,
+        label: parseNotes(envVar.notes)?.label || envVar.key,
+      })) ?? [];
+  const visibleAppEnvKeys = new Set(
+    visibleAppEnvVariables.map((envVar) => envVar.key)
+  );
+  const visibleAppEnvLabels = Object.fromEntries(
+    visibleAppEnvVariables.map((envVar) => [envVar.key, envVar.label])
+  );
+  const visibleEnvVariables = envVariables.filter((envVar) => {
+    if (!envVar.key || envVar.key.startsWith('_')) return false;
+    if (app) return visibleAppEnvKeys.has(envVar.key);
+    return true;
+  });
 
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
     inputs: getInputDisplayValues(fileInputs),
-    parameters: parameters.map((parameter) => ({
-      label: parameter.name,
-      id: parameter.name,
-      value: parameter.arg,
-    })),
+    parameters: [
+      ...parameters.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
+      })),
+      ...visibleEnvVariables.map((envVar) => ({
+        label: visibleAppEnvLabels[envVar.key] || envVar.key,
+        id: envVar.key,
+        value: envVar.value,
+      })),
+    ],
   };
 
   if (app) {
