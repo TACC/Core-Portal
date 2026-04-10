@@ -36,13 +36,20 @@ const AppBrowser = () => {
   useEffect(() => {
     if (!Object.keys(categoryDict).length) return;
 
+    if (params.appId) {
+      const tabFromAppId = findAppTab(categoryDict, params.appId);
+      if (tabFromAppId) {
+        setActiveTab(tabFromAppId);
+        return;
+      }
+    }
+
     if (defaultTab && categoryDict[defaultTab]) {
       setActiveTab(defaultTab);
       return;
     }
-
     setActiveTab(Object.keys(categoryDict)[0]);
-  }, [categoryDict, defaultTab]);
+  }, [categoryDict, defaultTab, params.appId]);
 
   if (error.isError) {
     return (
@@ -52,6 +59,13 @@ const AppBrowser = () => {
         </Message>
       </div>
     );
+  }
+
+  // set activeTab to url app's category if no tab selected
+  if (params.appId && !activeTab) {
+    toggle(findAppTab(categoryDict, params.appId));
+  } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
+    toggle(defaultTab);
   }
 
   return (
