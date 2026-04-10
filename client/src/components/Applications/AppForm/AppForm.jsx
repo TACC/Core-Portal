@@ -917,7 +917,7 @@ export const AppSchemaForm = ({ app }) => {
                         </FormField>
                       ) : (
                         <FormField
-                          label="Allocation"
+                          label="Allocation (case-sensitive)"
                           name="allocation"
                           description="Enter the project allocation you would like to use with this job submission."
                           type="text"
