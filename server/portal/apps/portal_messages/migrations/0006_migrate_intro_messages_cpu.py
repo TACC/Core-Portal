@@ -18,6 +18,7 @@ CPU_DATAFILES_MESSAGE = (
     "available are dependent on your authorizations for each folder and file."
 )
 
+
 def migrate_intro_messages(apps, schema_editor):
     CustomMessageTemplate = apps.get_model("portal_messages", "CustomMessageTemplate")
 
@@ -39,6 +40,7 @@ def migrate_intro_messages(apps, schema_editor):
         component="DATA",
         message_type="info",
     ).update(message=datafiles_message)
+
 
 class Migration(migrations.Migration):
 
