@@ -988,14 +988,22 @@ export const AppSchemaForm = ({ app }) => {
                       </>
                     )}
                     {isJobTypeBATCH(app) &&
-                      app.definition.notes.showReservation && (
+                      app.definition.notes.showReservation &&
+                      (isTACCPortal ? (
                         <FormField
-                          label="TACC Reservation"
+                          label="TACC Reservation (case-sensitive)"
                           name="reservation"
                           description="If you have a TACC reservation, enter the reservation string here."
                           type="text"
                         />
-                      )}
+                      ) : (
+                        <FormField
+                          label="Reservation (case-sensitive)"
+                          name="reservation"
+                          description="If you have a reservation, enter the reservation string here."
+                          type="text"
+                        />
+                      ))}
                     <FormField
                       label="Maximum Job Runtime (minutes)"
                       description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
