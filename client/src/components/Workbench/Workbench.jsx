@@ -75,7 +75,9 @@ function Workbench() {
     });
 
     if (setupComplete) {
-      isTACCPortal && dispatch({ type: 'GET_ALLOCATIONS' });
+      if (isTACCPortal) {
+        dispatch({ type: 'GET_ALLOCATIONS' });
+      }
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
