@@ -94,65 +94,74 @@ const DataFilesProjectEditDescriptionModal = () => {
       <ModalBody>
         <Formik
           initialValues={initialValues}
+          initialTouched={{
+            title: true,
+            description: true,
+            keywords: true,
+          }}
           onSubmit={setProjectTitleDescription}
           validationSchema={validationSchema}
+          validateOnMount
         >
-          <Form>
-            <FormField
-              name="title"
-              aria-label="title"
-              label={
-                <div>
-                  Title{' '}
-                  <small>
-                    <em>(Maximum {maxTitleLength} characters)</em>
-                  </small>
-                </div>
-              }
-            />
-            {!!minDescriptionLength && (
+          {({ isValid, dirty }) => (
+            <Form>
               <FormField
-                name="description"
-                aria-label="description"
+                name="title"
+                aria-label="title"
                 label={
                   <div>
-                    Description{' '}
+                    Title{' '}
                     <small>
-                      <em>(Minimum {minDescriptionLength} characters)</em>
+                      <em>(Maximum {maxTitleLength} characters)</em>
                     </small>
                   </div>
                 }
-                type="textarea"
-                className={styles['description-textarea']}
               />
-            )}
-            {!!enableWorkspaceKeywords && (
-              <FormField
-                name="keywords"
-                aria-label="keywords"
-                tags
-                label={<div>Keywords</div>}
-                type="textarea"
-                className={styles['description-textarea']}
-              />
-            )}
-            <div className={styles['button-container']}>
-              {updatingError && (
-                <Message type="error" dataTestid="updating-error">
-                  Something went wrong.
-                </Message>
+              {!!minDescriptionLength && (
+                <FormField
+                  name="description"
+                  aria-label="description"
+                  label={
+                    <div>
+                      Description{' '}
+                      <small>
+                        <em>(Minimum {minDescriptionLength} characters)</em>
+                      </small>
+                    </div>
+                  }
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
               )}
-              <Button
-                attr="submit"
-                type="primary"
-                size="long"
-                className={styles['update-button']}
-                isLoading={isUpdating}
-              >
-                Update Changes
-              </Button>
-            </div>
-          </Form>
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  tags
+                  label={<div>Keywords</div>}
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
+              )}
+              <div className={styles['button-container']}>
+                {updatingError && (
+                  <Message type="error" dataTestid="updating-error">
+                    Something went wrong.
+                  </Message>
+                )}
+                <Button
+                  attr="submit"
+                  type="primary"
+                  size="long"
+                  disabled={!isValid}
+                  className={styles['update-button']}
+                  isLoading={isUpdating}
+                >
+                  Update Changes
+                </Button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </ModalBody>
     </Modal>
