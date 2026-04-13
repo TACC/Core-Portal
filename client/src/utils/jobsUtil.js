@@ -170,16 +170,15 @@ export function getJobDisplayInformation(job, app) {
 
   const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);
-  const parameters = filterHiddenObjects(parameterSet.appArgs);
-
-  const envVariables = parameterSet.envVariables;
-  const schedulerOptions = parameterSet.schedulerOptions;
+  const envVariables = parameterSet.envVariables || [];
+  const schedulerOptions = parameterSet.schedulerOptions || [];
   const visibleAppEnvVariables =
     app?.definition?.jobAttributes?.parameterSet?.envVariables
       ?.filter((envVar) => {
         const notes = parseNotes(envVar.notes);
         return !notes || !notes.isHidden;
       })
+      ?.filter((envVar) => envVar?.key && !envVar.key.startsWith('_'))
       ?.map((envVar) => ({
         key: envVar.key,
         label: parseNotes(envVar.notes)?.label || envVar.key,
@@ -190,18 +189,27 @@ export function getJobDisplayInformation(job, app) {
   const visibleAppEnvLabels = Object.fromEntries(
     visibleAppEnvVariables.map((envVar) => [envVar.key, envVar.label])
   );
-  const visibleEnvVariables = envVariables.filter((envVar) => {
+  const visibleEnvVariables = filterHiddenObjects(envVariables).filter((envVar) => {
     if (!envVar.key || envVar.key.startsWith('_')) return false;
     if (app) return visibleAppEnvKeys.has(envVar.key);
     return true;
   });
+  const visibleAppArgs = filterHiddenObjects(parameterSet.appArgs || []);
+  const visibleContainerArgs = filterHiddenObjects(parameterSet.containerArgs || []);
+  const configMappedSchedulerOptionNames = new Set([
+    'Project Allocation Account',
+    'TACC Reservation',
+  ]);
+  const visibleSchedulerOptions = filterHiddenObjects(schedulerOptions).filter(
+    (parameter) => !configMappedSchedulerOptionNames.has(parameter?.name)
+  );
 
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
     inputs: getInputDisplayValues(fileInputs),
     parameters: [
-      ...parameters.map((parameter) => ({
+      ...visibleAppArgs.map((parameter) => ({
         label: parameter.name,
         id: parameter.name,
         value: parameter.arg,
@@ -210,6 +218,16 @@ export function getJobDisplayInformation(job, app) {
         label: visibleAppEnvLabels[envVar.key] || envVar.key,
         id: envVar.key,
         value: envVar.value,
+      })),
+      ...visibleContainerArgs.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
+      })),
+      ...visibleSchedulerOptions.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
       })),
     ],
   };
