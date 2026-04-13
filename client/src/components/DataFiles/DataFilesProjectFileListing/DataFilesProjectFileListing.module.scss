@@ -24,7 +24,8 @@
   color: var(--global-color-primary--x-dark);
   white-space: pre-wrap;
   overflow-y: auto;
-
+  overflow-x: hidden;
+  word-break: break-word;
   /* FAQ: `14px` is part of normalization of "table" font sizes */
   font-size: 0.875rem; /* 14px (assumed deviation from design) */
 

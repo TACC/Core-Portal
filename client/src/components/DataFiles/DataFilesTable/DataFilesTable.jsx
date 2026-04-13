@@ -10,7 +10,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  useRouteMatch,
+  generatePath,
+  useHistory,
+} from 'react-router-dom';
 import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
@@ -34,6 +39,8 @@ export const isNearBottom = ({
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
+  const match = useRouteMatch();
+  const history = useHistory();
 
   const isPublicSystem = params?.scheme === 'public';
 
@@ -67,10 +74,19 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           .map((downSys) => downSys.hostname)
       : []
   );
+  const reloadPage = (sys) => {
+    dispatch({
+      type: 'UPDATE_STORAGE_SYSTEM_CONFIGURATION',
+      payload: sys,
+    });
+    const newPath = `${generatePath(match.path, sys)}${sys.homeDir || ''}`;
+    window.location.href = newPath; // TODO: replace with history.push when system storage configuration is updated
+    history.push(newPath);
+  };
   const pushKeys = (e) => {
     e.preventDefault();
     const props = {
-      onSuccess: {}, // TODO refresh datafiles root route if non tacc system
+      reloadCallback: reloadPage,
       system,
     };
     if (modalRefs.FileSelector) {
