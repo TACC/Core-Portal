@@ -189,13 +189,17 @@ export function getJobDisplayInformation(job, app) {
   const visibleAppEnvLabels = Object.fromEntries(
     visibleAppEnvVariables.map((envVar) => [envVar.key, envVar.label])
   );
-  const visibleEnvVariables = filterHiddenObjects(envVariables).filter((envVar) => {
-    if (!envVar.key || envVar.key.startsWith('_')) return false;
-    if (app) return visibleAppEnvKeys.has(envVar.key);
-    return true;
-  });
+  const visibleEnvVariables = filterHiddenObjects(envVariables).filter(
+    (envVar) => {
+      if (!envVar.key || envVar.key.startsWith('_')) return false;
+      if (app) return visibleAppEnvKeys.has(envVar.key);
+      return true;
+    }
+  );
   const visibleAppArgs = filterHiddenObjects(parameterSet.appArgs || []);
-  const visibleContainerArgs = filterHiddenObjects(parameterSet.containerArgs || []);
+  const visibleContainerArgs = filterHiddenObjects(
+    parameterSet.containerArgs || []
+  );
   const configMappedSchedulerOptionNames = new Set([
     'Project Allocation Account',
     'TACC Reservation',
