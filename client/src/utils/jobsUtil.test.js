@@ -87,6 +87,38 @@ describe('jobsUtil', () => {
     ]);
   });
 
+  it('handles mixed parameterSet values without app definition', () => {
+    const job = {
+      ...jobDetailFixture,
+      fileInputs: '[]',
+      parameterSet: JSON.stringify({
+        appArgs: [{ name: 'A', arg: '1', notes: 'not-json' }],
+        envVariables: [{ key: 'CUSTOM_KERNELSPEC', value: '/work/custom' }],
+        containerArgs: [{ name: 'Bind Mounts', arg: '--bind /work' }],
+        schedulerOptions: [],
+      }),
+    };
+
+    const display = getJobDisplayInformation(job);
+    expect(display.parameters).toEqual([
+      {
+        label: 'A',
+        id: 'A',
+        value: '1',
+      },
+      {
+        label: 'CUSTOM_KERNELSPEC',
+        id: 'CUSTOM_KERNELSPEC',
+        value: '/work/custom',
+      },
+      {
+        label: 'Bind Mounts',
+        id: 'Bind Mounts',
+        value: '--bind /work',
+      },
+    ]);
+  });
+
   it('get input display values for single file', () => {
     expect(
       getInputDisplayValues([
