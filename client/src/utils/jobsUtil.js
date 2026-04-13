@@ -202,6 +202,7 @@ export function getJobDisplayInformation(job, app) {
   );
   const configMappedSchedulerOptionNames = new Set([
     'Project Allocation Account',
+    'TACC Allocation',
     'TACC Reservation',
   ]);
   const visibleSchedulerOptions = filterHiddenObjects(schedulerOptions).filter(
@@ -257,7 +258,9 @@ export function getJobDisplayInformation(job, app) {
 
       if (app.definition.jobType === 'BATCH') {
         const allocationParam = schedulerOptions.find(
-          (opt) => opt.name === 'Project Allocation Account'
+          (opt) =>
+            opt.name === 'Project Allocation Account' ||
+            opt.name === 'TACC Allocation'
         );
         const allocation = getAllocatonFromDirective(allocationParam.arg);
         if (allocation) {
