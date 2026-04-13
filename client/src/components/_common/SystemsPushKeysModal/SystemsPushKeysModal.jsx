@@ -18,6 +18,7 @@ const SystemsPushKeysModal = () => {
     system,
     submitting,
     onCancel,
+    reloadCallback,
     isTACCPortal,
     initialUsername,
   } = useSelector(
@@ -59,7 +60,7 @@ const SystemsPushKeysModal = () => {
         password,
         token,
         isTMSSystem,
-        reloadCallback: reloadPage,
+        reloadCallback: reloadCallback || reloadPage,
         onSuccess,
       },
     });
