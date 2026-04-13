@@ -343,7 +343,7 @@ describe('DataFilesTable', () => {
             operation: 'pushKeys',
             props: {
               callback: expect.any(Function),
-              onSuccess: expect.any(Object),
+              reloadCallback: expect.any(Function),
               system: expect.any(Object),
             },
           },
