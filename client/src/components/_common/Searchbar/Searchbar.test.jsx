@@ -273,4 +273,66 @@ describe('Searchbar', () => {
     ).toMatch(/hidden/);
     expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
+
+  it('shows validation error when less than 3 characters are used', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/test-api/test-scheme/test-system/');
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {},
+      },
+    });
+
+    const { getByRole } = renderComponent(
+      <Searchbar api="test-api" scheme="test-scheme" system="test-system" />,
+      store,
+      history
+    );
+
+    const form = getByRole('form');
+    const input = getByRole('searchbox');
+
+    fireEvent.input(input, { target: { value: 'qu' } });
+    fireEvent.submit(form);
+
+    expect(history.location.pathname).toEqual(
+      '/workbench/data/test-api/test-scheme/test-system/'
+    );
+    expect(input.validationMessage).toBe(
+      'Include at least 3 characters in your search.'
+    );
+  });
+
+  it('shows validation error when input contains a space', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/test-api/test-scheme/test-system/');
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {},
+      },
+    });
+
+    const { getByRole } = renderComponent(
+      <Searchbar api="test-api" scheme="test-scheme" system="test-system" />,
+      store,
+      history
+    );
+
+    const form = getByRole('form');
+    const input = getByRole('searchbox');
+
+    fireEvent.input(input, { target: { value: 'hello world' } });
+    fireEvent.submit(form);
+
+    expect(history.location.pathname).toEqual(
+      '/workbench/data/test-api/test-scheme/test-system/'
+    );
+    expect(input.validationMessage).toBe(
+      'Search term must be a single word with no spaces.'
+    );
+  });
 });
