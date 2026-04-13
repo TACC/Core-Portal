@@ -83,7 +83,7 @@ function Workbench() {
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
       dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
-  }, [setupComplete]);
+  }, [setupComplete, isTACCPortal, dispatch]);
 
   return (
     <div className="workbench-wrapper">
