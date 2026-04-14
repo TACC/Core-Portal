@@ -132,6 +132,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                 'metadata': value if value else None
             })
     except IndexError:
+        logger.exception(f"Error parsing listing response from Tapis for system {system} and path {path}")
         # Return [] if the listing is empty.
         listing = []
 

@@ -16,7 +16,6 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
     <Button
       iconNameBefore={iconClassName}
       type={text === 'Empty' ? 'primary' : 'secondary'}
-      size="small"
       disabled={disabled}
       onClick={onClick}
     >

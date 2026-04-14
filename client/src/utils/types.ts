@@ -99,7 +99,8 @@ export type TTapisApp = {
     execSystemLogicalQueue: string;
     archiveSystemId: string;
     archiveSystemDir: string;
-    archiveOnAppError: boolean;
+    archiveOnAppError: boolean; // deprecated, use archiveMode
+    archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
     isMpi: boolean;
     mpiCmd: string;
     cmdPrefix?: string;
@@ -203,7 +204,8 @@ export type TTapisJob = {
   appId: string;
   appVersion: string;
   archiveCorrelationId?: string;
-  archiveOnAppError: boolean;
+  archiveOnAppError: boolean; // deprecated, use archiveMode
+  archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
   archiveSystemDir: string;
   archiveSystemId: string;
   archiveTransactionId?: string;

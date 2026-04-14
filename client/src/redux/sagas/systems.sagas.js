@@ -4,9 +4,11 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 function* pushSystemKeys(action) {
   const form = {
+    username: action.payload.username,
     password: action.payload.password,
     token: action.payload.token,
     hostname: action.payload.hostname,
+    isTMSSystem: action.payload.isTMSSystem,
   };
   yield put({
     type: 'SYSTEMS_MODAL_UPDATE',
@@ -14,7 +16,7 @@ function* pushSystemKeys(action) {
   });
   try {
     const modalRefs = yield select((state) => state.files.refs);
-    yield call(fetchUtil, {
+    const res = yield call(fetchUtil, {
       url: `/api/accounts/systems/${action.payload.systemId}/keys/`,
       body: JSON.stringify({ form, action: 'push' }),
       method: 'PUT',
@@ -33,6 +35,7 @@ function* pushSystemKeys(action) {
     if (action.payload.onSuccess) {
       yield put(action.payload.onSuccess);
     }
+    yield call(action.payload.reloadCallback(res.system));
   } catch (error) {
     yield put({
       type: 'SYSTEMS_MODAL_UPDATE',
@@ -45,7 +48,6 @@ function* pushSystemKeys(action) {
       },
     });
   }
-  yield call(action.payload.reloadCallback);
 }
 
 export default function* watchSystems() {

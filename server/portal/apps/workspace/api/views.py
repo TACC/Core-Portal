@@ -22,7 +22,6 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
@@ -539,7 +538,7 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
+            for system_id in list(filter(None, [job_post.get('archiveSystemId'), execSystemId])):
                 if push_keys_required_if_not_credentials_ensured(request.user, system_id):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     return JsonResponse(
@@ -570,12 +569,6 @@ class JobsView(BaseApiView):
                 job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                     "envVariables", []
                 ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": interactive_wh_url}]
-
-                # Make sure $HOME/.tap directory exists for user when running interactive apps
-                system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
-                tasdir = get_user_data(username)['homeDirectory']
-                if system:
-                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")
 
             # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
@@ -673,7 +666,7 @@ class JobHistoryView(BaseApiView):
         )
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
@@ -681,17 +674,45 @@ class AppsTrayView(BaseApiView):
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
             search="(versionEnabled.eq.true)~(enabled.eq.true)",
-            listType="MINE",
+            listType="OWNED",
             limit=-1,
         )
-        my_apps = list(map(lambda app: {
-            "label": getattr(app.notes, 'label', app.id),
-            "version": app.version,
-            "type": "tapis",
-            "appId": app.id,
-        }, apps_listing))
+        my_apps = list(
+            map(
+                lambda app: {
+                    "label": getattr(app.notes, "label", app.id),
+                    "version": app.version,
+                    "type": "tapis",
+                    "appId": app.id,
+                },
+                apps_listing,
+            )
+        )
 
-        return my_apps
+        return {"title": "My Apps", "apps": my_apps}
+
+    def getSharedApps(self, user):
+        tapis = user.tapis_oauth.client
+        # Only shows enabled versions of apps
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)",
+            listType="SHARED_DIRECT",
+            limit=-1,
+        )
+        shared_apps = list(
+            map(
+                lambda app: {
+                    "label": getattr(app.notes, "label", app.id),
+                    "version": app.version,
+                    "type": "tapis",
+                    "appId": app.id,
+                },
+                apps_listing,
+            )
+        )
+
+        return {"title": "Shared Apps", "apps": shared_apps}
 
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
@@ -704,8 +725,25 @@ class AppsTrayView(BaseApiView):
         )
         categories = []
         html_definitions = {}
+
+        portal_app_categories = AppTrayCategory.objects.all()
+        if not portal_app_categories:
+            public_apps = list(
+                map(
+                    lambda app: {
+                        "label": getattr(app.notes, "label", app.id),
+                        "version": app.version,
+                        "type": "tapis",
+                        "appId": app.id,
+                    },
+                    apps_listing,
+                )
+            )
+            categories.append({"title": "Public Apps", "apps": public_apps})
+            return categories, html_definitions
+
         # Traverse category records in descending priority
-        for category in AppTrayCategory.objects.all().order_by('-priority'):
+        for category in portal_app_categories.order_by("-priority"):
 
             # Retrieve all apps known to the portal in that category
             portal_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
@@ -761,22 +799,14 @@ class AppsTrayView(BaseApiView):
         }
         """
         tabs, html_definitions = self.getPublicApps(request.user)
-        my_apps = self.getPrivateApps(request.user)
 
-        tabs.insert(
-            0,
-            {
-                "title": "My Apps",
-                "apps": my_apps
-            }
-        )
+        # Add "My Apps" tab with all of the user's private and shared apps that are enabled, or all available apps if no public apps are enabled
+        my_apps = self.getPrivateApps(request.user)
+        shared_apps = self.getSharedApps(request.user)
 
         # Only return tabs that are non-empty
         tabs = list(
-            filter(
-                lambda tab: len(tab["apps"]) > 0,
-                tabs
-            )
+            filter(lambda tab: len(tab["apps"]) > 0, [my_apps] + [shared_apps] + tabs)
         )
 
         return JsonResponse(
