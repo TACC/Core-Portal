@@ -134,7 +134,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     license: Optional[str] = None
     doi: Optional[str] = None
     institution: Optional[str] = None
-    keywords: Optional[str] = None
+    keywords: Optional[str | list[str]] = None
     related_datasets: list[DrpProjectRelatedDatasets] = []
     related_software: list[DrpProjectRelatedSoftware] = []
     related_publications: list[DrpProjectRelatedPublications] = []

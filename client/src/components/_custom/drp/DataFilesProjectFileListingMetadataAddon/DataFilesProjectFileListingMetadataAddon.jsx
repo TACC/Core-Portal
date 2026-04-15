@@ -50,7 +50,7 @@ const DataFilesProjectFileListingMetadataAddon = ({
       ),
       license: license ?? 'None',
       ...(doi && { doi }),
-      ...(keywords && { keywords }),
+      ...(keywords && { keywords: Array.isArray(keywords) ? keywords.join(', ') : keywords }),
       ...(cover_image && { cover_image }),
       ...(file_url && { file_url }),
     };

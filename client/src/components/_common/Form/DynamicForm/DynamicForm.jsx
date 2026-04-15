@@ -171,6 +171,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             label={field.label}
             type="textarea"
             rows={5}
+            tags={field?.tags}
             description={field?.description}
             required={field?.validation?.required}
             className={styles['textarea']}
