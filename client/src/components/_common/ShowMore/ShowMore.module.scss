@@ -8,6 +8,4 @@
   composes: x-untruncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
   max-height: 200px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #cccccc transparent;
 }
