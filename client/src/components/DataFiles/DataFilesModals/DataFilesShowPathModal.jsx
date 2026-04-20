@@ -3,6 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
 import styles from './DataFilesShowPathModal.module.scss';
+import { useSystems } from 'hooks/datafiles';
 
 const DataFilesShowPathModal = React.memo(() => {
   const dispatch = useDispatch();
@@ -27,8 +28,14 @@ const DataFilesShowPathModal = React.memo(() => {
     }
   }, [modalParams, dispatch]);
 
+  const { isRootProjectSystem } = useSystems();
+
   useEffect(() => {
-    if (params.api === 'tapis' && params.system) {
+    if (
+      params.api === 'tapis' &&
+      params.system &&
+      !isRootProjectSystem({ system: params.system })
+    ) {
       dispatch({
         type: 'FETCH_SYSTEM_DEFINITION',
         payload: params.system,

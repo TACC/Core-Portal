@@ -16,6 +16,7 @@ import {
   LastModifiedCell,
   FileIconCell,
   ViewPathCell,
+  DataTypeCell,
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import Searchbar from '_common/Searchbar';
@@ -37,7 +38,15 @@ const fileTypes = [
   '3D Visualization',
 ];
 
-const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
+const DataFilesListing = ({
+  api,
+  scheme,
+  system,
+  path,
+  isPublic,
+  rootSystem,
+  basePath,
+}) => {
   // Redux hooks
   const location = useLocation();
   const systems = useSelector(
@@ -46,12 +55,14 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   );
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
   const isPortalProject = scheme === 'projects';
-  const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
+  const hideSearchBar = isPortalProject && sharedWorkspaces?.hideSearchBar;
 
   const showViewPath = useSelector(
     (state) =>
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
+
+  const { showDataFileType } = useSelector((state) => state.workbench.config);
 
   const {
     data: files,
@@ -82,6 +93,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     ({ row }) => {
       return (
         <FileNavCell
+          rootSystem={rootSystem}
           system={row.original.system}
           path={row.original.path}
           name={row.original.name}
@@ -90,7 +102,9 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scheme={scheme}
           href={row.original._links.self.href}
           isPublic={isPublic}
+          basePath={basePath}
           length={row.original.length}
+          metadata={row.original.metadata}
         />
       );
     },
@@ -145,6 +159,33 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         Cell: (el) => <ViewPathCell file={el.row.original} api={api} />,
       });
     }
+
+    if (showDataFileType) {
+      cells.splice(3, 0, {
+        // Inserting at index 3 after 'Name'
+        Header: 'Data Type',
+        Cell: (el) => <DataTypeCell file={el.row.original} />,
+        width: 0.2,
+      });
+    }
+
+    if (scheme === 'projects' && rootSystem) {
+      const projectSystem = systems.find(
+        (s) => s.scheme === 'projects' && s.system === rootSystem
+      );
+
+      if (projectSystem && projectSystem.publicationProject) {
+        const index = cells.findIndex(
+          (cell) => cell.Header === 'Last Modified'
+        );
+        cells.splice(index, 1);
+        ['Name', 'Size'].forEach((header) => {
+          const column = cells.find((col) => col.Header === header);
+          column.width += 0.1;
+        });
+      }
+    }
+
     return cells;
   }, [api, showViewPath, fileNavCellCallback]);
 

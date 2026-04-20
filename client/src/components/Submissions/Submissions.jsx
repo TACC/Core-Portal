@@ -35,6 +35,7 @@ export const SubmissionsUpload = () => {
       upload({
         system: submissionSystem.system,
         path: uploadPath,
+        scheme: submissionSystem.scheme,
         files: filteredFiles,
         reloadCallback,
         tapisToken,
