@@ -7,6 +7,21 @@ const useDrpDatasetModals = (
   portalName,
   useReloadCallback = true
 ) => {
+  
+  // use the state to get folderMetadata 
+  // if folderMetadata is null, do nothing 
+  // if folderMetadata, and folderMetadata.data_type is sample, set the default value folderMetadata.uuid
+  // if folderMetadata, and folderMetadata.data_type is digital_dataset or analysis_data, set the default value to folderMetadata.sample
+  const folderData = useSelector(
+    (state) => state.files.folderMetadata.FilesListing
+  );
+  let sampleUUID = '';
+  if (folderData && folderData.data_type === 'sample') {
+    sampleUUID = folderData.uuid;
+  } else if (folderData && (folderData.data_type === 'digital_dataset' || folderData.data_type === 'analysis_data')) {
+    sampleUUID = folderData.sample;
+  }
+
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
       url: 'api/forms',
@@ -62,6 +77,7 @@ const useDrpDatasetModals = (
               };
             })
           );
+          field.defaultValue = sampleUUID;
         }
       });
 
@@ -100,6 +116,7 @@ const useDrpDatasetModals = (
               };
             })
           );
+          field.defaultValue = sampleUUID;
         } else if (field.name === 'digital_dataset') {
           field.options.push(
             ...originDatasets.map((originData) => {
