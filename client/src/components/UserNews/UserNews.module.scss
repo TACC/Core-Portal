@@ -1,0 +1,135 @@
+.news-list {
+  font-size: 0.875rem;
+}
+
+.posted-date {
+  color: var(--global-color-secondary--normal);
+  font-weight: 500;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.status-pill--inline {
+  margin-left: 0.5rem;
+}
+
+.body {
+  color: var(--global-color-primary--xx-dark);
+}
+
+.news-list-item {
+  padding-block: var(--global-space--section-top);
+  border-top: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+}
+
+.body--dashboard {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.news-link {
+  color: var(--global-color-accent--normal);
+}
+
+.news-link:hover,
+.news-link:focus {
+  color: var(--global-color-accent--normal);
+}
+
+.news-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--global-color-accent--normal);
+  padding: var(--global-space--section-right);
+}
+
+/* Browse page */
+
+.browse-header.browse-header {
+  margin-left: 10%;
+  margin-right: 10%;
+  border-bottom: none;
+}
+
+.browse-header h2 {
+  font-size: 1.5rem;
+  font-weight: bolder;
+}
+
+.browse-news-content {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.browse-title {
+  margin: 0.5rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.body--browse {
+  display: -webkit-box;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* Detail page */
+
+.detail-news-content {
+  padding-left: 25%;
+  padding-right: 25%;
+}
+
+.detail-news-list-item {
+  padding: 1rem 0;
+}
+
+.detail-news-list-item + .detail-news-list-item {
+  border-top: var(--global-border-width--normal) solid var(--global-color-primary--normal);
+}
+
+.posted-date--detail {
+  font-size: 0.875rem;
+}
+
+.posted-date--inline {
+  margin-left: 0.5rem;
+}
+
+.detail-title {
+  font-size: 2rem;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.body--detail {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.detail-top-back-link-wrapper {
+  padding-left: 25%;
+  padding-right: 25%;
+  margin: 1rem -0.5rem;
+}
+
+.detail-title-row {
+  border-bottom: var(--global-border-width--normal) solid
+    var(--global-color-primary--normal);
+}

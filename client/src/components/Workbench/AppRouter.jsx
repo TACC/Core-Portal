@@ -9,12 +9,17 @@ import PublicData from '../PublicData/PublicData';
 import RequestAccess from '../RequestAccess/RequestAccess';
 import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy';
 import SiteSearch from '../SiteSearch';
+import UserNewsBrowse from '../UserNews/UserNewsBrowse';
+import UserNewsDetail from '../UserNews/UserNewsDetail';
 
 function AppRouter() {
   const dispatch = useDispatch();
   const { fetchSystems } = useSystems();
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
+  );
+  const hideUserNews = useSelector(
+    (state) => state.workbench.config.hideUserNews ?? true
   );
 
   useEffect(() => {
@@ -40,6 +45,12 @@ function AppRouter() {
         path="/googledrive-privacy-policy"
         component={GoogleDrivePrivacyPolicy}
       />
+      {!hideUserNews && (
+        <Route exact path={ROUTES.USER_UPDATES} component={UserNewsBrowse} />
+      )}
+      {!hideUserNews && (
+        <Route path={`${ROUTES.USER_UPDATES}/:id`} component={UserNewsDetail} />
+      )}
     </Router>
   );
 }
