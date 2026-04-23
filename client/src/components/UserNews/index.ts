@@ -1,1 +1,1 @@
-export { default } from './UserNews';
+export { default } from './UserNewsDashboard';

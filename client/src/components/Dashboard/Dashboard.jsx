@@ -5,7 +5,7 @@ import { BrowserChecker, Section, SectionTableWrapper } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
-import UserNews from '../UserNews';
+import UserNewsDashboard from '../UserNews';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
@@ -176,7 +176,7 @@ function DashboardUserNews() {
       className={styles['user-news-panel']}
       contentShouldScroll
     >
-      <UserNews />
+      <UserNewsDashboard />
     </SectionTableWrapper>
   );
 }

@@ -38,7 +38,7 @@ const Manage = () => (
   </a>
 );
 
-const UserNews = () => {
+const UserNewsDashboard = () => {
   const { data, isPending, isError, status } = useUserNews({ sanitize: true });
 
   if (isPending) {
@@ -79,4 +79,4 @@ const UserNews = () => {
   );
 };
 
-export default UserNews;
+export default UserNewsDashboard;
