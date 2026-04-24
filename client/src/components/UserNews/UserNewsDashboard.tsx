@@ -4,17 +4,9 @@ import { LoadingSpinner, Pill, SectionTableWrapper } from '_common';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import styles from './UserNews.module.scss';
+import { formatUserNewsDate } from 'utils/timeFormat';
 
 const NEWS_DASHBOARD_DISPLAY_LIMIT = 3;
-
-const formatDate = (datestring: string): string => {
-  const date = new Date(datestring);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
 
 const ViewAllUpdates = () => (
   <a
@@ -55,7 +47,7 @@ const UserNewsDashboard = () => {
           data.slice(0, NEWS_DASHBOARD_DISPLAY_LIMIT).map((newsItem) => (
             <article className={styles['news-list-item']} key={newsItem.id}>
               <div className={styles['posted-date']}>
-                Published: {formatDate(newsItem.posted)}
+                Published: {formatUserNewsDate(newsItem.posted)}
                 {newsItem.updates && newsItem.updates.length > 0 && (
                   <Pill type="warning" className={`${styles['status-pill']} ${styles['status-pill--inline']}`}>
                     Updated

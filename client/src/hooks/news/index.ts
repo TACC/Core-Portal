@@ -22,5 +22,3 @@ export interface UserNewsResponse {
       postedUTC: string;
     }[];
 }
-
-// export { default as useUserNews } from './useUserNews';

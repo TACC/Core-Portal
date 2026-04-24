@@ -4,21 +4,13 @@ import { LoadingSpinner, Pill, Section, SectionTableWrapper } from '_common/inde
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import styles from './UserNews.module.scss';
+import { formatUserNewsDate } from 'utils/timeFormat';
 
 const UserNewsBrowse = () => {
   const { data, isPending, isError } = useUserNews({ sanitize: true });
 
   if (isPending) return <LoadingSpinner />;
   if (isError) return <p className={styles['news-message']}>Unable to load user updates</p>;
-
-  const formatDate = (datestring: string): string => {
-    const date = new Date(datestring);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   return (
     <Section
@@ -35,7 +27,7 @@ const UserNewsBrowse = () => {
               data.map((newsItem) => (
                 <article className={styles['news-list-item']} key={newsItem.id}>
                   <div className={styles['posted-date']}>
-                    Published: {formatDate(newsItem.posted)}
+                    Published: {formatUserNewsDate(newsItem.posted)}
                     {newsItem.updates && newsItem.updates.length > 0 && (
                       <Pill
                         type="warning"

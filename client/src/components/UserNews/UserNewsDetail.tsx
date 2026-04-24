@@ -4,16 +4,8 @@ import useUserNews from 'hooks/news/useUserNews';
 import { LoadingSpinner, Pill, Section, SectionTableWrapper } from '_common';
 import * as ROUTES from '../../constants/routes';
 import renderHtml from 'utils/renderHtml';
+import { formatUserNewsDate } from 'utils/timeFormat';
 import styles from './UserNews.module.scss';
-
-const formatDate = (datestring: string): string => {
-  const date = new Date(datestring);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
 
 const UserNewsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -94,7 +86,7 @@ const UserNewsDetail = () => {
                       !entry.isMainContent || hasUpdates ? styles['posted-date--inline'] : ''
                     }`}
                   >
-                    Published {formatDate(entry.posted)}
+                    Published {formatUserNewsDate(entry.posted)}
                   </span>
                   <div className={`${styles['body']} ${styles['body--detail']}`}>
                     {renderHtml(entry.content)}
