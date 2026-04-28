@@ -19,7 +19,7 @@ function AppRouter() {
     (state) => state.authenticatedUser.user
   );
   const hideUserNews = useSelector(
-    (state) => state.workbench.config.hideUserNews ?? true
+    (state) => state.workbench?.config?.hideUserNews ?? true
   );
 
   useEffect(() => {

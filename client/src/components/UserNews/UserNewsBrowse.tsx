@@ -1,6 +1,11 @@
 import React from 'react';
 import useUserNews from 'hooks/news/useUserNews';
-import { LoadingSpinner, Pill, Section, SectionTableWrapper } from '_common/index';
+import {
+  LoadingSpinner,
+  Pill,
+  Section,
+  SectionTableWrapper,
+} from '_common/index';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import styles from './UserNews.module.scss';
@@ -10,7 +15,10 @@ const UserNewsBrowse = () => {
   const { data, isPending, isError } = useUserNews({ sanitize: true });
 
   if (isPending) return <LoadingSpinner />;
-  if (isError) return <p className={styles['news-message']}>Unable to load user updates</p>;
+  if (isError)
+    return (
+      <p className={styles['news-message']}>Unable to load user updates</p>
+    );
 
   return (
     <Section
@@ -47,13 +55,19 @@ const UserNewsBrowse = () => {
                         {newsItem.webtitle.trim()}
                       </Link>
                     </h3>
-                    <p className={`${styles['body']} ${styles['body--browse']}`}>{newsItem.content}</p>
+                    <p
+                      className={`${styles['body']} ${styles['body--browse']}`}
+                    >
+                      {newsItem.content}
+                    </p>
                   </div>
                 </article>
               ))
             ) : (
               <article className={styles['news-list-item']}>
-                <p className={styles['news-message']}>No recent updates found</p>
+                <p className={styles['news-message']}>
+                  No recent updates found
+                </p>
               </article>
             )}
           </div>
