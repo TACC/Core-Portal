@@ -119,8 +119,14 @@ function PublishedDatasetEntityDetail({ params }) {
         
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+        const urlRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+
         if (!uuidRegex.test(digitalDataset)) {
             return formatLabel(digitalDataset);
+        }
+        //if referenced digital dataset is a valid url, make it a link
+        else if (urlRegex.test(digitalDataset)) {
+            return <Link to={digitalDataset}>{digitalDataset}</Link>;
         }
     
         const digitalDatasetEntity = findNodeInTree(tree, digitalDataset);
