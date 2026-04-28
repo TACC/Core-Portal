@@ -242,6 +242,7 @@ _WORKBENCH_SETTINGS = {
     "hideManageAccount": False,
     "hideSystemStatus": False,
     "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
+    "hideUserNews": False,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
     "minDescriptionLength": 50,
