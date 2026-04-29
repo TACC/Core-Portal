@@ -164,7 +164,7 @@ function PublishedDatasetEntityDetail({ params }) {
                                 if (key === 'digital_dataset') {
                                     return (
                                         <tr key={key}>
-                                            <th className="c-data-list__key">{formatLabel(key)}</th>
+                                            <th className="c-data-list__key">Reference Digital Dataset</th>
                                             <td className="c-data-list__value">{getDigitalDatasetLink(value)}</td>
                                         </tr>
                                     );
