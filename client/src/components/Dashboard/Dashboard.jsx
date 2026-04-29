@@ -19,12 +19,12 @@ function Dashboard() {
   const {
     hideApps,
     hideManageAccount,
-    hideUserNews = true,
+    showUserNews = false,
     customDashboardSection,
   } = useSelector((state) => state.workbench.config);
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
-    ['DashboardTickets', ...(!hideUserNews ? ['DashboardUserNews'] : [])],
+    ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],
     [hideApps, hideSystemMonitor].filter((isHidden) => !isHidden),
     ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
   );
@@ -59,7 +59,7 @@ function Dashboard() {
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           {!hideSystemMonitor && <DashboardSysmon />}
-          {!hideUserNews && <DashboardUserNews />}
+          {showUserNews && <DashboardUserNews />}
           {customDashboardSection && (
             <CustomDashboardSection className={styles['custom-panel']} />
           )}

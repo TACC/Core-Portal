@@ -266,7 +266,7 @@ _WORKBENCH_SETTINGS = {
     "showSubmissions": False,
     "hideManageAccount": False,
     "hideSystemStatus": False,
-    "hideUserNews": False,
+    "showUserNews": False,
     "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",

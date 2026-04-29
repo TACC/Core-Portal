@@ -18,8 +18,8 @@ function AppRouter() {
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
-  const hideUserNews = useSelector(
-    (state) => state.workbench?.config?.hideUserNews ?? true
+  const showUserNews = useSelector(
+    (state) => state.workbench?.config?.showUserNews ?? false
   );
 
   useEffect(() => {
@@ -45,10 +45,10 @@ function AppRouter() {
         path="/googledrive-privacy-policy"
         component={GoogleDrivePrivacyPolicy}
       />
-      {!hideUserNews && (
+      {showUserNews && (
         <Route exact path={ROUTES.USER_UPDATES} component={UserNewsBrowse} />
       )}
-      {!hideUserNews && (
+      {showUserNews && (
         <Route path={`${ROUTES.USER_UPDATES}/:id`} component={UserNewsDetail} />
       )}
     </Router>

@@ -772,7 +772,7 @@ SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
-WORKBENCH_SETTINGS.setdefault('hideUserNews', True)
+WORKBENCH_SETTINGS.setdefault('showUserNews', False)
 
 """
 SETTINGS: RECAPTCHA

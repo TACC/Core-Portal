@@ -8,28 +8,6 @@ import { formatUserNewsDate } from 'utils/timeFormat';
 
 const NEWS_DASHBOARD_DISPLAY_LIMIT = 3;
 
-const ViewAllUpdates = () => (
-  <a
-    href={ROUTES.USER_UPDATES}
-    className="c-button c-button--as-link"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    View all Updates
-  </a>
-);
-
-const Manage = () => (
-  <a
-    href="https://accounts.tacc.utexas.edu/subscriptions"
-    className="c-button c-button--as-link"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Manage
-  </a>
-);
-
 const UserNewsDashboard = () => {
   const { data, isPending, isError, status } = useUserNews({ sanitize: true });
 
