@@ -13,7 +13,7 @@ describe('fetchUserNewsUtil', () => {
 
   it('calls /api/news/ with sanitize false by default', async () => {
     vi.mocked(apiClient.get).mockResolvedValue({
-      data: [{ id: 1 }],
+      data: { response: [{ id: 1 }], status: 200 },
     });
 
     const data = await fetchUserNewsUtil();
@@ -26,7 +26,7 @@ describe('fetchUserNewsUtil', () => {
 
   it('calls /api/news/ with sanitize true when requested', async () => {
     vi.mocked(apiClient.get).mockResolvedValue({
-      data: [{ id: 2 }],
+      data: { response: [{ id: 2 }], status: 200 },
     });
 
     const data = await fetchUserNewsUtil({ sanitize: true });
@@ -68,7 +68,7 @@ describe('useUserNews', () => {
 
   it('uses sanitize true and wires queryFn to fetch util', async () => {
     vi.mocked(apiClient.get).mockResolvedValue({
-      data: [{ id: 3 }],
+      data: { response: [{ id: 3 }], status: 200 },
     });
     vi.mocked(useQuery).mockReturnValue({
       data: [{ id: 3 }],

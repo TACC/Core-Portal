@@ -1,12 +1,13 @@
+from html import unescape
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.utils.html import strip_tags
 import requests
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
-from bs4 import BeautifulSoup
 
 
 @method_decorator(login_required, name='dispatch')
@@ -36,7 +37,7 @@ class UserNewsView(BaseApiView):
                 for update in news_item.get('updates', []):
                     update['content'] = self._sanitize_news_content(update.get('content', ''))
 
-        return JsonResponse(user_news, safe=False)
+        return JsonResponse({"response": user_news, "status": 200})
 
     def _get_user_news(self):
         auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
@@ -49,5 +50,5 @@ class UserNewsView(BaseApiView):
         raise ApiException('Failed to get announcements', resp.get('message'))
 
     def _sanitize_news_content(self, content):
-        soup = BeautifulSoup(content, 'html.parser')
-        return soup.get_text()
+        text_content = strip_tags(content or '')
+        return unescape(text_content).replace('\xa0', ' ')

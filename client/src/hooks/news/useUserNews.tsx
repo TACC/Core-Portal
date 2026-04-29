@@ -14,7 +14,7 @@ export async function fetchUserNewsUtil({
       sanitize,
     },
   });
-  return response.data;
+  return response.data?.response ?? [];
 }
 
 function useUserNews({ sanitize = false }: UseUserNewsOptions = {}) {
