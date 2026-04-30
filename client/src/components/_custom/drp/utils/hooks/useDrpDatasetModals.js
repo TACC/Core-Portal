@@ -7,6 +7,17 @@ const useDrpDatasetModals = (
   portalName,
   useReloadCallback = true
 ) => {
+  
+  const folderData = useSelector(
+    (state) => state.files.folderMetadata.FilesListing
+  );
+  let sampleUUID = '';
+  if (folderData && folderData.data_type === 'sample') {
+    sampleUUID = folderData.uuid;
+  } else if (folderData && (folderData.data_type === 'digital_dataset' || folderData.data_type === 'analysis_data')) {
+    sampleUUID = folderData.sample;
+  }
+
   const getFormFields = async (formName) => {
     const response = await fetchUtil({
       url: 'api/forms',
@@ -62,6 +73,7 @@ const useDrpDatasetModals = (
               };
             })
           );
+          field.defaultValue = sampleUUID;
         }
       });
 
@@ -100,6 +112,7 @@ const useDrpDatasetModals = (
               };
             })
           );
+          field.defaultValue = sampleUUID;
         } else if (field.name === 'digital_dataset') {
           field.options.push(
             ...originDatasets.map((originData) => {

@@ -53,7 +53,10 @@ def get_value(project_id, path):
             return get_ordered_value(node['name'], node['value'])
 
         entity = ProjectMetadata.objects.get(uuid=node['uuid'])
-        return get_ordered_value(entity.name, entity.value)
+        value = get_ordered_value(entity.name, entity.value)
+        value['uuid'] = node['uuid']
+        return value
+
     except ProjectMetadata.DoesNotExist:
         return None
 
