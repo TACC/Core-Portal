@@ -61,13 +61,6 @@ const AppBrowser = () => {
     );
   }
 
-  // set activeTab to url app's category if no tab selected
-  if (params.appId && !activeTab) {
-    toggle(findAppTab(categoryDict, params.appId));
-  } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
-    toggle(defaultTab);
-  }
-
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
