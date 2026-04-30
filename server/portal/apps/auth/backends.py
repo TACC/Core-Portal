@@ -29,16 +29,19 @@ class TapisOAuthBackend(ModelBackend):
                 username = tapis_user['username']
                 UserModel = get_user_model()
 
-                try:
-                    user_data = get_user_data(username=username)
-                    defaults = {
-                        'first_name': user_data['firstName'],
-                        'last_name': user_data['lastName'],
-                        'email': user_data['email']
-                    }
-                except Exception:
-                    logger.exception("Error retrieving TAS user profile data for user: {}".format(username))
-                    defaults = {}
+                defaults = {}
+                if settings.IS_TACC_PORTAL:
+                    try:
+                        user_data = get_user_data(username=username)
+                        defaults = {
+                            "first_name": user_data["firstName"],
+                            "last_name": user_data["lastName"],
+                            "email": user_data["email"],
+                        }
+                    except Exception:
+                        logger.exception(
+                            "Error retrieving TAS user profile data for user: %s", username
+                        )
 
                 user, created = UserModel.objects.update_or_create(username=username, defaults=defaults)
 

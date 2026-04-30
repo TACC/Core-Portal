@@ -21,6 +21,18 @@ export const addSystemDefinition = (system, definitionList) => {
   ];
 };
 
+// Helper function to update a system configuration in the list after a push keys operation
+const updateStorageSystemConfiguration = (configuration, systemConf) => {
+  const systemIndex = configuration.findIndex(
+    (s) => s.system === systemConf.system
+  );
+  if (systemIndex !== -1) {
+    const updated = configuration.splice(systemIndex, 1, systemConf);
+    return updated;
+  }
+  return configuration;
+};
+
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_STARTED':
@@ -43,6 +55,17 @@ export function systems(state = initialSystemState, action) {
           defaultHost: action.payload.default_host,
           defaultSystemId: action.payload.default_system_id,
           loading: false,
+        },
+      };
+    case 'UPDATE_STORAGE_SYSTEM_CONFIGURATION':
+      return {
+        ...state,
+        storage: {
+          ...state.storage,
+          configuration: updateStorageSystemConfiguration(
+            state.storage.configuration,
+            action.payload.system
+          ),
         },
       };
     case 'FETCH_SYSTEMS_ERROR':

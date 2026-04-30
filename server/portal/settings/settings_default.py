@@ -282,6 +282,7 @@ _WORKBENCH_SETTINGS = {
     "hideAllocations": False,
     "hideManageAccount": False,
     "hideSystemStatus": False,
+    "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
     "hasUserGuide": True,
     "hasCustomSagas": True,
     "hasCustomEndpoints": True,

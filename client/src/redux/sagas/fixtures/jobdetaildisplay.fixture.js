@@ -29,6 +29,11 @@ const jobDetailDisplayFixture = {
       id: '_mainProgram',
       value: 'OpenSeesSP',
     },
+    {
+      label: 'tacc Scheduler Profile',
+      id: 'tacc Scheduler Profile',
+      value: '--tapis-profile tacc',
+    },
   ],
   queue: 'development',
   systemName: 'Frontera',

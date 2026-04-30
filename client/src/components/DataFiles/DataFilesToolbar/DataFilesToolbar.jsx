@@ -16,7 +16,6 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
     <Button
       iconNameBefore={iconClassName}
       type={text === 'Empty' ? 'primary' : 'secondary'}
-      size="small"
       disabled={disabled}
       onClick={onClick}
     >
@@ -64,9 +63,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   });
 
-  const { projectId, is_published_project: isPublishedProject } = useSelector(
-    (state) => state.projects.metadata
-  );
+  const {
+    projectId,
+    is_published_project: isPublishedProject,
+    is_review_project: isReviewProject,
+  } = useSelector((state) => state.projects.metadata);
 
   // defaults to return true if no custom permission check is provided
   const [customPermissionCheck, setCustomPermissionCheck] = useState(
@@ -222,7 +223,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
     const { exceedsSizeLimit, containsFolder } =
       canCompressForDownload(selectedFiles);
     const isCommunityOrPublicData =
-      params.scheme === 'community' || params.scheme === 'public';
+      params.scheme === 'community' ||
+      params.scheme === 'public' ||
+      (params.scheme === 'projects' &&
+        (params.system.includes('review') ||
+          params.system.includes('published')));
     // no folders modal is not necessary to show in community + public data areas as downloading multiple files at once isn't possible
     // there anyways
     if (containsFolder && !isCommunityOrPublicData) {
@@ -286,21 +291,28 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canRename =
     getFilePermissions('rename', permissionParams) &&
     !isGuest &&
-    !isPublishedProject;
+    !isPublishedProject &&
+    !isReviewProject;
   const canMove =
     getFilePermissions('move', permissionParams) &&
     !isGuest &&
-    !isPublishedProject;
+    !isPublishedProject &&
+    !isReviewProject;
   const canCopy =
     getFilePermissions('copy', permissionParams) && !!authenticatedUser;
   const canTrash =
     getFilePermissions('trash', permissionParams) &&
     !isGuest &&
-    !isPublishedProject;
+    !isPublishedProject &&
+    !isReviewProject;
   const canCompress =
-    getFilePermissions('compress', permissionParams) && !isPublishedProject;
+    getFilePermissions('compress', permissionParams) &&
+    !isPublishedProject &&
+    !isReviewProject;
   const canExtract =
-    getFilePermissions('extract', permissionParams) && !isPublishedProject;
+    getFilePermissions('extract', permissionParams) &&
+    !isPublishedProject &&
+    !isReviewProject;
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
   const canEmpty = trashedFiles.length > 0;

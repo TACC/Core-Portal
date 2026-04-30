@@ -3,7 +3,6 @@
 import logging
 from hashlib import sha256
 from django.http import JsonResponse
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
@@ -17,13 +16,6 @@ class TapisToken(BaseApiView):
 
     def get(self, request):
         """Get the current user's Tapis token and Tapis tenant base URL."""
-
-        if not request.user.profile.setup_complete:
-            logger.warning(
-                "User '%s' is attempting get Tapis token but setupComplete is False",
-                request.user.username,
-            )
-            raise PermissionDenied
 
         # By accessing client(), we ensure that there is a non-expired access_token which can be immediately used
         client = request.user.tapis_oauth.client

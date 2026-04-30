@@ -18,7 +18,7 @@ services:
     container_name: core_portal_redis
 
   rabbitmq:
-    image: rabbitmq:4-management
+    image: rabbitmq:4.2-management
     volumes:
       - core_portal_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_portal_rabbitmq
     env_file: ../env_files/rabbitmq.env
