@@ -8,10 +8,6 @@ const useDrpDatasetModals = (
   useReloadCallback = true
 ) => {
   
-  // use the state to get folderMetadata 
-  // if folderMetadata is null, do nothing 
-  // if folderMetadata, and folderMetadata.data_type is sample, set the default value folderMetadata.uuid
-  // if folderMetadata, and folderMetadata.data_type is digital_dataset or analysis_data, set the default value to folderMetadata.sample
   const folderData = useSelector(
     (state) => state.files.folderMetadata.FilesListing
   );
