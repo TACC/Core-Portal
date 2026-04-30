@@ -35,6 +35,8 @@ const DataFilesFormModal = () => {
     let value = '';
     if (field.optgroups) {
       value = field.optgroups[0].options[0]?.value;
+    } else if (field.defaultValue) {
+      value = field.defaultValue;
     } else {
       value =
         field.options && field.options.length > 0 ? field.options[0].value : '';
