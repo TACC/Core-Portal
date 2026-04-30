@@ -13,6 +13,7 @@ export async function uploadUtil({
   path,
   file,
   tapisToken,
+  metadata,
 }: {
   api: string;
   scheme: string;
@@ -20,6 +21,7 @@ export async function uploadUtil({
   path: string;
   file: FormData;
   tapisToken: TTapisToken;
+  metadata?: Record<string, any>;
 }): Promise<{ file: any; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
@@ -29,6 +31,9 @@ export async function uploadUtil({
   const fileField = file.get('uploaded_file') as File;
   let url: string = '';
   let config: AxiosRequestConfig = {};
+
+  let metadataUrl: string = '';
+  let metadataBody: any = {};
 
   if (api === 'tapis' && tapisToken) {
     formData.append('file', fileField);
@@ -46,8 +51,26 @@ export async function uploadUtil({
         'X-Tapis-Tracking-ID': tapisToken.tapisTrackingId,
       },
     };
+
+    if (metadata && scheme === 'projects') {
+      metadataUrl = `/api/datafiles/${api}/upload_file_metadata/${scheme}/${system}/${apiPath}`;
+      metadataBody = {
+        file_name: fileField.name,
+        file_size: fileField.size,
+        metadata: { data_type: 'file', ...metadata },
+      };
+    }
   } else {
     formData.append('uploaded_file', fileField);
+
+    // Append metadata as a JSON string (portal upload only; same as before)
+    if (metadata && !system.includes('community')) {
+      formData.append(
+        'metadata',
+        JSON.stringify({ data_type: 'file', ...metadata })
+      );
+    }
+
     url = `/api/datafiles/${api}/upload/${scheme}/${system}/${apiPath}/`;
     config = {
       headers: {
@@ -57,7 +80,18 @@ export async function uploadUtil({
     };
     url = url.replace(/\/{2,}/g, '/');
   }
+
   const response = await apiClient.post(url, formData, config);
+
+  if (metadataUrl) {
+    await apiClient.put(metadataUrl, metadataBody, {
+      headers: {
+        'X-CSRFToken': Cookies.get('csrfcookie') || '',
+      },
+      withCredentials: true,
+    });
+  }
+
   return response.data;
 }
 
@@ -80,26 +114,29 @@ function useUpload() {
   const upload = ({
     system,
     path,
+    scheme,
     files,
     reloadCallback,
     tapisToken,
   }: {
     system: string;
     path: string;
-    files: { data: File; id: string }[];
+    scheme: string;
+    files: { data: File; id: string; metadata: Record<string, any> }[];
     reloadCallback: () => void;
     tapisToken: TTapisToken;
   }) => {
     const api = 'tapis';
-    const scheme = 'private';
     const uploadCalls: Promise<any>[] = files.map((fileObj) => {
-      const { data: file, id: index } = fileObj;
+      const { data: file, id: index, metadata } = fileObj;
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'UPLOADING', key: index, operation: 'upload' },
       });
+
       const formData = new FormData();
       formData.append('uploaded_file', file);
+
       return mutateAsync(
         {
           api,
@@ -108,6 +145,7 @@ function useUpload() {
           path,
           file: formData,
           tapisToken,
+          metadata,
         },
         {
           onSuccess: () => {
@@ -141,6 +179,8 @@ function useUpload() {
       reloadCallback();
     });
   };
+
   return { upload, status, setStatus };
 }
+
 export default useUpload;

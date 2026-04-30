@@ -99,7 +99,7 @@ const DataFilesProjectMembers = ({
   };
 
   const memberColumn = {
-    Header: 'Members',
+    Header: 'Authors',
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
@@ -220,7 +220,7 @@ const DataFilesProjectMembers = ({
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Member
+            Add Authors
           </Label>
 
           <div className={styles['user-search']}>

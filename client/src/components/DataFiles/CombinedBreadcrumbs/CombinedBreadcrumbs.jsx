@@ -20,6 +20,7 @@ CombinedBreadcrumbs.propTypes = {
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
+  basePath: PropTypes.string,
   className: PropTypes.string,
 };
 

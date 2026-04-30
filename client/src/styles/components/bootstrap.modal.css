@@ -82,3 +82,17 @@ Styleguide Components.Bootstrap.Modal
   width: 25%;
   height: 60.5px;
 }
+
+.modal-content .badge-danger {
+  background-color: #eb6e6e;
+  color: white;
+}
+
+.modal-content .badge-success {
+  background-color: #43d130;
+}
+
+.modal-content .badge-warning {
+  background-color: #c7ce1d;
+  color: white;
+}
