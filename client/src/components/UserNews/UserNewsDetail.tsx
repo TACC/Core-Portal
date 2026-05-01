@@ -23,7 +23,7 @@ const UserNewsDetail = () => {
     return (
       <>
         <div className={styles['detail-top-back-link-wrapper']}>
-          <Link to={ROUTES.USER_UPDATES} className={styles['news-link']}>
+          <Link to={ROUTES.USER_NEWS} className={styles['news-link']}>
             Back to all updates
           </Link>
         </div>
@@ -64,7 +64,7 @@ const UserNewsDetail = () => {
   return (
     <>
       <div className={styles['detail-top-back-link-wrapper']}>
-        <Link to={ROUTES.USER_UPDATES} className={styles['news-link']}>
+        <Link to={ROUTES.USER_NEWS} className={styles['news-link']}>
           Back to all updates
         </Link>
       </div>

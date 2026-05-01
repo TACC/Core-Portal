@@ -155,7 +155,7 @@ function DashboardUserNews() {
       headerActions={
         <span>
           <Link
-            to={ROUTES.USER_UPDATES}
+            to={ROUTES.USER_NEWS}
             className="wb-link"
             target="_blank"
             rel="noopener noreferrer"

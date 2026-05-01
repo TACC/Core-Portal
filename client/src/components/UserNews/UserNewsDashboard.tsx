@@ -38,7 +38,7 @@ const UserNewsDashboard = () => {
             </div>
             <h3 className={styles['title']}>
               <Link
-                to={`${ROUTES.USER_UPDATES}/${newsItem.id}`}
+                to={`${ROUTES.USER_NEWS}/${newsItem.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles['news-link']}

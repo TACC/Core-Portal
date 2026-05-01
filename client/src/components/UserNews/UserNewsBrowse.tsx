@@ -49,7 +49,7 @@ const UserNewsBrowse = () => {
                   <div>
                     <h3 className={styles['browse-title']}>
                       <Link
-                        to={`${ROUTES.USER_UPDATES}/${newsItem.id}`}
+                        to={`${ROUTES.USER_NEWS}/${newsItem.id}`}
                         className={styles['news-link']}
                       >
                         {newsItem.webtitle.trim()}

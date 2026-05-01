@@ -86,7 +86,7 @@ describe('UserNewsBrowse', () => {
     expect(getByText(/^Updated$/i)).toBeInTheDocument();
     expect(getByRole('link', { name: /Browse news title/i })).toHaveAttribute(
       'href',
-      `${ROUTES.USER_UPDATES}/201`
+      `${ROUTES.USER_NEWS}/201`
     );
   });
 

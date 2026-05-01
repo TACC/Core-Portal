@@ -46,10 +46,10 @@ function AppRouter() {
         component={GoogleDrivePrivacyPolicy}
       />
       {showUserNews && (
-        <Route exact path={ROUTES.USER_UPDATES} component={UserNewsBrowse} />
+        <Route exact path={ROUTES.USER_NEWS} component={UserNewsBrowse} />
       )}
       {showUserNews && (
-        <Route path={`${ROUTES.USER_UPDATES}/:id`} component={UserNewsDetail} />
+        <Route path={`${ROUTES.USER_NEWS}/:id`} component={UserNewsDetail} />
       )}
     </Router>
   );

@@ -87,7 +87,7 @@ describe('UserNewsDetail', () => {
     expect(getByText(/Update not found/i)).toBeInTheDocument();
     expect(getByRole('link', { name: /Back to all updates/i })).toHaveAttribute(
       'href',
-      ROUTES.USER_UPDATES
+      ROUTES.USER_NEWS
     );
   });
 

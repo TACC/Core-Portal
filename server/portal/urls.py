@@ -104,7 +104,7 @@ urlpatterns = [
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
     path('public-data/', include('portal.apps.public_data.urls', namespace='public')),
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
-    path('user-updates/', include('portal.apps.news.urls', namespace='news')),
+    path('user-news/', include('portal.apps.news.urls', namespace='news')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 
     # portal_messages

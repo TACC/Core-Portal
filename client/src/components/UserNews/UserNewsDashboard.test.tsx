@@ -93,7 +93,7 @@ describe('UserNewsDashboard', () => {
     expect(getByText(/^Updated$/i)).toBeInTheDocument();
     expect(getByRole('link', { name: /News one/i })).toHaveAttribute(
       'href',
-      `${ROUTES.USER_UPDATES}/101`
+      `${ROUTES.USER_NEWS}/101`
     );
     expect(queryByText(/News four/i)).toBeNull();
   });
