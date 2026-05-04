@@ -48,3 +48,17 @@ export function formatDateTimeFromValue(dateTimeValue) {
 
   return formatDateTime(date);
 }
+
+/**
+ * Create a string representation of date for user news.
+ * @param {string} dateTimeValue - A standard-format date string.
+ * @returns {string}
+ */
+export function formatUserNewsDate(dateTimeValue) {
+  const date = new Date(dateTimeValue);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
