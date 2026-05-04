@@ -43,13 +43,14 @@ describe('useUserNews', () => {
     vi.clearAllMocks();
   });
 
-  it('uses sanitize false by default and returns fallback empty data', () => {
-    vi.mocked(useQuery).mockReturnValue({
+  it('uses sanitize false by default and returns the useQuery result', () => {
+    const queryResult = {
       data: undefined,
       isPending: false,
       isError: false,
       status: 'success',
-    } as never);
+    };
+    vi.mocked(useQuery).mockReturnValue(queryResult as never);
 
     const result = useUserNews();
 
@@ -58,24 +59,17 @@ describe('useUserNews', () => {
         queryKey: ['userNews', false],
       })
     );
-    expect(result).toEqual({
-      data: [],
-      isPending: false,
-      isError: false,
-      status: 'success',
-    });
+    expect(result).toBe(queryResult);
   });
 
-  it('uses sanitize true and wires queryFn to fetch util', async () => {
-    vi.mocked(apiClient.get).mockResolvedValue({
-      data: { response: [{ id: 3 }], status: 200 },
-    });
-    vi.mocked(useQuery).mockReturnValue({
+  it('uses sanitize true and wires queryFn to fetch util', () => {
+    const queryResult = {
       data: [{ id: 3 }],
       isPending: false,
       isError: false,
       status: 'success',
-    } as never);
+    };
+    vi.mocked(useQuery).mockReturnValue(queryResult as never);
 
     const result = useUserNews({ sanitize: true });
 
@@ -85,11 +79,6 @@ describe('useUserNews', () => {
         queryFn: expect.any(Function),
       })
     );
-    expect(result).toEqual({
-      data: [{ id: 3 }],
-      isPending: false,
-      isError: false,
-      status: 'success',
-    });
+    expect(result).toBe(queryResult);
   });
 });
