@@ -18,15 +18,10 @@ export async function fetchUserNewsUtil({
 }
 
 function useUserNews({ sanitize = false }: UseUserNewsOptions = {}) {
-  const query = useQuery({
+  return useQuery({
     queryKey: ['userNews', sanitize],
     queryFn: () => fetchUserNewsUtil({ sanitize }),
   });
-
-  return {
-    ...query,
-    data: query.data ?? [],
-  };
 }
 
 export default useUserNews;

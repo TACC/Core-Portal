@@ -17,7 +17,7 @@ const UserNewsDetail = () => {
       <p className={styles['news-message']}>Unable to load user updates</p>
     );
 
-  const selectedNews = data.find((newsItem) => String(newsItem.id) === id);
+  const selectedNews = data?.find((newsItem) => String(newsItem.id) === id);
 
   if (!selectedNews) {
     return (
