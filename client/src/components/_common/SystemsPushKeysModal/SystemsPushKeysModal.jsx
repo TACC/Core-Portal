@@ -70,8 +70,14 @@ const SystemsPushKeysModal = () => {
     username: Yup.string()
       .min(1)
       .required('Please enter your username for this system.'),
-    password: Yup.string().min(1).required('Please enter your password.'),
-    token: Yup.string().min(1).required('Please provide a valid MFA token.'),
+    password:
+      defaultAuthnMethod !== 'TMS_KEYS'
+        ? Yup.string().min(1).required('Please enter your password.')
+        : null,
+    token:
+      defaultAuthnMethod === 'PKI_KEYS'
+        ? Yup.string().min(1).required('Please provide a valid MFA token.')
+        : null,
   });
 
   const initialValues = {
@@ -129,26 +135,24 @@ const SystemsPushKeysModal = () => {
                     disabled={submitting}
                   />
                 )}
-                {!defaultAuthnMethod === 'TMS_KEYS' && (
-                  <>
-                    <FormField
-                      name="password"
-                      label="Password"
-                      type="password"
-                      required
-                      disabled={submitting}
-                      autoComplete="off"
-                    />
-                    {defaultAuthnMethod === 'PKI_KEYS' && (
-                      <FormField
-                        name="token"
-                        label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
-                        required
-                        disabled={submitting}
-                        autoComplete="off"
-                      />
-                    )}
-                  </>
+                {defaultAuthnMethod !== 'TMS_KEYS' && (
+                  <FormField
+                    name="password"
+                    label="Password"
+                    type="password"
+                    required
+                    disabled={submitting}
+                    autoComplete="off"
+                  />
+                )}
+                {defaultAuthnMethod === 'PKI_KEYS' && (
+                  <FormField
+                    name="token"
+                    label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
+                    required
+                    disabled={submitting}
+                    autoComplete="off"
+                  />
                 )}
               </ModalBody>
               <ModalFooter>

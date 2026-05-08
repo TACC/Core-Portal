@@ -102,8 +102,7 @@ class SystemKeysView(BaseApiView):
                 create_system_credentials_with_password(
                     client,
                     tapis_username,
-                    publ_key_str,
-                    priv_key_str,
+                    body["form"]["password"],
                     system_id,
                     loginUser=login_username,
                 )
