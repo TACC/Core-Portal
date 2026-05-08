@@ -425,7 +425,7 @@ export const AppSchemaForm = ({ app }) => {
         href="#"
         onClick={pushKeys}
       >
-        create your system Tapis system credentials.
+        create your Tapis system credentials.
       </a>
       .
     </span>
