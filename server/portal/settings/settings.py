@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.news',
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
@@ -771,6 +772,7 @@ SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
+WORKBENCH_SETTINGS.setdefault('showUserNews', False)
 
 """
 SETTINGS: RECAPTCHA
