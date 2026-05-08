@@ -14,6 +14,7 @@ from tapipy.errors import BaseTapyException
 from portal.apps.onboarding.steps.system_access_v3 import (
     create_system_credentials_with_keys,
     create_system_credentials,
+    create_system_credentials_with_password,
 )
 from portal.utils.encryption import createKeyPair
 from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
@@ -45,12 +46,12 @@ class SystemKeysView(BaseApiView):
         :param request: Django's request object
         :param str system_id: System id
         """
-        is_tms_system = body["form"]["isTMSSystem"]
+        default_authn_method = body["form"]["defaultAuthnMethod"]
         client = request.user.tapis_oauth.client
         tapis_username = request.user.username
         login_username = body["form"]["username"]
 
-        if is_tms_system:
+        if default_authn_method == "TMS_KEYS":
             try:
                 create_system_credentials(
                     client, login_username, system_id, createTmsKeys=True
@@ -65,11 +66,11 @@ class SystemKeysView(BaseApiView):
                 )
                 http_status = e.response.status_code
                 result = e.message
-        else:
+        elif default_authn_method == "PKI_KEYS":
             logger.info(
                 f"Resetting credentials for user {tapis_username} on system {system_id}"
             )
-            (priv_key_str, publ_key_str) = createKeyPair()
+            priv_key_str, publ_key_str = createKeyPair()
 
             success, result, http_status = AccountsManager.add_pub_key_to_resource(
                 request.user,
@@ -95,6 +96,27 @@ class SystemKeysView(BaseApiView):
                 system_id,
                 loginUser=login_username,
             )
+
+        elif default_authn_method == "PASSWORD":
+            try:
+                create_system_credentials_with_password(
+                    client,
+                    tapis_username,
+                    publ_key_str,
+                    priv_key_str,
+                    system_id,
+                    loginUser=login_username,
+                )
+                http_status = 200
+                result = "OK"
+            except BaseTapyException as e:
+                logger.exception(
+                    "System credential creation failed for user: %s on system: %s",
+                    tapis_username,
+                    system_id,
+                )
+                http_status = e.response.status_code
+                result = e.message
 
         tapis_system = client.systems.getSystem(systemId=system_id)
 

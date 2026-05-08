@@ -30,7 +30,7 @@ const SystemsPushKeysModal = () => {
     shallowEqual
   );
 
-  const isTMSSystem = system?.defaultAuthnMethod === 'TMS_KEYS';
+  const defaultAuthnMethod = system?.defaultAuthnMethod;
 
   const history = useHistory();
   const location = useLocation();
@@ -59,7 +59,7 @@ const SystemsPushKeysModal = () => {
         username,
         password,
         token,
-        isTMSSystem,
+        defaultAuthnMethod,
         reloadCallback: reloadCallback || reloadPage,
         onSuccess,
       },
@@ -129,7 +129,7 @@ const SystemsPushKeysModal = () => {
                     disabled={submitting}
                   />
                 )}
-                {!isTMSSystem && (
+                {!defaultAuthnMethod === 'TMS_KEYS' && (
                   <>
                     <FormField
                       name="password"
@@ -137,14 +137,17 @@ const SystemsPushKeysModal = () => {
                       type="password"
                       required
                       disabled={submitting}
-                    />
-                    <FormField
-                      name="token"
-                      label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
-                      required
-                      disabled={submitting}
                       autoComplete="off"
                     />
+                    {defaultAuthnMethod === 'PKI_KEYS' && (
+                      <FormField
+                        name="token"
+                        label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
+                        required
+                        disabled={submitting}
+                        autoComplete="off"
+                      />
+                    )}
                   </>
                 )}
               </ModalBody>
