@@ -169,7 +169,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
                 href="#"
                 onClick={pushKeys}
               >
-                push your keys
+                create your system Tapis system credentials.
               </a>
             </span>
           );
