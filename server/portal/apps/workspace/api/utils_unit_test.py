@@ -43,6 +43,7 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
         systemId="test_system",
         userName=authenticated_user.username,
         createTmsKeys=True,
+        loginUser=authenticated_user.username,
         skipCredentialCheck=False,
     )
 

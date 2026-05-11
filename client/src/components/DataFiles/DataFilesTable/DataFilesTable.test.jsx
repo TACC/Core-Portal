@@ -331,7 +331,7 @@ describe('DataFilesTable', () => {
       getByText(/There was a problem accessing this file system./)
     ).toBeDefined();
 
-    fireEvent.click(getByText(/push your keys/));
+    fireEvent.click(getByText(/create your Tapis system credentials/));
     await waitFor(() => {
       expect(storeWithError.getActions()).toEqual([
         {

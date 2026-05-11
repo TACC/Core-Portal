@@ -47,7 +47,7 @@ def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock
         'hosts': {}
     }
 
-    mock_tapis_client.systems.getSystem.return_value = TapisResult(host='frontera.tacc.utexas.edu')
+    mock_tapis_client.systems.getSystem.return_value = TapisResult(host='frontera.tacc.utexas.edu', notes={})
 
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
     assert response.status_code == 403
@@ -97,6 +97,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
         'host': 'frontera.tacc.utexas.edu',
         'defaultAuthnMethod': 'PKI_KEYS',
         "effectiveUserId": authenticated_user.username,
+        "notes": {}
     }
 
     mock_tapis_client.systems.getSystem.return_value = TapisResult(**system)

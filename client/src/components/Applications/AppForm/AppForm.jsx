@@ -251,7 +251,7 @@ export const AppSchemaForm = ({ app }) => {
     execSystem,
     defaultSystemId,
     defaultArchivePath,
-    keyService,
+    isTMSSystem,
     allocationToExecSysMap,
     hideManageAccount,
     isTACCPortal,
@@ -262,7 +262,7 @@ export const AppSchemaForm = ({ app }) => {
     );
     const { defaultHost, configuration, defaultSystemId } =
       state.systems.storage;
-    const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
+    const isTMSSystem = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
       configuration.length &&
@@ -309,7 +309,7 @@ export const AppSchemaForm = ({ app }) => {
         ) ?? null,
       defaultSystemId,
       defaultArchivePath,
-      keyService,
+      isTMSSystem,
       allocationToExecSysMap,
       hideManageAccount: state.workbench.config.hideManageAccount,
       isTACCPortal,
@@ -406,7 +406,7 @@ export const AppSchemaForm = ({ app }) => {
       );
     }
   }
-  const sectionMessage = keyService ? (
+  const sectionMessage = isTMSSystem ? (
     <span>
       For help,{' '}
       <Link
@@ -425,7 +425,7 @@ export const AppSchemaForm = ({ app }) => {
         href="#"
         onClick={pushKeys}
       >
-        push your keys
+        create your Tapis system credentials.
       </a>
       .
     </span>
@@ -921,6 +921,7 @@ export const AppSchemaForm = ({ app }) => {
                           name="allocation"
                           description="Enter the project allocation you would like to use with this job submission."
                           type="text"
+                          required
                         />
                       ))}
                     {isJobTypeBATCH(app) &&
@@ -973,16 +974,31 @@ export const AppSchemaForm = ({ app }) => {
                             (opt) =>
                               !opt.notes?.isHidden && (
                                 <FormField
-                                  key={opt.name}
-                                  label={opt.notes?.label || opt.name}
+                                  key={`queueSchedulerOptions.${opt.name}`}
                                   name={`queueSchedulerOptions.${opt.name}`}
+                                  label={opt.notes?.label || opt.name}
                                   description={opt.description}
-                                  type={
-                                    opt.notes?.fieldType === 'number'
-                                      ? 'number'
-                                      : 'text'
-                                  }
-                                />
+                                  type={opt.notes?.fieldType || 'text'}
+                                  required={opt.inputMode === 'REQUIRED'}
+                                >
+                                  {opt.notes?.enum_values
+                                    ? opt.notes?.enum_values.map((item) => {
+                                        let val = item;
+                                        if (val instanceof String) {
+                                          const tmp = {};
+                                          tmp[val] = val;
+                                          val = tmp;
+                                        }
+                                        return Object.entries(val).map(
+                                          ([key, value]) => (
+                                            <option key={key} value={key}>
+                                              {value}
+                                            </option>
+                                          )
+                                        );
+                                      })
+                                    : null}
+                                </FormField>
                               )
                           )}
                       </>

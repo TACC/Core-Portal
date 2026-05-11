@@ -139,7 +139,9 @@ class TapisFilesView(BaseApiView):
                 # In case of 500 determine cause
                 system_def = client.systems.getSystem(systemId=system)
 
-                if settings.IS_TACC_PORTAL:
+                if settings.IS_TACC_PORTAL and not system_def.notes.get(
+                    "noAllocationRequired"
+                ):
                     # If user is missing a non-corral allocation mangle error to a 403
                     allocations = get_allocations(request.user.username)
                     if not any(

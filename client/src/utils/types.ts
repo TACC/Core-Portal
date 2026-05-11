@@ -289,6 +289,7 @@ export type TTapisSystemQueue = {
   maxMemoryMB: number;
   minMinutes: number;
   maxMinutes: number;
+  schedulerOptions: TAppArgSpec[];
 };
 
 type TTapisSystemQueueFilter = {
