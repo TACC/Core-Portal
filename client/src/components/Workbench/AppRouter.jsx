@@ -9,6 +9,8 @@ import PublicData from '../PublicData/PublicData';
 import RequestAccess from '../RequestAccess/RequestAccess';
 import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy';
 import SiteSearch from '../SiteSearch';
+import UserNewsBrowse from '../UserNews/UserNewsBrowse';
+import UserNewsDetail from '../UserNews/UserNewsDetail';
 import { PublishedDatasetsBrowse, PublishedDatasetDetail, PublishedDatasetEntityDetail, PublishedDatasetsLayout } from '../_custom/drp/PublishedDatasets';
 
 function AppRouter() {
@@ -16,6 +18,9 @@ function AppRouter() {
   const { fetchSystems } = useSystems();
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
+  );
+  const showUserNews = useSelector(
+    (state) => state.workbench?.config?.showUserNews ?? false
   );
   const hasCustomSagas = useSelector(
     (state) => state.workbench.config.hasCustomSagas
@@ -82,6 +87,12 @@ function AppRouter() {
         path="/googledrive-privacy-policy"
         component={GoogleDrivePrivacyPolicy}
       />
+      {showUserNews && (
+        <Route exact path={ROUTES.USER_NEWS} component={UserNewsBrowse} />
+      )}
+      {showUserNews && (
+        <Route path={`${ROUTES.USER_NEWS}/:id`} component={UserNewsDetail} />
+      )}
     </Router>
   );
 }

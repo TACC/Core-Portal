@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   NavLink as RRNavLink,
   useRouteMatch,
@@ -33,6 +33,24 @@ const AppBrowser = () => {
     shallowEqual
   );
 
+  useEffect(() => {
+    if (!Object.keys(categoryDict).length) return;
+
+    if (params.appId) {
+      const tabFromAppId = findAppTab(categoryDict, params.appId);
+      if (tabFromAppId) {
+        setActiveTab(tabFromAppId);
+        return;
+      }
+    }
+
+    if (defaultTab && categoryDict[defaultTab]) {
+      setActiveTab(defaultTab);
+      return;
+    }
+    setActiveTab(Object.keys(categoryDict)[0]);
+  }, [categoryDict, defaultTab, params.appId]);
+
   if (error.isError) {
     return (
       <div id="appBrowser-wrapper" className="appDetail-error">
@@ -43,12 +61,6 @@ const AppBrowser = () => {
     );
   }
 
-  // set activeTab to url app's category if no tab selected
-  if (params.appId && !activeTab) {
-    toggle(findAppTab(categoryDict, params.appId));
-  } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
-    toggle(defaultTab);
-  }
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
