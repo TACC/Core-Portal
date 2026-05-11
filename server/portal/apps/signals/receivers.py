@@ -27,7 +27,7 @@ def portal_event_callback(sender, **kwargs):
     if users:
         for user in users:
             async_to_sync(channel_layer.group_send)(
-                user.username,
+                str(user.id),
                 {
                     'type': 'portal_notification',
                     'body': data
@@ -52,8 +52,9 @@ def send_notification_ws(sender, instance, created, **kwargs):
     try:
         instance_dict = instance.to_dict()
         logger.info(instance_dict)
+        user = get_user_model().objects.get(username=instance.user)
         async_to_sync(channel_layer.group_send)(
-            instance.user,
+            str(user.id),
             {
                 'type': 'portal_notification',
                 'body': instance_dict
@@ -90,7 +91,7 @@ def send_setup_event(sender, instance, **kwargs):
         }
         for user in set(receiving_users):
             async_to_sync(channel_layer.group_send)(
-                user.username,
+                str(user.id),
                 {
                     'type': 'portal_notification',
                     'body': data

@@ -75,6 +75,19 @@ const Searchbar = ({
     history.push(location.pathname);
   };
 
+  const getValidationMessage = (value) => {
+    if (/\s/.test(value))
+      return 'Search term must be a single word with no spaces.';
+    if (value.length < 3)
+      return 'Include at least 3 characters in your search.';
+    return '';
+  };
+
+  const onInput = (e) =>
+    e.target.setCustomValidity(getValidationMessage(e.target.value));
+  const onInvalid = (e) =>
+    e.target.setCustomValidity(getValidationMessage(e.target.value));
+
   const onChange = (e) => setQuery(e.target.value);
 
   return (
@@ -98,12 +111,8 @@ const Searchbar = ({
         <input
           type="search"
           minLength="3"
-          onInput={(e) => e.target.setCustomValidity('')}
-          onInvalid={(e) =>
-            e.target.setCustomValidity(
-              'Include at least 3 characters in your search.'
-            )
-          }
+          onInput={onInput}
+          onInvalid={onInvalid}
           onChange={onChange}
           value={query || ''}
           name="query"

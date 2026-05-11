@@ -45,6 +45,80 @@ describe('jobsUtil', () => {
     ).toEqual(jobDetailDisplayFixture);
   });
 
+  it('includes non-hidden env vars from app definition', () => {
+    const app = {
+      definition: {
+        jobType: 'BATCH',
+        notes: {},
+        jobAttributes: {
+          parameterSet: {
+            envVariables: [
+              {
+                key: 'CUSTOM_KERNELSPEC',
+                notes: { label: 'Custom Python Kernelspec Directory' },
+              },
+              { key: 'HIDDEN_VAR', notes: { isHidden: true } },
+            ],
+          },
+        },
+      },
+    };
+    const job = {
+      ...jobDetailFixture,
+      parameterSet: JSON.stringify({
+        appArgs: [],
+        envVariables: [
+          { key: 'CUSTOM_KERNELSPEC', value: '/work/user/kernelspec' },
+          { key: 'HIDDEN_VAR', value: 'secret' },
+          { key: '_tapisJobUUID', value: 'abc' },
+        ],
+        schedulerOptions: [],
+      }),
+      fileInputs: '[]',
+    };
+
+    const display = getJobDisplayInformation(job, app);
+    expect(display.parameters).toEqual([
+      {
+        label: 'Custom Python Kernelspec Directory',
+        id: 'CUSTOM_KERNELSPEC',
+        value: '/work/user/kernelspec',
+      },
+    ]);
+  });
+
+  it('handles mixed parameterSet values without app definition', () => {
+    const job = {
+      ...jobDetailFixture,
+      fileInputs: '[]',
+      parameterSet: JSON.stringify({
+        appArgs: [{ name: 'A', arg: '1', notes: 'not-json' }],
+        envVariables: [{ key: 'CUSTOM_KERNELSPEC', value: '/work/custom' }],
+        containerArgs: [{ name: 'Bind Mounts', arg: '--bind /work' }],
+        schedulerOptions: [],
+      }),
+    };
+
+    const display = getJobDisplayInformation(job);
+    expect(display.parameters).toEqual([
+      {
+        label: 'A',
+        id: 'A',
+        value: '1',
+      },
+      {
+        label: 'CUSTOM_KERNELSPEC',
+        id: 'CUSTOM_KERNELSPEC',
+        value: '/work/custom',
+      },
+      {
+        label: 'Bind Mounts',
+        id: 'Bind Mounts',
+        value: '--bind /work',
+      },
+    ]);
+  });
+
   it('get input display values for single file', () => {
     expect(
       getInputDisplayValues([
