@@ -24,7 +24,7 @@ export const getExtractParams = (
     }`,
     archiveSystemId: file.system,
     archiveSystemDir: archivePath,
-    archiveOnAppError: false,
+    archiveMode: 'NEVER',
     appId: extractApp.id,
     appVersion: extractApp.version,
     parameterSet: {
@@ -35,9 +35,9 @@ export const getExtractParams = (
           : [
               // if running on VM, no need to pass allocation param
               {
-                name: 'TACC Allocation',
+                name: 'Project Allocation Account',
                 description:
-                  'The TACC allocation associated with this job execution',
+                  'The project allocation account associated with this job execution.',
                 include: true,
                 arg: `-A ${defaultAllocation}`,
               },

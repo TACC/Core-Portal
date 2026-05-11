@@ -9,7 +9,7 @@ import LoadingSpinner from '_common/LoadingSpinner';
 const getProjectRole = async (projectId, username) => {
   const url = `/api/projects/${projectId}/project-role/${username}/`;
   const request = await fetch(url, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
   });
   const data = await request.json();
@@ -19,7 +19,7 @@ const getProjectRole = async (projectId, username) => {
 const setProjectRole = async (projectId, username, oldRole, newRole) => {
   const url = `/api/projects/${projectId}/members/`;
   const request = await fetch(url, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     method: 'PATCH',
     body: JSON.stringify({

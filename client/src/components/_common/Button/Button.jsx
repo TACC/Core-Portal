@@ -50,7 +50,7 @@ const Button = ({
   }
 
   // Manage prop warnings
-  /* eslint-disable no-console */
+
   if (type === 'link' && size) {
     size = '';
     // Component will work, except `size` is ineffectual
@@ -72,7 +72,6 @@ const Button = ({
         'is automatically assigned `size="auto"`.'
     );
   }
-  /* eslint-enable no-console */
 
   return (
     <button

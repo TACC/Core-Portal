@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '_common';
 import { FileInputDropZone, Section, LoadingSpinner } from '_common';
-import { useSystems } from 'hooks/datafiles';
+import { useSystems, useTapisToken } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from '../DataFiles/DataFilesModals/DataFilesUploadModalListing/DataFilesUploadModalListingTable.jsx';
 import styles from './Submissions.module.scss';
@@ -19,6 +19,7 @@ export const SubmissionsUpload = () => {
   };
 
   const { data: allSystems } = useSystems();
+  const { data: tapisToken } = useTapisToken();
   const submissionSystem = allSystems.find((s) => s.type === 'submission');
   const uploadPath = '';
 
@@ -36,6 +37,7 @@ export const SubmissionsUpload = () => {
         path: uploadPath,
         files: filteredFiles,
         reloadCallback,
+        tapisToken,
       });
   };
 
@@ -112,6 +114,7 @@ export const SubmissionsUpload = () => {
               type="primary"
               size="long"
               onClick={uploadStart}
+              disabled={!tapisToken}
             >
               Upload File(s)
             </Button>

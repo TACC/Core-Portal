@@ -2,7 +2,6 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import { FetchError } from 'utils/fetchUtil';
 import queryStringParser from 'query-string';
 
-// eslint-disable-next-line camelcase
 export async function fetchSiteSearchUtil(page, query_string, filter) {
   const q = queryStringParser.stringify({ page, query_string, filter });
   const response = await fetch(`/api/site-search/?${q}`);

@@ -44,6 +44,7 @@ function useCompress() {
   const { data: fullCompressApp } = useQuery({
     queryKey: ['compress-app', compressApp.id, compressApp.version],
     queryFn: () => getAppUtil(compressApp.id, compressApp.version),
+    enabled: !!compressApp.id && !!compressApp.version,
   });
 
   const allocationForCompress = useSelector((state: any) => {
@@ -134,6 +135,7 @@ function useCompress() {
               },
             });
             setStatus({}); // clear compress status after successful submission
+            // now close modal that compress job was submitted from
             if (!fromDownload) {
               dispatch({
                 type: 'DATA_FILES_TOGGLE_MODAL',

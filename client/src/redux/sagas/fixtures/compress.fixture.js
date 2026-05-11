@@ -3,7 +3,7 @@ export const compressApp = {
     sharedAppCtx: true,
     isPublic: true,
     tenant: 'portals',
-    id: 'compress',
+    id: 'compress-express',
     version: '0.0.1',
     description: 'Compress a file or folder for download.',
     owner: 'wma_prtl',

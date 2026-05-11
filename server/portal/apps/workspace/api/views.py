@@ -22,13 +22,13 @@ from portal.libs.agave.serializers import BaseTapisResultSerializer
 # TODOv3: dropV2Jobs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from portal.apps.users.utils import get_user_data
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
     push_keys_required_if_not_credentials_ensured
 )
 from portal.utils import get_client_ip
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
 
 
 logger = logging.getLogger(__name__)
@@ -214,35 +214,195 @@ class JobsView(BaseApiView):
         return data
 
     def search(self, client, request):
-        '''
-        Search using tapis in specific portal with providing query string.
-        Additonal parameters for search:
-        limit - limit param from request, otherwise default to 10
-        offset - offset param from request, otherwise default to 0
-        '''
-        query_string = request.GET.get('query_string')
+        # TODO WP-1116: declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
+        # all status search features to be moved to frontend
+        STATUS_TEXT_MAP = {
+            'PENDING': 'Processing',
+            'PROCESSING_INPUTS': 'Processing',
+            'STAGING_INPUTS': 'Queueing',
+            'STAGING_JOB': 'Queueing',
+            'SUBMITTING_JOB': 'Queueing',
+            'QUEUED': 'Queueing',
+            'RUNNING': 'Running',
+            'ARCHIVING': 'Finishing',
+            'FINISHED': 'Finished',
+            'STOPPED': 'Stopped',
+            'FAILED': 'Failure',
+            'BLOCKED': 'Blocked',
+            'PAUSED': 'Paused',
+            'CANCELLED': 'Cancelled',
+            'ARCHIVED': 'Archived',
+        }
 
+        def get_statuses_for_label(label):
+            """
+            Given a UI status label (e.g., "Finished" or "Queueing"), return all
+            TAPIS job statuses that map to that label
+            """
+            label = label.lower()
+            statuses = []
+            for status, ui_label in STATUS_TEXT_MAP.items():
+                if ui_label.lower() == label:
+                    statuses.append(status)
+            return statuses
+
+        def is_interactive(job):
+            notes = getattr(job, 'notes', None)
+            if not notes:
+                return False
+            if isinstance(notes, str):
+                try:
+                    notes = json.loads(notes)
+                except Exception:
+                    return False
+            val = notes.get('isInteractive')
+            if isinstance(val, str):
+                return val.strip().lower() == 'true'
+            return bool(val)
+
+        def has_timeout_message(job):
+            msg = getattr(job, 'lastMessage', '') or ''
+            msg = msg.upper()
+            return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
+
+        query_string = request.GET.get('query_string')
+        # limiting search down to the first word if multiple words are inputted
+        if query_string:
+            query_string = query_string.split()[0]
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
+        status_searches = get_statuses_for_label(query_string or '')
+        # 3 most common cases for case insensitivity
+        qs_lower = query_string.lower() if query_string else ''
+        qs_upper = query_string.upper() if query_string else ''
+        qs_title = query_string.title() if query_string else ''
 
-        sql_queries = [
-            f"(tags IN ('portalName: {portal_name}')) AND",
-            f"((name like '%{query_string}%') OR",
-            f"(archiveSystemDir like '%{query_string}%') OR",
-            f"(appId like '%{query_string}%') OR",
-            f"(archiveSystemId like '%{query_string}%'))",
-        ]
+        # TODO WP-1116: all status search add-ons to be removed and added to drop-down feature on frontend
+        if status_searches:
+            enhanced_status_conditions = []
+
+            for status in status_searches:
+                if status == 'FINISHED':
+                    enhanced_status_conditions.append(
+                        "(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                    )
+                elif status == 'FAILED':
+                    enhanced_status_conditions.append("(status = 'FAILED')")
+                else:
+                    enhanced_status_conditions.append(f"(status = '{status}')")
+            status_conditions = " OR ".join(enhanced_status_conditions)
+
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{query_string}%') OR",
+                f"{status_conditions})",
+            ]
+        else:
+            sql_queries = [
+                f"(tags IN ('portalName: {portal_name}')) AND",
+                f"((name like '%{query_string}%') OR",
+                f"(name like '%{qs_lower}%') OR",
+                f"(name like '%{qs_upper}%') OR",
+                f"(name like '%{qs_title}%') OR",
+                f"(archiveSystemDir like '%{query_string}%') OR",
+                f"(archiveSystemDir like '%{qs_lower}%') OR",
+                f"(archiveSystemDir like '%{qs_upper}%') OR",
+                f"(archiveSystemDir like '%{qs_title}%') OR",
+                f"(appId like '%{query_string}%') OR",
+                f"(appId like '%{qs_lower}%') OR",
+                f"(appId like '%{qs_upper}%') OR",
+                f"(appId like '%{qs_title}%') OR",
+                f"(archiveSystemId like '%{query_string}%') OR",
+                f"(archiveSystemId like '%{qs_lower}%') OR",
+                f"(archiveSystemId like '%{qs_upper}%') OR",
+                f"(archiveSystemId like '%{qs_title}%'))",
+            ]
+
+        # TODO WP-1116: This status search workaround to be removed when status filtering is moved to frontend WP-1116
+        # (Keep the fill-to-limit logic ONLY for Finished/Failed status searches) more info below
+        # We have to handle our jobs query for "Finished" or "Failed" uniquely as
+        # there we treat some jobs with tapis status of FAILED as being non-failures if they
+        # are interactive jobs that just timed-out.
+
+        # We are unable to query the `notes` field to determine if jobs are interactive,
+        # so we manually have to make requests to get jobs and filter them ourselves
+
+        # For "Finished" search, want to get all
+        # (i) FINISHED jobs
+        # and
+        # (ii) FAILED jobs that are interactive and have the timeout/expired message (will be shown as FINISHED on UI)
+
+        # For "Failed" search, want to get all
+        # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
+        is_finished = 'FINISHED' in status_searches
+        is_failed = 'FAILED' in status_searches
+
+        if is_finished or is_failed:
+            target_offset = offset
+            collected, skipped = [], 0
+            upstream_page_size = max(limit, 50)
+            upstream_offset = 0
+
+            while len(collected) < limit:
+                page = client.jobs.getJobSearchListByPostSqlStr(
+                    limit=upstream_page_size,
+                    skip=upstream_offset,
+                    orderBy='lastUpdated(desc),name(asc)',
+                    request_body={"search": sql_queries},
+                    select="allAttributes",
+                    headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+                )
+                if not page:
+                    break
+
+                upstream_offset += len(page)
+
+                for job in page:
+                    status = getattr(job, 'status', None)
+
+                    if is_finished:
+                        if status == 'FINISHED':
+                            pass
+                        elif status == 'FAILED':
+                            if not (has_timeout_message(job) and is_interactive(job)):
+                                continue
+                        else:
+                            continue
+
+                    elif is_failed:
+                        if status != 'FAILED':
+                            continue
+                        if has_timeout_message(job) and is_interactive(job):
+                            continue
+
+                    if skipped < target_offset:
+                        skipped += 1
+                        continue
+
+                    collected.append(job)
+                    if len(collected) == limit:
+                        break
+
+                if len(page) < upstream_page_size:
+                    break
+
+            return collected
 
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
-            startAfter=offset,
+            skip=offset,
             orderBy='lastUpdated(desc),name(asc)',
             request_body={
                 "search": sql_queries
             },
-            select="allAttributes", headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
+            select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
+
         return data
 
     def delete(self, request, *args, **kwargs):
@@ -346,11 +506,11 @@ class JobsView(BaseApiView):
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
+                default_system = evaluate_datafiles_storage_system(request.user.tapis_oauth, settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM)
                 if not job_post.get('archiveSystemId'):
-                    job_post['archiveSystemId'] = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
+                    job_post['archiveSystemId'] = default_system['system']
                 if not job_post.get('archiveSystemDir'):
-                    tasdir = get_user_data(username)['homeDirectory']
-                    homeDir = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['homeDir'].format(tasdir=tasdir, username=username)
+                    homeDir = default_system['homeDir']
                     job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             execSystemId = job_post.get("execSystemId")
@@ -378,7 +538,7 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(set([job_post["archiveSystemId"], execSystemId])):
+            for system_id in list(filter(None, [job_post.get('archiveSystemId'), execSystemId])):
                 if push_keys_required_if_not_credentials_ensured(request.user, system_id):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     return JsonResponse(
@@ -409,12 +569,6 @@ class JobsView(BaseApiView):
                 job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                     "envVariables", []
                 ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": interactive_wh_url}]
-
-                # Make sure $HOME/.tap directory exists for user when running interactive apps
-                system = next((v for k, v in settings.TACC_EXEC_SYSTEMS.items() if execSystemId.endswith(k)), None)
-                tasdir = get_user_data(username)['homeDirectory']
-                if system:
-                    tapis.files.mkdir(systemId=execSystemId, path=f"{system['home_dir'].format(tasdir)}/.tap")
 
             # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
@@ -512,7 +666,7 @@ class JobHistoryView(BaseApiView):
         )
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         tapis = user.tapis_oauth.client
@@ -520,17 +674,45 @@ class AppsTrayView(BaseApiView):
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
             search="(versionEnabled.eq.true)~(enabled.eq.true)",
-            listType="MINE",
+            listType="OWNED",
             limit=-1,
         )
-        my_apps = list(map(lambda app: {
-            "label": getattr(app.notes, 'label', app.id),
-            "version": app.version,
-            "type": "tapis",
-            "appId": app.id,
-        }, apps_listing))
+        my_apps = list(
+            map(
+                lambda app: {
+                    "label": getattr(app.notes, "label", app.id),
+                    "version": app.version,
+                    "type": "tapis",
+                    "appId": app.id,
+                },
+                apps_listing,
+            )
+        )
 
-        return my_apps
+        return {"title": "My Apps", "apps": my_apps}
+
+    def getSharedApps(self, user):
+        tapis = user.tapis_oauth.client
+        # Only shows enabled versions of apps
+        apps_listing = tapis.apps.getApps(
+            select="version,id,notes",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)",
+            listType="SHARED_DIRECT",
+            limit=-1,
+        )
+        shared_apps = list(
+            map(
+                lambda app: {
+                    "label": getattr(app.notes, "label", app.id),
+                    "version": app.version,
+                    "type": "tapis",
+                    "appId": app.id,
+                },
+                apps_listing,
+            )
+        )
+
+        return {"title": "Shared Apps", "apps": shared_apps}
 
     def getPublicApps(self, user):
         tapis = user.tapis_oauth.client
@@ -543,8 +725,25 @@ class AppsTrayView(BaseApiView):
         )
         categories = []
         html_definitions = {}
+
+        portal_app_categories = AppTrayCategory.objects.all()
+        if not portal_app_categories:
+            public_apps = list(
+                map(
+                    lambda app: {
+                        "label": getattr(app.notes, "label", app.id),
+                        "version": app.version,
+                        "type": "tapis",
+                        "appId": app.id,
+                    },
+                    apps_listing,
+                )
+            )
+            categories.append({"title": "Public Apps", "apps": public_apps})
+            return categories, html_definitions
+
         # Traverse category records in descending priority
-        for category in AppTrayCategory.objects.all().order_by('-priority'):
+        for category in portal_app_categories.order_by("-priority"):
 
             # Retrieve all apps known to the portal in that category
             portal_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
@@ -600,22 +799,14 @@ class AppsTrayView(BaseApiView):
         }
         """
         tabs, html_definitions = self.getPublicApps(request.user)
-        my_apps = self.getPrivateApps(request.user)
 
-        tabs.insert(
-            0,
-            {
-                "title": "My Apps",
-                "apps": my_apps
-            }
-        )
+        # Add "My Apps" tab with all of the user's private and shared apps that are enabled, or all available apps if no public apps are enabled
+        my_apps = self.getPrivateApps(request.user)
+        shared_apps = self.getSharedApps(request.user)
 
         # Only return tabs that are non-empty
         tabs = list(
-            filter(
-                lambda tab: len(tab["apps"]) > 0,
-                tabs
-            )
+            filter(lambda tab: len(tab["apps"]) > 0, [my_apps] + [shared_apps] + tabs)
         )
 
         return JsonResponse(

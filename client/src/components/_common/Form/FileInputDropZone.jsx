@@ -55,7 +55,6 @@ function FileInputDropZone({
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <div {...getRootProps()} className="dropzone-area">
       <input {...getInputProps()} />
       {!showFileList && (

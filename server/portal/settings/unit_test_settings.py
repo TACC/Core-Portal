@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.news',
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.webhooks',
@@ -151,7 +152,6 @@ LOGOUT_REDIRECT_URL = "/cms/logout/"
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = [
@@ -540,3 +540,5 @@ PORTAL_ELEVATED_ROLES = {
 
 INTERNAL_DOCS_URL = 'core/internal-docs/'
 INTERNAL_DOCS_ROOT = ''
+
+IS_TACC_PORTAL = True

@@ -1,4 +1,5 @@
 DOCKERHUB_REPO := $(shell cat ./docker_repo.var)
+GIT_TAG:= $(shell cat ./git_tag.var)
 DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
@@ -10,6 +11,9 @@ endif
 ####
 # `DOCKER_IMAGE_BRANCH` tag is the git tag for the commit if it exists, else the branch on which the commit exists
 DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --tags 2> /dev/null || git symbolic-ref --short HEAD | sed 's/[^[:alnum:]\.\_\-]/-/g')
+ifdef GIT_TAG
+	DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(GIT_TAG)
+endif
 
 .PHONY: build
 build:

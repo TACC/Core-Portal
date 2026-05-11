@@ -89,7 +89,7 @@ export async function sendOnboardingAction(username, step, action) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': Cookies.get('csrftoken'),
+      'X-CSRFToken': Cookies.get('csrfcookie'),
     },
     body: JSON.stringify({ step, action }),
   });

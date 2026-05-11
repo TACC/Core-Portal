@@ -98,7 +98,7 @@ const Message = ({
   const hasDismissSupport = scope === 'section';
 
   // Manage prop warnings
-  /* eslint-disable no-console */
+
   if (canDismiss && !hasDismissSupport) {
     // Component will work, except `canDismiss` is ineffectual
     console.error(ERROR_TEXT.mismatchCanDismissScope);
@@ -111,7 +111,6 @@ const Message = ({
     // Component will work, but `scope` should be defined
     console.info(ERROR_TEXT.missingScope);
   }
-  /* eslint-enable no-console */
 
   // Manage class names
   const modifierClassNames = [];
@@ -135,7 +134,7 @@ const Message = ({
   return (
     <Fade
       // Avoid manually syncing Reactstrap <Fade>'s default props
-      // eslint-disable-next-line react/jsx-props-no-spreading
+
       {...fadeProps}
       tag={tagName}
       className={`${className} ${containerStyleNames}`}

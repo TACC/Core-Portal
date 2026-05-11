@@ -53,6 +53,6 @@ describe('BreadcrumbsDropdown', () => {
     fireEvent.click(dropdownToggle);
 
     // Check if the root path is rendered correctly
-    expect(getByText('Frontera')).toBeDefined();
+    expect(getByText('frontera.home.username')).toBeDefined();
   });
 });

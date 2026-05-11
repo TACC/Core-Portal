@@ -28,8 +28,9 @@ export const helloWorldAppFixture = {
       execSystemLogicalQueue: 'development',
       archiveSystemId: 'frontera',
       archiveSystemDir:
-        '/home/username//tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
+        '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
       archiveOnAppError: true,
+      archiveMode: 'ALWAYS',
       isMpi: false,
       mpiCmd: null,
       cmdPrefix: null,
@@ -130,6 +131,7 @@ export const helloWorldAppFixture = {
       helpUrl: 'https://readthedocs.tacc.utexas.edu/hpcugs/frontera/frontera/',
       hideNodeCountAndCoresPerNode: true,
       showReservation: true,
+      isInteractive: false,
     },
     uuid: 'de2bce33-8dbc-479e-b8a2-6a9d27d583d1',
     deleted: false,
@@ -438,8 +440,9 @@ export const helloWorldAppSubmissionPayloadFixture = {
       containerArgs: [],
       schedulerOptions: [
         {
-          name: 'TACC Allocation',
-          description: 'The TACC allocation associated with this job execution',
+          name: 'Project Allocation Account',
+          description:
+            'The project allocation account associated with this job execution.',
           include: true,
           arg: '-A TACC-ACI',
         },
@@ -450,15 +453,13 @@ export const helloWorldAppSubmissionPayloadFixture = {
     nodeCount: 1,
     coresPerNode: 1,
     maxMinutes: 10,
-    archiveSystemId: 'frontera',
+    archiveSystemId: 'frontera.home.username',
     archiveSystemDir:
       '/home/username/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}',
-    archiveOnAppError: true,
     appId: 'hello-world',
     appVersion: '0.0.1',
     execSystemId: 'frontera',
     execSystemLogicalQueue: 'development',
-    reservation: '',
   },
   licenseType: null,
   isInteractive: false,

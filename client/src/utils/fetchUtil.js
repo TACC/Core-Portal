@@ -19,7 +19,7 @@ export async function fetchUtil({ url, params, ...options }) {
     ...options,
   };
   fetchParams.headers = {
-    'X-CSRFToken': Cookies.get('csrftoken'),
+    'X-CSRFToken': Cookies.get('csrfcookie'),
     ...fetchParams.headers,
   };
   const response = await fetch(request, fetchParams);

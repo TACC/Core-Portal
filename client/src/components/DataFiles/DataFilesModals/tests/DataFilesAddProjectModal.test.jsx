@@ -39,6 +39,12 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {
+      minDescriptionLength: 50,
+      maxTitleLength: 150,
+    },
+  },
 };
 
 describe('DataFilesAddProjectModal', () => {
@@ -67,7 +73,7 @@ describe('DataFilesAddProjectModal', () => {
       history
     );
 
-    const inputField = getByRole('textbox', { name: '' });
+    const inputField = getByRole('textbox', { name: 'title' });
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
@@ -79,7 +85,7 @@ describe('DataFilesAddProjectModal', () => {
     await waitFor(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it('disallows title input over 150 characters', async () => {
+  it('disallows title input over 150 characters and description under 50 characters', async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -89,16 +95,28 @@ describe('DataFilesAddProjectModal', () => {
       history
     );
 
-    const inputField = getByRole('textbox', { name: '' });
+    const titleField = getByRole('textbox', { name: 'title' });
+    const descriptionField = getByRole('textbox', { name: 'description' });
     const button = getByRole('button', { name: 'Add Workspace' });
-    fireEvent.change(inputField, {
+
+    fireEvent.change(titleField, {
       target: {
         value:
           'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient.',
       },
     });
+
+    fireEvent.change(descriptionField, {
+      target: {
+        value: 'Lorem ipsum dolor sit amet',
+      },
+    });
+
     fireEvent.click(button);
 
     await waitFor(() => getAllByText(/Title must be at most 150 characters/));
+    await waitFor(() =>
+      getAllByText(/Description must be at least 50 characters/)
+    );
   });
 });

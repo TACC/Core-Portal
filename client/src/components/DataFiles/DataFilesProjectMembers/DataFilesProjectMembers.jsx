@@ -46,11 +46,9 @@ const DataFilesProjectMembers = ({
 
   const [transferUser, setTransferUser] = useState(null);
 
-  /* eslint-disable */
   // The backend needs to camelcase this
   const formatUser = ({ first_name, last_name, email }) =>
     `${first_name} ${last_name} (${email})`;
-  /* eslint-enable */
 
   const userSearch = (e) => {
     setInputUser(e.target.value);
@@ -256,14 +254,12 @@ const DataFilesProjectMembers = ({
               />
               <datalist id="user-search-list">
                 {
-                  /* eslint-disable */
                   // Need to replace this component with a generalized solution from FP-743
                   userSearchResults
                     .filter((user) => !alreadyMember(user))
                     .map((user) => (
                       <option value={formatUser(user)} key={user.username} />
                     ))
-                  /* eslint-enable */
                 }
               </datalist>
             </div>

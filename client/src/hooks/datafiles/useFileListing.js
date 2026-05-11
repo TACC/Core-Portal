@@ -57,6 +57,7 @@ function useFileListing(section = 'FilesListing') {
   );
 
   const fetchMore = useCallback(() => {
+    if (reachedEnd || loadingScroll || loading) return;
     dispatch({
       type: 'SCROLL_FILES',
       payload: {
@@ -71,7 +72,17 @@ function useFileListing(section = 'FilesListing') {
         nextPageToken: data.nextPageToken,
       },
     });
-  }, [dispatch, params, section, data, queryString, filter]);
+  }, [
+    dispatch,
+    params,
+    section,
+    data,
+    queryString,
+    filter,
+    reachedEnd,
+    loadingScroll,
+    loading,
+  ]);
 
   return {
     data,

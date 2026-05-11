@@ -84,7 +84,7 @@ const systemsFixture = {
     //errorMessage: null,
     //loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
-    defaultSystemId: 'frontera',
+    defaultSystemId: 'frontera.home.username',
   },
   // This definitions is required for the tests, some can be removed. Referencing datafiles.reducers.js
   definitions: {

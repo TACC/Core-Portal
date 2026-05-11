@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
-
 import { BrowserChecker, Section, SectionTableWrapper } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
+import UserNewsDashboard from '../UserNews';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
@@ -16,15 +16,27 @@ function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
 }
 
 function Dashboard() {
-  const { hideApps, hideManageAccount, customDashboardSection } = useSelector(
-    (state) => state.workbench.config
-  );
+  const {
+    hideApps,
+    hideManageAccount,
+    showUserNews = false,
+    customDashboardSection,
+  } = useSelector((state) => state.workbench.config);
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
-    ['DashboardTickets'],
+    ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],
     [hideApps, hideSystemMonitor].filter((isHidden) => !isHidden),
     ...(Boolean(customDashboardSection) ? [['customDashboardSection']] : [])
   );
+
+  const contentLayoutName =
+    panelCount === 1
+      ? 'oneColumn'
+      : panelCount === 2 && customDashboardSection
+        ? 'twoColumnUnequal'
+        : panelCount === 2 && !customDashboardSection
+          ? 'twoColumn'
+          : 'twoColumnUnequal';
 
   return (
     <Section
@@ -40,13 +52,14 @@ function Dashboard() {
         )
       }
       contentClassName={`${styles['panels']} count--${panelCount}`}
-      contentLayoutName={hideApps ? 'balanceUnequal' : 'twoColumnUnequal'}
+      contentLayoutName={contentLayoutName}
       contentShouldScroll
       content={
         <>
           {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           {!hideSystemMonitor && <DashboardSysmon />}
+          {showUserNews && <DashboardUserNews />}
           {customDashboardSection && (
             <CustomDashboardSection className={styles['custom-panel']} />
           )}
@@ -131,6 +144,39 @@ function DashboardTickets() {
       contentShouldScroll
     >
       <Tickets />
+    </SectionTableWrapper>
+  );
+}
+
+function DashboardUserNews() {
+  return (
+    <SectionTableWrapper
+      header="User Updates"
+      headerActions={
+        <span>
+          <Link
+            to={ROUTES.USER_NEWS}
+            className="wb-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View All Updates
+          </Link>
+          {' | '}
+          <a
+            href="https://accounts.tacc.utexas.edu/subscriptions"
+            className="wb-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Manage
+          </a>
+        </span>
+      }
+      className={styles['user-news-panel']}
+      contentShouldScroll
+    >
+      <UserNewsDashboard />
     </SectionTableWrapper>
   );
 }

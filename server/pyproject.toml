@@ -6,14 +6,14 @@ authors = [
   { name = "TACC-WMA", email = "wma-portals@tacc.utexas.edu" },
 ]
 readme = "README.md"
-requires-python = "^3.11"
+requires-python = "^3.12"
 dynamic = [ "dependencies" ]
 
 [tool.poetry]
 package-mode = false
 
 [tool.poetry.dependencies]
-Django = "^4.2"
+Django = "^5.2"
 elasticsearch-dsl = "^7.2.1"
 paramiko = "^3.4.0"
 rt = "^2.0.0"
@@ -42,10 +42,11 @@ google-api-python-client = "^1.12.5"
 jsonpickle = "^1.4.1"
 python-magic = "^0.4.18"
 zeep = "^4.1.0"
-tapipy = "^1.8.1"
+tapipy = "^25.4.0"
 gevent = "^23.9.1"
 pymemcache = "^4.0.0"
 twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev]
 optional = true

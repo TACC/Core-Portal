@@ -14,6 +14,7 @@ export const initialState = {
     title: '',
     description: '',
     projectId: '',
+    keywords: '',
     members: [],
     loading: false,
     error: null,
@@ -28,6 +29,16 @@ const removeProjectMember = (members, removedMember) => {
   return members.filter(
     (el) => el.user.username !== removedMember.user.username
   );
+};
+
+const convertKeywordsStringToArray = (keywords) => {
+  if (typeof keywords === 'string') {
+    return keywords
+      .split(',')
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword.length > 0);
+  }
+  return keywords;
 };
 
 export default function projects(state = initialState, action) {
@@ -120,6 +131,7 @@ export default function projects(state = initialState, action) {
         ...state,
         metadata: {
           ...action.payload,
+          keywords: convertKeywordsStringToArray(action.payload.keywords),
           loading: false,
           error: null,
         },

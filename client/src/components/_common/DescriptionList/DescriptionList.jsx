@@ -61,7 +61,7 @@ DescriptionList.propTypes = {
   className: PropTypes.string,
   /** Selector type */
   /* FAQ: We can support any values, even a component */
-  // eslint-disable-next-line react/forbid-prop-types
+
   data: PropTypes.object.isRequired,
   /** Layout density */
   density: PropTypes.oneOf(DENSITIES),

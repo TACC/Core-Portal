@@ -74,35 +74,167 @@ export function getReservationFromArg(arg) {
 }
 
 /**
+ * Strips trailing suffixes like `_1.2` which Tapis adds to file names.
+ */
+function _getCleanInputLabel(inputName) {
+  const original = inputName || '';
+  const stripped = original.replace(/_\d+\.\d+$/, '').trim();
+  return stripped || 'Unnamed Input';
+}
+
+/**
+ * Returns a grouping key for a Tapis input name.
+ *
+ * Tapis adds `_X.Y` suffixes to inputs defined via `fileInputArrays`
+ * in the Tapis app definition and Tapis does not add suffixes for
+ * `fileInputs`.  So we figure out a "grouping" the following way:
+ *
+ * 1) If the name ends with `_<field>.<index>` (e.g. "Target path_1.1", "_1.2"),
+ * returns `<field>` (e.g. "1") so all files for the same input field group together:
+ *     "Target path_1.1" → "1"  (field 1, file 1)
+ *     "_1.2"            → "1"  (field 1, file 2)
+ *     "_2.1"            → "2"  (field 2, file 1)
+ *
+ * 2) Otherwise (no Tapis suffix), falls back to the original name so single-file
+ * inputs still have a stable grouping key:
+ *     "Other target path" → "Other target path"
+ */
+function _getInputGroupKey(inputName) {
+  const match = (inputName || '').match(/_(\d+)\.\d+$/);
+  return match ? match[1] : inputName || 'unkown';
+}
+
+/**
+ * Build display-friendly input labels from job file inputs.
+ * Groups inputs by their Tapis field index (the X in `_X.Y`),
+ * derives the label from the first entry in each group, and
+ * appends "(1/N)", "(2/N)" when a group has multiple files.
+ *
+ * @param {Array} fileInputs - Filtered (non-hidden) file inputs from job
+ * @returns {Array<{label: string, id: string, value: string}>}
+ */
+export function getInputDisplayValues(fileInputs) {
+  if (!fileInputs.length) return [];
+
+  const groups = new Map();
+  fileInputs.forEach((input) => {
+    const key = _getInputGroupKey(input.name);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(input);
+  });
+
+  return [...groups.values()].flatMap((inputs) => {
+    // First entry in each group carries the meaningful name;
+    // subsequent entries are just suffixes like "_1.2"
+    const baseLabel = _getCleanInputLabel(inputs[0].name);
+
+    if (inputs.length === 1) {
+      return [
+        {
+          label: baseLabel,
+          id: inputs[0].sourceUrl,
+          value: inputs[0].sourceUrl,
+        },
+      ];
+    }
+
+    return inputs.map((input, index) => ({
+      label: `${baseLabel} (${index + 1}/${inputs.length})`,
+      id: input.sourceUrl,
+      value: input.sourceUrl,
+    }));
+  });
+}
+
+/**
  * Get display values from job, app and execution system info
  */
 export function getJobDisplayInformation(job, app) {
+  const parseNotes = (notes) => {
+    if (!notes) return null;
+    if (typeof notes === 'string') {
+      try {
+        return JSON.parse(notes);
+      } catch (ignore) {
+        return null;
+      }
+    }
+    return notes;
+  };
+
   const filterHiddenObjects = (objects) =>
     objects.filter((obj) => {
-      const notes = obj.notes ? JSON.parse(obj.notes) : null;
+      const notes = parseNotes(obj.notes);
       return !notes || !notes.isHidden;
     });
 
   const fileInputs = filterHiddenObjects(JSON.parse(job.fileInputs));
   const parameterSet = JSON.parse(job.parameterSet);
-  const parameters = filterHiddenObjects(parameterSet.appArgs);
+  const envVariables = parameterSet.envVariables || [];
+  const schedulerOptions = parameterSet.schedulerOptions || [];
+  const visibleAppEnvVariables =
+    app?.definition?.jobAttributes?.parameterSet?.envVariables
+      ?.filter((envVar) => {
+        const notes = parseNotes(envVar.notes);
+        return !notes || !notes.isHidden;
+      })
+      ?.filter((envVar) => envVar?.key && !envVar.key.startsWith('_'))
+      ?.map((envVar) => ({
+        key: envVar.key,
+        label: parseNotes(envVar.notes)?.label || envVar.key,
+      })) ?? [];
+  const visibleAppEnvKeys = new Set(
+    visibleAppEnvVariables.map((envVar) => envVar.key)
+  );
+  const visibleAppEnvLabels = Object.fromEntries(
+    visibleAppEnvVariables.map((envVar) => [envVar.key, envVar.label])
+  );
+  const visibleEnvVariables = filterHiddenObjects(envVariables).filter(
+    (envVar) => {
+      if (!envVar.key || envVar.key.startsWith('_')) return false;
+      if (app) return visibleAppEnvKeys.has(envVar.key);
+      return true;
+    }
+  );
+  const visibleAppArgs = filterHiddenObjects(parameterSet.appArgs || []);
+  const visibleContainerArgs = filterHiddenObjects(
+    parameterSet.containerArgs || []
+  );
+  const configMappedSchedulerOptionNames = new Set([
+    'Project Allocation Account',
+    'TACC Allocation',
+    'TACC Reservation',
+  ]);
+  const visibleSchedulerOptions = filterHiddenObjects(schedulerOptions).filter(
+    (parameter) => !configMappedSchedulerOptionNames.has(parameter?.name)
+  );
 
-  const envVariables = parameterSet.envVariables;
-  const schedulerOptions = parameterSet.schedulerOptions;
   const display = {
     applicationName: job.appId,
     systemName: job.execSystemId,
-    inputs: fileInputs.map((input) => ({
-      label: input.name || 'Unnamed Input',
-      id: input.sourceUrl,
-      value: input.sourceUrl,
-    })),
-
-    parameters: parameters.map((parameter) => ({
-      label: parameter.name,
-      id: parameter.name,
-      value: parameter.arg,
-    })),
+    inputs: getInputDisplayValues(fileInputs),
+    parameters: [
+      ...visibleAppArgs.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
+      })),
+      ...visibleEnvVariables.map((envVar) => ({
+        label: visibleAppEnvLabels[envVar.key] || envVar.key,
+        id: envVar.key,
+        value: envVar.value,
+      })),
+      ...visibleContainerArgs.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
+      })),
+      ...visibleSchedulerOptions.map((parameter) => ({
+        label: parameter.name,
+        id: parameter.name,
+        value: parameter.arg,
+      })),
+    ],
   };
 
   if (app) {
@@ -126,7 +258,9 @@ export function getJobDisplayInformation(job, app) {
 
       if (app.definition.jobType === 'BATCH') {
         const allocationParam = schedulerOptions.find(
-          (opt) => opt.name === 'TACC Allocation'
+          (opt) =>
+            opt.name === 'Project Allocation Account' ||
+            opt.name === 'TACC Allocation'
         );
         const allocation = getAllocatonFromDirective(allocationParam.arg);
         if (allocation) {

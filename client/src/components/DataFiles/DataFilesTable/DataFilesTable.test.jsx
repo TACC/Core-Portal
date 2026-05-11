@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import DataFilesTable from './DataFilesTable';
+import DataFilesTable, { isNearBottom } from './DataFilesTable';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -331,7 +331,7 @@ describe('DataFilesTable', () => {
       getByText(/There was a problem accessing this file system./)
     ).toBeDefined();
 
-    fireEvent.click(getByText(/push your keys/));
+    fireEvent.click(getByText(/create your Tapis system credentials/));
     await waitFor(() => {
       expect(storeWithError.getActions()).toEqual([
         {
@@ -343,12 +343,44 @@ describe('DataFilesTable', () => {
             operation: 'pushKeys',
             props: {
               callback: expect.any(Function),
-              onSuccess: expect.any(Object),
+              reloadCallback: expect.any(Function),
               system: expect.any(Object),
             },
           },
         },
       ]);
     });
+  });
+});
+
+describe('isNearBottom', () => {
+  const ROW_HEIGHT = 45;
+  const baseArgs = {
+    itemCount: 101,
+    rowHeight: ROW_HEIGHT,
+    listHeight: 136.609375,
+    threshold: ROW_HEIGHT * 10,
+  };
+
+  const bottomOffset =
+    baseArgs.itemCount * baseArgs.rowHeight - baseArgs.listHeight;
+  const atThreshold = bottomOffset - baseArgs.threshold;
+  const rightAboveThreshold = atThreshold + 1;
+  const rightBelowThreshold = atThreshold - 1;
+
+  it('should return true when within threshold of bottom', () => {
+    expect(
+      isNearBottom({ ...baseArgs, scrollOffset: rightAboveThreshold })
+    ).toBe(true);
+  });
+
+  it('should return true when exactly at threshold', () => {
+    expect(isNearBottom({ ...baseArgs, scrollOffset: atThreshold })).toBe(true);
+  });
+
+  it('should return false when beyond threshold from bottom', () => {
+    expect(
+      isNearBottom({ ...baseArgs, scrollOffset: rightBelowThreshold })
+    ).toBe(false);
   });
 });

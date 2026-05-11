@@ -8,6 +8,7 @@ import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
+import canCompressForDownload from 'utils/canCompressForDownload';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `action icon-${iconName}`;
@@ -15,7 +16,6 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
     <Button
       iconNameBefore={iconClassName}
       type={text === 'Empty' ? 'primary' : 'secondary'}
-      size="small"
       disabled={disabled}
       onClick={onClick}
     >
@@ -151,8 +151,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleExtractModal = () =>
     toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
-  const toggleLargeDownloadModal = () =>
-    toggle({ operation: 'largeDownload', props: {} });
+  const toggleUnavailDownloadModal = (customMessage = null) =>
+    toggle({
+      operation: 'unavailDownload',
+      props: { customMessage: customMessage },
+    });
+
+  const toggleNoFoldersModal = () => {
+    toggle({ operation: 'noFolders', props: {} });
+  };
 
   const toggleLinkModal = () => {
     dispatch({
@@ -169,17 +176,32 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
   const download = () => {
-    if (canDownload) {
-      // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays the Globus alert if false
-      const maxFileSize = 2 * 1024 * 1024 * 1024;
-      if (selectedFiles[0].length < maxFileSize) {
-        dispatch({
-          type: 'DATA_FILES_DOWNLOAD',
-          payload: { file: selectedFiles[0] },
-        });
-      } else {
-        toggleLargeDownloadModal();
+    // Checks to see if the file is less than 2 GB; executes the dispatch if true and displays an alert/prompts to compress if false
+    const { exceedsSizeLimit, containsFolder } =
+      canCompressForDownload(selectedFiles);
+    const isCommunityOrPublicData =
+      params.scheme === 'community' || params.scheme === 'public';
+    // no folders modal is not necessary to show in community + public data areas as downloading multiple files at once isn't possible
+    // there anyways
+    if (containsFolder && !isCommunityOrPublicData) {
+      toggleNoFoldersModal();
+    } else if (
+      exceedsSizeLimit ||
+      (areMultipleFilesOrFolderSelected && isCommunityOrPublicData)
+    ) {
+      //public and community data downloads need to be treated with this logic due to compress restrictions
+      let customMessage = null;
+      // prevent running compress job in public or community data
+      if (isCommunityOrPublicData) {
+        customMessage =
+          'Compression is not available in this data system. You may download files individually or transfer to your My Data directory and download them there, but if they are larger than 2GB use Globus below.';
       }
+      toggleUnavailDownloadModal(customMessage);
+    } else if (canDownload && !exceedsSizeLimit) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: selectedFiles[0] },
+      });
     } else {
       toggle({
         operation: 'downloadMessage',

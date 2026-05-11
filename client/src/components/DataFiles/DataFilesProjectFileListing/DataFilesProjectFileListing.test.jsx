@@ -15,11 +15,11 @@ const { ResizeObserver } = window;
 
 beforeEach(() => {
   delete window.ResizeObserver;
-  window.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }));
+  window.ResizeObserver = vi.fn().mockImplementation(function () {
+    this.observe = vi.fn();
+    this.unobserve = vi.fn();
+    this.disconnect = vi.fn();
+  });
 });
 
 afterEach(() => {
@@ -70,6 +70,7 @@ const initialMockState = {
 
 describe('DataFilesProjectFileListing', () => {
   it('shows uses the Show More component for long descriptions', () => {
+    initialMockState.projects.metadata.keywords = [];
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing
@@ -82,7 +83,7 @@ describe('DataFilesProjectFileListing', () => {
     expect(getByText(/Show More/)).toBeDefined();
   });
 
-  it('hides Edit Descriptions and Manage Team when readOnly is true or user is not owner', () => {
+  it('hides Edit Workspace and Manage Team when readOnly is true or user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
@@ -94,11 +95,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(queryByText(/Edit Descriptions/)).toBeNull();
+    expect(queryByText(/Edit Workspace/)).toBeNull();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Descriptions and Manage Team when readOnly is false and user is owner', () => {
+  it('shows Edit Workspace and Manage Team when readOnly is false and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
@@ -110,11 +111,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(getByText(/Edit Descriptions/)).toBeDefined();
+    expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(getByText(/Manage Team/)).toBeDefined();
   });
 
-  it('hides Edit Descriptions and Manage Team when readOnly is false and user is not owner', () => {
+  it('hides Edit Workspace and Manage Team when readOnly is false and user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].readOnly = false;
     const store = mockStore(initialMockState);
@@ -126,11 +127,11 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(queryByText(/Edit Descriptions/)).toBeNull();
+    expect(queryByText(/Edit Workspace/)).toBeNull();
     expect(queryByText(/Manage Team/)).toBeNull();
   });
 
-  it('shows Edit Descriptions and hides Manage Team when readOnly is true and user is owner', () => {
+  it('shows Edit Workspace and hides Manage Team when readOnly is true and user is owner', () => {
     initialMockState.authenticatedUser.user.username = 'username';
     initialMockState.systems.storage.configuration[5].readOnly = true;
     const store = mockStore(initialMockState);
@@ -142,7 +143,35 @@ describe('DataFilesProjectFileListing', () => {
       store
     );
 
-    expect(getByText(/Edit Descriptions/)).toBeDefined();
+    expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(queryByText(/Manage Team/)).toBeNull();
+  });
+
+  it('hides Keywords heading when keyword length is 0', () => {
+    initialMockState.projects.metadata.keywords = [];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/Keywords/)).toBeNull();
+  });
+
+  it('inserts commas between keyword entries if they are in an array', () => {
+    initialMockState.projects.metadata.keywords = ['one', 'two', 'three'];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/one, two, three/)).toBeDefined();
   });
 });

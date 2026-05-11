@@ -47,12 +47,9 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
-
-if not DEBUG:
-    # Stop the browser from submitting the cookie in any requests that use an unencrypted HTTP connection.
-    CSRF_COOKIE_SECURE = True
-    # Prevent the cookie's value from being read or set by client-side JavaScript.
-    CSRF_COOKIE_HTTPONLY = True
+# whether the csrf token cookie should be secure (https:// only)
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_NAME = 'csrfcookie'
 
 #
 CSRF_COOKIE_SAMESITE = 'Strict'
@@ -103,6 +100,7 @@ INSTALLED_APPS = [
     'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.news',
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
@@ -212,7 +210,6 @@ LOGIN_URL = '/auth/tapis/'
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # LANGUAGES = [
@@ -389,6 +386,12 @@ LOGGING = {
 }
 
 """
+SETTINGS: TACC
+"""
+
+IS_TACC_PORTAL = getattr(settings_custom, '_IS_TACC_PORTAL', True)
+
+"""
 SETTINGS: TAPIS
 """
 
@@ -527,7 +530,7 @@ TACC_EXEC_SYSTEMS = {
     },
     'frontera': {
         'work_dir': '/work2/{}',
-        'scratch_dir': '/scratch1/{}',
+        'scratch_dir': 'HOST_EVAL(SCRATCH)',
         'home_dir': '/home1/{}'
     },
     'ls6': {
@@ -671,6 +674,8 @@ SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_
 
 SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
+DOCS_CHATBOT_URL = getattr(settings_custom, '_DOCS_CHATBOT_URL', None)
+
 """
 SETTINGS: EXPORTS
 """
@@ -681,7 +686,9 @@ SETTINGS_EXPORT = [
     'DEBUG',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE',
-    'WORKBENCH_SETTINGS'
+    'WORKBENCH_SETTINGS',
+    'DOCS_CHATBOT_URL',
+    'PORTAL_USER_ACCOUNT_SETUP_STEPS',
 ]
 
 """
@@ -765,6 +772,7 @@ SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
+WORKBENCH_SETTINGS.setdefault('showUserNews', False)
 
 """
 SETTINGS: RECAPTCHA

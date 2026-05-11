@@ -6,4 +6,6 @@
 
 .expanded {
   composes: x-untruncate--many-lines from '@tacc/core-styles/dist/tools/x-truncate.css';
+  max-height: 200px;
+  overflow-y: auto;
 }

@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye AS python-base
+FROM python:3.12-bullseye AS python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 EXPOSE 8000
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=2.1.3 \
+ENV POETRY_VERSION=2.3.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     PYSETUP_PATH="/opt/pysetup" \
@@ -68,8 +68,8 @@ WORKDIR /srv/www/portal/server
 # `production` target is used for deployed runtime environments
 FROM python-base AS production
 
-# install node 22.x
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+# install node 24.x
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 RUN apt-get install -y nodejs
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH

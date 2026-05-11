@@ -44,6 +44,12 @@ const initialMockState = {
       email: 'user@name.com',
     },
   },
+  workbench: {
+    config: {
+      minDescriptionLength: 50,
+      maxTitleLength: 150,
+    },
+  },
 };
 
 describe('DataFilesProjectEditDescriptionModal', () => {
@@ -53,11 +59,13 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       <DataFilesProjectEditDescriptionModal />,
       store
     );
-    expect(getAllByText(/Edit Descriptions/)).toBeDefined();
-    expect(getAllByText(/Workspace Title/)).toBeDefined();
+    expect(getAllByText(/Edit Workspace/)).toBeDefined();
+    expect(getAllByText(/Title/)).toBeDefined();
     expect(getByDisplayValue(projectMetadataFixture.title)).toBeDefined();
-    expect(getAllByText(/Workspace Description/)).toBeDefined();
+    expect(getAllByText(/Description/)).toBeDefined();
     expect(getAllByText(projectMetadataFixture.description)).toBeDefined();
+    expect(getAllByText(/Keywords/)).toBeDefined();
+    expect(getAllByText(projectMetadataFixture.keywords)).toBeDefined();
     expect(getAllByText(/Update Changes/)).toBeDefined();
   });
 
@@ -119,7 +127,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     await waitFor(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it('disallows title input over 150 characters and description over 800 characters', async () => {
+  it('disallows title input over 150 characters and description under 50 characters', async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -141,17 +149,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
 
     fireEvent.change(descriptionField, {
       target: {
-        value:
-          'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo \
-        ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient \
-        montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium \
-        quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, \
-        vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. \
-        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus \
-        elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor \
-        eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, \
-        feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. \
-        Aenean imperdiet. Etiam ultricies.',
+        value: 'Lorem ipsum dolor sit amet',
       },
     });
 
@@ -159,7 +157,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
 
     await waitFor(() => getAllByText(/Title must be at most 150 characters/));
     await waitFor(() =>
-      getAllByText(/Description must be at most 800 characters/)
+      getAllByText(/Description must be at least 50 characters/)
     );
   });
 });

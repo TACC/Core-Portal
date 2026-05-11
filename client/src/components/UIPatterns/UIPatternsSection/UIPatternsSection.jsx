@@ -17,7 +17,6 @@ function UIPatternsSection() {
   const dispatch = useDispatch();
 
   function performAction() {
-    // eslint-disable-next-line no-alert
     window.alert(
       'Sample action (no actual action has occurred beyond this alert).'
     );

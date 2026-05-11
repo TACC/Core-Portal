@@ -83,14 +83,12 @@ const UserSearchbar = ({
         />
         <datalist id="user-search-list">
           {
-            /* eslint-disable */
             // Need to replace this component with a generalized solution from FP-743
             searchResults
               .filter((user) => !alreadyMember(user))
               .map((user) => (
                 <option value={formatUser(user)} key={user.username} />
               ))
-            /* eslint-enable */
           }
         </datalist>
       </div>

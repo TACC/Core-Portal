@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
-import { useSystems } from 'hooks/datafiles';
+import { useSystems, useTapisToken } from 'hooks/datafiles';
 import Dashboard from '../Dashboard';
 import TicketCreateModal from '../Tickets/TicketCreateModal';
 import ManageAccount from '../ManageAccount';
@@ -27,6 +27,9 @@ function Workbench() {
   const dispatch = useDispatch();
   const { loading: loadingSystems } = useSystems();
 
+  // Prefetch the user's Tapis token so it's ready to go when the user tries to upload files
+  useTapisToken();
+
   // showUIPatterns: Show some entries only in local development
   const {
     loading,
@@ -39,6 +42,8 @@ function Workbench() {
     showSubmissions,
     hideManageAccount,
     hideSystemStatus,
+    hideOnboarding,
+    isTACCPortal,
   } = useSelector(
     (state) => ({
       loading: state.workbench.loading || loadingSystems,
@@ -52,6 +57,8 @@ function Workbench() {
       showSubmissions: state.workbench.config.showSubmissions,
       hideManageAccount: state.workbench.config.hideManageAccount,
       hideSystemStatus: state.workbench.config.hideSystemStatus,
+      hideOnboarding: state.workbench.config.hideOnboarding,
+      isTACCPortal: state.workbench.isTACCPortal,
     }),
     shallowEqual
   );
@@ -68,13 +75,15 @@ function Workbench() {
     });
 
     if (setupComplete) {
-      dispatch({ type: 'GET_ALLOCATIONS' });
+      if (isTACCPortal) {
+        dispatch({ type: 'GET_ALLOCATIONS' });
+      }
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
       dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
-  }, [setupComplete]);
+  }, [setupComplete, isTACCPortal, dispatch]);
 
   return (
     <div className="workbench-wrapper">
@@ -129,11 +138,13 @@ function Workbench() {
                     component={History}
                   />
                 )}
-                <Route
-                  path={`${path}${ROUTES.ONBOARDING}`}
-                  component={Onboarding}
-                />
-                {isStaff && (
+                {!hideOnboarding && (
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDING}`}
+                    component={Onboarding}
+                  />
+                )}
+                {isStaff && !hideOnboarding && (
                   <Route
                     path={`${path}${ROUTES.ONBOARDINGADMIN}`}
                     component={OnboardingAdmin}

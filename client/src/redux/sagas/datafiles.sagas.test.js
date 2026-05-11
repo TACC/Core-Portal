@@ -84,7 +84,7 @@ describe('fetchFiles', () => {
     const fm = fetchMock
       .sandbox()
       .mock(
-        '/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&nextPageToken&offset=0&query_string=',
+        '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string=',
         {
           body: { data: '200 response' },
           status: 200,
@@ -216,7 +216,7 @@ describe('fetchFiles', () => {
     );
     expect(apiResult).resolves.toEqual('200 response');
     expect(fetch).toBeCalledWith(
-      '/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&nextPageToken&offset=0&query_string='
+      '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string='
     );
   });
 });
@@ -333,19 +333,19 @@ describe('Test extract with different file names', () => {
                 sourceUrl: pathInfo['tapis_path'],
               },
             ],
-            name: `extract-0.0.1_${new Date().toISOString().split('.')[0]}`,
+            name: `extract-express-0.0.1_${new Date().toISOString().split('.')[0]}`,
             archiveSystemId: 'test.system',
             archiveSystemDir: 'dir/',
             archiveOnAppError: false,
-            appId: 'extract',
+            appId: 'extract-express',
             appVersion: '0.0.1',
             parameterSet: {
               appArgs: [],
               schedulerOptions: [
                 {
-                  name: 'TACC Allocation',
+                  name: 'Project Allocation Account',
                   description:
-                    'The TACC allocation associated with this job execution',
+                    'The project allocation account associated with this job execution.',
                   include: true,
                   arg: '-A TACC-ACI',
                 },
@@ -369,12 +369,12 @@ describe('Test extract with different file names', () => {
       it('runs extractFiles saga with success', () => {
         return expectSaga(extractFiles, action)
           .provide([
-            [select(extractAppSelector), 'extract'],
+            [select(extractAppSelector), 'extract-express'],
             [select(defaultAllocationSelector), 'TACC-ACI'],
             [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
             [matchers.call.fn(jobHelper), { status: 'PENDING' }],
           ])
-          .call(fetchAppDefinitionUtil, 'extract')
+          .call(fetchAppDefinitionUtil, 'extract-express')
           .put({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
             payload: { status: 'RUNNING', operation: 'extract' },
@@ -390,12 +390,12 @@ describe('Test extract with different file names', () => {
       it('runs extractFiles saga with push keys modal', () => {
         return expectSaga(extractFiles, action)
           .provide([
-            [select(extractAppSelector), 'extract'],
+            [select(extractAppSelector), 'extract-express'],
             [select(defaultAllocationSelector), 'TACC-ACI'],
             [matchers.call.fn(fetchAppDefinitionUtil), extractApp],
             [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
           ])
-          .call(fetchAppDefinitionUtil, 'extract')
+          .call(fetchAppDefinitionUtil, 'extract-express')
           .put({
             type: 'DATA_FILES_SET_OPERATION_STATUS',
             payload: { status: 'RUNNING', operation: 'extract' },
@@ -456,11 +456,11 @@ describe('compressFiles', () => {
             sourceUrl: 'tapis://test.system/test 2.txt',
           },
         ],
-        name: `compress-0.0.1_${new Date().toISOString().split('.')[0]}`,
+        name: `compress-express-0.0.1_${new Date().toISOString().split('.')[0]}`,
         archiveSystemId: archiveSystemId,
         archiveSystemDir: archiveSystemDir,
         archiveOnAppError: false,
-        appId: 'compress',
+        appId: 'compress-express',
         appVersion: '0.0.1',
         parameterSet: {
           appArgs: [
@@ -475,9 +475,9 @@ describe('compressFiles', () => {
           ],
           schedulerOptions: [
             {
-              name: 'TACC Allocation',
+              name: 'Project Allocation Account',
               description:
-                'The TACC allocation associated with this job execution',
+                'The project allocation account associated with this job execution.',
               include: true,
               arg: '-A TACC-ACI',
             },
@@ -491,13 +491,13 @@ describe('compressFiles', () => {
   it.skip('runs compressFiles saga with success', () => {
     return expectSaga(useCompress, createAction('private'))
       .provide([
-        [select(compressAppSelector), 'compress'],
+        [select(compressAppSelector), 'compress-express'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
         [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
-      .call(fetchAppDefinitionUtil, 'compress')
+      .call(fetchAppDefinitionUtil, 'compress-express')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: { type: 'RUNNING' }, operation: 'compress' },
@@ -513,13 +513,13 @@ describe('compressFiles', () => {
   it.skip('runs compressFiles saga with push keys modal', () => {
     return expectSaga(compressFiles, createAction('private'))
       .provide([
-        [select(compressAppSelector), 'compress'],
+        [select(compressAppSelector), 'compress-express'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
         [select(systemsSelector), []],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { execSys: 'test.cli.system' }],
       ])
-      .call(fetchAppDefinitionUtil, 'compress')
+      .call(fetchAppDefinitionUtil, 'compress-express')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: { type: 'RUNNING' }, operation: 'compress' },
@@ -548,13 +548,13 @@ describe('compressFiles', () => {
   it.skip('runs compressFiles saga with success for file in a public system', () => {
     return expectSaga(compressFiles, createAction('public'))
       .provide([
-        [select(compressAppSelector), 'compress'],
+        [select(compressAppSelector), 'compress-express'],
         [select(defaultAllocationSelector), 'TACC-ACI'],
         [select(systemsSelector), systemsFixture.storage.configuration],
         [matchers.call.fn(fetchAppDefinitionUtil), compressApp],
         [matchers.call.fn(jobHelper), { status: 'PENDING' }],
       ])
-      .call(fetchAppDefinitionUtil, 'compress')
+      .call(fetchAppDefinitionUtil, 'compress-express')
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: { type: 'RUNNING' }, operation: 'compress' },

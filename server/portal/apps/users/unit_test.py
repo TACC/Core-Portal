@@ -1,15 +1,16 @@
+import json
+import os
+import pytest
 from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from portal.apps.auth.models import TapisOAuthToken
+from django.conf import settings
 from pytas.http import TASClient
-from portal.apps.users.utils import get_tas_allocations, get_allocations
 from elasticsearch.exceptions import NotFoundError
 from zeep.exceptions import Fault
-import pytest
-import json
-import os
-from django.conf import settings
+from portal.apps.auth.models import TapisOAuthToken
+from portal.apps.users.utils import get_allocations
+from portal.apps.users.tasks import get_tas_allocations
 
 
 class AttrDict(dict):
@@ -84,7 +85,7 @@ class TestGetAllocations(TestCase):
     def setUp(self):
         super(TestGetAllocations, self).setUp()
         self.mock_tas_patcher = patch(
-            'portal.apps.users.utils.TASClient',
+            'portal.apps.users.tasks.TASClient',
             spec=TASClient
         )
         self.mock_tas = self.mock_tas_patcher.start()
@@ -214,9 +215,13 @@ class TestGetAllocations(TestCase):
 
 class TestGetIndexedAllocations(TestCase):
 
+    @patch('portal.apps.users.utils.index_allocations')
     @patch('portal.apps.users.utils.IndexedAllocation')
-    def test_checks_allocations(self, mock_idx):
+    def test_checks_allocations(self, mock_idx, mock_index_allocations):
         get_allocations('testuser')
+        mock_index_allocations.apply_async.assert_called_once_with(
+            args=['testuser']
+        )
         mock_idx.from_username.assert_called_with('testuser')
 
     @patch('portal.apps.users.utils.IndexedAllocation')

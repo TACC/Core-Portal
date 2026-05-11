@@ -26,6 +26,12 @@ const initialMockState = {
       email: 'user@username.com',
     },
   },
+  workbench: {
+    config: {
+      uploadModalMaxSizeLabel: '2GB',
+      uploadModalMaxSizeValue: 2 * 1024 * 1024 * 1024,
+    },
+  },
 };
 
 describe('DataFilesSidebar', () => {

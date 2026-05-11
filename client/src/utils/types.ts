@@ -51,6 +51,24 @@ export type TAppFileInput = {
   targetPath?: string;
 };
 
+type TAppNotes = {
+  label?: string;
+  shortLabel?: string;
+  helpUrl?: string;
+  category?: string;
+  isInteractive?: boolean;
+  hideNodeCountAndCoresPerNode?: boolean;
+  icon?: string;
+  dynamicExecSystems?: string[];
+  queueFilter?: string[];
+  hideQueue?: boolean;
+  hideAllocation?: boolean;
+  hideMaxMinutes?: boolean;
+  jobLaunchDescription?: string;
+  showReservation?: boolean;
+  showTargetPath?: boolean;
+};
+
 export type TTapisApp = {
   sharedAppCtx: string;
   isPublic: boolean;
@@ -81,7 +99,8 @@ export type TTapisApp = {
     execSystemLogicalQueue: string;
     archiveSystemId: string;
     archiveSystemDir: string;
-    archiveOnAppError: boolean;
+    archiveOnAppError: boolean; // deprecated, use archiveMode
+    archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
     isMpi: boolean;
     mpiCmd: string;
     cmdPrefix?: string;
@@ -110,22 +129,7 @@ export type TTapisApp = {
     tags: string[];
   };
   tags: string[];
-  notes: {
-    label?: string;
-    shortLabel?: string;
-    helpUrl?: string;
-    category?: string;
-    isInteractive?: boolean;
-    hideNodeCountAndCoresPerNode?: boolean;
-    icon?: string;
-    dynamicExecSystems?: string[];
-    queueFilter?: string[];
-    hideQueue?: boolean;
-    hideAllocation?: boolean;
-    hideMaxMinutes?: boolean;
-    jobLaunchDescription?: string;
-    showReservation?: boolean;
-  };
+  notes: TAppNotes;
   uuid: string;
   deleted: boolean;
   created: string;
@@ -200,7 +204,8 @@ export type TTapisJob = {
   appId: string;
   appVersion: string;
   archiveCorrelationId?: string;
-  archiveOnAppError: boolean;
+  archiveOnAppError: boolean; // deprecated, use archiveMode
+  archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
   archiveSystemDir: string;
   archiveSystemId: string;
   archiveTransactionId?: string;
@@ -240,7 +245,7 @@ export type TTapisJob = {
   mpiCmd?: string;
   name: string;
   nodeCount: number;
-  notes: string;
+  notes: TAppNotes;
   owner: string;
   parameterSet: string;
   remoteChecksFailed: number;
@@ -272,6 +277,7 @@ export type TTapisJob = {
 
 export type TTapisSystemQueue = {
   name: string;
+  description: string;
   hpcQueueName: string;
   maxJobs: number;
   maxJobsPerUser: number;
@@ -283,6 +289,12 @@ export type TTapisSystemQueue = {
   maxMemoryMB: number;
   minMinutes: number;
   maxMinutes: number;
+  schedulerOptions: TAppArgSpec[];
+};
+
+type TTapisSystemQueueFilter = {
+  portalName: string;
+  queues: [];
 };
 
 export type TTapisSystem = {
@@ -317,7 +329,7 @@ export type TTapisSystem = {
     {
       runtimeType: string;
       version?: string;
-    }
+    },
   ];
   jobWorkingDir: string;
   jobEnvVariables: [];
@@ -331,10 +343,11 @@ export type TTapisSystem = {
   tags: [];
   notes: {
     label?: string;
-    keyservice?: boolean;
     isMyData?: boolean;
     hasWork?: boolean;
+    queueFilter?: TTapisSystemQueueFilter[];
     portalNames: string[];
+    noAllocationRequired?: boolean;
   };
   importRefId?: string;
   uuid: string;
