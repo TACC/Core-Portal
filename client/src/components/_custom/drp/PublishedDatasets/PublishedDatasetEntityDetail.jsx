@@ -123,7 +123,7 @@ function PublishedDatasetEntityDetail({ params }) {
 
         //if referenced digital dataset is a valid url, make it a link
         if (urlRegex.test(digitalDataset)) {
-            return <a href={`${digitalDataset}`} target="_blank">{digitalDataset}</a>;
+            return <a href={`${digitalDataset}`} target="_blank" rel="noreferrer">{digitalDataset}</a>;
         }
         else if (!uuidRegex.test(digitalDataset)) {
             return formatLabel(digitalDataset);
