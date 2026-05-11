@@ -15,11 +15,11 @@
 {% endif %}
 {% if user.is_authenticated %}
 <li class="nav-item dropdown" style="{% if settings.DOCS_CHATBOT_URL %}border-left: 1px solid var(--header-minor-border-color);{% endif %}">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="nav-link dropdown-toggle" id="navbarDropdown" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="icon icon-user" role="presentation"></i>
     <span>{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
-  </a>
+  </button>
   <nav class="dropdown-menu dropdown-menu-end">
     <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
       <i class="icon icon-dashboard" role="presentation"></i> My Dashboard
