@@ -404,6 +404,11 @@ export const AppSchemaForm = ({ app }) => {
           [opt.name]: opt.fieldType === 'number' ? Number(opt.arg) : opt.arg,
         }))
       );
+
+      console.log(
+        'queueSchedulerOptions:',
+        initialValues.queueSchedulerOptions
+      );
     }
   }
   const sectionMessage = keyService ? (
@@ -674,6 +679,22 @@ export const AppSchemaForm = ({ app }) => {
             app.definition.jobAttributes.memoryMB > queue.maxMemoryMB
           ) {
             job.memoryMB = queue.maxMemoryMB;
+          }
+          debugger;
+          if (isAppUsingDynamicExecSystem(app)) {
+            if (!job.parameterSet.schedulerOptions) {
+              job.parameterSet.schedulerOptions = [];
+            }
+            job.parameterSet.schedulerOptions.push({
+              name: 'TACC Scheduler Profile',
+              description: 'Scheduler profile for HPC clusters at TACC',
+              inputMode: 'FIXED',
+              include: true,
+              arg: `--tapis-profile ${app.definition.notes.dynamicExecSystems.profileName}`,
+              notes: { isHidden: true },
+            });
+
+            console.log('SchedulerOptions:', job.parameterSet.schedulerOptions);
           }
 
           // Add allocation scheduler option
