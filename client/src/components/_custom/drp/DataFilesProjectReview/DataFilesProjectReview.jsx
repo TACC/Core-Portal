@@ -50,7 +50,7 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
   const wizardSteps = [
     ProjectDescriptionStep({ project: metadata }),
     ReviewProjectStructureStep({ projectTree: tree }),
-    ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {} }),
+    ReviewAuthorsStep({ project: metadata, onAuthorsUpdate: () => {}, isReviewProject: true }),
     SubmitPublicationReviewStep({
       callbackUrl: `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}`,
     }),

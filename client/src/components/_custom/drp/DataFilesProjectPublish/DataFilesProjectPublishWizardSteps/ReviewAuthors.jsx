@@ -160,7 +160,7 @@ export const Citations = ({ project, authors }) => (
   </div>
 );
 
-const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
+const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -184,7 +184,7 @@ const ReviewAuthors = ({ project, onAuthorsUpdate }) => {
     const projectMembers = project.members || [];
     const guestUsers = project.guest_users || [];
 
-    const initialAuthors = [
+    const initialAuthors = isReviewProject && project.authors.length > 0 ? project.authors : [
       ...projectMembers.map((member) => ({
         ...member.user,
         isOwner: member.access === 'owner',
