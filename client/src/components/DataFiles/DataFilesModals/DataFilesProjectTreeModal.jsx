@@ -5,6 +5,8 @@ import styles from './DataFilesProjectTreeModal.module.scss';
 import { ProjectTreeView } from '_custom/drp/DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ProjectTreeView';
 
 const DataFilesProjectTreeModal = () => {
+  const dispatch = useDispatch();
+
   const { projectId } = useSelector((state) => state.projects.metadata);
 
   const isOpen = useSelector((state) => state.files.modals.projectTree);
@@ -16,8 +18,6 @@ const DataFilesProjectTreeModal = () => {
       payload: { operation: 'projectTree', props: {} },
     });
   }, []);
-
-  const dispatch = useDispatch();
 
   return (
     <>

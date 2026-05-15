@@ -263,9 +263,9 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
   );
 };
 
-export const ReviewAuthorsStep = ({ project, onAuthorsUpdate }) => ({
+export const ReviewAuthorsStep = ({ project, onAuthorsUpdate, isReviewProject = false }) => ({
   id: 'project_authors',
   name: 'Review Authors and Citations',
-  render: <ReviewAuthors project={project} onAuthorsUpdate={onAuthorsUpdate} />,
+  render: <ReviewAuthors project={project} onAuthorsUpdate={onAuthorsUpdate} isReviewProject={isReviewProject} />,
   initialValues: {},
 });
