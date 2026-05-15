@@ -174,15 +174,14 @@ const DataFilesProjectFileListing = ({
           )}
         <>
           {DataFilesProjectFileListingMetadataAddon ? (
-            <ShowMore key={`${system}`}>
-              <DataFilesProjectFileListingMetadataAddon
-                folderMetadata={folderMetadata}
-                metadata={metadata}
-                system={system}
-                path={path}
-                showCitation={isPublicationSystem(rootSystem)}
-              />
-            </ShowMore>
+            <DataFilesProjectFileListingMetadataAddon
+              key={system}
+              folderMetadata={folderMetadata}
+              metadata={metadata}
+              system={system}
+              path={path}
+              showCitation={isPublicationSystem(rootSystem)}
+            />
           ) : (
             !!metadata.description && (
               <>

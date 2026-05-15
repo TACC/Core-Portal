@@ -42,7 +42,11 @@ const ProjectDescription = ({ project }) => {
     let projectData = {
       Title: project.title,
       Created: formatDate(new Date(project.created)),
-      Description: <ShowMore> {project.description} </ShowMore>,
+      Description: (
+        <ShowMore className={styles['description-show-more']}>
+          {project.description}
+        </ShowMore>
+      ),
       License: project.license ?? 'None',
     };
 

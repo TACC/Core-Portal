@@ -280,7 +280,9 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                   )}
                 </div>
                 <div className={styles['description']}>
-                  <ShowMore>{node.metadata.description}</ShowMore>
+                  <ShowMore className={styles['description-show-more']}>
+                    {node.metadata.description}
+                  </ShowMore>
                   <DataDisplay
                     data={node.metadata}
                     tree={tree[0]}

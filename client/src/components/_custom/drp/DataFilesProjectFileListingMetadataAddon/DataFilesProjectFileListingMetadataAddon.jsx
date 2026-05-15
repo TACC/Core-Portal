@@ -5,7 +5,7 @@ import { useFileListing } from 'hooks/datafiles';
 import DataDisplay from '../utils/DataDisplay/DataDisplay';
 import { formatDate } from 'utils/timeFormat';
 import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
-import { Button } from '_common';
+import { Button, ShowMore } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
@@ -85,7 +85,11 @@ const DataFilesProjectFileListingMetadataAddon = ({
       {!loading && tree &&
         (folderMetadata ? (
           <>
-            {folderMetadata.description}
+            {!!folderMetadata.description && (
+              <ShowMore className={styles['addon-description']}>
+                {folderMetadata.description}
+              </ShowMore>
+            )}
             <DataDisplay
               data={folderMetadata}
               tree={tree}
@@ -111,7 +115,11 @@ const DataFilesProjectFileListingMetadataAddon = ({
                 </div>
               </div>
             )}
-            {metadata.description}
+            {!!metadata.description && (
+              <ShowMore className={styles['addon-description']}>
+                {metadata.description}
+              </ShowMore>
+            )}
             <DataDisplay
               data={getProjectMetadata(metadata)}
               tree={tree}
