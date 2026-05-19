@@ -123,7 +123,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {
-            'expected_hosts': 'vista.tacc.utexas.edu'
+            'expected_hosts': ['vista.tacc.utexas.edu']
         }
     },
     {

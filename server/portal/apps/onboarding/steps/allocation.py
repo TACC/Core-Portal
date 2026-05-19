@@ -1,7 +1,7 @@
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from portal.apps.users.utils import get_allocations
-from django.conf import settings
+
 
 class AllocationStep(AbstractStep):
     def __init__(self, user):
@@ -35,23 +35,21 @@ class AllocationStep(AbstractStep):
                 """User {0} does not have any allocations""".format(self.user.username),
             )
         else:
-            if self.settings.get("expected_hosts"):
+            if "expected_hosts" in self.settings:
                 # checking if expected hosts are included in allocation hosts
                 expected_hosts = self.settings["expected_hosts"]
-                hosts = [
-                    h
-                    for h in allocations["hosts"].keys()
-                    if h.lower() in expected_hosts
-                ]
+                allocation_hosts = {h.lower() for h in allocations["hosts"].keys()}
+                matched_hosts = [h for h in expected_hosts if h in allocation_hosts]
+                missing_hosts = [h for h in expected_hosts if h not in allocation_hosts]
 
-                if not hosts:
+                if missing_hosts:
                     self.state = SetupState.FAILED
                     self.log(
-                        "User {0} does not have active allocations on any expected hosts: {1}".format(
-                            self.user.username, expected_hosts
+                        "User {0} is missing allocations on: {1}".format(
+                            self.user.username, missing_hosts
                         )
                     )
                     return
-                self.log("Expected host allocations found: {0}".format(hosts))
+                self.log("Expected host allocations found: {0}".format(matched_hosts))
 
             self.complete("Allocations retrieved", data=allocations)
