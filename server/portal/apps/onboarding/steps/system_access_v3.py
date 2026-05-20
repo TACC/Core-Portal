@@ -62,13 +62,11 @@ def create_system_credentials_with_keys(
     )
 
 
-def create_system_credentials(
+def create_system_credentials_with_tms(
     client,
     username,
     system_id,
-    createTmsKeys,
     skipCredentialCheck=False,
-    loginUser=None,
 ) -> int:
     """
     Create user's auth credential on a Tapis system. This Tapis API uses TMS.
@@ -79,9 +77,8 @@ def create_system_credentials(
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
-        createTmsKeys=createTmsKeys,
-        skipCredentialCheck=skipCredentialCheck,
-        loginUser=loginUser or username,
+        createTmsKeys=True,
+        skipCredentialCheck=skipCredentialCheck
     )
 
 
@@ -157,15 +154,14 @@ class SystemAccessStepV3(AbstractStep):
                         system,
                     )
                 else:
-                    create_system_credentials(
+                    create_system_credentials_with_tms(
                         self.user.tapis_oauth.client,
                         self.user.username,
                         system,
-                        createTmsKeys=True,
                     )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as e:
-                logger.error(e)
+                logger.exception(f"Failed to create credentials for system: {system}")
                 self.fail(f"Failed to create credentials for system: {system}")
 
         if self.state != SetupState.FAILED:
