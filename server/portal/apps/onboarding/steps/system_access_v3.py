@@ -160,7 +160,7 @@ class SystemAccessStepV3(AbstractStep):
                         system,
                     )
                 self.log(f"Successfully created credentials for system: {system}")
-            except BaseTapyException as e:
+            except BaseTapyException:
                 logger.exception(f"Failed to create credentials for system: {system}")
                 self.fail(f"Failed to create credentials for system: {system}")
 
