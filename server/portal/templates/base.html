@@ -47,7 +47,7 @@
     <!-- Project JS -->
     {% if settings.PORTAL_JS_FILENAMES|length %}
       {% for script in settings.PORTAL_JS_FILENAMES %}
-      <script type="module" src="{{ script }}">
+      <script type="module" src="{{ script }}"></script>
       {% endfor %}
     {% endif %}
   </body>
