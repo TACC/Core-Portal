@@ -30,6 +30,7 @@ class TapisOAuthBackend(ModelBackend):
                 UserModel = get_user_model()
 
                 defaults = {}
+                profile_defaults = {}
                 if settings.IS_TACC_PORTAL:
                     try:
                         user_data = get_user_data(username=username)
@@ -37,6 +38,10 @@ class TapisOAuthBackend(ModelBackend):
                             "first_name": user_data["firstName"],
                             "last_name": user_data["lastName"],
                             "email": user_data["email"],
+                        }
+                        profile_defaults = {
+                            "institution": user_data.get("institution"),
+                            "orcid_id": user_data.get("orcidId")
                         }
                     except Exception:
                         logger.exception(
@@ -48,7 +53,8 @@ class TapisOAuthBackend(ModelBackend):
                 if created:
                     logger.info('Created local user record for "%s" from TAS Profile' % username)
 
-                PortalProfile.objects.get_or_create(user=user)
+                PortalProfile.objects.update_or_create(user=user,
+                                                       defaults=profile_defaults)
                 logger.info('Login successful for user "%s"' % username)
             else:
                 logger.info('Tapis Authentication failed: %s' % json_result)
