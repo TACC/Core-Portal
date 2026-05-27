@@ -43,15 +43,14 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
         systemId="test_system",
         userName=authenticated_user.username,
         createTmsKeys=True,
-        loginUser=authenticated_user.username,
         skipCredentialCheck=False,
     )
 
 
 @patch("portal.apps.workspace.api.utils.should_push_keys")
-@patch("portal.apps.workspace.api.utils.create_system_credentials")
+@patch("portal.apps.workspace.api.utils.create_system_credentials_with_tms")
 def test_push_keys_required_if_not_credentials_ensured_credentials_ok(
-    mock_create_system_credentials,
+    mock_create_system_credentials_with_tms,
     mock_should_push_keys,
     authenticated_user,
     mock_tapis_client,
@@ -75,7 +74,7 @@ def test_push_keys_required_if_not_credentials_ensured_credentials_ok(
 
     assert result is False
     mock_should_push_keys.assert_not_called()
-    mock_create_system_credentials.assert_not_called()
+    mock_create_system_credentials_with_tms.assert_not_called()
 
 
 def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
