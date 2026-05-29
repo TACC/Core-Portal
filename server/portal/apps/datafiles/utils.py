@@ -174,6 +174,6 @@ def _get_resource_provider_from_host(host: str) -> str:
         case [*comps, "tacc", "utexas", "edu"]:
             return "TACC Systems"
         case [*comps, "edu"]:
-            return comps[-1].upper()
+            return f"{comps[-1].upper()} Systems"
         case _:
             return "Other"
