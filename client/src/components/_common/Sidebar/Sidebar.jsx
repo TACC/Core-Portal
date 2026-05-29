@@ -93,8 +93,11 @@ const Sidebar = ({
       {!loading &&
         Object.entries(groupedItems).map(([category, items]) => (
           <React.Fragment key={category}>
-            {/* Sidebar category label. Categories with empty strings will not have a label rendered. */}
-            {category && (
+            {/* Sidebar category label.
+            - Categories with empty strings will not have a label rendered.
+            - If there is only one category, regardless of value, it is not rendered.
+            */}
+            {category && Object.keys(groupedItems).length > 1 && (
               <NavItem className={styles['category-label']}>
                 <span>{category}</span>
               </NavItem>
