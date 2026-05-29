@@ -71,7 +71,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/work/{tasdir}",
         "icon": None,
         "default": True,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "My Data (Frontera Scratch)",
@@ -80,7 +80,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "tapis",
         "hostEval": "SCRATCH",
         "icon": None,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "My Data (Frontera Home)",
@@ -89,7 +89,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "tapis",
         "homeDir": "/home1/{tasdir}",
         "icon": None,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "Community Data",
@@ -99,7 +99,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/corral/tacc/aci/CEP/community",
         "icon": None,
         "siteSearchPriority": 1,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "Public Data",
@@ -109,7 +109,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/corral/tacc/aci/CEP/public",
         "icon": "publications",
         "siteSearchPriority": 0,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "Shared Workspaces",
@@ -118,7 +118,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "icon": "publications",
         "readOnly": False,
         "hideSearchBar": False,
-        "resource_provider": "TACC",
+        "resourceProvider": "TACC",
     },
     {
         "name": "Google Drive",
@@ -127,7 +127,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "googledrive",
         "icon": None,
         "integration": "portal.apps.googledrive_integration",
-        "resource_provider": "External Resources",
+        "resourceProvider": "External Resources",
     },
 ]
 

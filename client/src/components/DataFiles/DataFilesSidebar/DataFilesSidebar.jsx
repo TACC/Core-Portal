@@ -122,7 +122,7 @@ const DataFilesSidebar = ({ readOnly }) => {
       iconName: sys.icon || 'my-data',
       disabled: false,
       hidden: false,
-      category: sys.resource_provider,
+      category: sys.resourceProvider,
     });
   });
 

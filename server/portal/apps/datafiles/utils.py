@@ -21,7 +21,7 @@ class PortalDataFilesSystem(TypedDict):
     hostEval: NotRequired[str]
     icon: NotRequired[Optional[str]]
     siteSearchPriority: NotRequired[int]
-    resource_provider: NotRequired[str]
+    resourceProvider: NotRequired[str]
     readOnly: NotRequired[bool]
     hideSearchBar: NotRequired[bool]
     integration: NotRequired[bool]
@@ -81,20 +81,20 @@ def evaluate_datafiles_storage_system(
     else:
         evaluated_system = system
 
-    if "resource_provider" not in system:
+    if "resourceProvider" not in evaluated_system:
         if system["api"] != "tapis":
             # For non-tapis systems without a resource provider, default to "Other"
-            evaluated_system["resource_provider"] = "Other"
+            evaluated_system["resourceProvider"] = "Other"
 
         elif system["scheme"] == "projects":
             # For projects systems, determine resource provider based on projects host evaluation
             projects_host = settings.PORTAL_PROJECTS_ROOT_HOST
-            evaluated_system["resource_provider"] = _get_resource_provider_from_host(
+            evaluated_system["resourceProvider"] = _get_resource_provider_from_host(
                 projects_host
             )
         else:
             system_def = tapis.client.systems.getSystem(systemId=system["system"])
-            evaluated_system["resource_provider"] = _get_resource_provider_from_system(
+            evaluated_system["resourceProvider"] = _get_resource_provider_from_system(
                 system_def
             )
 
@@ -151,7 +151,7 @@ def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
             "api": "tapis",
             "icon": None,
             "default": False,
-            "resource_provider": _get_resource_provider_from_system(system),
+            "resourceProvider": _get_resource_provider_from_system(system),
         }
         for system in systems
     ]
@@ -163,7 +163,7 @@ def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
 
 def _get_resource_provider_from_system(system: TapisResult) -> str:
     """Get resource provider from a Tapis system's notes or via hostname evaluation"""
-    resource_provider = system.notes.get("resource_provider")
+    resource_provider = system.notes.get("resourceProvider")
 
     return resource_provider or _get_resource_provider_from_host(system.host)
 
