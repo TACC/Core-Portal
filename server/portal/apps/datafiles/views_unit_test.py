@@ -438,7 +438,9 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'api': 'tapis',
                 'homeDir': '/home/username',
                 'icon': None,
-                'default': True
+                'default': True,
+                'resource_provider': 'TACC Systems',
+
             },
             {
                 'name': 'My Data (Frontera)',
@@ -447,6 +449,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'api': 'tapis',
                 'homeDir': '/home1/01234/username',
                 'icon': None,
+                'resource_provider': 'TACC Systems',
             },
             {
                 'name': 'Community Data',
@@ -455,7 +458,8 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'api': 'tapis',
                 'homeDir': '/path/to/community',
                 'icon': None,
-                'siteSearchPriority': 1
+                'siteSearchPriority': 1,
+                'resource_provider': 'TACC Systems',
             },
             {
                 'name': 'Public Data',
@@ -464,13 +468,15 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'api': 'tapis',
                 'homeDir': '/path/to/public',
                 'icon': 'publications',
-                'siteSearchPriority': 0
+                'siteSearchPriority': 0,
+                'resource_provider': 'TACC Systems',
             },
             {
                 'name': 'Shared Workspaces',
                 'scheme': 'projects',
                 'api': 'tapis',
-                'icon': 'publications'
+                'icon': 'publications',
+                'resource_provider': 'TACC Systems',
             },
             {
                 'name': 'Google Drive',
@@ -478,7 +484,8 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'scheme': 'private',
                 'api': 'googledrive',
                 'icon': None,
-                'integration': 'portal.apps.googledrive_integration'
+                'integration': 'portal.apps.googledrive_integration',
+                'resource_provider': 'Other',
             }
         ]
     }
