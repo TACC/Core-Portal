@@ -169,17 +169,11 @@ def _get_resource_provider_from_system(system: TapisResult) -> str:
 
 
 def _get_resource_provider_from_host(host: str) -> str:
-    match host.split('.'):
-        case [*comps, 'tacc', 'utexas', 'edu']:
-            return "TACC Systems"
-         case [*comps, 'edu']:
-             return comps[-1].upper()
-         case _:
-             return "Other"
     """Get resource provider from hostname evaluation of a Tapis system"""
-    if host.endswith(".tacc.utexas.edu"):
-        return "TACC Systems"
-    if host.endswith(".edu"):
-        return host.split(".")[-2].upper()
-
-    return "Other"
+    match host.split("."):
+        case [*comps, "tacc", "utexas", "edu"]:
+            return "TACC Systems"
+        case [*comps, "edu"]:
+            return comps[-1].upper()
+        case _:
+            return "Other"
