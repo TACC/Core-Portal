@@ -41,9 +41,14 @@ export const AppsLayout = () => {
 
 const AppsHeader = (categoryDict) => {
   const { params } = useRouteMatch();
+  const query = useQuery();
   const appMeta = Object.values(categoryDict.categoryDict)
     .flatMap((e) => e)
-    .find((app) => app.appId === params.appId);
+    .find(
+      (app) =>
+        app.appId === params.appId &&
+        (!query.get('appVersion') || app.version === query.get('appVersion'))
+    );
   const path = appMeta ? ` / ${appMeta.label || appMeta.appId}` : '';
   return `Applications ${path}`;
 };
