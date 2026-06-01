@@ -439,7 +439,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'homeDir': '/home/username',
                 'icon': None,
                 'default': True,
-                'resourceProvider': 'TACC Systems',
+                'resourceProvider': 'TACC',
 
             },
             {
@@ -449,7 +449,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'api': 'tapis',
                 'homeDir': '/home1/01234/username',
                 'icon': None,
-                'resourceProvider': 'TACC Systems',
+                'resourceProvider': 'TACC',
             },
             {
                 'name': 'Community Data',
@@ -459,7 +459,7 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'homeDir': '/path/to/community',
                 'icon': None,
                 'siteSearchPriority': 1,
-                'resourceProvider': 'TACC Systems',
+                'resourceProvider': 'TACC',
             },
             {
                 'name': 'Public Data',
@@ -469,14 +469,14 @@ def test_systems_list(client, authenticated_user, mock_tapis_client, agave_stora
                 'homeDir': '/path/to/public',
                 'icon': 'publications',
                 'siteSearchPriority': 0,
-                'resourceProvider': 'TACC Systems',
+                'resourceProvider': 'TACC',
             },
             {
                 'name': 'Shared Workspaces',
                 'scheme': 'projects',
                 'api': 'tapis',
                 'icon': 'publications',
-                'resourceProvider': 'TACC Systems',
+                'resourceProvider': 'TACC',
             },
             {
                 'name': 'Google Drive',

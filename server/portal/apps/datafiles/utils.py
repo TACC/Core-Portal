@@ -172,8 +172,8 @@ def _get_resource_provider_from_host(host: str) -> str:
     """Get resource provider from hostname evaluation of a Tapis system"""
     match host.split("."):
         case [*comps, "tacc", "utexas", "edu"]:
-            return "TACC Systems"
+            return "TACC"
         case [*comps, "edu"]:
-            return f"{comps[-1].upper()} Systems"
+            return comps[-1].upper()
         case _:
             return "Other"
