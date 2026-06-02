@@ -99,7 +99,7 @@ const Sidebar = ({
             */}
             {category && Object.keys(groupedItems).length > 1 && (
               <NavItem className={styles['category-label']}>
-                <span>{category}</span>
+                <span className={styles['category-text']}>{category}</span>
               </NavItem>
             )}
             {items.map((item) => (
