@@ -122,7 +122,9 @@ Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
-        'settings': {}
+        'settings': {
+            'expected_hosts': ['vista.tacc.utexas.edu']
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
@@ -242,6 +244,7 @@ _WORKBENCH_SETTINGS = {
     "hideManageAccount": False,
     "hideSystemStatus": False,
     "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
+    "showUserNews": True,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
     "minDescriptionLength": 50,

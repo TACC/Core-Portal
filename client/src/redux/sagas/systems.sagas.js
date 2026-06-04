@@ -8,7 +8,7 @@ function* pushSystemKeys(action) {
     password: action.payload.password,
     token: action.payload.token,
     hostname: action.payload.hostname,
-    isTMSSystem: action.payload.isTMSSystem,
+    defaultAuthnMethod: action.payload.defaultAuthnMethod,
   };
   yield put({
     type: 'SYSTEMS_MODAL_UPDATE',
