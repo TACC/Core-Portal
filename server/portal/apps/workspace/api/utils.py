@@ -4,7 +4,7 @@ import json
 import logging
 from django.conf import settings
 from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_tms
 from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
@@ -116,8 +116,8 @@ def push_keys_required_if_not_credentials_ensured(
         if is_tms_system(system_def):
             if settings.IS_TACC_PORTAL is False:
                 return True
-            create_system_credentials(
-                tapis, user.username, system_id, createTmsKeys=True
+            create_system_credentials_with_tms(
+                tapis, user.username, system_id
             )
 
         elif should_push_keys(system_def, user.username):
