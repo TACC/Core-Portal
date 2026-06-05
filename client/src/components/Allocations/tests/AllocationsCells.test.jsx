@@ -81,9 +81,9 @@ describe('Allocations Table Cells', () => {
     const title = fixture.title;
     const projectName = fixture.projectName;
     const { getByText } = render(
-      <Title 
+      <Title
         cell={{
-          value: { title: title, projectName: projectName}
+          value: { title: title, projectName: projectName },
         }}
       />
     );
