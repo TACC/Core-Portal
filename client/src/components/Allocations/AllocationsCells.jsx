@@ -11,6 +11,23 @@ const CELL_PROPTYPES = {
   }).isRequired,
 };
 
+export const Title = ({ cell: { value } }) => {
+  const { title, projectName } = value;
+  return (
+    <>
+      <span style={{ whiteSpace: 'wrap' }}>{title} ({projectName})</span>
+    </>
+  )
+};
+Title.propTypes = {
+  cell: shape({
+    value: shape({
+      title: string.isRequired,
+      projectName: string.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
+
 export const Team = ({ cell: { value } }) => {
   const { projectId, page } = value;
   const history = useHistory();
