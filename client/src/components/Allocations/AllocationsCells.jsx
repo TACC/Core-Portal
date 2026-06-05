@@ -15,9 +15,11 @@ export const Title = ({ cell: { value } }) => {
   const { title, projectName } = value;
   return (
     <>
-      <span style={{ whiteSpace: 'wrap' }}>{title} ({projectName})</span>
+      <span style={{ whiteSpace: 'wrap' }}>
+        {title} ({projectName})
+      </span>
     </>
-  )
+  );
 };
 Title.propTypes = {
   cell: shape({
