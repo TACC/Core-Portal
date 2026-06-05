@@ -47,3 +47,13 @@
 .disabled {
   color: var(--global-color-primary--light);
 }
+
+.category-label {
+  padding: 20px 1rem 10px;
+  border-bottom: 1px solid var(--global-color-primary--dark);
+  font-weight: var(--medium);
+}
+
+.category-text {
+  padding-left: 20px;
+}
