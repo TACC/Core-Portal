@@ -680,21 +680,21 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             job.memoryMB = queue.maxMemoryMB;
           }
-          debugger;
           if (isAppUsingDynamicExecSystem(app)) {
             if (!job.parameterSet.schedulerOptions) {
               job.parameterSet.schedulerOptions = [];
             }
+            //pick the right profile for the right exec system
+            const selectedSystem = app.definition.notes.dynamicExecSystems.find(
+              (s) => s.systemId === job.execSystemId
+            );
+            const profileName = selectedSystem?.profileName;
             job.parameterSet.schedulerOptions.push({
               name: 'TACC Scheduler Profile',
               description: 'Scheduler profile for HPC clusters at TACC',
-              inputMode: 'FIXED',
               include: true,
-              arg: `--tapis-profile ${app.definition.notes.dynamicExecSystems.profileName}`,
-              notes: { isHidden: true },
+              arg: `--tapis-profile ${profileName}`,
             });
-
-            console.log('SchedulerOptions:', job.parameterSet.schedulerOptions);
           }
 
           // Add allocation scheduler option
