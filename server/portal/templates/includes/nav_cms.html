@@ -13,6 +13,9 @@
   import flagLinkActive from '/static/site_cms/js/modules/flagLinkActive.js';
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
 
+  const NAV_READY_ATTR  = 'navReady';
+  const NAV_READY_EVENT = 'cms-nav:ready';
+
   const container = document.getElementById('s-cms-nav');
 
   importHTML.insertFromURL('/cms/nav/pages/markup/', container).then(container => {
@@ -39,5 +42,8 @@
         )
       }
     });
+
+    container.dataset[NAV_READY_ATTR] = 'true';
+    container.dispatchEvent(new CustomEvent(NAV_READY_EVENT, { bubbles: true }));
   });
 </script>
