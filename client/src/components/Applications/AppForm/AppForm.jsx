@@ -404,11 +404,6 @@ export const AppSchemaForm = ({ app }) => {
           [opt.name]: opt.fieldType === 'number' ? Number(opt.arg) : opt.arg,
         }))
       );
-
-      console.log(
-        'queueSchedulerOptions:',
-        initialValues.queueSchedulerOptions
-      );
     }
   }
   const sectionMessage = isTMSSystem ? (
