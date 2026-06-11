@@ -679,7 +679,7 @@ export const AppSchemaForm = ({ app }) => {
             if (!job.parameterSet.schedulerOptions) {
               job.parameterSet.schedulerOptions = [];
             }
-            //pick the right profile for the right exec system
+            // pick the right profile for the right exec system
             const selectedSystem = app.definition.notes.dynamicExecSystems.find(
               (s) => s.systemId === job.execSystemId
             );
