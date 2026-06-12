@@ -216,6 +216,7 @@ _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+_PROJECT_ADMIN_GROUP = "Project Admin"
 
 ########################
 # Custom Portal Template Assets

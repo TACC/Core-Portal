@@ -112,8 +112,8 @@ class ProjectMetadata(models.Model):
             return
         prj_users = [user.get("username") for user in self.value.get("users", [])]
         project_user_query = models.Q(username__in=prj_users)
-        admin_user_query = models.Q(username__in=settings.PROJECT_ADMIN_USERS)
-        self.users.set(user_model.objects.filter(project_user_query | admin_user_query))
+        project_admin_query = models.Q(groups__name=settings.PROJECT_ADMIN_GROUP)
+        self.users.set(user_model.objects.filter(project_user_query | project_admin_query).distinct())
 
     def save(self, *args, **kwargs):
         if self.name == constants.PROJECT:

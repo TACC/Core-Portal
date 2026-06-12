@@ -19,6 +19,7 @@ from portal.apps.notifications.models import Notification
 from django.http import HttpResponse
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.views import get_project_client, get_project_for_user
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
@@ -72,7 +73,7 @@ class PublicationRequestView(BaseApiView):
         
         request_body = json.loads(request.body)
 
-        client = request.user.tapis_oauth.client
+        client = get_project_client(request.user)
         service_client = service_account()
         
         full_project_id = request_body.get('project_id')
@@ -88,7 +89,12 @@ class PublicationRequestView(BaseApiView):
         with transaction.atomic():
             # Update authors for the source project
             # TODO: use pydantic to validate data
-            source_project = ProjectMetadata.get_project_by_id(source_system_id)
+            try:
+                source_project = get_project_for_user(source_system_id, request.user)
+            except ProjectMetadata.DoesNotExist as exc:
+                raise ApiException(
+                    "User does not have access to the requested project", status=403
+                ) from exc
             source_project.value['authors'] = request_body.get('authors')
             source_project.save()
 
@@ -236,7 +242,7 @@ class PublicationPublishView(BaseApiView):
      def post(self, request):
         """view for publishing a project"""
 
-        client = request.user.tapis_oauth.client
+        client = get_project_client(request.user)
         request_body = json.loads(request.body)
 
         full_project_id = request_body.get('project_id')
@@ -249,6 +255,13 @@ class PublicationPublishView(BaseApiView):
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
         else: 
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+
+        try:
+            get_project_for_user(full_project_id, request.user)
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
 
         source_system_id = f'{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{project_id}'
         published_workspace_id = f"{project_id}"
@@ -295,7 +308,7 @@ class PublicationVersionView(BaseApiView):
     def post(self, request):
         """view for publishing a project"""
 
-        client = request.user.tapis_oauth.client
+        client = get_project_client(request.user)
         request_body = json.loads(request.body)
 
         full_project_id = request_body.get('project_id')
@@ -308,6 +321,13 @@ class PublicationVersionView(BaseApiView):
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
         else: 
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+
+        try:
+            get_project_for_user(full_project_id, request.user)
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
 
         print('project_id:', project_id)
 

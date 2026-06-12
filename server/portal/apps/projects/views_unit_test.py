@@ -1,13 +1,17 @@
 import pytest
 from hashlib import sha256
 from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.views import get_project_client, get_project_for_user
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from mock import MagicMock
 import json
 from tapipy.tapis import TapisResult
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.test import override_settings
+from portal.apps._custom.drp import constants
 
 
 @pytest.fixture
@@ -104,6 +108,30 @@ def project_list(authenticated_user):
             },
         ],
     }
+
+
+def test_get_project_client_uses_service_account_for_project_admin(authenticated_user, mocker):
+    group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
+    authenticated_user.groups.add(group)
+    mock_service_account = mocker.patch('portal.apps.projects.views.service_account')
+
+    client = get_project_client(authenticated_user)
+
+    assert client == mock_service_account.return_value
+    mock_service_account.assert_called_once_with()
+
+
+def test_get_project_for_user_allows_project_admin(authenticated_user):
+    group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
+    authenticated_user.groups.add(group)
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+
+    result = get_project_for_user(project.project_id, authenticated_user)
+
+    assert result == project
 
 
 def test_projects_get(

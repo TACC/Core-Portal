@@ -1,6 +1,8 @@
 from django.test import TestCase, override_settings
 from mock import patch, Mock
+from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from portal.utils import check_group_membership
 from portal.utils.translations import url_parse_inputs
 from portal.utils.jwt_auth import login_user_agave_jwt
 from datetime import timedelta
@@ -45,6 +47,18 @@ class TestTranslations(TestCase):
             "agave://test.system/test file.txt"
         )
         self.assertNotEqual(self.job, result)
+
+
+class TestGroupMembership(TestCase):
+    """Test group membership helper."""
+
+    def test_check_group_membership(self):
+        user = get_user_model().objects.create_user(username='group_user')
+        group = Group.objects.create(name='Project Admin')
+        user.groups.add(group)
+
+        self.assertTrue(check_group_membership(user, 'Project Admin'))
+        self.assertFalse(check_group_membership(user, 'Other Group'))
 
 
 class TestAgaveJWTAuth(TestCase):
