@@ -6,7 +6,7 @@ const ROOT_SLUG = '/accounts/api/profile';
 
 export const getPasswordStatus = (h) => {
   const passwordChanged = h.filter((entry) =>
-    entry.comment.includes('Change Password')
+	entry.comment.toLowerCase().includes('password') && entry.comment.toLowerCase().includes('change')
   );
   if (isEmpty(passwordChanged)) return '';
   const lastChanged = passwordChanged.pop().timestamp;
