@@ -1,2 +1,2 @@
-export { useSessionLifetime} from './useSessionLifetime';
+export { useSessionLifetime } from './useSessionLifetime';
 export { useRedirectOnSessionExpired } from './useRedirectOnSessionExpired';

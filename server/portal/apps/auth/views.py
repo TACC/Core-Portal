@@ -64,7 +64,7 @@ def get_session_lifetime(request):
     """
     if not request.user.is_authenticated:
         return JsonResponse({"message": "unauthenticated user"}, status=401)
-    
+
     seconds_left = get_session_seconds_left(request)
     return JsonResponse({"sessionLifetime": seconds_left})
 
