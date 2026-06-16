@@ -5,12 +5,15 @@ import logging
 import time
 import requests
 import secrets
+import math
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
+from django.contrib.sessions.models import Session
 from .models import TapisOAuthToken
 from portal.apps.onboarding.execute import (
     execute_setup_steps,
@@ -26,6 +29,44 @@ METRICS = logging.getLogger(f'metrics.{__name__}')
 
 def logged_out(request):
     return render(request, 'portal/apps/auth/logged_out.html')
+
+
+def get_session_seconds_left(request):
+    """
+    Return the number of seconds until the current session expires.
+
+    Returns:
+        int: seconds left
+    """
+
+    session_key = request.session.session_key
+
+    if not session_key:
+        return 0
+
+    expire_date = (
+        Session.objects
+        .filter(session_key=session_key)
+        .values_list("expire_date", flat=True)
+        .first()
+    )
+    if not expire_date:
+        return 0
+
+    seconds_left = (expire_date - timezone.now()).total_seconds()
+    return max(0, math.ceil(seconds_left))
+
+
+def get_session_lifetime(request):
+    """
+    View to return the number of seconds remaining the user's session. Useful for
+    handling session expiry on the client side.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "unauthenticated user"}, status=401)
+    
+    seconds_left = get_session_seconds_left(request)
+    return JsonResponse({"sessionLifetime": seconds_left})
 
 
 def _get_auth_state():
