@@ -135,6 +135,7 @@ const DataFilesSidebar = ({ readOnly }) => {
         iconName: sys.icon || 'my-data',
         disabled: false,
         hidden: false,
+        category: sys.resourceProvider,
       });
     }
   });
