@@ -491,9 +491,6 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
     
     if listing and listing[0].deleted:
         service_client.systems.undeleteSystem(systemId=target_system_id)
-        # Add back system credentials since the system was previously deleted
-        create_system_credentials_with_keys(service_client, portal_admin_username, settings.PORTAL_PROJECTS_PUBLIC_KEY, 
-                                  settings.PORTAL_PROJECTS_PRIVATE_KEY, target_system_id)
     else:
     # Create the target workspace system
         create_workspace_system(

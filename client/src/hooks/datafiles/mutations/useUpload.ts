@@ -53,7 +53,8 @@ export async function uploadUtil({
     };
 
     if (metadata && scheme === 'projects') {
-      metadataUrl = `/api/datafiles/${api}/upload_file_metadata/${scheme}/${system}/${apiPath}`;
+      metadataUrl = `/api/datafiles/${api}/upload_file_metadata/${scheme}/${system}/${apiPath}/`;
+      metadataUrl = metadataUrl.replace(/\/{2,}/g, '/');
       metadataBody = {
         file_name: fileField.name,
         file_size: fileField.size,

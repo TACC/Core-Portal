@@ -7,4 +7,5 @@ export const EXCLUDED_METADATA_FIELDS = [
   'file_objs',
   'cover_image',
   'file_url',
+  'uuid',
 ];

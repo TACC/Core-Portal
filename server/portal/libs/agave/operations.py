@@ -23,7 +23,7 @@ from portal.apps import SCHEMA_MAPPING
 from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node, 
                                                                                patch_file_association)
 from portal.apps._custom.drp import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_root_node, get_node_from_path, update_node_in_project
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_or_create_trash_entity, get_root_node, get_node_from_path, update_node_in_project
 
 
 logger = logging.getLogger(__name__)
@@ -548,14 +548,8 @@ def trash(client, system, path, homeDir, metadata=None, *args, **kwargs):
             raise
         mkdir(client, system, homeDir, settings.TAPIS_DEFAULT_TRASH_NAME)
 
-    try:
-        if metadata is not None:
-            trash_entity = get_entity(system, f'{settings.TAPIS_DEFAULT_TRASH_NAME}')
-            if not trash_entity:
-                new_entity = create_entity_metadata(system, constants.TRASH, {})
-                add_node_to_project(system, 'NODE_ROOT', new_entity.uuid, new_entity.name, settings.TAPIS_DEFAULT_TRASH_NAME)
-    except Exception as e:
-        print(f'Error creating trash entity: {e}')
+    if metadata is not None:
+        get_or_create_trash_entity(system)
 
     resp = move(client, system, path, system,
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata, **kwargs)
