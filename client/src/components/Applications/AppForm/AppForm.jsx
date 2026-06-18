@@ -680,16 +680,42 @@ export const AppSchemaForm = ({ app }) => {
               job.parameterSet.schedulerOptions = [];
             }
             // pick the right profile for the right exec system
+
+            const isValidDynamicExecSystems =
+              Array.isArray(app.definition.notes.dynamicExecSystems) &&
+              app.definition.notes.dynamicExecSystems.every(
+                (s) => typeof s === 'object' && s !== null && 'systemId' in s
+              );
+            if (!isValidDynamicExecSystems) {
+              return (
+                <div
+                  id="appDetail-wrapper"
+                  className="has-message  appDetail-error"
+                >
+                  <SectionMessage type="warning">
+                    {'DynamicExecSystems for this application are invalid'}
+                  </SectionMessage>
+                </div>
+              );
+            }
+
             const selectedSystem = app.definition.notes.dynamicExecSystems.find(
               (s) => s.systemId === job.execSystemId
             );
             const profileName = selectedSystem?.profileName;
-            job.parameterSet.schedulerOptions.push({
-              name: 'TACC Scheduler Profile',
-              description: 'Scheduler profile for HPC clusters at TACC',
-              include: true,
-              arg: `--tapis-profile ${profileName}`,
-            });
+            if (!!profileName) {
+              job.parameterSet.schedulerOptions = [
+                ...job.parameterSet.schedulerOptions.filter(
+                  (opt) => !opt.arg.startsWith('--tapis-profile')
+                ),
+                {
+                  name: 'TACC Scheduler Profile',
+                  arg: `--tapis-profile ${profileName}`,
+                  description: 'Scheduler profile for HPC clusters at TACC',
+                  include: true,
+                },
+              ];
+            }
           }
 
           // Add allocation scheduler option
