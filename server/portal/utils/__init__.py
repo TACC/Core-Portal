@@ -9,10 +9,3 @@ def get_client_ip(request):
     else:
         ip = request.META.get("REMOTE_ADDR")
     return ip
-
-
-def check_group_membership(user, group_name):
-    """Return whether a user belongs to a Django auth group."""
-    if not user or not getattr(user, "is_authenticated", False):
-        return False
-    return user.groups.filter(name=group_name).exists()

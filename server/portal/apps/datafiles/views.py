@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
-from portal.utils import check_group_membership, get_client_ip
+from portal.utils import get_client_ip
 from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
@@ -32,28 +32,6 @@ from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems, get_
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
-
-
-def check_project_admin_group(user):
-    """Check whether a user belongs to the project admin group."""
-    return check_group_membership(user, settings.PROJECT_ADMIN_GROUP)
-
-
-def is_project_system(system):
-    """Return whether a Tapis system is managed as a portal project system."""
-    project_prefixes = (
-        settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
-        settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX,
-        settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX,
-    )
-    return bool(system and system.startswith(project_prefixes))
-
-
-def get_tapis_client(user, system=None):
-    """Return the correct Tapis client for a user and optional project system."""
-    if is_project_system(system) and check_project_admin_group(user):
-        return service_account()
-    return user.tapis_oauth.client
 
 
 class SystemListingView(BaseApiView):
@@ -94,7 +72,7 @@ class SystemDefinitionView(BaseApiView):
 
     def get(self, request, systemId):
         try:
-            client = get_tapis_client(request.user, systemId)
+            client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
@@ -118,7 +96,7 @@ class TapisFilesView(BaseApiView):
     @retry(UnauthorizedError, tries=3, max_time=15)
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
-            client = get_tapis_client(request.user, system)
+            client = request.user.tapis_oauth.client
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
@@ -211,7 +189,7 @@ class TapisFilesView(BaseApiView):
             handler=None, system=None, path='/'):
         body = json.loads(request.body)
         try:
-            client = get_tapis_client(request.user, system)
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden("This data requires authentication to view.")
 
@@ -246,7 +224,7 @@ class TapisFilesView(BaseApiView):
         body = request.FILES.dict()
 
         try:
-            client = get_tapis_client(request.user, system)
+            client = request.user.tapis_oauth.client
         except AttributeError:
             return HttpResponseForbidden("This data requires authentication to upload.")
 
@@ -327,7 +305,7 @@ class GoogleDriveFilesView(BaseApiView):
         return JsonResponse({"data": response})
 
 
-def get_client(user, api, system=None):
+def get_client(user, api):
     client_mappings = {
         'tapis': 'tapis_oauth',
         'shared': 'tapis_oauth',
@@ -335,8 +313,6 @@ def get_client(user, api, system=None):
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
     }
-    if api in ('tapis', 'shared') and is_project_system(system) and check_project_admin_group(user):
-        return service_account()
     return getattr(user, client_mappings[api]).client
 
 
@@ -344,8 +320,8 @@ class TransferFilesView(BaseApiView):
     def put(self, request, filetype):
         body = json.loads(request.body)
 
-        src_client = get_client(request.user, body['src_api'], body.get('src_system'))
-        dest_client = get_client(request.user, body['dest_api'], body.get('dest_system'))
+        src_client = get_client(request.user, body['src_api'])
+        dest_client = get_client(request.user, body['dest_api'])
         METRICS.info('Data Files',
                      extra={
                          'user': request.user.username,
@@ -375,7 +351,7 @@ class TransferFilesView(BaseApiView):
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
 
-        client = get_tapis_client(request.user, system)
+        client = request.user.tapis_oauth.client
 
         # Create postit for unlimited use with a valid period of 1 year
         postit = client.files.createPostIt(systemId=system, path=path, allowedUses=-1, validSeconds=31536000)
@@ -388,8 +364,8 @@ class LinkView(BaseApiView):
         )
         return {"data": postit_redeem_url, "expiration": postit.expiration}
 
-    def delete_link(self, request, system, link):
-        client = get_tapis_client(request.user, system)
+    def delete_link(self, request, link):
+        client = request.user.tapis_oauth.client
 
         postitId = link.get_uuid()
 
@@ -441,7 +417,7 @@ class LinkView(BaseApiView):
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
-        response = self.delete_link(request, system, link)
+        response = self.delete_link(request, link)
         return JsonResponse({"data": response})
 
     def post(self, request, scheme, system, path):
