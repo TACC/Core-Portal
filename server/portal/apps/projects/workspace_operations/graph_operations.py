@@ -141,6 +141,43 @@ def update_node_in_project(project_id: str, node_id: str, new_parent: str = None
         graph_model.value = nx.node_link_data(project_graph)
         graph_model.save()
 
+def _get_trash_node_uuid(project_graph: nx.DiGraph) -> str | None:
+    """Return the metadata UUID for the trash node under NODE_ROOT, if present."""
+    for successor in project_graph.successors("NODE_ROOT"):
+        if project_graph.nodes[successor].get("label") == settings.TAPIS_DEFAULT_TRASH_NAME:
+            return project_graph.nodes[successor]["uuid"]
+    return None
+
+
+@transaction.atomic
+def get_or_create_trash_entity(project_id: str):
+    """Return the trash entity for a project, creating it under lock if needed."""
+    from portal.apps.projects.workspace_operations.project_meta_operations import (
+        create_entity_metadata,
+    )
+
+    graph_model = ProjectMetadata.objects.select_for_update().get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+
+    trash_uuid = _get_trash_node_uuid(project_graph)
+    if trash_uuid:
+        return ProjectMetadata.objects.get(uuid=trash_uuid)
+
+    new_entity = create_entity_metadata(project_id, constants.TRASH, {})
+    updated_graph, _ = _add_node_to_graph(
+        project_graph,
+        "NODE_ROOT",
+        new_entity.uuid,
+        new_entity.name,
+        settings.TAPIS_DEFAULT_TRASH_NAME,
+    )
+    graph_model.value = nx.node_link_data(updated_graph)
+    graph_model.save()
+    return new_entity
+
+
 def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name: str, label: str):
     """Update the database entry for a project graph to add a node."""
     # Lock the project graph's tale row to prevent conflicting updates.

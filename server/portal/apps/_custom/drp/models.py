@@ -155,6 +155,7 @@ class DrpDatasetMetadata(DrpMetadataModel):
 
     name: str
     description: Optional[str] = None
+    uuid: Optional[str] = None
     data_type: Literal[
         "sample", 
         "origin_data",
