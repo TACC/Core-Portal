@@ -434,7 +434,7 @@ class ProjectMembersApiView(BaseApiView):
     def transfer_ownership(self, request, project_id, **data):
         old_pi = data.get('oldOwner')
         new_pi = data.get('newOwner')
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         res = transfer_ownership(client, project_id, new_pi, old_pi)
         return JsonResponse(
             {
@@ -450,7 +450,7 @@ class ProjectMembersApiView(BaseApiView):
         be added with "edit" access, which translates to co_pi
         """
         username = data.get('username')
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         resp = add_user_to_workspace(client, project_id, username)
 
         return JsonResponse(
@@ -468,7 +468,7 @@ class ProjectMembersApiView(BaseApiView):
         :param dict data: Data.
         """
         username = data.get('username')
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         resp = remove_user(client, project_id, username)
 
         return JsonResponse(
@@ -500,7 +500,7 @@ class ProjectMembersApiView(BaseApiView):
     def change_system_role(self, request, project_Id, **data):
         username = data.get('username')
         new_role = data.get('newRole')
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
 
         role_map = {
             "GUEST": "reader",
