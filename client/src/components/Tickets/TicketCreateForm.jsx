@@ -94,7 +94,7 @@ function TicketCreateForm({
 
   const dispatch = useDispatch();
 
-  const isAuthenticated = authenticatedUser != null;
+ const isAuthenticated = Boolean(authenticatedUser?.username);
 
   const formShape = {
     subject: Yup.string().required('Required'),
