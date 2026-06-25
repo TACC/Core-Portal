@@ -94,8 +94,14 @@ const DataFilesProjectEditDescriptionModal = () => {
       <ModalBody>
         <Formik
           initialValues={initialValues}
+          initialTouched={{
+            title: true,
+            description: true,
+            keywords: true,
+          }}
           onSubmit={setProjectTitleDescription}
           validationSchema={validationSchema}
+          validateOnMount
         >
           {({ isValid, dirty }) => (
             <Form>
@@ -147,8 +153,8 @@ const DataFilesProjectEditDescriptionModal = () => {
                   attr="submit"
                   type="primary"
                   size="long"
+                  disabled={!isValid}
                   className={styles['update-button']}
-                  disabled={!isValid || !dirty}
                   isLoading={isUpdating}
                 >
                   Update Changes

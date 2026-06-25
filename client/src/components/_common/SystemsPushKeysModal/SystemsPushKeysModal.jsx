@@ -18,6 +18,7 @@ const SystemsPushKeysModal = () => {
     system,
     submitting,
     onCancel,
+    reloadCallback,
     isTACCPortal,
     initialUsername,
   } = useSelector(
@@ -29,7 +30,7 @@ const SystemsPushKeysModal = () => {
     shallowEqual
   );
 
-  const isTMSSystem = system?.defaultAuthnMethod === 'TMS_KEYS';
+  const defaultAuthnMethod = system?.defaultAuthnMethod;
 
   const history = useHistory();
   const location = useLocation();
@@ -58,8 +59,8 @@ const SystemsPushKeysModal = () => {
         username,
         password,
         token,
-        isTMSSystem,
-        reloadCallback: reloadPage,
+        defaultAuthnMethod,
+        reloadCallback: reloadCallback || reloadPage,
         onSuccess,
       },
     });
@@ -69,8 +70,14 @@ const SystemsPushKeysModal = () => {
     username: Yup.string()
       .min(1)
       .required('Please enter your username for this system.'),
-    password: Yup.string().min(1).required('Please enter your password.'),
-    token: Yup.string().min(1).required('Please provide a valid MFA token.'),
+    password:
+      defaultAuthnMethod !== 'TMS_KEYS'
+        ? Yup.string().min(1).required('Please enter your password.')
+        : null,
+    token:
+      defaultAuthnMethod === 'PKI_KEYS'
+        ? Yup.string().min(1).required('Please provide a valid MFA token.')
+        : null,
   });
 
   const initialValues = {
@@ -128,23 +135,24 @@ const SystemsPushKeysModal = () => {
                     disabled={submitting}
                   />
                 )}
-                {!isTMSSystem && (
-                  <>
-                    <FormField
-                      name="password"
-                      label="Password"
-                      type="password"
-                      required
-                      disabled={submitting}
-                    />
-                    <FormField
-                      name="token"
-                      label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
-                      required
-                      disabled={submitting}
-                      autoComplete="off"
-                    />
-                  </>
+                {defaultAuthnMethod !== 'TMS_KEYS' && (
+                  <FormField
+                    name="password"
+                    label="Password"
+                    type="password"
+                    required
+                    disabled={submitting}
+                    autoComplete="off"
+                  />
+                )}
+                {defaultAuthnMethod === 'PKI_KEYS' && (
+                  <FormField
+                    name="token"
+                    label={isTACCPortal ? 'TACC Token' : 'MFA Token'}
+                    required
+                    disabled={submitting}
+                    autoComplete="off"
+                  />
                 )}
               </ModalBody>
               <ModalFooter>

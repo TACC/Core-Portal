@@ -47,15 +47,15 @@ class KeysManager(AbstractKeysManager):
         self.password = password
         self.token = token
 
-    def _tacc_prompt_handler(
+    def _ssh_prompt_handler(
             self,
             title,
             instructions,
             prompt_list
     ):
-        """TACC Prompt Handler
+        """SSH Prompt Handler
 
-        This method handles SSH prompts from TACC resources
+        This method handles SSH prompts from cloud resources
         """
         answers = {
             'password': self.password,
@@ -78,7 +78,7 @@ class KeysManager(AbstractKeysManager):
 
     def get_transport(self, hostname, port):
         """Gets authenticated transport"""
-        handler = self._tacc_prompt_handler
+        handler = self._ssh_prompt_handler
 
         trans = paramiko.Transport((hostname, port))
         # trans.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)

@@ -245,7 +245,7 @@ function JobsView({
             size="small"
             onClick={() => setIsInfoModalOpen(true)}
           >
-            ?
+            ⓘ
           </Button>
         </div>
       )}

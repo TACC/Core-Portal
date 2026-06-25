@@ -19,6 +19,11 @@ const jobDisplaySlurmFixture = {
       id: 'Target',
       value: 'world',
     },
+    {
+      label: 'tacc Scheduler Profile',
+      id: 'tacc Scheduler Profile',
+      value: '--tapis-profile tacc',
+    },
   ],
   nodeCount: 1,
   coresPerNode: 1,

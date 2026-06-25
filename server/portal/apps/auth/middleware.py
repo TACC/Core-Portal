@@ -47,7 +47,7 @@ class TapisTokenRefreshMiddleware:
                 extra={"user": request.user.username},
             )
             logout(request)
-            return HttpResponseRedirect(reverse("portal_accounts:login"))
+            return HttpResponseRedirect(reverse("login"))
 
         if not tapis_oauth.expired:
             return
@@ -72,7 +72,7 @@ class TapisTokenRefreshMiddleware:
                         extra={"user": request.user.username},
                     )
                     logout(request)
-                    return HttpResponseRedirect(reverse("portal_accounts:login"))
+                    return HttpResponseRedirect(reverse("login"))
 
             else:
                 logger.info(

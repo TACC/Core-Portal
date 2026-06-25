@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.news',
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
@@ -686,7 +687,8 @@ SETTINGS_EXPORT = [
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE',
     'WORKBENCH_SETTINGS',
-    'DOCS_CHATBOT_URL'
+    'DOCS_CHATBOT_URL',
+    'PORTAL_USER_ACCOUNT_SETUP_STEPS',
 ]
 
 """
@@ -770,6 +772,7 @@ SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
+WORKBENCH_SETTINGS.setdefault('showUserNews', False)
 
 """
 SETTINGS: RECAPTCHA

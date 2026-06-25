@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.news',
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.webhooks',
@@ -211,7 +212,7 @@ PORTAL_PROJECTS_ROOT_DIR = '/path/to/root'
 
 PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'projects.system.name'
 
-PORTAL_PROJECTS_ROOT_HOST = 'host.for.projects'
+PORTAL_PROJECTS_ROOT_HOST = 'host.for.projects.tacc.utexas.edu'
 
 PORTAL_PROJECTS_SYSTEM_PORT = 22
 
