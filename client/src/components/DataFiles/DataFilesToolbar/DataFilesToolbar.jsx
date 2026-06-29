@@ -4,13 +4,18 @@ import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
-import { useModal, useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import {
+  useModal,
+  useSelectedFiles,
+  useFileListing,
+  useAddonComponents,
+} from 'hooks/datafiles';
 import { useSystemRole } from '../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+export const ToolbarButton = ({ text, iconName, onClick, disabled, className }) => {
   const iconClassName = `action icon-${iconName}`;
   return (
     <Button
@@ -18,6 +23,7 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
       type={text === 'Empty' ? 'primary' : 'secondary'}
       disabled={disabled}
       onClick={onClick}
+      className={className}
     >
       {text}
     </Button>
@@ -96,6 +102,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
       loadCustomPermissions();
     }
   }, [hasCustomDataFilesToolbarChecks, portalName]);
+
+  const { DataFilesToolbarAddon } = useAddonComponents({ portalName });
 
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser?.user?.username
@@ -320,6 +328,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        {DataFilesToolbarAddon && <DataFilesToolbarAddon />}
         {showExtract && (
           <ToolbarButton
             text="Extract"
