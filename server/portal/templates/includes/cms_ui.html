@@ -1,0 +1,53 @@
+<style id="cms-ui-styles" media="not all">{# i.e. disabled #}
+  @layer mimic-cms, mimic-cms.base, mimic-cms.project;
+
+  @import url(/static/site_cms/css/build/core-styles.base.css) layer(mimic-cms.base);
+  @import url(/static/site_cms/css/build/core-styles.cms.css) layer(mimic-cms.base);
+  @import url(/static/site_cms/css/build/core-cms.css) layer(mimic-cms.project);
+
+  /* To mimic Bootstrap v4 (which CMS uses) */
+  .container { --bs-gutter-x: 15px; }
+  .row { --bs-gutter-x: 30px; }
+
+  /* To change high-level styles to match CMS */
+  body { -webkit-font-smoothing: revert; }
+  .c-button { --max-width: auto; }
+</style>
+
+<script id="cms-ui-script" type="module">
+  let footerEl = null;
+  let footerOriginalMarkup = null;
+
+  const toggleStyles = (enabled) => {
+    const media = (enabled) ? 'all' : 'not all';
+    document.getElementById('cms-ui-styles').media = media;
+  };
+
+  const toggleLayout = (enabled) => {
+    document.body.classList.toggle('has-cms-ui', enabled);
+  };
+
+  const useCMSFooter = async () => {
+    footerEl = document.getElementById('footer');
+    footerOriginalMarkup = footerEl.outerHTML;
+
+    const { replaceFromURL } = await import('/static/site_cms/js/modules/importHTML.js');
+    footerEl = await replaceFromURL('/cms/markup/footer', footerEl);
+  };
+  const restorePortalFooter = () => {
+    footerEl.outerHTML = footerOriginalMarkup;
+  };
+
+  window.addEventListener('cms-styles-activated', async (event) => {
+    console.log(`event: ${event.type}`);
+    toggleStyles(true);
+    toggleLayout(true);
+    await useCMSFooter();
+  });
+  window.addEventListener('cms-styles-deactivated', (event) => {
+    console.log(`event: ${event.type}`);
+    toggleStyles(false);
+    toggleLayout(false);
+    restorePortalFooter();
+  });
+</script>
