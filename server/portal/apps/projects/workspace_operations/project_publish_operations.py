@@ -14,9 +14,7 @@ from portal.apps.projects.workspace_operations.datacite_operations import get_da
 from django.db import transaction
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.search.tasks import index_publication
-from tapipy.errors import NotFoundError, BaseTapyException
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)

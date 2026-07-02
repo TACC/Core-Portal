@@ -24,7 +24,6 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
-from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
 from portal.apps import SCHEMA_MAPPING

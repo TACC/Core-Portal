@@ -19,10 +19,10 @@ from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
-from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node, 
+from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node,
                                                                                patch_file_association)
 from portal.apps.projects.schema_models import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_or_create_trash_entity, get_root_node, get_node_from_path, update_node_in_project
+from portal.apps.projects.workspace_operations.graph_operations import get_or_create_trash_entity, get_root_node, get_node_from_path
 
 
 logger = logging.getLogger(__name__)

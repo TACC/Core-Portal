@@ -8,7 +8,6 @@ from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
-from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_keys
 
 import logging
 logger = logging.getLogger(__name__)

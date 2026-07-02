@@ -2,10 +2,8 @@ import os
 import base64
 import logging
 from pathlib import Path
-from django.conf import settings
 from celery import shared_task
 from django.db import transaction
-from portal.apps.publications.models import PublicationRequest
 from portal.libs.agave.utils import user_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
