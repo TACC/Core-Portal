@@ -13,7 +13,8 @@ export function useRedirectOnSessionExpired({
     if (sessionRemaining) {
       const newTimeoutId = setTimeout(
         () => window.location.replace(location ?? '/'),
-        sessionRemaining
+        // Add 10 seconds to make sure username doesn't render in navbar after redirect
+        sessionRemaining + 10000
       );
       setTimeoutId(newTimeoutId);
     }
