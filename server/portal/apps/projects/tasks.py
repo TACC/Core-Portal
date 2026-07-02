@@ -8,7 +8,7 @@ from django.db import transaction
 from portal.apps.publications.models import PublicationRequest
 from portal.libs.agave.utils import user_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.project_meta_operations import (
         add_file_associations, 
         create_file_obj, 
@@ -16,7 +16,7 @@ from portal.apps.projects.workspace_operations.project_meta_operations import (
         get_ordered_value 
     )
 from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
-from portal.apps._custom.drp.models import FileObj
+from portal.apps.projects.schema_models.base_metadata import FileObj
 from portal.libs.files.file_processing import ( 
         binary_correction, 
         conf_raw, 

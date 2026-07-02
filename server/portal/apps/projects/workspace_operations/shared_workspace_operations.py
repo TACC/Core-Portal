@@ -1,7 +1,7 @@
 # from portal.utils.encryption import createKeyPair
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from tapipy.tapis import Tapis
 from typing import Literal
 from django.db import transaction

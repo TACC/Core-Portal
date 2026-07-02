@@ -7,7 +7,7 @@ from portal.apps.projects.workspace_operations.shared_workspace_operations impor
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 import networkx as nx
 from celery import shared_task
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.libs.agave.utils import user_account, service_account
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, upsert_datacite_json, publish_datacite_doi

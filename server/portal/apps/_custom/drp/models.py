@@ -1,39 +1,26 @@
-from pydantic import BaseModel, ConfigDict, model_validator, Field, NonNegativeInt, NonNegativeFloat
 from typing import Optional, Literal
-from pydantic.alias_generators import to_camel
-from functools import partial
+from pydantic import ConfigDict, NonNegativeInt, NonNegativeFloat
+
+from portal.apps.projects.schema_models.base_metadata import (
+    BaseMetadataModel,
+    FileObj,
+)
 
 """
-Pydantic models for DRP Metadata
+Pydantic models for DRP Metadata.
 """
-
-class DrpMetadataModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        from_attributes=True,
-        extra="forbid",
-        coerce_numbers_to_str=True,
-    )
-
-    def model_dump(self, *args, **kwargs):
-        # default by_alias to true for camelCase serialization
-        return partial(super().model_dump, by_alias=True, exclude_none=True)(
-            *args, **kwargs
-        )
-    
-class DrpFileMetadata(DrpMetadataModel):
+class DrpFileMetadata(BaseMetadataModel):
     """Model for DRP File Metadata"""
 
     model_config = ConfigDict(
         extra="forbid",
-    ) 
+    )
 
     data_type: Literal['file']
     is_advanced_image_file: Optional[bool] = False
     name: Optional[str] = None
     image_type: Optional[Literal[
-        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real', 
+        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real',
         '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
     ]] = None
     height: Optional[NonNegativeInt] = None
@@ -44,31 +31,8 @@ class DrpFileMetadata(DrpMetadataModel):
     byte_order: Optional[Literal['big_endian', 'little_endian']] = None
     use_binary_correction: Optional[bool] = None
 
-class FileObj(DrpMetadataModel):
-    """Model for associated files"""
 
-    system: str
-    name: str
-    path: str
-    legacy_path: Optional[str] = None
-    type: Literal["file", "dir"]
-    length: Optional[int] = None
-    last_modified: Optional[str] = None
-    uuid: Optional[str] = None
-    value: Optional[DrpFileMetadata] = None
-
-class PartialTrashEntity(DrpMetadataModel):
-    """Model for representing a trash entity."""
-
-    model_config = ConfigDict(extra="ignore")
-class PartialEntityWithFiles(DrpMetadataModel):
-    """Model for representing an entity with associated files."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    # file_tags: list[FileTag] = []
-    file_objs: list[FileObj] = []
-class DrpProjectRelatedDatasets(DrpMetadataModel):
+class DrpProjectRelatedDatasets(BaseMetadataModel):
     """Model for DRP Project Related Datasets"""
 
     model_config = ConfigDict(
@@ -79,7 +43,8 @@ class DrpProjectRelatedDatasets(DrpMetadataModel):
     dataset_description: Optional[str] = None
     dataset_link: str = ""
 
-class DrpProjectRelatedSoftware(DrpMetadataModel):
+
+class DrpProjectRelatedSoftware(BaseMetadataModel):
     """Model for DRP Project Related Software"""
 
     model_config = ConfigDict(
@@ -90,7 +55,8 @@ class DrpProjectRelatedSoftware(DrpMetadataModel):
     software_description: str = ""
     software_link: str = ""
 
-class DrpProjectRelatedPublications(DrpMetadataModel):
+
+class DrpProjectRelatedPublications(BaseMetadataModel):
     """Model for DRP Project Related Publications"""
 
     model_config = ConfigDict(
@@ -110,7 +76,8 @@ class DrpProjectRelatedPublications(DrpMetadataModel):
     publication_publisher: Optional[str] = None
     publication_description: Optional[str] = None
 
-class DrpGuestUser(DrpMetadataModel):
+
+class DrpGuestUser(BaseMetadataModel):
     """Model for DRP Guest User"""
 
     model_config = ConfigDict(
@@ -121,7 +88,8 @@ class DrpGuestUser(DrpMetadataModel):
     last_name: str
     email: str
 
-class DrpProjectMetadata(DrpMetadataModel):
+
+class DrpProjectMetadata(BaseMetadataModel):
     """Model for DRP Project Metadata"""
 
     model_config = ConfigDict(
@@ -146,7 +114,8 @@ class DrpProjectMetadata(DrpMetadataModel):
     guest_users: list[DrpGuestUser] = []
     cover_image: Optional[str] = None
 
-class DrpDatasetMetadata(DrpMetadataModel):
+
+class DrpDatasetMetadata(BaseMetadataModel):
     """Model for Base DRP Dataset Metadata"""
 
     model_config = ConfigDict(
@@ -157,13 +126,14 @@ class DrpDatasetMetadata(DrpMetadataModel):
     description: Optional[str] = None
     uuid: Optional[str] = None
     data_type: Literal[
-        "sample", 
+        "sample",
         "origin_data",
         "digital_dataset",
         "analysis_data",
         "file"
     ]
     file_objs: list[FileObj] = []
+
 
 class DrpSampleMetadata(DrpDatasetMetadata):
     """Model for DRP Sample Metadata"""
@@ -175,7 +145,7 @@ class DrpSampleMetadata(DrpDatasetMetadata):
         "granite",
         "beads",
         "fibrous_media",
-        "coal", 
+        "coal",
         "energy_storage",
         "other"
     ]
@@ -211,7 +181,8 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     date_of_collection: Optional[str] = None
     date_of_creation: Optional[str] = None
     identifier: Optional[str] = None
-    location: Optional[str] = None # TODO_DRP: Remove in new model
+    location: Optional[str] = None  # TODO_DRP: Remove in new model
+
 
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Origin Dataset Metadata"""
@@ -234,7 +205,8 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     ]] = None
     dimensionality: Optional[str] = None
     digital_dataset: Optional[str] = None
-    external_uri: Optional[str] = None # TODO_DRP: Remove in new model
+    external_uri: Optional[str] = None  # TODO_DRP: Remove in new model
+
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
     """Model for DRP Analysis Dataset Metadata"""

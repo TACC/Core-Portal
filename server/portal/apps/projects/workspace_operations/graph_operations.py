@@ -4,7 +4,7 @@ from django.db import transaction
 import uuid
 import copy
 from django.conf import settings
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 
 

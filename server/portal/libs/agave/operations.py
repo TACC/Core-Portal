@@ -14,7 +14,6 @@ from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
-from portal.apps._custom.drp.models import FileObj
 from portal.apps.projects.tasks import process_file
 from tapipy.errors import BaseTapyException
 from portal.apps.projects.models.metadata import ProjectsMetadata
@@ -22,7 +21,7 @@ from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps import SCHEMA_MAPPING
 from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node, 
                                                                                patch_file_association)
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, get_or_create_trash_entity, get_root_node, get_node_from_path, update_node_in_project
 
 
@@ -100,18 +99,21 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          limit=int(limit),
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
-    folder_entity_value = get_value(system, path)
+    folder_entity_value = get_value(system, path) if settings.PORTAL_PROJECTS_ENABLE_METADATA else None
 
     try:
         # Convert file objects to dicts for serialization.
         listing = []
 
-        for f in raw_listing: 
-            if f.type == 'dir':
+        for f in raw_listing:
+            if not settings.PORTAL_PROJECTS_ENABLE_METADATA:
+                value = None
+                uuid = None
+            elif f.type == 'dir':
                 value = get_value(system,f.path)
                 entity = get_entity(system, f.path)
                 uuid = entity.to_dict().get('uuid') if entity else None
-            else: 
+            else:
                 file_obj = get_file_obj(system, f.path)
                 value = get_ordered_value(constants.FILE, file_obj.get('value')) if file_obj else None
                 uuid = file_obj.get('uuid') if file_obj else None
@@ -297,12 +299,6 @@ def mkdir(client, system, path, dir_name, metadata=None, **kwargs):
     """
 
     path_input = str(Path(path) / Path(dir_name))
-
-    if metadata is not None: 
-        new_meta = create_entity_metadata(system, 'drp.project.trash', {
-            **metadata,
-        })
-        add_node_to_project(system, 'NODE_ROOT', new_meta.uuid, new_meta.name, dir_name)
 
     client.files.mkdir(systemId=system, path=path_input)
 
@@ -579,8 +575,8 @@ def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
 
-    if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
-        
+    if settings.PORTAL_PROJECTS_ENABLE_METADATA and metadata is not None and getattr(constants, metadata.get('data_type').upper(), None):
+
         parent_node = get_node_from_path(system, path)
 
         file_obj = create_file_obj(system, uploaded_file.name, uploaded_file.size, dest_path, metadata)
@@ -711,9 +707,9 @@ def download_bytes(client, system, path, *args, **kwargs):
 def upload_file_metadata(client, system, path, file_name, file_size, metadata, **kwargs):
 
     dest_path = os.path.join(path.strip('/'), file_name)
-    
-    if metadata is not None and getattr(constants, metadata.get('data_type').upper(), None): 
-    
+
+    if settings.PORTAL_PROJECTS_ENABLE_METADATA and metadata is not None and getattr(constants, metadata.get('data_type').upper(), None):
+
         parent_node = get_node_from_path(system, path)
 
         file_obj = create_file_obj(system, file_name, file_size, dest_path, metadata)

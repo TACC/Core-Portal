@@ -685,6 +685,9 @@ PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
 PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', True)
 
+# When True, project creation builds the metadata graph and file listings
+PORTAL_PROJECTS_ENABLE_METADATA = getattr(settings_custom, '_PORTAL_PROJECTS_ENABLE_METADATA', False)
+
 # Vanity URL for the portal. Backwards compatibility with old _WH_BASE_URL setting.
 # Also include support for NGINX_SERVER_NAME environment variable if no settings are set.
 VANITY_BASE_URL = getattr(

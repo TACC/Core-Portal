@@ -7,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.dispatch import receiver
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps import SCHEMA_MAPPING
 from django.db.models.signals import pre_save
 from typing import get_args, List

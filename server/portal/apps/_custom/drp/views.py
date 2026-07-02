@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 import networkx as nx
 from networkx import shortest_path
 from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value

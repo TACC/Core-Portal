@@ -34,7 +34,7 @@ from portal.apps.projects.workspace_operations.project_meta_operations import cr
         patch_file_obj_entity, patch_project_entity
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
 from portal.apps.projects.tasks import process_file, sync_files_without_metadata
 from portal.libs.files.file_processing import resize_cover_image
@@ -159,14 +159,20 @@ class ProjectsApiView(BaseApiView):
         workspace_number = increment_workspace_count()
         system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}"
 
-        if metadata is not None: 
-            metadata = json.loads(metadata)
+        if settings.PORTAL_PROJECTS_ENABLE_METADATA:
+            # Build base project metadata from the standard create fields, then
+            # merge in any richer metadata payload a portal's frontend may send.
+            project_metadata = json.loads(metadata) if metadata is not None else {}
+            project_metadata.setdefault("title", title)
+            project_metadata.setdefault("description", description or "")
+            if keywords is not None:
+                project_metadata.setdefault("keywords", keywords)
+            project_metadata["projectId"] = system_id
 
             if cover_image:
-                metadata['cover_image'] = f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}'
+                project_metadata['cover_image'] = f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}'
 
-            metadata["projectId"] = system_id
-            project_meta = create_project_metadata(metadata)
+            project_meta = create_project_metadata(project_metadata)
             initialize_project_graph(project_meta.project_id)
 
         client = request.user.tapis_oauth.client
@@ -339,13 +345,27 @@ class ProjectInstanceApiView(BaseApiView):
         else: 
             workspace_def = get_project(client, project_id)
 
-        if metadata is not None:
-            metadata = json.loads(metadata)
+        if settings.PORTAL_PROJECTS_ENABLE_METADATA:
+            # Keep the project metadata entity in sync with the standard edit
+            # fields; merge in any richer payload a portal's frontend may send.
+            project_metadata = json.loads(metadata) if metadata is not None else {}
+            if title is not None:
+                project_metadata.setdefault("title", title)
+            if description is not None:
+                project_metadata.setdefault("description", description)
+            if keywords is not None:
+                project_metadata.setdefault("keywords", keywords)
 
             if cover_image:
-                metadata['cover_image'] = f'media/{project_id}/cover_image/{cover_image.name}'
-    
-            entity = patch_project_entity(project_id_full, metadata)
+                project_metadata['cover_image'] = f'media/{project_id}/cover_image/{cover_image.name}'
+
+            try:
+                entity = patch_project_entity(project_id_full, project_metadata)
+            except ProjectMetadata.DoesNotExist:
+                project_metadata["projectId"] = project_id_full
+                entity = create_project_metadata(project_metadata)
+                initialize_project_graph(entity.project_id)
+
             workspace_def.update(get_ordered_value(entity.name, entity.value))
             workspace_def["projectId"] = project_id
         

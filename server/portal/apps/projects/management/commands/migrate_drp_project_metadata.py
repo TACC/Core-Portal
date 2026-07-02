@@ -11,7 +11,8 @@ from portal.apps.projects.migration_utils.sql_db_utils import (get_project_by_id
                                                                query_related_publications, query_authors, query_samples, query_user)
 from portal.apps._custom.drp.models import DrpProjectRelatedPublications
 from portal.apps import SCHEMA_MAPPING
-from portal.apps._custom.drp import constants, metadata_mappings
+from portal.apps.projects.schema_models import constants
+from portal.apps._custom.drp import metadata_mappings
 from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_entity_metadata, 
                                                                                create_file_obj, create_project_metadata)
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_workspace_dir, create_workspace_system, set_workspace_acls

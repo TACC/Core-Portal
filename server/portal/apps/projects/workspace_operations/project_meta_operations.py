@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import get_args
 import networkx as nx
 from portal.apps import SCHEMA_MAPPING
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps._custom.drp.models import PartialEntityWithFiles, FileObj
+from portal.apps.projects.schema_models.base_metadata import PartialEntityWithFiles, FileObj
 from portal.apps.projects.workspace_operations.graph_operations import get_node_from_path, get_node_from_uuid, get_root_node, update_node_in_project
 
 portal = settings.PORTAL_NAMESPACE.lower()
