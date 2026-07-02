@@ -223,7 +223,7 @@ class ProjectInstanceApiView(BaseApiView):
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
         
-        if system_id and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
+        if system_id and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX or ''):
             client = service_account()
         else:
             client = request.user.tapis_oauth.client

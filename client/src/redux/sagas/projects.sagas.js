@@ -67,8 +67,10 @@ export async function fetchCreateProject(project) {
 
   const formData = new FormData();
 
-  const { file, ...projectMetadata } = project.metadata; // Exclude the file
-  formData.append('metadata', JSON.stringify(projectMetadata));
+  const { file, ...projectMetadata } = project.metadata || {}; // Exclude the file
+  if (project.metadata) {
+    formData.append('metadata', JSON.stringify(projectMetadata));
+  }
 
   if (file) {
     formData.append('cover_image', file);
@@ -79,7 +81,7 @@ export async function fetchCreateProject(project) {
     .forEach(([key, value]) => {
       formData.append(key, value);
     });
-  
+
   const result = await fetchUtil({
     url: `/api/projects/`,
     method: 'POST',
@@ -186,8 +188,10 @@ export async function setTitleDescriptionUtil(projectId, data) {
 
   const formData = new FormData();
 
-  const { file, ...projectMetadata } = data.metadata; // Exclude the file
-  formData.append('metadata', JSON.stringify(projectMetadata));
+  const { file, ...projectMetadata } = data.metadata || {}; // Exclude the file
+  if (data.metadata) {
+    formData.append('metadata', JSON.stringify(projectMetadata));
+  }
 
   if (file) {
     formData.append('cover_image', file);

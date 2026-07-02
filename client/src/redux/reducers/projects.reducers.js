@@ -209,6 +209,7 @@ export default function projects(state = initialState, action) {
         ...state,
         metadata: {
           ...action.payload,
+          keywords: convertKeywordsStringToArray(action.payload.keywords),
           loading: false,
           error: null,
         },
