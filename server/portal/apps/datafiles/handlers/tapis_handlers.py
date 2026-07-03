@@ -11,7 +11,7 @@ allowed_actions = {
     'public': ['listing', 'search', 'copy', 'download', 'preview', 'detail'],
     'community': ['listing', 'search', 'copy', 'download', 'preview', 'detail'],
     'projects': ['listing', 'search', 'copy', 'download', 'mkdir', 'detail',
-                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'update_metadata', 'upload_file_metadata']
+                 'move', 'rename', 'trash', 'preview', 'upload', 'makepublic', 'upload_file_metadata']
 }
 
 
@@ -22,7 +22,7 @@ def tapis_get_handler(client, scheme, system, path, operation, tapis_tracking_id
     # Exclude .Trash directory from Public and Community Data listing and search
     if scheme in ('public', 'community'):
         kwargs['hideTrash'] = True
-    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **kwargs)
+    return op(client, system, path, tapis_tracking_id=tapis_tracking_id, scheme=scheme, **kwargs)
 
 
 def tapis_post_handler(client, scheme, system,

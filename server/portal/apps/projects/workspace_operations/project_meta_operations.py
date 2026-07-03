@@ -358,6 +358,16 @@ def remove_file_associations(uuid: str, file_paths: list[str]):
         entity.save()
     return entity
 
+def remove_file_obj_by_path(project_id, path):
+    """Remove a file object from its parent entity, resolved by the file's path.
+
+    Mirrors get_file_obj's parent resolution. No-op if the parent isn't in the graph.
+    """
+    parent_node = _get_valid_node(project_id, str(Path(path).parent))
+    if parent_node and parent_node.get('uuid'):
+        remove_file_associations(parent_node['uuid'], [path])
+
+
 def create_file_entity(project_id: str, value: dict, uploaded_file, path: str):
         
         new_meta = create_entity_metadata(project_id, getattr(constants, value.get('data_type').upper()), {

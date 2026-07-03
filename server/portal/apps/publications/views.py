@@ -13,7 +13,6 @@ from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
 from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project, send_publication_rejected_email_to_authors, send_publication_reviewed_email_to_reviewers
-from portal.apps.projects.models.metadata import ProjectsMetadata
 from django.db import transaction
 from portal.apps.notifications.models import Notification
 from django.http import HttpResponse
@@ -60,7 +59,7 @@ class PublicationRequestView(BaseApiView):
                     for pub_request in publication_requests
                 ]
                 
-            except ProjectsMetadata.DoesNotExist:
+            except ProjectMetadata.DoesNotExist:
                 raise ApiException(f'Project {project_id} not found', status=404)
             
             return JsonResponse({'response': publication_requests_data}, safe=False)

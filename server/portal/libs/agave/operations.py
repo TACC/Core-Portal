@@ -16,55 +16,13 @@ from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from portal.apps.projects.tasks import process_file
 from tapipy.errors import BaseTapyException
-from portal.apps.projects.models.metadata import ProjectsMetadata
-from portal.apps.datafiles.models import DataFilesMetadata
-from portal.apps import SCHEMA_MAPPING
 from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node,
-                                                                               patch_file_association)
+                                                                               patch_file_association, remove_file_obj_by_path)
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.graph_operations import get_or_create_trash_entity, get_root_node, get_node_from_path
 
 
 logger = logging.getLogger(__name__)
-
-
-def get_datafile_metadata(system, path):
-    try: 
-        datafile_metadata = DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}')
-        return datafile_metadata.ordered_metadata
-    except: 
-        return None
-
-@transaction.atomic
-def update_datafile_metadata(system, name, old_path, new_path, metadata):
-    
-    validated_metadata = validate_datafile_metadata({**metadata, 'name': name})
-
-    files_metadata = DataFilesMetadata.objects.get(path=f'{system}/{old_path.strip("/")}')
-    files_metadata.name = name
-    files_metadata.path = f"{system}/{new_path.strip('/')}" 
-    files_metadata.metadata = validated_metadata
-    files_metadata.save()
-
-    for child in DataFilesMetadata.objects.filter(parent=files_metadata.id):
-        update_datafile_metadata(system=system, name=child.name, old_path=child.path.split('/', 1)[1], new_path=f"{new_path}/{child.name}", metadata=child.metadata)
-
-@transaction.atomic
-def create_datafile_metadata(system, path, name, metadata):
-
-    project_instance = ProjectsMetadata.objects.get(project_id=system)
-
-    validated_metadata = validate_datafile_metadata(metadata)
-
-    files_metadata = DataFilesMetadata(
-        name = name,
-        path = path,
-        metadata = validated_metadata,
-        project = project_instance
-    )
-
-    files_metadata.save()
-    print(f'File Metadata for path {path} saved successfully')
 
 
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
@@ -99,14 +57,18 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                                          limit=int(limit),
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
-    folder_entity_value = get_value(system, path) if settings.PORTAL_PROJECTS_ENABLE_METADATA else None
+    # Only add project metadata for projects scheme listings, never touch
+    # the graph for My Data / Community / Public systems.
+    metadata_enabled = settings.PORTAL_PROJECTS_ENABLE_METADATA and kwargs.get('scheme') == 'projects'
+
+    folder_entity_value = get_value(system, path) if metadata_enabled else None
 
     try:
         # Convert file objects to dicts for serialization.
         listing = []
 
         for f in raw_listing:
-            if not settings.PORTAL_PROJECTS_ENABLE_METADATA:
+            if not metadata_enabled:
                 value = None
                 uuid = None
             elif f.type == 'dir':
@@ -480,14 +442,12 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
                 *args, **kwargs)
 
 @transaction.atomic
-def delete(client, system, path):
-    # Delete file metadata
-    try:
-        DataFilesMetadata.objects.get(path=f'{system}/{path.strip("/")}').delete()
-    except DataFilesMetadata.DoesNotExist:
-        pass
-
 def delete(client, system, path, *args, **kwargs):
+    # Keep the project metadata graph in sync when enabled: drop the file's
+    # association from its parent entity so no orphaned fileObj remains.
+    if settings.PORTAL_PROJECTS_ENABLE_METADATA and get_file_obj(system, path):
+        remove_file_obj_by_path(system, path)
+
     return client.files.delete(systemId=system,
                                path=path,
                                headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
@@ -725,20 +685,3 @@ def upload_file_metadata(client, system, path, file_name, file_size, metadata, *
         if metadata.get('is_advanced_image_file', None):
             transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token))
 
-@transaction.atomic
-def update_metadata(client, system, path, new_path, old_name, new_name, metadata):
-    if (old_name != new_name) or (os.path.dirname(path) != new_path):
-        move_result = move(client, src_system=system, src_path=path,
-                dest_system=system, dest_path=new_path, file_name=new_name)
-        # update the name in the case it was changed during the move operation
-        move_message = move_result['message'].split('DestinationPath: ', 1)[1]
-        new_name = ('/' + move_message).rsplit('/', 1)[1]
-        
-    update_datafile_metadata(system=system, name=new_name, old_path=path, new_path=f'{new_path.strip("/")}/{new_name}', metadata=metadata)
-
-def validate_datafile_metadata(metadata): 
-    portal_name = settings.PORTAL_NAMESPACE
-    schema = SCHEMA_MAPPING[portal_name][metadata.get('data_type')]
-    validated_model = schema.model_validate(metadata)
-
-    return validated_model.model_dump(exclude_none=True)

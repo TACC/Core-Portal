@@ -1167,32 +1167,3 @@ export function* watchMakePublic() {
   yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
 }
 
-export async function updateMetadataUtil(
-  api,
-  scheme,
-  system,
-  path,
-  newPath,
-  oldName,
-  newName,
-  metadata
-) {
-  const url = `/api/datafiles/${api}/update_metadata/${scheme}/${system}/${path}/`;
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
-    credentials: 'same-origin',
-    body: JSON.stringify({
-      new_path: newPath,
-      old_name: oldName,
-      new_name: newName,
-      metadata: metadata ?? null,
-    }),
-  });
-  if (!response.ok) {
-    throw new Error(response.status);
-  }
-
-  const responseJson = await response.json();
-  return responseJson.data;
-}

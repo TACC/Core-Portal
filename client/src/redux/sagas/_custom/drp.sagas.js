@@ -1,5 +1,4 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
-import { mkdirUtil, updateMetadataUtil } from '../datafiles.sagas';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createEntityUtil, patchEntityUtil } from '../projects.sagas';
 

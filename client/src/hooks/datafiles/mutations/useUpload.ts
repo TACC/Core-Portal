@@ -14,6 +14,7 @@ export async function uploadUtil({
   file,
   tapisToken,
   metadata,
+  projectsEnableMetadata,
 }: {
   api: string;
   scheme: string;
@@ -22,6 +23,7 @@ export async function uploadUtil({
   file: FormData;
   tapisToken: TTapisToken;
   metadata?: Record<string, any>;
+  projectsEnableMetadata?: boolean;
 }): Promise<{ file: any; path: string }> {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {
@@ -52,13 +54,15 @@ export async function uploadUtil({
       },
     };
 
-    if (metadata && scheme === 'projects') {
+    // Register the file in the project graph when the portal has metadata
+    // enabled, or when a metadata payload was supplied
+    if ((projectsEnableMetadata || metadata) && scheme === 'projects') {
       metadataUrl = `/api/datafiles/${api}/upload_file_metadata/${scheme}/${system}/${apiPath}/`;
       metadataUrl = metadataUrl.replace(/\/{2,}/g, '/');
       metadataBody = {
         file_name: fileField.name,
         file_size: fileField.size,
-        metadata: { data_type: 'file', ...metadata },
+        metadata: { data_type: 'file', ...(metadata || {}) },
       };
     }
   } else {
@@ -101,6 +105,9 @@ function useUpload() {
   const status = useSelector(
     (state: any) => state.files.operationStatus.upload,
     shallowEqual
+  );
+  const projectsEnableMetadata = useSelector(
+    (state: any) => state.workbench.config.projectsEnableMetadata
   );
 
   const setStatus = (newStatus: any) => {
@@ -147,6 +154,7 @@ function useUpload() {
           file: formData,
           tapisToken,
           metadata,
+          projectsEnableMetadata,
         },
         {
           onSuccess: () => {

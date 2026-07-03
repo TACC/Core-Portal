@@ -4,13 +4,16 @@ import importlib
 
 from django.conf import settings
 
-# Base entity names (default values; portals may override)
-PROJECT = "project"
-PROJECT_GRAPH = "project.graph"
-FILE = "project.file"
-TRASH = "project.trash"
+# Base entity names, namespaced to the portal
+PORTAL_NAMESPACE = settings.PORTAL_NAMESPACE.lower()
 
-# Override with portal-specific constants
+PROJECT = f"{PORTAL_NAMESPACE}.project"
+PROJECT_GRAPH = f"{PORTAL_NAMESPACE}.project.graph"
+FILE = f"{PORTAL_NAMESPACE}.project.file"
+TRASH = f"{PORTAL_NAMESPACE}.project.trash"
+
+# Override with portal-specific constants (domain entity types, or explicit
+# overrides of the names above)
 try:
     _portal_constants = importlib.import_module(
         f"portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.constants"

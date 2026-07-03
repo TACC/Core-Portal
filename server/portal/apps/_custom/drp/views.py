@@ -2,7 +2,6 @@ import json
 from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
-from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
 import networkx as nx
