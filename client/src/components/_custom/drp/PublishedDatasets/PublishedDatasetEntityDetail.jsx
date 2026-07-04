@@ -6,7 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
-import { formatLabel, findNodeInTreeById, findNodeInTree, getTooltipDescription } from '../utils/utils';
+import { formatLabel } from 'utils/formatLabel';
+import { findNodeInTreeById, findNodeInTree, getTooltipDescription } from '../utils/utils';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';

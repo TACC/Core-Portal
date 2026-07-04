@@ -6,7 +6,8 @@ import { MLACitation, APACitation } from '../DataFilesProjectPublish/DataFilesPr
 import * as ROUTES from '../../../../constants/routes';
 import { Link } from 'react-router-dom';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
-import { formatLabel, getTooltipDescription } from '../utils/utils';
+import { formatLabel } from 'utils/formatLabel';
+import { getTooltipDescription } from '../utils/utils';
 import styles from './PublishedDatasetDetail.module.css';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 

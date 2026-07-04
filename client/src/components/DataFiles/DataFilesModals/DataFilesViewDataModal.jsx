@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesViewDataModal.module.scss';
 import DescriptionList from '_common/DescriptionList';
-import { formatLabel } from '../../_custom/drp/utils/utils';
+import { formatLabel } from 'utils/formatLabel';
 
 const DataFilesViewDataModal = () => {
   const dispatch = useDispatch();

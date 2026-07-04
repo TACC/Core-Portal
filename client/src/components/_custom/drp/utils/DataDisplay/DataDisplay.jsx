@@ -4,7 +4,7 @@ import { Section, SectionContent, LoadingSpinner, Button } from '_common';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './DataDisplay.module.scss';
 import { useDispatch } from 'react-redux';
-import { formatLabel } from '../utils';
+import { formatLabel } from 'utils/formatLabel';
 import { findNodeInTree } from '../utils';
 
 const processModalViewableData = (data) => {
