@@ -215,6 +215,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 # PROJECTS SETTINGS
 #######################
 
+# Enable the project metadata graph (entity/file metadata, publishing)
 _PORTAL_PROJECTS_ENABLE_METADATA = False
 
 _PORTAL_PROJECTS_SYSTEM_PREFIX = "cep.project"
@@ -225,6 +226,16 @@ _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+
+#######################
+# PUBLICATION SETTINGS
+#######################
+
+_PORTAL_PUBLICATION_PUBLISHER = "CEP"
+_PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+_DATACITE_URL = "https://api.test.datacite.org/"
 
 ########################
 # Custom Portal Template Assets

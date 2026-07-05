@@ -62,7 +62,7 @@ def get_datacite_json(pub_graph: nx.DiGraph):
 
     datacite_json["types"] = {}
     datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
-    datacite_json["publisher"] = "Digital Porous Media Portal"
+    datacite_json["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
 
     datacite_json["publicationYear"] = datetime.datetime.now().year
 

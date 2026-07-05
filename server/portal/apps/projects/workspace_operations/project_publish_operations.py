@@ -150,10 +150,10 @@ def archive_publication_files(project_id: str):
     published_root_dir = client.systems.getSystem(systemId=published_root_system).rootDir
 
     job_body = {
-        "name": f"drp-archive-publication-{project_id}",
-        "appId": "digitalrocks-archive-publication",
+        "name": f"{settings.PORTAL_NAMESPACE.lower()}-archive-publication-{project_id}",
+        "appId": settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID,
         "appVersion": "0.0.1",
-        "description": "Archive DRP publication",
+        "description": f"Archive {settings.PORTAL_NAMESPACE} publication",
         "fileInputs": [],
         "parameterSet": {
             "appArgs": [],
@@ -169,7 +169,7 @@ def archive_publication_files(project_id: str):
                 }
             ],
         },
-        "tags": ["portalName:drp"],
+        "tags": [f"portalName:{settings.PORTAL_NAMESPACE.lower()}"],
     }
     res = client.jobs.submitJob(**job_body)
     return res
@@ -401,7 +401,7 @@ def send_publication_accepted_email_to_authors(self, project_id):
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: Your Publication Request has been Accepted",
+            f"{settings.PORTAL_PUBLICATION_PUBLISHER} Alert: Your Publication Request has been Accepted",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
@@ -431,7 +431,7 @@ def send_publication_rejected_email_to_authors(self, project_id: str):
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: Your Dataset needs revision",
+            f"{settings.PORTAL_PUBLICATION_PUBLISHER} Alert: Your Dataset needs revision",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
@@ -464,7 +464,7 @@ def send_publication_in_review_email_to_authors(self, project_id):
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: Your Dataset is in Review",
+            f"{settings.PORTAL_PUBLICATION_PUBLISHER} Alert: Your Dataset is in Review",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [user_email],
@@ -497,7 +497,7 @@ def send_publication_reviewed_email_to_reviewers(self, project_id, status, revie
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: A Dataset has Received Review",
+            f"{settings.PORTAL_PUBLICATION_PUBLISHER} Alert: A Dataset has Received Review",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [reviewer_email],
@@ -530,7 +530,7 @@ def send_publication_submitted_for_review_email_to_reviewers(self, project_id):
             """
 
         send_mail(
-            "DigitalPorousMedia Alert: A New Dataset has been Submitted for Review",
+            f"{settings.PORTAL_PUBLICATION_PUBLISHER} Alert: A New Dataset has been Submitted for Review",
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [reviewer_email],

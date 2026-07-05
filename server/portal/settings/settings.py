@@ -673,6 +673,12 @@ PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
+PORTAL_PUBLICATION_PUBLISHER = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_PUBLISHER', PORTAL_NAMESPACE)
+
+PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_ID', None)
+
 ALLOCATIONS_TO_EXCLUDE = (
     getattr(settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"])
 )
