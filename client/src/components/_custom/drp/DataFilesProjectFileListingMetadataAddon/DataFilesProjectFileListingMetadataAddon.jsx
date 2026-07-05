@@ -4,7 +4,7 @@ import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
 import { useFileListing } from 'hooks/datafiles';
 import DataDisplay from '../utils/DataDisplay/DataDisplay';
 import { formatDate } from 'utils/timeFormat';
-import { MLACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { MLACitation } from '_common/Citations/Citations';
 import { Button, ShowMore } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';

@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Section, Button, LoadingSpinner } from '_common';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { MLACitation, APACitation } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { MLACitation, APACitation } from '_common/Citations/Citations';
 import * as ROUTES from '../../../../constants/routes';
 import { Link } from 'react-router-dom';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';

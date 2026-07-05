@@ -7,6 +7,7 @@ def workbench_state(request):
         'config': {
             **settings.WORKBENCH_SETTINGS,
             'projectsEnableMetadata': settings.PORTAL_PROJECTS_ENABLE_METADATA,
+            'publisher': settings.PORTAL_PUBLICATION_PUBLISHER,
         },
         'portalName': settings.PORTAL_NAMESPACE,
         'recaptchaSiteKey': settings.RECAPTCHA_SITE_KEY,

@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectCitationModal.module.scss';
-import { Citations } from '_custom/drp/DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewAuthors';
+import { Citations } from '_common/Citations/Citations';
 
 const DataFilesProjectCitationModal = () => {
   const dispatch = useDispatch();
