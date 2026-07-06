@@ -57,11 +57,8 @@ export const getDefaultExecSystem = (
  *
  * @returns boolean
  */
-export const isValidDynamicExecSystems = (
-  app: TPortalApp
-): boolean => (
+export const isValidDynamicExecSystems = (app: TPortalApp): boolean =>
   Array.isArray(app.definition.notes.dynamicExecSystems) &&
   app.definition.notes.dynamicExecSystems.every(
     (s) => typeof s === 'object' && s !== null && 'systemId' in s
-  )
-);
+  );
