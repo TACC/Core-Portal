@@ -441,7 +441,66 @@ describe('AppSchemaForm', () => {
           ...helloWorldAppSubmissionPayloadFixture.job.parameterSet,
           schedulerOptions: [
             {
-              arg: '--tapis-profile tacc-apptainer',
+              arg: '--tapis-profile tacc-apptainer-frontera',
+              description: 'Scheduler profile for HPC clusters at TACC',
+              include: true,
+              name: 'TACC Scheduler Profile',
+            },
+            ...helloWorldAppSubmissionPayloadFixture.job.parameterSet
+              .schedulerOptions,
+          ],
+        },
+      },
+    };
+
+    const submitButton = getByText(/Submit/);
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(store.getActions()).toEqual([
+        { type: 'GET_SYSTEM_MONITOR' },
+        { type: 'SUBMIT_JOB', payload: payload },
+      ]);
+    });
+  });
+
+  it('uses correct dynamic scheduler profile after the assigned dynamic exec system has changed', async () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const appFixture = {
+      ...helloWorldAppFixture,
+      definition: {
+        ...helloWorldAppFixture.definition,
+        notes: {
+          ...helloWorldAppFixture.definition.notes,
+          ...executionSystemNotesFixture,
+        },
+      },
+      execSystems: execSystemsFixture,
+    };
+
+    const { getByText, container } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+
+    const execSystemDropDown = container.querySelector(
+      'select[name="execSystemId"]'
+    );
+    fireEvent.change(execSystemDropDown, { target: { value: 'ls6' } });
+
+    const payload = {
+      ...helloWorldAppSubmissionPayloadFixture,
+      job: {
+        ...helloWorldAppSubmissionPayloadFixture.job,
+        execSystemId: 'ls6',
+        name: `hello-world-0.0.1_${frozenDate}T00:00:00`,
+        parameterSet: {
+          ...helloWorldAppSubmissionPayloadFixture.job.parameterSet,
+          schedulerOptions: [
+            {
+              arg: '--tapis-profile tacc-apptainer-ls6',
               description: 'Scheduler profile for HPC clusters at TACC',
               include: true,
               name: 'TACC Scheduler Profile',

@@ -50,3 +50,18 @@ export const getDefaultExecSystem = (
 
   return undefined;
 };
+
+/**
+ * This validates if dynamicExecSystems is an array of objects
+ * that is not empty and has a systemId in each item
+ *
+ * @returns boolean
+ */
+export const isValidDynamicExecSystems = (
+  app: TPortalApp
+): boolean => (
+  Array.isArray(app.definition.notes.dynamicExecSystems) &&
+  app.definition.notes.dynamicExecSystems.every(
+    (s) => typeof s === 'object' && s !== null && 'systemId' in s
+  )
+);
