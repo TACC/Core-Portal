@@ -14,6 +14,7 @@ import {
   useSystems,
 } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
+import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({
@@ -57,6 +58,13 @@ const DataFilesProjectFileListing = ({
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
     true;
+  const sharedWorkspacesDisplayName = useSelector(
+    (state) =>
+      getDefaultProjectSystem(state.systems.storage.configuration)?.name
+  );
+  const projectMembersLabel = useSelector((state) =>
+    state.workbench.config.projectsEnableMetadata ? 'Authors' : 'Team'
+  );
 
   const canEditSystem = useSelector(
     (state) =>
@@ -134,14 +142,14 @@ const DataFilesProjectFileListing = ({
           {canEditSystem ? (
             <>
               <Button type="link" onClick={onEdit}>
-                Edit Dataset
+                Edit {sharedWorkspacesDisplayName}
               </Button>
               <span className={styles.separator}>|</span>
             </>
           ) : null}
           {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
             <Button type="link" onClick={onManage}>
-              {readOnlyTeam ? 'View' : 'Manage'} Authors
+              {readOnlyTeam ? 'View' : 'Manage'} {projectMembersLabel}
             </Button>
           )}
           {DataFilesProjectFileListingAddon && (

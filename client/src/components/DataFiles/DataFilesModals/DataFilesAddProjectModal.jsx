@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import { useAddonComponents, useFileListing } from 'hooks/datafiles';
+import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -53,13 +54,8 @@ const DataFilesAddProjectModal = () => {
     );
   });
 
-  const systems = useSelector(
-    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
-    shallowEqual
-  );
-
-  const system = systems.find(
-    (s) => s.scheme === 'projects' && s.defaultProject == true
+  const system = useSelector((state) =>
+    getDefaultProjectSystem(state.systems.storage.configuration)
   );
 
   const sharedWorkspacesDisplayName = system?.name;

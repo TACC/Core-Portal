@@ -36,10 +36,10 @@ const DescriptionList = ({ className, data, density, direction }) => {
   const compareFn = (entry1, entry2) => {
     const [, val1] = entry1;
     const [, val2] = entry2;
-    if ((val1._order ?? 0) < (val2._order ?? 0)) {
+    if ((val1?._order ?? 0) < (val2?._order ?? 0)) {
       return -1;
     }
-    if ((val1._order ?? 0) > (val2._order ?? 0)) {
+    if ((val1?._order ?? 0) > (val2?._order ?? 0)) {
       return 1;
     }
     return 0;

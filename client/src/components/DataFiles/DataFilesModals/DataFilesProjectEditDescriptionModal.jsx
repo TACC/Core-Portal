@@ -7,6 +7,7 @@ import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
+import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,10 @@ const DataFilesProjectEditDescriptionModal = () => {
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
     true;
+  const sharedWorkspacesDisplayName = useSelector(
+    (state) =>
+      getDefaultProjectSystem(state.systems.storage.configuration)?.name
+  );
 
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
@@ -125,7 +130,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           {({ isValid, dirty }) => (
             <Form>
               <ModalHeader toggle={toggle} charCode="&#xe912;">
-                Edit Dataset
+                Edit {sharedWorkspacesDisplayName}
               </ModalHeader>
               <ModalBody className={styles['modal-body']}>
                 <FormField
