@@ -17,6 +17,12 @@ const mockState = {
     results: siteSearchResults,
   },
   authenticatedUser: { user: null },
+  projects: {
+    metadata: {},
+  },
+  workbench: {
+    config: {},
+  },
   files: {
     modals: {
       preview: false,

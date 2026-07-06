@@ -16,9 +16,6 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
   const [isAdvancedImageFile, setIsAdvancedImageFile] = useState(metadata?.is_advanced_image_file ?? false);
   const [expandIsOpen, setExpandIsOpen] = useState(false);
 
-  // regex from old digitalrocks portal
-  const standardImageType = /(\.|\/)(gif|jpe?g|png|tiff?)$/i;
-
   const status = useSelector(
     (state) => state.files.operationStatus.dynamicform
   );
