@@ -42,6 +42,9 @@ const DataFilesManageProjectModal = () => {
   });
 
   const portalName = useSelector((state) => state.workbench.portalName);
+  const projectsEnableMetadata = useSelector(
+    (state) => state.workbench.config.projectsEnableMetadata
+  );
 
   const { DataFilesManageProjectModalAddon } = useAddonComponents({
     portalName,
@@ -135,7 +138,8 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          {readOnlyTeam ? 'View' : 'Manage'} Authors
+          {readOnlyTeam ? 'View' : 'Manage'}{' '}
+          {projectsEnableMetadata ? 'Authors' : 'Team'}
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -150,7 +154,8 @@ const DataFilesManageProjectModal = () => {
           {error ? (
             <div className={styles.error}>
               <Message type="warn">
-                An error occurred while modifying authors
+                An error occurred while modifying{' '}
+                {projectsEnableMetadata ? 'authors' : 'team members'}
               </Message>
             </div>
           ) : null}

@@ -32,6 +32,8 @@ const DataFilesPublicationsList = ({ rootSystem, basePath }) => {
     (s) => s.scheme === 'projects' && s.publicationProject === true
   );
 
+  const publicationsName = selectedSystem?.name ?? 'Publications';
+
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
 
@@ -109,14 +111,14 @@ const DataFilesPublicationsList = ({ rootSystem, basePath }) => {
   ];
 
   const noDataText = query.query_string
-    ? `No Publications match your search term.`
-    : `No Publications available.`;
+    ? `No ${publicationsName} match your search term.`
+    : `No ${publicationsName} available.`;
 
   if (error) {
     return (
       <div className={styles['root-placeholder']}>
         <SectionMessage type="error">
-          There was a problem retrieving Publications.
+          There was a problem retrieving {publicationsName}.
         </SectionMessage>
       </div>
     );
@@ -131,7 +133,7 @@ const DataFilesPublicationsList = ({ rootSystem, basePath }) => {
       <Searchbar
         api="tapis"
         scheme="projects"
-        sectionName="Publications"
+        sectionName={publicationsName}
         resultCount={publications.length}
         infiniteScroll
       />

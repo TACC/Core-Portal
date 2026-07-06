@@ -23,6 +23,9 @@ const DataFilesProjectMembers = ({
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
   );
+  const projectsEnableMetadata = useSelector(
+    (state) => state.workbench.config.projectsEnableMetadata
+  );
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId ?? null,
     authenticatedUser ?? null
@@ -99,7 +102,7 @@ const DataFilesProjectMembers = ({
   };
 
   const memberColumn = {
-    Header: 'Authors',
+    Header: projectsEnableMetadata ? 'Authors' : 'Members',
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
@@ -220,7 +223,7 @@ const DataFilesProjectMembers = ({
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Authors
+            Add {projectsEnableMetadata ? 'Authors' : 'Member'}
           </Label>
 
           <div className={styles['user-search']}>
