@@ -267,14 +267,6 @@ DATABASES = {
         'PASSWORD': settings_secret._DJANGO_DB_PASSWORD,
         'HOST': settings_secret._DJANGO_DB_HOST,
         'PORT': settings_secret._DJANGO_DB_PORT
-    }, 
-    'drp_mysql': {
-        'ENGINE': settings_secret._DJANGO_DRP_DB_ENGINE,
-        'NAME': settings_secret._DJANGO_DRP_DB_NAME,
-        'USER': settings_secret._DJANGO_DRP_DB_USER,
-        'PASSWORD': settings_secret._DJANGO_DRP_DB_PASSWORD,
-        'HOST': settings_secret._DJANGO_DRP_DB_HOST,
-        'PORT': settings_secret._DJANGO_DRP_DB_PORT
     }
 }
 
@@ -641,11 +633,11 @@ PORTAL_PUBLICATION_DATACITE_URL_PREFIX = getattr(
 DATACITE_URL = getattr(
     settings_custom, '_DATACITE_URL', None)
 
-DATACITE_USER = settings_secret.\
-    _DATACITE_USER
+DATACITE_USER = getattr(
+    settings_secret, '_DATACITE_USER', None)
 
-DATACITE_PASS = settings_secret.\
-    _DATACITE_PASS
+DATACITE_PASS = getattr(
+    settings_secret, '_DATACITE_PASS', None)
 
 PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
     _PORTAL_PROJECTS_PRIVATE_KEY
