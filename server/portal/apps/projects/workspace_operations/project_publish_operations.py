@@ -154,7 +154,7 @@ def archive_publication_files(project_id: str):
     job_body = {
         "name": f"drp-archive-publication-{project_id}",
         "appId": "digitalrocks-archive-publication",
-        "appVersion": "0.0.1",
+        "appVersion": "0.0.2",
         "description": "Archive DRP publication",
         "fileInputs": [],
         "parameterSet": {
@@ -168,6 +168,14 @@ def archive_publication_files(project_id: str):
                 {
                     "key": "projectId",
                     "value": project_id
+                },
+                {
+                    "key": "ranchSystemId",
+                    "value": "digitalrocks.ranch.test",  # or final Ranch system ID
+                },
+                {
+                    "key": "ranchArchiveRootDir",
+                    "value": "/",
                 }
             ],
         },
