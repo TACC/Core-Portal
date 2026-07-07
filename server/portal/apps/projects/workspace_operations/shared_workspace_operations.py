@@ -358,14 +358,16 @@ def list_projects(client, root_system_id=None):
         )
         if root_system:
             query += f"~(rootDir.like.{root_system['rootDir']}*)"
-
-        is_review_system = root_system.get('reviewProject', False)
-        is_publication_system = root_system.get('publicationProject', False)
+            is_review_system = root_system.get('reviewProject', False)
+            is_publication_system = root_system.get('publicationProject', False)
+        else:
+            is_review_system = False
+            is_publication_system = False
     else:
         is_review_system = False
         is_publication_system = False
 
-    community_system = next(system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community')
+    community_system = next((system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community'), None)
 
     if community_system and not is_review_system and not is_publication_system: 
         community_data_query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)~(rootDir.like.{community_system['homeDir']}*)"
