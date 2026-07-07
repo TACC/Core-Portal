@@ -311,8 +311,7 @@ class ProjectInstanceApiView(BaseApiView):
         :param request: Request object
         :param str project_id: Project Id.
         """
-        service_client = service_account()
-        query_dict, multi_value_dict = MultiPartParser(request.META, request, 
+        query_dict, multi_value_dict = MultiPartParser(request.META, request,
                                             request.upload_handlers).parse()
         
         title = query_dict.get('title')
@@ -368,20 +367,23 @@ class ProjectInstanceApiView(BaseApiView):
             workspace_def.update(get_ordered_value(entity.name, entity.value))
             workspace_def["projectId"] = project_id
         
-        # Upload cover image to media folder
-        if cover_image:
-            resized_file = resize_cover_image(cover_image)
-            service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
-                                path=f'media/{project_id}/cover_image/{cover_image.name}', 
-                                file=resized_file)
-            
-        if workspace_def.get('cover_image') is not None:
-            # Get the postit for the cover image
-            postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
-                                                       path=f"media/{project_id}/cover_image/{Path(workspace_def['cover_image']).name}",
-                                                       allowedUses=-1, 
-                                                       validSeconds=86400)
-            workspace_def["file_url"] = postit.redeemUrl
+        if cover_image or workspace_def.get('cover_image') is not None:
+            service_client = service_account()
+
+            # Upload cover image to media folder
+            if cover_image:
+                resized_file = resize_cover_image(cover_image)
+                service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                                    path=f'media/{project_id}/cover_image/{cover_image.name}',
+                                    file=resized_file)
+
+            if workspace_def.get('cover_image') is not None:
+                # Get the postit for the cover image
+                postit = service_client.files.createPostIt(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                                                           path=f"media/{project_id}/cover_image/{Path(workspace_def['cover_image']).name}",
+                                                           allowedUses=-1,
+                                                           validSeconds=86400)
+                workspace_def["file_url"] = postit.redeemUrl
 
         return JsonResponse(
             {

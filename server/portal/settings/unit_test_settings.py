@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'portal.apps.datafiles',
     'portal.apps.projects',
     'portal.apps.portal_messages',
+    'portal.apps.publications',
 
 ]
 
@@ -205,6 +206,14 @@ PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
 PORTAL_PROJECTS_SYSTEM_PREFIX = 'test.project'
+
+PORTAL_PROJECTS_ENABLE_METADATA = False
+
+PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'test.project.published'
+
+PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
+
+PORTAL_PUBLICATION_PUBLISHER = None
 
 PORTAL_PROJECTS_ID_PREFIX = 'test.project'
 

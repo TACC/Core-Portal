@@ -32,7 +32,8 @@ class TestOperations(TestCase):
                                                   limit=100,
                                                   headers={'X-Tapis-Tracking-ID': ''})
 
-        mock_response_listing = [{'system': 'test.system',
+        mock_response_listing = [{'uuid': None,
+                                  'system': 'test.system',
                                   'type': 'file',
                                   'format': 'raw',
                                   'mimeType': None,
@@ -44,13 +45,15 @@ class TestOperations(TestCase):
                                       'self': {
                                           'href': 'tapis://cloud.data/path/to/file'
                                       }
-                                    }
+                                    },
+                                  'metadata': None
                                   }]
 
         mock_indexer.delay.assert_called_with(mock_response_listing)
 
         self.assertEqual(ls, {'listing': mock_response_listing,
-                              'reachedEnd': True})
+                              'reachedEnd': True,
+                              'folder_metadata': None})
 
     @patch('portal.libs.agave.operations.listing')
     @patch('portal.libs.agave.operations.IndexedFile.search')
@@ -105,7 +108,7 @@ class TestOperations(TestCase):
                                      src_system='test.system',
                                      src_path='/path/to/file',
                                      dest_system='test.system', dest_path='/path/to',
-                                     file_name='newname')
+                                     file_name='newname', metadata=None)
 
     @patch('portal.libs.agave.operations.tapis_indexer')
     def test_move(self, mock_indexer):

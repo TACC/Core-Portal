@@ -5,7 +5,6 @@ from portal.libs.agave.utils import user_account, service_account
 from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.libs.elasticsearch.docs.base import (IndexedProject, IndexedPublication)
-from portal.apps.publications.models import Publication
 from elasticsearch.exceptions import NotFoundError
 
 logger = logging.getLogger(__name__)
@@ -68,7 +67,8 @@ def tapis_project_listing_indexer(self, projects):
     index_project_listing(projects)
 
 def index_publication(project_id):
-    """Util to index a publication by its project ID"""
+    from portal.apps.publications.models import Publication
+    
     pub = Publication.objects.get(project_id=project_id)
     try:
         pub_es = IndexedPublication.get(project_id)

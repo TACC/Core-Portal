@@ -216,6 +216,7 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
         "data": {
             "listing": [
                 {
+                    'uuid': None,
                     'system': 'frontera.home.username',
                     'type': 'dir' if f.type == 'dir' else 'file',
                     'format': 'folder' if f.type == 'dir' else 'raw',
@@ -226,9 +227,11 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
                     'lastModified': f.lastModified,
                     '_links': {
                         'self': {'href': f.url}
-                    }
+                    },
+                    'metadata': None
                 } for f in tapis_listing_result
             ],
+            "folder_metadata": None,
             "reachedEnd": True
         }
     }

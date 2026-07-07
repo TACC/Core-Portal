@@ -57,7 +57,7 @@ def test_metadata_str(mock_owner, mock_project_save_signal):
         defaults=defaults
     )
     meta_str = str(meta)
-    assert meta_str == '(<ProjectMetadata: PRJ-123 - Project Title>, True)'
+    assert meta_str == '(<LegacyProjectMetadata: PRJ-123 - Project Title>, True)'
 
 
 @pytest.mark.skip(reason="TODOv3: deprecate with projects")
