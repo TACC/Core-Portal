@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, shallowEqual, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+import { STATUS_TEXT_MAP } from './JobsStatus/JobsStatus';
 import {
   AppIcon,
   InfiniteScrollTable,
@@ -27,6 +28,7 @@ function JobsView({
   includeSearchbar,
 }) {
   // TODOv3: dropV2Jobs
+  const jobStatuses = Object.keys(STATUS_TEXT_MAP);
   const location = useLocation();
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
@@ -83,10 +85,11 @@ function JobsView({
     if (!isJobLoading) {
       dispatch({
         type: dispatchType,
-        params: { offset: jobs.length, queryString: query.query_string || '' },
+        params: { offset: jobs.length, queryString: query.query_string || '',
+          filter: query.filter || '' },
       });
     }
-  }, [dispatch, jobs, query.query_string, isJobLoading]);
+  }, [dispatch, jobs, query.query_string, query.filter , isJobLoading]);
 
   const jobDetailLink = useCallback(
     ({
@@ -236,6 +239,7 @@ function JobsView({
             api="tapis"
             resultCount={jobs.length}
             dataType="Jobs"
+            filterTypes={jobStatuses}
             infiniteScroll
             disabled={isJobLoading || isNotificationLoading}
           />

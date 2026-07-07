@@ -5,12 +5,13 @@ import { fetchAppDefinitionUtil } from './apps.sagas';
 
 export const LIMIT = 50;
 
-export async function fetchJobs(offset, limit, queryString) {
-  const operation = queryString ? 'search' : 'listing';
+export async function fetchJobs(offset, limit, queryString, filter) {
+  const operation = queryString || filter ? 'search' : 'listing';
   const result = await fetchUtil({
     url: `/api/workspace/jobs/${operation}`,
-    params: { offset, limit, query_string: queryString },
+    params: { offset, limit, query_string: queryString, filter },
   });
+  //alert(`Filtering by ${location.pathname} - ${filter}`);
   return result.response;
 }
 
@@ -43,12 +44,15 @@ export function* getJobs(action) {
   yield put({ type: 'JOBS_LIST_START' });
 
   try {
+    alert(`Filtering by ${location.pathname} - ${action.params.filter}`);
     const jobs = yield call(
       fetchJobs,
       action.params.offset,
       action.params.limit || LIMIT,
-      action.params.queryString || ''
+      action.params.queryString || '',
+      action.params.filter || ''
     );
+    //const filtered = jobs.filter((job) => job.status === 'FINISHED');
     yield put({
       type: 'JOBS_LIST',
       payload: { list: jobs, reachedEnd: jobs.length < LIMIT },
