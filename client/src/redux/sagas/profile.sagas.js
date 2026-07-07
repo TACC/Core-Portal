@@ -5,8 +5,10 @@ import { fetchUtil } from 'utils/fetchUtil';
 const ROOT_SLUG = '/accounts/api/profile';
 
 export const getPasswordStatus = (h) => {
-  const passwordChanged = h.filter((entry) =>
-    entry.comment.includes('Password changed')
+  const passwordChanged = h.filter(
+    (entry) =>
+      entry.comment.toLowerCase().includes('password') &&
+      entry.comment.toLowerCase().includes('change')
   );
   if (isEmpty(passwordChanged)) return '';
   const lastChanged = passwordChanged.pop().timestamp;

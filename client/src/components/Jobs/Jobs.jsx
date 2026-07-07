@@ -241,6 +241,7 @@ function JobsView({
             dataType="Jobs"
             filterTypes={jobStatuses}
             infiniteScroll
+            forbidWhitespace
             disabled={isJobLoading || isNotificationLoading}
           />
           <Button
