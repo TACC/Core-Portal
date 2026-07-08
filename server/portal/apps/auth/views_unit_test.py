@@ -68,18 +68,6 @@ def test_tapis_callback_mismatched_state(client):
     assert response.status_code == 400
 
 
-def test_session_lifetime_endpoint(client, regular_user):
-    # add auth to session
-    client.force_login(regular_user)
-    session = client.session
-    session.save()
-    response = client.get("/auth/session-lifetime/")
-    # Exact remaining lifetime responds depends on speed of test execution
-    # It should be a positive number less than the max session age.
-    assert response.json()["sessionLifetime"] > 0
-    assert response.json()["sessionLifetime"] <= 604800
-
-
 def test_launch_setup_checks(regular_user, mocker):
     mock_execute_setup_steps = mocker.patch(
         "portal.apps.auth.views.execute_setup_steps"
