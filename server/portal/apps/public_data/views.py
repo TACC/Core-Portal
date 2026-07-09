@@ -2,6 +2,7 @@ import networkx as nx
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from portal.apps.publications.models import Publication
+from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 
 
 def get_google_scholar_context(project_id):
