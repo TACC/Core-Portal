@@ -159,13 +159,9 @@ function Wizard<T>({ steps, memo, formSubmit }: WizardProps<T>) {
 
   const { goToStep } = stepWizardProps;
 
-  useEffect(
-    () => {
-      goToStep && goToStep(1);
-    },
-    /* eslint-disable-next-line */
-    [memo]
-  );
+  useEffect(() => {
+    goToStep && goToStep(1);
+  }, [memo]);
 
   return (
     <WizardContext.Provider value={stepWizardProps}>

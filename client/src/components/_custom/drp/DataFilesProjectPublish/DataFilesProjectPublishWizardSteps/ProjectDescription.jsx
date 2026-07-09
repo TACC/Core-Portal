@@ -52,7 +52,12 @@ const ProjectDescription = ({ project }) => {
 
     if (project.cover_image) {
       projectData['Cover Image'] = (
-        <a href={project.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+        <a
+          href={project.file_url}
+          target="_blank"
+          rel="noreferrer"
+          className="wb-link"
+        >
           {project.cover_image.split('/').pop()}
         </a>
       );
@@ -168,7 +173,9 @@ const ProjectDescription = ({ project }) => {
           <p>Dataset metadata has the following errors:</p>
           <ul>
             {Object.keys(errors).map((key) => (
-              <li key={key}><b>{errors[key]}</b></li>
+              <li key={key}>
+                <b>{errors[key]}</b>
+              </li>
             ))}
           </ul>
         </div>
@@ -180,11 +187,11 @@ const ProjectDescription = ({ project }) => {
 
 const validateProjectMetadata = (values) => {
   const errors = {};
-  
+
   if (!values.title) {
     errors.title = 'Title is required';
   }
-  
+
   if (!values.description) {
     errors.description = 'Description is required';
   }
@@ -192,7 +199,7 @@ const validateProjectMetadata = (values) => {
   if (!values.cover_image) {
     errors.cover_image = 'Cover image is required';
   }
-  
+
   return errors;
 };
 

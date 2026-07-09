@@ -3,7 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { Form, Formik } from 'formik';
-import { Button, Expand, LoadingSpinner, Section, SectionHeader } from '_common';
+import {
+  Button,
+  Expand,
+  LoadingSpinner,
+  Section,
+  SectionHeader,
+} from '_common';
 import styles from './DataFilesPreviewModalAddon.module.scss';
 import { useFileListing } from 'hooks/datafiles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +19,9 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const [isAdvancedImageFile, setIsAdvancedImageFile] = useState(metadata?.is_advanced_image_file ?? false);
+  const [isAdvancedImageFile, setIsAdvancedImageFile] = useState(
+    metadata?.is_advanced_image_file ?? false
+  );
   const [expandIsOpen, setExpandIsOpen] = useState(false);
 
   // regex from old digitalrocks portal
@@ -36,9 +44,11 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
 
   const { ...file } = useSelector((state) => state.files.modalProps.preview);
 
-  const { is_review_project, is_published_project } = useSelector((state) => state.projects.metadata);
+  const { is_review_project, is_published_project } = useSelector(
+    (state) => state.projects.metadata
+  );
 
-  const getEditFileForm = async() => {
+  const getEditFileForm = async () => {
     const response = await fetchUtil({
       url: 'api/forms',
       params: {
@@ -47,7 +57,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
     });
 
     return response;
-  }
+  };
 
   const useEditFileForm = () => {
     const query = useQuery({
@@ -55,7 +65,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
       queryFn: getEditFileForm,
     });
     return query;
-  }
+  };
 
   const { data: form, isLoading } = useEditFileForm();
 
@@ -76,7 +86,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
     history.replace(location.pathname);
   };
 
-  const onMetadataRemove = ( resetForm ) => {
+  const onMetadataRemove = (resetForm) => {
     resetForm();
     setIsAdvancedImageFile(false);
 
@@ -89,7 +99,7 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
         selectedFile: file,
       },
     });
-  }
+  };
 
   const handleSubmit = (values) => {
     Object.keys(values).forEach((key) => {
@@ -112,60 +122,65 @@ const DataFilesPreviewModalAddon = ({ metadata }) => {
     <>
       {!isLoading && !is_review_project && !is_published_project && (
         <div className={styles['expand-div']}>
-            {!isAdvancedImageFile && (
-              <div className={styles['metadata-div']}>
-                <Button
-                  className={styles['metadata-button']}
-                  type={'secondary'} 
-                  onClick={() => {
-                    setIsAdvancedImageFile(true);
-                    setExpandIsOpen(true);
-                  }}>
-                  + Add Advanced Image File Metadata
-                </Button>
-              </div>
-            )}
+          {!isAdvancedImageFile && (
+            <div className={styles['metadata-div']}>
+              <Button
+                className={styles['metadata-button']}
+                type={'secondary'}
+                onClick={() => {
+                  setIsAdvancedImageFile(true);
+                  setExpandIsOpen(true);
+                }}
+              >
+                + Add Advanced Image File Metadata
+              </Button>
+            </div>
+          )}
           {form && isAdvancedImageFile && (
             <Expand
-            detail="Metadata"
-            isOpenDefault={expandIsOpen}
-            message={
-              <>
-                <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-                  {({ resetForm }) => (
+              detail="Metadata"
+              isOpenDefault={expandIsOpen}
+              message={
+                <>
+                  <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+                    {({ resetForm }) => (
                       <Form>
-                      <Section
-                        className={styles['section']}
-                        contentLayoutName="oneColumn"
-                        content={
-                          <div>
-                            <DynamicForm initialFormFields={form.form_fields ?? []} />
+                        <Section
+                          className={styles['section']}
+                          contentLayoutName="oneColumn"
+                          content={
+                            <div>
+                              <DynamicForm
+                                initialFormFields={form.form_fields ?? []}
+                              />
+                            </div>
+                          }
+                        />
+                        {form?.footer && (
+                          <div className={styles['footer']}>
+                            <Button
+                              type={'secondary'}
+                              className={styles['footer-remove-button']}
+                              onClick={() => onMetadataRemove(resetForm)}
+                            >
+                              Remove Metadata
+                            </Button>
+                            <DynamicForm
+                              initialFormFields={form.footer.fields ?? []}
+                            />
                           </div>
-                        }
-                      />
-                      {form?.footer && (
-                        <div className={styles['footer']}>
-                          <Button 
-                            type={'secondary'} 
-                            className={styles['footer-remove-button']}
-                            onClick={() => onMetadataRemove(resetForm)}
-                          >
-                            Remove Metadata
-                          </Button>
-                          <DynamicForm initialFormFields={form.footer.fields ?? []} />
-                        </div>
-                      )}
-                    </Form>
-                  )}
-                </Formik>
-              </>
-            }
-          />
+                        )}
+                      </Form>
+                    )}
+                  </Formik>
+                </>
+              }
+            />
           )}
         </div>
       )}
     </>
-  );  
+  );
 };
 
 export default DataFilesPreviewModalAddon;

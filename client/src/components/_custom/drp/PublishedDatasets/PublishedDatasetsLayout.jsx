@@ -6,18 +6,17 @@ import './PublishedDatasetsLayout.global.css';
 import PublishedDatasetBreadcrumbs from './PublishedDatasetBreadcrumbs';
 
 function PublishedDatasetsLayout({ children, params }) {
-
-    return (
-        <CMSWrapper>
-            <PublishedDatasetBreadcrumbs params={params} />
-            {children}
-        </CMSWrapper>
-    );
+  return (
+    <CMSWrapper>
+      <PublishedDatasetBreadcrumbs params={params} />
+      {children}
+    </CMSWrapper>
+  );
 }
 
 PublishedDatasetsLayout.propTypes = {
-    children: PropTypes.node.isRequired,
-    params: PropTypes.object.isRequired,
+  children: PropTypes.node.isRequired,
+  params: PropTypes.object.isRequired,
 };
 
-export default PublishedDatasetsLayout; 
+export default PublishedDatasetsLayout;

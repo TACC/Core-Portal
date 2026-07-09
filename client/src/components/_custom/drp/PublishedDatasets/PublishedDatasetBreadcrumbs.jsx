@@ -6,10 +6,13 @@ import * as ROUTES from '../../../../constants/routes';
 import { findNodeInTreeById } from '../utils/utils';
 
 const PublishedDatasetBreadcrumbs = ({ params }) => {
-  
   const dispatch = useDispatch();
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { value: tree, loading: treeLoading, error: treeError } = useSelector((state) => state.publications.tree);
+  const {
+    value: tree,
+    loading: treeLoading,
+    error: treeError,
+  } = useSelector((state) => state.publications.tree);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
   useEffect(() => {
@@ -25,21 +28,19 @@ const PublishedDatasetBreadcrumbs = ({ params }) => {
 
   useEffect(() => {
     const buildBreadcrumbs = () => {
-      const crumbs = [
-        { name: "Browse Datasets", href: ROUTES.PUBLICATIONS }
-      ];
+      const crumbs = [{ name: 'Browse Datasets', href: ROUTES.PUBLICATIONS }];
 
       if (params?.page_type === 'datasetDetail') {
         crumbs.push({ name: tree.label });
       }
-      
+
       if (params?.page_type === 'entityDetail') {
-        crumbs.push({ 
-          name: tree.label, 
-          href: `${ROUTES.PUBLICATIONS}/${params.system}` 
+        crumbs.push({
+          name: tree.label,
+          href: `${ROUTES.PUBLICATIONS}/${params.system}`,
         });
-        crumbs.push({ 
-          name: findNodeInTreeById(tree, params.entity_id)?.label || 'Entity'
+        crumbs.push({
+          name: findNodeInTreeById(tree, params.entity_id)?.label || 'Entity',
         });
       }
 

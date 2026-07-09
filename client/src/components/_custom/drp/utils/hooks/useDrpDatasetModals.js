@@ -7,14 +7,17 @@ const useDrpDatasetModals = (
   portalName,
   useReloadCallback = true
 ) => {
-  
   const folderData = useSelector(
     (state) => state.files.folderMetadata.FilesListing
   );
   let sampleUUID = '';
   if (folderData && folderData.data_type === 'sample') {
     sampleUUID = folderData.uuid;
-  } else if (folderData && (folderData.data_type === 'digital_dataset' || folderData.data_type === 'analysis_data')) {
+  } else if (
+    folderData &&
+    (folderData.data_type === 'digital_dataset' ||
+      folderData.data_type === 'analysis_data')
+  ) {
     sampleUUID = folderData.sample;
   }
 

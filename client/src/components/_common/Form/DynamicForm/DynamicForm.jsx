@@ -23,7 +23,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
     modifiedField
   ) => {
     const { dependency } = field;
-    const filteredOptions = field.options.filter(option => {
+    const filteredOptions = field.options.filter((option) => {
       if (option.value === 'other') {
         return true;
       }
@@ -204,18 +204,18 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                   );
                 })
               : // shows only filtered fields
-              field.filteredOptions
-              ? field.filteredOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))
-              : // shows all fields
-                field.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
+                field.filteredOptions
+                ? field.filteredOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))
+                : // shows all fields
+                  field.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
           </FormField>
         );
       // uses FieldArray from formik to handle array fields. arrayHelpers from FieldArray is used to add and remove fields
@@ -230,7 +230,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                   <div>
                     <h2>{field.label}</h2>
                     {field.description && (
-                      <p className={styles['array-field-description']}>{field.description}</p>
+                      <p className={styles['array-field-description']}>
+                        {field.description}
+                      </p>
                     )}
                   </div>
                   {values[field.name]?.map((_, index) => (
@@ -241,10 +243,14 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
                       <Expand
                         className={styles['expand-card']}
                         detail={
-                          values[field.name][index][field.title_field ?? field.fields[0].name] || ''
+                          values[field.name][index][
+                            field.title_field ?? field.fields[0].name
+                          ] || ''
                         }
                         isOpenDefault={
-                          values[field.name][index][field.title_field ?? field.fields[0].name] === ''
+                          values[field.name][index][
+                            field.title_field ?? field.fields[0].name
+                          ] === ''
                             ? true
                             : false
                         }
@@ -325,8 +331,13 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
             />
             {field?.file_name && (
               <span className={styles['file-name']}>
-              Uploaded File:&nbsp;
-                <a href={field.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+                Uploaded File:&nbsp;
+                <a
+                  href={field.file_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="wb-link"
+                >
                   {field.file_name}
                 </a>
               </span>

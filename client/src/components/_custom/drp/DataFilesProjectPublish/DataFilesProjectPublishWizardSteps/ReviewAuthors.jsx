@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  SectionTableWrapper,
-  Section,
-} from '_common';
+import { Button, SectionTableWrapper, Section } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
 import ProjectMembersList from '../../utils/ProjectMembersList/ProjectMembersList';
@@ -27,7 +23,9 @@ const ACMCitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.first_name} ${a.last_name}`)
     .join(', ');
-  const createdDate = new Date(project.publication_date || project.created).toLocaleDateString('en-US', {
+  const createdDate = new Date(
+    project.publication_date || project.created
+  ).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
@@ -72,7 +70,9 @@ const BibTeXCitation = ({ project, authors }) => {
   const projectUrl = project.doi
     ? `https://www.doi.org/${project.doi}`
     : `DOI link will appear after publication`;
-  const year = new Date(project.publication_date || project.created).getFullYear();
+  const year = new Date(
+    project.publication_date || project.created
+  ).getFullYear();
 
   return (
     <pre>{`@misc{dataset,
@@ -90,11 +90,14 @@ export const MLACitation = ({ project, authors }) => {
   const authorString = authors
     .map((a) => `${a.last_name}, ${a.first_name}`)
     .join(', ');
-  const createdDate = new Date(project.publication_date).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  const createdDate = new Date(project.publication_date).toLocaleDateString(
+    'en-GB',
+    {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }
+  );
   const accessDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -103,7 +106,8 @@ export const MLACitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`${authorString}. "${project.title}."`} <em>Digital Porous Media Portal,</em>{' '}
+      {`${authorString}. "${project.title}."`}{' '}
+      <em>Digital Porous Media Portal,</em>{' '}
       {` Digital Porous Media, ${createdDate}, `}
       <DOILink project={project} />
       {` Accessed ${accessDate}.`}
@@ -123,8 +127,7 @@ const IEEECitation = ({ project, authors }) => {
   return (
     <div>
       {`[1] ${authorString}, "${project.title}",`}{' '}
-      <em>Digital Porous Media Portal,</em>{' '}
-      {` ${year}. [Online]. Available: `}
+      <em>Digital Porous Media Portal,</em> {` ${year}. [Online]. Available: `}
       <DOILink project={project} />
       {`. [Accessed: ${day}-${month}-${year}]`}
     </div>
@@ -160,7 +163,11 @@ export const Citations = ({ project, authors }) => (
   </div>
 );
 
-const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) => {
+const ReviewAuthors = ({
+  project,
+  onAuthorsUpdate,
+  isReviewProject = false,
+}) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -184,13 +191,16 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
     const projectMembers = project.members || [];
     const guestUsers = project.guest_users || [];
 
-    const initialAuthors = isReviewProject && project.authors.length > 0 ? project.authors : [
-      ...projectMembers.map((member) => ({
-        ...member.user,
-        isOwner: member.access === 'owner',
-      })),
-      ...guestUsers,
-    ];
+    const initialAuthors =
+      isReviewProject && project.authors.length > 0
+        ? project.authors
+        : [
+            ...projectMembers.map((member) => ({
+              ...member.user,
+              isOwner: member.access === 'owner',
+            })),
+            ...guestUsers,
+          ];
 
     setAuthors(initialAuthors);
     setMembers([]);
@@ -263,9 +273,19 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
   );
 };
 
-export const ReviewAuthorsStep = ({ project, onAuthorsUpdate, isReviewProject = false }) => ({
+export const ReviewAuthorsStep = ({
+  project,
+  onAuthorsUpdate,
+  isReviewProject = false,
+}) => ({
   id: 'project_authors',
   name: 'Review Authors and Citations',
-  render: <ReviewAuthors project={project} onAuthorsUpdate={onAuthorsUpdate} isReviewProject={isReviewProject} />,
+  render: (
+    <ReviewAuthors
+      project={project}
+      onAuthorsUpdate={onAuthorsUpdate}
+      isReviewProject={isReviewProject}
+    />
+  ),
   initialValues: {},
 });

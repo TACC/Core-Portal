@@ -17,7 +17,8 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  const { canPublish = false } = useSelector((state) => state.workbench.config) || {};
+  const { canPublish = false } =
+    useSelector((state) => state.workbench.config) || {};
 
   const {
     isApproveLoading,

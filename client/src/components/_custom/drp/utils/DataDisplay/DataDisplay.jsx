@@ -83,9 +83,9 @@ const DataDisplay = ({
       if (entity) {
         const index = location.pathname.indexOf(system) + system.length;
         const url = `${location.pathname.slice(0, index)}/${entity.path}`;
-  
+
         processedData = processedData.filter((entry) => entry.label !== label);
-  
+
         processedData.unshift({
           label,
           value: (

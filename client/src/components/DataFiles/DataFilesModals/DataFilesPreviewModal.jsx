@@ -103,9 +103,11 @@ const DataFilesPreviewModal = () => {
         File Preview: {params.name}
       </ModalHeader>
       <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
-        {DataFilesPreviewModalAddon && !isLoading && params.scheme === 'projects' && (
-          <DataFilesPreviewModalAddon metadata={params.metadata} />
-        )}
+        {DataFilesPreviewModalAddon &&
+          !isLoading &&
+          params.scheme === 'projects' && (
+            <DataFilesPreviewModalAddon metadata={params.metadata} />
+          )}
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
           <div className={styles['loading-style']}>
             <LoadingSpinner />

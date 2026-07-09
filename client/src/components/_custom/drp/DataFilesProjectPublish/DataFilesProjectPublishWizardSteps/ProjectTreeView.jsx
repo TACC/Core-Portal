@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  Button,
-  ShowMore,
-  Section,
-  Icon,
-} from '_common';
+import { Button, ShowMore, Section, Icon } from '_common';
 import { TreeItem2 as TreeItem, SimpleTreeView } from '@mui/x-tree-view';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import DataDisplay from '../../utils/DataDisplay/DataDisplay';
@@ -21,14 +16,14 @@ const theme = createTheme({
     MuiTreeItem2: {
       styleOverrides: {
         root: {
-          "& > .MuiTreeItem-content.Mui-selected": {
+          '& > .MuiTreeItem-content.Mui-selected': {
             backgroundColor: 'transparent',
-          }
+          },
         },
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 
 export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   const history = useHistory();
@@ -40,12 +35,13 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
 
   const [tree, setTree] = useState([]);
 
-  const { dynamicFormModal, previewModal, projectTreeModal, metadata } = useSelector((state) => ({
-    dynamicFormModal: state.files.modals.dynamicform,
-    previewModal: state.files.modals.preview,
-    projectTreeModal: state.files.modals.projectTree,
-    metadata: state.projects.metadata,
-  }));
+  const { dynamicFormModal, previewModal, projectTreeModal, metadata } =
+    useSelector((state) => ({
+      dynamicFormModal: state.files.modals.dynamicform,
+      previewModal: state.files.modals.preview,
+      projectTreeModal: state.files.modals.projectTree,
+      metadata: state.projects.metadata,
+    }));
 
   const fetchTree = useCallback(async () => {
     if (projectId) {
@@ -77,7 +73,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   const findNodeByPath = (nodes, targetPath, parentIds = []) => {
     if (!nodes || !Array.isArray(nodes)) return null;
 
-    targetPath = targetPath.replace(/\/+$/, '')
+    targetPath = targetPath.replace(/\/+$/, '');
 
     for (const node of nodes) {
       const currentPath = (node.path || '').replace(/\/+$/, '');
@@ -89,13 +85,21 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
 
       // search in children
       if (node.children && node.children.length > 0) {
-        const result = findNodeByPath(node.children, targetPath, currentParentIds);
+        const result = findNodeByPath(
+          node.children,
+          targetPath,
+          currentParentIds
+        );
         if (result) return result;
       }
 
       // search in fileObjs
       if (node.fileObjs && node.fileObjs.length > 0) {
-        const result = findNodeByPath(node.fileObjs, targetPath, currentParentIds);
+        const result = findNodeByPath(
+          node.fileObjs,
+          targetPath,
+          currentParentIds
+        );
         if (result) return result;
       }
     }
@@ -107,14 +111,14 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     if (tree && tree.length > 0) {
       const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
       const baseUrlMatch = location.pathname.match(regex);
-      
+
       if (baseUrlMatch) {
         const baseUrl = baseUrlMatch[0];
         const nodePath = location.pathname.substring(baseUrl.length + 1);
-        
+
         // Find the node by path and get all parent IDs
         const parentIds = findNodeByPath(tree, nodePath);
-        
+
         if (parentIds && parentIds.length > 0) {
           setExpandedNodes(parentIds);
         } else {
@@ -187,7 +191,6 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   };
 
   const onGoTo = (node) => {
-
     const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
     const baseUrl = location.pathname.match(regex)[0];
 
@@ -212,8 +215,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
       .join(' ');
 
   const renderTree = (node) => {
-    
-    let treeItemSlots; 
+    let treeItemSlots;
 
     if (node.children && node.children.length > 0) {
       treeItemSlots = {
@@ -227,103 +229,103 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     }
 
     return (
-    <>
-      <Section
-        key={node.id}
-        className={styles['section-project-structure']}
-        contentLayoutName="oneColumn"
-      >
-        <div>
-          <TreeItem
-            key={node.id}
-            itemId={node.id}
-            label={
-              <div className={styles['node-name-div']}>
-                {node.label ?? node.name}
-                {node.metadata.data_type && (
-                  <span className={styles['data-type-box']}>
-                    {formatDatatype(node.metadata.data_type)}
-                  </span>
-                )}
-              </div>
-            }
-            classes={{
-              label: styles['tree-label'],
-            }}
-            slots={treeItemSlots}
-          >
-            {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
-              <div className={styles['metadata-description-div']}>
-                <div className={styles['tree-button-div']}>
-                  {(!readOnly || node.metadata.data_type === 'file') && (
-                    <Button
-                      className={styles['edit-button']}
-                      type="link"
-                      onClick={() => onEditData(node)}
-                    >
-                      {!readOnly && node.metadata.data_type !== 'file'
-                        ? 'Edit'
-                        : 'View'}
-                    </Button>
-                  )}
-                  {(!readOnly || node.metadata.data_type === 'file') && (
-                    <span className={styles['separator']}>|</span>
-                  )}
-                  {(
-                    <Button
-                      className={styles['edit-button']}
-                      type="link"
-                      onClick={() => onGoTo(node)}
-                    >
-                      Go To {formatDatatype(node.metadata.data_type)}
-                    </Button>
+      <>
+        <Section
+          key={node.id}
+          className={styles['section-project-structure']}
+          contentLayoutName="oneColumn"
+        >
+          <div>
+            <TreeItem
+              key={node.id}
+              itemId={node.id}
+              label={
+                <div className={styles['node-name-div']}>
+                  {node.label ?? node.name}
+                  {node.metadata.data_type && (
+                    <span className={styles['data-type-box']}>
+                      {formatDatatype(node.metadata.data_type)}
+                    </span>
                   )}
                 </div>
-                <div className={styles['description']}>
-                  <ShowMore className={styles['description-show-more']}>
-                    {node.metadata.description}
-                  </ShowMore>
-                  <DataDisplay
-                    data={node.metadata}
-                    tree={tree[0]}
-                    system={projectId}
-                    excludeKeys={EXCLUDED_METADATA_FIELDS}
-                  />
+              }
+              classes={{
+                label: styles['tree-label'],
+              }}
+              slots={treeItemSlots}
+            >
+              {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
+                <div className={styles['metadata-description-div']}>
+                  <div className={styles['tree-button-div']}>
+                    {(!readOnly || node.metadata.data_type === 'file') && (
+                      <Button
+                        className={styles['edit-button']}
+                        type="link"
+                        onClick={() => onEditData(node)}
+                      >
+                        {!readOnly && node.metadata.data_type !== 'file'
+                          ? 'Edit'
+                          : 'View'}
+                      </Button>
+                    )}
+                    {(!readOnly || node.metadata.data_type === 'file') && (
+                      <span className={styles['separator']}>|</span>
+                    )}
+                    {
+                      <Button
+                        className={styles['edit-button']}
+                        type="link"
+                        onClick={() => onGoTo(node)}
+                      >
+                        Go To {formatDatatype(node.metadata.data_type)}
+                      </Button>
+                    }
+                  </div>
+                  <div className={styles['description']}>
+                    <ShowMore className={styles['description-show-more']}>
+                      {node.metadata.description}
+                    </ShowMore>
+                    <DataDisplay
+                      data={node.metadata}
+                      tree={tree[0]}
+                      system={projectId}
+                      excludeKeys={EXCLUDED_METADATA_FIELDS}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-            {Array.isArray(node.fileObjs) &&
-              node.fileObjs.map((fileObj) => (
-                <React.Fragment key={fileObj.id}>
-                  {renderTree(fileObj)}
-                </React.Fragment>
-              ))}
-            {Array.isArray(node.children) &&
-              node.children.map((child) => (
-                <React.Fragment key={child.id}>
-                  {renderTree(child)}
-                </React.Fragment>
-              ))}
-          </TreeItem>
-        </div>
-      </Section>
-    </>
-  );
-}
+              )}
+              {Array.isArray(node.fileObjs) &&
+                node.fileObjs.map((fileObj) => (
+                  <React.Fragment key={fileObj.id}>
+                    {renderTree(fileObj)}
+                  </React.Fragment>
+                ))}
+              {Array.isArray(node.children) &&
+                node.children.map((child) => (
+                  <React.Fragment key={child.id}>
+                    {renderTree(child)}
+                  </React.Fragment>
+                ))}
+            </TreeItem>
+          </div>
+        </Section>
+      </>
+    );
+  };
 
-  return (tree &&
-  tree.length > 0 && (
-    <ThemeProvider theme={theme}>
-      <SimpleTreeView
-        expandedItems={expandedNodes}
-        onItemClick={handleNodeToggle}
-      >
-        {tree.map((node) => (
-          <React.Fragment key={node.id}>
-            {renderTree(node)}
-          </React.Fragment>
-        ))}
-      </SimpleTreeView>
-    </ThemeProvider>
-  ));
+  return (
+    tree &&
+    tree.length > 0 && (
+      <ThemeProvider theme={theme}>
+        <SimpleTreeView
+          expandedItems={expandedNodes}
+          onItemClick={handleNodeToggle}
+        >
+          {tree.map((node) => (
+            <React.Fragment key={node.id}>{renderTree(node)}</React.Fragment>
+          ))}
+        </SimpleTreeView>
+      </ThemeProvider>
+    )
+  );
 };
