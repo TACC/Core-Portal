@@ -606,5 +606,10 @@ export const execSystemsFixture = [
 ];
 
 export const executionSystemNotesFixture = {
-  dynamicExecSystems: ['maverick2', 'frontera', 'ls6', 'vista'],
+  dynamicExecSystems: [
+    { systemId: 'maverick2', profileName: 'tacc-apptainer-mav2' },
+    { systemId: 'frontera', profileName: 'tacc-apptainer-frontera' },
+    { systemId: 'ls6', profileName: 'tacc-apptainer-ls6' },
+    { systemId: 'vista', profileName: 'tacc-apptainer-vista' },
+  ],
 };

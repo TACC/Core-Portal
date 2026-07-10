@@ -51,6 +51,11 @@ export type TAppFileInput = {
   targetPath?: string;
 };
 
+type TAppNotesDynamicExecSystems = {
+  systemId: string;
+  profileName: string;
+};
+
 type TAppNotes = {
   label?: string;
   shortLabel?: string;
@@ -59,7 +64,7 @@ type TAppNotes = {
   isInteractive?: boolean;
   hideNodeCountAndCoresPerNode?: boolean;
   icon?: string;
-  dynamicExecSystems?: string[];
+  dynamicExecSystems?: TAppNotesDynamicExecSystems[];
   queueFilter?: string[];
   hideQueue?: boolean;
   hideAllocation?: boolean;
