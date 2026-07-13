@@ -47,10 +47,11 @@ const DataFilesUploadModalAddon = ({ uploadedFiles, setUploadedFiles }) => {
       if (uploadedFile.data.name === file.data.name) {
         return {
           ...uploadedFile,
-          metadata: { 
+          metadata: {
             name: uploadedFile.data.name,
             is_advanced_image_file: uploadedFile.is_advanced_image_file,
-            ...values },
+            ...values,
+          },
         };
       }
       return uploadedFile;

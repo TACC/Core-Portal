@@ -11,7 +11,7 @@ export async function moveFileUtil({
   path,
   destSystem,
   destPath,
-  metadata
+  metadata,
 }: {
   api: string;
   scheme: string;

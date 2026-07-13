@@ -20,10 +20,11 @@ const useAddonComponents = ({ portalName }) => {
     const loadAddonComponents = async () => {
       try {
         const modules = await Promise.all(
-          addons.map((addonName) =>
-            import(
-              `../../components/_custom/${portalName.toLowerCase()}/${addonName}/${addonName}.jsx`
-            )
+          addons.map(
+            (addonName) =>
+              import(
+                `../../components/_custom/${portalName.toLowerCase()}/${addonName}/${addonName}.jsx`
+              )
           )
         );
 

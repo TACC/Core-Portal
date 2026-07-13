@@ -90,7 +90,7 @@ const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
                   .max(
                     subField.validation?.max ?? Infinity,
                     `${subField.label} must be less than or equal to ${subField.validation?.max} characters`
-                  )
+                  );
               }
 
               return subAcc;

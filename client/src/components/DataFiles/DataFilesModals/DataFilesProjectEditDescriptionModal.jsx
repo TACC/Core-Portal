@@ -87,110 +87,114 @@ const DataFilesProjectEditDescriptionModal = () => {
     [projectId, dispatch]
   );
 
-  const [validationSchema, setValidationSchema] = useState(Yup.object().shape({
-    title: Yup.string()
-      .min(3, 'Title must be at least 3 characters')
-      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
-      .required('Please enter a title.'),
-    description: Yup.string()
-      .min(
-        minDescriptionLength,
-        `Description must be at least ${minDescriptionLength} characters`
-      )
-      .when([], {
-        is: () => minDescriptionLength > 0,
-        then: (schema) => schema.required('Please enter a description.'),
-        otherwise: (schema) => schema.notRequired(),
+  const [validationSchema, setValidationSchema] = useState(
+    Yup.object().shape({
+      title: Yup.string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(
+          maxTitleLength,
+          `Title must be at most ${maxTitleLength} characters`
+        )
+        .required('Please enter a title.'),
+      description: Yup.string()
+        .min(
+          minDescriptionLength,
+          `Description must be at least ${minDescriptionLength} characters`
+        )
+        .when([], {
+          is: () => minDescriptionLength > 0,
+          then: (schema) => schema.required('Please enter a description.'),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      ...(enableWorkspaceKeywords && {
+        keywords: Yup.array().of(Yup.string()),
       }),
-    ...(enableWorkspaceKeywords && {
-      keywords: Yup.array().of(Yup.string()
-      ),
-    }),
-  }));
+    })
+  );
 
   return (
     <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
       {/* <ModalBody> */}
-        <Formik
-          initialValues={initialValues}
-          initialTouched={{
-            title: true,
-            description: true,
-            keywords: true,
-          }}
-          onSubmit={setProjectTitleDescription}
-          validationSchema={validationSchema}
-          validateOnMount
-        >
-          {({ isValid, dirty }) => (
-            <Form>
-              <ModalHeader toggle={toggle} charCode="&#xe912;">
-                Edit Dataset
-              </ModalHeader>
-              <ModalBody className={styles['modal-body']}>
+      <Formik
+        initialValues={initialValues}
+        initialTouched={{
+          title: true,
+          description: true,
+          keywords: true,
+        }}
+        onSubmit={setProjectTitleDescription}
+        validationSchema={validationSchema}
+        validateOnMount
+      >
+        {({ isValid, dirty }) => (
+          <Form>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
+              Edit Dataset
+            </ModalHeader>
+            <ModalBody className={styles['modal-body']}>
+              <FormField
+                name="title"
+                aria-label="title"
+                disabled={!isOwner}
+                label={
+                  <div>
+                    Title{' '}
+                    <small>
+                      <em>(Maximum {maxTitleLength} characters)</em>
+                    </small>
+                  </div>
+                }
+              />
+              {!!minDescriptionLength && (
                 <FormField
-                  name="title"
-                  aria-label="title"
+                  name="description"
+                  aria-label="description"
                   disabled={!isOwner}
                   label={
                     <div>
-                      Title{' '}
+                      Description{' '}
                       <small>
-                        <em>(Maximum {maxTitleLength} characters)</em>
+                        <em>(Minimum {minDescriptionLength} characters)</em>
                       </small>
                     </div>
                   }
+                  type="textarea"
+                  className={styles['description-textarea']}
                 />
-                {!!minDescriptionLength && (
-                  <FormField
-                    name="description"
-                    aria-label="description"
-                    disabled={!isOwner}
-                    label={
-                      <div>
-                        Description{' '}
-                        <small>
-                          <em>(Minimum {minDescriptionLength} characters)</em>
-                        </small>
-                      </div>
-                    }
-                    type="textarea"
-                    className={styles['description-textarea']}
-                  />
+              )}
+              {!!enableWorkspaceKeywords && (
+                <FormField
+                  name="keywords"
+                  aria-label="keywords"
+                  tags
+                  label={<div>Keywords</div>}
+                  type="textarea"
+                  className={styles['description-textarea']}
+                />
+              )}
+              {DataFilesProjectEditDescriptionModalAddon && (
+                <DataFilesProjectEditDescriptionModalAddon
+                  setValidationSchema={setValidationSchema}
+                />
+              )}
+              <div className={styles['button-container']}>
+                {updatingError && (
+                  <Message type="error" dataTestid="updating-error">
+                    Something went wrong.
+                  </Message>
                 )}
-                {!!enableWorkspaceKeywords && (
-                  <FormField
-                    name="keywords"
-                    aria-label="keywords"
-                    tags
-                    label={<div>Keywords</div>}
-                    type="textarea"
-                    className={styles['description-textarea']}
-                  />
-                )}
-                {DataFilesProjectEditDescriptionModalAddon && (
-                  <DataFilesProjectEditDescriptionModalAddon
-                    setValidationSchema={setValidationSchema}
-                  />
-                )}
-                <div className={styles['button-container']}>
-                  {updatingError && (
-                    <Message type="error" dataTestid="updating-error">
-                      Something went wrong.
-                    </Message>
-                  )}
-                  <Button
-                    attr="submit"
-                    type="primary"
-                    size="long"
-                    disabled={!isValid}
-                    className={styles['update-button']}
-                    isLoading={isUpdating}
-                  >
-                    Update Changes
-                  </Button>
-                </div>
-              </ModalBody>
+                <Button
+                  attr="submit"
+                  type="primary"
+                  size="long"
+                  disabled={!isValid}
+                  className={styles['update-button']}
+                  isLoading={isUpdating}
+                >
+                  Update Changes
+                </Button>
+              </div>
+            </ModalBody>
           </Form>
         )}
       </Formik>

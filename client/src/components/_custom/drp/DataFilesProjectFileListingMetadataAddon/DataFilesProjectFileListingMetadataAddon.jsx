@@ -19,7 +19,9 @@ const DataFilesProjectFileListingMetadataAddon = ({
   const dispatch = useDispatch();
 
   const { portalName } = useSelector((state) => state.workbench);
-  const { value: tree, error } = useSelector((state) => state.publications.tree);
+  const { value: tree, error } = useSelector(
+    (state) => state.publications.tree
+  );
   const { loading } = useFileListing('FilesListing');
 
   useEffect(() => {
@@ -50,7 +52,9 @@ const DataFilesProjectFileListingMetadataAddon = ({
       ),
       license: license ?? 'None',
       ...(doi && { doi }),
-      ...(keywords && { keywords: Array.isArray(keywords) ? keywords.join(', ') : keywords }),
+      ...(keywords && {
+        keywords: Array.isArray(keywords) ? keywords.join(', ') : keywords,
+      }),
       ...(cover_image && { cover_image }),
       ...(file_url && { file_url }),
     };
@@ -82,7 +86,8 @@ const DataFilesProjectFileListingMetadataAddon = ({
 
   return (
     <>
-      {!loading && tree &&
+      {!loading &&
+        tree &&
         (folderMetadata ? (
           <>
             {!!folderMetadata.description && (

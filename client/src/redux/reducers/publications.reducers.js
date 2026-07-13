@@ -169,7 +169,7 @@ export default function publications(state = initialState, action) {
           error: action.payload,
           loading: false,
         },
-      };  
+      };
     default:
       return state;
   }

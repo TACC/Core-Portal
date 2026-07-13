@@ -4,8 +4,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
 
 const DataFilesAddProjectModalAddon = () => {
-
-  const getProjectFormAddon = async() => {
+  const getProjectFormAddon = async () => {
     const response = await fetchUtil({
       url: '/api/forms',
       params: {
@@ -14,7 +13,7 @@ const DataFilesAddProjectModalAddon = () => {
     });
 
     return response;
-  }
+  };
 
   const useProjectFormAddon = () => {
     const query = useQuery({
@@ -22,7 +21,7 @@ const DataFilesAddProjectModalAddon = () => {
       queryFn: getProjectFormAddon,
     });
     return query;
-  }
+  };
 
   const { data: form, isLoading } = useProjectFormAddon();
 

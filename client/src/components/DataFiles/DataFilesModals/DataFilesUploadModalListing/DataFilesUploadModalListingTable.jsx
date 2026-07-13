@@ -50,7 +50,9 @@ function DataFilesUploadModalListingTable({
 
   const { params } = useFileListing('FilesListing');
   const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesUploadModalListingTableAddon } = useAddonComponents({ portalName });
+  const { DataFilesUploadModalListingTableAddon } = useAddonComponents({
+    portalName,
+  });
 
   return (
     <div className={styles['table-wrapper']}>
@@ -71,20 +73,21 @@ function DataFilesUploadModalListingTable({
                 <FileLengthCell cell={{ value: file.data.size }} />
               </td>
               <td>
-                {DataFilesUploadModalListingTableAddon && params.scheme === 'projects' && (
-                  <DataFilesUploadModalListingTableAddon
-                    file={file}
-                    onToggleAdvancedImageFile={(fileId, value) =>
-                      setUploadedFiles((prevFiles) =>
-                        prevFiles.map((f) =>
-                          f.id === fileId
-                            ? { ...f, is_advanced_image_file: value }
-                            : f
+                {DataFilesUploadModalListingTableAddon &&
+                  params.scheme === 'projects' && (
+                    <DataFilesUploadModalListingTableAddon
+                      file={file}
+                      onToggleAdvancedImageFile={(fileId, value) =>
+                        setUploadedFiles((prevFiles) =>
+                          prevFiles.map((f) =>
+                            f.id === fileId
+                              ? { ...f, is_advanced_image_file: value }
+                              : f
+                          )
                         )
-                      )
-                    }
-                  />
-                )}
+                      }
+                    />
+                  )}
               </td>
               <td>
                 <span className="float-right">

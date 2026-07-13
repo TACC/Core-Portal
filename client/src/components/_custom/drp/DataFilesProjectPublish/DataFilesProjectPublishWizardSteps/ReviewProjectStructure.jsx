@@ -63,10 +63,16 @@ export const ReviewProjectStructure = ({ projectTree }) => {
             <p>Dataset structure has the following errors:</p>
             <ul>
               {Object.keys(errors).map((key) => (
-                <li key={key}><b>{errors[key]}</b></li>
+                <li key={key}>
+                  <b>{errors[key]}</b>
+                </li>
               ))}
             </ul>
-            <p>Please delete {Object.keys(errors).length === 1 ? 'entity' : 'entities'} or upload files to continue</p>
+            <p>
+              Please delete{' '}
+              {Object.keys(errors).length === 1 ? 'entity' : 'entities'} or
+              upload files to continue
+            </p>
           </div>
         )}
         <div className={styles['description']}>
@@ -95,39 +101,40 @@ export const ReviewProjectStructure = ({ projectTree }) => {
 
 const validateFolder = (node) => {
   const errors = [];
-  
+
   const hasFileObjs = (node) => {
     // Check if the current node has fileObjs
     if (node.fileObjs && node.fileObjs.length > 0) {
       return true;
     }
-    
+
     // Check if any children have fileObjs
     if (node.children && node.children.length > 0) {
-      return node.children.some(child => hasFileObjs(child));
+      return node.children.some((child) => hasFileObjs(child));
     }
-    
+
     return false;
-  }
-  
+  };
+
   // Process the current node
   if (!hasFileObjs(node)) {
-    errors.push(`Entity "${node.label}" (path: /${node.path}) has no files in itself or any of its child entities.`);
+    errors.push(
+      `Entity "${node.label}" (path: /${node.path}) has no files in itself or any of its child entities.`
+    );
   }
-  
+
   // Recursively validate all children
   if (node.children && node.children.length > 0) {
-    node.children.forEach(child => {
+    node.children.forEach((child) => {
       const childErrors = validateFolder(child);
       errors.push(...childErrors);
     });
   }
-  
+
   return errors;
-}
+};
 
 const validateProjectStructure = (tree) => {
-
   const validationErrors = [];
 
   tree.forEach((node) => {
@@ -135,7 +142,7 @@ const validateProjectStructure = (tree) => {
     if (nodeErrors.length > 0) {
       validationErrors.push(...nodeErrors);
     }
-  })
+  });
 
   const errors = {};
 
@@ -143,12 +150,11 @@ const validateProjectStructure = (tree) => {
     validationErrors.forEach((error, index) => {
       const errorKey = `folder_${index}`;
       errors[errorKey] = error;
-    }
-    );
+    });
   }
 
   return errors;
-}
+};
 
 export const ReviewProjectStructureStep = ({ projectTree }) => ({
   id: 'project_structure',

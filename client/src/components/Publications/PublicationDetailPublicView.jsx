@@ -13,11 +13,9 @@ import NotificationToast from '../Toasts';
 import DataFilesUnavailDownloadModal from '../DataFiles/DataFilesModals/DataFilesUnavailDownloadModal';
 import DataFilesPublicationDownloadModal from '../DataFiles/DataFilesModals/DataFilesPublicationDownloadModal';
 import { getDecodedPath } from '../../utils/datafilesUtil';
-import { PUBLICATIONS } from '../../constants/routes'
-
+import { PUBLICATIONS } from '../../constants/routes';
 
 function PublicationDetailPublicView({ params }) {
-  
   const decodedPath = getDecodedPath(params.path);
 
   return (

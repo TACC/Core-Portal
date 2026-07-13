@@ -210,7 +210,11 @@ export function* getTree(action) {
     type: 'PUBLICATIONS_GET_TREE_STARTED',
   });
   try {
-    const tree = yield call(fetchTree, action.payload.portalName, action.payload.system);
+    const tree = yield call(
+      fetchTree,
+      action.payload.portalName,
+      action.payload.system
+    );
     yield put({
       type: 'PUBLICATIONS_GET_TREE_SUCCESS',
       payload: tree,

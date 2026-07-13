@@ -46,14 +46,13 @@ const SubmitPublicationRequest = ({ callbackUrl }) => {
     });
   }, [values]);
 
-
   const onSubmit = () => {
     setValues({
       ...values,
       formSubmitted: true,
     });
     submitForm();
-  }
+  };
 
   return (
     <SectionTableWrapper

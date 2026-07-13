@@ -15,10 +15,11 @@ export default function CMSBreadcrumbs({ breadcrumbs = [] }) {
 
   // Default breadcrumbs if none provided (maintains backward compatibility)
   const defaultBreadcrumbs = [
-    { name: "Browse Datasets", href: ROUTES.PUBLICATIONS }
+    { name: 'Browse Datasets', href: ROUTES.PUBLICATIONS },
   ];
 
-  const crumbsToRender = breadcrumbs.length > 0 ? breadcrumbs : defaultBreadcrumbs;
+  const crumbsToRender =
+    breadcrumbs.length > 0 ? breadcrumbs : defaultBreadcrumbs;
 
   return (
     <>
