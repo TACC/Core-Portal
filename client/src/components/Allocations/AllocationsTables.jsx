@@ -3,7 +3,14 @@ import { useTable, useSortBy } from 'react-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { string } from 'prop-types';
 import { Message } from '_common';
-import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
+import {
+  Title,
+  Team,
+  Systems,
+  Awarded,
+  Remaining,
+  Expires,
+} from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
 import styles from './AllocationsTables.module.scss';
@@ -17,7 +24,11 @@ export const useAllocations = (page) => {
     () => [
       {
         Header: 'Title',
-        accessor: 'projectName',
+        accessor: ({ title, projectName }) => ({
+          title,
+          projectName,
+        }),
+        Cell: Title,
         sortType: 'alphanumeric',
       },
       {
