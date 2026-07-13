@@ -62,12 +62,28 @@ def get_project_client(user):
     return user.tapis_oauth.client
 
 
+def get_workspace_id(project_id):
+    """Return a workspace id from a system-style project id."""
+    prefix = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}."
+    if project_id.startswith(prefix):
+        return project_id[len(prefix):]
+    return project_id
+
+
 def get_project_for_user(project_id, user):
     """Return project metadata if the user can access the project."""
+    write_roles = {"OWNER", "USER"}
     project_query = models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+    project = ProjectMetadata.objects.get(project_query)
+
     if check_project_admin_group(user):
-        return ProjectMetadata.objects.get(project_query)
-    return user.projects.get(project_query)
+        return project
+
+    client = user.tapis_oauth.client
+    workspace_id = get_workspace_id(project.project_id)
+    if get_workspace_role(client, workspace_id, user.username) not in write_roles:
+        raise ProjectMetadata.DoesNotExist("User cannot edit this project")
+    return project
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')

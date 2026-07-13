@@ -134,6 +134,34 @@ def test_get_project_for_user_allows_project_admin(authenticated_user):
     assert result == project
 
 
+def test_get_project_for_user_allows_tapis_write_role(authenticated_user, mocker):
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+    mock_get_workspace_role = mocker.patch(
+        'portal.apps.projects.views.get_workspace_role', return_value='USER'
+    )
+
+    result = get_project_for_user(project.project_id, authenticated_user)
+
+    assert result == project
+    mock_get_workspace_role.assert_called_once_with(
+        authenticated_user.tapis_oauth.client, 'PRJ-123', authenticated_user.username
+    )
+
+
+def test_get_project_for_user_denies_tapis_guest_role(authenticated_user, mocker):
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+    mocker.patch('portal.apps.projects.views.get_workspace_role', return_value='GUEST')
+
+    with pytest.raises(ProjectMetadata.DoesNotExist):
+        get_project_for_user(project.project_id, authenticated_user)
+
+
 def test_projects_get(
     authenticated_user,
     client,
