@@ -49,7 +49,7 @@ const systemsFixture = {
         homeDir: '/corral/tacc/aci/CEP/public',
       },
       {
-        name: 'Shared Workspaces',
+        name: 'Workspace',
         scheme: 'projects',
         api: 'tapis',
         icon: null,

@@ -32,13 +32,11 @@ services:
     command: ["memcached"]
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      memlock: -1
     environment:
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ES_HEAP_SIZE:1g
       - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml

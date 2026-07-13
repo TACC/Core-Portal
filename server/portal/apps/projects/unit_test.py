@@ -411,33 +411,38 @@ def test_listing(mock_tapis_client, mock_owner, authenticated_user):
         keywords = "test1, test2, test3"
 
         # Mock return of getSystems based on views_unit_test.py
-        mock_tapis_client.systems.getSystems.return_value = [
-            TapisResult(
-                id="test.project.test.project-2",
-                host="cloud.data.tacc.utexas.edu",
-                description="Test Workspace 1 description",
-                notes={
-                    "title": title1,
-                    "description": description,
-                    "keywords": keywords,
-                },
-                updated="2023-03-07T19:31:17.292220Z",
-                owner="owner_username",
-                rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
-            ),
-            TapisResult(
-                id="test.project.test.project-3",
-                host="cloud.data.tacc.utexas.edu",
-                description="Test Workspace 2 description",
-                notes={
-                    "title": title2,
-                    "description": description,
-                    "keywords": keywords,
-                },
-                updated="2023-03-08T19:31:17.292220Z",
-                owner="owner_username",
-                rootDir="/corral/tacc/aci/CEP/projects/test.project-3",
-            ),
+        # list_projects queries getSystems twice (main + community); return the
+        # projects for the main call and nothing for the community call.
+        mock_tapis_client.systems.getSystems.side_effect = [
+            [
+                TapisResult(
+                    id="test.project.test.project-2",
+                    host="cloud.data.tacc.utexas.edu",
+                    description="Test Workspace 1 description",
+                    notes={
+                        "title": title1,
+                        "description": description,
+                        "keywords": keywords,
+                    },
+                    updated="2023-03-07T19:31:17.292220Z",
+                    owner="owner_username",
+                    rootDir="/corral/tacc/aci/CEP/projects/test.project-2",
+                ),
+                TapisResult(
+                    id="test.project.test.project-3",
+                    host="cloud.data.tacc.utexas.edu",
+                    description="Test Workspace 2 description",
+                    notes={
+                        "title": title2,
+                        "description": description,
+                        "keywords": keywords,
+                    },
+                    updated="2023-03-08T19:31:17.292220Z",
+                    owner="owner_username",
+                    rootDir="/corral/tacc/aci/CEP/projects/test.project-3",
+                ),
+            ],
+            [],
         ]
 
         # Create first project
@@ -572,7 +577,9 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
         else:
             new_username = "new_user"
             mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
-            mock_get_project.assert_called_once_with(client, workspace_id)
+            mock_get_project.assert_called_once_with(
+                client, workspace_id, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+            )
             mock_service_account.assert_called()
 
             mock_service_account().files.setFacl.assert_called_with(

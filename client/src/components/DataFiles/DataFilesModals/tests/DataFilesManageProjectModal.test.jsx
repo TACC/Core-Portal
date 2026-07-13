@@ -46,6 +46,9 @@ const initialMockState = {
     },
   },
   systems: systemsFixture,
+  workbench: {
+    config: {},
+  },
 };
 
 describe('DataFilesManageProjectModal', () => {

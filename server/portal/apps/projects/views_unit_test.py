@@ -8,6 +8,7 @@ import json
 from tapipy.tapis import TapisResult
 from django.conf import settings
 from django.test import override_settings
+from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
 
 
 @pytest.fixture
@@ -113,8 +114,9 @@ def test_projects_get(
     mock_project_search_indexer,
     project_list,
 ):
-    mock_tapis_client.systems.getSystems.return_value = [
-        project_list["tapis_response"][0]
+    mock_tapis_client.systems.getSystems.side_effect = [
+        [project_list["tapis_response"][0]],
+        [],
     ]
 
     client.force_login(authenticated_user)
@@ -126,8 +128,8 @@ def test_projects_get(
         "response": [project_list["api_response"][0]],
     }
     fields = "id,host,description,notes,updated,owner,rootDir"
-    query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
-    mock_tapis_client.systems.getSystems.assert_called_with(
+    query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
+    mock_tapis_client.systems.getSystems.assert_any_call(
         listType="ALL", search=query, select=fields, limit=-1
     )
     mock_project_search_indexer.delay.assert_called_with(
@@ -146,8 +148,10 @@ def test_projects_search(
     mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
         IndexedProject(**project_list["api_response"][1])
     ]
-    mock_tapis_client.systems.getSystems.return_value = [
-        project_list["tapis_response"][1]
+    
+    mock_tapis_client.systems.getSystems.side_effect = [
+        [project_list["tapis_response"][1]],
+        [],
     ]
 
     response = client.get("/api/projects/?query_string=bar")
@@ -357,7 +361,11 @@ def test_project_instance_patch(
 
     response = client.patch(
         "/api/projects/PRJ-123/",
-        json.dumps({"title": "New Title", "description": "new description", "keywords": None}),
+        data=encode_multipart(
+            BOUNDARY,
+            {"title": "New Title", "description": "new description"},
+        ),
+        content_type=MULTIPART_CONTENT,
     )
 
     mock_tapis_client.systems.patchSystem.assert_called_with(

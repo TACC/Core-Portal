@@ -97,6 +97,9 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "icon": "publications",
         "readOnly": False,
         "hideSearchBar": False,
+        "defaultProject": True,
+        "system": "cep.project.root",
+        "rootDir": "/corral/tacc/aci/CEP/projects",
     },
 ]
 

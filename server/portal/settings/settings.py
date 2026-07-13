@@ -28,6 +28,12 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
 else:
     from portal.settings import settings_default as settings_custom
 
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_forms.py')):
+    from portal.settings import settings_forms
+else:
+    settings_forms = None
+
+
 DEBUG = settings_custom._DEBUG
 
 FIXTURE_DIRS = [
@@ -116,6 +122,7 @@ INSTALLED_APPS = [
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
     'portal.apps.portal_messages',
+    'portal.apps.publications',
 ]
 
 MIDDLEWARE = [
@@ -564,6 +571,8 @@ PORTAL_SEARCH_MANAGERS = {
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
+FORMS = getattr(settings_forms, '_FORMS', {})
+
 """
 SETTINGS: EXTERNAL DATA RESOURCES
 """
@@ -594,6 +603,42 @@ PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_custom.\
 PORTAL_PROJECTS_ROOT_HOST = settings_custom.\
     _PORTAL_PROJECTS_ROOT_HOST
 
+PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = getattr(
+    settings_custom, '_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX', None)
+
+PORTAL_PROJECTS_REVIEW_ROOT_DIR = getattr(
+    settings_custom, '_PORTAL_PROJECTS_REVIEW_ROOT_DIR', None)
+
+PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = getattr(
+    settings_custom, '_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME', None)
+
+PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = getattr(
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX', None)
+
+PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = getattr(
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR', None)
+
+PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = getattr(
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME', None)
+
+PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME', None)
+
+PORTAL_PUBLICATION_DATACITE_SHOULDER = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_DATACITE_SHOULDER', None)
+
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_DATACITE_URL_PREFIX', None)
+
+DATACITE_URL = getattr(
+    settings_custom, '_DATACITE_URL', None)
+
+DATACITE_USER = getattr(
+    settings_secret, '_DATACITE_USER', None)
+
+DATACITE_PASS = getattr(
+    settings_secret, '_DATACITE_PASS', None)
+
 PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
     _PORTAL_PROJECTS_PRIVATE_KEY
 
@@ -620,6 +665,12 @@ PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
+PORTAL_PUBLICATION_PUBLISHER = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_PUBLISHER', PORTAL_NAMESPACE)
+
+PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_ID', None)
+
 ALLOCATIONS_TO_EXCLUDE = (
     getattr(settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"])
 )
@@ -631,6 +682,9 @@ NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', '')
 PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
 PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', True)
+
+# When True, project creation builds the metadata graph and file listings
+PORTAL_PROJECTS_ENABLE_METADATA = getattr(settings_custom, '_PORTAL_PROJECTS_ENABLE_METADATA', False)
 
 # Vanity URL for the portal. Backwards compatibility with old _WH_BASE_URL setting.
 # Also include support for NGINX_SERVER_NAME environment variable if no settings are set.
@@ -783,6 +837,16 @@ RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
+SETTINGS: EMAIL
+"""
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getattr(settings_custom, '_SMTP_HOST', 'localhost')
+EMAIL_PORT = getattr(settings_custom, '_SMTP_PORT', 25)
+EMAIL_HOST_USER = getattr(settings_custom, '_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = getattr(settings_custom, '_SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = getattr(settings_custom, '_DEFAULT_FROM_EMAIL', '')
+
+"""
 SETTINGS: INTERNAL DOCS
 """
 INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
@@ -794,3 +858,8 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
+
+"""
+SETTINGS: PUBLICATIONS
+"""
+PUBLICATION_REVIEWERS = getattr(settings_secret, '_PUBLICATION_REVIEWERS', [])

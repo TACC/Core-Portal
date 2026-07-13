@@ -4,7 +4,8 @@
 /* SETTINGS */
 @import url('@tacc/core-styles/src/lib/_imports/settings/border.css');
 @import url('./settings/color.css');
-@import url('./settings/font.css');
+@import url('@tacc/core-styles/dist/settings/font.css');
+@import url('@tacc/core-styles/dist/settings/font--portal.css');
 @import url('./settings/space.css');
 
 /* TOOLS */
@@ -29,6 +30,7 @@
 @import url('./components/bootstrap.nav.css');
 @import url('./components/bootstrap.utils.css');
 @import url('./components/bootstrap.button.css');
+@import url('./components/bootstrap.tooltip.css');
 @import url('./components/mui.tabs.css');
 
 /* TRUMPS */

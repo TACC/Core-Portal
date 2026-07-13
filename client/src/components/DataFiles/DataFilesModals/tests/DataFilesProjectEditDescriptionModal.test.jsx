@@ -8,6 +8,7 @@ import {
   projectsListingFixture,
   projectMetadataFixture,
 } from '../../../../redux/sagas/fixtures/projects.fixture';
+import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 
@@ -50,6 +51,7 @@ const initialMockState = {
       maxTitleLength: 150,
     },
   },
+  systems: systemsFixture,
 };
 
 describe('DataFilesProjectEditDescriptionModal', () => {

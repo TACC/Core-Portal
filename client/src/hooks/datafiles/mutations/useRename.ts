@@ -9,17 +9,20 @@ export async function renameFileUtil({
   system,
   path,
   newName,
+  metadata,
 }: {
   api: string;
   scheme: string;
   system: string;
   path: string;
   newName: string;
+  metadata?: Record<string, any>;
 }): Promise<{ name: string; path: string }> {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}/${path}/`;
 
   const response = await apiClient.put<{ name: string; path: string }>(url, {
     new_name: newName,
+    metadata: metadata ?? null,
   });
 
   return response.data;
@@ -65,6 +68,7 @@ function useRename() {
         system: selectedFile.system,
         path: '/' + selectedFile.path,
         newName,
+        metadata: selectedFile.metadata ? {...selectedFile.metadata, name: newName} : null,
       },
       {
         onSuccess: (resp) => {

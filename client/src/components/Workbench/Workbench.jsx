@@ -21,7 +21,6 @@ import SystemStatus from '../SystemStatus';
 import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
-import { useRedirectOnSessionExpired } from 'hooks/auth';
 
 function Workbench() {
   const { path } = useRouteMatch();
@@ -30,9 +29,6 @@ function Workbench() {
 
   // Prefetch the user's Tapis token so it's ready to go when the user tries to upload files
   useTapisToken();
-  // Get the time remaining in the user's session and redirect to the homepage if their
-  // browser is open when it expires.
-  useRedirectOnSessionExpired({ location: '/' });
 
   // showUIPatterns: Show some entries only in local development
   const {
@@ -85,7 +81,6 @@ function Workbench() {
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
-      dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
   }, [setupComplete, isTACCPortal, dispatch]);
 

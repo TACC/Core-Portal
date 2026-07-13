@@ -3,7 +3,7 @@ Migration scripts for bringing Shared Workspaces from V2 to V3.
 """
 import requests
 from django.conf import settings
-from portal.apps.projects.models import ProjectMetadata
+from portal.apps.projects.models import LegacyProjectMetadata
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_workspace_system, add_user_to_workspace
 from portal.libs.agave.utils import service_account
 
@@ -36,7 +36,7 @@ def migrate_project(project_id):
     client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
     try:
-        v2_project = ProjectMetadata.objects.get(project_id=project_id)
+        v2_project = LegacyProjectMetadata.objects.get(project_id=project_id)
     except MultipleObjectsReturned:
         print('FAILURE: more than 1 project with this ID')
         return
@@ -92,5 +92,5 @@ def migrate_project(project_id):
 
 
 def migrate_all_projects():
-    for prj in ProjectMetadata.objects.all():
+    for prj in LegacyProjectMetadata.objects.all():
         migrate_project(prj.project_id)
