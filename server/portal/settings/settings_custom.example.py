@@ -231,10 +231,23 @@ _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
 ########################
 
 # No Art.
-# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
-
+# _PORTAL_ICON_FILENAME='' # Empty string yields NO icon.
 # Default Art.
-_PORTAL_ICON_FILENAME = "/static/site_cms/img/favicons/favicon.ico"
+# _PORTAL_ICON_FILENAME = "https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@813aa7c/ptdatax_assets/favicon.ico"
+
+# No Extra Scripts.
+# _PORTAL_CSS_FILENAMES = [] # Empty array yields NO extra styles.
+# Custom CMS Scripts
+# _PORTAL_CSS_FILENAMES = [
+#     "https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@cc02b6d8/lccf_assets/header.css"
+# ]
+
+# No Extra Scripts.
+# _PORTAL_JS_FILENAMES = [] # Empty array yields NO extra scripts.
+# Custom CMS Scripts
+# _PORTAL_JS_FILENAMES = [
+#     "https://cdn.jsdelivr.net/gh/TACC/Core-CMS-Custom@main/ptdatax_assets/js/open-certain-links-in-new-tab.js"
+# ]
 
 ########################
 # GOOGLE ANALYTICS
