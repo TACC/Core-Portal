@@ -52,4 +52,3 @@ class Publication(models.Model):
         encoder=DjangoJSONEncoder,
         help_text=("JSON document containing the serialized publication tree"),
     )
-
