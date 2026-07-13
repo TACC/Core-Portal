@@ -2,7 +2,7 @@
 {% load static %}
 {% block google_citation_meta %}
     <meta name="keywords" content='{{ scholar_context.keywords }}'> <!-- related experiments, subject; used in search -->
-    <meta name="citation_publisher" content="DesignSafe-CI">
+    <meta name="citation_publisher" content="Digital Porous Media">
     <meta name="citation_language" content="en">
     {% for keyword in scholar_context.citation_keywords %}
     <meta name="citation_keywords" content="{{keyword}}">
@@ -18,7 +18,7 @@
         {% endfor %}
         <meta name="identifier" content="{{entity.doi}}">
         <meta name="DC.identifier" content="{{entity.doi}}">
-        <meta name="DC.publisher" content="DesignSafe-CI">
+        <meta name="DC.publisher" content="Digital Porous Media">
         <meta name="DC.title" content="{{entity.title}}">
         <meta name="DC.date" content="{{entity.publication_date}}">
         <meta name="DC.language" content="en">
