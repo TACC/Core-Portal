@@ -32,7 +32,8 @@ class PublicationRequest(models.Model):
 
     def __str__(self):
         return f'Review for {self.review_project.project_id}'
-    
+
+
 class Publication(models.Model):
 
     project_id = models.CharField(max_length=100, primary_key=True, editable=False)
