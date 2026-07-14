@@ -6,7 +6,6 @@ import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import { useUpload } from 'hooks/datafiles/mutations';
 import styles from './DataFilesUploadModalListingTable.module.scss';
 import { useSelector } from 'react-redux';
-import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter((f) => f.id === i).length > 0) {
@@ -48,10 +47,6 @@ function DataFilesUploadModalListingTable({
     setUploadedFiles(uploadedFiles.filter((f) => f.id !== id));
   };
 
-  const { params } = useFileListing('FilesListing');
-  const portalName = useSelector((state) => state.workbench.portalName);
-  const { DataFilesUploadModalListingTableAddon } = useAddonComponents({ portalName });
-
   return (
     <div className={styles['table-wrapper']}>
       <Table striped>
@@ -59,7 +54,6 @@ function DataFilesUploadModalListingTable({
           <tr>
             <th>Name</th>
             <th>Size</th>
-            <th aria-label="null" />
             <th aria-label="null" />
           </tr>
         </thead>
@@ -69,22 +63,6 @@ function DataFilesUploadModalListingTable({
               <td style={{ verticalAlign: 'middle' }}>{file.data.name}</td>
               <td style={{ verticalAlign: 'middle' }}>
                 <FileLengthCell cell={{ value: file.data.size }} />
-              </td>
-              <td>
-                {DataFilesUploadModalListingTableAddon && params.scheme === 'projects' && (
-                  <DataFilesUploadModalListingTableAddon
-                    file={file}
-                    onToggleAdvancedImageFile={(fileId, value) =>
-                      setUploadedFiles((prevFiles) =>
-                        prevFiles.map((f) =>
-                          f.id === fileId
-                            ? { ...f, is_advanced_image_file: value }
-                            : f
-                        )
-                      )
-                    }
-                  />
-                )}
               </td>
               <td>
                 <span className="float-right">
