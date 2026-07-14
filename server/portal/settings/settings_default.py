@@ -305,7 +305,7 @@ _WORKBENCH_SETTINGS = {
                'DataFilesProjectFileListingMetadataAddon', 'DataFilesProjectFileListingMetadataTitleAddon',
                'DataFilesProjectPublish', 'DataFilesProjectReview',
                'DataFilesManageProjectModalAddon', 'DataFilesToolbarAddon',
-               'DataFilesPreviewModalAddon'],
+               'DataFilesPreviewModalAddon', 'DataFilesUploadModalAddon'],
     "showDataFileType": True,
     "onboardingCompleteRedirect": '/workbench/',
     "minDescriptionLength": 50,
