@@ -40,7 +40,11 @@ import {
   getExecSystemIdValidation,
   getQueueSchedulerOptionsValidation,
 } from './AppFormUtils';
-import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
+import {
+  getExecSystemFromId,
+  getDefaultExecSystem,
+  isValidDynamicExecSystems,
+} from 'utils/apps';
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -674,6 +678,37 @@ export const AppSchemaForm = ({ app }) => {
             app.definition.jobAttributes.memoryMB > queue.maxMemoryMB
           ) {
             job.memoryMB = queue.maxMemoryMB;
+          }
+          if (isAppUsingDynamicExecSystem(app)) {
+            if (!job.parameterSet.schedulerOptions) {
+              job.parameterSet.schedulerOptions = [];
+            }
+
+            if (!isValidDynamicExecSystems(app)) {
+              console.error(
+                'DynamicExecSystems for this application are invalid'
+              );
+            } else {
+              // pick the right profile for the right exec system
+              const selectedSystem =
+                app.definition.notes.dynamicExecSystems.find(
+                  (s) => s.systemId === job.execSystemId
+                );
+              const profileName = selectedSystem?.profileName;
+              if (!!profileName) {
+                job.parameterSet.schedulerOptions = [
+                  ...job.parameterSet.schedulerOptions.filter(
+                    (opt) => !opt.arg.startsWith('--tapis-profile')
+                  ),
+                  {
+                    name: 'TACC Scheduler Profile',
+                    arg: `--tapis-profile ${profileName}`,
+                    description: 'Scheduler profile for HPC clusters at TACC',
+                    include: true,
+                  },
+                ];
+              }
+            }
           }
 
           // Add allocation scheduler option
