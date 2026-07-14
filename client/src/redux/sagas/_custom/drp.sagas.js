@@ -1,4 +1,5 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
+import { fetchUtil } from 'utils/fetchUtil';
 import { mkdirUtil, updateMetadataUtil } from '../datafiles.sagas';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createEntityUtil, patchEntityUtil } from '../projects.sagas';
@@ -199,6 +200,49 @@ function* handleFile(action, isEdit) {
   );
 }
 
+export async function generateImagesUtil(projectId, path, values) {
+  const result = await fetchUtil({
+    url: 'api/drp/generate-images/',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      project_id: projectId,
+      path,
+      value: values,
+    }),
+  });
+
+  return result.response;
+}
+
+function* handleGenerateImages(action) {
+  const { projectId, path, values, reloadPage } = action.payload;
+
+  try {
+    yield call(generateImagesUtil, projectId, path, values);
+
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: 'Image generation started. This may take a few minutes.',
+      },
+    });
+
+    if (reloadPage) {
+      yield call(reloadPage);
+    }
+  } catch (e) {
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: 'Unable to start image generation. Please try again.',
+      },
+    });
+  }
+}
+
 export default function* watchDRP() {
   yield takeLatest('ADD_SAMPLE_DATA', (action) =>
     handleSampleData(action, false)
@@ -219,4 +263,5 @@ export default function* watchDRP() {
     handleOriginData(action, true)
   );
   yield takeLatest('EDIT_FILE', (action) => handleFile(action, true));
+  yield takeLatest('GENERATE_IMAGES', handleGenerateImages);
 }

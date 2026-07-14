@@ -1,14 +1,16 @@
 import json
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import HttpRequest, JsonResponse, HttpResponseForbidden
+from portal.exceptions.api import ApiException
 from portal.apps.datafiles.models import DataFilesMetadata
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps._custom.drp import constants
 import networkx as nx
 from networkx import shortest_path
-from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value
+from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value, patch_file_obj_entity
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.projects.tasks import process_file
 import logging
 
 logger = logging.getLogger(__name__)
@@ -124,5 +126,33 @@ class DigitalRocksTreeView(BaseApiView):
         tree = nx.tree_data(graph, "NODE_ROOT")
 
         return JsonResponse([tree], safe=False)
+
+
+class GenerateImagesView(BaseApiView):
+    """Save advanced image metadata for a project file and trigger image generation."""
+
+    def post(self, request: HttpRequest):
+
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        client = request.user.tapis_oauth.client
+
+        req_body = json.loads(request.body)
+        project_id = req_body.get("project_id", "")
+        path = req_body.get("path", "")
+        value = req_body.get("value", {})
+
+        # Generating images implies the file is an advanced image file
+        value["data_type"] = "file"
+        value["is_advanced_image_file"] = True
+
+        try:
+            patch_file_obj_entity(client, project_id, value, path)
+            process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
+        except Exception as exc:
+            raise ApiException("Error generating images", status=500) from exc
+
+        return JsonResponse({"result": "OK"})
     
 
