@@ -28,8 +28,32 @@
       <link rel="stylesheet" href="{{ stylesheet }}">
       {% endfor %}
     {% endif %}
-
     {% block styles %}{% endblock %}
+    <!-- used in general search -->
+    <meta name="keywords" content=""> <!-- related experiements, subject; used in search -->
+    <meta name="author" content=""> <!-- author names -->
+    <!-- used in google citation -->
+    {% block google_citation_meta %}
+    <meta name="citation_title" content=""> <!-- project title -->
+    <meta name="citation_author" content=""> <!-- author; can have multiple lines -->
+    <meta name="citation_author_institution" content=""> <!-- example: University of Texas at Austin-->
+    <meta name="citation_publication_date" content=""> <!-- year of publication -->
+    <meta name="citation_doi" content=""> <!-- project doi, example: 10.17603/DS28382 -->
+    <meta name="citation_keywords" content=""> <!-- project keywords -->
+    <meta name="citation_pdf_url" content=""> <!-- pdf url -->
+    <meta name="citation_abstract_html_url" content=""> <!-- project url -->
+    <meta name="citation_publisher" content="Digital Porous Media">
+    <meta name="citation_language" content="en">
+    <meta name="identifier" content="">
+    <!--Dublin Core Metatags-->
+    <meta name="DC.identifier" content="">
+    <meta name="DC.publisher" content="Digital Porous Media">
+    <meta name="DC.title" content="">
+    <meta name="DC.date" content="">
+    <meta name="DC.language" content="en">
+    <meta name="DC.creator" content="">
+    <meta name="DC.type" content="dataset">
+    {% endblock %}
   </head>
   <body>
     <div class="content">
