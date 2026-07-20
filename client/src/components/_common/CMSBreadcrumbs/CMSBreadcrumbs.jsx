@@ -4,15 +4,6 @@ import * as ROUTES from '../../../constants/routes';
 import { Link } from 'react-router-dom';
 
 export default function CMSBreadcrumbs({ breadcrumbs = [] }) {
-  /* TODO: Move to …module.css OR into Core-Styles */
-  /* https://github.com/TACC/Core-CMS/blob/v4.30.0/taccsite_cms/templates/nav_cms_breadcrumbs.html#L4-L11 */
-  const breadcrumbCSS = `
-    .s-breadcrumbs a:not([href]) {
-      opacity: 1;
-      color: unset;
-    }
-  `;
-
   // Default breadcrumbs if none provided (maintains backward compatibility)
   const defaultBreadcrumbs = [
     { name: "Browse Datasets", href: ROUTES.PUBLICATIONS }
@@ -22,7 +13,6 @@ export default function CMSBreadcrumbs({ breadcrumbs = [] }) {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: breadcrumbCSS }} />
       <nav className="s-breadcrumbs" id="cms-breadcrumbs">
         <ol itemScope itemType="https://schema.org/BreadcrumbList">
           {crumbsToRender.map((crumb, index) => (
