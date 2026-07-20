@@ -19,7 +19,7 @@ from portal.apps.notifications.models import Notification
 from django.http import HttpResponse
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.views import get_project_client, get_project_for_user
+from portal.apps.projects.views import get_project_for_user
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
@@ -73,7 +73,7 @@ class PublicationRequestView(BaseApiView):
         
         request_body = json.loads(request.body)
 
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         service_client = service_account()
         
         full_project_id = request_body.get('project_id')
@@ -238,11 +238,11 @@ class PublicationListingView(BaseApiView):
         return JsonResponse({'response': publications_data}, safe=False)
 
 class PublicationPublishView(BaseApiView):
-     
+
      def post(self, request):
         """view for publishing a project"""
 
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         request_body = json.loads(request.body)
 
         full_project_id = request_body.get('project_id')
@@ -308,12 +308,12 @@ class PublicationVersionView(BaseApiView):
     def post(self, request):
         """view for publishing a project"""
 
-        client = get_project_client(request.user)
+        client = request.user.tapis_oauth.client
         request_body = json.loads(request.body)
 
         full_project_id = request_body.get('project_id')
         is_review = request_body.get('is_review_project', False)
-        
+
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
         
