@@ -204,7 +204,9 @@ def create_shared_workspace(client: Tapis, title: str, description: str, keyword
                        "writer")
 
     # User creates the system and adds their credential
-    system_id = create_workspace_system(client, workspace_id, title, description, keywords)
+    system_id = create_workspace_system(
+        client, workspace_id, title, description, keywords, owner=owner
+    )
 
     # Give portal admin full permissions
     portal_admin = settings.PORTAL_ADMIN_USERNAME

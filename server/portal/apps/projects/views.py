@@ -12,7 +12,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from portal.libs.agave.utils import service_account
-from portal.utils import get_client_ip
+from portal.utils import check_group_membership, get_client_ip
 from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
@@ -48,6 +48,42 @@ def validate_project_metadata(metadata):
     schema = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema.model_validate(metadata)
     return validated_model.model_dump(exclude_none=True)
+
+
+def check_project_admin_group(user):
+    """Check whether a user belongs to the project admin group."""
+    return check_group_membership(user, settings.PROJECT_ADMIN_GROUP)
+
+
+def get_project_client(user):
+    """Return a Tapis client with project access for this user."""
+    if check_project_admin_group(user):
+        return service_account()
+    return user.tapis_oauth.client
+
+
+def get_workspace_id(project_id):
+    """Return a workspace id from a system-style project id."""
+    prefix = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}."
+    if project_id.startswith(prefix):
+        return project_id[len(prefix):]
+    return project_id
+
+
+def get_project_for_user(project_id, user):
+    """Return project metadata if the user can access the project."""
+    write_roles = {"OWNER", "USER"}
+    project_query = models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+    project = ProjectMetadata.objects.get(project_query)
+
+    if check_project_admin_group(user):
+        return project
+
+    client = user.tapis_oauth.client
+    workspace_id = get_workspace_id(project.project_id)
+    if get_workspace_role(client, workspace_id, user.username) not in write_roles:
+        raise ProjectMetadata.DoesNotExist("User cannot edit this project")
+    return project
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -127,12 +163,12 @@ class ProjectsApiView(BaseApiView):
             listing = []
             # Filter search results to projects specific to user
             if hits:
-                client = request.user.tapis_oauth.client
+                client = get_project_client(request.user)
                 listing = list_projects(client, root_system)
                 filtered_list = filter(lambda prj: prj['id'] in hits, listing)
                 listing = list(filtered_list)
         else:
-            client = request.user.tapis_oauth.client
+            client = get_project_client(request.user)
             listing = list_projects(client, root_system)
 
         for project in listing:
@@ -226,7 +262,7 @@ class ProjectInstanceApiView(BaseApiView):
         if system_id and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
             client = service_account()
         else:
-            client = request.user.tapis_oauth.client
+            client = get_project_client(request.user)
 
         prj = get_project(client, project_id)
         
@@ -330,11 +366,11 @@ class ProjectInstanceApiView(BaseApiView):
             },
         )
 
-        client = request.user.tapis_oauth.client
+        client = get_project_client(request.user)
 
         system_details = client.systems.getSystem(systemId=project_id_full)
 
-        if (system_details.owner == request.user.username):
+        if system_details.owner == request.user.username or check_project_admin_group(request.user):
             workspace_def = update_project(client, project_id, title, description, keywords)
         else: 
             workspace_def = get_project(client, project_id)
@@ -499,7 +535,7 @@ class ProjectMembersApiView(BaseApiView):
 @login_required
 def get_project_role(request, project_id, username):
     role = None
-    client = request.user.tapis_oauth.client
+    client = get_project_client(request.user)
 
     METRICS.info(
             "Projects",
@@ -520,7 +556,7 @@ def get_project_role(request, project_id, username):
 
 @login_required
 def get_system_role(request, project_id, username):
-    client = request.user.tapis_oauth.client
+    client = get_project_client(request.user)
 
     METRICS.info(
             "Projects",
@@ -542,10 +578,16 @@ class ProjectEntityView(BaseApiView):
 
     def patch(self, request: HttpRequest, project_id: str):
         
-        client = request.user.tapis_oauth.client
-
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
+
+        client = get_project_client(request.user)
+        try:
+            get_project_for_user(project_id, request.user)
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
         
         req_body = json.loads(request.body)
         value = req_body.get("value", {})
@@ -571,14 +613,12 @@ class ProjectEntityView(BaseApiView):
     def post(self, request: HttpRequest, project_id: str):
         """Add a new entity to a project"""
 
-        client = request.user.tapis_oauth.client
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
+        client = get_project_client(request.user)
     
         try:
-            project: ProjectMetadata = ProjectMetadata.objects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
+            project: ProjectMetadata = get_project_for_user(project_id, request.user)
         except ProjectMetadata.DoesNotExist as exc:
             raise ApiException(
                 "User does not have access to the requested project", status=403
