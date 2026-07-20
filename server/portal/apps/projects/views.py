@@ -283,7 +283,7 @@ class ProjectInstanceApiView(BaseApiView):
             prj.update(get_ordered_value(project.name, project.value))
             prj["projectId"] = project_id
 
-            if prj["cover_image"] is not None:
+            if prj.get("cover_image") is not None:
                 service_client = service_account()
 
                 if prj.get("is_published_project", False):
