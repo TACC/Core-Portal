@@ -223,6 +223,7 @@ _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+_PROJECT_ADMIN_GROUP = "Project Admin"
 
 ########################
 # Custom Portal Template Assets
@@ -310,3 +311,7 @@ _PORTAL_ELEVATED_ROLES = {
 # PORTAL INTERNAL DOCS SETTINGS
 ##################################
 _INTERNAL_DOCS_URL = "core/internal-docs/"
+
+
+_SMTP_HOST = "relay.tacc.utexas.edu"
+_DEFAULT_FROM_EMAIL="no-reply@digitalrocksportal.org"

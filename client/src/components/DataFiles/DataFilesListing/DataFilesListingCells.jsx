@@ -50,7 +50,20 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
+  ({
+    system,
+    path,
+    name,
+    format,
+    api,
+    scheme,
+    href,
+    isPublic,
+    basePath,
+    length,
+    metadata,
+    rootSystem,
+  }) => {
     const dispatch = useDispatch();
     const previewCallback = (e) => {
       e.stopPropagation();
@@ -63,19 +76,25 @@ export const FileNavCell = React.memo(
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href, length },
+          props: { api, scheme, system, path, name, href, length, metadata },
         },
       });
     };
 
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
+
+    // encoding for % and # in path. Done twice due to react-router encoding bug. fixed in react router v6
+    path = path.replace(/%/g, encodeURIComponent(encodeURIComponent('%')))
+              .replace(/#/g, encodeURIComponent(encodeURIComponent('#')));
 
     return (
       <>
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
+            to={`${basePath}/${api}/${scheme}${
+              rootSystem ? '/' + rootSystem : ''
+            }/${system}/${path}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}
@@ -179,5 +198,23 @@ export const ViewPathCell = ({ file }) => {
 };
 
 ViewPathCell.propTypes = {
+  file: PropTypes.shape({}).isRequired,
+};
+
+export const DataTypeCell = ({ file }) => {
+  const dataType = file.metadata ? file.metadata.data_type : file.type;
+
+  const formatDatatype = (data_type) =>
+    data_type
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+  return dataType ? (
+    <span className="dataTypeBox">{formatDatatype(dataType)}</span>
+  ) : null;
+};
+
+DataTypeCell.propTypes = {
   file: PropTypes.shape({}).isRequired,
 };
