@@ -29,7 +29,7 @@ function AppRouter() {
   }, []);
 
   useEffect(() => {
-    if (authenticatedUser) {
+    if (authenticatedUser?.username) {
       dispatch({ type: 'FETCH_INTRO' });
       dispatch({ type: 'FETCH_CUSTOM_MESSAGES' });
     }
