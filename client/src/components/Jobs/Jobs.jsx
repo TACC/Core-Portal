@@ -28,7 +28,18 @@ function JobsView({
   includeSearchbar,
 }) {
   // TODOv3: dropV2Jobs
-  const jobStatuses = Object.keys(STATUS_TEXT_MAP);
+  const jobStatuses = [
+  'Processing',
+  'Queueing',
+  'Running',
+  'Finishing',
+  'Finished',
+  'Stopped',
+  'Failure',
+  'Blocked',
+  'Paused',
+  'Cancelled',
+  'Archived'];
   const location = useLocation();
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
@@ -74,7 +85,7 @@ function JobsView({
   useEffect(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: 0, queryString: query.query_string || '' },
+      params: { offset: 0, queryString: query.query_string || '', 'status': 'FINISHED' },
     });
   }, [dispatch, query.query_string]);
 
@@ -241,7 +252,6 @@ function JobsView({
             dataType="Jobs"
             filterTypes={jobStatuses}
             infiniteScroll
-            forbidWhitespace
             disabled={isJobLoading || isNotificationLoading}
           />
           <Button

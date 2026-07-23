@@ -9,7 +9,7 @@ export async function fetchJobs(offset, limit, queryString, filter) {
   const operation = queryString || filter ? 'search' : 'listing';
   const result = await fetchUtil({
     url: `/api/workspace/jobs/${operation}`,
-    params: { offset, limit, query_string: queryString, filter },
+    params: { offset, limit, query_string: queryString, 'status.eq': filter },
   });
   //alert(`Filtering by ${location.pathname} - ${filter}`);
   return result.response;
