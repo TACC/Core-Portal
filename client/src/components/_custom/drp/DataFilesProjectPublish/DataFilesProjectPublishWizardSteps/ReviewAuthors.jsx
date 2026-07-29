@@ -3,6 +3,7 @@ import {
   Button,
   SectionTableWrapper,
   Section,
+  SectionHeader
 } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import ReorderUserList from '../../utils/ReorderUserList/ReorderUserList';
@@ -224,9 +225,9 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
   };
 
   return (
-    <SectionTableWrapper
-      header={<div className={styles.title}>Review Authors and Citations</div>}
-      headerActions={
+    <>
+    <SectionHeader
+      actions={
         <>
           {canEdit && (
             <div className={styles.controls}>
@@ -240,8 +241,10 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
         </>
       }
     >
-      {authors.length > 0 && project && (
-        <Section contentLayoutName={'oneColumn'}>
+      <div className={styles.title}>Review Authors and Citations</div>
+    </SectionHeader>
+    {authors.length > 0 && project && (
+        <>
           <Citations project={project} authors={authors} />
 
           {canEdit && (
@@ -257,9 +260,9 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
               />
             </>
           )}
-        </Section>
+        </>
       )}
-    </SectionTableWrapper>
+      </>
   );
 };
 

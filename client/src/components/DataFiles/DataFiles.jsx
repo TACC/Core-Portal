@@ -71,12 +71,12 @@ const DataFilesSwitch = React.memo(() => {
           path={`${path}/tapis/projects/:root_system/:system/publish`}
           render={({ match: { params } }) => {
             return (
-              <SectionTableWrapper contentShouldScroll>
+              <Section contentShouldScroll contentLayoutName={"oneColumn"}>
                 <DataFilesProjectPublish
                   system={params.system}
                   rootSystem={params.root_system}
                 />
-              </SectionTableWrapper>
+              </Section>
             );
           }}
         />

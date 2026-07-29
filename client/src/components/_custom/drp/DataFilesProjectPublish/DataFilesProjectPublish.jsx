@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { LoadingSpinner, SectionTableWrapper } from '_common';
+import { LoadingSpinner, SectionTableWrapper, SectionHeader } from '_common';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
@@ -106,14 +106,9 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
       {metadata.loading ? (
         <LoadingSpinner />
       ) : (
-        <SectionTableWrapper
-          className={styles.root}
-          header={
-            <div className={styles.title}>
-              Request Dataset Publication | {metadata.title}
-            </div>
-          }
-          headerActions={
+        <>
+        <SectionHeader
+          actions={
             <div className={styles.controls}>
               <>
                 <Link
@@ -126,11 +121,46 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
             </div>
           }
         >
-          <Wizard steps={wizardSteps} formSubmit={formSubmit} />
-        </SectionTableWrapper>
+          <div className={styles.title}>
+            Request Dataset Publication | {metadata.title}
+          </div>
+        </SectionHeader>
+        <Wizard steps={wizardSteps} formSubmit={formSubmit} />
+        </>
       )}
     </>
   );
+
+  // return (
+  //   <>
+  //     {metadata.loading ? (
+  //       <LoadingSpinner />
+  //     ) : (
+  //       <SectionTableWrapper
+  //         className={styles.root}
+  //         header={
+  //           <div className={styles.title}>
+  //             Request Dataset Publication | {metadata.title}
+  //           </div>
+  //         }
+  //         headerActions={
+  //           <div className={styles.controls}>
+  //             <>
+  //               <Link
+  //                 className="wb-link"
+  //                 to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}/${system}`}
+  //               >
+  //                 Back to Dataset
+  //               </Link>
+  //             </>
+  //           </div>
+  //         }
+  //       >
+  //         <Wizard steps={wizardSteps} formSubmit={formSubmit} />
+  //       </SectionTableWrapper>
+  //     )}
+  //   </>
+  // );
 };
 
 export default DataFilesProjectPublish;
