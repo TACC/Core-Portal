@@ -111,7 +111,10 @@ ul#appBrowser-sidebar {
 #appBrowser-tray .apps-grid-list {
   display: grid;
   gap: var(--grid-gap-y) var(--grid-gap-x);
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-min), 100%), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--grid-min), 100%), 1fr)
+  );
   align-content: start;
   overflow-x: hidden;
 }
