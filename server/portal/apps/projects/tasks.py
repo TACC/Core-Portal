@@ -78,10 +78,9 @@ def sync_files_without_metadata(self, user_access_token, project_id: str):
         add_file_associations(entity_uuid, file_objs)
 
 @shared_task(bind=True, queue='default')
-def process_file(self, project_id: str, path: str, user_access_token: str, encoded_file=None):
+def process_file(self, project_id: str, path: str, user_access_token: str, username: str, encoded_file=None):
 
     client = user_account(user_access_token)
-    username = client.access_token.claims['tapis/username']
 
     logger.info(f'Processing file {path} in project {project_id}')
 
