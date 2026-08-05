@@ -6,7 +6,7 @@ from django.conf import settings
 from pathlib import Path
 from typing import get_args
 import networkx as nx
-from portal.apps import SCHEMA_MAPPING
+from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models.base_metadata import PartialEntityWithFiles, FileObj
