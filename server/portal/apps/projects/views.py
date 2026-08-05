@@ -26,7 +26,7 @@ from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from django.db import transaction
-from portal.apps import SCHEMA_MAPPING
+from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
 from django.db import models
 from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata,  \
         create_project_metadata, get_ordered_value, move_entity, patch_entity_and_node, \
