@@ -1,3 +1,4 @@
+import json
 import networkx as nx
 from django.views.generic.base import TemplateView
 from django.conf import settings
@@ -9,32 +10,20 @@ def get_google_scholar_context(project_id):
     """Get context info for Google Scholar/Datacite"""
     pub = Publication.objects.get(project_id=project_id)
     pub_tree = nx.node_link_graph(pub.tree)
-    latest_version = max(
-            pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
-        )
-    published_ents = [node for node in pub_tree.successors("NODE_ROOT")
-                    if pub_tree.nodes[node]["version"] == latest_version]
 
-    datacite_json_list = []
     scholar_meta = {}
     scholar_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
     scholar_meta["citation_keywords"] = pub.value.get("keywords", [])
-    scholar_meta["entities"] = []
-    for ent in published_ents:
-        ent_meta = pub_tree.nodes[ent]
-        entity_scholar_data = {
-            "title": ent_meta["value"]["title"],
-            "description": ent_meta["value"].get("description"),
-            "doi": ent_meta["value"].get("dois", [])[0],
-            "authors": ent_meta["value"].get("authors", []),
-            "publication_date": ent_meta["publicationDate"]
-        }
-        scholar_meta["entities"].append(entity_scholar_data)
+    scholar_meta["entities"] = [{
+        "title": pub.value.get("title"),
+        "description": pub.value.get("description"),
+        "doi": pub.value.get("doi"),
+        "authors": pub.value.get("authors", []),
+        "publication_date": pub.value.get("publicationDate") or pub.value.get("publication_date"),
+    }]
 
+    datacite_json_list = [get_datacite_json(pub_tree)]
 
-        datacite_json_list.append(get_datacite_json(pub_tree,
-                                                    ent_meta["uuid"],
-                                                    latest_version))
     pub_title = pub.value["title"]
     return scholar_meta, datacite_json_list, pub_title
 
