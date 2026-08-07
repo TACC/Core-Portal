@@ -175,7 +175,7 @@ class ProjectsApiView(BaseApiView):
             try:
                 project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=project['id']))
                 project.update(get_ordered_value(project_meta.name, project_meta.value))
-                project["projectId"] = project['id']
+                project["projectId"] = project['id'].split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
             except ProjectMetadata.DoesNotExist:
                 pass
 

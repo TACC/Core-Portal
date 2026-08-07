@@ -11,6 +11,7 @@ from networkx import shortest_path
 from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value, patch_file_obj_entity
 from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
 from portal.apps.projects.tasks import process_file
+from portal.apps.projects.views import get_project_client
 import logging
 
 logger = logging.getLogger(__name__)
@@ -136,7 +137,7 @@ class GenerateImagesView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        client = request.user.tapis_oauth.client
+        client = get_project_client(request.user)
 
         req_body = json.loads(request.body)
         project_id = req_body.get("project_id", "")
@@ -149,7 +150,7 @@ class GenerateImagesView(BaseApiView):
 
         try:
             patch_file_obj_entity(client, project_id, value, path)
-            process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token)
+            process_file.delay(project_id, path.lstrip("/"), client.access_token.access_token, request.user.username)
         except Exception as exc:
             raise ApiException("Error generating images", status=500) from exc
 
