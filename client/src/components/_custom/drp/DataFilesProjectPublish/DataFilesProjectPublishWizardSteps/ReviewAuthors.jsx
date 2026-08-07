@@ -75,14 +75,17 @@ const BibTeXCitation = ({ project, authors }) => {
   const year = new Date(project.publication_date || project.created).getFullYear();
 
   return (
-    <pre>{`@misc{dataset,
-  author = {${authorString}},
-  title = {${project.title}},
-  year = {${year}},
-  publisher = {Digital Porous Media},
-  doi = {},
-  howpublished = {\\url{${projectUrl}}}
-}`}</pre>
+    <pre style={{ whiteSpace: 'pre-wrap' }}>
+      {
+        `@misc{dataset,
+        author = {${authorString}},
+        title = {${project.title}},
+        year = {${year}},
+        publisher = {Digital Porous Media},
+        doi = {},
+        howpublished = {\\url{${projectUrl}}}
+      }`}
+    </pre>
   );
 };
 
