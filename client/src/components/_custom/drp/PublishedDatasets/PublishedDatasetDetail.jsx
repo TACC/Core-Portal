@@ -12,6 +12,12 @@ import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
+function formatKeywords(keywords) {
+    if (!keywords) return keywords;
+    if (Array.isArray(keywords)) return keywords.join(', ');
+    return keywords;
+}
+
 function formatPublicationLink(link) {
     if (!link) return null;
 
@@ -233,7 +239,7 @@ function PublishedDatasetDetail({ params }) {
                                                     Keywords
                                                 </th>
                                                 <td className={'c-data-list__value'}>
-                                                    {metadata.keywords}
+                                                    {formatKeywords(metadata.keywords)}
                                                 </td>
                                             </tr>
                                         )}
