@@ -131,7 +131,7 @@ class DrpProjectMetadata(DrpMetadataModel):
     project_id: str
     title: str
     description: str = ""
-    license: Optional[str] = None
+    license: Optional[str] = "ODC-BY 1.0"    
     doi: Optional[str] = None
     institution: Optional[str] = None
     keywords: Optional[str | list[str]] = None
