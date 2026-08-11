@@ -53,6 +53,7 @@ matplotlib = "^3.10.0"
 tifffile = "^2025.1.10"
 mysqlclient = "^2.2.7"
 httpx = "^0.28.1"
+imagecodecs = "2025.8.2"
 
 [tool.poetry.group.dev]
 optional = true

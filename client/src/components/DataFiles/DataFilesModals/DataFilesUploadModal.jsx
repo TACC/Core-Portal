@@ -34,7 +34,6 @@ const DataFilesUploadModal = ({ className, layout }) => {
   };
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
-
   const maxSizeLabel = useSelector(
     (state) => state.workbench.config.uploadModalMaxSizeLabel
   );

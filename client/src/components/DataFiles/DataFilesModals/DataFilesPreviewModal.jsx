@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 import { Niivue } from '@niivue/niivue';
-import { useAddonComponents, useModal } from 'hooks/datafiles';
+import { useModal, useAddonComponents } from 'hooks/datafiles';
 
 const NiiVue = ({ imageUrl, fileName }) => {
   const canvas = useRef();
@@ -103,7 +103,7 @@ const DataFilesPreviewModal = () => {
         File Preview: {params.name}
       </ModalHeader>
       <ModalBody className={`${styles.root} ${styles['modal-body']}`}>
-        {DataFilesPreviewModalAddon && !isLoading && params.scheme === 'projects' && (
+        {DataFilesPreviewModalAddon && params.scheme === 'projects' && (
           <DataFilesPreviewModalAddon metadata={params.metadata} />
         )}
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
@@ -132,11 +132,7 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <div
-            className={`${styles.error} ${
-              DataFilesPreviewModalAddon ? styles['error-condensed'] : ''
-            }`}
-          >
+          <div className={styles.error}>
             <SectionMessage type="warning" className={styles['error-message']}>
               {error}
             </SectionMessage>
