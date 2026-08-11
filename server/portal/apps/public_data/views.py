@@ -41,6 +41,7 @@ class IndexView(TemplateView):
             context['dc_context'] = [json.dumps(ctx) for ctx in datacite_context]
             context['scholar_context'] = scholar_context
             context['citation_title'] = f"{kwargs['project_id']} | {title}"
+            context['publisher'] = settings.PORTAL_PUBLICATION_PUBLISHER
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.
             pass
