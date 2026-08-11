@@ -352,6 +352,9 @@ LOGGING = {
             'formatter': 'metrics',
             'filters': ['portalFilter']
         },
+        "csp_file": {
+            "class": "logging.StreamHandler",
+        },
     },
     'loggers': {
         'django': {
@@ -381,7 +384,12 @@ LOGGING = {
                 'console',
             ],
             'level': 'INFO'
-        }
+        },
+        "csp_reports": {
+            "handlers": ["csp_file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
     },
 }
 

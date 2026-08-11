@@ -28,8 +28,8 @@ from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
 from impersonate import views as impersonate_views
-from portal.views.views import health_check
-from portal.views.views import serve_docs
+from portal.views.views import health_check, serve_docs, csp_report
+
 admin.autodiscover()
 
 urlpatterns = [
@@ -106,7 +106,7 @@ urlpatterns = [
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
     path('user-news/', include('portal.apps.news.urls', namespace='news')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
-
+    path("csp-report/", csp_report, name="csp-report"),
     # portal_messages
     path('api/portal_messages/', include('portal.apps.portal_messages.urls', namespace='portal_messages')),
 

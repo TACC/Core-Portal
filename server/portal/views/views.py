@@ -4,9 +4,31 @@ from django.views.static import serve
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
 
 logger = logging.getLogger(__name__)
 
+@csrf_exempt
+@require_POST
+def csp_report(request):
+    logger = logging.getLogger("csp_reports")
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        # Malformed report body — log raw bytes for debugging, don't 500
+        logger.warning("Malformed CSP report body: %r", request.body[:500])
+        return HttpResponse(status=204)
+
+    # Browsers send either the older `csp-report` wrapper or newer
+    # Reporting API format depending on report-uri vs report-to
+    report = payload.get("csp-report", payload)
+
+    logger.warning("CSP violation: %s", json.dumps(report))
+
+    return HttpResponse(status=204)
 
 def project_version(request):
     try:
@@ -46,3 +68,5 @@ def serve_docs(request, path):
             raise Http404("Directory index not found")
 
     return serve(request, path, document_root=settings.INTERNAL_DOCS_ROOT)
+
+
