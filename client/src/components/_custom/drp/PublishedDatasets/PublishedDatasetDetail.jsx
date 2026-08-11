@@ -13,6 +13,12 @@ import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
+function formatKeywords(keywords) {
+    if (!keywords) return keywords;
+    if (Array.isArray(keywords)) return keywords.join(', ');
+    return keywords;
+}
+
 function formatPublicationLink(link) {
     if (!link) return null;
 
@@ -189,27 +195,17 @@ function PublishedDatasetDetail({ params }) {
                                     <tbody>
                                         <tr>
                                             <th className={'c-data-list__key'}>
-                                                Author
+                                                Authors
                                             </th>
                                             <td className={'c-data-list__value'}>
-                                                {metadata.authors[0].first_name} {metadata.authors[0].last_name} {metadata.institution ? `(${metadata.institution})` : ''}
+                                                {metadata.authors.map((author, index) => (
+                                                    <>
+                                                        {index > 0 && <br />}
+                                                        {author.first_name} {author.last_name} {metadata.institution ? `(${metadata.institution})` : ''}
+                                                    </>
+                                                ))}
                                             </td>
                                         </tr>
-                                        {metadata.authors.length > 1 && (
-                                            <tr>
-                                                <th className={'c-data-list__key'}>
-                                                    Collaborators
-                                                </th>
-                                                <td className={'c-data-list__value'}>
-                                                    {metadata.authors.slice(1).map((author, index) => (
-                                                        <>
-                                                            {index > 0 && <br />}
-                                                            {`${author.first_name} ${author.last_name}`}
-                                                        </>
-                                                    ))}
-                                                </td>
-                                            </tr>
-                                        )}
                                         <tr>
                                             <th className={'c-data-list__key'}>
                                                 Published
@@ -244,7 +240,7 @@ function PublishedDatasetDetail({ params }) {
                                                     Keywords
                                                 </th>
                                                 <td className={'c-data-list__value'}>
-                                                    {metadata.keywords}
+                                                    {formatKeywords(metadata.keywords)}
                                                 </td>
                                             </tr>
                                         )}

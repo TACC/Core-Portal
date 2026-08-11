@@ -1,4 +1,3 @@
-import base64
 import os
 import io
 from urllib.parse import quote
@@ -14,7 +13,6 @@ from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
-from portal.apps.projects.tasks import process_file
 from tapipy.errors import BaseTapyException
 from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node,
                                                                                patch_file_association, remove_file_obj_by_path)
@@ -543,16 +541,10 @@ def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
 
         if parent_node and parent_node['id'] != 'NODE_ROOT':
             add_file_associations(parent_node['uuid'], [file_obj])
-        else: 
+        else:
             # Add file association to root node if no parent node/entity exists
             root_node = get_root_node(system)
             add_file_associations(root_node['uuid'], [file_obj])
-
-        # additional processing for files
-        if metadata.get('is_advanced_image_file', None):
-            encoded_file = base64.b64encode(uploaded_file.read()).decode('utf-8')
-            uploaded_file.seek(0)
-            transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token, encoded_file))
 
     upload_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/{system}/{dest_path.lstrip('/')}"
     headers = {'x-tapis-token': client.get_access_jwt(),
@@ -676,12 +668,7 @@ def upload_file_metadata(client, system, path, file_name, file_size, metadata, *
 
         if parent_node and parent_node['id'] != 'NODE_ROOT':
             add_file_associations(parent_node['uuid'], [file_obj])
-        else: 
+        else:
             # Add file association to root node if no parent node/entity exists
             root_node = get_root_node(system)
             add_file_associations(root_node['uuid'], [file_obj])
-
-        # additional processing for files
-        if metadata.get('is_advanced_image_file', None):
-            transaction.on_commit(lambda: process_file.delay(file_obj.system, file_obj.path, client.access_token.access_token))
-

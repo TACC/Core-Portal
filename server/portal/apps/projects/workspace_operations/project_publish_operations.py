@@ -99,11 +99,11 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
     publication_reviewers = get_user_model().objects.filter(groups__name=settings.PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME).values_list('username', flat=True)
 
     with transaction.atomic():
-        # Remove admin from source workspace
-        user_client.systems.unShareSystem(systemId=source_system_id, users=[portal_admin_username])
-        user_client.systems.revokeUserPerms(systemId=source_system_id, userName=portal_admin_username, permissions=["READ", "MODIFY", "EXECUTE"])
-        user_client.files.deletePermissions(systemId=source_system_id, username=portal_admin_username, path="/")
-        logger.info(f'Removed service account from workspace {source_workspace_id}')
+        # Commented out cleanup to prevent breaking admin role functionality
+        # user_client.systems.unShareSystem(systemId=source_system_id, users=[portal_admin_username])
+        # user_client.systems.revokeUserPerms(systemId=source_system_id, userName=portal_admin_username, permissions=["READ", "MODIFY", "EXECUTE"])
+        # user_client.files.deletePermissions(systemId=source_system_id, username=portal_admin_username, path="/")
+        # logger.info(f'Removed service account from workspace {source_workspace_id}')
 
         # Add reviewers to review workspace
         from portal.apps.projects.workspace_operations.shared_workspace_operations import add_user_to_workspace
@@ -152,7 +152,7 @@ def archive_publication_files(project_id: str):
     job_body = {
         "name": f"{settings.PORTAL_NAMESPACE.lower()}-archive-publication-{project_id}",
         "appId": settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID,
-        "appVersion": "0.0.1",
+        "appVersion": "0.0.2",
         "description": f"Archive {settings.PORTAL_NAMESPACE} publication",
         "fileInputs": [],
         "parameterSet": {
@@ -166,6 +166,14 @@ def archive_publication_files(project_id: str):
                 {
                     "key": "projectId",
                     "value": project_id
+                },
+                {
+                    "key": "ranchSystemId",
+                    "value": "digitalrocks.ranch.test",  # or final Ranch system ID
+                },
+                {
+                    "key": "ranchArchiveRootDir",
+                    "value": "/",
                 }
             ],
         },

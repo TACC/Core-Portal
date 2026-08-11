@@ -40,7 +40,8 @@ def conf_raw(img, file):
 def conf_tiff(file):
     with io.BytesIO(file) as buffer:
         image = tiff.imread(buffer)
-    return image
+        scaled_image = binary_correction(image)
+    return scaled_image
 
 def binary_correction(img):
     logger.debug('Correcting for Binary values...')
@@ -80,7 +81,7 @@ def create_thumbnail(img):
     # TODO: Swap color mapping if image is bitmap/8bit
     # plt.set_cmap('gray') if img.invert_colors else plt.set_cmap('Greys')
     plt.set_cmap('Greys')
-    if depth_slice:
+    if depth_slice is not None:
         logger.debug('Creating Thumbnail from 3D tif')
         ax.imshow(img[depth_slice,:,:], aspect='equal', vmin=0, vmax=255)
     else:
@@ -172,7 +173,7 @@ def create_animation(img):
     if img.shape[0] < 100:
         slicesave = 1
     else:
-        slicesave = round((img.shape[0] / 100) * 1)
+        slicesave = max(1, round((img.shape[0] / 100) * 1))
 
     for i in range(1, img.shape[0], slicesave):
         sl = img[i, :, :]
