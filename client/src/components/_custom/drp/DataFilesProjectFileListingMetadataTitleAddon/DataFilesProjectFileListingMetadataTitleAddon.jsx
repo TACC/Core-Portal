@@ -6,6 +6,7 @@ import { Button, LoadingSpinner } from '_common';
 import { fetchUtil } from 'utils/fetchUtil';
 import { useFileListing } from 'hooks/datafiles';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
+import { formatDataType } from '../utils/utils';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({
   folderMetadata,
@@ -70,13 +71,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
     }
   };
 
-  // Function to format the data_type value from snake_case to Label Case i.e. origin_data -> Origin Data
-  const formatDatatype = (data_type) =>
-    data_type
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
   return (
     <>
       {loading ? (
@@ -85,7 +79,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
         <>
           {folderMetadata.name}
           <span className={styles['dataTypeBox']}>
-            {formatDatatype(folderMetadata.data_type)}
+            {formatDataType(folderMetadata.data_type)}
           </span>
           {canEditDataset && (
             <Button
