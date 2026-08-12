@@ -1,21 +1,6 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { fetchUtil } from 'utils/fetchUtil';
-
-export type TFormField = {
-  name: string;
-  label?: string;
-  type?: string;
-  options?: { value: string; label: string; [key: string]: unknown }[];
-  optgroups?: { options: { value: string; label: string }[] }[];
-  validation?: { required?: boolean; min?: number; max?: number };
-  fields?: TFormField[];
-  defaultValue?: unknown;
-  [key: string]: unknown;
-};
-
-export type TFormDefinition = {
-  form_fields: TFormField[];
-};
+import { TFormDefinition } from 'utils/types';
 
 // Fetch a form definition by name from the forms API
 export const fetchForm = (formName: string): Promise<TFormDefinition> =>
