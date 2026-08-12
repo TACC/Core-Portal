@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { Modal, ModalHeader, ModalBody, ModalFooter, FormText } from 'reactstrap';
 import { Form, Formik } from 'formik';
-import { fetchUtil } from 'utils/fetchUtil';
 import { Button, LoadingSpinner, Section } from '_common';
 import { DynamicForm } from '_common/Form/DynamicForm';
-import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
+import { useSelectedFiles, useFileListing, useForm } from 'hooks/datafiles';
 import { ToolbarButton } from '../../../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import styles from './DataFilesToolbarAddon.module.scss';
 
@@ -36,20 +34,7 @@ const DataFilesToolbarAddon = () => {
     !is_review_project &&
     !is_published_project;
 
-  const getEditFileForm = async () => {
-    const response = await fetchUtil({
-      url: 'api/forms',
-      params: {
-        form_name: 'EDIT_FILE',
-      },
-    });
-
-    return response;
-  };
-
-  const { data: form, isLoading } = useQuery({
-    queryKey: ['form-edit-file'],
-    queryFn: getEditFileForm,
+  const { data: form, isLoading } = useForm('EDIT_FILE', {
     enabled: isModalOpen && !isTiff,
   });
 

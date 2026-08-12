@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUtil } from 'utils/fetchUtil';
+import { fetchForm } from 'hooks/datafiles';
 
 const useDrpDatasetModals = (
   projectId,
@@ -18,16 +19,6 @@ const useDrpDatasetModals = (
     sampleUUID = folderData.sample;
   }
 
-  const getFormFields = async (formName) => {
-    const response = await fetchUtil({
-      url: 'api/forms',
-      params: {
-        form_name: formName,
-      },
-    });
-    return response;
-  };
-
   const getDatasets = async (projectId, portalName, getOriginData = false) => {
     const response = await fetchUtil({
       url: `api/${portalName.toLowerCase()}`,
@@ -44,7 +35,7 @@ const useDrpDatasetModals = (
 
   const createSampleModal = useCallback(
     async (formName, selectedFile = null) => {
-      const form = await getFormFields(formName);
+      const form = await fetchForm(formName);
 
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
@@ -59,7 +50,7 @@ const useDrpDatasetModals = (
 
   const createOriginDataModal = useCallback(
     async (formName, selectedFile = null) => {
-      const form = await getFormFields(formName);
+      const form = await fetchForm(formName);
       const { samples } = await getDatasets(projectId, portalName);
 
       form.form_fields.map((field) => {
@@ -95,7 +86,7 @@ const useDrpDatasetModals = (
 
   const createAnalysisDataModal = useCallback(
     async (formName, selectedFile = null) => {
-      const form = await getFormFields(formName);
+      const form = await fetchForm(formName);
       const { samples, origin_data: originDatasets } = await getDatasets(
         projectId,
         portalName,

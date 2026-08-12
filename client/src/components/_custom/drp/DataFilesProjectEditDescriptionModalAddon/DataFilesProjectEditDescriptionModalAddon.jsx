@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUtil } from 'utils/fetchUtil';
 import { DynamicForm } from '_common/Form/DynamicForm';
+import { useForm } from 'hooks/datafiles';
 import { useSelector } from 'react-redux';
 import { useFormikContext } from 'formik';
 import * as Yup from 'yup';
@@ -10,26 +9,7 @@ import styles from './DataFilesProjectEditDescriptionModalAddon.module.scss';
 const DataFilesProjectEditDescriptionModalAddon = ({ setValidationSchema }) => {
   const { setFieldValue } = useFormikContext();
 
-  const getEditProjectFormAddon = async () => {
-    const response = await fetchUtil({
-      url: '/api/forms',
-      params: {
-        form_name: 'EDIT_PROJECT_ADDON',
-      },
-    });
-
-    return response;
-  };
-
-  const useEditProjectFormAddon = () => {
-    const query = useQuery({
-      queryKey: ['form-edit-project'],
-      queryFn: getEditProjectFormAddon,
-    });
-    return query;
-  };
-
-  const { data: form, isLoading } = useEditProjectFormAddon();
+  const { data: form, isLoading } = useForm('EDIT_PROJECT_ADDON');
 
   const { metadata } = useSelector((state) => state.projects);
 
