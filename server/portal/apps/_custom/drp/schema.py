@@ -8,7 +8,6 @@ from portal.apps._custom.drp.models import (
     DrpAnalysisDatasetMetadata,
     DrpFileMetadata,
 )
-from portal.apps.projects.schema_models.base_metadata import PartialTrashEntity
 
 SCHEMA_MAPPING = {
     constants.PROJECT: DrpProjectMetadata,
@@ -17,5 +16,4 @@ SCHEMA_MAPPING = {
     constants.DIGITAL_DATASET: DrpOriginDatasetMetadata,
     constants.ANALYSIS_DATA: DrpAnalysisDatasetMetadata,
     constants.FILE: DrpFileMetadata,
-    constants.TRASH: PartialTrashEntity,
 }

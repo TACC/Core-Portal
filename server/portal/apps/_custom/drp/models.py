@@ -3,22 +3,22 @@ from pydantic import ConfigDict, NonNegativeInt, NonNegativeFloat
 
 from portal.apps.projects.schema_models.base_metadata import (
     BaseMetadataModel,
+    BaseProjectMetadata,
+    BaseFileMetadata,
     FileObj,
 )
 
 """
 Pydantic models for DRP Metadata.
 """
-class DrpFileMetadata(BaseMetadataModel):
+class DrpFileMetadata(BaseFileMetadata):
     """Model for DRP File Metadata"""
 
     model_config = ConfigDict(
         extra="forbid",
     )
 
-    data_type: Literal['file']
     is_advanced_image_file: Optional[bool] = False
-    name: Optional[str] = None
     image_type: Optional[Literal[
         '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real',
         '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
@@ -32,87 +32,8 @@ class DrpFileMetadata(BaseMetadataModel):
     use_binary_correction: Optional[bool] = None
 
 
-class DrpProjectRelatedDatasets(BaseMetadataModel):
-    """Model for DRP Project Related Datasets"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-    dataset_title: str
-    dataset_description: Optional[str] = None
-    dataset_link: str = ""
-
-
-class DrpProjectRelatedSoftware(BaseMetadataModel):
-    """Model for DRP Project Related Software"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-    software_title: str
-    software_description: str = ""
-    software_link: str = ""
-
-
-class DrpProjectRelatedPublications(BaseMetadataModel):
-    """Model for DRP Project Related Publications"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-    publication_type: Literal[
-        "context",
-        "linked_dataset",
-        "cited_by"
-    ]
-    publication_title: str
-    publication_link: str
-    publication_author: Optional[str] = None
-    publication_doi: Optional[str] = None
-    publication_date_of_publication: Optional[str] = None
-    publication_publisher: Optional[str] = None
-    publication_description: Optional[str] = None
-
-
-class DrpGuestUser(BaseMetadataModel):
-    """Model for DRP Guest User"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-    first_name: str
-    last_name: str
-    email: str
-
-
-class DrpProjectMetadata(BaseMetadataModel):
-    """Model for DRP Project Metadata"""
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-    project_id: str
-    title: str
-    description: str = ""
-    license: Optional[str] = "ODC-BY 1.0"    
-    doi: Optional[str] = None
-    institution: Optional[str] = None
-    keywords: Optional[str | list[str]] = None
-    related_datasets: list[DrpProjectRelatedDatasets] = []
-    related_software: list[DrpProjectRelatedSoftware] = []
-    related_publications: list[DrpProjectRelatedPublications] = []
-    publication_date: Optional[str] = None
-    authors: list[dict] = []
-    file_objs: list[FileObj] = []
-    is_review_project: Optional[bool] = None
-    is_published_project: Optional[bool] = None
-    guest_users: list[DrpGuestUser] = []
-    cover_image: Optional[str] = None
+class DrpProjectMetadata(BaseProjectMetadata):
+    license: Optional[str] = "ODC-BY 1.0"
 
 
 class DrpDatasetMetadata(BaseMetadataModel):
