@@ -11,6 +11,7 @@ import DataDisplay from '../../utils/DataDisplay/DataDisplay';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFileListing } from 'hooks/datafiles';
 import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
+import { formatDataType } from '../../utils/utils';
 import { fetchUtil } from 'utils/fetchUtil';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { EXCLUDED_METADATA_FIELDS } from '../../constants/metadataFields';
@@ -205,12 +206,6 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     }
   };
 
-  const formatDatatype = (data_type) =>
-    data_type
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
   const renderTree = (node) => {
     
     let treeItemSlots; 
@@ -242,7 +237,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                 {node.label ?? node.name}
                 {node.metadata.data_type && (
                   <span className={styles['data-type-box']}>
-                    {formatDatatype(node.metadata.data_type)}
+                    {formatDataType(node.metadata.data_type)}
                   </span>
                 )}
               </div>
@@ -275,7 +270,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                       type="link"
                       onClick={() => onGoTo(node)}
                     >
-                      Go To {formatDatatype(node.metadata.data_type)}
+                      Go To {formatDataType(node.metadata.data_type)}
                     </Button>
                   )}
                 </div>

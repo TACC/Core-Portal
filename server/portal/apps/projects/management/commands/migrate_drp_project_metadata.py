@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 from portal.apps.projects.migration_utils.sql_db_utils import (get_project_by_id, query_advanced_file_metadata, query_analysis_data, 
                                                                query_files, query_origin_data, query_projects, query_published_projects, 
                                                                query_related_publications, query_authors, query_samples, query_user)
-from portal.apps._custom.drp.models import DrpProjectRelatedPublications
+from portal.apps.projects.schema_models.base_metadata import ProjectRelatedPublications
 from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
 from portal.apps.projects.schema_models import constants
 from portal.apps._custom.drp import metadata_mappings
@@ -199,7 +199,7 @@ class Command(BaseCommand):
             if not pub_link:
                 print(f'No related publication link found for {pub["title"]}')
 
-            migrated_related_pubs.append(DrpProjectRelatedPublications(
+            migrated_related_pubs.append(ProjectRelatedPublications(
                 publication_type='cited_by',
                 publication_title=pub['title'],
                 publication_link=pub_link if pub_link else '',

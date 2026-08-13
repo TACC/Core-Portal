@@ -32,6 +32,13 @@ export const findNodeInTreeById = (node, id) => {
     return null;
 };
 
+// Format a snake_case data_type into Label Case, e.g. origin_data -> Origin Data
+export const formatDataType = (data_type) =>
+    data_type
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
 export const getTooltipDescription = (key) => {
     switch (key) {
         case 'sample':

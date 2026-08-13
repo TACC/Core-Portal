@@ -62,17 +62,65 @@ class PartialEntityWithFiles(BaseMetadataModel):
     file_objs: list[FileObj] = []
 
 
-class BaseProjectMetadata(BaseMetadataModel):
-    """Generic project entity metadata."""
+class ProjectRelatedDatasets(BaseMetadataModel):
+    """A dataset related to a project."""
 
-    model_config = ConfigDict(extra="ignore")
+    dataset_title: str
+    dataset_description: Optional[str] = None
+    dataset_link: str = ""
+
+
+class ProjectRelatedSoftware(BaseMetadataModel):
+    """Software related to a project."""
+
+    software_title: str
+    software_description: str = ""
+    software_link: str = ""
+
+
+class ProjectRelatedPublications(BaseMetadataModel):
+    """A publication related to a project."""
+
+    publication_type: Literal["context", "linked_dataset", "cited_by"]
+    publication_title: str
+    publication_link: str
+    publication_author: Optional[str] = None
+    publication_doi: Optional[str] = None
+    publication_date_of_publication: Optional[str] = None
+    publication_publisher: Optional[str] = None
+    publication_description: Optional[str] = None
+
+
+class GuestUser(BaseMetadataModel):
+    """A guest collaborator granted access to a project."""
+
+    first_name: str
+    last_name: str
+    email: str
+
+
+class BaseProjectMetadata(BaseMetadataModel):
+    """Generic project entity metadata.
+
+    Holds the full set of standard project fields (all optional beyond
+    project_id/title). Portals can narrow which fields are shown/required via
+    settings_forms.
+    """
 
     project_id: str
     title: str
     description: str = ""
+    license: Optional[str] = None
+    doi: Optional[str] = None
+    institution: Optional[str] = None
     keywords: Optional[str | list[str]] = None
+    related_datasets: list[ProjectRelatedDatasets] = []
+    related_software: list[ProjectRelatedSoftware] = []
+    related_publications: list[ProjectRelatedPublications] = []
+    publication_date: Optional[str] = None
     authors: list[dict] = []
     file_objs: list[FileObj] = []
     is_review_project: Optional[bool] = None
     is_published_project: Optional[bool] = None
+    guest_users: list[GuestUser] = []
     cover_image: Optional[str] = None
