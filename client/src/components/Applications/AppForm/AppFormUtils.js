@@ -452,7 +452,7 @@ export const getDefaultAllocation = (allocationList, portalAlloc) => {
     return portalAlloc;
   }
 
-  return allocationList.length === 1 ? allocationList[0] : '';
+  return allocationList.length > 0 ? allocationList[0] : '';
 };
 
 /**
