@@ -11,6 +11,7 @@ urlpatterns = [
     path('<str:project_id>/system-role/<str:username>/', views.get_system_role),
     path('<str:project_id>/', views.ProjectInstanceApiView.as_view(), name='project'),
     path('<str:project_id>/entities/create', views.ProjectEntityView.as_view()),
+    path('<str:project_id>/tree/', views.ProjectTreeView.as_view(), name='project_tree'),
     path('<str:root_system>', views.ProjectsApiView.as_view()),
     path('', views.ProjectsApiView.as_view(), name='projects_api')
 ]

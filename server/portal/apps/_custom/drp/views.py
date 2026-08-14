@@ -6,9 +6,7 @@ from portal.exceptions.api import ApiException
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
 import networkx as nx
-from networkx import shortest_path
-from portal.apps.projects.workspace_operations.project_meta_operations import get_ordered_value, patch_file_obj_entity
-from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.projects.workspace_operations.project_meta_operations import patch_file_obj_entity
 from portal.apps.projects.tasks import process_file
 from portal.apps.projects.views import get_project_client
 import logging
@@ -50,82 +48,6 @@ class DigitalRocksSampleView(BaseApiView):
 
         return JsonResponse(response_data)
     
-class DigitalRocksTreeView(BaseApiView):
-        
-    @staticmethod
-    def _get_entity(uuid):
-        return ProjectMetadata.objects.get(uuid=uuid)
-    
-    def get(self, request):
-
-        project_id = request.GET.get('project_id')
-        
-        # Enhanced logging for debugging
-        logger.info(
-            f'DigitalRocksTreeView request - '
-            f'project_id: {project_id}, '
-            f'user: {request.user.username if request.user.is_authenticated else "anonymous"}, '
-            f'user_agent: {request.META.get("HTTP_USER_AGENT", "unknown")}, '
-            f'referer: {request.META.get("HTTP_REFERER", "none")}, '
-            f'ip: {request.META.get("REMOTE_ADDR", "unknown")}'
-        )
-
-        if project_id.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX):
-            full_project_id = project_id
-        else:
-            full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
-
-        try:
-            graph_model = ProjectMetadata.objects.get(
-                name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
-            )
-        except ProjectMetadata.DoesNotExist:
-            logger.error(
-                f'Project metadata does not exist for project ID: {full_project_id} '
-                f'(original: {project_id}), user: {request.user.username if request.user.is_authenticated else "anonymous"}'
-            )
-            return JsonResponse({'error': 'Project metadata does not exist'}, status=404)
-
-        graph = nx.node_link_graph(graph_model.value)
-
-        graph = remove_trash_nodes(graph)
-
-        for node_id in graph.nodes:
-
-            node = graph.nodes[node_id]
-
-            # Get the path from NODE_ROOT to the current node excluding the root
-            if nx.has_path(graph, 'NODE_ROOT', node_id):
-                path_nodes = shortest_path(graph, 'NODE_ROOT', node_id)[1:]
-                node['path'] = '/'.join(graph.nodes[parent]['label'] for parent in path_nodes if 'label' in graph.nodes[parent])
-            else:
-                node['path'] = ""
-
-            if node.get('value'):
-                metadata = get_ordered_value(node['name'], node['value'])
-                file_objs = node['value'].get('fileObjs', [])
-            else:
-                node_uuid = node.get("uuid")
-                entity = self._get_entity(node_uuid)
-                metadata = get_ordered_value(entity.name, entity.value)
-                file_objs = entity.value.get('fileObjs', [])
-
-            file_objs_dict = []
-
-            for file_obj in file_objs:
-
-                file_objs_dict.append({
-                    **file_obj,
-                    'id': file_obj.get('uuid'),
-                    'metadata': get_ordered_value(constants.FILE, file_obj.get('value'))
-                })
-
-            node['metadata'] = metadata
-            node['fileObjs'] = file_objs_dict
-
-        tree = nx.tree_data(graph, "NODE_ROOT")
-
-        return JsonResponse([tree], safe=False)
 
 
 class GenerateImagesView(BaseApiView):

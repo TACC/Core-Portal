@@ -221,6 +221,57 @@ def remove_trash_nodes(graph: nx.DiGraph):
         graph.remove_nodes_from(nodes_to_remove)
     return graph
 
+def build_project_tree(full_project_id: str):
+    """Build a nested tree (a list with a single root node) from a project's
+    metadata graph, attaching each node's ordered metadata and file objects.
+    """
+
+    from portal.apps.projects.workspace_operations.project_meta_operations import (
+        get_ordered_value,
+    )
+
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
+    )
+
+    graph = nx.node_link_graph(graph_model.value)
+    graph = remove_trash_nodes(graph)
+
+    for node_id in graph.nodes:
+        node = graph.nodes[node_id]
+
+        # Build the node's path from the labels of its ancestors (excluding root).
+        if nx.has_path(graph, 'NODE_ROOT', node_id):
+            path_nodes = nx.shortest_path(graph, 'NODE_ROOT', node_id)[1:]
+            node['path'] = '/'.join(
+                graph.nodes[parent]['label']
+                for parent in path_nodes
+                if 'label' in graph.nodes[parent]
+            )
+        else:
+            node['path'] = ""
+
+        if node.get('value'):
+            metadata = get_ordered_value(node['name'], node['value'])
+            file_objs = node['value'].get('fileObjs', [])
+        else:
+            entity = ProjectMetadata.objects.get(uuid=node.get('uuid'))
+            metadata = get_ordered_value(entity.name, entity.value)
+            file_objs = entity.value.get('fileObjs', [])
+
+        node['metadata'] = metadata
+        node['fileObjs'] = [
+            {
+                **file_obj,
+                'id': file_obj.get('uuid'),
+                'metadata': get_ordered_value(constants.FILE, file_obj.get('value')),
+            }
+            for file_obj in file_objs
+        ]
+
+    return [nx.tree_data(graph, "NODE_ROOT")]
+
+
 def get_path_uuid_mapping(project_id: str):
     """Return a mapping of node paths to UUIDs for a project graph."""
     graph_model = ProjectMetadata.objects.get(
