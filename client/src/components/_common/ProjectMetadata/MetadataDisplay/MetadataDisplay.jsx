@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Section, SectionContent, LoadingSpinner, Button } from '_common';
-import { useLocation, Link } from 'react-router-dom';
-import styles from './DataDisplay.module.scss';
+import { Link, useLocation } from 'react-router-dom';
+import styles from './MetadataDisplay.module.scss';
 import { useDispatch } from 'react-redux';
 import { formatLabel } from 'utils/formatLabel';
-import { findNodeInTree } from '../utils';
+import { findNodeInTree } from 'utils/tree';
 
 const processModalViewableData = (data) => {
   const createViewDataModal = (key, value) => {
@@ -48,21 +48,33 @@ const processCoverImage = (data) => {
   ];
 };
 
-const DataDisplay = ({
+// Generic key/value metadata display.
+const MetadataDisplay = ({
   data,
   tree,
   system,
   path,
-  excludeKeys,
+  excludeKeys = [],
   modalData,
   coverImage,
+  entityLinks = [],
 }) => {
-  //filter out empty values and unwanted keys
+  const location = useLocation();
+
+  // Only show fields that have a value set: skip empty/unset values, excluded
+  // keys, and non-primitive values (objects/arrays can't be shown as a value).
   let processedData = Object.entries(data)
-    .filter(([key, value]) => value !== '' && !excludeKeys.includes(key))
+    .filter(
+      ([key, value]) =>
+        value !== '' &&
+        value !== null &&
+        value !== undefined &&
+        typeof value !== 'object' &&
+        !excludeKeys.includes(key)
+    )
     .map(([key, value]) => ({
       label: formatLabel(key),
-      value: typeof value === 'string' ? formatLabel(value) : value,
+      value: typeof value === 'string' ? formatLabel(value) : String(value),
     }));
 
   if (coverImage) {
@@ -83,9 +95,9 @@ const DataDisplay = ({
       if (entity) {
         const index = location.pathname.indexOf(system) + system.length;
         const url = `${location.pathname.slice(0, index)}/${entity.path}`;
-  
+
         processedData = processedData.filter((entry) => entry.label !== label);
-  
+
         processedData.unshift({
           label,
           value: (
@@ -98,10 +110,9 @@ const DataDisplay = ({
     }
   };
 
-  // Apply to digital_dataset and sample. If path is provided, we can add the links.
+  // Turn configured UUID-valued fields into links to their tree entities.
   if (path) {
-    addEntityLink('digital_dataset', 'Digital Dataset');
-    addEntityLink('sample', 'Sample');
+    entityLinks.forEach(({ key, label }) => addEntityLink(key, label));
   }
   // Divide processed data into chunks for two-column layout display
   const chunkSize = Math.ceil(processedData.length / 2);
@@ -132,10 +143,11 @@ const DataDisplay = ({
   );
 };
 
-DataDisplay.propTypes = {
+MetadataDisplay.propTypes = {
   data: PropTypes.object.isRequired,
   path: PropTypes.string,
   excludeKeys: PropTypes.array,
+  entityLinks: PropTypes.array,
 };
 
-export default DataDisplay;
+export default MetadataDisplay;

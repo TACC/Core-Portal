@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Button, SectionTableWrapper, Section } from '_common';
 import styles from './DataFilesProjectPublishWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProjectTreeView } from './ProjectTreeView';
+import { ProjectTree } from '../../DataFilesProjectTree/DataFilesProjectTree';
 import { useFormikContext } from 'formik';
 
 export const ReviewProjectStructure = ({ projectTree }) => {
@@ -87,7 +87,7 @@ export const ReviewProjectStructure = ({ projectTree }) => {
             </li>
           </ul>
         </div>
-        <ProjectTreeView projectId={projectId} readOnly={!canEdit} />
+        <ProjectTree projectId={projectId} readOnly={!canEdit} />
       </Section>
     </SectionTableWrapper>
   );

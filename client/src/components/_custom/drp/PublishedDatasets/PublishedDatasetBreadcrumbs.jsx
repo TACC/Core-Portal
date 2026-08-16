@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import CMSBreadcrumbs from '_common/CMSBreadcrumbs';
 import * as ROUTES from '../../../../constants/routes';
-import { findNodeInTreeById } from '../utils/utils';
+import { findNodeInTreeById } from 'utils/tree';
 
 const PublishedDatasetBreadcrumbs = ({ params }) => {
   

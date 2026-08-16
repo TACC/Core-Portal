@@ -1,21 +1,17 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import styles from './DataFilesProjectFileListingMetadataAddon.module.scss';
-import { useFileListing } from 'hooks/datafiles';
-import DataDisplay from '../utils/DataDisplay/DataDisplay';
-import { formatDate } from 'utils/timeFormat';
-import { MLACitation } from '_common/Citations/Citations';
-import { Button, ShowMore } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFileListing } from 'hooks/datafiles';
+import { ProjectMetadataView } from '_common/ProjectMetadata';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
-const DataFilesProjectFileListingMetadataAddon = ({
-  folderMetadata,
-  metadata,
-  system,
-  path,
-  showCitation,
-}) => {
+const ENTITY_LINKS = [
+  { key: 'digital_dataset', label: 'Digital Dataset' },
+  { key: 'sample', label: 'Sample' },
+];
+
+const DataFilesProjectFileListingMetadataAddon = (props) => {
+  const { system } = props;
   const dispatch = useDispatch();
 
   const { portalName } = useSelector((state) => state.workbench);
@@ -31,112 +27,23 @@ const DataFilesProjectFileListingMetadataAddon = ({
     }
   }, [system, portalName]);
 
-  const getProjectMetadata = ({
-    publication_date,
-    created,
-    license,
-    doi,
-    keywords,
-    cover_image,
-    file_url,
-  }) => {
-    const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-    const dateLabel = publication_date ? 'Publication Date' : 'Created';
-
-    return {
-      [dateLabel]: new Date(publication_date || created).toLocaleDateString(
-        'en-US',
-        dateOptions
-      ),
-      license: license ?? 'None',
-      ...(doi && { doi }),
-      ...(keywords && { keywords: Array.isArray(keywords) ? keywords.join(', ') : keywords }),
-      ...(cover_image && { cover_image }),
-      ...(file_url && { file_url }),
-    };
-  };
-
-  const getProjectModalMetadata = (metadata) => {
-    const fields = [
-      'related_publications',
-      'related_datasets',
-      'related_software',
-    ];
-    return fields.reduce((formattedMetadata, field) => {
-      if (metadata[field] && metadata[field].length > 0) {
-        formattedMetadata[field] = metadata[field];
-      }
-      return formattedMetadata;
-    }, {});
-  };
-
-  const createProjectCitationModal = (project) => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'projectCitation',
-        props: { project },
-      },
-    });
-  };
+  if (loading || !tree) {
+    return null;
+  }
 
   return (
-    <>
-      {!loading && tree &&
-        (folderMetadata ? (
-          <>
-            {!!folderMetadata.description && (
-              <ShowMore className={styles['addon-description']}>
-                {folderMetadata.description}
-              </ShowMore>
-            )}
-            <DataDisplay
-              data={folderMetadata}
-              tree={tree}
-              system={system}
-              path={path}
-              excludeKeys={EXCLUDED_METADATA_FIELDS}
-            />
-          </>
-        ) : (
-          <>
-            {showCitation && (
-              <div className={styles['citation-box']}>
-                <h3>Cite This Data:</h3>
-                <MLACitation project={metadata} authors={metadata.authors} />
-                <div>
-                  <Button
-                    type="link"
-                    className={styles['citation-button']}
-                    onClick={() => createProjectCitationModal(metadata)}
-                  >
-                    View Additional Citations
-                  </Button>
-                </div>
-              </div>
-            )}
-            {!!metadata.description && (
-              <ShowMore className={styles['addon-description']}>
-                {metadata.description}
-              </ShowMore>
-            )}
-            <DataDisplay
-              data={getProjectMetadata(metadata)}
-              tree={tree}
-              system={system}
-              path={path}
-              excludeKeys={EXCLUDED_METADATA_FIELDS}
-              modalData={getProjectModalMetadata(metadata)}
-              coverImage={metadata.cover_image}
-            />
-          </>
-        ))}
-    </>
+    <ProjectMetadataView
+      {...props}
+      tree={tree}
+      entityLinks={ENTITY_LINKS}
+      excludeKeys={EXCLUDED_METADATA_FIELDS}
+    />
   );
 };
 
 DataFilesProjectFileListingMetadataAddon.propTypes = {
   folderMetadata: PropTypes.shape({}),
+  system: PropTypes.string,
 };
 
 export default DataFilesProjectFileListingMetadataAddon;

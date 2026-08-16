@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { MetadataPreview } from '_common/ProjectMetadata';
-import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 
+// Default preview addon: shows a file's metadata in a collapsible section.
 const DataFilesPreviewModalAddon = ({ metadata }) => (
-  <MetadataPreview metadata={metadata} excludeKeys={EXCLUDED_METADATA_FIELDS} />
+  <MetadataPreview metadata={metadata} />
 );
 
 DataFilesPreviewModalAddon.propTypes = {

@@ -1,61 +1,61 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  Button,
-  ShowMore,
-  Section,
-  Icon,
-} from '_common';
+import PropTypes from 'prop-types';
+import { Button, ShowMore, Section, Icon } from '_common';
 import { TreeItem2 as TreeItem, SimpleTreeView } from '@mui/x-tree-view';
-import styles from './DataFilesProjectPublishWizard.module.scss';
-import DataDisplay from '../../utils/DataDisplay/DataDisplay';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFileListing } from 'hooks/datafiles';
-import useDrpDatasetModals from '../../utils/hooks/useDrpDatasetModals';
-import { formatDataType } from '../../utils/utils';
-import { fetchUtil } from 'utils/fetchUtil';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { EXCLUDED_METADATA_FIELDS } from '../../constants/metadataFields';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useFileListing } from 'hooks/datafiles';
+import { formatLabel } from 'utils/formatLabel';
+import { fetchUtil } from 'utils/fetchUtil';
+import MetadataDisplay from '../MetadataDisplay/MetadataDisplay';
+import styles from './ProjectTree.module.scss';
 
 const theme = createTheme({
   components: {
     MuiTreeItem2: {
       styleOverrides: {
         root: {
-          "& > .MuiTreeItem-content.Mui-selected": {
+          '& > .MuiTreeItem-content.Mui-selected': {
             backgroundColor: 'transparent',
-          }
+          },
         },
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 
-export const ProjectTreeView = ({ projectId, readOnly = false }) => {
+/**
+ * Generic project metadata tree with basic functionality: it renders the
+ * project's entity/file tree, navigation, file preview, and each
+ * node's metadata.
+ */
+export const ProjectTree = ({
+  projectId,
+  excludeKeys = [],
+  nodeActions,
+}) => {
   const history = useHistory();
   const location = useLocation();
   const [expandedNodes, setExpandedNodes] = useState([]);
 
   const dispatch = useDispatch();
-  const portalName = useSelector((state) => state.workbench.portalName);
 
   const [tree, setTree] = useState([]);
 
-  const { dynamicFormModal, previewModal, projectTreeModal, metadata } = useSelector((state) => ({
-    dynamicFormModal: state.files.modals.dynamicform,
-    previewModal: state.files.modals.preview,
-    projectTreeModal: state.files.modals.projectTree,
-    metadata: state.projects.metadata,
-  }));
+  const { dynamicFormModal, previewModal, projectTreeModal } = useSelector(
+    (state) => ({
+      dynamicFormModal: state.files.modals.dynamicform,
+      previewModal: state.files.modals.preview,
+      projectTreeModal: state.files.modals.projectTree,
+    })
+  );
 
   const fetchTree = useCallback(async () => {
     if (projectId) {
       try {
         const response = await fetchUtil({
-          url: `api/${portalName.toLowerCase()}/tree`,
-          params: {
-            project_id: projectId,
-          },
+          url: `api/projects/${projectId}/tree/`,
         });
         setTree(response);
       } catch (error) {
@@ -63,7 +63,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
         setTree([]);
       }
     }
-  }, [portalName, projectId]);
+  }, [projectId]);
 
   useEffect(() => {
     // workaround to get updated data after modal closes
@@ -74,11 +74,11 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
 
   const { params } = useFileListing('FilesListing');
 
-  // Helper function to find a node by path and collect all parent node IDs
+  // Find a node by path and collect all parent node IDs.
   const findNodeByPath = (nodes, targetPath, parentIds = []) => {
     if (!nodes || !Array.isArray(nodes)) return null;
 
-    targetPath = targetPath.replace(/\/+$/, '')
+    targetPath = targetPath.replace(/\/+$/, '');
 
     for (const node of nodes) {
       const currentPath = (node.path || '').replace(/\/+$/, '');
@@ -88,15 +88,21 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
         return currentParentIds;
       }
 
-      // search in children
       if (node.children && node.children.length > 0) {
-        const result = findNodeByPath(node.children, targetPath, currentParentIds);
+        const result = findNodeByPath(
+          node.children,
+          targetPath,
+          currentParentIds
+        );
         if (result) return result;
       }
 
-      // search in fileObjs
       if (node.fileObjs && node.fileObjs.length > 0) {
-        const result = findNodeByPath(node.fileObjs, targetPath, currentParentIds);
+        const result = findNodeByPath(
+          node.fileObjs,
+          targetPath,
+          currentParentIds
+        );
         if (result) return result;
       }
     }
@@ -108,14 +114,13 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     if (tree && tree.length > 0) {
       const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
       const baseUrlMatch = location.pathname.match(regex);
-      
+
       if (baseUrlMatch) {
         const baseUrl = baseUrlMatch[0];
         const nodePath = location.pathname.substring(baseUrl.length + 1);
-        
-        // Find the node by path and get all parent IDs
+
         const parentIds = findNodeByPath(tree, nodePath);
-        
+
         if (parentIds && parentIds.length > 0) {
           setExpandedNodes(parentIds);
         } else {
@@ -128,7 +133,6 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   }, [tree, location.pathname]);
 
   const handleNodeToggle = (event, node) => {
-    // Update the list of expanded nodes
     setExpandedNodes((prev) => {
       if (prev.includes(node)) {
         return prev.filter((id) => id !== node);
@@ -137,58 +141,27 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
     });
   };
 
-  const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
-    useDrpDatasetModals(projectId, portalName, false);
-
-  const onEditData = (node) => {
-    const dataType = node.metadata.data_type;
-    // reconstruct editFile to mimic SelectedFile object
-    const editFile = {
-      id: node.id,
-      uuid: node.uuid,
-      metadata: node.metadata,
-      name: node.metadata.name,
-      system: params.system,
-      type: 'dir',
-      path: node.path,
-    };
-    switch (dataType) {
-      case 'sample':
-        createSampleModal('EDIT_SAMPLE_DATA', editFile);
-        break;
-      case 'digital_dataset':
-        createOriginDataModal('EDIT_ORIGIN_DATASET', editFile);
-        break;
-      case 'analysis_data':
-        createAnalysisDataModal('EDIT_ANALYSIS_DATASET', editFile);
-        break;
-      case 'file':
-        // Dispatch an action to toggle the modal for previewing the file
-        dispatch({
-          type: 'DATA_FILES_TOGGLE_MODAL',
-          payload: {
-            operation: 'preview',
-            props: {
-              api: params.api,
-              scheme: params.scheme,
-              system: params.system,
-              path: node.path,
-              name: node.name,
-              href: `tapis://${params.system}/${node.path}`,
-              length: node.length,
-              metadata: node.metadata,
-              useReloadCallback: false,
-            },
-          },
-        });
-        break;
-      default:
-        break;
-    }
+  const onPreviewFile = (node) => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'preview',
+        props: {
+          api: params.api,
+          scheme: params.scheme,
+          system: params.system,
+          path: node.path,
+          name: node.name,
+          href: `tapis://${params.system}/${node.path}`,
+          length: node.length,
+          metadata: node.metadata,
+          useReloadCallback: false,
+        },
+      },
+    });
   };
 
   const onGoTo = (node) => {
-
     const regex = /^.*?\/projects\/[^/]+\/[^/]+/;
     const baseUrl = location.pathname.match(regex)[0];
 
@@ -207,8 +180,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
   };
 
   const renderTree = (node) => {
-    
-    let treeItemSlots; 
+    let treeItemSlots;
 
     if (node.children && node.children.length > 0) {
       treeItemSlots = {
@@ -221,8 +193,20 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
       };
     }
 
+    const isFile = node.metadata.data_type === 'file';
+    const actionButton = isFile ? (
+      <Button
+        className={styles['edit-button']}
+        type="link"
+        onClick={() => onPreviewFile(node)}
+      >
+        View
+      </Button>
+    ) : (
+      nodeActions && nodeActions(node)
+    );
+
     return (
-    <>
       <Section
         key={node.id}
         className={styles['section-project-structure']}
@@ -237,7 +221,7 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
                 {node.label ?? node.name}
                 {node.metadata.data_type && (
                   <span className={styles['data-type-box']}>
-                    {formatDataType(node.metadata.data_type)}
+                    {formatLabel(node.metadata.data_type)}
                   </span>
                 )}
               </div>
@@ -250,39 +234,29 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
             {expandedNodes.includes(node.id) && node.id !== 'NODE_ROOT' && (
               <div className={styles['metadata-description-div']}>
                 <div className={styles['tree-button-div']}>
-                  {(!readOnly || node.metadata.data_type === 'file') && (
-                    <Button
-                      className={styles['edit-button']}
-                      type="link"
-                      onClick={() => onEditData(node)}
-                    >
-                      {!readOnly && node.metadata.data_type !== 'file'
-                        ? 'Edit'
-                        : 'View'}
-                    </Button>
+                  {actionButton && (
+                    <>
+                      {actionButton}
+                      <span className={styles['separator']}>|</span>
+                    </>
                   )}
-                  {(!readOnly || node.metadata.data_type === 'file') && (
-                    <span className={styles['separator']}>|</span>
-                  )}
-                  {(
-                    <Button
-                      className={styles['edit-button']}
-                      type="link"
-                      onClick={() => onGoTo(node)}
-                    >
-                      Go To {formatDataType(node.metadata.data_type)}
-                    </Button>
-                  )}
+                  <Button
+                    className={styles['edit-button']}
+                    type="link"
+                    onClick={() => onGoTo(node)}
+                  >
+                    Go To {formatLabel(node.metadata.data_type)}
+                  </Button>
                 </div>
                 <div className={styles['description']}>
                   <ShowMore className={styles['description-show-more']}>
                     {node.metadata.description}
                   </ShowMore>
-                  <DataDisplay
+                  <MetadataDisplay
                     data={node.metadata}
                     tree={tree[0]}
                     system={projectId}
-                    excludeKeys={EXCLUDED_METADATA_FIELDS}
+                    excludeKeys={excludeKeys}
                   />
                 </div>
               </div>
@@ -302,23 +276,30 @@ export const ProjectTreeView = ({ projectId, readOnly = false }) => {
           </TreeItem>
         </div>
       </Section>
-    </>
-  );
-}
+    );
+  };
 
-  return (tree &&
-  tree.length > 0 && (
-    <ThemeProvider theme={theme}>
-      <SimpleTreeView
-        expandedItems={expandedNodes}
-        onItemClick={handleNodeToggle}
-      >
-        {tree.map((node) => (
-          <React.Fragment key={node.id}>
-            {renderTree(node)}
-          </React.Fragment>
-        ))}
-      </SimpleTreeView>
-    </ThemeProvider>
-  ));
+  return (
+    tree &&
+    tree.length > 0 && (
+      <ThemeProvider theme={theme}>
+        <SimpleTreeView
+          expandedItems={expandedNodes}
+          onItemClick={handleNodeToggle}
+        >
+          {tree.map((node) => (
+            <React.Fragment key={node.id}>{renderTree(node)}</React.Fragment>
+          ))}
+        </SimpleTreeView>
+      </ThemeProvider>
+    )
+  );
 };
+
+ProjectTree.propTypes = {
+  projectId: PropTypes.string,
+  excludeKeys: PropTypes.array,
+  nodeActions: PropTypes.func,
+};
+
+export default ProjectTree;

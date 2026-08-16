@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import * as Yup from 'yup';
 import styles from './DataFilesManageProjectModalAddon.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSystemRole } from '../../../DataFiles/DataFilesProjectMembers/_cells/SystemRoleSelector';
+import { useSystemRole } from '../../DataFilesProjectMembers/_cells/SystemRoleSelector';
 import { Input, Label } from 'reactstrap';
 import { FieldArray, Form, Formik, useFormikContext } from 'formik';
 import {
