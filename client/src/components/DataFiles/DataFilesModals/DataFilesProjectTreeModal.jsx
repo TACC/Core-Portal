@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectTreeModal.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
-import { ProjectTree as CoreProjectTree } from '_common/ProjectMetadata';
 
 const DataFilesProjectTreeModal = () => {
   const dispatch = useDispatch();
@@ -15,7 +14,6 @@ const DataFilesProjectTreeModal = () => {
   const props = useSelector((state) => state.files.modalProps['projectTree']);
 
   const { DataFilesProjectTree } = useAddonComponents({ portalName });
-  const ProjectTree = DataFilesProjectTree ?? CoreProjectTree;
 
   const toggle = useCallback(() => {
     dispatch({
@@ -37,10 +35,12 @@ const DataFilesProjectTreeModal = () => {
         </ModalHeader>
         <ModalBody className={styles['modal-body']}>
           {' '}
-          <ProjectTree
-            projectId={projectId}
-            readOnly={props?.readOnly ?? true}
-          />
+          {DataFilesProjectTree && (
+            <DataFilesProjectTree
+              projectId={projectId}
+              readOnly={props?.readOnly ?? true}
+            />
+          )}
         </ModalBody>
       </Modal>
     </>

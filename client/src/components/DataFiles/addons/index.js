@@ -2,6 +2,7 @@ import DataFilesUploadModalAddon from './DataFilesUploadModalAddon/DataFilesUplo
 import DataFilesAddProjectModalAddon from './DataFilesAddProjectModalAddon/DataFilesAddProjectModalAddon';
 import DataFilesProjectEditDescriptionModalAddon from './DataFilesProjectEditDescriptionModalAddon/DataFilesProjectEditDescriptionModalAddon';
 import DataFilesPreviewModalAddon from './DataFilesPreviewModalAddon/DataFilesPreviewModalAddon';
+import DataFilesProjectFileListingAddon from './DataFilesProjectFileListingAddon/DataFilesProjectFileListingAddon';
 import DataFilesProjectFileListingMetadataAddon from './DataFilesProjectFileListingMetadataAddon/DataFilesProjectFileListingMetadataAddon';
 import DataFilesProjectFileListingMetadataTitleAddon from './DataFilesProjectFileListingMetadataTitleAddon/DataFilesProjectFileListingMetadataTitleAddon';
 import DataFilesManageProjectModalAddon from './DataFilesManageProjectModalAddon/DataFilesManageProjectModalAddon';
@@ -21,6 +22,7 @@ const coreMetadataAddons = {
   DataFilesAddProjectModalAddon,
   DataFilesProjectEditDescriptionModalAddon,
   DataFilesPreviewModalAddon,
+  DataFilesProjectFileListingAddon,
   DataFilesProjectFileListingMetadataAddon,
   DataFilesProjectFileListingMetadataTitleAddon,
   DataFilesManageProjectModalAddon,
