@@ -193,7 +193,23 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
       if (JSON.stringify(updatedValues) !== JSON.stringify(values)) {
         setValues(updatedValues);
       }
+    } else if (values.allocation) {
+      // Mount case: populate execSystems for whatever allocation we started with
+      const newExecSys = formStateUpdateHandler.setExecSysForAllocation(
+        values.allocation,
+        values.execSystemId
+      );
+      if (newExecSys?.id && newExecSys.id !== values.execSystemId) {
+        let updatedValues = { ...values, execSystemId: newExecSys.id };
+        updatedValues = execSystemChangeHandler(
+          app,
+          updatedValues,
+          formStateUpdateHandler
+        );
+        setValues(updatedValues);
+      }
     }
+
     setPreviousValues(values);
   }, [app, values, setValues, formStateUpdateHandler]);
   return null;
@@ -371,6 +387,7 @@ export const AppSchemaForm = ({ app }) => {
     name: `${app.definition.id}-${app.definition.version}_${
       new Date().toISOString().split('.')[0]
     }`,
+    allocation: initialAllocation,
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
@@ -826,6 +843,24 @@ export const AppSchemaForm = ({ app }) => {
             !hasStorageSystems ||
             jobSubmission.submitting ||
             missingAllocationMessage;
+
+          const showAllocationSelect =
+            isJobTypeBATCH(app) &&
+            isTACCPortal &&
+            (isAppUsingDynamicExecSystem(app) ||
+              (selectedExecSystem &&
+                isSystemTypeSLURM(selectedExecSystem) &&
+                isTACCHost(selectedExecSystem?.host)));
+
+          const showAllocationText =
+            isJobTypeBATCH(app) &&
+            !isAppUsingDynamicExecSystem(app) &&
+            selectedExecSystem &&
+            !(
+              isSystemTypeSLURM(selectedExecSystem) &&
+              isTACCHost(selectedExecSystem?.host)
+            );
+
           return (
             <>
               {missingAllocationMessage && (
@@ -930,35 +965,33 @@ export const AppSchemaForm = ({ app }) => {
                     <div className="appSchema-header">
                       <span>Configuration</span>
                     </div>
-                    {isJobTypeBATCH(app) &&
-                      selectedExecSystem &&
-                      isSystemTypeSLURM(selectedExecSystem) &&
-                      (isTACCHost(selectedExecSystem?.host) && isTACCPortal ? (
-                        <FormField
-                          label="Allocation"
-                          name="allocation"
-                          description="Select the project allocation you would like to use with this job submission."
-                          type="select"
-                          required
-                        >
-                          <option hidden disabled>
-                            {' '}
+                    {showAllocationSelect && (
+                      <FormField
+                        label="Allocation"
+                        name="allocation"
+                        description="Select the project allocation you would like to use with this job submission."
+                        type="select"
+                        required
+                      >
+                        <option hidden disabled>
+                          {' '}
+                        </option>
+                        {allocations.sort().map((projectId) => (
+                          <option key={projectId} value={projectId}>
+                            {projectId}
                           </option>
-                          {allocations.sort().map((projectId) => (
-                            <option key={projectId} value={projectId}>
-                              {projectId}
-                            </option>
-                          ))}
-                        </FormField>
-                      ) : (
-                        <FormField
-                          label="Allocation (case-sensitive)"
-                          name="allocation"
-                          description="Enter the project allocation you would like to use with this job submission."
-                          type="text"
-                          required
-                        />
-                      ))}
+                        ))}
+                      </FormField>
+                    )}
+                    {showAllocationText && (
+                      <FormField
+                        label="Allocation (case-sensitive)"
+                        name="allocation"
+                        description="Enter the project allocation you would like to use with this job submission."
+                        type="text"
+                        required
+                      />
+                    )}
                     {isJobTypeBATCH(app) &&
                       isAppUsingDynamicExecSystem(app) && (
                         <FormField

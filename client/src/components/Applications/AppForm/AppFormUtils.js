@@ -444,15 +444,15 @@ export const getAllocationList = (app, allocations, allocationToExecSysMap) => {
 /**
  * @param {*} allocationList
  * @param {*} portalAlloc
- * @returns portalAlloc if available, otherwise first item in allocation list.
- *          If list is empty, returns empty string.
+ * @returns portalAlloc if available. Otherwise, the first item in the allocationList if it is only one item long.
+ *          If neither of those are true, this returns empty string to force the user to choose.
  */
 export const getDefaultAllocation = (allocationList, portalAlloc) => {
   if (allocationList.includes(portalAlloc)) {
     return portalAlloc;
   }
 
-  return allocationList.length > 0 ? allocationList[0] : '';
+  return allocationList.length === 1 ? allocationList[0] : '';
 };
 
 /**
