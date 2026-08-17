@@ -148,9 +148,14 @@ const DataFilesProjectFileListing = ({
             </>
           ) : null}
           {!isPublicationSystem(rootSystem) && !isReviewSystem(rootSystem) && (
-            <Button type="link" onClick={onManage}>
-              {readOnlyTeam ? 'View' : 'Manage'} {projectMembersLabel}
-            </Button>
+            <>
+              <Button type="link" onClick={onManage}>
+                {readOnlyTeam ? 'View' : 'Manage'} {projectMembersLabel}
+              </Button>
+              {DataFilesProjectFileListingAddon && (
+                <span className={styles.separator}>|</span>
+              )}
+            </>
           )}
           {DataFilesProjectFileListingAddon && (
             <DataFilesProjectFileListingAddon

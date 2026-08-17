@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { LoadingSpinner, SectionTableWrapper } from '_common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
+import { useProjectTree } from 'hooks/datafiles';
 import styles from './DataFilesProjectReview.module.scss';
-import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../../../constants/routes';
 import { ProjectDescriptionStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ProjectDescription';
 import { ReviewProjectStructureStep } from '../DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ReviewProjectStructure';
@@ -13,9 +13,8 @@ import { SubmitPublicationReviewStep } from '../DataFilesProjectPublish/DataFile
 
 const DataFilesProjectReview = ({ rootSystem, system }) => {
   const dispatch = useDispatch();
-  const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
-  const [tree, setTree] = useState([]);
+  const { data: tree = [] } = useProjectTree(projectId);
 
   useEffect(() => {
     dispatch({
@@ -25,27 +24,6 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
   }, [system]);
 
   const { metadata } = useSelector((state) => state.projects);
-
-  const fetchTree = useCallback(async () => {
-    if (projectId) {
-      try {
-        const response = await fetchUtil({
-          url: `api/${portalName.toLowerCase()}/tree`,
-          params: {
-            project_id: projectId,
-          },
-        });
-        setTree(response);
-      } catch (error) {
-        console.error('Error fetching tree data:', error);
-        setTree([]);
-      }
-    }
-  }, [portalName, projectId]);
-
-  useEffect(() => {
-    fetchTree();
-  }, [portalName, projectId, fetchTree]);
 
   const wizardSteps = [
     ProjectDescriptionStep({ project: metadata }),

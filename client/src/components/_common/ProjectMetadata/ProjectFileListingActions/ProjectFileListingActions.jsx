@@ -31,7 +31,7 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
   const createTreeModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'projectTree', props: { readOnly: true } },
+      payload: { operation: 'projectTree', props: { readOnly: !canEdit } },
     });
 
   const createPublicationRequestModal = () =>
@@ -49,7 +49,7 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
       props: { projectId: metadata?.projectId, rootSystem },
     });
 
-  const { canRequestPublication, canReviewPublication } = useSelector(
+  const { canEdit, canRequestPublication, canReviewPublication } = useSelector(
     (state) => {
       const { members } = state.projects.metadata;
       const { username } = state.authenticatedUser?.user ?? {};
@@ -58,10 +58,15 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
       );
 
       if (!currentUser) {
-        return { canRequestPublication: false, canReviewPublication: false };
+        return {
+          canEdit: false,
+          canRequestPublication: false,
+          canReviewPublication: false,
+        };
       }
 
       const { access } = currentUser;
+      const canEdit = access === 'owner' || access === 'edit';
       const { is_review_project, publication_requests } =
         state.projects.metadata;
 
@@ -84,7 +89,7 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
         }
       }
 
-      return { canRequestPublication, canReviewPublication };
+      return { canEdit, canRequestPublication, canReviewPublication };
     }
   );
 

@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Paginator, LoadingSpinner } from '_common';
-import { useSelector, useDispatch } from 'react-redux';
+import { useProjectTree } from 'hooks/datafiles';
 import createSizeString from 'utils/sizeFormat';
 import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
@@ -17,16 +17,14 @@ const excludedImageMetadataFields = ['is_advanced_image_file', 'data_type', 'nam
 
 function PublishedDatasetEntityDetail({ params }) {
 
-    const dispatch = useDispatch();
     const location = useLocation();
 
     const { system, entity_type: entityType, entity_id: entityID } = params;
     const projectId = system.split('.').pop();
 
     const projectUrl = `${BASE_ASSET_URL}/${projectId}`;
-    const portalName = useSelector((state) => state.workbench.portalName);
-
-    const { value: tree, loading, error } = useSelector((state) => state.publications.tree);
+    const { data, isLoading: loading, isError: error } = useProjectTree(system);
+    const tree = data?.[0];
     const [selectedEntity, setSelectedEntity] = useState(null);
     const [fileGroups, setFileGroups] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -81,15 +79,6 @@ function PublishedDatasetEntityDetail({ params }) {
 
         return Object.values(groups);
     };
-
-    useEffect(() => {
-        if (system && portalName && !error) {
-            dispatch({
-                type: 'PUBLICATIONS_GET_TREE',
-                payload: { portalName, system },
-            });
-        }
-    }, [system, portalName]);
 
     useEffect(() => {
         if (tree && !loading && !error && entityID) {

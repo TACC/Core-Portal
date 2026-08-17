@@ -10,6 +10,7 @@ import { formatLabel } from 'utils/formatLabel';
 import { getTooltipDescription } from '../utils/utils';
 import styles from './PublishedDatasetDetail.module.css';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
+import { useProjectTree } from 'hooks/datafiles';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -100,8 +101,8 @@ function PublishedDatasetDetail({ params }) {
 
     const { system } = params;
     const [projectId, setProjectId] = useState(null);
-    const portalName = useSelector((state) => state.workbench.portalName);
-    const { value: tree, loading, error } = useSelector((state) => state.publications.tree);
+    const { data, isLoading: loading, isError: error } = useProjectTree(system);
+    const tree = data?.[0];
     const metadata = useSelector((state) => state.projects.metadata);
     const imageUrl = `${BASE_ASSET_URL}/${metadata.cover_image}`;
 
@@ -112,15 +113,6 @@ function PublishedDatasetDetail({ params }) {
         });
         setProjectId(system.split('.').pop());
     }, [system]);
-
-    useEffect(() => {
-        if (system && portalName && !error) {
-            dispatch({
-                type: 'PUBLICATIONS_GET_TREE',
-                payload: { portalName, system },
-            });
-        }
-    }, [system, portalName, error]);
 
     return (
         <div className={'container'}>

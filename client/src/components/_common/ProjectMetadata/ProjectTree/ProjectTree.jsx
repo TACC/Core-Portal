@@ -1,13 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, ShowMore, Section, Icon } from '_common';
 import { TreeItem2 as TreeItem, SimpleTreeView } from '@mui/x-tree-view';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useFileListing } from 'hooks/datafiles';
+import { useFileListing, useProjectTree } from 'hooks/datafiles';
 import { formatLabel } from 'utils/formatLabel';
-import { fetchUtil } from 'utils/fetchUtil';
 import MetadataDisplay from '../MetadataDisplay/MetadataDisplay';
 import styles from './ProjectTree.module.scss';
 
@@ -41,7 +40,7 @@ export const ProjectTree = ({
 
   const dispatch = useDispatch();
 
-  const [tree, setTree] = useState([]);
+  const { data: tree = [], refetch: fetchTree } = useProjectTree(projectId);
 
   const { dynamicFormModal, previewModal, projectTreeModal } = useSelector(
     (state) => ({
@@ -50,20 +49,6 @@ export const ProjectTree = ({
       projectTreeModal: state.files.modals.projectTree,
     })
   );
-
-  const fetchTree = useCallback(async () => {
-    if (projectId) {
-      try {
-        const response = await fetchUtil({
-          url: `api/projects/${projectId}/tree/`,
-        });
-        setTree(response);
-      } catch (error) {
-        console.error('Error fetching tree data:', error);
-        setTree([]);
-      }
-    }
-  }, [projectId]);
 
   useEffect(() => {
     // workaround to get updated data after modal closes

@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingSpinner, SectionTableWrapper } from '_common';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
+import { useProjectTree } from 'hooks/datafiles';
 import styles from './DataFilesProjectPublish.module.scss';
-import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../../../constants/routes';
 import { ProjectDescriptionStep } from './DataFilesProjectPublishWizardSteps/ProjectDescription';
 import { PublicationInstructionsStep } from './DataFilesProjectPublishWizardSteps/PublicationInstructions';
@@ -16,12 +16,11 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId, publication_requests } = useSelector(
     (state) => state.projects.metadata
   );
   const [authors, setAuthors] = useState([]);
-  const [tree, setTree] = useState([]);
+  const { data: tree = [], refetch: fetchTree } = useProjectTree(projectId);
 
   useEffect(() => {
     dispatch({
@@ -35,23 +34,6 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
     previewModal: state.files.modals.preview,
     metadata: state.projects.metadata,
   }));
-
-  const fetchTree = useCallback(async () => {
-    if (projectId) {
-      try {
-        const response = await fetchUtil({
-          url: `api/${portalName.toLowerCase()}/tree`,
-          params: {
-            project_id: projectId,
-          },
-        });
-        setTree(response);
-      } catch (error) {
-        console.error('Error fetching tree data:', error);
-        setTree([]);
-      }
-    }
-  }, [portalName, projectId]);
 
   useEffect(() => {
     // Check if there is any PENDING publication request
