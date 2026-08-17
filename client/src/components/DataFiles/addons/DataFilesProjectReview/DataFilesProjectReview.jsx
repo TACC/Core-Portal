@@ -9,14 +9,8 @@ import {
   SubmitPublicationReviewStep,
 } from '_common/ProjectPublication';
 import * as ROUTES from '../../../../constants/routes';
-import {
-  DRP_CURATOR_CONTACT,
-  drpMetadataValidate,
-  drpStructureValidate,
-} from '../DataFilesProjectPublish/DataFilesProjectPublish';
 
-// DRP review flow = the generic publication wizard with DRP validation and
-// curator contact.
+// Default review flow: the generic publication wizard with baseline steps.
 const DataFilesProjectReview = ({ rootSystem, system }) => {
   const dispatch = useDispatch();
   const callbackUrl = `${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/projects/${rootSystem}`;
@@ -27,18 +21,17 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
       rootSystem={rootSystem}
       title="Review Publication Request"
       renderSteps={({ metadata, tree, onAuthorsUpdate }) => [
-        ProjectDescriptionStep({ project: metadata, validate: drpMetadataValidate }),
+        ProjectDescriptionStep({ project: metadata }),
         ReviewProjectStructureStep({
           projectId: metadata.projectId,
           projectTree: tree,
-          validate: drpStructureValidate,
         }),
         ReviewAuthorsStep({
           project: metadata,
           onAuthorsUpdate,
           isReviewProject: true,
         }),
-        SubmitPublicationReviewStep({ callbackUrl, contact: DRP_CURATOR_CONTACT }),
+        SubmitPublicationReviewStep({ callbackUrl }),
       ]}
       onSubmit={(values, { metadata }) => {
         if (values?.publicationApproved) {

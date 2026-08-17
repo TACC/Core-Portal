@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   ShowMore,
@@ -6,12 +7,13 @@ import {
   DescriptionList,
   Expand,
 } from '_common';
-import styles from './DataFilesProjectPublishWizard.module.scss';
+import styles from '../PublicationWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/timeFormat';
 import { formatDataKey } from 'utils/dataKeyFormat';
 import { useFormikContext } from 'formik';
 
+// Proofread view of the project's metadata before publication.
 const ProjectDescription = ({ project }) => {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
@@ -66,43 +68,22 @@ const ProjectDescription = ({ project }) => {
       projectData['DOI'] = project.doi;
     }
 
-    if (project.related_publications?.length > 0) {
-      const relatedPublicationCards = project.related_publications.map(
-        (publication) => {
-          return (
-            <Expand
-              className={styles['project-expand-card']}
-              detail={publication.publication_title}
-              message={
-                <DescriptionList
-                  data={Object.keys(publication).reduce((acc, key) => {
-                    acc[formatDataKey(key)] = publication[key];
-                    return acc;
-                  }, {})}
-                  direction={'vertical'}
-                  density={'compact'}
-                />
-              }
-            />
-          );
-        }
-      );
+    const relatedFields = [
+      { key: 'related_publications', label: 'Related Publications', title: 'publication_title' },
+      { key: 'related_datasets', label: 'Related Datasets', title: 'dataset_title' },
+      { key: 'related_software', label: 'Related Software', title: 'software_title' },
+    ];
 
-      projectData['Related Publications'] = relatedPublicationCards;
-    } else {
-      projectData['Related Publications'] = 'None';
-    }
-
-    if (project.related_datasets?.length > 0) {
-      const relatedDatasetCards = project.related_datasets.map((dataset) => {
-        return (
+    relatedFields.forEach(({ key, label, title }) => {
+      if (project[key]?.length > 0) {
+        projectData[label] = project[key].map((item) => (
           <Expand
             className={styles['project-expand-card']}
-            detail={dataset.dataset_title}
+            detail={item[title]}
             message={
               <DescriptionList
-                data={Object.keys(dataset).reduce((acc, key) => {
-                  acc[formatDataKey(key)] = dataset[key];
+                data={Object.keys(item).reduce((acc, k) => {
+                  acc[formatDataKey(k)] = item[k];
                   return acc;
                 }, {})}
                 direction={'vertical'}
@@ -110,38 +91,11 @@ const ProjectDescription = ({ project }) => {
               />
             }
           />
-        );
-      });
-
-      projectData['Related Datasets'] = relatedDatasetCards;
-    } else {
-      projectData['Related Datasets'] = 'None';
-    }
-
-    if (project.related_software?.length > 0) {
-      const relatedSoftwareCards = project.related_software.map((software) => {
-        return (
-          <Expand
-            className={styles['project-expand-card']}
-            detail={software.software_title}
-            message={
-              <DescriptionList
-                data={Object.keys(software).reduce((acc, key) => {
-                  acc[formatDataKey(key)] = software[key];
-                  return acc;
-                }, {})}
-                direction={'vertical'}
-                density={'compact'}
-              />
-            }
-          />
-        );
-      });
-
-      projectData['Related Software'] = relatedSoftwareCards;
-    } else {
-      projectData['Related Software'] = 'None';
-    }
+        ));
+      } else {
+        projectData[label] = 'None';
+      }
+    });
 
     setData(projectData);
   }, [project]);
@@ -178,28 +132,27 @@ const ProjectDescription = ({ project }) => {
   );
 };
 
-const validateProjectMetadata = (values) => {
+ProjectDescription.propTypes = {
+  project: PropTypes.object,
+};
+
+const defaultValidate = (values) => {
   const errors = {};
-  
   if (!values.title) {
     errors.title = 'Title is required';
   }
-  
   if (!values.description) {
     errors.description = 'Description is required';
   }
-
-  if (!values.cover_image) {
-    errors.cover_image = 'Cover image is required';
-  }
-  
   return errors;
 };
 
-export const ProjectDescriptionStep = ({ project }) => ({
+export const ProjectDescriptionStep = ({ project, validate = defaultValidate }) => ({
   id: 'project_description',
   name: 'Project Description',
   render: <ProjectDescription project={project} />,
-  validate: validateProjectMetadata,
+  validate,
   initialValues: project,
 });
+
+export default ProjectDescription;

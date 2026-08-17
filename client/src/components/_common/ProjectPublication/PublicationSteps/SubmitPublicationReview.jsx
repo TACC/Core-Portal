@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useFormikContext } from 'formik';
 import { SectionTableWrapper, Section, Button } from '_common';
-import * as Yup from 'yup';
-import styles from './DataFilesProjectPublishWizard.module.scss';
-import { useDispatch, useSelector } from 'react-redux';
+import styles from '../PublicationWizard.module.scss';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-const validationSchema = Yup.object({});
-
-const SubmitPublicationReview = ({ callbackUrl }) => {
+// Reviewer step: approve/publish, publish a new version, or reject a request.
+const SubmitPublicationReview = ({ callbackUrl, contact }) => {
   const { submitForm, setFieldValue, resetForm } = useFormikContext();
 
   const { doi } = useSelector((state) => state.projects.metadata);
@@ -17,22 +16,19 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  const { canPublish = false } = useSelector((state) => state.workbench.config) || {};
+  const { canPublish = false } =
+    useSelector((state) => state.workbench.config) || {};
 
-  const {
-    isApproveLoading,
-    isRejectLoading,
-    isApproveSuccess,
-    isRejectSuccess,
-  } = useSelector((state) => {
-    const { name, loading, error, result } = state.publications.operation;
-    return {
-      isApproveLoading: name === 'approve' && loading,
-      isRejectLoading: name === 'reject' && loading,
-      isApproveSuccess: name === 'approve' && !loading && !error && result,
-      isRejectSuccess: name === 'reject' && !loading && !error && result,
-    };
-  });
+  const { isApproveLoading, isRejectLoading, isApproveSuccess, isRejectSuccess } =
+    useSelector((state) => {
+      const { name, loading, error, result } = state.publications.operation;
+      return {
+        isApproveLoading: name === 'approve' && loading,
+        isRejectLoading: name === 'reject' && loading,
+        isApproveSuccess: name === 'approve' && !loading && !error && result,
+        isRejectSuccess: name === 'reject' && !loading && !error && result,
+      };
+    });
 
   useEffect(() => {
     if (isApproveSuccess || isRejectSuccess) {
@@ -65,11 +61,7 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
       header={<div className={styles.title}>Confirm Publication Review</div>}
     >
       <Section contentLayoutName={'oneColumn'}>
-        <div>
-          If you have any doubts about the process please contact the data
-          curator <a href="mailto:maria@tacc.utexas.edu">Maria Esteva</a> before
-          submitting the data for publication.
-        </div>
+        {contact && <div>{contact}</div>}
         <div className={styles['submit-div']}>
           {doi ? (
             <Button
@@ -107,10 +99,16 @@ const SubmitPublicationReview = ({ callbackUrl }) => {
   );
 };
 
-export const SubmitPublicationReviewStep = ({ callbackUrl }) => ({
+SubmitPublicationReview.propTypes = {
+  callbackUrl: PropTypes.string,
+  contact: PropTypes.node,
+};
+
+export const SubmitPublicationReviewStep = ({ callbackUrl, contact }) => ({
   id: 'submit_publication_review',
   name: 'Submit Publication Review',
-  render: <SubmitPublicationReview callbackUrl={callbackUrl} />,
+  render: <SubmitPublicationReview callbackUrl={callbackUrl} contact={contact} />,
   initialValues: {},
-  validationSchema,
 });
+
+export default SubmitPublicationReview;
