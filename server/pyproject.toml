@@ -51,7 +51,6 @@ networkx = "^3.2.1"
 numpy = "<2.0"
 matplotlib = "^3.10.0"
 tifffile = "^2025.1.10"
-mysqlclient = "^2.2.7"
 httpx = "^0.28.1"
 imagecodecs = "2025.8.2"
 
