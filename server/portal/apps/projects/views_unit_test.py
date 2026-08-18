@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.test import override_settings
 from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
-from portal.apps._custom.drp import constants
+from portal.apps.projects.schema_models import constants
 
 
 @pytest.fixture

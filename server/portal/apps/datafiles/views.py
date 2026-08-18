@@ -44,9 +44,9 @@ def is_project_system(system):
     project_prefixes = tuple(
         prefix
         for prefix in (
-            settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
-            settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX,
-            settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX,
+            getattr(settings, 'PORTAL_PROJECTS_SYSTEM_PREFIX', None),
+            getattr(settings, 'PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX', None),
+            getattr(settings, 'PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX', None),
         )
         if prefix
     )
@@ -491,7 +491,7 @@ class LinkView(BaseApiView):
                                  'query': request.GET.dict()}
                          })
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
-            self.delete_link(request, link)
+            self.delete_link(request, system, link)
         except Link.DoesNotExist:
             raise ApiException("Could not find pre-existing link")
         postit = self.create_postit(request, scheme, system, path)
