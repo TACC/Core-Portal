@@ -33,22 +33,9 @@ const DescriptionList = ({ className, data, density, direction }) => {
     shouldTruncateValues ? 'value-truncated' : ''
   }`;
 
-  const compareFn = (entry1, entry2) => {
-    const [, val1] = entry1;
-    const [, val2] = entry2;
-    if ((val1?._order ?? 0) < (val2?._order ?? 0)) {
-      return -1;
-    }
-    if ((val1?._order ?? 0) > (val2?._order ?? 0)) {
-      return 1;
-    }
-    return 0;
-  };
-
   return (
     <dl className={`${className} ${containerStyleNames}`} data-testid="list">
       {Object.entries(data)
-        .sort(compareFn)
         .filter(([key, _]) => !key.startsWith('_'))
         .map(([key, value]) => (
           <React.Fragment key={key}>

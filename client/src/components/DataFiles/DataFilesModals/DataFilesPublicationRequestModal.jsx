@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { DescriptionList } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
@@ -7,7 +7,6 @@ import { formatDate, formatDateTime } from 'utils/timeFormat';
 
 const DataFilesPublicationRequestModal = () => {
   const dispatch = useDispatch();
-  const [data, setData] = useState([]);
 
   const isOpen = useSelector((state) => state.files.modals.publicationRequest);
   const { publicationRequests } =
@@ -26,30 +25,7 @@ const DataFilesPublicationRequestModal = () => {
     return 0;
   };
 
-  useEffect(() => {
-    const data = {};
-
-    publicationRequests?.sort(compareFn).forEach((request, index) => {
-      const publicationRequestDataObj = {
-        Status: request.status,
-        Reviewers: request.reviewers.reduce((acc, reviewer, index) => {
-          return (
-            acc +
-            (index > 0 ? ', ' : '') +
-            `${reviewer.first_name} ${reviewer.last_name}`
-          );
-        }, ''),
-        Submitted: formatDateTime(new Date(request.created_at)),
-        _order: index,
-      };
-
-      const heading = `Publication Request | ${formatDate(new Date(request.created_at))}`;
-
-      data[heading] = <DescriptionList data={publicationRequestDataObj} />;
-    });
-
-    setData(data);
-  }, [publicationRequests]);
+  const sortedRequests = [...(publicationRequests ?? [])].sort(compareFn);
 
   const toggle = useCallback(() => {
     dispatch({
@@ -70,10 +46,32 @@ const DataFilesPublicationRequestModal = () => {
           Publication Requests
         </ModalHeader>
         <ModalBody>
-          <DescriptionList
-            className={`${styles['right-panel']} ${styles['panel-content']}`}
-            data={data}
-          />
+          <dl className={`${styles['right-panel']} ${styles['panel-content']}`}>
+            {sortedRequests.map((request) => (
+              <React.Fragment key={request.id}>
+                <dt>
+                  {`Publication Request | ${formatDate(
+                    new Date(request.created_at)
+                  )}`}
+                </dt>
+                <dd>
+                  <DescriptionList
+                    data={{
+                      Status: request.status,
+                      Reviewers: request.reviewers.reduce(
+                        (acc, reviewer, index) =>
+                          acc +
+                          (index > 0 ? ', ' : '') +
+                          `${reviewer.first_name} ${reviewer.last_name}`,
+                        ''
+                      ),
+                      Submitted: formatDateTime(new Date(request.created_at)),
+                    }}
+                  />
+                </dd>
+              </React.Fragment>
+            ))}
+          </dl>
         </ModalBody>
       </Modal>
     </>
