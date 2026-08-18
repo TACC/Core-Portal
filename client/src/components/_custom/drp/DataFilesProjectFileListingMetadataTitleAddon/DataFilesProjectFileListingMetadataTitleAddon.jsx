@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './DataFilesProjectFileListingMetadataTitleAddon.module.scss';
-import { Button, LoadingSpinner } from '_common';
-import { fetchUtil } from 'utils/fetchUtil';
+import { useSelector } from 'react-redux';
+import { Button } from '_common';
 import { useFileListing } from 'hooks/datafiles';
+import { MetadataTitle } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
-import { formatDataType } from '../utils/utils';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({
   folderMetadata,
@@ -16,7 +14,6 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
 }) => {
   const portalName = useSelector((state) => state.workbench.portalName);
   const { projectId } = useSelector((state) => state.projects.metadata);
-
   const { loading } = useFileListing('FilesListing');
 
   const { canEditDataset } = useSelector((state) => {
@@ -71,34 +68,27 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
     }
   };
 
+  const actions = canEditDataset ? (
+    <Button type="link" onClick={() => onEditData(folderMetadata.data_type)}>
+      Edit Data
+    </Button>
+  ) : null;
+
   return (
-    <>
-      {loading ? (
-        <LoadingSpinner placement="inline" />
-      ) : folderMetadata && folderMetadata.data_type ? (
-        <>
-          {folderMetadata.name}
-          <span className={styles['dataTypeBox']}>
-            {formatDataType(folderMetadata.data_type)}
-          </span>
-          {canEditDataset && (
-            <Button
-              type="link"
-              onClick={() => onEditData(folderMetadata.data_type)}
-            >
-              Edit Data
-            </Button>
-          )}
-        </>
-      ) : (
-        metadata.title
-      )}
-    </>
+    <MetadataTitle
+      folderMetadata={folderMetadata}
+      metadata={metadata}
+      loading={loading}
+      actions={actions}
+    />
   );
 };
 
 DataFilesProjectFileListingMetadataTitleAddon.propTypes = {
   folderMetadata: PropTypes.shape({}),
+  metadata: PropTypes.object,
+  system: PropTypes.string,
+  path: PropTypes.string,
 };
 
 export default DataFilesProjectFileListingMetadataTitleAddon;

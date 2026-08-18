@@ -201,11 +201,12 @@ def create_shared_workspace_2_user(
     # Get workspace role of the owner
     # System args that are in create_workspace_system
 
-    # NOTE: The owner is not expected in these system args
-    # set_workspace_acls adds the owner to the project and is checked
-    # already in the create_shared_workspace helper function
+    # NOTE: The owner is set explicitly so the workspace system records the
+    # human owner even when a project admin creates it via the service
+    # account. set_workspace_acls also grants the owner ACL access.
     system_args = {
         "id": "test.project.test.project-2",
+        "owner": "username",
         "host": settings.PORTAL_PROJECTS_ROOT_HOST,
         "port": int(settings.PORTAL_PROJECTS_SYSTEM_PORT),
         "systemType": "LINUX",
@@ -756,11 +757,12 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
         # Get workspace role of the owner
         # System args that are in create_workspace_system
 
-        # NOTE: The owner is not expected in these system args
-        # set_workspace_acls adds the owner to the project and is checked
-        # already in the create_shared_workspace helper function
+        # NOTE: The owner is set explicitly so the workspace system records the
+        # human owner even when a project admin creates it via the service
+        # account. set_workspace_acls also grants the owner ACL access.
         system_args = {
             "id": "test.project.test.project-2",
+            "owner": "username",
             "host": settings.PORTAL_PROJECTS_ROOT_HOST,
             "port": int(settings.PORTAL_PROJECTS_SYSTEM_PORT),
             "systemType": "LINUX",

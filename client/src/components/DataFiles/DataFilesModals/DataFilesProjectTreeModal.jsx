@@ -2,15 +2,18 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './DataFilesProjectTreeModal.module.scss';
-import { ProjectTreeView } from '_custom/drp/DataFilesProjectPublish/DataFilesProjectPublishWizardSteps/ProjectTreeView';
+import { useAddonComponents } from 'hooks/datafiles';
 
 const DataFilesProjectTreeModal = () => {
   const dispatch = useDispatch();
 
   const { projectId } = useSelector((state) => state.projects.metadata);
+  const portalName = useSelector((state) => state.workbench.portalName);
 
   const isOpen = useSelector((state) => state.files.modals.projectTree);
   const props = useSelector((state) => state.files.modalProps['projectTree']);
+
+  const { DataFilesProjectTree } = useAddonComponents({ portalName });
 
   const toggle = useCallback(() => {
     dispatch({
@@ -32,10 +35,12 @@ const DataFilesProjectTreeModal = () => {
         </ModalHeader>
         <ModalBody className={styles['modal-body']}>
           {' '}
-          <ProjectTreeView
-            projectId={projectId}
-            readOnly={props?.readOnly ?? true}
-          />
+          {DataFilesProjectTree && (
+            <DataFilesProjectTree
+              projectId={projectId}
+              readOnly={props?.readOnly ?? true}
+            />
+          )}
         </ModalBody>
       </Modal>
     </>

@@ -34,7 +34,7 @@ from portal.apps.projects.workspace_operations.project_meta_operations import cr
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps.projects.schema_models import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path, build_project_tree
 from portal.apps.projects.tasks import sync_files_without_metadata
 from portal.libs.files.file_processing import resize_cover_image
 from django.http.multipartparser import MultiPartParser
@@ -663,4 +663,26 @@ class ProjectEntityView(BaseApiView):
             mkdir(client, project_id, path, value['name'])
 
         return JsonResponse({"result": "OK"})
-    
+
+
+class ProjectTreeView(BaseApiView):
+    """Return a project's metadata graph as a nested tree."""
+
+    def get(self, request, project_id):
+        if project_id.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX):
+            full_project_id = project_id
+        else:
+            full_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
+
+        try:
+            tree = build_project_tree(full_project_id)
+        except ProjectMetadata.DoesNotExist:
+            LOGGER.error(
+                f'Project metadata does not exist for project ID: {full_project_id}'
+            )
+            return JsonResponse(
+                {'error': 'Project metadata does not exist'}, status=404
+            )
+
+        return JsonResponse(tree, safe=False)
+

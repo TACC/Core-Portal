@@ -8,4 +8,5 @@ export const EXCLUDED_METADATA_FIELDS = [
   'cover_image',
   'file_url',
   'uuid',
+  'is_advanced_image_file',
 ];

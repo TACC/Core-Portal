@@ -1,0 +1,55 @@
+.section-project-structure main {
+  margin-right: 0;
+  margin-bottom: 10px;
+}
+
+.tree-label {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid var(--global-color-primary--light);
+}
+
+.metadata-description-div {
+  border: 1px solid var(--global-color-primary--light);
+  margin-left: 20px;
+  margin-right: 8px;
+  padding: 10px;
+  margin-top: -4px;
+}
+
+.description {
+  font-size: 0.875rem;
+}
+
+.tree-button-div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.edit-button {
+  font-size: 0.875rem;
+}
+
+.node-name-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.data-type-box {
+  display: inline-block;
+  background-color: #808080;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  margin: 8px 8px;
+  font-weight: bold;
+}
+
+.description-show-more {
+  overflow: hidden auto;
+}
