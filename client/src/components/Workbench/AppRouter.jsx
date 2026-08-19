@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSystems } from 'hooks/datafiles';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
@@ -11,12 +11,6 @@ import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy'
 import SiteSearch from '../SiteSearch';
 import UserNewsBrowse from '../UserNews/UserNewsBrowse';
 import UserNewsDetail from '../UserNews/UserNewsDetail';
-import {
-  PublishedDatasetsBrowse,
-  PublishedDatasetDetail,
-  PublishedDatasetEntityDetail,
-  PublishedDatasetsLayout,
-} from '../_custom/drp/PublishedDatasets';
 
 function AppRouter() {
   const dispatch = useDispatch();
@@ -30,6 +24,20 @@ function AppRouter() {
   const hasCustomSagas = useSelector(
     (state) => state.workbench.config.hasCustomSagas
   );
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const [CustomRoutes, setCustomRoutes] = useState(null);
+
+  // Resolve the portal's own routes from _custom/<portal>/CustomRoutes.jsx, so
+  // any portal can register its own routes
+  useEffect(() => {
+    if (!portalName) {
+      setCustomRoutes(null);
+      return;
+    }
+    import(`../_custom/${portalName.toLowerCase()}/CustomRoutes.jsx`)
+      .then((module) => setCustomRoutes(() => module.default))
+      .catch(() => setCustomRoutes(null));
+  }, [portalName]);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
@@ -56,42 +64,7 @@ function AppRouter() {
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
       <Route path="/tickets/new" component={TicketStandaloneCreate} />
       <Route path="/public-data" component={PublicData} />
-      <Route
-        path={ROUTES.PUBLICATIONS}
-        exact
-        render={() => {
-          return (
-            <PublishedDatasetsLayout params={{ page_type: 'browse' }}>
-              <PublishedDatasetsBrowse />
-            </PublishedDatasetsLayout>
-          );
-        }}
-      />
-      <Route
-        path={`${ROUTES.PUBLICATIONS}/:system/:entity_type/:entity_id`}
-        render={({ match: { params } }) => {
-          return (
-            <PublishedDatasetsLayout
-              params={{ ...params, page_type: 'entityDetail' }}
-            >
-              <PublishedDatasetEntityDetail params={params} />
-            </PublishedDatasetsLayout>
-          );
-        }}
-      />
-      <Route
-        path={`${ROUTES.PUBLICATIONS}/:system`}
-        exact
-        render={({ match: { params } }) => {
-          return (
-            <PublishedDatasetsLayout
-              params={{ ...params, page_type: 'datasetDetail' }}
-            >
-              <PublishedDatasetDetail params={params} />
-            </PublishedDatasetsLayout>
-          );
-        }}
-      />
+      {CustomRoutes && <CustomRoutes />}
       <Route path="/request-access" component={RequestAccess} />
       <Route
         path="/googledrive-privacy-policy"
