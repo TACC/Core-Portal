@@ -134,7 +134,7 @@ const DataFilesToolbarAddon = () => {
             <Form>
               <ModalBody>
                 <FormText className="form-field__help" color="muted">
-                  Enter this file's image properties to generate a thumbnail,
+                  Enter this file&apos;s image properties to generate a thumbnail,
                   histogram, and animation. Processing runs in the background
                   and may take a few minutes. The results will appear alongside
                   the file.
