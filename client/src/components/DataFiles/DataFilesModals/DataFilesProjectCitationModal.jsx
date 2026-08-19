@@ -19,11 +19,7 @@ const DataFilesProjectCitationModal = () => {
   return (
     <>
       {props?.project && (
-        <Modal
-          size="lg"
-          isOpen={isOpen}
-          toggle={toggle}
-        >
+        <Modal size="lg" isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle} charCode="&#xe912;">
             Citations
           </ModalHeader>
