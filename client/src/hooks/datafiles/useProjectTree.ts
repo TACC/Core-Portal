@@ -3,7 +3,9 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 // Fetch a project's metadata tree
 export const fetchProjectTree = (projectId: string): Promise<any[]> =>
-  fetchUtil({ url: `api/projects/${projectId}/tree/`, params: {} });
+  fetchUtil({ url: `api/projects/${projectId}/tree/`, params: {} }).then(
+    (res) => res.tree
+  );
 
 export const useProjectTree = (
   projectId: string,

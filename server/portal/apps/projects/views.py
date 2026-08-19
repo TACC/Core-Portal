@@ -170,13 +170,16 @@ class ProjectsApiView(BaseApiView):
             client = get_project_client(request.user)
             listing = list_projects(client, root_system)
 
-        for project in listing:
-            try:
-                project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=project['id']))
-                project.update(get_ordered_value(project_meta.name, project_meta.value))
-                project["projectId"] = project['id'].split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
-            except ProjectMetadata.DoesNotExist:
-                pass
+        # Retrieve project metadata entity for metadata enabled portals
+        if settings.PORTAL_PROJECTS_ENABLE_METADATA:
+            for project in listing:
+                try:
+                    project_meta = ProjectMetadata.objects.get(models.Q(value__projectId=project['id']))
+                    project.update(get_ordered_value(project_meta.name, project_meta.value))
+                    project["projectId"] = project['id'].split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
+                except Exception as e:
+                    LOGGER.exception(f"Failed to retrieve metadata for project {project['id']}: {e}")
+                    pass
 
         tapis_project_listing_indexer.delay(listing)
 
@@ -283,30 +286,33 @@ class ProjectInstanceApiView(BaseApiView):
             },
         )
 
-        try: 
-            project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
-            prj.update(get_ordered_value(project.name, project.value))
-            prj["projectId"] = project_id
+        # Retrieve project metadata entity for metadata enabled portals
+        if settings.PORTAL_PROJECTS_ENABLE_METADATA:
+            try:
+                project = ProjectMetadata.objects.get(models.Q(value__projectId=f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"))
+                prj.update(get_ordered_value(project.name, project.value))
+                prj["projectId"] = project_id
 
-            if prj.get("cover_image") is not None:
-                service_client = service_account()
+                if prj.get("cover_image") is not None:
+                    service_client = service_account()
 
-                if prj.get("is_published_project", False):
-                    root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
-                elif prj.get("is_review_project", False):
-                    root_system = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME
-                else:
-                    root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+                    if prj.get("is_published_project", False):
+                        root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+                    elif prj.get("is_review_project", False):
+                        root_system = settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME
+                    else:
+                        root_system = settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
-                postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1,
-                                                           validSeconds=86400)
-                prj["file_url"] = postit.redeemUrl
+                    postit = service_client.files.createPostIt(systemId=root_system, path=prj['cover_image'], allowedUses=-1,
+                                                               validSeconds=86400)
+                    prj["file_url"] = postit.redeemUrl
 
-            if not getattr(prj, 'is_review_project', False) and not getattr(prj, 'is_published_project', False):
-                sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
-        except: 
-            pass
-
+                if not prj.get('is_review_project', False) and not prj.get('is_published_project', False):
+                    sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
+            except Exception as e:
+                LOGGER.exception(f"Failed to retrieve metadata for project {project_id}: {e}")
+                pass
+            
         return JsonResponse(
             {
                 'status': 200,
@@ -684,5 +690,5 @@ class ProjectTreeView(BaseApiView):
                 {'error': 'Project metadata does not exist'}, status=404
             )
 
-        return JsonResponse(tree, safe=False)
+        return JsonResponse({'tree': tree})
 

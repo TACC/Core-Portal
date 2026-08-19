@@ -10,21 +10,6 @@
   padding: 1em;
 }
 
-.step-summary {
-  padding-bottom: 1em;
-}
-.step-summary > .name {
-  display: flex;
-  justify-content: space-between;
-}
-.step-summary > .content {
-  font-size: smaller;
-  padding-left: 1em;
-}
-.step-summary > .edit {
-  padding: 0 !important;
-}
-
 .step {
   padding-top: 1em;
 }

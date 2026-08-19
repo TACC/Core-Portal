@@ -236,7 +236,7 @@ class TapisFilesView(BaseApiView):
                              }
                          })
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-            response = tapis_put_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", body=body)
+            response = tapis_put_handler(client, scheme, system, path, operation, body, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -246,7 +246,8 @@ class TapisFilesView(BaseApiView):
     def post(self, request, operation=None, scheme=None,
              handler=None, system=None, path='/'):
 
-        metadata = json.loads(request.POST.get("metadata", "null"))
+        metadata_json = request.POST.get("metadata")
+        metadata = json.loads(metadata_json) if metadata_json else None
         body = request.FILES.dict()
 
         try:

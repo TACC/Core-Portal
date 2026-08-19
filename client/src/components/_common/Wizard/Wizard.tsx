@@ -16,8 +16,7 @@ export const useWizard = () => {
 };
 
 export const WizardNavigation: React.FC = () => {
-  const { currentStep, previousStep, totalSteps, nextStep, goToStep } =
-    useWizard();
+  const { currentStep, previousStep, totalSteps, nextStep } = useWizard();
   const { validateForm, handleSubmit } = useFormikContext();
   const onContinue = useCallback(async () => {
     try {
@@ -30,75 +29,19 @@ export const WizardNavigation: React.FC = () => {
       console.error(e);
     }
   }, [validateForm, nextStep, handleSubmit]);
-  const onSkip = useCallback(async () => {
-    try {
-      const errors = await validateForm();
-      if (!Object.keys(errors).length && goToStep && !!totalSteps) {
-        // Skip to End button doesn't appear to trigger handleSubmit,
-        // so it must be called explicitly
-        handleSubmit();
-        goToStep(totalSteps);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [validateForm, handleSubmit, goToStep, totalSteps]);
   return (
     <div className={styles.controls}>
       {!!currentStep && currentStep > 1 && (
         <Button onClick={previousStep}>Back</Button>
       )}
       {!!currentStep && !!totalSteps && currentStep < totalSteps && (
-        <>
-          <Button attr="submit" type="primary" onClick={onContinue}>
-            Continue
-          </Button>
-          {/* <Button attr="submit" type="secondary" onClick={onSkip}>
-            Skip to End
-          </Button> */}
-        </>
+        <Button attr="submit" type="primary" onClick={onContinue}>
+          Continue
+        </Button>
       )}
     </div>
   );
 };
-
-type WizardControlProps<T> = {
-  steps: Array<WizardStep<T>>;
-} & Partial<StepWizardChildProps>;
-
-function WizardSummary<T>({
-  steps,
-  ...stepWizardProps
-}: WizardControlProps<T>) {
-  const { goToNamedStep } = stepWizardProps;
-  const editCallback = useCallback(
-    (stepId: string) => goToNamedStep && goToNamedStep(stepId),
-    [goToNamedStep]
-  );
-  return (
-    <div className={styles.summary}>
-      <h3>Summary</h3>
-      {steps.map((step) => (
-        <div
-          className={styles['step-summary']}
-          key={`wizard-summary-${step.id}`}
-        >
-          <div className={styles.name}>
-            <b>{step.name}</b>
-            <Button
-              type="link"
-              onClick={() => editCallback(step.id)}
-              className={styles.edit}
-            >
-              edit
-            </Button>
-          </div>
-          <div className={styles.content}>{step.summary}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 type StepContainerProps<T> = {
   step: WizardStep<T>;
@@ -163,7 +106,6 @@ function Wizard<T>({ steps, memo, formSubmit }: WizardProps<T>) {
     () => {
       goToStep && goToStep(1);
     },
-    /* eslint-disable-next-line */
     [memo]
   );
 
@@ -185,7 +127,6 @@ function Wizard<T>({ steps, memo, formSubmit }: WizardProps<T>) {
             />
           ))}
         </StepWizard>
-        {/* <WizardSummary steps={steps} {...stepWizardProps} /> */}
       </div>
     </WizardContext.Provider>
   );

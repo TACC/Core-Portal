@@ -7,6 +7,20 @@ import { FieldArray } from 'formik';
 import styles from './DynamicForm.module.scss';
 import { useSelector } from 'react-redux';
 
+/**
+ * Renders a form from a declarative field-config array, letting a portal define
+ * its forms in config (e.g. the settings_forms.py file)
+ *
+ * Must be rendered inside a Formik Form: it reads and writes form state through
+ * useFormikContext and provides no form element or submit of its own. Each field
+ * config declares a name, a type (text, link, number, textarea, select, array,
+ * radio, file, or submit), and a label, plus optional description, validation,
+ * options/optgroups, and a dependency rule (filter or visibility) driven by the
+ * value of another field.
+ *
+ * @param {Object[]} initialFormFields - The field configurations described above.
+ * @param {Function} [onChange] - Called as (formFields, values) whenever a field or value changes.
+ */
 const DynamicForm = ({ initialFormFields, onChange }) => {
   const [formFields, setFormFields] = useState(initialFormFields);
   const { setFieldValue, values, handleChange, handleBlur } =

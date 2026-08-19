@@ -63,7 +63,7 @@ class PublicationRequestView(BaseApiView):
             except ProjectMetadata.DoesNotExist:
                 raise ApiException(f'Project {project_id} not found', status=404)
             
-            return JsonResponse({'response': publication_requests_data}, safe=False)
+            return JsonResponse({'response': publication_requests_data})
         
         return JsonResponse({'response': []})
 
@@ -234,7 +234,7 @@ class PublicationListingView(BaseApiView):
 
             publications_data.append(publication_data)
         
-        return JsonResponse({'response': publications_data}, safe=False)
+        return JsonResponse({'response': publications_data})
 
 class PublicationPublishView(BaseApiView):
 
