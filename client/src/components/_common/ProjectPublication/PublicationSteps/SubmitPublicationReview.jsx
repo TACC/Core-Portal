@@ -19,16 +19,20 @@ const SubmitPublicationReview = ({ callbackUrl, contact }) => {
   const { canPublish = false } =
     useSelector((state) => state.workbench.config) || {};
 
-  const { isApproveLoading, isRejectLoading, isApproveSuccess, isRejectSuccess } =
-    useSelector((state) => {
-      const { name, loading, error, result } = state.publications.operation;
-      return {
-        isApproveLoading: name === 'approve' && loading,
-        isRejectLoading: name === 'reject' && loading,
-        isApproveSuccess: name === 'approve' && !loading && !error && result,
-        isRejectSuccess: name === 'reject' && !loading && !error && result,
-      };
-    });
+  const {
+    isApproveLoading,
+    isRejectLoading,
+    isApproveSuccess,
+    isRejectSuccess,
+  } = useSelector((state) => {
+    const { name, loading, error, result } = state.publications.operation;
+    return {
+      isApproveLoading: name === 'approve' && loading,
+      isRejectLoading: name === 'reject' && loading,
+      isApproveSuccess: name === 'approve' && !loading && !error && result,
+      isRejectSuccess: name === 'reject' && !loading && !error && result,
+    };
+  });
 
   useEffect(() => {
     if (isApproveSuccess || isRejectSuccess) {
@@ -107,7 +111,9 @@ SubmitPublicationReview.propTypes = {
 export const SubmitPublicationReviewStep = ({ callbackUrl, contact }) => ({
   id: 'submit_publication_review',
   name: 'Submit Publication Review',
-  render: <SubmitPublicationReview callbackUrl={callbackUrl} contact={contact} />,
+  render: (
+    <SubmitPublicationReview callbackUrl={callbackUrl} contact={contact} />
+  ),
   initialValues: {},
 });
 

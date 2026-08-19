@@ -29,11 +29,7 @@ const theme = createTheme({
  * project's entity/file tree, navigation, file preview, and each
  * node's metadata.
  */
-export const ProjectTree = ({
-  projectId,
-  excludeKeys = [],
-  nodeActions,
-}) => {
+export const ProjectTree = ({ projectId, excludeKeys = [], nodeActions }) => {
   const history = useHistory();
   const location = useLocation();
   const [expandedNodes, setExpandedNodes] = useState([]);

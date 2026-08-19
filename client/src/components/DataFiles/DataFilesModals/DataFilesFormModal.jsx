@@ -1,6 +1,12 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, ModalFooter, FormText } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormText,
+} from 'reactstrap';
 import { DynamicForm } from '_common/Form/DynamicForm';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -14,7 +20,9 @@ const DataFilesFormModal = () => {
   const location = useLocation();
 
   const reloadPage = (updatedPath = '') => {
-    const match = location.pathname.match(/^\/workbench\/data\/tapis\/[^\/]+\/[^\/]+\/[^\/]+/);
+    const match = location.pathname.match(
+      /^\/workbench\/data\/tapis\/[^\/]+\/[^\/]+\/[^\/]+/
+    );
     if (!match) return;
 
     const projectUrl = match[0];
@@ -73,7 +81,6 @@ const DataFilesFormModal = () => {
 
   const validationSchema = Yup.object().shape({
     ...(form?.form_fields ?? []).reduce((schema, field) => {
-
       let validator;
 
       if (field.type === 'number') {
@@ -120,7 +127,7 @@ const DataFilesFormModal = () => {
           .max(
             field.validation?.max ?? Infinity,
             `${field.label} must be less than or equal to ${field.validation?.max} characters`
-          )
+          );
       }
 
       schema[field.name] = validator;
@@ -149,10 +156,7 @@ const DataFilesFormModal = () => {
                 </ModalHeader>
                 <ModalBody className={styles['modal-body-container']}>
                   {form?.description && (
-                    <FormText
-                      className="form-field__help"
-                      color='muted'
-                    >
+                    <FormText className="form-field__help" color="muted">
                       {form.description}
                     </FormText>
                   )}

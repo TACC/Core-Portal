@@ -162,11 +162,12 @@ const DataFilesManageProjectModalAddon = ({ projectId }) => {
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Guest Author 
+            Add Guest Author
           </Label>
-          <div style={{ marginTop: "-12px", marginBottom: "12px" }}>
+          <div style={{ marginTop: '-12px', marginBottom: '12px' }}>
             <small className="text-muted">
-              Collaborators who do not have TACC accounts. These authors won’t have access to the portal but will be included as authors.
+              Collaborators who do not have TACC accounts. These authors won’t
+              have access to the portal but will be included as authors.
             </small>
           </div>
           <Formik

@@ -109,13 +109,16 @@ export async function fetchFilesUtil(
     nextPageToken,
   });
 
-  path = path.split('/').map(p => {
-    try {
-      return encodeURIComponent(decodeURIComponent(p));
-    } catch {
-      return encodeURIComponent(p);
-    }
-  }).join('/');
+  path = path
+    .split('/')
+    .map((p) => {
+      try {
+        return encodeURIComponent(decodeURIComponent(p));
+      } catch {
+        return encodeURIComponent(p);
+      }
+    })
+    .join('/');
 
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}/?${q}`
@@ -1166,4 +1169,3 @@ export function* doMakePublic(action) {
 export function* watchMakePublic() {
   yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
 }
-

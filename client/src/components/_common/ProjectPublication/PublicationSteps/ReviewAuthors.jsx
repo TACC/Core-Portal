@@ -8,7 +8,11 @@ import ProjectMembersList from '../ProjectMembersList/ProjectMembersList';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Review/reorder the publication's authors and preview citations.
-const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) => {
+const ReviewAuthors = ({
+  project,
+  onAuthorsUpdate,
+  isReviewProject = false,
+}) => {
   const [authors, setAuthors] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -102,7 +106,10 @@ const ReviewAuthors = ({ project, onAuthorsUpdate, isReviewProject = false }) =>
                 onReorder={onReorder}
                 onRemoveAuthor={onRemoveCoAuthor}
               />
-              <ProjectMembersList members={members} onAddCoAuthor={onAddAuthor} />
+              <ProjectMembersList
+                members={members}
+                onAddCoAuthor={onAddAuthor}
+              />
             </>
           )}
         </Section>

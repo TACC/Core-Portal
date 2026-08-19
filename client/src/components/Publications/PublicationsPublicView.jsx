@@ -12,4 +12,4 @@ function PublicationsPublicView() {
   );
 }
 
-export default PublicationsPublicView
+export default PublicationsPublicView;

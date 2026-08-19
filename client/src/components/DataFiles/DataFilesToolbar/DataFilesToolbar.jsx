@@ -15,7 +15,13 @@ import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled, className }) => {
+export const ToolbarButton = ({
+  text,
+  iconName,
+  onClick,
+  disabled,
+  className,
+}) => {
   const iconClassName = `action icon-${iconName}`;
   return (
     <Button

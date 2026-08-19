@@ -21,7 +21,6 @@ const BreadcrumbsDropdown = ({
   section,
   isPublic,
 }) => {
-
   // encode path to handle special characters
   path = path.split('/').map(encodeURIComponent).join('/');
 

@@ -39,7 +39,9 @@ const PublicationWizard = ({
       redirectOnPending &&
       publication_requests?.some((request) => request.status === 'PENDING')
     ) {
-      history.replace(location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`);
+      history.replace(
+        location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`
+      );
     }
   }, [redirectOnPending, publication_requests, history]);
 

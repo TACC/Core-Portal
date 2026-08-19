@@ -64,7 +64,6 @@ export function* showSharedWorkspaces(action) {
 }
 
 export async function fetchCreateProject(project) {
-
   const formData = new FormData();
 
   const { file, ...projectMetadata } = project.metadata || {}; // Exclude the file
@@ -185,7 +184,6 @@ export function* setMember(action) {
 }
 
 export async function setTitleDescriptionUtil(projectId, data) {
-
   const formData = new FormData();
 
   const { file, ...projectMetadata } = data.metadata || {}; // Exclude the file

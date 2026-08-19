@@ -84,7 +84,9 @@ const DataFilesAddProjectModal = () => {
           username: member.user.username,
           access: member.access,
         })),
-        metadata: DataFilesAddProjectModalAddon ? { title, description, ...values } : null,
+        metadata: DataFilesAddProjectModalAddon
+          ? { title, description, ...values }
+          : null,
         onCreate,
       },
     });
@@ -149,7 +151,9 @@ const DataFilesAddProjectModal = () => {
                     <br />
                   </div>
                 }
-                description={'The title should be descriptive and distinctive from related publications.'}
+                description={
+                  'The title should be descriptive and distinctive from related publications.'
+                }
               />
               {!!minDescriptionLength && (
                 <FormField
@@ -175,7 +179,9 @@ const DataFilesAddProjectModal = () => {
                   type="textarea"
                 />
               )}
-              {DataFilesAddProjectModalAddon && <DataFilesAddProjectModalAddon />}
+              {DataFilesAddProjectModalAddon && (
+                <DataFilesAddProjectModalAddon />
+              )}
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}

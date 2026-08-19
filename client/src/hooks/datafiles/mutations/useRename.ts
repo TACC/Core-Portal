@@ -68,7 +68,9 @@ function useRename() {
         system: selectedFile.system,
         path: '/' + selectedFile.path,
         newName,
-        metadata: selectedFile.metadata ? {...selectedFile.metadata, name: newName} : null,
+        metadata: selectedFile.metadata
+          ? { ...selectedFile.metadata, name: newName }
+          : null,
       },
       {
         onSuccess: (resp) => {

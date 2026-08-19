@@ -40,8 +40,8 @@ const DRP_INSTRUCTIONS = (
 export const DRP_CURATOR_CONTACT = (
   <>
     If you have any doubts about the process please contact the data curator{' '}
-    <a href="mailto:maria@tacc.utexas.edu">Maria Esteva</a> before submitting the
-    data for publication.
+    <a href="mailto:maria@tacc.utexas.edu">Maria Esteva</a> before submitting
+    the data for publication.
   </>
 );
 
@@ -119,14 +119,20 @@ const DataFilesProjectPublish = ({ rootSystem, system }) => {
       redirectOnPending
       renderSteps={({ metadata, tree, onAuthorsUpdate }) => [
         PublicationInstructionsStep({ instructions: DRP_INSTRUCTIONS }),
-        ProjectDescriptionStep({ project: metadata, validate: drpMetadataValidate }),
+        ProjectDescriptionStep({
+          project: metadata,
+          validate: drpMetadataValidate,
+        }),
         ReviewProjectStructureStep({
           projectId: metadata.projectId,
           projectTree: tree,
           validate: drpStructureValidate,
         }),
         ReviewAuthorsStep({ project: metadata, onAuthorsUpdate }),
-        SubmitPublicationRequestStep({ callbackUrl, contact: DRP_CURATOR_CONTACT }),
+        SubmitPublicationRequestStep({
+          callbackUrl,
+          contact: DRP_CURATOR_CONTACT,
+        }),
       ]}
       onSubmit={(values, { metadata, authors }) => {
         if (values.formSubmitted) {

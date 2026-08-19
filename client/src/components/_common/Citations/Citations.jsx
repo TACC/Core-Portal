@@ -125,8 +125,7 @@ const IEEECitation = ({ project, authors }) => {
 
   return (
     <div>
-      {`[1] ${authorString}, "${project.title}",`}{' '}
-      <em>{publisher},</em>{' '}
+      {`[1] ${authorString}, "${project.title}",`} <em>{publisher},</em>{' '}
       {` ${year}. [Online]. Available: `}
       <DOILink project={project} />
       {`. [Accessed: ${day}-${month}-${year}]`}

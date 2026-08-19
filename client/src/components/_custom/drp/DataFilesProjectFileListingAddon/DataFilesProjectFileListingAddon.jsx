@@ -37,12 +37,17 @@ const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
       {selectedDataType === 'sample' ? (
         <Button
           type="link"
-          onClick={() => createSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])}
+          onClick={() =>
+            createSampleModal('EDIT_SAMPLE_DATA', selectedFiles[0])
+          }
         >
           Edit Sample Data
         </Button>
       ) : (
-        <Button type="link" onClick={() => createSampleModal('ADD_SAMPLE_DATA')}>
+        <Button
+          type="link"
+          onClick={() => createSampleModal('ADD_SAMPLE_DATA')}
+        >
           Add Sample Information
         </Button>
       )}

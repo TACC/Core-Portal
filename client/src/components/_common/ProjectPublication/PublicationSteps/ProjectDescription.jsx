@@ -54,7 +54,12 @@ const ProjectDescription = ({ project }) => {
 
     if (project.cover_image) {
       projectData['Cover Image'] = (
-        <a href={project.file_url} target='_blank' rel="noreferrer" className='wb-link'>
+        <a
+          href={project.file_url}
+          target="_blank"
+          rel="noreferrer"
+          className="wb-link"
+        >
           {project.cover_image.split('/').pop()}
         </a>
       );
@@ -69,9 +74,21 @@ const ProjectDescription = ({ project }) => {
     }
 
     const relatedFields = [
-      { key: 'related_publications', label: 'Related Publications', title: 'publication_title' },
-      { key: 'related_datasets', label: 'Related Datasets', title: 'dataset_title' },
-      { key: 'related_software', label: 'Related Software', title: 'software_title' },
+      {
+        key: 'related_publications',
+        label: 'Related Publications',
+        title: 'publication_title',
+      },
+      {
+        key: 'related_datasets',
+        label: 'Related Datasets',
+        title: 'dataset_title',
+      },
+      {
+        key: 'related_software',
+        label: 'Related Software',
+        title: 'software_title',
+      },
     ];
 
     relatedFields.forEach(({ key, label, title }) => {
@@ -122,7 +139,9 @@ const ProjectDescription = ({ project }) => {
           <p>Dataset metadata has the following errors:</p>
           <ul>
             {Object.keys(errors).map((key) => (
-              <li key={key}><b>{errors[key]}</b></li>
+              <li key={key}>
+                <b>{errors[key]}</b>
+              </li>
             ))}
           </ul>
         </div>
@@ -147,7 +166,10 @@ const defaultValidate = (values) => {
   return errors;
 };
 
-export const ProjectDescriptionStep = ({ project, validate = defaultValidate }) => ({
+export const ProjectDescriptionStep = ({
+  project,
+  validate = defaultValidate,
+}) => ({
   id: 'project_description',
   name: 'Project Description',
   render: <ProjectDescription project={project} />,

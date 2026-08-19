@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Modal, ModalHeader, ModalBody, ModalFooter, FormText } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormText,
+} from 'reactstrap';
 import { Form, Formik } from 'formik';
 import { Button, LoadingSpinner, Section } from '_common';
 import { DynamicForm } from '_common/Form/DynamicForm';
@@ -24,7 +30,8 @@ const DataFilesToolbarAddon = () => {
   const selectedFile = selectedFiles.length === 1 ? selectedFiles[0] : null;
 
   // TIFF files carry their own dimensions, so no metadata form is needed
-  const fileName = selectedFile?.name ?? selectedFile?.path?.split('/').pop() ?? '';
+  const fileName =
+    selectedFile?.name ?? selectedFile?.path?.split('/').pop() ?? '';
   const isTiff = /\.tiff?$/i.test(fileName);
 
   const canGenerateImages =
@@ -127,10 +134,10 @@ const DataFilesToolbarAddon = () => {
             <Form>
               <ModalBody>
                 <FormText className="form-field__help" color="muted">
-                  Enter this file's image properties to generate a
-                  thumbnail, histogram, and animation. Processing runs in the
-                  background and may take a few minutes. The results will
-                  appear alongside the file.
+                  Enter this file's image properties to generate a thumbnail,
+                  histogram, and animation. Processing runs in the background
+                  and may take a few minutes. The results will appear alongside
+                  the file.
                 </FormText>
                 <Section
                   className={styles['section']}

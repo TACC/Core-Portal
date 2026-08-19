@@ -38,7 +38,9 @@ const ReviewProjectStructure = ({ projectId }) => {
   return (
     <SectionTableWrapper
       header={
-        <div className={styles.title}>Review Data Structure and Description</div>
+        <div className={styles.title}>
+          Review Data Structure and Description
+        </div>
       }
       headerActions={
         <>

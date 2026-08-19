@@ -1,4 +1,3 @@
-
 export default function getDefaultProjectSystem(configuration = []) {
   const projectSystems = configuration.filter((s) => s.scheme === 'projects');
   if (projectSystems.length <= 1) {

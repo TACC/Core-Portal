@@ -27,7 +27,10 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
       rootSystem={rootSystem}
       title="Review Publication Request"
       renderSteps={({ metadata, tree, onAuthorsUpdate }) => [
-        ProjectDescriptionStep({ project: metadata, validate: drpMetadataValidate }),
+        ProjectDescriptionStep({
+          project: metadata,
+          validate: drpMetadataValidate,
+        }),
         ReviewProjectStructureStep({
           projectId: metadata.projectId,
           projectTree: tree,
@@ -38,7 +41,10 @@ const DataFilesProjectReview = ({ rootSystem, system }) => {
           onAuthorsUpdate,
           isReviewProject: true,
         }),
-        SubmitPublicationReviewStep({ callbackUrl, contact: DRP_CURATOR_CONTACT }),
+        SubmitPublicationReviewStep({
+          callbackUrl,
+          contact: DRP_CURATOR_CONTACT,
+        }),
       ]}
       onSubmit={(values, { metadata }) => {
         if (values?.publicationApproved) {

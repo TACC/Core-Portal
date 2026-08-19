@@ -107,12 +107,18 @@ const ProjectFileListingActions = ({ rootSystem, system, datasetActions }) => {
       View Tree Diagram
     </Button>,
     canRequestPublication && (
-      <Link className={`wb-link ${styles['link']}`} to={`${projectPath}/publish`}>
+      <Link
+        className={`wb-link ${styles['link']}`}
+        to={`${projectPath}/publish`}
+      >
         Request Publication
       </Link>
     ),
     canReviewPublication && (
-      <Link className={`wb-link ${styles['link']}`} to={`${projectPath}/review`}>
+      <Link
+        className={`wb-link ${styles['link']}`}
+        to={`${projectPath}/review`}
+      >
         Review Publication Request
       </Link>
     ),
