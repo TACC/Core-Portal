@@ -37,10 +37,6 @@
   padding-top: 10px;
   padding-bottom: 10px;
   border: 1px solid var(--global-color-primary--light);
-
-  // &:hover {
-  //     background-color: white;
-  // }
 }
 
 .metadata-description-div {
@@ -80,11 +76,11 @@
 .data-type-box {
   display: inline-block;
   background-color: #808080; /* Light grey background */
-  color: #fff; /* Dark text color */
+  color: #ffffff; /* Dark text color */
   padding: 2px 8px; /* Small top/bottom padding, larger left/right padding */
   border-radius: 12px; /* Rounded corners */
   font-size: 0.875rem; /* Smaller font size */
-  margin: 8px 8px;
+  margin: 8px;
   font-weight: bold;
 }
 
@@ -116,7 +112,7 @@
   margin-bottom: 20px;
   padding: 10px;
   font-size: 0.875rem;
-  color: rgba(0, 0, 0, 0.88);
+  color: rgb(0 0 0 / 88%);
   border: 1px solid #ffdcd6;
   background-color: #fff3f0;
 }

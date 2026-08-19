@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import styles from './DataFilesProjectDescriptionModal.module.scss';
 
 const DataFilesProjectDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -24,12 +23,11 @@ const DataFilesProjectDescriptionModal = () => {
         size="lg"
         isOpen={isOpen}
         toggle={toggle}
-        className={styles['modal-dialog']}
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
           {props?.title}
         </ModalHeader>
-        <ModalBody className={styles['modal-body']}>
+        <ModalBody>
           <p>{props?.description}</p>
         </ModalBody>
       </Modal>

@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import styles from './DataFilesProjectCitationModal.module.scss';
 import { Citations } from '_common/Citations/Citations';
 
 const DataFilesProjectCitationModal = () => {
@@ -24,12 +23,11 @@ const DataFilesProjectCitationModal = () => {
           size="lg"
           isOpen={isOpen}
           toggle={toggle}
-          className={styles['modal-dialog']}
         >
           <ModalHeader toggle={toggle} charCode="&#xe912;">
             Citations
           </ModalHeader>
-          <ModalBody className={styles['modal-body']}>
+          <ModalBody>
             <Citations
               project={props.project}
               authors={props.project.authors}
