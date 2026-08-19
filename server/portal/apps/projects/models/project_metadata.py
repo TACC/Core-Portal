@@ -5,14 +5,15 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from portal.apps.projects.schema_models import constants
 
 user_model = get_user_model()
 
+
 def snake_to_camel(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
+
 
 def uuid_pk():
     """Generate a string UUID for use as a primary key."""
@@ -83,7 +84,7 @@ class ProjectMetadata(models.Model):
     def get_entities_by_project_id(cls, project_id: str):
         """Return an iterable of all metadata objects for a given project ID."""
         return cls.objects.filter(base_project__value__projectId=project_id)
-    
+
     @classmethod
     def get_entity_by_project_id_and_path(cls, project_id: str, path: str):
         """Return a single metadata object for a given project ID and path"""

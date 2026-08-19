@@ -17,15 +17,15 @@ def set_workspace_permissions(client: Tapis, username: str, system_id: str, role
     """Apply read/write/execute permissions to a user on a system."""
 
     system_pems = {
-         "reader": ["READ", "EXECUTE"],
-         "writer": ["READ", "EXECUTE"],
-         "admin": ["READ", "EXECUTE", "MODIFY"]
+        "reader": ["READ", "EXECUTE"],
+        "writer": ["READ", "EXECUTE"],
+        "admin": ["READ", "EXECUTE", "MODIFY"]
     }
 
     files_pems = {
-         "reader": "READ",
-         "writer": "MODIFY",
-         "admin": "MODIFY"
+        "reader": "READ",
+        "writer": "MODIFY",
+        "admin": "MODIFY"
     }
 
     logger.info(f"Adding {username} permissions to Tapis system {system_id}")
@@ -128,6 +128,7 @@ def submit_workspace_acls_job(
 
     job_res = client.jobs.submitJob(**job_body)
     logger.info(f"Submitted workspace ACL job {job_res.name} with UUID {job_res.uuid}")
+
 
 def create_workspace_dir(workspace_id: str, system_id=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, **kwargs) -> str:
     client = service_account()
@@ -371,11 +372,10 @@ def list_projects(client, root_system_id=None):
 
     community_system = next((system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community'), None)
 
-    if community_system and not is_review_system and not is_publication_system: 
+    if community_system and not is_review_system and not is_publication_system:
         community_data_query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)~(rootDir.like.{community_system['homeDir']}*)"
     else:
         community_data_query = None
-
 
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
@@ -385,11 +385,11 @@ def list_projects(client, root_system_id=None):
                                         limit=-1)
     if community_data_query:
         community_listing = client.systems.getSystems(listType='ALL',
-                                        search=community_data_query,
-                                        select=fields,
-                                        limit=-1)
+                                                      search=community_data_query,
+                                                      select=fields,
+                                                      limit=-1)
         listing = community_listing + listing
-    
+
     serialized_listing = map(lambda prj: {
         "id": prj.id,
         "path": prj.rootDir,
@@ -454,10 +454,11 @@ def get_workspace_role(client, workspace_id, username):
 
     return None
 
+
 @transaction.atomic
-def create_publication_workspace(client, source_workspace_id: str, source_system_id: str, target_workspace_id: str, 
+def create_publication_workspace(client, source_workspace_id: str, source_system_id: str, target_workspace_id: str,
                                  target_system_id: str, title: str, description="", is_review=False):
-    
+
     portal_admin_username = settings.PORTAL_ADMIN_USERNAME
     service_client = service_account()
 
@@ -490,17 +491,17 @@ def create_publication_workspace(client, source_workspace_id: str, source_system
 
     query = f"(id.eq.{target_system_id})"
     listing = service_client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
-                                            showDeleted=True, limit=-1)
-    
+                                                showDeleted=True, limit=-1)
+
     if listing and listing[0].deleted:
         service_client.systems.undeleteSystem(systemId=target_system_id)
     else:
-    # Create the target workspace system
+        # Create the target workspace system
         create_workspace_system(
             service_client, target_workspace_id, title, description, None, None,
             f"{system_prefix}.{target_workspace_id}",
             f"{root_dir}/{target_workspace_id}"
         )
 
-     # Configure workspace ACLs
+    # Configure workspace ACLs
     set_workspace_acls(service_client, target_system_id, "/", root_dir, portal_admin_username, "add", "writer")

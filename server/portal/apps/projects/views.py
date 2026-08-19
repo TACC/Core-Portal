@@ -9,7 +9,6 @@ from django.http import HttpRequest, JsonResponse
 from hashlib import sha256
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from portal.libs.agave.utils import service_account
 from portal.utils import check_group_membership, get_client_ip
@@ -18,9 +17,9 @@ from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.workspace_operations.shared_workspace_operations import \
-        list_projects, get_project, create_shared_workspace, \
-        update_project, get_workspace_role, change_user_role, add_user_to_workspace, \
-        remove_user, transfer_ownership, increment_workspace_count
+    list_projects, get_project, create_shared_workspace, \
+    update_project, get_workspace_role, change_user_role, add_user_to_workspace, \
+    remove_user, transfer_ownership, increment_workspace_count
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
@@ -29,8 +28,8 @@ from django.db import transaction
 from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
 from django.db import models
 from portal.apps.projects.workspace_operations.project_meta_operations import create_entity_metadata,  \
-        create_project_metadata, get_ordered_value, move_entity, patch_entity_and_node, \
-        patch_file_obj_entity, patch_project_entity
+    create_project_metadata, get_ordered_value, move_entity, patch_entity_and_node, \
+    patch_file_obj_entity, patch_project_entity
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps.projects.schema_models import constants
@@ -42,8 +41,8 @@ from django.http.multipartparser import MultiPartParser
 LOGGER = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
 
+
 def validate_project_metadata(metadata):
-    portal_name = settings.PORTAL_NAMESPACE
     schema = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema.model_validate(metadata)
     return validated_model.model_dump(exclude_none=True)
@@ -83,6 +82,7 @@ def get_project_for_user(project_id, user):
     if get_workspace_role(client, workspace_id, user.username) not in write_roles:
         raise ProjectMetadata.DoesNotExist("User cannot edit this project")
     return project
+
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -179,7 +179,6 @@ class ProjectsApiView(BaseApiView):
                     project["projectId"] = project['id'].split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
                 except Exception as e:
                     LOGGER.exception(f"Failed to retrieve metadata for project {project['id']}: {e}")
-                    pass
 
         tapis_project_listing_indexer.delay(listing)
 
@@ -215,15 +214,16 @@ class ProjectsApiView(BaseApiView):
 
         client = request.user.tapis_oauth.client
         session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-        system_id = create_shared_workspace(client, title, description, keywords, request.user.username, workspace_number, tapis_tracking_id=f"portals.{session_key_hash}")
+        system_id = create_shared_workspace(client, title, description, keywords, request.user.username,
+                                            workspace_number, tapis_tracking_id=f"portals.{session_key_hash}")
 
         # Upload cover image to media folder
-        if cover_image: 
+        if cover_image:
             service_client = service_account()
             resized_file = resize_cover_image(cover_image)
-            service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, 
-                                path=f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}', 
-                                file=resized_file)
+            service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                                        path=f'media/{settings.PORTAL_PROJECTS_ID_PREFIX}-{workspace_number}/cover_image/{cover_image.name}',
+                                        file=resized_file)
 
         METRICS.info(
             "Projects",
@@ -266,14 +266,14 @@ class ProjectInstanceApiView(BaseApiView):
         # Based on url mapping, either system_id or project_id is always available.
         if system_id is not None:
             project_id = system_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
-        
+
         if system_id and settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX and system_id.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
             client = service_account()
         else:
             client = get_project_client(request.user)
 
         prj = get_project(client, project_id)
-        
+
         METRICS.info(
             "Projects",
             extra={
@@ -311,8 +311,7 @@ class ProjectInstanceApiView(BaseApiView):
                     sync_files_without_metadata.delay(client.access_token.access_token, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}")
             except Exception as e:
                 LOGGER.exception(f"Failed to retrieve metadata for project {project_id}: {e}")
-                pass
-            
+
         return JsonResponse(
             {
                 'status': 200,
@@ -354,16 +353,16 @@ class ProjectInstanceApiView(BaseApiView):
         :param str project_id: Project Id.
         """
         query_dict, multi_value_dict = MultiPartParser(request.META, request,
-                                            request.upload_handlers).parse()
-        
+                                                       request.upload_handlers).parse()
+
         title = query_dict.get('title')
         description = query_dict.get('description')
         metadata = query_dict.get('metadata')
         cover_image = multi_value_dict.get('cover_image')
         keywords = query_dict.get('keywords')
-        
+
         project_id_full = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
-        
+
         METRICS.info(
             "Projects",
             extra={
@@ -382,7 +381,7 @@ class ProjectInstanceApiView(BaseApiView):
 
         if system_details.owner == request.user.username or check_project_admin_group(request.user):
             workspace_def = update_project(client, project_id, title, description, keywords)
-        else: 
+        else:
             workspace_def = get_project(client, project_id)
 
         if settings.PORTAL_PROJECTS_ENABLE_METADATA:
@@ -408,7 +407,7 @@ class ProjectInstanceApiView(BaseApiView):
 
             workspace_def.update(get_ordered_value(entity.name, entity.value))
             workspace_def["projectId"] = project_id
-        
+
         if cover_image or workspace_def.get('cover_image') is not None:
             service_client = service_account()
 
@@ -416,8 +415,8 @@ class ProjectInstanceApiView(BaseApiView):
             if cover_image:
                 resized_file = resize_cover_image(cover_image)
                 service_client.files.insert(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                                    path=f'media/{project_id}/cover_image/{cover_image.name}',
-                                    file=resized_file)
+                                            path=f'media/{project_id}/cover_image/{cover_image.name}',
+                                            file=resized_file)
 
             if workspace_def.get('cover_image') is not None:
                 # Get the postit for the cover image
@@ -433,6 +432,7 @@ class ProjectInstanceApiView(BaseApiView):
                 'response': workspace_def
             }
         )
+
 
 @method_decorator(agave_jwt_login, name='dispatch')
 @method_decorator(login_required, name='dispatch')
@@ -565,16 +565,16 @@ def get_project_role(request, project_id, username):
     client = get_project_client(request.user)
 
     METRICS.info(
-            "Projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "projects.get_project_role",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"project_id": project_id, "username": username},
-            },
-        )
+        "Projects",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "projects.get_project_role",
+            "agent": request.META.get("HTTP_USER_AGENT"),
+            "ip": get_client_ip(request),
+            "info": {"project_id": project_id, "username": username},
+        },
+    )
 
     role = get_workspace_role(client, project_id, username)
 
@@ -586,25 +586,26 @@ def get_system_role(request, project_id, username):
     client = get_project_client(request.user)
 
     METRICS.info(
-            "Projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "projects.get_system_role",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"project_id": project_id, "username": username},
-            },
-        )
+        "Projects",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "projects.get_system_role",
+            "agent": request.META.get("HTTP_USER_AGENT"),
+            "ip": get_client_ip(request),
+            "info": {"project_id": project_id, "username": username},
+        },
+    )
 
     role = get_workspace_role(client, project_id, username)
 
     return JsonResponse({'username': username, 'role': role})
 
+
 class ProjectEntityView(BaseApiView):
 
     def patch(self, request: HttpRequest, project_id: str):
-        
+
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
@@ -615,7 +616,7 @@ class ProjectEntityView(BaseApiView):
             raise ApiException(
                 "User does not have access to the requested project", status=403
             ) from exc
-        
+
         req_body = json.loads(request.body)
         value = req_body.get("value", {})
         entity_uuid = req_body.get("uuid", "")
@@ -636,16 +637,15 @@ class ProjectEntityView(BaseApiView):
 
         return JsonResponse({"result": "OK"})
 
-
     def post(self, request: HttpRequest, project_id: str):
         """Add a new entity to a project"""
 
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
         client = get_project_client(request.user)
-    
+
         try:
-            project: ProjectMetadata = get_project_for_user(project_id, request.user)
+            get_project_for_user(project_id, request.user)
         except ProjectMetadata.DoesNotExist as exc:
             raise ApiException(
                 "User does not have access to the requested project", status=403
@@ -691,4 +691,3 @@ class ProjectTreeView(BaseApiView):
             )
 
         return JsonResponse({'tree': tree})
-

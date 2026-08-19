@@ -1,7 +1,7 @@
 import json
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.http import HttpRequest, JsonResponse, HttpResponseForbidden
+from django.http import HttpRequest, JsonResponse
 from portal.exceptions.api import ApiException
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
@@ -12,6 +12,7 @@ from portal.apps.projects.views import get_project_client
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class DigitalRocksSampleView(BaseApiView):
 
@@ -33,13 +34,14 @@ class DigitalRocksSampleView(BaseApiView):
             node = project_graph.nodes[node_id]
             if (node.get('name') == constants.SAMPLE):
                 sample_uuids.append(node.get('uuid'))
-            
+
         samples = ProjectMetadata.objects.filter(uuid__in=sample_uuids).values('uuid', 'name', 'value')
 
         origin_data = []
-        
+
         if get_origin_data == 'true':
-            origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id, name=constants.DIGITAL_DATASET).values('uuid', 'name', 'value')
+            origin_data = ProjectMetadata.objects.filter(base_project__value__projectId=full_project_id,
+                                                         name=constants.DIGITAL_DATASET).values('uuid', 'name', 'value')
 
         response_data = {
             'samples': list(samples),
@@ -47,7 +49,6 @@ class DigitalRocksSampleView(BaseApiView):
         }
 
         return JsonResponse(response_data)
-    
 
 
 class GenerateImagesView(BaseApiView):
@@ -76,5 +77,3 @@ class GenerateImagesView(BaseApiView):
             raise ApiException("Error generating images", status=500) from exc
 
         return JsonResponse({"result": "OK"})
-    
-

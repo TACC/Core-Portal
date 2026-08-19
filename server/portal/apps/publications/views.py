@@ -12,32 +12,37 @@ from django.utils.decorators import method_decorator
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
-from portal.apps.projects.workspace_operations.project_publish_operations import copy_graph_and_files_for_review_system, publish_project, update_and_cleanup_review_project, send_publication_rejected_email_to_authors, send_publication_reviewed_email_to_reviewers
+from portal.apps.projects.workspace_operations.project_publish_operations import (
+    copy_graph_and_files_for_review_system,
+    publish_project,
+    update_and_cleanup_review_project,
+    send_publication_rejected_email_to_authors,
+    send_publication_reviewed_email_to_reviewers,
+)
 from django.db import transaction
 from portal.apps.notifications.models import Notification
-from django.http import HttpResponse
 from portal.apps.publications.models import Publication, PublicationRequest
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.views import get_project_for_user
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
-from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.docs.base import IndexedPublication
 from elasticsearch_dsl import Q
 
 logger = logging.getLogger(__name__)
 
+
 class PublicationRequestView(BaseApiView):
-         
+
     def get(self, request, project_id: str):
-        
+
         if project_id:
             try:
                 project = ProjectMetadata.get_project_by_id(project_id)
-                
+
                 publication_requests = PublicationRequest.objects.filter(
-                     models.Q(source_project=project) | models.Q(review_project=project)
+                    models.Q(source_project=project) | models.Q(review_project=project)
                 )
 
                 publication_requests_data = [
@@ -59,22 +64,21 @@ class PublicationRequestView(BaseApiView):
                     }
                     for pub_request in publication_requests
                 ]
-                
+
             except ProjectMetadata.DoesNotExist:
                 raise ApiException(f'Project {project_id} not found', status=404)
-            
+
             return JsonResponse({'response': publication_requests_data})
-        
+
         return JsonResponse({'response': []})
 
     @method_decorator(login_required, name='dispatch')
     def post(self, request):
-        
+
         request_body = json.loads(request.body)
 
         client = request.user.tapis_oauth.client
-        service_client = service_account()
-        
+
         full_project_id = request_body.get('project_id')
 
         if not full_project_id:
@@ -98,8 +102,8 @@ class PublicationRequestView(BaseApiView):
             source_project.save()
 
         try:
-            create_publication_workspace(client, source_workspace_id, source_system_id, review_workspace_id, 
-                                            review_system_id, request_body.get('title'), request_body.get('description'), True)
+            create_publication_workspace(client, source_workspace_id, source_system_id, review_workspace_id,
+                                         review_system_id, request_body.get('title'), request_body.get('description'), True)
 
             # Create publication request
             review_project = ProjectMetadata.get_project_by_id(review_system_id)
@@ -124,47 +128,48 @@ class PublicationRequestView(BaseApiView):
 
             # Start task to copy files and metadata
             copy_graph_and_files_for_review_system.apply_async(kwargs={
-                'user_access_token': client.access_token.access_token, 
+                'user_access_token': client.access_token.access_token,
                 'source_workspace_id': source_workspace_id,
                 'review_workspace_id': review_workspace_id,
-                'source_system_id': source_system_id, 
+                'source_system_id': source_system_id,
                 'review_system_id': review_system_id
             })
 
-            # Create notification 
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.INFO,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{source_workspace_id} submitted for review',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{source_workspace_id} submitted for review',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
         except Exception as e:
             logger.error(f"Error creating publication workspace: {e}")
 
-            # Create notification 
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.ERROR,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{source_workspace_id} creation failed',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.ERROR,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{source_workspace_id} creation failed',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
 
         return JsonResponse({'response': 'OK'})
+
 
 class PublicationListingView(BaseApiView):
 
     def get(self, request):
-        
+
         query_string = request.GET.get('query_string')
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-    
+
         if query_string:
             query = IndexedPublication.search()
 
@@ -200,9 +205,9 @@ class PublicationListingView(BaseApiView):
             res = query.execute()
             hits = [hit.meta.id for hit in res if hasattr(hit.meta, 'id') and hit.meta.id is not None]
 
-            if hits: 
+            if hits:
                 publications = (
-                     Publication.objects.filter(project_id__in=hits, is_published=True)
+                    Publication.objects.filter(project_id__in=hits, is_published=True)
                     .defer("tree")
                     .order_by("-created")
                 )
@@ -210,7 +215,7 @@ class PublicationListingView(BaseApiView):
                 publications = Publication.objects.none()
         else:
             publications = Publication.objects.filter(is_published=True).order_by("-created")
-        
+
         publications_data = []
         for publication in publications:
             publication_data = {
@@ -233,12 +238,13 @@ class PublicationListingView(BaseApiView):
                 pass
 
             publications_data.append(publication_data)
-        
+
         return JsonResponse({'response': publications_data})
+
 
 class PublicationPublishView(BaseApiView):
 
-     def post(self, request):
+    def post(self, request):
         """view for publishing a project"""
 
         client = request.user.tapis_oauth.client
@@ -249,10 +255,10 @@ class PublicationPublishView(BaseApiView):
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
-        
+
         if is_review:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
-        else: 
+        else:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
         try:
@@ -267,37 +273,37 @@ class PublicationPublishView(BaseApiView):
         published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{published_workspace_id}"
 
         try:
-            create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id, 
-                                     request_body.get('title'), request_body.get('description'), False)
+            create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id,
+                                         request_body.get('title'), request_body.get('description'), False)
 
             publish_project.apply_async(kwargs={
                 'project_id': project_id,
                 'version': 1
             })
 
-            # Create notification 
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.INFO,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{project_id} submitted for publication',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{project_id} submitted for publication',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
         except Exception as e:
             logger.error(f"Error creating publication workspace: {e}")
-        
-            # Create notification 
+
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.ERROR,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{project_id} publication failed',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.ERROR,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{project_id} publication failed',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
 
         return JsonResponse({'response': 'OK'})
 
@@ -315,10 +321,10 @@ class PublicationVersionView(BaseApiView):
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
-        
+
         if is_review:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.")[1]
-        else: 
+        else:
             project_id = full_project_id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1]
 
         try:
@@ -342,65 +348,66 @@ class PublicationVersionView(BaseApiView):
         print(f"Published Workspace ID: {published_workspace_id}")
 
         try:
-            create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id, 
-                                        request_body.get('title'), request_body.get('description'), False)
-            
+            create_publication_workspace(client, project_id, source_system_id, published_workspace_id, published_system_id,
+                                         request_body.get('title'), request_body.get('description'), False)
+
             publish_project.apply_async(kwargs={
                 'project_id': project_id,
                 'version': version
             })
 
-            # Create notification 
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.INFO,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{project_id} submitted for publication',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.INFO,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{project_id} submitted for publication',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
         except Exception as e:
             logger.error(f"Error creating publication workspace: {e}")
-        
-            # Create notification 
+
+            # Create notification
             event_data = {
-                    Notification.EVENT_TYPE: 'projects',
-                    Notification.STATUS: Notification.ERROR,
-                    Notification.USER: request.user.username,
-                    Notification.MESSAGE: f'{project_id} publication failed',
-                }
-            
+                Notification.EVENT_TYPE: 'projects',
+                Notification.STATUS: Notification.ERROR,
+                Notification.USER: request.user.username,
+                Notification.MESSAGE: f'{project_id} publication failed',
+            }
+
             with transaction.atomic():
-                    Notification.objects.create(**event_data)
+                Notification.objects.create(**event_data)
 
         return JsonResponse({'response': 'OK'})
+
 
 class PublicationRejectView(BaseApiView):
 
     def post(self, request):
-        
+
         request_body = json.loads(request.body)
         full_project_id = request_body.get('project_id')
 
         if not full_project_id:
             raise ApiException("Missing project ID", status=400)
-        
+
         if not settings.DEBUG:
             send_publication_rejected_email_to_authors.apply_async(args=[full_project_id])
             send_publication_reviewed_email_to_reviewers.apply_async(args=[full_project_id, PublicationRequest.Status.REJECTED, request.user.username])
-        
+
         update_and_cleanup_review_project(full_project_id, PublicationRequest.Status.REJECTED)
 
-        # Create notification 
+        # Create notification
         event_data = {
-                Notification.EVENT_TYPE: 'projects',
-                Notification.STATUS: Notification.INFO,
-                Notification.USER: request.user.username,
-                Notification.MESSAGE: f'{full_project_id} was rejected',
-            }
-        
+            Notification.EVENT_TYPE: 'projects',
+            Notification.STATUS: Notification.INFO,
+            Notification.USER: request.user.username,
+            Notification.MESSAGE: f'{full_project_id} was rejected',
+        }
+
         with transaction.atomic():
-                Notification.objects.create(**event_data)
+            Notification.objects.create(**event_data)
 
         return JsonResponse({'response': 'OK'})

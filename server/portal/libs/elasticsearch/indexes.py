@@ -76,6 +76,7 @@ def setup_projects_index(reindex=False, force=False):
         index.document(IndexedProject)
         index.create()
 
+
 def setup_publications_index(reindex=False, force=False):
     index = setup_indexes('publications', reindex, force)
     if not index.exists():

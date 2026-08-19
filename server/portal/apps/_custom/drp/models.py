@@ -11,6 +11,8 @@ from portal.apps.projects.schema_models.base_metadata import (
 """
 Pydantic models for DRP Metadata.
 """
+
+
 class DrpFileMetadata(BaseFileMetadata):
     """Model for DRP File Metadata"""
 

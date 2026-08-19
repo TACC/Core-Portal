@@ -1,6 +1,6 @@
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse
 
 
 class FormsView(BaseApiView):

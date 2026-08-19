@@ -11,6 +11,7 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+
 def conf_raw(img, file):
     # NOTE: As mentioned above, this datatype should be an auto generated field
     # in the adv image upload form for RAW files. The image parameters for
@@ -37,24 +38,27 @@ def conf_raw(img, file):
         int(img['width'])
     ])
 
+
 def conf_tiff(file):
     with io.BytesIO(file) as buffer:
         image = tiff.imread(buffer)
         scaled_image = binary_correction(image)
     return scaled_image
 
+
 def binary_correction(img):
     logger.debug('Correcting for Binary values...')
     min_value = np.min(img)
     max_value = np.max(img)
-    k=255/(max_value-min_value)
-    l=-k*min_value
+    k = 255/(max_value-min_value)
+    offset = -k*min_value
 
-    image1=np.floor(img * k + l)
+    image1 = np.floor(img * k + offset)
     del img
     return image1.astype('uint8')
 
-def create_thumbnail(img):    
+
+def create_thumbnail(img):
     dpi = 100
     dim_max = 5
     width = img.shape[1]
@@ -69,7 +73,7 @@ def create_thumbnail(img):
         logger.debug('handle RGB')
 
     # preserve aspect ratio and resize to fit.
-    modifier = dim_max/width if width>height else dim_max/height
+    modifier = dim_max/width if width > height else dim_max/height
     resized_width = width*modifier
     resized_height = height*modifier
 
@@ -83,7 +87,7 @@ def create_thumbnail(img):
     plt.set_cmap('Greys')
     if depth_slice is not None:
         logger.debug('Creating Thumbnail from 3D tif')
-        ax.imshow(img[depth_slice,:,:], aspect='equal', vmin=0, vmax=255)
+        ax.imshow(img[depth_slice, :, :], aspect='equal', vmin=0, vmax=255)
     else:
         logger.debug('Creating Thumbnail from FLAT tif')
         ax.imshow(img, aspect='equal')
@@ -91,15 +95,16 @@ def create_thumbnail(img):
     buffer = io.BytesIO()
     plt.savefig(buffer, format='jpeg', dpi=dpi)
     buffer.seek(0)
-    
+
     plt.close(fig)
 
     return buffer.getvalue()
 
+
 def create_histogram(img):
     logger.debug('Creating Histogram')
-    nbins=256
-    fig_hist = plt.figure(figsize=(4,2.4))
+    nbins = 256
+    fig_hist = plt.figure(figsize=(4, 2.4))
     freq, bins, patches = plt.hist(img.reshape([np.size(img),]), nbins, density=True)
     plt.xlabel('Gray value')
     plt.ylabel('Probability')
@@ -111,15 +116,16 @@ def create_histogram(img):
     plt.close(fig_hist)
 
     csv_buffer = io.StringIO()
-    histwriter = csv.writer(csv_buffer,delimiter=',')
-    histwriter.writerow(('Value','Probability'))
+    histwriter = csv.writer(csv_buffer, delimiter=',')
+    histwriter.writerow(('Value', 'Probability'))
     for i in range(np.size(freq)):
-        histwriter.writerow((bins[i],freq[i]))
+        histwriter.writerow((bins[i], freq[i]))
     csv_buffer.seek(0)
 
     logger.debug('Histogram Created')
 
     return image_buffer.getvalue(), csv_buffer.getvalue()
+
 
 def create_animation(img):
     """
@@ -185,8 +191,9 @@ def create_animation(img):
     logger.debug('Animated Gif Created')
     return gif_binary_data
 
+
 def resize_cover_image(img):
-    
+
     max_size = 500
     image = Image.open(img)
     (width, height) = image.size

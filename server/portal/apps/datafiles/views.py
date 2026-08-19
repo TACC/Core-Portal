@@ -88,7 +88,8 @@ class SystemListingView(BaseApiView):
                 response['default_host'] = system_def.host
                 response['default_system_id'] = default_system_id
         else:
-            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public' or sys['system'] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME]
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] ==
+                                       'public' or sys['system'] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME]
 
         return JsonResponse(response)
 
@@ -277,7 +278,8 @@ class TapisFilesView(BaseApiView):
                 },
             )
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-            response = tapis_post_handler(client, scheme, system, path, operation, {**body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
+            response = tapis_post_handler(client, scheme, system, path, operation, {
+                                          **body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -457,16 +459,16 @@ class LinkView(BaseApiView):
         except Link.DoesNotExist:
             METRICS.info('Data Files',
                          extra={
-                              'user': request.user.username,
-                              'sessionId': getattr(request.session, 'session_key', ''),
-                              'operation': 'create-postit',
-                              'agent': request.META.get('HTTP_USER_AGENT'),
-                              'ip': get_client_ip(request),
-                              'info': {
-                                  'api': 'tapis',
-                                  'systemId': system,
-                                  'filePath': path,
-                                  'query': request.GET.dict()}
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'create-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
                          })
             # Link doesn't exist - proceed with creating one
             postit = self.create_postit(request, scheme, system, path)

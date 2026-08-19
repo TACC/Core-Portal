@@ -9,9 +9,11 @@ from django.conf import settings
 from django.db import migrations, models
 from portal.apps.projects.schema_models import constants
 
+
 class Migration(migrations.Migration):
 
-    replaces = [('projects', '0004_projectsmetadata'), ('projects', '0005_projectsmetadata_created_at_and_more'), ('projects', '0006_rename_projectmetadata_legacyprojectmetadata'), ('projects', '0007_projectmetadata_and_more'), ('projects', '0008_delete_projectsmetadata')]
+    replaces = [('projects', '0004_projectsmetadata'), ('projects', '0005_projectsmetadata_created_at_and_more'), ('projects',
+                                                                                                                   '0006_rename_projectmetadata_legacyprojectmetadata'), ('projects', '0007_projectmetadata_and_more'), ('projects', '0008_delete_projectsmetadata')]
 
     dependencies = [
         ('projects', '0003_alter_abstractprojectmetadata_co_pis_and_more'),
@@ -27,11 +29,14 @@ class Migration(migrations.Migration):
             name='ProjectMetadata',
             fields=[
                 ('uuid', models.CharField(default=portal.apps.projects.models.project_metadata.uuid_pk, editable=False, max_length=100, primary_key=True, serialize=False)),
-                ('name', models.CharField(help_text="Metadata namespace, e.g. 'designsafe.project'", max_length=100, validators=[django.core.validators.MinLengthValidator(1)])),
-                ('value', models.JSONField(encoder=django.core.serializers.json.DjangoJSONEncoder, help_text='JSON document containing file metadata, including title/description')),
+                ('name', models.CharField(help_text="Metadata namespace, e.g. 'designsafe.project'",
+                 max_length=100, validators=[django.core.validators.MinLengthValidator(1)])),
+                ('value', models.JSONField(encoder=django.core.serializers.json.DjangoJSONEncoder,
+                 help_text='JSON document containing file metadata, including title/description')),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
-                ('base_project', models.ForeignKey(help_text='Base project containing this entity.For top-level project metadata, this is `self`.', on_delete=django.db.models.deletion.CASCADE, to='projects.projectmetadata')),
+                ('base_project', models.ForeignKey(help_text='Base project containing this entity.For top-level project metadata, this is `self`.',
+                 on_delete=django.db.models.deletion.CASCADE, to='projects.projectmetadata')),
                 ('users', models.ManyToManyField(help_text='Users who have access to a project.', related_name='projects', to=settings.AUTH_USER_MODEL)),
             ],
             options={

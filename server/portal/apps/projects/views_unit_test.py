@@ -204,7 +204,7 @@ def test_projects_search(
     mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
         IndexedProject(**project_list["api_response"][1])
     ]
-    
+
     mock_tapis_client.systems.getSystems.side_effect = [
         [project_list["tapis_response"][1]],
         [],

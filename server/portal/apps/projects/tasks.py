@@ -8,24 +8,25 @@ from portal.libs.agave.utils import user_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.project_meta_operations import (
-        add_file_associations, 
-        create_file_obj, 
-        get_file_obj, 
-        get_ordered_value 
-    )
+    add_file_associations,
+    create_file_obj,
+    get_file_obj,
+    get_ordered_value
+)
 from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
 from portal.apps.projects.schema_models.base_metadata import FileObj
-from portal.libs.files.file_processing import ( 
-        binary_correction, 
-        conf_raw, 
-        conf_tiff, 
-        create_animation, 
-        create_histogram, 
-        create_thumbnail 
-    )
+from portal.libs.files.file_processing import (
+    binary_correction,
+    conf_raw,
+    conf_tiff,
+    create_animation,
+    create_histogram,
+    create_thumbnail
+)
 from portal.apps.notifications.models import Notification
 
 logger = logging.getLogger(__name__)
+
 
 @shared_task(bind=True, max_retries=3, queue='default')
 def sync_files_without_metadata(self, user_access_token, project_id: str):
@@ -44,7 +45,7 @@ def sync_files_without_metadata(self, user_access_token, project_id: str):
 
     files_to_add_dict = {}
 
-    for file in files: 
+    for file in files:
         file_path = file.path
         parent_path = str(Path(file_path).parent)
 
@@ -75,6 +76,7 @@ def sync_files_without_metadata(self, user_access_token, project_id: str):
         logger.info(f'Adding {len(file_objs)} files to entity {entity_uuid} in project {project_id}')
         add_file_associations(entity_uuid, file_objs)
 
+
 @shared_task(bind=True, queue='default')
 def process_file(self, project_id: str, path: str, user_access_token: str, username: str, encoded_file=None):
 
@@ -88,7 +90,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
     else:
         logger.info('Retrieving file using Tapis')
         file = client.files.getContents(systemId=project_id, path=path)
-    
+
     logger.info('File retrieved')
 
     parent_path = str(Path(path).parent)
@@ -116,9 +118,9 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
                 Notification.USER: username,
                 Notification.MESSAGE: f'Failed to Generate Images for {Path(path).name}',
             })
-            
+
             return
-        
+
         Notification.objects.create(**{
             Notification.EVENT_TYPE: 'projects',
             Notification.STATUS: Notification.INFO,
@@ -139,7 +141,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
 
             logger.info('Uploading generated thumbnail')
             client.files.insert(systemId=project_id, path=thumbnail_path, file=thumbnail)
-        except Exception as e: 
+        except Exception as e:
             logger.error(f'Error generating thumbnail: {e}')
 
         try:
@@ -151,7 +153,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
             logger.info('Uploading generated histogram')
             client.files.insert(systemId=project_id, path=histogram_img_path, file=histogram_img)
             client.files.insert(systemId=project_id, path=histogram_csv_path, file=histogram_csv)
-        except Exception as e: 
+        except Exception as e:
             logger.error(f'Error generating histogram: {e}')
 
         try:
@@ -161,7 +163,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
 
             logger.info('Uploading generated animation')
             client.files.insert(systemId=project_id, path=animation_path, file=animation)
-        except Exception as e: 
+        except Exception as e:
             logger.error(f'Error generating animation: {e}')
 
         with transaction.atomic():
@@ -169,7 +171,7 @@ def process_file(self, project_id: str, path: str, user_access_token: str, usern
                 Notification.EVENT_TYPE: 'projects',
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: username,
-                Notification.MESSAGE: f'Image generation complete. Please refresh the page.',
+                Notification.MESSAGE: 'Image generation complete. Please refresh the page.',
             })
-    else: 
+    else:
         print(f"File {path} does not exist in project {project_id}")

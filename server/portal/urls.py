@@ -129,7 +129,7 @@ urlpatterns = [
 if settings.WORKBENCH_SETTINGS.get('hasCustomEndpoints'):
     urlpatterns.append(
         path(
-            f'api/{settings.PORTAL_NAMESPACE.lower()}/', 
+            f'api/{settings.PORTAL_NAMESPACE.lower()}/',
             include(f'portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.urls', namespace='custom')
         )
     )

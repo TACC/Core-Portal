@@ -66,9 +66,10 @@ def index_project(self, project_id):
 def tapis_project_listing_indexer(self, projects):
     index_project_listing(projects)
 
+
 def index_publication(project_id):
     from portal.apps.publications.models import Publication
-    
+
     pub = Publication.objects.get(project_id=project_id)
     try:
         pub_es = IndexedPublication.get(project_id)

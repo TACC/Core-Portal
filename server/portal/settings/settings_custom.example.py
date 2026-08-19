@@ -327,4 +327,4 @@ _INTERNAL_DOCS_URL = "core/internal-docs/"
 
 
 _SMTP_HOST = "relay.tacc.utexas.edu"
-_DEFAULT_FROM_EMAIL="no-reply@digitalrocksportal.org"
+_DEFAULT_FROM_EMAIL = "no-reply@digitalrocksportal.org"

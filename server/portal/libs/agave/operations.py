@@ -14,8 +14,10 @@ from portal.libs.agave.utils import text_preview, get_file_size, increment_file_
 from portal.libs.agave.filter_mapping import filter_mapping
 from pathlib import Path
 from tapipy.errors import BaseTapyException
-from portal.apps.projects.workspace_operations.project_meta_operations import (add_file_associations, create_file_obj, get_entity, get_file_obj, get_ordered_value, get_value, patch_entity_and_node,
-                                                                               patch_file_association, remove_file_obj_by_path)
+from portal.apps.projects.workspace_operations.project_meta_operations import (
+    add_file_associations, create_file_obj, get_entity, get_file_obj,
+    get_ordered_value, get_value, patch_entity_and_node,
+    patch_file_association, remove_file_obj_by_path)
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.graph_operations import get_or_create_trash_entity, get_root_node, get_node_from_path
 
@@ -70,7 +72,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
                 value = None
                 uuid = None
             elif f.type == 'dir':
-                value = get_value(system,f.path)
+                value = get_value(system, f.path)
                 entity = get_entity(system, f.path)
                 uuid = entity.to_dict().get('uuid') if entity else None
             else:
@@ -107,20 +109,21 @@ def detail(client, system, path, *args, **kwargs):
     """
     Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
-    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1,
+                                      headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     f = _listing[0]
     listing_res = {
-            'system': system,
-            'type': 'dir' if f.type == 'dir' else 'file',
-            'format': 'folder' if f.type == 'dir' else 'raw',
-            'mimeType': f.mimeType,
-            'path': f"/{f.path}",
-            'name': f.name,
-            'length': f.size,
-            'lastModified': f.lastModified,
-            '_links': {
+        'system': system,
+        'type': 'dir' if f.type == 'dir' else 'file',
+        'format': 'folder' if f.type == 'dir' else 'raw',
+        'mimeType': f.mimeType,
+        'path': f"/{f.path}",
+        'name': f.name,
+        'length': f.size,
+        'lastModified': f.lastModified,
+        '_links': {
                 'self': {'href': f.url}
-            }}
+        }}
 
     return listing_res
 
@@ -238,6 +241,7 @@ def download(client, system, path, max_uses=3, lifetime=600, **kwargs):
 
     return redeemUrl
 
+
 @transaction.atomic
 def mkdir(client, system, path, dir_name, metadata=None, **kwargs):
     """Create a new directory.
@@ -263,12 +267,13 @@ def mkdir(client, system, path, dir_name, metadata=None, **kwargs):
     client.files.mkdir(systemId=system, path=path_input)
 
     tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                    'systemId': system,
-                                    'filePath': path,
-                                    'recurse': False},
-                            )
+                                      'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              )
 
     return {"result": "OK"}
+
 
 @transaction.atomic
 def move(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None, **kwargs):
@@ -314,7 +319,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
     if metadata is not None:
         if (metadata.get('data_type') == 'file'):
             patch_file_association(src_system, metadata, src_path.strip('/'), dest_path_full, file_name, 'move')
-        else: 
+        else:
             patch_entity_and_node(src_system, metadata, src_path.strip('/'), dest_path, file_name)
 
     if src_system == dest_system:
@@ -351,6 +356,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None, m
                                   )
 
     return move_result
+
 
 @transaction.atomic
 def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, metadata=None,
@@ -439,6 +445,7 @@ def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
                 dest_path,
                 *args, **kwargs)
 
+
 @transaction.atomic
 def delete(client, system, path, *args, **kwargs):
     # Keep the project metadata graph in sync when enabled: drop the file's
@@ -449,6 +456,7 @@ def delete(client, system, path, *args, **kwargs):
     return client.files.delete(systemId=system,
                                path=path,
                                headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+
 
 def rename(client, system, path, new_name, metadata=None, *args, **kwargs):
     """Renames a file. This is performed under the hood by moving the file to
@@ -472,6 +480,7 @@ def rename(client, system, path, new_name, metadata=None, *args, **kwargs):
     new_path = os.path.dirname(path)
     return move(client, src_system=system, src_path=path,
                 dest_system=system, dest_path=new_path, file_name=new_name, metadata=metadata, **kwargs)
+
 
 def trash(client, system, path, homeDir, metadata=None, *args, **kwargs):
     """Move a file to the .Trash folder.
@@ -509,6 +518,7 @@ def trash(client, system, path, homeDir, metadata=None, *args, **kwargs):
                 f'{homeDir}/{settings.TAPIS_DEFAULT_TRASH_NAME}', file_name, metadata, **kwargs)
 
     return resp
+
 
 @transaction.atomic
 def upload(client, system, path, uploaded_file, metadata=None, *args, **kwargs):
@@ -649,11 +659,12 @@ def download_bytes(client, system, path, *args, **kwargs):
     io.BytesIO
         BytesIO object representing the downloaded file.
     """
-    file_name = os.path.basename(path) 
+    file_name = os.path.basename(path)
     resp = client.files.getContents(systemId=system, path=path)
     result = io.BytesIO(resp)
     result.name = file_name
     return result
+
 
 @transaction.atomic
 def upload_file_metadata(client, system, path, file_name, file_size, metadata, **kwargs):

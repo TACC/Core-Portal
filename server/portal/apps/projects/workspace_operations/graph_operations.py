@@ -13,6 +13,7 @@ def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:
     max_order = max((graph.nodes[child]["order"] for child in child_nodes), default=-1)
     return int(max_order) + 1
 
+
 def _add_node_to_graph(
     graph: nx.DiGraph, parent_node_id: str, meta_uuid: str, name: str, label: str
 ) -> tuple[nx.DiGraph, str | None]:
@@ -32,6 +33,7 @@ def _add_node_to_graph(
     _graph.add_node(child_node_id, uuid=meta_uuid, name=name, order=order, label=label)
     _graph.add_edge(parent_node_id, child_node_id)
     return (_graph, child_node_id)
+
 
 def initialize_project_graph(project_id: str):
     """
@@ -75,6 +77,7 @@ def initialize_project_graph(project_id: str):
     )
     return res
 
+
 def traverse_graph(project_graph, root_node, path_components):
     current_node = root_node
     for component in path_components:
@@ -89,6 +92,7 @@ def traverse_graph(project_graph, root_node, path_components):
             return None
     return {"id": current_node, **project_graph.nodes[current_node]}
 
+
 def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
     """Return the node ID for the parent of a node with the given path."""
 
@@ -101,10 +105,11 @@ def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
 
     if len(path_parts) == 0 or path_parts[0] == "":
         return {"id": "NODE_ROOT"}
-    
+
     node = traverse_graph(project_graph, "NODE_ROOT", path_parts)
 
     return node
+
 
 def get_root_node(project_id: str) -> Dict[str, Any]:
     """Return the root node for a project graph."""
@@ -113,6 +118,7 @@ def get_root_node(project_id: str) -> Dict[str, Any]:
     )
     project_graph = nx.node_link_graph(graph_model.value)
     return {"id": "NODE_ROOT", **project_graph.nodes["NODE_ROOT"]}
+
 
 def update_node_in_project(project_id: str, node_id: str, new_parent: str = None, new_name: str = None):
     """Update the database entry for a project graph to update a node."""
@@ -140,6 +146,7 @@ def update_node_in_project(project_id: str, node_id: str, new_parent: str = None
 
         graph_model.value = nx.node_link_data(project_graph)
         graph_model.save()
+
 
 def _get_trash_node_uuid(project_graph: nx.DiGraph) -> str | None:
     """Return the metadata UUID for the trash node under NODE_ROOT, if present."""
@@ -195,6 +202,7 @@ def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name:
         graph_model.save()
     return new_node_id
 
+
 def get_node_from_uuid(project_id: str, uuid: str):
     """Get a node from the project graph using its UUID."""
     graph_model = ProjectMetadata.objects.get(
@@ -206,6 +214,7 @@ def get_node_from_uuid(project_id: str, uuid: str):
         if project_graph.nodes[node_id]["uuid"] == uuid:
             return {"id": node_id, **project_graph.nodes[node_id]}
     return None
+
 
 def remove_trash_nodes(graph: nx.DiGraph):
     trash_node_id = None
@@ -220,6 +229,7 @@ def remove_trash_nodes(graph: nx.DiGraph):
         nodes_to_remove = {trash_node_id} | trash_descendants
         graph.remove_nodes_from(nodes_to_remove)
     return graph
+
 
 def build_project_tree(full_project_id: str):
     """Build a nested tree (a list with a single root node) from a project's
@@ -281,6 +291,6 @@ def get_path_uuid_mapping(project_id: str):
     path_uuid_mapping = {}
     for node_id in project_graph.nodes:
         path_nodes = nx.shortest_path(project_graph, 'NODE_ROOT', node_id)[1:]
-        path =  '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
+        path = '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
         path_uuid_mapping[path] = project_graph.nodes[node_id]["uuid"]
     return path_uuid_mapping
