@@ -15,6 +15,6 @@
   margin-left: 1.5rem;
 }
 .active-user {
-  @extend .row;
+  composes: row;
   background-color: var(--global-color-accent--weak);
 }

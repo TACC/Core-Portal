@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-eslint": "^9.2.0",
-    "@tacc/core-styles": "^2.53.1",
+    "@tacc/core-styles": "^2.58.0-rc2",
     "@testing-library/jest-dom": "^5.0.2",
     "@testing-library/react": "^16.0.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
@@ -92,7 +92,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.3.0",
     "jiti": "^2.6.1",
-    "postcss-extend-rule": "^4.0.0",
+    "postcss-mixins": "^10.0.1",
     "postcss-preset-env": "^10.0.2",
     "prettier": "^3.8.1",
     "react-test-renderer": "^18.3.1",

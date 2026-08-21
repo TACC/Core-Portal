@@ -63,8 +63,11 @@ Styleguide Components.Button
   font-weight: 500;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 
-  /* When possible: @extend %x-truncate--one-line; */
-  /* SEE: https://github.com/tacc-wbomar/Core-Styles/blob/20e4cb7/source/_imports/tools/x-truncate.css#L36-L41 */
+  /* HACK: Should `@mixin truncate--one-line;` (from @core-styles) BUT…
+      1. file is consumed via `composes: c-button from '.../c-button--new.css'`
+      2. CSS Modules extraction does not run postcss-mixins
+      3. so the raw `@mixin` at-rule would leak into the build output
+  */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
