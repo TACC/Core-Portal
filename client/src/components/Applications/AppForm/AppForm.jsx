@@ -194,7 +194,6 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
         setValues(updatedValues);
       }
     } else if (values.allocation) {
-      // Mount case: populate execSystems for whatever allocation we started with
       const newExecSys = formStateUpdateHandler.setExecSysForAllocation(
         values.allocation,
         values.execSystemId
