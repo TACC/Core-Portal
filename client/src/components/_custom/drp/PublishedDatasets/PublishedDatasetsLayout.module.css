@@ -1,9 +1,4 @@
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    padding-bottom: 40px;
-
-    nav button {
-        font-size: 14px !important;
-    }
-}
+@import url('@tacc/core-styles/dist/components/bootstrap.pagination.css');
+@import url('./styles/elements.cms.css');
+@import url('./styles/components.cms.css');
+@import url('./styles/customize-core-styles.cms.css');

@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import CMSWrapper from '_common/CMSWrapper';
-import './PublishedDatasetsLayout.global.css';
 import PublishedDatasetBreadcrumbs from './PublishedDatasetBreadcrumbs';
+
+import './PublishedDatasetsLayout.module.css';
 
 function PublishedDatasetsLayout({ children, params }) {
   return (
