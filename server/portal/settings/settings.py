@@ -673,6 +673,9 @@ PORTAL_PUBLICATION_PUBLISHER = getattr(
 PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(
     settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_ID', None)
 
+PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = getattr(
+    settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION', None)
+
 ALLOCATIONS_TO_EXCLUDE = (
     getattr(settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"])
 )
