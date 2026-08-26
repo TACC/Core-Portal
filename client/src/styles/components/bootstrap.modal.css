@@ -37,8 +37,6 @@ Styleguide Components.Bootstrap.Modal
   color: var(--global-color-primary--xx-dark);
   font-weight: normal;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
-
-  @mixin truncate--one-line;
 }
 
 /* To darken close button */
