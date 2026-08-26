@@ -35,8 +35,13 @@
   composes: c-button--as-link from '../../../styles/components/c-button--new.css';
 }
 
+/* Intentionally inherit, like a real <a> tag would — do not hardcode a
+   size here. .as-link is used by buttons sitewide, so a fixed size here
+   affects all of them, not just whichever one prompted the change (this
+   has regressed 3 times: #986, #1332). Scope a one-off sizing need to
+   that button's own context instead. */
 .root.as-link {
-  font-size: 0.75rem;
+  font-size: inherit;
 }
 
 
