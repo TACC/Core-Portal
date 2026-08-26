@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 import { Paginator, LoadingSpinner } from '_common';
 import { useProjectTree } from 'hooks/datafiles';
 import createSizeString from 'utils/sizeFormat';
-import styles from './PublishedDatasetsLayout.module.css';
 import NameWithDesc from '../utils/NameWithDesc/NameWithDesc';
 import { formatLabel } from 'utils/formatLabel';
 import { getTooltipDescription } from '../utils/utils';
 import { findNodeInTree, findNodeInTreeById } from 'utils/tree';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
+
+import styles from './PublishedDatasetEntityDetail.module.css';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
