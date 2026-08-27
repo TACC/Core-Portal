@@ -175,7 +175,7 @@ def archive_publication_files(project_id: str):
                 },
                 {
                     "key": "ranchSystemId",
-                    "value": "digitalrocks.ranch.test",  # or final Ranch system ID
+                    "value": settings.PORTAL_PUBLICATION_RANCH_SYSTEM_ID,
                 },
                 {
                     "key": "ranchArchiveRootDir",
