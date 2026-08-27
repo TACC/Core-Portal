@@ -104,11 +104,13 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 # DJANGO APP: ONBOARDING
 ########################
 """
-Onboarding steps
+Onboarding Steps
+
 Each step is an object, with the full package name of the step class and
 an associated settings object.
 - If the 'settings' key is omitted, steps will have a default value of None for their settings attribute.
 - If the '_PORTAL_USER_ACCOUNT_SETUP_STEPS' secret is set to [], onboarding will be skipped.
+
 Example:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
@@ -118,12 +120,17 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         }
     }
 ]
+
 Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {
-            'expected_hosts': ['vista.tacc.utexas.edu']
+            # Option A: Restrict portal login based on a single allocation resource.
+            # 'expected_hosts': ['vista.tacc.utexas.edu']
+
+            # Option B: Restrict portal login based on multiple allocation resources.
+            # 'expected_hosts': ['vista.tacc.utexas.edu','frontera.tacc.utexas.edu']
         }
     },
     {
@@ -157,6 +164,10 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with TMS
         }
     },
+    {
+        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
+        'settings': {}
+    }
 ]
 """
 
