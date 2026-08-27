@@ -197,6 +197,7 @@ export const initialFilesState = {
     select: {},
     upload: {},
     mkdir: {},
+    trash: {},
     rename: {},
     link: {},
     showpath: {},

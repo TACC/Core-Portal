@@ -148,6 +148,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleCompressModal = () =>
     toggle({ operation: 'compress', props: { selectedFiles } });
 
+  const toggleTrashModal = () => {
+    // Specific handling for shared workspaces.
+    const homeDir = selectedSystem?.homeDir || '';
+    const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
+    if (!destSystem) return;
+
+    toggle({ operation: 'trash', props: { selectedFiles, homeDir, destSystem } });
+  };
+
   const toggleExtractModal = () =>
     toggle({ operation: 'extract', props: { selectedFile: selectedFiles[0] } });
 
@@ -209,19 +218,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       });
     }
   };
-
-  const trashCallback = useCallback(() => {
-    // Specific handling for shared workspaces.
-    const homeDir = selectedSystem?.homeDir || '';
-    const destSystem = selectedSystem?.system || selectedFiles[0]?.system;
-    if (!destSystem) return;
-
-    trash({
-      destSystem,
-      homeDir,
-      callback: reloadPage,
-    });
-  }, [selectedFiles, selectedSystem, reloadPage, status]);
 
   const empty = () => {
     dispatch({
@@ -307,7 +303,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
           <ToolbarButton
             text={!inTrash ? 'Trash' : 'Empty'}
             iconName="trash"
-            onClick={!inTrash ? trashCallback : empty}
+            onClick={!inTrash ? toggleTrashModal : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
             className={!inTrash ? '' : 'is-empty'}
           />
