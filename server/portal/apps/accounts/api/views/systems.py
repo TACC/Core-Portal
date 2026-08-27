@@ -13,7 +13,7 @@ from portal.apps.accounts.managers import accounts as AccountsManager
 from tapipy.errors import BaseTapyException
 from portal.apps.onboarding.steps.system_access_v3 import (
     create_system_credentials_with_keys,
-    create_system_credentials,
+    create_system_credentials_with_tms,
     create_system_credentials_with_password,
 )
 from portal.utils.encryption import createKeyPair
@@ -53,8 +53,8 @@ class SystemKeysView(BaseApiView):
 
         if default_authn_method == "TMS_KEYS":
             try:
-                create_system_credentials(
-                    client, login_username, system_id, createTmsKeys=True
+                create_system_credentials_with_tms(
+                    client, tapis_username, system_id
                 )
                 http_status = 200
                 result = "OK"

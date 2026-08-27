@@ -69,7 +69,8 @@ def _get_app(app_id, app_version, user):
 
     data = {'definition': app_def}
 
-    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', [])
+    dynamic_exec_systems = getattr(app_def.notes, "dynamicExecSystems", [])
+    exec_systems = [system.systemId for system in dynamic_exec_systems]
     if len(exec_systems) > 0:
         data['execSystems'] = _get_exec_systems(user, exec_systems)
     else:
