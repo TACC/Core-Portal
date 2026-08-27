@@ -15,6 +15,7 @@ const Searchbar = ({
   dataType,
   filterTypes,
   infiniteScroll,
+  forbidWhitespace,
   className,
   siteSearch,
   sectionName,
@@ -76,7 +77,7 @@ const Searchbar = ({
   };
 
   const getValidationMessage = (value) => {
-    if (/\s/.test(value))
+    if (/\s/.test(value) && forbidWhitespace)
       return 'Search term must be a single word with no spaces.';
     if (value.length < 3)
       return 'Include at least 3 characters in your search.';
@@ -174,6 +175,7 @@ Searchbar.propTypes = {
   resultCount: PropTypes.number,
   filterTypes: PropTypes.arrayOf(PropTypes.string),
   infiniteScroll: PropTypes.bool,
+  forbidWhitespace: PropTypes.bool,
   dataType: PropTypes.string.isRequired,
   sectionName: PropTypes.string,
   /** Additional className(s) for the root element */

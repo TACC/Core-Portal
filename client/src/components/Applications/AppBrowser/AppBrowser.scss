@@ -10,10 +10,10 @@
 
   --panel-vertical-buffer: 10px;
   --panel-max-item-count: 5;
-  --panel-item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
+  --panel-item-height: 34px; /* (~30px design * 1.2 design-to-app ratio) */
   --panel-height: calc(
     (var(--panel-max-item-count) * var(--panel-item-height)) +
-      (var(--panel-vertical-buffer) * 2)
+      var(--panel-vertical-buffer)
   );
 
   border-bottom: 1px solid #707070;
@@ -28,7 +28,6 @@
   min-width: var(--min-width);
   max-width: 300px;
   padding-top: var(--panel-vertical-buffer);
-  padding-bottom: var(--panel-vertical-buffer);
 }
 
 #appBrowser-sidebar,
@@ -112,7 +111,7 @@ ul#appBrowser-sidebar {
   display: grid;
   gap: var(--grid-gap-y) var(--grid-gap-x);
   grid-template-columns: repeat(
-    auto-fit,
+    auto-fill,
     minmax(min(var(--grid-min), 100%), 1fr)
   );
   align-content: start;

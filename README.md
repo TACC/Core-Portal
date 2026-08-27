@@ -65,6 +65,12 @@ NOTE: This may require a computer restart to take effect.
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
+### Generating new Certs for Local development.
+This operation should be done yearly when local certs expire, and the results committed to the repo. Typically the local CA should NOT be re=generated and added to your keychain, since we mint them to last several years. From the `server/conf/nginx/certificates` directory:
+1. `openssl req -newkey rsa:2048 -noenc -keyout cep.test.key -out cep.test.csr`
+2. `openssl x509 -req -CA ca.pem -CAkey ca.key -in cep.test.csr -out cep.test.crt -days 365 -CAcreateserial -extfile cep.test.ext`
+After this you will need to restart the Nginx container if it is running.
+
 ### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
