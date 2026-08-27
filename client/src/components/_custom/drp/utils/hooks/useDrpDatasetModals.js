@@ -4,7 +4,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { fetchForm } from 'hooks/datafiles';
 
 const getDatasets = async (projectId, portalName, getOriginData = false) => {
-  const response = await fetchUtil({
+  const result = await fetchUtil({
     url: `api/${portalName.toLowerCase()}`,
     params: {
       project_id: projectId,
@@ -12,7 +12,7 @@ const getDatasets = async (projectId, portalName, getOriginData = false) => {
     },
   });
 
-  return response;
+  return result.response;
 };
 
 const useDrpDatasetModals = (

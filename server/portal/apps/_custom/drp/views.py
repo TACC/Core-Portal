@@ -48,7 +48,7 @@ class DigitalRocksSampleView(BaseApiView):
             'origin_data': list(origin_data)
         }
 
-        return JsonResponse(response_data)
+        return JsonResponse({"response": response_data})
 
 
 class GenerateImagesView(BaseApiView):
@@ -76,4 +76,4 @@ class GenerateImagesView(BaseApiView):
         except Exception as exc:
             raise ApiException("Error generating images", status=500) from exc
 
-        return JsonResponse({"result": "OK"})
+        return JsonResponse({"response": "OK"})

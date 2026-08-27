@@ -7,7 +7,7 @@ export const fetchForm = (formName: string): Promise<TFormDefinition> =>
   fetchUtil({
     url: '/api/forms',
     params: { form_name: formName },
-  });
+  }).then((resp) => resp.response);
 
 export const useForm = (
   formName: string,
