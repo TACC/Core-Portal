@@ -293,7 +293,10 @@ def test_get_app_dynamic_exec_sys(
     ) as f:
         app = json.load(f)
         if dynamic_exec_system:
-            app["notes"]["dynamicExecSystems"] = ["frontera", "ls6"]
+            app["notes"]["dynamicExecSystems"] = [
+                {"systemId": "frontera", "profileName": "tacc-apptainer"},
+                {"systemId": "ls6", "profileName": "tacc-apptainer"},
+            ]
 
     # setup tapis mocks
     mock_tapis_client.apps.getApp.return_value = TapisResult(**app)

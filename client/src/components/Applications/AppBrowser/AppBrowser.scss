@@ -28,7 +28,6 @@
   min-width: var(--min-width);
   max-width: 300px;
   padding-top: var(--panel-vertical-buffer);
-  padding-bottom: var(--panel-vertical-buffer);
 }
 
 #appBrowser-sidebar,
@@ -112,7 +111,7 @@ ul#appBrowser-sidebar {
   display: grid;
   gap: var(--grid-gap-y) var(--grid-gap-x);
   grid-template-columns: repeat(
-    auto-fit,
+    auto-fill,
     minmax(min(var(--grid-min), 100%), 1fr)
   );
   align-content: start;
