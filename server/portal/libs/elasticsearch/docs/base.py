@@ -185,3 +185,12 @@ class IndexedAllocation(Document):
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('allocations')
+
+class IndexedPublication(Document):
+    """Elasticsearch model for published works"""
+
+    # pylint: disable=too-few-public-methods
+    class Index:
+        """Index meta settings"""
+
+        name = settings.ES_INDEX_PREFIX.format('publications')

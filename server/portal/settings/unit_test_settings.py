@@ -199,6 +199,7 @@ ALLOCATION_SYSTEMS = []
 PORTAL_NAMESPACE = 'test'
 PORTAL_ALLOCATION = 'test'
 PORTAL_PROJECTS_USE_SET_FACL_JOB = False
+PROJECT_ADMIN_GROUP = 'Project Admin'
 
 
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'

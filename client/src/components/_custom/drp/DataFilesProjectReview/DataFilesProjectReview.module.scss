@@ -1,0 +1,21 @@
+@import '../../../../styles/tools/mixins.scss';
+
+.root {
+  /* As a flex child */
+  flex-grow: 1;
+
+  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+}
+
+.title {
+  @include truncate-with-ellipsis;
+  max-width: 1400px;
+  font-size: 18px;
+}
+
+.controls {
+  display: flex;
+  align-items: flex-start;
+}
