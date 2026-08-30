@@ -100,30 +100,28 @@ function useUpload() {
       });
       const formData = new FormData();
       formData.append('uploaded_file', file);
-      return mutateAsync(
-        {
-          api,
-          scheme,
-          system,
-          path,
-          file: formData,
-          tapisToken,
-        },
-        {
-          onSuccess: () => {
+
+      return mutateAsync({
+        api,
+        scheme,
+        system,
+        path,
+        file: formData,
+        tapisToken,
+      })
+        .then(() => {
+          (tapisToken,
             dispatch({
               type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
               payload: { status: 'SUCCESS', key: index, operation: 'upload' },
-            });
-          },
-          onError: (error) => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'ERROR', key: index, operation: 'upload' },
-            });
-          },
-        }
-      );
+            }));
+        })
+        .catch(() => {
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: { status: 'ERROR', key: index, operation: 'upload' },
+          });
+        });
     });
     Promise.all(uploadCalls).then(() => {
       dispatch({
