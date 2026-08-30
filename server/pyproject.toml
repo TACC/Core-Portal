@@ -34,7 +34,7 @@ requests = "^2.32.4"
 django-impersonate = "^1.5"
 channels = "^4.0.0"
 channels-redis = "^4.1.0"
-daphne = "^4.0.0"
+daphne = "^4.2.2"
 pytas = {git = "https://bitbucket.org/taccaci/pytas.git", tag = "v1.6.0"}
 google-auth = "^1.23.0"
 google-auth-oauthlib = "^0.4.2"
