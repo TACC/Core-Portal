@@ -84,5 +84,4 @@
 
 .u-title-needs-colon > :first-child { font-weight: normal; }
 .u-title-needs-colon > :first-child::after { content: ':'; }
-
 }
