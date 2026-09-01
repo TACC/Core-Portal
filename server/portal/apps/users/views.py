@@ -30,11 +30,7 @@ class AuthenticatedView(BaseApiView):
         if request.user.is_authenticated:
             u = request.user
 
-            try:
-                user = get_user_model().objects.get(username=u.username)
-                groups = [group.name for group in user.groups.all()]
-            except ObjectDoesNotExist:
-                groups = []
+            groups = [group.name for group in u.groups.all()]
 
             out = {
                 "first_name": u.first_name,
