@@ -20,12 +20,6 @@
 
 /* Elements: New Ticket Button */
 
-.btn-new-ticket:hover {
-  text-decoration: none;
-  color: var(--global-color-primary--xx-dark);
-  background-color: var(--global-color-accent--weak);
-  border-color: var(--global-color-accent--normal);
-}
 .btn-new-ticket {
   color: var(--global-color-primary--xx-dark);
   background-color: var(--global-color-primary--x-light);
@@ -34,9 +28,14 @@
   border-width: var(--global-border-width--normal);
   border-style: solid;
   font-weight: 500;
-  font-size: .75rem;
+  font-size: 0.75rem; /* 12px */
 }
-
+.btn-new-ticket:hover {
+  text-decoration: none;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--weak);
+  border-color: var(--global-color-accent--normal);
+}
 
 /* Elements: System Monitor */
 
