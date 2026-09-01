@@ -94,11 +94,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
-      <ModalHeader
-        className="pe-3"
-        toggle={toggle}
-        charCode="&#xe912;"
-      >
+      <ModalHeader className="pe-3" toggle={toggle} charCode="&#xe912;">
         <Tabs
           style={{ marginBottom: '-8px' }}
           value={selectedTab}
