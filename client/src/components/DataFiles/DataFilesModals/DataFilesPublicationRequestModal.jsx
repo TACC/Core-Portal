@@ -12,6 +12,7 @@ const DataFilesPublicationRequestModal = () => {
   const { publicationRequests } =
     useSelector((state) => state.files.modalProps.publicationRequest) || [];
 
+  // Compare function for sorting requests by creation date
   const compareFn = (req1, req2) => {
     // sort more recent requests first
     const date1 = new Date(req1.created_at);

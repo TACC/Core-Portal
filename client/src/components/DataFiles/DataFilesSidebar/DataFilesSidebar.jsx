@@ -11,6 +11,7 @@ import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
 import { useTapisToken } from 'hooks/datafiles';
 import { useRouteMatch } from 'react-router-dom';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
 
 const DataFilesAddButton = ({ readOnly }) => {
@@ -82,7 +83,8 @@ const DataFilesAddButton = ({ readOnly }) => {
           </DropdownItem>
           {sharedWorkspaces && !sharedWorkspaces.readOnly && (
             <DropdownItem onClick={toggleAddProjectModal}>
-              <i className="icon-folder" /> {sharedWorkspaces.name}
+              <i className="icon-folder" />{' '}
+              {getSharedWorkspaceDisplayName(sharedWorkspaces.name)}
             </DropdownItem>
           )}
           <DropdownItem divider />

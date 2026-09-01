@@ -15,6 +15,7 @@ import {
 } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({
@@ -58,9 +59,10 @@ const DataFilesProjectFileListing = ({
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
     true;
-  const sharedWorkspacesDisplayName = useSelector(
-    (state) =>
+  const sharedWorkspacesDisplayName = useSelector((state) =>
+    getSharedWorkspaceDisplayName(
       getDefaultProjectSystem(state.systems.storage.configuration)?.name
+    )
   );
   const projectMembersLabel = useSelector((state) =>
     state.workbench.config.projectsEnableMetadata ? 'Authors' : 'Team'
