@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { helloWorldAppFixture } from './fixtures/AppForm.app.fixture';
-import { getNodeCountValidation, updateValuesForQueue } from './AppFormUtils';
+import { getNodeCountValidation, updateValuesForQueue, checkAndSetDefaultTargetPath } from './AppFormUtils';
 
 describe('AppFormUtils', () => {
   const normalQueue =
@@ -106,4 +106,11 @@ describe('AppFormUtils', () => {
     const updatedValues = updateValuesForQueue(appFrontera, values);
     expect(updatedValues.maxMinutes).toEqual(120);
   });
-});
+  });
+
+  it('checkAndSetDefaultTargetPath returns empty string for empty target path or asterisk (*)', () => {
+    expect(checkAndSetDefaultTargetPath('')).toEqual('');
+    expect(checkAndSetDefaultTargetPath('*')).toEqual('');
+    expect(checkAndSetDefaultTargetPath(null)).toEqual('');
+    expect(checkAndSetDefaultTargetPath(undefined)).toEqual('');
+  });
