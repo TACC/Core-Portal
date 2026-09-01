@@ -2,14 +2,19 @@
 .. module:: portal.apps.site_search.urls
    :synopsis: Site Search URLs
 """
+import re
 from django.urls import re_path
+from django.conf import settings
 from portal.apps.public_data.views import IndexView
 
 app_name = 'public_data'
+
+published_prefix = re.escape(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX or "")
+id_prefix = re.escape(settings.PORTAL_PROJECTS_ID_PREFIX or "")
+
 urlpatterns = [
     re_path(
-        # Match DRP prod or pprd project IDs
-        r'^drp\.(?:pprd\.)?project\.published\.(?P<project_id>DRP(?:-PPRD)?-[0-9]+)(v(?P<revision>[0-9]+))?/?$',
+        rf'^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)(v(?P<revision>[0-9]+))?/?$',
         IndexView.as_view(),
         name='index'
     ),

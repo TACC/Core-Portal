@@ -149,7 +149,12 @@ const DataFilesSwitch = React.memo(() => {
 
 const DataFiles = () => {
   const { params: listingParams } = useFileListing('FilesListing');
-  const { data: allSystems, loading, error } = useSystems();
+  const {
+    data: allSystems,
+    loading,
+    error,
+    isRootProjectSystem,
+  } = useSystems();
 
   const systems = allSystems.filter((s) => !s.hidden);
   const noPHISystem = useSelector(
@@ -162,6 +167,12 @@ const DataFiles = () => {
   const projectId = useSelector((state) =>
     state.projects.metadata.projectId ? state.projects.metadata.projectId : ''
   );
+  const isPublishedProject = useSelector(
+    (state) => state.projects.metadata.is_published_project
+  );
+  const isReviewProject = useSelector(
+    (state) => state.projects.metadata.is_review_project
+  );
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId,
     authenticatedUser
@@ -169,8 +180,9 @@ const DataFiles = () => {
 
   const readOnly =
     listingParams.scheme === 'projects' &&
-    (listingParams.system === '' ||
-      !listingParams.system ||
+    (isRootProjectSystem({ system: listingParams.system }) ||
+      isPublishedProject ||
+      isReviewProject ||
       authenticatedUserQuery?.data?.role === 'GUEST');
 
   if (error) {

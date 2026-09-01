@@ -158,7 +158,7 @@ def archive_publication_files(project_id: str):
     job_body = {
         "name": f"{settings.PORTAL_NAMESPACE.lower()}-archive-publication-{project_id}",
         "appId": settings.PORTAL_PUBLICATION_ARCHIVE_APP_ID,
-        "appVersion": "0.0.2",
+        "appVersion": settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION,
         "description": f"Archive {settings.PORTAL_NAMESPACE} publication",
         "fileInputs": [],
         "parameterSet": {
@@ -175,7 +175,7 @@ def archive_publication_files(project_id: str):
                 },
                 {
                     "key": "ranchSystemId",
-                    "value": "digitalrocks.ranch.test",  # or final Ranch system ID
+                    "value": settings.PORTAL_PUBLICATION_RANCH_SYSTEM_ID,
                 },
                 {
                     "key": "ranchArchiveRootDir",
