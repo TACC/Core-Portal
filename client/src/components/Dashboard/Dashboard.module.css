@@ -18,6 +18,26 @@
     var(--global-color-primary--dark);
 }
 
+/* Elements: New Ticket Button */
+
+.btn-new-ticket:hover {
+  text-decoration: none;
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-accent--weak);
+  border-color: var(--global-color-accent--normal);
+}
+.btn-new-ticket {
+  color: var(--global-color-primary--xx-dark);
+  background-color: var(--global-color-primary--x-light);
+  border-color: var(--global-color-primary--xx-dark);
+  padding: 6px 18px;
+  border-width: var(--global-border-width--normal);
+  border-style: solid;
+  font-weight: 500;
+  font-size: .75rem;
+}
+
+
 /* Elements: System Monitor */
 
 /* HACK: To prevent growing when table has no more rows to fill the height */
