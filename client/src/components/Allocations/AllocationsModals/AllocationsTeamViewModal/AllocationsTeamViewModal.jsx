@@ -95,7 +95,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" onClosed={resetCard}>
       <ModalHeader
-        className="pe-3 has-MuiTabs"
+        className="pe-3"
         toggle={toggle}
         charCode="&#xe912;"
       >
