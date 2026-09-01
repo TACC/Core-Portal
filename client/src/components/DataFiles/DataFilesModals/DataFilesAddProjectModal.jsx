@@ -9,6 +9,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -58,7 +59,9 @@ const DataFilesAddProjectModal = () => {
     getDefaultProjectSystem(state.systems.storage.configuration)
   );
 
-  const sharedWorkspacesDisplayName = system?.name;
+  const sharedWorkspacesDisplayName = getSharedWorkspaceDisplayName(
+    system?.name
+  );
   const rootSystem = system?.system;
 
   const toggle = () => {

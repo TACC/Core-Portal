@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -36,9 +37,10 @@ const DataFilesProjectEditDescriptionModal = () => {
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
     true;
-  const sharedWorkspacesDisplayName = useSelector(
-    (state) =>
+  const sharedWorkspacesDisplayName = useSelector((state) =>
+    getSharedWorkspaceDisplayName(
       getDefaultProjectSystem(state.systems.storage.configuration)?.name
+    )
   );
 
   const portalName = useSelector((state) => state.workbench.portalName);
