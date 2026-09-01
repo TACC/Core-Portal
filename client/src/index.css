@@ -1,5 +1,8 @@
 @import url('./styles/global.css') layer(portal);
 
+/* IMPORTANT: Must be unlayered, like MUI's runtime styles */
+@import url('./styles/components/mui.tabs.css');
+
 @layer portal {
 
 /*
