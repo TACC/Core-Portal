@@ -1,13 +1,13 @@
 """DRP schema extension."""
 
-from portal.apps.projects.schema_models import constants
 from portal.apps._custom.drp.models import (
-    DrpProjectMetadata,
-    DrpSampleMetadata,
-    DrpOriginDatasetMetadata,
     DrpAnalysisDatasetMetadata,
     DrpFileMetadata,
+    DrpOriginDatasetMetadata,
+    DrpProjectMetadata,
+    DrpSampleMetadata,
 )
+from portal.apps.projects.schema_models import constants
 
 SCHEMA_MAPPING = {
     constants.PROJECT: DrpProjectMetadata,
