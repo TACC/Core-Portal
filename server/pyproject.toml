@@ -76,7 +76,7 @@ target-version = "py312"
 select = ["E", "W", "F", "I", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
-"*/migrations/*.py" = ["E501"]
+"**/migrations/*.py" = ["E501", "RUF012"]
 
 [build-system]
 requires = ["poetry-core"]
