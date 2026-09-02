@@ -111,6 +111,12 @@ const DataFilesListing = ({
     [api, scheme]
   );
 
+  const fileLengthCellCallback = useCallback(
+    ({ row, cell }) =>
+      row.original.type === 'dir' ? null : <FileLengthCell cell={cell} />,
+    []
+  );
+
   const columns = useMemo(() => {
     const cells = [
       {
@@ -138,7 +144,7 @@ const DataFilesListing = ({
       {
         Header: 'Size',
         accessor: 'length',
-        Cell: FileLengthCell,
+        Cell: fileLengthCellCallback,
         width: 0.2,
       },
       {
@@ -187,7 +193,7 @@ const DataFilesListing = ({
     }
 
     return cells;
-  }, [api, showViewPath, fileNavCellCallback]);
+  }, [api, showViewPath, fileNavCellCallback, fileLengthCellCallback]);
 
   const { fetchSelectedSystem } = useSystems();
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
