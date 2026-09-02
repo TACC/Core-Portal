@@ -1,8 +1,10 @@
-import pytest
 import time
 from hashlib import sha256
-from portal.apps.auth.models import TapisOAuthToken
+
+import pytest
 from tapipy.tapis import Tapis
+
+from portal.apps.auth.models import TapisOAuthToken
 
 
 @pytest.fixture
