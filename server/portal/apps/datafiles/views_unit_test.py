@@ -3,12 +3,14 @@ import logging
 import os
 
 import pytest
+from django.contrib.auth.models import Group
 from django.conf import settings
 from mock import MagicMock, patch
 from tapipy.errors import InternalServerError, UnauthorizedError
 from tapipy.tapis import TapisResult
 
 from portal.apps.datafiles.models import Link
+from portal.apps.datafiles.views import get_tapis_client
 pytestmark = pytest.mark.django_db
 
 
@@ -29,6 +31,20 @@ def get_user_data(mocker):
         tas_user = json.load(f)
     mock.return_value = tas_user
     yield mock
+
+
+def test_get_tapis_client_uses_service_account_for_project_admin(authenticated_user, mocker):
+    group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
+    authenticated_user.groups.add(group)
+    mock_service_account = mocker.patch('portal.apps.datafiles.views.service_account')
+
+    client = get_tapis_client(
+        authenticated_user,
+        f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123',
+    )
+
+    assert client == mock_service_account.return_value
+    mock_service_account.assert_called_once_with()
 
 
 def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock_tapis_client):
@@ -216,6 +232,7 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
         "data": {
             "listing": [
                 {
+                    'uuid': None,
                     'system': 'frontera.home.username',
                     'type': 'dir' if f.type == 'dir' else 'file',
                     'format': 'folder' if f.type == 'dir' else 'raw',
@@ -226,9 +243,11 @@ def test_tapis_file_view_get_is_logged_for_metrics(mock_indexer, client, authent
                     'lastModified': f.lastModified,
                     '_links': {
                         'self': {'href': f.url}
-                    }
+                    },
+                    'metadata': None
                 } for f in tapis_listing_result
             ],
+            "folder_metadata": None,
             "reachedEnd": True
         }
     }

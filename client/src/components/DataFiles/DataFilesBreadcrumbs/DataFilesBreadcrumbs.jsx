@@ -141,7 +141,7 @@ const DataFilesBreadcrumbs = ({
     });
   };
 
-  const { fetchSelectedSystem } = useSystems();
+  const { fetchSelectedSystem, isRootProjectSystem } = useSystems();
 
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
@@ -183,9 +183,7 @@ const DataFilesBreadcrumbs = ({
     <div className="breadcrumb-container">
       <div className={`breadcrumbs ${className}`}>
         {currentDirectory.length === 0 ? (
-          <span className="system-name">
-            {truncateMiddle(systemName || 'Shared Workspaces', 30)}
-          </span>
+          <span className="system-name">{truncateMiddle(systemName, 30)}</span>
         ) : (
           currentDirectory.map((pathComp, i) => {
             if (i === fullPath.length - 1) {
@@ -194,11 +192,13 @@ const DataFilesBreadcrumbs = ({
           })
         )}
       </div>
-      {systemName && api === 'tapis' && (
-        <Button type="link" onClick={openFullPathModal}>
-          View Full Path
-        </Button>
-      )}
+      {systemName &&
+        api === 'tapis' &&
+        !isRootProjectSystem(selectedSystem ?? '') && (
+          <Button type="link" onClick={openFullPathModal}>
+            View Full Path
+          </Button>
+        )}
     </div>
   );
 };

@@ -1,13 +1,18 @@
 import pytest
 from hashlib import sha256
 from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.views import get_project_client, get_project_for_user
 from portal.apps.search.tasks import tapis_project_listing_indexer
 from portal.libs.elasticsearch.indexes import IndexedProject
 from mock import MagicMock
 import json
 from tapipy.tapis import TapisResult
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.test import override_settings
+from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
+from portal.apps.projects.schema_models import constants
 
 
 @pytest.fixture
@@ -106,6 +111,58 @@ def project_list(authenticated_user):
     }
 
 
+def test_get_project_client_uses_service_account_for_project_admin(authenticated_user, mocker):
+    group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
+    authenticated_user.groups.add(group)
+    mock_service_account = mocker.patch('portal.apps.projects.views.service_account')
+
+    client = get_project_client(authenticated_user)
+
+    assert client == mock_service_account.return_value
+    mock_service_account.assert_called_once_with()
+
+
+def test_get_project_for_user_allows_project_admin(authenticated_user):
+    group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
+    authenticated_user.groups.add(group)
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+
+    result = get_project_for_user(project.project_id, authenticated_user)
+
+    assert result == project
+
+
+def test_get_project_for_user_allows_tapis_write_role(authenticated_user, mocker):
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+    mock_get_workspace_role = mocker.patch(
+        'portal.apps.projects.views.get_workspace_role', return_value='USER'
+    )
+
+    result = get_project_for_user(project.project_id, authenticated_user)
+
+    assert result == project
+    mock_get_workspace_role.assert_called_once_with(
+        authenticated_user.tapis_oauth.client, 'PRJ-123', authenticated_user.username
+    )
+
+
+def test_get_project_for_user_denies_tapis_guest_role(authenticated_user, mocker):
+    project = ProjectMetadata.objects.create(
+        name=constants.PROJECT,
+        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+    )
+    mocker.patch('portal.apps.projects.views.get_workspace_role', return_value='GUEST')
+
+    with pytest.raises(ProjectMetadata.DoesNotExist):
+        get_project_for_user(project.project_id, authenticated_user)
+
+
 def test_projects_get(
     authenticated_user,
     client,
@@ -113,8 +170,9 @@ def test_projects_get(
     mock_project_search_indexer,
     project_list,
 ):
-    mock_tapis_client.systems.getSystems.return_value = [
-        project_list["tapis_response"][0]
+    mock_tapis_client.systems.getSystems.side_effect = [
+        [project_list["tapis_response"][0]],
+        [],
     ]
 
     client.force_login(authenticated_user)
@@ -126,8 +184,8 @@ def test_projects_get(
         "response": [project_list["api_response"][0]],
     }
     fields = "id,host,description,notes,updated,owner,rootDir"
-    query = f"id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*"
-    mock_tapis_client.systems.getSystems.assert_called_with(
+    query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
+    mock_tapis_client.systems.getSystems.assert_any_call(
         listType="ALL", search=query, select=fields, limit=-1
     )
     mock_project_search_indexer.delay.assert_called_with(
@@ -146,8 +204,10 @@ def test_projects_search(
     mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
         IndexedProject(**project_list["api_response"][1])
     ]
-    mock_tapis_client.systems.getSystems.return_value = [
-        project_list["tapis_response"][1]
+
+    mock_tapis_client.systems.getSystems.side_effect = [
+        [project_list["tapis_response"][1]],
+        [],
     ]
 
     response = client.get("/api/projects/?query_string=bar")
@@ -357,7 +417,11 @@ def test_project_instance_patch(
 
     response = client.patch(
         "/api/projects/PRJ-123/",
-        json.dumps({"title": "New Title", "description": "new description", "keywords": None}),
+        data=encode_multipart(
+            BOUNDARY,
+            {"title": "New Title", "description": "new description"},
+        ),
+        content_type=MULTIPART_CONTENT,
     )
 
     mock_tapis_client.systems.patchSystem.assert_called_with(
