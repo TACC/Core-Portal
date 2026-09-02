@@ -15,34 +15,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="MATLABLicense",
+            name='MATLABLicense',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "license_file_content",
-                    models.TextField(
-                        help_text="This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file."
-                    ),
-                ),
-                (
-                    "user",
-                    models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="matlablicense",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('license_file_content', models.TextField(help_text="This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file.")),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='matlablicense', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                "abstract": False,
+                'abstract': False,
             },
         ),
     ]

@@ -2,7 +2,6 @@
 .. :module:: apps.workspace.api.views
    :synopsys: Views to handle Workspace API
 """
-
 import logging
 import json
 from urllib.parse import urlparse
@@ -26,13 +25,14 @@ from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from .handlers.tapis_handlers import tapis_get_handler
 from portal.apps.workspace.api.utils import (
     check_job_for_timeout,
-    push_keys_required_if_not_credentials_ensured,
+    push_keys_required_if_not_credentials_ensured
 )
 from portal.utils import get_client_ip
 from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
 
+
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("metrics.{}".format(__name__))
+METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
 def _app_license_type(app_def):
@@ -43,9 +43,7 @@ def _app_license_type(app_def):
 
 def _get_user_app_license(license_type, user):
     _, license_models = get_license_info()
-    license_model = next(
-        (x for x in license_models if x.license_type == license_type), None
-    )
+    license_model = next((x for x in license_models if x.license_type == license_type), None)
     if not license_model:
         return None
     lic = license_model.objects.filter(user=user).first()
@@ -57,11 +55,9 @@ def _get_exec_systems(user, systems):
     tapis = user.tapis_oauth.client
     search_string = "(canExec.eq.true)~(enabled.eq.true)"
     if systems != ["All"]:
-        system_id_search = ",".join(systems)
+        system_id_search = ','.join(systems)
         search_string = f"(id.in.{system_id_search})~{search_string}"
-    return tapis.systems.getSystems(
-        listType="ALL", select="allAttributes", search=search_string
-    )
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
 
 def _get_app(app_id, app_version, user):
@@ -71,32 +67,32 @@ def _get_app(app_id, app_version, user):
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
 
-    data = {"definition": app_def}
+    data = {'definition': app_def}
 
     dynamic_exec_systems = getattr(app_def.notes, "dynamicExecSystems", [])
     exec_systems = [system.systemId for system in dynamic_exec_systems]
     if len(exec_systems) > 0:
-        data["execSystems"] = _get_exec_systems(user, exec_systems)
+        data['execSystems'] = _get_exec_systems(user, exec_systems)
     else:
         # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-        data["execSystems"] = [
-            tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
-        ]
+        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
-    data["license"] = {"type": lic_type}
+    data['license'] = {
+        'type': lic_type
+    }
     if lic_type is not None:
         lic = _get_user_app_license(lic_type, user)
-        data["license"]["enabled"] = lic is not None
+        data['license']['enabled'] = lic is not None
 
     return data
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
-        app_id = request.GET.get("appId")
+        app_id = request.GET.get('appId')
         if app_id:
             METRICS.info(
                 "Apps",
@@ -109,18 +105,16 @@ class AppsView(BaseApiView):
                     "info": {"query": request.GET.dict()},
                 },
             )
-            app_version = request.GET.get("appVersion")
+            app_version = request.GET.get('appVersion')
             data = _get_app(app_id, app_version, request.user)
 
             # Check if default storage system needs keys pushed
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
-                system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM["system"]
-                if push_keys_required_if_not_credentials_ensured(
-                    request.user, system_id, "/"
-                ):
+                system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM['system']
+                if push_keys_required_if_not_credentials_ensured(request.user, system_id, '/'):
                     system_def = tapis.systems.getSystem(systemId=system_id)
-                    data["systemNeedsKeys"] = True
-                    data["pushKeysSystem"] = system_def
+                    data['systemNeedsKeys'] = True
+                    data['pushKeysSystem'] = system_def
 
         else:
             METRICS.info(
@@ -134,41 +128,36 @@ class AppsView(BaseApiView):
                     "info": {"query": request.GET.dict()},
                 },
             )
-            data = {"appListing": tapis.apps.getApps()}
+            data = {'appListing': tapis.apps.getApps()}
 
         return JsonResponse(
             {
-                "status": 200,
-                "response": data,
+                'status': 200,
+                'response': data,
             },
-            encoder=BaseTapisResultSerializer,
+            encoder=BaseTapisResultSerializer
         )
 
 
 # TODOv3: dropV2Jobs
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class HistoricJobsView(BaseApiView):
     def get(self, request, *args, **kwargs):
-        limit = int(request.GET.get("limit", 10))
-        offset = int(request.GET.get("offset", 0))
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
 
-        jobs = (
-            JobSubmission.objects.all()
-            .filter(user=request.user)
-            .exclude(data__isnull=True)
-            .order_by("-time")
-        )
-        data = [job.data for job in jobs[offset : offset + limit]]
+        jobs = JobSubmission.objects.all().filter(user=request.user).exclude(data__isnull=True).order_by('-time')
+        data = [job.data for job in jobs[offset:offset + limit]]
 
         return JsonResponse({"response": data})
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class JobsView(BaseApiView):
 
     def get(self, request, operation=None):
 
-        allowed_actions = ["listing", "search", "select"]
+        allowed_actions = ['listing', 'search', 'select']
 
         tapis = request.user.tapis_oauth.client
 
@@ -190,7 +179,7 @@ class JobsView(BaseApiView):
         op = getattr(self, operation)
         data = op(tapis, request)
 
-        if isinstance(data, list):
+        if (isinstance(data, list)):
             for index, job in enumerate(data):
                 data[index] = check_job_for_timeout(job)
         else:
@@ -198,33 +187,29 @@ class JobsView(BaseApiView):
 
         return JsonResponse(
             {
-                "status": 200,
-                "response": data,
+                'status': 200,
+                'response': data,
             },
-            encoder=BaseTapisResultSerializer,
+            encoder=BaseTapisResultSerializer
         )
 
     def select(self, client, request):
-        job_uuid = request.GET.get("job_uuid")
-        data = client.jobs.getJob(
-            jobUuid=job_uuid,
-            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
-        )
+        job_uuid = request.GET.get('job_uuid')
+        data = client.jobs.getJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
 
         return data
 
     def listing(self, client, request):
-        limit = int(request.GET.get("limit", 10))
-        offset = int(request.GET.get("offset", 0))
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
 
         data = client.jobs.getJobSearchList(
             limit=limit,
             skip=offset,
-            orderBy="lastUpdated(desc),name(asc)",
-            _tapis_query_parameters={"tags.contains": f"portalName: {portal_name}"},
-            select="allAttributes",
-            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+            orderBy='lastUpdated(desc),name(asc)',
+            _tapis_query_parameters={'tags.contains': f'portalName: {portal_name}'},
+            select='allAttributes', headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
 
         return data
@@ -233,21 +218,21 @@ class JobsView(BaseApiView):
         # TODO WP-1116: declared on react frontend under client/src/components/Jobs/JobsStatus/JobsStatus.jsx
         # all status search features to be moved to frontend
         STATUS_TEXT_MAP = {
-            "PENDING": "Processing",
-            "PROCESSING_INPUTS": "Processing",
-            "STAGING_INPUTS": "Queueing",
-            "STAGING_JOB": "Queueing",
-            "SUBMITTING_JOB": "Queueing",
-            "QUEUED": "Queueing",
-            "RUNNING": "Running",
-            "ARCHIVING": "Finishing",
-            "FINISHED": "Finished",
-            "STOPPED": "Stopped",
-            "FAILED": "Failure",
-            "BLOCKED": "Blocked",
-            "PAUSED": "Paused",
-            "CANCELLED": "Cancelled",
-            "ARCHIVED": "Archived",
+            'PENDING': 'Processing',
+            'PROCESSING_INPUTS': 'Processing',
+            'STAGING_INPUTS': 'Queueing',
+            'STAGING_JOB': 'Queueing',
+            'SUBMITTING_JOB': 'Queueing',
+            'QUEUED': 'Queueing',
+            'RUNNING': 'Running',
+            'ARCHIVING': 'Finishing',
+            'FINISHED': 'Finished',
+            'STOPPED': 'Stopped',
+            'FAILED': 'Failure',
+            'BLOCKED': 'Blocked',
+            'PAUSED': 'Paused',
+            'CANCELLED': 'Cancelled',
+            'ARCHIVED': 'Archived',
         }
 
         def get_statuses_for_label(label):
@@ -263,7 +248,7 @@ class JobsView(BaseApiView):
             return statuses
 
         def is_interactive(job):
-            notes = getattr(job, "notes", None)
+            notes = getattr(job, 'notes', None)
             if not notes:
                 return False
             if isinstance(notes, str):
@@ -271,39 +256,39 @@ class JobsView(BaseApiView):
                     notes = json.loads(notes)
                 except Exception:
                     return False
-            val = notes.get("isInteractive")
+            val = notes.get('isInteractive')
             if isinstance(val, str):
-                return val.strip().lower() == "true"
+                return val.strip().lower() == 'true'
             return bool(val)
 
         def has_timeout_message(job):
-            msg = getattr(job, "lastMessage", "") or ""
+            msg = getattr(job, 'lastMessage', '') or ''
             msg = msg.upper()
-            return ("TIME_EXPIRED" in msg) or ("TIMEOUT" in msg)
+            return ('TIME_EXPIRED' in msg) or ('TIMEOUT' in msg)
 
-        query_string = request.GET.get("query_string")
+        query_string = request.GET.get('query_string')
         # limiting search down to the first word if multiple words are inputted
         if query_string:
             query_string = query_string.split()[0]
-        limit = int(request.GET.get("limit", 10))
-        offset = int(request.GET.get("offset", 0))
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
         portal_name = settings.PORTAL_NAMESPACE
-        status_searches = get_statuses_for_label(query_string or "")
+        status_searches = get_statuses_for_label(query_string or '')
         # 3 most common cases for case insensitivity
-        qs_lower = query_string.lower() if query_string else ""
-        qs_upper = query_string.upper() if query_string else ""
-        qs_title = query_string.title() if query_string else ""
+        qs_lower = query_string.lower() if query_string else ''
+        qs_upper = query_string.upper() if query_string else ''
+        qs_title = query_string.title() if query_string else ''
 
         # TODO WP-1116: all status search add-ons to be removed and added to drop-down feature on frontend
         if status_searches:
             enhanced_status_conditions = []
 
             for status in status_searches:
-                if status == "FINISHED":
+                if status == 'FINISHED':
                     enhanced_status_conditions.append(
                         "(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
                     )
-                elif status == "FAILED":
+                elif status == 'FAILED':
                     enhanced_status_conditions.append("(status = 'FAILED')")
                 else:
                     enhanced_status_conditions.append(f"(status = '{status}')")
@@ -354,8 +339,8 @@ class JobsView(BaseApiView):
 
         # For "Failed" search, want to get all
         # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
-        is_finished = "FINISHED" in status_searches
-        is_failed = "FAILED" in status_searches
+        is_finished = 'FINISHED' in status_searches
+        is_failed = 'FAILED' in status_searches
 
         if is_finished or is_failed:
             target_offset = offset
@@ -367,12 +352,10 @@ class JobsView(BaseApiView):
                 page = client.jobs.getJobSearchListByPostSqlStr(
                     limit=upstream_page_size,
                     skip=upstream_offset,
-                    orderBy="lastUpdated(desc),name(asc)",
+                    orderBy='lastUpdated(desc),name(asc)',
                     request_body={"search": sql_queries},
                     select="allAttributes",
-                    headers={
-                        "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
-                    },
+                    headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
                 )
                 if not page:
                     break
@@ -380,19 +363,19 @@ class JobsView(BaseApiView):
                 upstream_offset += len(page)
 
                 for job in page:
-                    status = getattr(job, "status", None)
+                    status = getattr(job, 'status', None)
 
                     if is_finished:
-                        if status == "FINISHED":
+                        if status == 'FINISHED':
                             pass
-                        elif status == "FAILED":
+                        elif status == 'FAILED':
                             if not (has_timeout_message(job) and is_interactive(job)):
                                 continue
                         else:
                             continue
 
                     elif is_failed:
-                        if status != "FAILED":
+                        if status != 'FAILED':
                             continue
                         if has_timeout_message(job) and is_interactive(job):
                             continue
@@ -413,10 +396,12 @@ class JobsView(BaseApiView):
         data = client.jobs.getJobSearchListByPostSqlStr(
             limit=limit,
             skip=offset,
-            orderBy="lastUpdated(desc),name(asc)",
-            request_body={"search": sql_queries},
+            orderBy='lastUpdated(desc),name(asc)',
+            request_body={
+                "search": sql_queries
+            },
             select="allAttributes",
-            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
         )
 
         return data
@@ -434,38 +419,28 @@ class JobsView(BaseApiView):
             },
         )
         tapis = request.user.tapis_oauth.client
-        job_uuid = request.GET.get("job_uuid")
-        data = tapis.jobs.hideJob(
-            jobUuid=job_uuid,
-            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
-        )
+        job_uuid = request.GET.get('job_uuid')
+        data = tapis.jobs.hideJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
         return JsonResponse(
             {
-                "status": 200,
-                "response": data,
+                'status': 200,
+                'response': data,
             },
-            encoder=BaseTapisResultSerializer,
+            encoder=BaseTapisResultSerializer
         )
 
     def post(self, request, *args, **kwargs):
         tapis = request.user.tapis_oauth.client
         username = request.user.username
         body = json.loads(request.body)
-        job_uuid = body.get("job_uuid")
-        job_action = body.get("action")
-        job_post = body.get("job")
+        job_uuid = body.get('job_uuid')
+        job_action = body.get('action')
+        job_post = body.get('job')
 
         if job_uuid and job_action:
-            if job_action == "resubmit":
-                logger.info(
-                    "user:{} is resubmitting job uuid:{}".format(username, job_uuid)
-                )
-                data = tapis.jobs.resubmitJob(
-                    jobUuid=job_uuid,
-                    headers={
-                        "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
-                    },
-                )
+            if job_action == 'resubmit':
+                logger.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
+                data = tapis.jobs.resubmitJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
                         "body": body,
@@ -485,18 +460,9 @@ class JobsView(BaseApiView):
                         },
                     )
 
-            elif job_action == "cancel":
-                logger.info(
-                    "user:{} is canceling/stopping job uuid:{}".format(
-                        username, job_uuid
-                    )
-                )
-                data = tapis.jobs.cancelJob(
-                    jobUuid=job_uuid,
-                    headers={
-                        "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
-                    },
-                )
+            elif job_action == 'cancel':
+                logger.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
+                data = tapis.jobs.cancelJob(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
                 if isinstance(data, TapisResult):
                     metrics_info = {
                         "body": body,
@@ -516,48 +482,37 @@ class JobsView(BaseApiView):
                         },
                     )
             else:
-                raise ApiException(
-                    "user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
-                        username, job_action, job_uuid
-                    ),
-                    status=400,
-                )
+                raise ApiException("user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
+                    username,
+                    job_action,
+                    job_uuid
+                ), status=400)
 
             return JsonResponse(
                 {
-                    "status": 200,
-                    "response": data,
+                    'status': 200,
+                    'response': data,
                 },
-                encoder=BaseTapisResultSerializer,
+                encoder=BaseTapisResultSerializer
             )
 
         elif not job_post:
-            raise ApiException(
-                "user:{} is submitting a request with no job body.".format(
-                    username,
-                ),
-                status=400,
-            )
+            raise ApiException("user:{} is submitting a request with no job body.".format(
+                username,
+            ), status=400)
 
         # submit job
         else:
-            logger.info(
-                "processing job submission for user:{}: {}".format(username, job_post)
-            )
+            logger.info("processing job submission for user:{}: {}".format(username, job_post))
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
-                default_system = evaluate_datafiles_storage_system(
-                    request.user.tapis_oauth,
-                    settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM,
-                )
-                if not job_post.get("archiveSystemId"):
-                    job_post["archiveSystemId"] = default_system["system"]
-                if not job_post.get("archiveSystemDir"):
-                    homeDir = default_system["homeDir"]
-                    job_post["archiveSystemDir"] = (
-                        f"{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
-                    )
+                default_system = evaluate_datafiles_storage_system(request.user.tapis_oauth, settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM)
+                if not job_post.get('archiveSystemId'):
+                    job_post['archiveSystemId'] = default_system['system']
+                if not job_post.get('archiveSystemDir'):
+                    homeDir = default_system['homeDir']
+                    job_post['archiveSystemDir'] = f'{homeDir}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}'
 
             execSystemId = job_post.get("execSystemId")
             if not execSystemId:
@@ -569,13 +524,11 @@ class JobsView(BaseApiView):
                 job_post["appVersion"] = app["definition"].version
 
             # Check for and set license environment variable if app requires one
-            lic_type = body.get("licenseType")
+            lic_type = body.get('licenseType')
             if lic_type:
                 lic = _get_user_app_license(lic_type, request.user)
                 if lic is None:
-                    raise ApiException(
-                        "You are missing the required license for this application."
-                    )
+                    raise ApiException("You are missing the required license for this application.")
 
                 # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
                 # https://jira.tacc.utexas.edu/browse/WP-70
@@ -586,12 +539,8 @@ class JobsView(BaseApiView):
                 # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
-            for system_id in list(
-                filter(None, [job_post.get("archiveSystemId"), execSystemId])
-            ):
-                if push_keys_required_if_not_credentials_ensured(
-                    request.user, system_id
-                ):
+            for system_id in list(filter(None, [job_post.get('archiveSystemId'), execSystemId])):
+                if push_keys_required_if_not_credentials_ensured(request.user, system_id):
                     system_def = tapis.systems.getSystem(systemId=system_id)
                     return JsonResponse(
                         {
@@ -602,29 +551,21 @@ class JobsView(BaseApiView):
                     )
 
             if settings.DEBUG:
-                webhook_url = getattr(settings, "NGROK_DOMAIN", None) or getattr(
-                    settings, "WH_BASE_URL", ""
-                )
+                webhook_url = getattr(settings, "NGROK_DOMAIN", None) or getattr(settings, "WH_BASE_URL", "")
                 parsed_url = urlparse(webhook_url)
                 if not parsed_url.scheme:
                     webhook_base_url = f"https://{webhook_url}"
                 else:
                     webhook_base_url = settings.NGROK_DOMAIN
 
-                interactive_wh_url = webhook_base_url + reverse(
-                    "webhooks:interactive_wh_handler"
-                )
+                interactive_wh_url = webhook_base_url + reverse("webhooks:interactive_wh_handler")
                 jobs_wh_url = webhook_base_url + reverse("webhooks:jobs_wh_handler")
             else:
-                interactive_wh_url = request.build_absolute_uri(
-                    reverse("webhooks:interactive_wh_handler")
-                )
-                jobs_wh_url = request.build_absolute_uri(
-                    reverse("webhooks:jobs_wh_handler")
-                )
+                interactive_wh_url = request.build_absolute_uri(reverse("webhooks:interactive_wh_handler"))
+                jobs_wh_url = request.build_absolute_uri(reverse("webhooks:jobs_wh_handler"))
 
             # Add additional data for interactive apps
-            if body.get("isInteractive"):
+            if body.get('isInteractive'):
                 # Add webhook URL environment variable for interactive apps
                 job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                     "envVariables", []
@@ -632,28 +573,26 @@ class JobsView(BaseApiView):
 
             # Add portalName tag to job in order to filter jobs by portal
             portal_name = settings.PORTAL_NAMESPACE
-            job_post["tags"] = job_post.get("tags", []) + [f"portalName: {portal_name}"]
+            job_post['tags'] = job_post.get('tags', []) + [f'portalName: {portal_name}']
 
             # Add webhook subscription for job status updates
-            job_post["subscriptions"] = job_post.get("subscriptions", []) + [
-                {
+            job_post["subscriptions"] = job_post.get('subscriptions', []) + [
+               {
                     "description": "Portal job status notification",
                     "enabled": True,
                     "eventCategoryFilter": "JOB_NEW_STATUS",
                     "ttlMinutes": 0,  # ttlMinutes of 0 corresponds to max default (1 week)
                     "deliveryTargets": [
-                        {"deliveryMethod": "WEBHOOK", "deliveryAddress": jobs_wh_url}
-                    ],
+                        {
+                            "deliveryMethod": "WEBHOOK",
+                            "deliveryAddress": jobs_wh_url
+                        }
+                    ]
                 }
             ]
 
             logger.info("user:{} is submitting job:{}".format(username, job_post))
-            response = tapis.jobs.submitJob(
-                **job_post,
-                headers={
-                    "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
-                },
-            )
+            response = tapis.jobs.submitJob(**job_post, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
 
             if isinstance(response, TapisResult):
                 metrics_info = {
@@ -676,69 +615,55 @@ class JobsView(BaseApiView):
 
             return JsonResponse(
                 {
-                    "status": 200,
-                    "response": response,
+                    'status': 200,
+                    'response': response,
                 },
-                encoder=BaseTapisResultSerializer,
+                encoder=BaseTapisResultSerializer
             )
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class SystemsView(BaseApiView):
 
     def get(self, request, *args, **kwargs):
-        roles = request.GET.get("roles")
-        user_role = request.GET.get("user_role")
-        system_id = request.GET.get("system_id")
+        roles = request.GET.get('roles')
+        user_role = request.GET.get('user_role')
+        system_id = request.GET.get('system_id')
         if roles:
-            logger.info(
-                "user:{} tapis.systems.listRoles system_id:{}".format(
-                    request.user.username, system_id
-                )
-            )
+            logger.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            logger.info(
-                "user:{} tapis.systems.getRoleForUser system_id:{}".format(
-                    request.user.username, system_id
-                )
-            )
+            logger.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
-            data = agc.systems.getRoleForUser(
-                systemId=system_id, username=request.user.username
-            )
+            data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body)
-        role = body["role"]
-        system_id = body["system_id"]
-        logger.info(
-            "user:{} tapis.systems.updateRole system_id:{}".format(
-                request.user.username, system_id
-            )
-        )
-        role_body = {"username": request.user.username, "role": role}
+        role = body['role']
+        system_id = body['system_id']
+        logger.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        role_body = {
+            'username': request.user.username,
+            'role': role
+        }
         agc = service_account()
         data = agc.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
         tapis = request.user.tapis_oauth.client
-        data = tapis.jobs.getJobHistory(
-            jobUuid=job_uuid,
-            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
-        )
+        data = tapis.jobs.getJobHistory(jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"})
         return JsonResponse(
             {
-                "status": 200,
-                "response": data,
+                'status': 200,
+                'response': data,
             },
-            encoder=BaseTapisResultSerializer,
+            encoder=BaseTapisResultSerializer
         )
 
 
@@ -822,63 +747,34 @@ class AppsTrayView(BaseApiView):
         for category in portal_app_categories.order_by("-priority"):
 
             # Retrieve all apps known to the portal in that category
-            portal_apps = list(
-                AppTrayEntry.objects.all()
-                .filter(available=True, category=category, appType="tapis")
-                .order_by(Coalesce("label", "appId"))
-                .values("appId", "appType", "html", "icon", "label", "version")
-            )
+            portal_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='tapis')
+                               .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             # Only return Tapis apps that are known to exist and are enabled
             tapis_apps = []
             for portal_app in portal_apps:
-                portal_app_id = (
-                    (portal_app["appId"], portal_app["version"])
-                    if portal_app["version"]
-                    else portal_app["appId"]
-                )
+                portal_app_id = (portal_app['appId'], portal_app['version']) if portal_app['version'] else portal_app['appId']
 
                 # Look for matching app in tapis apps list, and append tapis app label if portal app has no label
-                matching_app = next(
-                    (
-                        x
-                        for x in sorted(apps_listing, key=lambda y: y.version)
-                        if portal_app_id in [x.id, (x.id, x.version)]
-                    ),
-                    None,
-                )
+                matching_app = next((x for x in sorted(apps_listing, key=lambda y: y.version) if portal_app_id in [x.id, (x.id, x.version)]), None)
                 if matching_app:
-                    tapis_apps.append(
-                        {
-                            **portal_app,
-                            "label": portal_app["label"] or matching_app.notes.label,
-                        }
-                    )
+                    tapis_apps.append({**portal_app, 'label': portal_app['label'] or matching_app.notes.label})
 
-            html_apps = list(
-                AppTrayEntry.objects.all()
-                .filter(available=True, category=category, appType="html")
-                .order_by(Coalesce("label", "appId"))
-                .values("appId", "appType", "html", "icon", "label", "version")
-            )
+            html_apps = list(AppTrayEntry.objects.all().filter(available=True, category=category, appType='html')
+                             .order_by(Coalesce('label', 'appId')).values('appId', 'appType', 'html', 'icon', 'label', 'version'))
 
             categoryResult = {
                 "title": category.category,
-                "apps": [
-                    {k: v for k, v in tapis_app.items() if v != ""}
-                    for tapis_app in tapis_apps
-                ],  # Remove empty strings from response
+                "apps": [{k: v for k, v in tapis_app.items() if v != ''} for tapis_app in tapis_apps]  # Remove empty strings from response
             }
 
             # Add html apps to html_definitions
             for app in html_apps:
-                html_definitions[app["appId"]] = app
+                html_definitions[app['appId']] = app
 
                 categoryResult["apps"].append(app)
 
-            categoryResult["apps"] = sorted(
-                categoryResult["apps"], key=lambda app: app["label"] or app["appId"]
-            )
+            categoryResult["apps"] = sorted(categoryResult["apps"], key=lambda app: app['label'] or app['appId'])
             categories.append(categoryResult)
 
         return categories, html_definitions
@@ -915,26 +811,26 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse(
-            {"tabs": tabs, "htmlDefinitions": html_definitions},
-            encoder=BaseTapisResultSerializer,
+            {
+                "tabs": tabs,
+                "htmlDefinitions": html_definitions
+            },
+            encoder=BaseTapisResultSerializer
         )
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required, name='dispatch')
 class TapisAppsView(BaseApiView):
     def get(self, request, operation=None):
         try:
             client = request.user.tapis_oauth.client
         except AttributeError:
             return JsonResponse(
-                {"message": "This view requires authentication."}, status=403
-            )
+                {'message': 'This view requires authentication.'},
+                status=403)
 
         get_params = request.GET.dict()
-        logger.info(
-            "user:%s op:%s query_params:%s"
-            % (request.user.username, operation, get_params)
-        )
+        logger.info('user:%s op:%s query_params:%s' % (request.user.username, operation, get_params))
         response = tapis_get_handler(client, operation, **get_params)
 
-        return JsonResponse({"data": response})
+        return JsonResponse({'data': response})

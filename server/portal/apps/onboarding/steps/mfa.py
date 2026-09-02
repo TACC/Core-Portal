@@ -34,8 +34,8 @@ class MFAStep(AbstractStep):
     def mfa_check(self):
         auth = HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
         response = requests.get(self.tas_pairings_url(), auth=auth)
-        pairings = response.json()["result"]
-        return any(pairing["type"] == "tacc-soft-token" for pairing in pairings)
+        pairings = response.json()['result']
+        return any(pairing['type'] == 'tacc-soft-token' for pairing in pairings)
 
     def process(self):
         if self.mfa_check():

@@ -3,7 +3,6 @@
    :synopsis: Necessary classes to serialize a class which
     wrapps an agave object into a dict.
 """
-
 import logging
 import json
 from tapipy.tapis import TapisResult

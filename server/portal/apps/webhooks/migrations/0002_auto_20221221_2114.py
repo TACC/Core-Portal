@@ -7,13 +7,13 @@ import portal.utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("webhooks", "0001_initial"),
+        ('webhooks', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="externalcall",
-            name="callback_data",
+            model_name='externalcall',
+            name='callback_data',
             field=portal.utils.fields.JSONField(null=True),
         ),
     ]

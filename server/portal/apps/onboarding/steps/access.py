@@ -49,6 +49,12 @@ class RequestAccessStep(AbstractStep):
                 )
             )
         elif action == "staff_deny":
-            self.deny("Portal access request has not been approved.")
+            self.deny(
+                "Portal access request has not been approved."
+            )
         else:
-            self.fail("Invalid client action {action}".format(action=action))
+            self.fail(
+                "Invalid client action {action}".format(
+                    action=action
+                )
+            )

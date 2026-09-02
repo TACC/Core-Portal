@@ -6,30 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("accounts", "0003_auto_20200131_0207"),
+        ('accounts', '0003_auto_20200131_0207'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="portalprofile",
-            name="bio",
-            field=models.CharField(
-                blank=True, default=None, max_length=4096, null=True
-            ),
+            model_name='portalprofile',
+            name='bio',
+            field=models.CharField(blank=True, default=None, max_length=4096, null=True),
         ),
         migrations.AddField(
-            model_name="portalprofile",
-            name="orcid_id",
+            model_name='portalprofile',
+            name='orcid_id',
             field=models.CharField(blank=True, default=None, max_length=256, null=True),
         ),
         migrations.AddField(
-            model_name="portalprofile",
-            name="professional_level",
+            model_name='portalprofile',
+            name='professional_level',
             field=models.CharField(default=None, max_length=256, null=True),
         ),
         migrations.AddField(
-            model_name="portalprofile",
-            name="website",
+            model_name='portalprofile',
+            name='website',
             field=models.CharField(blank=True, default=None, max_length=256, null=True),
         ),
     ]

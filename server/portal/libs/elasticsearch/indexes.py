@@ -2,18 +2,15 @@
 .. module: portal.libs.elasticsearch.indexes
    :synopsis: ElasticSearch Index setup
 """
-
 from datetime import datetime
 import logging
 from django.conf import settings
 from elasticsearch_dsl import Index
-from portal.libs.elasticsearch.docs.base import (
-    IndexedFile,
-    IndexedAllocation,
-    IndexedProject,
-    IndexedPublication,
-)
+from portal.libs.elasticsearch.docs.base import (IndexedFile,
+                                                 IndexedAllocation,
+                                                 IndexedProject, IndexedPublication)
 from portal.libs.elasticsearch.analyzers import file_query_analyzer
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +28,10 @@ def setup_indexes(doc_type, reindex=False, force=False):
        index with that alias and the provided name.
     """
     baseName = settings.ES_INDEX_PREFIX.format(doc_type)
-    indexName = "{}-{}".format(baseName, index_time_string())
+    indexName = '{}-{}'.format(baseName, index_time_string())
     alias = baseName
     if reindex:
-        alias += "-reindex"
+        alias += '-reindex'
 
     index = Index(alias)
     if force or not index.exists():
@@ -58,7 +55,7 @@ def index_time_string():
 
 
 def setup_files_index(reindex=False, force=False):
-    index = setup_indexes("files", reindex, force)
+    index = setup_indexes('files', reindex, force)
     if not index.exists():
         index.document(IndexedFile)
         index.analyzer(file_query_analyzer)
@@ -67,21 +64,21 @@ def setup_files_index(reindex=False, force=False):
 
 
 def setup_allocations_index(reindex=False, force=False):
-    index = setup_indexes("allocations", reindex, force)
+    index = setup_indexes('allocations', reindex, force)
     if not index.exists():
         index.document(IndexedAllocation)
         index.create()
 
 
 def setup_projects_index(reindex=False, force=False):
-    index = setup_indexes("projects", reindex, force)
+    index = setup_indexes('projects', reindex, force)
     if not index.exists():
         index.document(IndexedProject)
         index.create()
 
 
 def setup_publications_index(reindex=False, force=False):
-    index = setup_indexes("publications", reindex, force)
+    index = setup_indexes('publications', reindex, force)
     if not index.exists():
         index.document(IndexedPublication)
         index.create()
