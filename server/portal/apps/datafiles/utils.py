@@ -1,11 +1,13 @@
 import logging
+from typing import NotRequired, TypedDict
+
 from django.conf import settings
-from typing import TypedDict, NotRequired, Optional
-from tapipy.errors import InternalServerError, BaseTapyException
+from tapipy.errors import BaseTapyException, InternalServerError
 from tapipy.tapis import TapisResult
+
+from portal.apps.auth.models import TapisOAuthToken
 from portal.apps.notifications.models import Notification
 from portal.apps.users.utils import get_user_data
-from portal.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +21,7 @@ class PortalDataFilesSystem(TypedDict):
     api: str
     homeDir: str
     hostEval: NotRequired[str]
-    icon: NotRequired[Optional[str]]
+    icon: NotRequired[str | None]
     siteSearchPriority: NotRequired[int]
     resourceProvider: NotRequired[str]
     readOnly: NotRequired[bool]
@@ -47,7 +49,8 @@ def evaluate_datafiles_storage_system(
     Args:
         tapis (TapisOAuthToken): Tapis OAuth token object
         system (PortalDataFilesSystem): Storage system definition
-        default_host_eval (str, optional): Default environment variable name to evaluate for homeDir if hostEval is not provided.
+        default_host_eval (str, optional): Default environment variable name to
+            evaluate for homeDir if hostEval is not provided.
 
     Returns:
         PortalDataFilesSystem: Evaluated storage system definition
@@ -101,7 +104,8 @@ def evaluate_datafiles_storage_systems(tapis: TapisOAuthToken, systems: list, de
     Args:
         tapis (TapisOAuthToken): Tapis OAuth token object
         systems (list): List of storage system definitions
-        default_host_eval (str, optional): Default environment variable name to evaluate for homeDir if hostEval is not provided.
+        default_host_eval (str, optional): Default environment variable name to
+            evaluate for homeDir if hostEval is not provided.
 
     Returns:
         list: List of evaluated storage system definitions

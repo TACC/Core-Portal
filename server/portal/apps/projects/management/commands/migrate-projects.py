@@ -1,13 +1,14 @@
 """Management command."""
 
+import logging
+
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from portal.libs.agave.utils import service_account
+
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.search.tasks import index_project
-from django.contrib.auth import get_user_model
-import logging
-
+from portal.libs.agave.utils import service_account
 
 logger = logging.getLogger(__name__)
 
@@ -40,16 +41,14 @@ class Command(BaseCommand):
                         )
                     )
                     if len(admins) != 1:
-                        raise Exception("Not exactly one admin for {project_id}".format(project_id=meta.project_id))
+                        raise Exception(f"Not exactly one admin for {meta.project_id}")
                     # Get first role tuple, first item in tuple which is username
                     admin = get_user_model().objects.get(username=admins[0][0])
                     project.add_pi(admin)
-                    logger.info(
-                        "Set {admin} as PI on {project_id}".format(admin=admin.username, project_id=meta.project_id)
-                    )
+                    logger.info(f"Set {admin.username} as PI on {meta.project_id}")
 
                 except Exception as e:
-                    logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
+                    logger.error(f"Could not migrate {meta.project_id}")
                     logger.exception(e)
 
             index_project.apply_async(args=[meta.project_id])

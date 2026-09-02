@@ -1,16 +1,18 @@
 import json
 import os
+from unittest.mock import patch
+
 import pytest
-from mock import patch
-from django.test import TestCase
-from django.contrib.auth import get_user_model
 from django.conf import settings
-from pytas.http import TASClient
+from django.contrib.auth import get_user_model
+from django.test import TestCase
 from elasticsearch.exceptions import NotFoundError
+from pytas.http import TASClient
 from zeep.exceptions import Fault
+
 from portal.apps.auth.models import TapisOAuthToken
-from portal.apps.users.utils import get_allocations
 from portal.apps.users.tasks import get_tas_allocations
+from portal.apps.users.utils import get_allocations
 
 
 class AttrDict(dict):
@@ -60,7 +62,10 @@ class TestUserApiViews(TestCase):
     def test_usage_view(self, mocked_file):
         # TODO: this is hideous, there must be a better way to write that or
         # re-write the route to be less disgusting.
-        mocked_file.search.return_value.filter.return_value.extra.return_value.execute.return_value.to_dict.return_value = {
+        mocked_search = mocked_file.search.return_value
+        mocked_filter = mocked_search.filter.return_value
+        mocked_extra = mocked_filter.extra.return_value
+        mocked_extra.execute.return_value.to_dict.return_value = {
             "aggregations": {"total_storage_bytes": {"value": 10}}
         }
         self.client.login(username="test", password="test")
@@ -76,12 +81,12 @@ class TestUserApiViews(TestCase):
 
 class TestGetAllocations(TestCase):
     def setUp(self):
-        super(TestGetAllocations, self).setUp()
+        super().setUp()
         self.mock_tas_patcher = patch("portal.apps.users.tasks.TASClient", spec=TASClient)
         self.mock_tas = self.mock_tas_patcher.start()
 
     def tearDown(self):
-        super(TestGetAllocations, self).tearDown()
+        super().tearDown()
         self.mock_tas_patcher.stop()
 
     @patch("portal.apps.users.utils.IndexedAllocation")
@@ -218,7 +223,7 @@ def tas_delete_user_error_response():
 
 
 def test_add_user(client, requests_mock, authenticated_user, tas_add_user_response):
-    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_response)
+    requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_add_user_response)
     response = client.post("/api/users/team/manage/1234/5678")
     assert response.status_code == 200
     assert response.json() == {"response": "ok"}
@@ -230,13 +235,13 @@ def test_add_user_unauthenticated(client):
 
 
 def test_add_user_failure(client, requests_mock, authenticated_user, tas_add_user_error_response):
-    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_error_response)
+    requests_mock.post(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_add_user_error_response)
     response = client.post("/api/users/team/manage/1234/5678")
     assert response.status_code == 400
 
 
 def test_delete_user(client, requests_mock, authenticated_user, tas_delete_user_response):
-    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_response)
+    requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_delete_user_response)
     response = client.delete("/api/users/team/manage/1234/5678")
     assert response.status_code == 200
     assert response.json() == {"response": "ok"}
@@ -248,7 +253,7 @@ def test_delete_user_unauthenticated(client):
 
 
 def test_delete_user_failure(client, requests_mock, authenticated_user, tas_delete_user_error_response):
-    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
+    requests_mock.delete(f"{settings.TAS_URL}/v1/projects/1234/users/5678", json=tas_delete_user_error_response)
     response = client.delete("/api/users/team/manage/1234/5678")
     assert response.status_code == 400
 

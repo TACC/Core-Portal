@@ -1,8 +1,9 @@
-from django.core.management import BaseCommand
-from portal.libs.agave.utils import service_account
-from django.contrib.auth import get_user_model
-from portal.apps.workspace.models import JobSubmission
 import dateutil.parser
+from django.contrib.auth import get_user_model
+from django.core.management import BaseCommand
+
+from portal.apps.workspace.models import JobSubmission
+from portal.libs.agave.utils import service_account
 
 
 class Command(BaseCommand):
@@ -34,4 +35,4 @@ class Command(BaseCommand):
                 offset += 100
                 done = len(jobs) < 100
                 total += len(jobs)
-            print("{} jobs for {}".format(total, user.username))
+            print(f"{total} jobs for {user.username}")

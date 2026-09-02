@@ -1,10 +1,11 @@
 import json
 import os
-from mock import patch
-from django.test import TestCase
+from unittest.mock import patch
+
+import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
-import pytest
+from django.test import TestCase
 
 
 @pytest.mark.django_db(transaction=True)
@@ -13,7 +14,7 @@ class TestAppsApiViews(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestAppsApiViews, cls).setUpClass()
+        super().setUpClass()
         cls.mock_client_patcher = patch("portal.apps.auth.models.TapisOAuthToken.client")
         cls.mock_client = cls.mock_client_patcher.start()
         cls.mock_get_user_data_patcher = patch("portal.apps.users.utils.get_user_data")
@@ -24,7 +25,7 @@ class TestAppsApiViews(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        super(TestAppsApiViews, cls).tearDownClass()
+        super().tearDownClass()
         cls.mock_get_user_data_patcher.stop()
         cls.mock_client_patcher.stop()
 

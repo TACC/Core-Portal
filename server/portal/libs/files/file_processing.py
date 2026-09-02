@@ -1,12 +1,13 @@
-import numpy as np
-import io
-import os
-import logging
-from matplotlib import pyplot as plt
 import csv
-import matplotlib.animation as anim
+import io
+import logging
+import os
 import tempfile
+
+import matplotlib.animation as anim
+import numpy as np
 import tifffile as tiff
+from matplotlib import pyplot as plt
 from PIL import Image
 
 logger = logging.getLogger(__name__)

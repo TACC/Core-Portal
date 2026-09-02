@@ -2,11 +2,12 @@
 :synopsis: Function to lookup manager classes
 """
 
-from importlib import import_module
 import logging
-from django.conf import settings
-from portal.exceptions.api import ApiException
+from importlib import import_module
 
+from django.conf import settings
+
+from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 

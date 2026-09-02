@@ -6,9 +6,10 @@
 import logging
 import time
 from functools import wraps
-from django.http import JsonResponse
-from portal.utils.jwt_auth import login_user_agave_jwt
 
+from django.http import JsonResponse
+
+from portal.utils.jwt_auth import login_user_agave_jwt
 
 logger = logging.getLogger(__name__)
 

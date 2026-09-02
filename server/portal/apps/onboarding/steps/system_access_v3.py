@@ -1,8 +1,10 @@
 import logging
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
-from portal.libs.agave.utils import service_account
+
 from tapipy.errors import BaseTapyException
+
+from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.abstract import AbstractStep
+from portal.libs.agave.utils import service_account
 from portal.utils.encryption import createKeyPair
 
 logger = logging.getLogger(__name__)
@@ -86,7 +88,7 @@ class SystemAccessStepV3(AbstractStep):
         """
         Call super class constructor
         """
-        super(SystemAccessStepV3, self).__init__(user)
+        super().__init__(user)
 
     def display_name(self):
         return "System Access"

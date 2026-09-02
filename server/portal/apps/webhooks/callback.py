@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class WebhookCallback(object):
+class WebhookCallback:
     """class WebhookCallback
 
     An abstract base class for executing callback functions upon

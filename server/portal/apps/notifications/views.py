@@ -1,10 +1,10 @@
-import logging
-from django.http import JsonResponse
-from portal.apps.notifications.models import Notification
-
-from portal.views.base import BaseApiView
-
 import json
+import logging
+
+from django.http import JsonResponse
+
+from portal.apps.notifications.models import Notification
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 

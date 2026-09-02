@@ -1,19 +1,22 @@
-import os
 import io
+import logging
+import os
+import urllib
+from pathlib import Path
 from urllib.parse import quote
+
+import httpx
 from django.conf import settings
 from django.db import transaction
-import logging
-import urllib
 from elasticsearch_dsl import Q
-import httpx
-from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
-from portal.exceptions.api import ApiException
-from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
-from portal.libs.agave.filter_mapping import filter_mapping
-from pathlib import Path
 from tapipy.errors import BaseTapyException
+
+from portal.apps.projects.schema_models import constants
+from portal.apps.projects.workspace_operations.graph_operations import (
+    get_node_from_path,
+    get_or_create_trash_entity,
+    get_root_node,
+)
 from portal.apps.projects.workspace_operations.project_meta_operations import (
     add_file_associations,
     create_file_obj,
@@ -25,13 +28,11 @@ from portal.apps.projects.workspace_operations.project_meta_operations import (
     patch_file_association,
     remove_file_obj_by_path,
 )
-from portal.apps.projects.schema_models import constants
-from portal.apps.projects.workspace_operations.graph_operations import (
-    get_or_create_trash_entity,
-    get_root_node,
-    get_node_from_path,
-)
-
+from portal.apps.search.tasks import tapis_indexer, tapis_listing_indexer
+from portal.exceptions.api import ApiException
+from portal.libs.agave.filter_mapping import filter_mapping
+from portal.libs.agave.utils import get_file_size, increment_file_name, text_preview
+from portal.libs.elasticsearch.indexes import IndexedFile
 
 logger = logging.getLogger(__name__)
 
@@ -468,9 +469,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None, m
 
 
 def makepublic(client, src_system, src_path, dest_path="/", *args, **kwargs):
-    dest_system = next(
-        (sys["system"] for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["scheme"] == "public")
-    )
+    dest_system = next(sys["system"] for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["scheme"] == "public")
 
     return copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs)
 
@@ -663,11 +662,11 @@ def preview(client, system, path, max_uses=3, lifetime=600, **kwargs):
         file_type = "object"
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
         file_type = "ms-office"
-        url = "https://view.officeapps.live.com/op/view.aspx?src={}".format(url)
+        url = f"https://view.officeapps.live.com/op/view.aspx?src={url}"
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
         file_type = "ipynb"
         tmp = url.replace("https://", "")
-        url = "https://nbviewer.jupyter.org/urls/{tmp}".format(tmp=tmp)
+        url = f"https://nbviewer.jupyter.org/urls/{tmp}"
     elif file_ext in settings.SUPPORTED_NEW_WINDOW_PREVIEW_EXTS:
         error = "This file type must be previewed in a new window."
     else:

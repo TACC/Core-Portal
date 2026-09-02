@@ -1,12 +1,13 @@
 import logging
-from django.conf import settings
-from requests.auth import HTTPBasicAuth
-from pytas.http import TASClient
-from rt import Rt
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
-from portal.apps.users.tasks import index_allocations
 
+from django.conf import settings
+from pytas.http import TASClient
+from requests.auth import HTTPBasicAuth
+from rt import Rt
+
+from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.abstract import AbstractStep
+from portal.apps.users.tasks import index_allocations
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class ProjectMembershipStep(AbstractStep):
         """
         Call super class constructor
         """
-        super(ProjectMembershipStep, self).__init__(user)
+        super().__init__(user)
         self.project_sql_ids = (
             self.settings["project_sql_id"]
             if isinstance(self.settings["project_sql_id"], list)
@@ -72,9 +73,7 @@ class ProjectMembershipStep(AbstractStep):
         ticket_text = ticket_text.format(
             username=self.user.username,
             project=self.default_project["title"],
-            onboarding_url=request.build_absolute_uri(
-                "/workbench/onboarding/setup/{username}".format(username=self.user.username)
-            ),
+            onboarding_url=request.build_absolute_uri(f"/workbench/onboarding/setup/{self.user.username}"),
         )
 
         try:
@@ -145,7 +144,7 @@ class ProjectMembershipStep(AbstractStep):
             )
             tracker.edit_ticket(ticket_id, Status="resolved")
         else:
-            self.fail("The portal was unable to close RT Ticket {ticket_id}".format(ticket_id=ticket_id))
+            self.fail(f"The portal was unable to close RT Ticket {ticket_id}")
 
     def close_project_request(self, deny=False):
         ticket_id = None
@@ -168,7 +167,7 @@ class ProjectMembershipStep(AbstractStep):
             )
             tracker.edit_ticket(ticket_id, Status="resolved")
         else:
-            self.fail("The portal was unable to close RT Ticket {ticket_id}".format(ticket_id=ticket_id))
+            self.fail(f"The portal was unable to close RT Ticket {ticket_id}")
 
     def process(self):
         if self.is_project_member():
@@ -189,13 +188,13 @@ class ProjectMembershipStep(AbstractStep):
             try:
                 self.add_to_project()
                 self.close_project_request()
-                self.complete("Portal access request approved by {user}".format(user=request.user.username))
+                self.complete(f"Portal access request approved by {request.user.username}")
             except Exception as err:
-                logger.exception(msg="Error during staff_approve on {}".format(self.step_name()))
+                logger.exception(msg=f"Error during staff_approve on {self.step_name()}")
                 logger.error(err.args)
                 self.fail("An error occurred while trying to add this user to the project")
         elif action == "staff_deny":
             self.deny_project_request()
             self.deny("Portal access request has not been approved.")
         else:
-            self.fail("Invalid client action {action}".format(action=action))
+            self.fail(f"Invalid client action {action}")

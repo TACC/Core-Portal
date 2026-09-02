@@ -1,6 +1,7 @@
 import logging
-from django.db import models
+
 from django.conf import settings
+from django.db import models
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -69,7 +70,7 @@ class CustomMessageTemplate(models.Model):
         }
 
     def __str__(self):
-        return "%s | %s | %s | %s" % (
+        return "{} | {} | {} | {}".format(
             self.message_type,
             self.component,
             ("dismissible" if self.dismissible else "not dismissible"),

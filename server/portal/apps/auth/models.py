@@ -3,8 +3,9 @@
 import logging
 import time
 from urllib.parse import urlparse
-from django.db import models
+
 from django.conf import settings
+from django.db import models
 from tapipy.tapis import Tapis
 
 logger = logging.getLogger(__name__)
@@ -108,4 +109,7 @@ class TapisOAuthToken(models.Model):
     def __str__(self):
         access_token_masked = self.access_token[-5:]
         refresh_token_masked = self.refresh_token[-5:]
-        return f"access_token:{access_token_masked} refresh_token:{refresh_token_masked} expires_in:{self.expires_in} created:{self.created}"
+        return (
+            f"access_token:{access_token_masked} refresh_token:{refresh_token_masked} "
+            f"expires_in:{self.expires_in} created:{self.created}"
+        )

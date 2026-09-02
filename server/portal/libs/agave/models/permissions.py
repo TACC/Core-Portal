@@ -4,6 +4,7 @@
 """
 
 import logging
+
 from portal.libs.agave.exceptions import CreationError
 
 # pylint: disable=invalid-name
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-class Permission(object):
+class Permission:
     """A single permission"""
 
     READ = "READ"
@@ -58,14 +59,13 @@ class Permission(object):
 
     def __str__(self):
         """String -> self.username [R,W,E]"""
-        return "{username} {recursive}[{read}, {write}, {execute}]".format(
-            username=self.username, recursive=self.recursive, read=self.read, write=self.write, execute=self.execute
-        )
+        return f"{self.username} {self.recursive}[{self.read}, {self.write}, {self.execute}]"
 
     def __repr__(self):
         """Repr -> Permissions(username, R, W, E)"""
-        return ("Permissions({username},recursive={recursive},read={read},write={write},execute={execute})").format(
-            username=self.username, recursive=self.recursive, read=self.read, write=self.write, execute=self.execute
+        return (
+            f"Permissions({self.username},recursive={self.recursive},read={self.read},"
+            f"write={self.write},execute={self.execute})"
         )
 
     def __eq__(self, other):
@@ -79,7 +79,7 @@ class Permission(object):
         )
 
 
-class Permissions(object):
+class Permissions:
     """Permissions"""
 
     def __init__(self, client, permissions):
@@ -173,7 +173,7 @@ class FilePermissions(Permissions):
             agave's pems endpoint.
         :param parent: Agave File object.
         """
-        super(FilePermissions, self).__init__(client, permissions)
+        super().__init__(client, permissions)
         self.parent = parent
 
     def save(self):
@@ -198,7 +198,7 @@ class MetadataPermissions(Permissions):
             agave's pems endpoint.
         :param parent: Agave Metadata object.
         """
-        super(MetadataPermissions, self).__init__(client, permissions)
+        super().__init__(client, permissions)
         self.parent = parent
 
     def save(self):
@@ -223,7 +223,7 @@ class ApplicationPermissions(Permissions):
             agave's pems endpoint.
         :param parent: Agave Application object.
         """
-        super(ApplicationPermissions, self).__init__(client, permissions)
+        super().__init__(client, permissions)
         self.parent = parent
 
     def save(self):

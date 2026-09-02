@@ -1,11 +1,11 @@
 from html import unescape
 
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.html import strip_tags
-import requests
 
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
@@ -28,7 +28,7 @@ class UserNewsView(BaseApiView):
 
     def _get_user_news(self):
         auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
-        r = requests.get("{0}/announcements".format(settings.TAS_URL), auth=auth)
+        r = requests.get(f"{settings.TAS_URL}/announcements", auth=auth)
 
         resp = r.json()
 

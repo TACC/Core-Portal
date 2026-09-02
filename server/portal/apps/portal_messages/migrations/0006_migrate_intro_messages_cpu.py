@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import migrations
 
-
 CPU_DASHBOARD_MESSAGE = "This page allows you to monitor your job status and get help with tickets. "
 
 CPU_DATAFILES_MESSAGE = (

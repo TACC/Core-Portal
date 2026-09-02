@@ -7,8 +7,8 @@ from django.conf import settings
 
 from portal.apps.projects.schema_models import constants
 from portal.apps.projects.schema_models.base_metadata import (
-    BaseProjectMetadata,
     BaseFileMetadata,
+    BaseProjectMetadata,
     PartialTrashEntity,
 )
 

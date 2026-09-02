@@ -1,8 +1,9 @@
+import pytest
+from django.db.models import signals
+
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.db.models import signals
 from portal.apps.onboarding.steps.test_steps import MockStep
-import pytest
 
 
 @pytest.fixture(autouse=True)

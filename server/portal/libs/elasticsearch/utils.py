@@ -2,14 +2,16 @@
 Utilities to help on elastic search implementations.
 """
 
-import os
-import logging
 import datetime
+import logging
+import os
+from hashlib import sha256
+from itertools import zip_longest
+
 from elasticsearch.helpers import bulk
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.connections import get_connection
-from hashlib import sha256
-from itertools import zip_longest
+
 # from portal.apps.projects.models import ProjectMetadata
 
 # pylint: disable=invalid-name
@@ -60,7 +62,7 @@ def file_uuid_sha256(system, path):
     """
 
     if not path.startswith("/"):
-        path = "/{}".format(path)
+        path = f"/{path}"
     # str representation of the hash of e.g. "cep.home.user/path/to/file"
     return sha256((system + path).encode()).hexdigest()
 
@@ -111,8 +113,7 @@ def walk_children(system, path, include_parent=False, recurse=False):
     else:
         search = search.filter(basepath_query)
 
-    for hit in search.scan():
-        yield hit
+    yield from search.scan()
 
 
 def delete_recursive(system, path):

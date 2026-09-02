@@ -4,10 +4,12 @@
    :synopsis: Serializer classes for project objects.
 """
 
-import logging
 import datetime
 import json
+import logging
+
 from django.contrib.auth import get_user_model
+
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.libs.agave.utils import to_camel_case
 
@@ -61,4 +63,4 @@ class MetadataJSONSerializer(json.JSONEncoder):
                 else:
                     ret[attname] = field.value_to_string(obj)
             return ret
-        return super(MetadataJSONSerializer, self).default(obj)
+        return super().default(obj)

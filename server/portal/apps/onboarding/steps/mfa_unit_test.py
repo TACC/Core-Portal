@@ -1,5 +1,6 @@
-from portal.apps.onboarding.steps.mfa import MFAStep
 import pytest
+
+from portal.apps.onboarding.steps.mfa import MFAStep
 
 
 @pytest.fixture

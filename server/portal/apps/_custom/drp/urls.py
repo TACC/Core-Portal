@@ -4,6 +4,7 @@
 """
 
 from django.urls import re_path
+
 from portal.apps._custom.drp.views import DigitalRocksSampleView, GenerateImagesView
 
 app_name = "custom"

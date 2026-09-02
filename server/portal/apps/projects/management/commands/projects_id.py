@@ -1,10 +1,11 @@
 """Management command."""
 
-from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
+from django.db import transaction
+
 from portal.apps.projects.models.base import ProjectId
-from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
+from portal.apps.projects.models.utils import get_latest_project_directory, get_latest_project_storage
 
 
 class Command(BaseCommand):
@@ -57,8 +58,8 @@ class Command(BaseCommand):
         max_project_id = options["max_project_id"]
         if max_project_id:
             self.stdout.write(
-                "NOTE(!!!!): Ignoring project ids >= {} when "
-                "processing/updating the storage systems and directories".format(max_project_id)
+                f"NOTE(!!!!): Ignoring project ids >= {max_project_id} when "
+                "processing/updating the storage systems and directories"
             )
 
         latest_storage_system_id = get_latest_project_storage(max_project_id=max_project_id)
@@ -69,13 +70,13 @@ class Command(BaseCommand):
         if latest_project_id == -1:
             self.stdout.write("There are no project directories.")
 
-        self.stdout.write("Latest storage system project id: {}".format(latest_storage_system_id))
-        self.stdout.write("Latest directory project id: {}".format(latest_project_id))
+        self.stdout.write(f"Latest storage system project id: {latest_storage_system_id}")
+        self.stdout.write(f"Latest directory project id: {latest_project_id}")
 
         try:
             with transaction.atomic():
                 model_project_id = ProjectId.objects.select_for_update().latest("last_updated").value
-            self.stdout.write("Latest project id in ProjectId model: {}".format(model_project_id))
+            self.stdout.write(f"Latest project id in ProjectId model: {model_project_id}")
         except ObjectDoesNotExist:
             self.stdout.write("Latest project id in ProjectId model: None")
 
@@ -84,5 +85,5 @@ class Command(BaseCommand):
             ProjectId.update(options.get("update"))
         elif options["update_using_max_value_found"]:
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
-            self.stdout.write("Updating to value latest storage system id: {}".format(max_value_found))
+            self.stdout.write(f"Updating to value latest storage system id: {max_value_found}")
             ProjectId.update(max_value_found)

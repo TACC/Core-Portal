@@ -1,9 +1,10 @@
-from django.db import models
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import timezone
-import logging
 import json
+import logging
+
 import six
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,7 @@ class BaseNotify(models.Model):
                         logger.debug("Keys with error: %s . Value: %s", key, self.extra[key])
                         raise
 
-        super(BaseNotify, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def extra_content(self):
@@ -92,7 +93,7 @@ class Notification(BaseNotify):
         self.save()
 
     def to_dict(self):
-        event_data = super(Notification, self).to_dict()
+        event_data = super().to_dict()
         event_data.update({"user": self.user, "read": self.read, "deleted": self.deleted})
         return event_data
 
@@ -101,6 +102,6 @@ class Broadcast(BaseNotify):
     group = models.CharField(max_length=20)
 
     def to_dict(self):
-        event_data = super(Broadcast, self).to_dict()
+        event_data = super().to_dict()
         event_data.update({"group": self.group})
         return event_data

@@ -1,7 +1,8 @@
-from portal.libs.googledrive import operations
-from django.core.exceptions import PermissionDenied
 import logging
 
+from django.core.exceptions import PermissionDenied
+
+from portal.libs.googledrive import operations
 
 logger = logging.getLogger(__name__)
 

@@ -1,19 +1,20 @@
-from mock import MagicMock
-from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
+from unittest.mock import MagicMock
+
+import pytest
+
 from portal.apps.accounts.models import PortalProfile
-from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.execute import (
+    StepExecuteException,
     execute_setup_steps,
     execute_single_step,
-    prepare_setup_steps,
     load_setup_step,
     log_setup_state,
     new_user_setup_check,
-    StepExecuteException,
+    prepare_setup_steps,
 )
-import pytest
-
+from portal.apps.onboarding.models import SetupEvent
+from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
 
 pytestmark = pytest.mark.django_db
 

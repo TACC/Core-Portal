@@ -1,13 +1,13 @@
-from django.conf import settings
-from portal.apps.workspace.api.views import AppsTrayView
-from portal.apps.workspace.models import AppTrayCategory
-from portal.apps.workspace.models import JobSubmission
 import json
 import os
-import pytest
-from tapipy.tapis import TapisResult
-from django.core.management import call_command
 
+import pytest
+from django.conf import settings
+from django.core.management import call_command
+from tapipy.tapis import TapisResult
+
+from portal.apps.workspace.api.views import AppsTrayView
+from portal.apps.workspace.models import AppTrayCategory, JobSubmission
 
 pytest.mark.django_db(transaction=True)
 
@@ -187,7 +187,7 @@ def test_job_post_is_logged_for_metrics(
 
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with(
-        "user:{} is submitting job:{}".format(authenticated_user.username, tapis_job_submission)
+        f"user:{authenticated_user.username} is submitting job:{tapis_job_submission}"
     )
 
 

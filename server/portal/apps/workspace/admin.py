@@ -1,5 +1,6 @@
 from django.contrib import admin
-from portal.apps.workspace.models import AppTrayEntry, AppTrayCategory
+
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 
 
 @admin.register(AppTrayCategory)

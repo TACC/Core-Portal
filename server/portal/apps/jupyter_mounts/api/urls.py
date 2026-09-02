@@ -1,6 +1,7 @@
 """Jupyter Mounts API Urls"""
 
 from django.urls import path
+
 from portal.apps.jupyter_mounts.api import views
 
 app_name = "jupyter_mounts"

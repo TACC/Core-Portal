@@ -1,10 +1,12 @@
-from django.conf import settings
-from portal.apps.onboarding.steps.project_membership import ProjectMembershipStep
-from portal.apps.onboarding.models import SetupEvent
-from mock import MagicMock, ANY
-import pytest
 import json
 import os
+from unittest.mock import ANY, MagicMock
+
+import pytest
+from django.conf import settings
+
+from portal.apps.onboarding.models import SetupEvent
+from portal.apps.onboarding.steps.project_membership import ProjectMembershipStep
 
 
 @pytest.fixture

@@ -1,17 +1,18 @@
 import logging
 import re
 from functools import wraps
-from django.core.files.base import ContentFile
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
-from portal.apps.tickets import rtUtil
-from portal.apps.tickets import utils
-from portal.views.base import BaseApiView
+from django.core.files.base import ContentFile
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.utils.decorators import method_decorator
+
+from portal.apps.tickets import rtUtil, utils
 from portal.exceptions.api import ApiException
-from django.conf import settings
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ class TicketsHistoryView(BaseApiView):
 
             known_user = get_user_model().objects.filter(username=entry["Creator"]).first()
             if known_user:
-                entry["Creator"] = "{} {}".format(known_user.first_name, known_user.last_name)
+                entry["Creator"] = f"{known_user.first_name} {known_user.last_name}"
         return ticket_history
 
     def _get_matching_history_entry(self, ticket_history, content):
@@ -150,7 +151,7 @@ class TicketsHistoryView(BaseApiView):
             return HttpResponseBadRequest()
 
         # Add information on which user submitted this reply (as this is being done by a service account)
-        modified_reply = reply + "\n[Reply submitted on behalf of {}]".format(request.user.username)
+        modified_reply = reply + f"\n[Reply submitted on behalf of {request.user.username}]"
 
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist("attachments")]
 

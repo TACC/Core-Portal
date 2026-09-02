@@ -1,10 +1,11 @@
 import logging
-from django.core.management import BaseCommand
-from django.conf import settings
-from tapipy.errors import NotFoundError
-from portal.libs.agave.utils import service_account
-from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 
+from django.conf import settings
+from django.core.management import BaseCommand
+from tapipy.errors import NotFoundError
+
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
+from portal.libs.agave.utils import service_account
 
 logger = logging.getLogger(__name__)
 
@@ -63,10 +64,10 @@ class Command(BaseCommand):
                     appId=app.get("id"),
                 )
 
-                logger.info("Imported {}".format(app_entry))
+                logger.info(f"Imported {app_entry}")
             except Exception:
                 logger.exception("Error importing application")
-                logger.info("Following app could not be imported: {}".format(app))
+                logger.info(f"Following app could not be imported: {app}")
 
     def handle(self, *args, **options):
         if options["clean"]:

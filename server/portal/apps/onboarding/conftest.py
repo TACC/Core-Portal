@@ -1,4 +1,5 @@
 import pytest
+
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 

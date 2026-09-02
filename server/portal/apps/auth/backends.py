@@ -1,13 +1,14 @@
 """Auth backends"""
 
 import logging
+
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+
 from portal.apps.accounts.models import PortalProfile
 from portal.apps.users.utils import get_user_data
-
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class TapisOAuthBackend(ModelBackend):
         if "backend" in kwargs and kwargs["backend"] == "tapis":
             token = kwargs["token"]
 
-            logger.info('Attempting login via Tapis with token "%s"' % token[:8].ljust(len(token), "-"))
+            logger.info('Attempting login via Tapis with token "{}"'.format(token[:8].ljust(len(token), "-")))
 
             response = requests.get(
                 f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/userinfo", headers={"X-Tapis-Token": token}
@@ -50,10 +51,10 @@ class TapisOAuthBackend(ModelBackend):
                 user, created = UserModel.objects.update_or_create(username=username, defaults=defaults)
 
                 if created:
-                    logger.info('Created local user record for "%s" from TAS Profile' % username)
+                    logger.info(f'Created local user record for "{username}" from TAS Profile')
 
                 PortalProfile.objects.update_or_create(user=user, defaults=profile_defaults)
-                logger.info('Login successful for user "%s"' % username)
+                logger.info(f'Login successful for user "{username}"')
             else:
-                logger.info("Tapis Authentication failed: %s" % json_result)
+                logger.info(f"Tapis Authentication failed: {json_result}")
         return user

@@ -1,7 +1,7 @@
 """Portal-agnostic base Pydantic models for the project metadata graph."""
 
 from functools import partial
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -29,7 +29,7 @@ class BaseFileMetadata(BaseMetadataModel):
     model_config = ConfigDict(extra="ignore")
 
     data_type: Literal["file"]
-    name: Optional[str] = None
+    name: str | None = None
 
 
 class FileObj(BaseMetadataModel):
@@ -38,12 +38,12 @@ class FileObj(BaseMetadataModel):
     system: str
     name: str
     path: str
-    legacy_path: Optional[str] = None
+    legacy_path: str | None = None
     type: Literal["file", "dir"]
-    length: Optional[int] = None
-    last_modified: Optional[str] = None
-    uuid: Optional[str] = None
-    value: Optional[dict] = None
+    length: int | None = None
+    last_modified: str | None = None
+    uuid: str | None = None
+    value: dict | None = None
 
 
 class PartialTrashEntity(BaseMetadataModel):
@@ -64,7 +64,7 @@ class ProjectRelatedDatasets(BaseMetadataModel):
     """A dataset related to a project."""
 
     dataset_title: str
-    dataset_description: Optional[str] = None
+    dataset_description: str | None = None
     dataset_link: str = ""
 
 
@@ -82,11 +82,11 @@ class ProjectRelatedPublications(BaseMetadataModel):
     publication_type: Literal["context", "linked_dataset", "cited_by"]
     publication_title: str
     publication_link: str
-    publication_author: Optional[str] = None
-    publication_doi: Optional[str] = None
-    publication_date_of_publication: Optional[str] = None
-    publication_publisher: Optional[str] = None
-    publication_description: Optional[str] = None
+    publication_author: str | None = None
+    publication_doi: str | None = None
+    publication_date_of_publication: str | None = None
+    publication_publisher: str | None = None
+    publication_description: str | None = None
 
 
 class GuestUser(BaseMetadataModel):
@@ -108,17 +108,17 @@ class BaseProjectMetadata(BaseMetadataModel):
     project_id: str
     title: str
     description: str = ""
-    license: Optional[str] = None
-    doi: Optional[str] = None
-    institution: Optional[str] = None
-    keywords: Optional[str | list[str]] = None
+    license: str | None = None
+    doi: str | None = None
+    institution: str | None = None
+    keywords: str | list[str] | None = None
     related_datasets: list[ProjectRelatedDatasets] = []
     related_software: list[ProjectRelatedSoftware] = []
     related_publications: list[ProjectRelatedPublications] = []
-    publication_date: Optional[str] = None
+    publication_date: str | None = None
     authors: list[dict] = []
     file_objs: list[FileObj] = []
-    is_review_project: Optional[bool] = None
-    is_published_project: Optional[bool] = None
+    is_review_project: bool | None = None
+    is_published_project: bool | None = None
     guest_users: list[GuestUser] = []
-    cover_image: Optional[str] = None
+    cover_image: str | None = None

@@ -1,4 +1,4 @@
-from portal.apps.workspace.models import JobSubmission, AppTrayCategory, AppTrayEntry
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry, JobSubmission
 
 
 def test_job_submission_model(django_db_reset_sequences, regular_user):

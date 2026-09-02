@@ -1,10 +1,12 @@
-from mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
-from tapipy.tapis import TapisResult
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
-from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename, makepublic
+from tapipy.tapis import TapisResult
+
 from portal.exceptions.api import ApiException
+from portal.libs.agave.operations import copy, listing, makepublic, mkdir, move, rename, search
 
 
 class TestOperations(TestCase):
@@ -79,7 +81,7 @@ class TestOperations(TestCase):
         mock_search().query().filter.assert_called_with(~Q("query_string", query="\\/.Trash\\/", fields=["path"]))
         mock_search().query().filter().filter.assert_called_with("prefix", **{"path._exact": "path"})
         mock_search().query().filter().filter().filter.assert_called_with("term", **{"system._exact": "test.system"})
-        mock_search().query().filter().filter().filter().extra.assert_called_with(from_=int(0), size=int(100))
+        mock_search().query().filter().filter().filter().extra.assert_called_with(from_=0, size=100)
         self.assertEqual(
             search_res,
             {"listing": [{"system": "test.system", "path": "/path/to/file"}], "reachedEnd": True, "count": 1},

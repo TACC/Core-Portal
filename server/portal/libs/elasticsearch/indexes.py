@@ -3,13 +3,14 @@
    :synopsis: ElasticSearch Index setup
 """
 
-from datetime import datetime
 import logging
+from datetime import datetime
+
 from django.conf import settings
 from elasticsearch_dsl import Index
-from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation, IndexedProject, IndexedPublication
-from portal.libs.elasticsearch.analyzers import file_query_analyzer
 
+from portal.libs.elasticsearch.analyzers import file_query_analyzer
+from portal.libs.elasticsearch.docs.base import IndexedAllocation, IndexedFile, IndexedProject, IndexedPublication
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def setup_indexes(doc_type, reindex=False, force=False):
        index with that alias and the provided name.
     """
     baseName = settings.ES_INDEX_PREFIX.format(doc_type)
-    indexName = "{}-{}".format(baseName, index_time_string())
+    indexName = f"{baseName}-{index_time_string()}"
     alias = baseName
     if reindex:
         alias += "-reindex"

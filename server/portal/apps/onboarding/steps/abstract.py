@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
+
+from django.conf import settings
 from six import add_metaclass
+
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.conf import settings
 
 
 @add_metaclass(ABCMeta)
@@ -70,12 +72,10 @@ class AbstractStep:
         self.log(message, data)
 
     def __str__(self):
-        return "<{step} for {username} is {state}>".format(
-            step=self.step_name(), state=self.state, username=self.user.username
-        )
+        return f"<{self.step_name()} for {self.user.username} is {self.state}>"
 
     def step_name(self):
-        return "{module}.{classname}".format(module=self.__module__, classname=self.__class__.__name__)
+        return f"{self.__module__}.{self.__class__.__name__}"
 
     @abstractmethod
     def display_name(self):

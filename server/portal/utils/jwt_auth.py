@@ -5,15 +5,14 @@
 
 import logging
 from base64 import b64decode
-from six import text_type
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login
-from django.core.exceptions import ObjectDoesNotExist
-import jwt as pyjwt
-from cryptography.hazmat.primitives.serialization import load_der_public_key
-from cryptography.exceptions import UnsupportedAlgorithm
 
+import jwt as pyjwt
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.primitives.serialization import load_der_public_key
+from django.conf import settings
+from django.contrib.auth import get_user_model, login
+from django.core.exceptions import ObjectDoesNotExist
+from six import text_type
 
 LOGGER = logging.getLogger(__name__)
 
