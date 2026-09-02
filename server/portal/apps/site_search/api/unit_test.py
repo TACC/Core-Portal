@@ -1,6 +1,7 @@
-from mock import MagicMock
-from tapipy.errors import BaseTapyException
+from unittest.mock import MagicMock
+
 import pytest
+from tapipy.errors import BaseTapyException
 
 
 @pytest.fixture
@@ -22,9 +23,7 @@ def mock_cms_search(mocker):
 
 @pytest.fixture
 def mock_service_account(mocker):
-    yield mocker.patch(
-        "portal.apps.site_search.api.views.service_account", autospec=True
-    )
+    yield mocker.patch("portal.apps.site_search.api.views.service_account", autospec=True)
 
 
 @pytest.fixture
@@ -126,9 +125,7 @@ def test_search_with_auth(regular_user, client, mock_cms_search, mock_files_sear
         },
     ],
 )
-def test_search_with_tapis_error(
-    regular_user, client, mock_cms_search, mocker, tapis_test_config
-):
+def test_search_with_tapis_error(regular_user, client, mock_cms_search, mocker, tapis_test_config):
     # Test if does not error out when public or community search fails with SSH related errors.
     # file search return different error based on the type.
     def file_search_side_effect(*args, **kwargs):
@@ -161,9 +158,7 @@ def test_search_with_tapis_error(
         }
 
 
-def test_search_no_auth(
-    client, mock_cms_search, mock_files_search, mock_service_account
-):
+def test_search_no_auth(client, mock_cms_search, mock_files_search, mock_service_account):
     response = client.get("/api/site-search/?page=0&query_string=test")
 
     assert response.json() == {
@@ -182,9 +177,7 @@ def test_search_no_auth(
     }
 
 
-def test_search_public(
-    client, configure_public, mock_cms_search, mock_files_search, mock_service_account
-):
+def test_search_public(client, configure_public, mock_cms_search, mock_files_search, mock_service_account):
     response = client.get("/api/site-search/?page=0&query_string=test")
 
     assert response.json() == {
@@ -214,9 +207,7 @@ def test_cms_search_util(mock_dsl_search):
     dummy_result.hits.__iter__.return_value = [dummy_hit]
     dummy_result.hits.total.value = 1
 
-    mock_dsl_search().query().highlight().highlight().highlight_options().extra().execute.return_value = (
-        dummy_result
-    )
+    mock_dsl_search().query().highlight().highlight().highlight_options().extra().execute.return_value = dummy_result
 
     res = cms_search("test_query", offset=0, limit=10)
     assert res == (1, [{"title": "test title", "highlight": {"body": ["highlight 1"]}}])

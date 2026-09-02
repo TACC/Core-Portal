@@ -1,70 +1,59 @@
-from portal.utils.decorators import agave_jwt_login
-from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
-from portal.apps.auth.models import TapisOAuthToken
-from portal.views.base import BaseApiView
-from portal.apps.projects.workspace_operations.shared_workspace_operations import list_projects, get_workspace_role
-from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
-
 import logging
 
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+
+from portal.apps.auth.models import TapisOAuthToken
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
+from portal.apps.projects.workspace_operations.shared_workspace_operations import get_workspace_role, list_projects
+from portal.utils.decorators import agave_jwt_login
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(agave_jwt_login, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(agave_jwt_login, name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class JupyterMountsApiView(BaseApiView):
     """JupyterMountsApiView
 
     This API returns a list of mount definitions for JupyterHub
     """
+
     def getDatafilesStorageSystems(self, tapis_oauth: TapisOAuthToken) -> list:
         result = []
         non_private_systems = [
-            sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys['api'] == 'tapis' and (sys['scheme'] == 'community' or sys['scheme'] == 'public')
+            sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["api"] == "tapis" and (sys["scheme"] == "community" or sys["scheme"] == "public")
         ]
         for system in evaluate_datafiles_storage_systems(tapis_oauth, non_private_systems):
             try:
                 result.append(
                     {
                         "path": system.get("homeDir", "/"),
-                        "mountPath": "/{namespace}/{name}".format(
-                            namespace=settings.PORTAL_NAMESPACE,
-                            name=system['name']
-                        ),
-                        "pems": "ro"
+                        "mountPath": "/{namespace}/{name}".format(namespace=settings.PORTAL_NAMESPACE, name=system["name"]),
+                        "pems": "ro",
                     }
                 )
             except Exception:
-                logger.exception("Could not retrieve system {}".format(system))
+                logger.exception(f"Could not retrieve system {system}")
         return result
 
     def getLocalStorageSystems(self, tapis_oauth: TapisOAuthToken) -> list:
         result = []
-        private_tapis_systems = [
-            sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys['api'] == 'tapis' and sys['scheme'] == 'private'
-        ]
-        for system in evaluate_datafiles_storage_systems(
-            tapis_oauth, private_tapis_systems
-        ):
+        private_tapis_systems = [sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["api"] == "tapis" and sys["scheme"] == "private"]
+        for system in evaluate_datafiles_storage_systems(tapis_oauth, private_tapis_systems):
             try:
                 result.append(
                     {
-                        "path": system['homeDir'],
-                        "mountPath": "/{namespace}/{name}".format(
-                            namespace=settings.PORTAL_NAMESPACE,
-                            name=system['name']
-                        ),
-                        "pems": "rw"
+                        "path": system["homeDir"],
+                        "mountPath": "/{namespace}/{name}".format(namespace=settings.PORTAL_NAMESPACE, name=system["name"]),
+                        "pems": "rw",
                     }
                 )
             except Exception:
-                logger.exception("Could not retrieve system {}".format(system))
+                logger.exception(f"Could not retrieve system {system}")
         return result
 
     def getProjectSystems(self, tapis_oauth: TapisOAuthToken) -> list:
@@ -89,17 +78,13 @@ class JupyterMountsApiView(BaseApiView):
             result.append(
                 {
                     "path": project["path"],
-                    "mountPath": "/{namespace}/My Projects/{name}".format(
-                        namespace=settings.PORTAL_NAMESPACE,
-                        name=name),
-                    "pems": permissions
+                    "mountPath": f"/{settings.PORTAL_NAMESPACE}/My Projects/{name}",
+                    "pems": permissions,
                 }
             )
         return result
 
     def get(self, request):
         tapis_oauth = request.user.tapis_oauth
-        mounts = self.getDatafilesStorageSystems(tapis_oauth) + \
-            self.getLocalStorageSystems(tapis_oauth) + \
-            self.getProjectSystems(tapis_oauth)
+        mounts = self.getDatafilesStorageSystems(tapis_oauth) + self.getLocalStorageSystems(tapis_oauth) + self.getProjectSystems(tapis_oauth)
         return JsonResponse(mounts, safe=False)

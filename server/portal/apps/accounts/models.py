@@ -2,14 +2,16 @@
 .. :module:: apps.accounts.managers.models
    :synopsis: Account's models
 """
+
 import logging
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from portal.utils import encryption as EncryptionUtil
 
+from portal.utils import encryption as EncryptionUtil
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -21,11 +23,8 @@ class PortalProfile(models.Model):
 
     Extending the user model to store extra data
     """
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        related_name='profile',
-        on_delete=models.CASCADE
-    )
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE)
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login
     setup_complete = models.BooleanField(default=False)
@@ -35,11 +34,7 @@ class PortalProfile(models.Model):
 
     def send_mail(self, subject, body=None):
         """Send mail to user"""
-        send_mail(subject,
-                  body,
-                  settings.DEFAULT_FROM_EMAIL,
-                  [self.user.email],
-                  html_message=body)
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [self.user.email], html_message=body)
 
 
 class NotificationPreferences(models.Model):
@@ -48,38 +43,35 @@ class NotificationPreferences(models.Model):
     .. todo: Should we have a `Preferences` model and store there
     all different kinds of preferences?
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences',
-                                on_delete=models.CASCADE)
-    announcements = models.BooleanField(
-        default=True,
-        verbose_name=_('Receive occasional announcements'))
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="notification_preferences", on_delete=models.CASCADE)
+    announcements = models.BooleanField(default=True, verbose_name=_("Receive occasional announcements"))
 
     class Meta:
-        permissions = (
-            ('view_notification_subscribers',
-             'Can view list of users subscribed to a notification type'),
-        )
+        permissions = (("view_notification_subscribers", "Can view list of users subscribed to a notification type"),)
 
 
 class PortalProfileNHInterests(models.Model):
     """Portal Profile NH Interests"""
+
     description = models.CharField(max_length=300)
 
 
 class PortalProfileResearchActivities(models.Model):
     """Resesarch Activities"""
+
     description = models.CharField(max_length=300)
 
 
 class SSHKeysManager(models.Manager):
     """SSHKeys Manager"""
+
     def save_keys(
-            self,
-            user,
-            system_id,
-            priv_key,
-            pub_key,
+        self,
+        user,
+        system_id,
+        priv_key,
+        pub_key,
     ):
         """Saves a new set of keys for a specific system and user obj
 
@@ -98,24 +90,14 @@ class SSHKeysManager(models.Manager):
              encrypted using AES
         """
         try:
-            Keys.objects.get(
-                ssh_keys__user=user,
-                system=system_id
-            )
+            Keys.objects.get(ssh_keys__user=user, system=system_id)
         except ObjectDoesNotExist:
-            ssh_keys = super(SSHKeysManager, self).create(user=user)
-            Keys.objects.create(
-                ssh_keys=ssh_keys,
-                system=system_id,
-                private=priv_key,
-                public=pub_key
-            )
+            ssh_keys = super().create(user=user)
+            Keys.objects.create(ssh_keys=ssh_keys, system=system_id, private=priv_key, public=pub_key)
             return ssh_keys
         raise ValueError(
-            """A set of keys for system: '{system}' and username: '{username}'
-               already exists""".format(
-                   system=system_id,
-                   username=user.username)
+            f"""A set of keys for system: '{system_id}' and username: '{user.username}'
+               already exists"""
         )
 
     def update_keys(self, user, system_id, priv_key, pub_key):
@@ -137,37 +119,25 @@ class SSHKeysManager(models.Manager):
              encrypted using AES
         """
         try:
-            keys = Keys.objects.get(
-                ssh_keys__user=user,
-                system=system_id
-            )
+            keys = Keys.objects.get(ssh_keys__user=user, system=system_id)
         except ObjectDoesNotExist:
             try:
-                ssh_keys = super(
-                    SSHKeysManager,
-                    self
-                ).get_queryset().get(user=user)
+                ssh_keys = super().get_queryset().get(user=user)
             except ObjectDoesNotExist:
-                ssh_keys = super(
-                    SSHKeysManager,
-                    self
-                ).create(user=user)
+                ssh_keys = super().create(user=user)
             keys = Keys.objects.create(ssh_keys=ssh_keys, system=system_id)
 
         keys.public = pub_key
         keys.private = priv_key
         keys.save()
-        return super(
-            SSHKeysManager,
-            self
-        ).get_queryset().get(user=user)
+        return super().get_queryset().get(user=user)
 
     def save_hostname_keys(
-            self,
-            user,
-            hostname,
-            priv_key,
-            pub_key,
+        self,
+        user,
+        hostname,
+        priv_key,
+        pub_key,
     ):
         """Saves a new set of keys for a specific system and user obj
 
@@ -186,24 +156,14 @@ class SSHKeysManager(models.Manager):
              encrypted using AES
         """
         try:
-            HostKeys.objects.get(
-                ssh_keys__user=user,
-                hostname=hostname
-            )
+            HostKeys.objects.get(ssh_keys__user=user, hostname=hostname)
         except ObjectDoesNotExist:
-            ssh_keys = super(SSHKeysManager, self).create(user=user)
-            HostKeys.objects.create(
-                ssh_keys=ssh_keys,
-                hostname=hostname,
-                private=priv_key,
-                public=pub_key
-            )
+            ssh_keys = super().create(user=user)
+            HostKeys.objects.create(ssh_keys=ssh_keys, hostname=hostname, private=priv_key, public=pub_key)
             return ssh_keys
         raise ValueError(
-            """A set of keys for hostname: '{hostname}' and username: '{username}'
-               already exists""".format(
-                hostname=hostname,
-                username=user.username)
+            f"""A set of keys for hostname: '{hostname}' and username: '{user.username}'
+               already exists"""
         )
 
     def update_hostname_keys(self, user, hostname, priv_key, pub_key):
@@ -225,30 +185,18 @@ class SSHKeysManager(models.Manager):
              encrypted using AES
         """
         try:
-            keys = HostKeys.objects.get(
-                ssh_keys__user=user,
-                hostname=hostname
-            )
+            keys = HostKeys.objects.get(ssh_keys__user=user, hostname=hostname)
         except ObjectDoesNotExist:
             try:
-                ssh_keys = super(
-                    SSHKeysManager,
-                    self
-                ).get_queryset().get(user=user)
+                ssh_keys = super().get_queryset().get(user=user)
             except ObjectDoesNotExist:
-                ssh_keys = super(
-                    SSHKeysManager,
-                    self
-                ).create(user=user)
+                ssh_keys = super().create(user=user)
             keys = HostKeys.objects.create(ssh_keys=ssh_keys, hostname=hostname)
 
         keys.public = pub_key
         keys.private = priv_key
         keys.save()
-        return super(
-            SSHKeysManager,
-            self
-        ).get_queryset().get(user=user)
+        return super().get_queryset().get(user=user)
 
 
 class SSHKeys(models.Model):
@@ -265,10 +213,8 @@ class SSHKeys(models.Model):
         developers think twice about doing something with this set of
         keys.
     """
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        related_name='ssh_keys',
-        on_delete=models.CASCADE)
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="ssh_keys", on_delete=models.CASCADE)
     objects = SSHKeysManager()
 
     def for_system(self, system_id):
@@ -336,13 +282,14 @@ class Keys(models.Model):
          if it changed. If it did then the save method will encrypt the key
          before saving it into the DB.
     """
-    ssh_keys = models.ForeignKey(SSHKeys, related_name='+', on_delete=models.CASCADE)
+
+    ssh_keys = models.ForeignKey(SSHKeys, related_name="+", on_delete=models.CASCADE)
     system = models.TextField(unique=True)
     private = models.TextField()
     public = models.TextField()
 
     def __init__(self, *args, **kwargs):
-        super(Keys, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._private = self.private
 
     def private_key(self):
@@ -356,17 +303,13 @@ class Keys(models.Model):
             The keys need to be given as clear text strings and will be
              encrypted using AES
         """
-        if (self.private != self._private or
-                self.pk is None):
+        if self.private != self._private or self.pk is None:
             self.private = EncryptionUtil.encrypt(self.private)
-        super(Keys, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._private = self.private
 
     def __str__(self):
-        return '{username}: {system}'.format(
-            username=self.ssh_keys.user.username,
-            system=self.system
-        )
+        return f"{self.ssh_keys.user.username}: {self.system}"
 
 
 class HostKeys(models.Model):
@@ -378,15 +321,15 @@ class HostKeys(models.Model):
     """
 
     hostname = models.TextField()
-    ssh_keys = models.ForeignKey(SSHKeys, related_name='+', on_delete=models.CASCADE)
+    ssh_keys = models.ForeignKey(SSHKeys, related_name="+", on_delete=models.CASCADE)
     private = models.TextField()
     public = models.TextField()
 
     class Meta:
-        unique_together = (('hostname', 'ssh_keys'),)
+        unique_together = (("hostname", "ssh_keys"),)
 
     def __init__(self, *args, **kwargs):
-        super(HostKeys, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._private = self.private
 
     def private_key(self):
@@ -400,14 +343,10 @@ class HostKeys(models.Model):
             The keys need to be given as clear text strings and will be
              encrypted using AES
         """
-        if (self.private != self._private or
-                self.pk is None):
+        if self.private != self._private or self.pk is None:
             self.private = EncryptionUtil.encrypt(self.private)
-        super(HostKeys, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._private = self.private
 
     def __str__(self):
-        return '{username}: {host}'.format(
-            username=self.ssh_keys.user.username,
-            host=self.hostname
-        )
+        return f"{self.ssh_keys.user.username}: {self.hostname}"

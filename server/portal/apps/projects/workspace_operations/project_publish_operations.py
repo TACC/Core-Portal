@@ -1,21 +1,22 @@
-from typing import Optional
-from django.conf import settings
-import logging
 import json
+import logging
 from io import StringIO
-from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
-from portal.apps.projects.models.project_metadata import ProjectMetadata
+
 import networkx as nx
 from celery import shared_task
-from portal.apps.projects.schema_models import constants
-from portal.libs.agave.utils import user_account, service_account
-from portal.apps.publications.models import Publication, PublicationRequest
-from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, upsert_datacite_json, publish_datacite_doi
-from django.db import transaction
-from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
-from portal.apps.search.tasks import index_publication
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.db import transaction
+
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.schema_models import constants
+from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json, publish_datacite_doi, upsert_datacite_json
+from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
+from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.search.tasks import index_publication
+from portal.libs.agave.utils import service_account, user_account
 
 logger = logging.getLogger(__name__)
 
@@ -24,18 +25,12 @@ def _transfer_files(client, source_system_id, dest_system_id):
 
     service_client = service_account()
 
-    source_system_files = client.files.listFiles(systemId=source_system_id, path='/')
+    source_system_files = client.files.listFiles(systemId=source_system_id, path="/")
 
     # Filter out the trash folder
     filtered_files = [file for file in source_system_files if file.name != settings.TAPIS_DEFAULT_TRASH_NAME]
 
-    transfer_elements = [
-        {
-            'sourceURI': file.url,
-            'destinationURI': f'tapis://{dest_system_id}/{file.path}'
-        }
-        for file in filtered_files
-    ]
+    transfer_elements = [{"sourceURI": file.url, "destinationURI": f"tapis://{dest_system_id}/{file.path}"} for file in filtered_files]
 
     transfer = service_client.files.createTransferTask(elements=transfer_elements)
     return transfer
@@ -44,18 +39,13 @@ def _transfer_files(client, source_system_id, dest_system_id):
 def _transfer_cover_image(source_system_id, dest_system_id, cover_image_path):
 
     if not cover_image_path:
-        logger.info('No cover image found for project, skipping transfer.')
+        logger.info("No cover image found for project, skipping transfer.")
         return None
 
     service_client = service_account()
 
     # Transfer the cover image to the destination system
-    transfer_elements = [
-        {
-            'sourceURI': f'tapis://{source_system_id}/{cover_image_path}',
-            'destinationURI': f'tapis://{dest_system_id}/{cover_image_path}'
-        }
-    ]
+    transfer_elements = [{"sourceURI": f"tapis://{source_system_id}/{cover_image_path}", "destinationURI": f"tapis://{dest_system_id}/{cover_image_path}"}]
 
     transfer = service_client.files.createTransferTask(elements=transfer_elements)
     logger.info(f"Transfer task created for cover image: {transfer.uuid}")
@@ -100,7 +90,7 @@ def publish_project_callback(review_project_id, published_project_id, archive_pr
 def publication_request_callback(user_access_token, source_workspace_id, review_workspace_id, source_system_id, review_system_id):
     service_client = service_account()
 
-    publication_reviewers = get_user_model().objects.filter(groups__name=settings.PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME).values_list('username', flat=True)
+    publication_reviewers = get_user_model().objects.filter(groups__name=settings.PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME).values_list("username", flat=True)
 
     with transaction.atomic():
         # Commented out cleanup to prevent breaking admin role functionality
@@ -121,7 +111,7 @@ def publication_request_callback(user_access_token, source_workspace_id, review_
                 f"{settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX}.{review_workspace_id}",
                 settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
             )
-            logger.info(f'Added reviewer {reviewer} to review system {review_system_id}')
+            logger.info(f"Added reviewer {reviewer} to review system {review_system_id}")
 
         if not settings.DEBUG:
             send_publication_in_review_email_to_authors.apply_async(args=[source_system_id])
@@ -165,14 +155,8 @@ def archive_publication_files(project_id: str):
             "appArgs": [],
             "schedulerOptions": [],
             "envVariables": [
-                {
-                    "key": "publishedRootDir",
-                    "value": published_root_dir
-                },
-                {
-                    "key": "projectId",
-                    "value": project_id
-                },
+                {"key": "publishedRootDir", "value": published_root_dir},
+                {"key": "projectId", "value": project_id},
                 {
                     "key": "ranchSystemId",
                     "value": settings.PORTAL_PUBLICATION_RANCH_SYSTEM_ID,
@@ -180,7 +164,7 @@ def archive_publication_files(project_id: str):
                 {
                     "key": "ranchArchiveRootDir",
                     "value": "/",
-                }
+                },
             ],
         },
         "tags": [f"portalName:{settings.PORTAL_NAMESPACE.lower()}"],
@@ -189,18 +173,17 @@ def archive_publication_files(project_id: str):
     return res
 
 
-@shared_task(bind=True, max_retries=3, queue='default')
-def publish_project(self, project_id: str, version: Optional[int] = 1):
+@shared_task(bind=True, max_retries=3, queue="default")
+def publish_project(self, project_id: str, version: int | None = 1):
 
     review_system_prefix = settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX
     published_system_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX
 
     published_workspace_id = f"{project_id}{f'v{version}' if version and version > 1 else ''}"
-    published_system_id = f'{published_system_prefix}.{published_workspace_id}'
-    review_system_id = f'{review_system_prefix}.{project_id}'
+    published_system_id = f"{published_system_prefix}.{published_workspace_id}"
+    review_system_id = f"{review_system_prefix}.{project_id}"
 
     with transaction.atomic():
-
         project_meta = ProjectMetadata.get_project_by_id(review_system_id)
         publication_tree: nx.DiGraph = nx.node_link_graph(project_meta.project_graph.value)
 
@@ -214,32 +197,32 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             value=nx.node_link_data(publication_tree),
         )
 
-        source_project_id = f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}'
+        source_project_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"
         source_project = ProjectMetadata.get_project_by_id(source_project_id)
 
         try:
             # Mint a DataCite DOI
             existing_doi = source_project.value.get("doi", None)
-            logger.info(f'Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}')
+            logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
 
             datacite_json = get_datacite_json(publication_tree)
             datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
             doi = datacite_resp["data"]["id"]
-            logger.info(f'Successfully minted DataCite DOI for project {project_id}: {doi}')
+            logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")
         except Exception as e:
-            logger.error(f'Error minting DataCite DOI for project {project_id}: {e}')
-            raise Exception(f'Error minting DOI for project {project_id}: {e}')
+            logger.error(f"Error minting DataCite DOI for project {project_id}: {e}")
+            raise Exception(f"Error minting DOI for project {project_id}: {e}")
 
         # Update project metadata with datacite doi
-        source_project.value['doi'] = doi
-        source_project.value['publicationDate'] = published_project.created
+        source_project.value["doi"] = doi
+        source_project.value["publicationDate"] = published_project.created
         source_project.save()
 
         pub_tree = nx.node_link_graph(published_project.project_graph.value)
         pub_tree.nodes["NODE_ROOT"]["version"] = version
         published_project.project_graph.value = nx.node_link_data(pub_tree)
-        published_project.value['doi'] = doi
-        published_project.value['publicationDate'] = published_project.created
+        published_project.value["doi"] = doi
+        published_project.value["publicationDate"] = published_project.created
         published_project.save()
 
         pub_metadata, _ = Publication.objects.update_or_create(
@@ -251,8 +234,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
             try:
                 publish_datacite_doi(doi)
             except Exception as e:
-                logger.error(f'Error publishing DataCite DOI for project {project_id}: {e}')
-                raise Exception(f'Error publishing DOI for project {project_id}: {e}')
+                logger.error(f"Error publishing DataCite DOI for project {project_id}: {e}")
+                raise Exception(f"Error publishing DOI for project {project_id}: {e}")
 
         upload_metadata_file(published_workspace_id, pub_metadata.tree)
 
@@ -262,26 +245,23 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
         client = service_account()
         transfer = _transfer_files(client, review_system_id, published_system_id)
         _transfer_cover_image(
-            settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
-            settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME,
-            project_meta.value.get("coverImage", None))
+            settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, project_meta.value.get("coverImage", None)
+        )
 
         poll_tapis_file_transfer.apply_async(
             args=(transfer.uuid, False),
-            kwargs={
-                'review_project_id': review_system_id,
-                'published_project_id': published_system_id,
-                'archive_project_id': published_workspace_id
-            }, countdown=30)
+            kwargs={"review_project_id": review_system_id, "published_project_id": published_system_id, "archive_project_id": published_workspace_id},
+            countdown=30,
+        )
 
         if not settings.DEBUG:
             send_publication_accepted_email_to_authors.apply_async(args=[project_id])
-            send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, 'APPROVED', None])
+            send_publication_reviewed_email_to_reviewers.apply_async(args=[project_id, "APPROVED", None])
 
 
-@shared_task(bind=True, max_retries=3, queue='default')
+@shared_task(bind=True, max_retries=3, queue="default")
 def copy_graph_and_files_for_review_system(self, user_access_token, source_workspace_id, review_workspace_id, source_system_id, review_system_id):
-    logger.info(f'Starting copy task for system {source_system_id} to system {review_system_id}')
+    logger.info(f"Starting copy task for system {source_system_id} to system {review_system_id}")
 
     with transaction.atomic():
         pub_tree = _add_values_to_tree(source_system_id)
@@ -300,26 +280,27 @@ def copy_graph_and_files_for_review_system(self, user_access_token, source_works
         client = user_account(user_access_token)
         transfer = _transfer_files(client, source_system_id, review_system_id)
         _transfer_cover_image(
-            settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME,
-            review_project.value.get("coverImage", None))
+            settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME, review_project.value.get("coverImage", None)
+        )
 
-        logger.info(f'Transfer task submmited with id {transfer.uuid}')
+        logger.info(f"Transfer task submmited with id {transfer.uuid}")
 
         poll_tapis_file_transfer.apply_async(
             args=(transfer.uuid, True),
             kwargs={
-                'user_access_token': user_access_token,
-                'source_workspace_id': source_workspace_id,
-                'review_workspace_id': review_workspace_id,
-                'source_system_id': source_system_id,
-                'review_system_id': review_system_id,
-            }, countdown=30)
+                "user_access_token": user_access_token,
+                "source_workspace_id": source_workspace_id,
+                "review_workspace_id": review_workspace_id,
+                "source_system_id": source_system_id,
+                "review_system_id": review_system_id,
+            },
+            countdown=30,
+        )
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def poll_tapis_file_transfer(self, transfer_task_id, is_review, **kwargs):
-    logger.info(f'Starting post transfer task for transfer id {transfer_task_id} with arguments: {kwargs}')
+    logger.info(f"Starting post transfer task for transfer id {transfer_task_id} with arguments: {kwargs}")
 
     try:
         service_client = service_account()
@@ -328,14 +309,14 @@ def poll_tapis_file_transfer(self, transfer_task_id, is_review, **kwargs):
         transfer_status = _check_transfer_status(service_client, transfer_task_id)
 
         # Handle pending or in-progress transfer
-        if transfer_status in ['PENDING', 'IN_PROGRESS']:
-            logger.info(f'Transfer {transfer_task_id} is still pending with status {transfer_status}, retrying in 30 seconds.')
+        if transfer_status in ["PENDING", "IN_PROGRESS"]:
+            logger.info(f"Transfer {transfer_task_id} is still pending with status {transfer_status}, retrying in 30 seconds.")
             self.apply_async(args=(transfer_task_id, is_review), kwargs=kwargs, countdown=30)
             return
 
         # Handle completed transfer
-        elif transfer_status == 'COMPLETED':
-            logger.info(f'Transfer {transfer_task_id} completed successfully with arguments: {kwargs}')
+        elif transfer_status == "COMPLETED":
+            logger.info(f"Transfer {transfer_task_id} completed successfully with arguments: {kwargs}")
 
             # Call the callback function with any passed arguments
             if is_review:
@@ -344,11 +325,11 @@ def poll_tapis_file_transfer(self, transfer_task_id, is_review, **kwargs):
                 publish_project_callback(**kwargs)
 
         else:
-            logger.error(f'Error processing transfer {transfer_task_id}: Transfer status is {transfer_status}')
-            raise Exception(f'Transfer {transfer_task_id} failed with status {transfer_status}')
+            logger.error(f"Error processing transfer {transfer_task_id}: Transfer status is {transfer_status}")
+            raise Exception(f"Transfer {transfer_task_id} failed with status {transfer_status}")
 
     except Exception as e:
-        logger.error(f'Error processing transfer {transfer_task_id} with arguments {kwargs}: {e}')
+        logger.error(f"Error processing transfer {transfer_task_id} with arguments {kwargs}: {e}")
         self.retry(exc=e, countdown=30)
 
 
@@ -365,7 +346,7 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
     pub_request.status = status
     pub_request.save()
 
-    logger.info(f'Updated publication request for review project {review_project_id} to {status}.')
+    logger.info(f"Updated publication request for review project {review_project_id} to {status}.")
 
     # delete the review project and data inside it
     reviewers = pub_request.reviewers.all()
@@ -373,18 +354,18 @@ def update_and_cleanup_review_project(review_project_id: str, status: Publicatio
     for reviewer in reviewers:
         try:
             remove_user(client, workspace_id, reviewer.username, review_project_id, settings.PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME)
-            logger.info(f'Removed reviewer {reviewer.username} from review system {review_project_id}')
+            logger.info(f"Removed reviewer {reviewer.username} from review system {review_project_id}")
         except Exception:
-            logger.error(f'Error removing reviewer {reviewer.username} from review system {review_project_id}')
+            logger.error(f"Error removing reviewer {reviewer.username} from review system {review_project_id}")
             continue
 
-    client.files.delete(systemId=review_project_id, path='/')
+    client.files.delete(systemId=review_project_id, path="/")
     client.systems.deleteSystem(systemId=review_project_id)
     review_project_graph = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project=review_project)
     review_project_graph.delete()
     review_project.delete()
 
-    logger.info(f'Deleted review project {review_project_id} and its associated data.')
+    logger.info(f"Deleted review project {review_project_id} and its associated data.")
 
 
 def get_project_user_emails(project_id):
@@ -399,7 +380,7 @@ def get_reviewer_emails():
     return [reviewer.email for reviewer in reviewers if reviewer.email]
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def send_publication_accepted_email_to_authors(self, project_id):
     """
     Alert project authors that their request has been accepted.
@@ -430,7 +411,7 @@ def send_publication_accepted_email_to_authors(self, project_id):
         )
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def send_publication_rejected_email_to_authors(self, project_id: str):
     """
     Alert project authors that their request has been rejected.
@@ -461,7 +442,7 @@ def send_publication_rejected_email_to_authors(self, project_id: str):
         )
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def send_publication_in_review_email_to_authors(self, project_id):
     """
     Alert dataset authors that their dataset is in review.
@@ -495,7 +476,7 @@ def send_publication_in_review_email_to_authors(self, project_id):
         )
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def send_publication_reviewed_email_to_reviewers(self, project_id, status, reviewer):
     """
     Alert dataset reviewers that a dataset has received feedback.
@@ -503,7 +484,7 @@ def send_publication_reviewed_email_to_reviewers(self, project_id, status, revie
     reviewer_emails = get_reviewer_emails()
 
     if status == PublicationRequest.Status.REJECTED:
-        status = 'Revision Required'
+        status = "Revision Required"
 
     logger.info(f"Sending reviewer notification email to {reviewer_emails}")
 
@@ -529,7 +510,7 @@ def send_publication_reviewed_email_to_reviewers(self, project_id, status, revie
         )
 
 
-@shared_task(bind=True, queue='default')
+@shared_task(bind=True, queue="default")
 def send_publication_submitted_for_review_email_to_reviewers(self, project_id):
     """
     Alert dataset reviewers that a dataset has been submitted for review.
