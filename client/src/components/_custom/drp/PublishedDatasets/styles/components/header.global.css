@@ -1,0 +1,12 @@
+/* HEADER */
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 1rem;
+}
+
+.header :is(h1,h2,h3,h4,h5,h6) {
+    margin-right: auto;
+}

@@ -10,6 +10,9 @@ import '@testing-library/jest-dom';
 const mockStore = configureStore();
 const mockState = {
   systems: systemsFixture,
+  projects: {
+    metadata: {},
+  },
   files: {
     modals: {
       preview: false,

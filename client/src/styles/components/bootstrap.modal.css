@@ -62,23 +62,27 @@ Styleguide Components.Bootstrap.Modal
   font-family: Cortal-Icons !important;
 }
 
-.modal-header.has-MuiTabs {
+.modal-header:has(.MuiTabs-root) {
   flex-direction: row;
   position: relative;
   height: 63.5px;
   border-bottom: 1px solid #afafaf;
   padding: 5px;
 }
-.modal-header.has-MuiTabs .close {
+.modal-header:has(.MuiTabs-root) .close {
   transform: translate(-25%, 25%);
 }
 
-.MuiTab-root {
-  font-size: 19px;
-  text-align: center;
-  opacity: 1;
-  display: inline-block;
-  position: absolute;
-  width: 25%;
-  height: 60.5px;
+.modal-content .badge-danger {
+  background-color: #eb6e6e;
+  color: white;
+}
+
+.modal-content .badge-success {
+  background-color: #43d130;
+}
+
+.modal-content .badge-warning {
+  background-color: #c7ce1d;
+  color: white;
 }

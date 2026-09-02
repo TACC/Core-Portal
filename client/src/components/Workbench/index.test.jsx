@@ -17,6 +17,9 @@ describe('AppRouter', () => {
           email: 'user@name.com',
         },
       },
+      workbench: {
+        config: {},
+      },
     });
 
     renderComponent(<AppRouter />, store);
