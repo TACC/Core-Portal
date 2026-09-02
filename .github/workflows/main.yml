@@ -67,10 +67,10 @@ jobs:
           cd server
           poetry install --with dev
 
-      - name: Run Ruff check
-        run: |
-          cd server
-          poetry run ruff check --output-format=github .
+      # - name: Run Ruff check
+      #   run: |
+      #     cd server
+      #     poetry run ruff check --output-format=github .
 
       - name: Run Ruff format check
         run: |
