@@ -37,15 +37,11 @@ class BaseApiView(View):
             extra = e.extra
             if status != 404:
                 logger.error(
-                    '%s: %s',
-                    message,
-                    e.response.text,
-                    exc_info=True,
-                    extra=extra
+                    "%s: %s", message, e.response.text, exc_info=True, extra=extra
                 )
             else:
-                logger.info('Error %s', message, exc_info=True, extra=extra)
-            return JsonResponse({'message': message}, status=400)
+                logger.info("Error %s", message, exc_info=True, extra=extra)
+            return JsonResponse({"message": message}, status=400)
         except (ConnectionError, HTTPError, BaseTapyException) as e:
             # status code and json content from ConnectionError/HTTPError exceptions
             # are used in the returned response. Note: the handling of these two exceptions
@@ -61,39 +57,37 @@ class BaseApiView(View):
                     message = "Unknown Error"
                 if status in [404, 403]:
                     logger.warning(
-                        '%s: %s',
+                        "%s: %s",
                         message,
                         e.response.text,
                         exc_info=True,
                         extra={
-                            'username': request.user.username,
-                            'session_key': request.session.session_key
-                        }
+                            "username": request.user.username,
+                            "session_key": request.session.session_key,
+                        },
                     )
                 else:
                     logger.error(
-                        '%s: %s',
+                        "%s: %s",
                         message,
                         e.response.text,
                         exc_info=True,
                         extra={
-                            'username': request.user.username,
-                            'session_key': request.session.session_key
-                        }
+                            "username": request.user.username,
+                            "session_key": request.session.session_key,
+                        },
                     )
             else:
                 logger.error(
                     e,
                     exc_info=True,
                     extra={
-                        'username': request.user.username,
-                        'session_key': request.session.session_key
-                    }
+                        "username": request.user.username,
+                        "session_key": request.session.session_key,
+                    },
                 )
                 message = str(e)
-            return JsonResponse({'message': message}, status=status)
+            return JsonResponse({"message": message}, status=status)
         except Exception as e:  # pylint: disable=broad-except
             logger.error(e, exc_info=True)
-            return JsonResponse(
-                {'message': "Something went wrong here..."},
-                status=500)
+            return JsonResponse({"message": "Something went wrong here..."}, status=500)

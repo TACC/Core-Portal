@@ -8,7 +8,6 @@ import pytest
 from tapipy.tapis import TapisResult
 from django.core.management import call_command
 
-
 pytest.mark.django_db(transaction=True)
 
 

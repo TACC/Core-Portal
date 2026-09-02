@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('onboarding', '0001_initial'),
+        ("onboarding", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='setupevent',
-            name='data',
+            model_name="setupevent",
+            name="data",
             field=models.JSONField(null=True),
         ),
     ]

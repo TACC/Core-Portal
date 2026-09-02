@@ -7,31 +7,126 @@ class GoogleDriveFile(object):
     """Represents a google drive file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
-        '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
-        '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+        ".ai",
+        ".bmp",
+        ".gif",
+        ".eps",
+        ".jpeg",
+        ".jpg",
+        ".png",
+        ".ps",
+        ".psd",
+        ".svg",
+        ".tif",
+        ".tiff",
+        ".dcm",
+        ".dicm",
+        ".dicom",
+        ".svs",
+        ".tga",
     ]
 
     SUPPORTED_TEXT_PREVIEWS = [
-        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
-        '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
-        '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
-        '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
-        '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
-        '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+        ".as",
+        ".as3",
+        ".asm",
+        ".bat",
+        ".c",
+        ".cc",
+        ".cmake",
+        ".cpp",
+        ".cs",
+        ".css",
+        ".csv",
+        ".cxx",
+        ".diff",
+        ".doc",
+        ".docx",
+        ".erb",
+        ".gdoc",
+        ".groovy",
+        ".gsheet",
+        ".h",
+        ".haml",
+        ".hh",
+        ".htm",
+        ".html",
+        ".java",
+        ".js",
+        ".less",
+        ".m",
+        ".make",
+        ".ml",
+        ".mm",
+        ".msg",
+        ".ods",
+        ".odt",
+        ".odp",
+        ".php",
+        ".pl",
+        ".ppt",
+        ".pptx",
+        ".properties",
+        ".py",
+        ".rb",
+        ".rtf",
+        ".sass",
+        ".scala",
+        ".scm",
+        ".script",
+        ".sh",
+        ".sml",
+        ".sql",
+        ".txt",
+        ".vi",
+        ".vim",
+        ".wpd",
+        ".xls",
+        ".xlsm",
+        ".xlsx",
+        ".xml",
+        ".xsd",
+        ".xsl",
+        ".yaml",
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
-        '.pdf',
-        '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
-
+        ".pdf",
+        ".aac",
+        ".aifc",
+        ".aiff",
+        ".amr",
+        ".au",
+        ".flac",
+        ".m4a",
+        ".mp3",
+        ".ogg",
+        ".ra",
+        ".wav",
+        ".wma",
         # VIDEO
-        '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
-        '.ogg', '.mts', '.qt', '.wmv',
+        ".3g2",
+        ".3gp",
+        ".avi",
+        ".m2v",
+        ".m2ts",
+        ".m4v",
+        ".mkv",
+        ".mov",
+        ".mp4",
+        ".mpeg",
+        ".mpg",
+        ".ogg",
+        ".mts",
+        ".qt",
+        ".wmv",
     ]
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                    SUPPORTED_TEXT_PREVIEWS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
+    SUPPORTED_PREVIEW_EXTENSIONS = (
+        SUPPORTED_IMAGE_PREVIEW_EXTS
+        + SUPPORTED_TEXT_PREVIEWS
+        + SUPPORTED_OBJECT_PREVIEW_EXTS
+    )
 
     def __init__(self, googledrive_item, parent=None, drive=None):
         self._item = googledrive_item
@@ -44,72 +139,88 @@ class GoogleDriveFile(object):
 
     @property
     def id(self):
-        return '{}/{}'.format(self.type, self._item['id'])
+        return "{}/{}".format(self.type, self._item["id"])
 
     @property
     def name(self):
-        return self._item['name'].encode('utf-8')
+        return self._item["name"].encode("utf-8")
 
     @property
     def path(self):
         if self._parent:
-            if self._parent.name == 'My Drive':
-                path = '/{}'.format(self.name)
+            if self._parent.name == "My Drive":
+                path = "/{}".format(self.name)
             else:
-                path = '/'.join([self._parent.path, self.name])
-        elif 'parents' in self._item:
+                path = "/".join([self._parent.path, self.name])
+        elif "parents" in self._item:
             parent = self
-            path = '{}'.format(self.name)
+            path = "{}".format(self.name)
             while True:
                 try:
                     self._path_collection.insert(
-                        0, {'id': parent.id, 'name': '' if parent.name == 'My Drive' else parent.name})
-                    parent = GoogleDriveFile(self._driveapi.files().get(
-                        fileId=parent._item['parents'][0], fields="parents, name, id, mimeType").execute())
-                    parent_name = '' if parent.name == 'My Drive' else parent.name
+                        0,
+                        {
+                            "id": parent.id,
+                            "name": "" if parent.name == "My Drive" else parent.name,
+                        },
+                    )
+                    parent = GoogleDriveFile(
+                        self._driveapi.files()
+                        .get(
+                            fileId=parent._item["parents"][0],
+                            fields="parents, name, id, mimeType",
+                        )
+                        .execute()
+                    )
+                    parent_name = "" if parent.name == "My Drive" else parent.name
                     path = "{}/{}".format(parent_name, path)
                 except (AttributeError, KeyError):
                     break
         else:
-            path = ''
+            path = ""
         return path
 
     @property
     def length(self):
-        return self._item.get('size')
+        return self._item.get("size")
 
     @property
     def last_modified(self):
-        return self._item.get('modifiedTime')
+        return self._item.get("modifiedTime")
 
     @property
     def type(self):
-        if self._item['mimeType'] == 'application/vnd.google-apps.folder':
-            return 'dir'
+        if self._item["mimeType"] == "application/vnd.google-apps.folder":
+            return "dir"
         else:
-            return 'file'
+            return "file"
 
     @property
     def ext(self):
         try:
-            return '.{}'.format(self._item['fileExtension']).lower()
+            return ".{}".format(self._item["fileExtension"]).lower()
         except KeyError:
             return None
 
     @property
     def trail(self):
-        trail = [{'name': self._path_collection[i]['name'] or '/',
-                  'system': None,
-                  'resource': 'googledrive',
-                  'id': self._path_collection[i]['id'],
-                  'path': '/'.join(j['name'] for j in self._path_collection[0:i + 1]) or '/',
-                  } for i in range(0, len(self._path_collection))]
+        trail = [
+            {
+                "name": self._path_collection[i]["name"] or "/",
+                "system": None,
+                "resource": "googledrive",
+                "id": self._path_collection[i]["id"],
+                "path": "/".join(j["name"] for j in self._path_collection[0 : i + 1])
+                or "/",
+            }
+            for i in range(0, len(self._path_collection))
+        ]
 
         return trail
 
     @property
     def previewable(self):
-        return self.type != 'dir' and self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
+        return self.type != "dir" and self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
 
     @staticmethod
     def parse_file_id(file_id):
@@ -127,31 +238,29 @@ class GoogleDriveFile(object):
         Raises:
             AssertionError
         """
-        parts = file_id.split('/')
+        parts = file_id.split("/")
 
-        assert len(
-            parts) == 2, 'The file path should be in the format {type}/{id}'
-        assert parts[0] in [
-            'dir', 'file'], '{type} must be one of ["folder", "file"]'
+        assert len(parts) == 2, "The file path should be in the format {type}/{id}"
+        assert parts[0] in ["dir", "file"], '{type} must be one of ["folder", "file"]'
 
         return parts[0], parts[1]
 
     def to_dict(self, trail=True, **kwargs):
-        pems = kwargs.get('default_pems', [])
+        pems = kwargs.get("default_pems", [])
         obj_dict = {
-            'system': None,
-            'id': self.id,
-            'type': self.type,
-            'path': self.path,
-            'name': self.name,
-            'ext': self.ext,
-            'length': self.length,
-            'lastModified': self.last_modified,
-            '_actions': [],
-            'permissions': pems,
-            'resource': 'googledrive'
+            "system": None,
+            "id": self.id,
+            "type": self.type,
+            "path": self.path,
+            "name": self.name,
+            "ext": self.ext,
+            "length": self.length,
+            "lastModified": self.last_modified,
+            "_actions": [],
+            "permissions": pems,
+            "resource": "googledrive",
         }
         if trail:
-            obj_dict['trail'] = self.trail
+            obj_dict["trail"] = self.trail
 
         return obj_dict

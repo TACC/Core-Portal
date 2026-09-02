@@ -11,7 +11,7 @@ filter_mapping = {
         "ogg",
         "ra",
         "wav",
-        "wma"
+        "wma",
     ],
     "Code": [
         "c",
@@ -59,17 +59,9 @@ filter_mapping = {
         "xsd",
         "xsl",
         "yaml",
-        "yml"
+        "yml",
     ],
-    "Documents": [
-        "doc",
-        "dot",
-        "docx",
-        "docm",
-        "dotx",
-        "dotm",
-        "docb"
-    ],
+    "Documents": ["doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
     "Folders": [],
     "Images": [
         "ai",
@@ -88,14 +80,10 @@ filter_mapping = {
         "dicm",
         "dicom",
         "svs",
-        "tga"
+        "tga",
     ],
-    "Jupyter Notebook": [
-        "ipynb"
-    ],
-    "PDF": [
-        "pdf"
-    ],
+    "Jupyter Notebook": ["ipynb"],
+    "PDF": ["pdf"],
     "Presentation": [
         "ppt",
         "pot",
@@ -106,17 +94,9 @@ filter_mapping = {
         "ppsx",
         "ppsm",
         "sldx",
-        "sldm"
+        "sldm",
     ],
-    "Spreadsheet": [
-        "xls",
-        "xlt",
-        "xlm",
-        "xlsx",
-        "xlsm",
-        "xltx",
-        "xltm"
-    ],
+    "Spreadsheet": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm"],
     "Shape File": [
         "shp",
         "shx",
@@ -132,20 +112,10 @@ filter_mapping = {
         "mxs",
         "prj",
         "xml",
-        "cpg"
+        "cpg",
     ],
-    "Text": [
-        "err",
-        "log",
-        "out",
-        "txt"
-    ],
-    "ZIP": [
-        "zip",
-        "tar",
-        "gz",
-        "tgz"
-    ],
+    "Text": ["err", "log", "out", "txt"],
+    "ZIP": ["zip", "tar", "gz", "tgz"],
     "3D Visualization": [
         "pov",
         "vrml",
@@ -169,6 +139,6 @@ filter_mapping = {
         "collada",
         "3ds",
         "iges",
-        "step"
-    ]
+        "step",
+    ],
 }

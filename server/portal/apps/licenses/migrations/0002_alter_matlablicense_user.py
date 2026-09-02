@@ -9,13 +9,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('portal_licenses', '0001_initial'),
+        ("portal_licenses", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='matlablicense',
-            name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s', to=settings.AUTH_USER_MODEL),
+            model_name="matlablicense",
+            name="user",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

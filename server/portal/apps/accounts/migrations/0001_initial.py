@@ -15,38 +15,95 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='PortalProfileNHInterests',
+            name="PortalProfileNHInterests",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=300)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.CharField(max_length=300)),
             ],
         ),
         migrations.CreateModel(
-            name='PortalProfileResearchActivities',
+            name="PortalProfileResearchActivities",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=300)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.CharField(max_length=300)),
             ],
         ),
         migrations.CreateModel(
-            name='PortalProfile',
+            name="PortalProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ethnicity', models.CharField(max_length=255)),
-                ('gender', models.CharField(max_length=255)),
-                ('setup_complete', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ethnicity", models.CharField(max_length=255)),
+                ("gender", models.CharField(max_length=255)),
+                ("setup_complete", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='NotificationPreferences',
+            name="NotificationPreferences",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('announcements', models.BooleanField(default=True, verbose_name='Receive occasional announcements from sal.frontera')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='notification_preferences', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "announcements",
+                    models.BooleanField(
+                        default=True,
+                        verbose_name="Receive occasional announcements from sal.frontera",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="notification_preferences",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'permissions': (('view_notification_subscribers', 'Can view list of users subscribed to a notification type'),),
+                "permissions": (
+                    (
+                        "view_notification_subscribers",
+                        "Can view list of users subscribed to a notification type",
+                    ),
+                ),
             },
         ),
     ]

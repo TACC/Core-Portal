@@ -7,13 +7,13 @@ import portal.utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspace', '0003_apptraycategory_apptrayentry'),
+        ("workspace", "0003_apptraycategory_apptrayentry"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='jobsubmission',
-            name='data',
+            model_name="jobsubmission",
+            name="data",
             field=portal.utils.fields.JSONField(null=True),
         ),
     ]

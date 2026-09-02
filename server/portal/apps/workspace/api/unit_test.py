@@ -7,10 +7,12 @@ from django.contrib.auth import get_user_model
 
 @pytest.mark.django_db(transaction=True)
 class TestJobHistoryView(TestCase):
-    fixtures = ['users', 'auth']
+    fixtures = ["users", "auth"]
 
     def setUp(self):
-        self.mock_tapis_patcher = patch('portal.apps.auth.models.TapisOAuthToken.client', autospec=True)
+        self.mock_tapis_patcher = patch(
+            "portal.apps.auth.models.TapisOAuthToken.client", autospec=True
+        )
         self.mock_tapis_client = self.mock_tapis_patcher.start()
         self.client.force_login(get_user_model().objects.get(username="username"))
 
