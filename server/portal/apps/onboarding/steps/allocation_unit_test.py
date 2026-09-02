@@ -6,7 +6,9 @@ import pytest
 
 @pytest.fixture
 def get_allocations_mock(mocker):
-    get_allocations = mocker.patch('portal.apps.onboarding.steps.allocation.get_allocations')
+    get_allocations = mocker.patch(
+        "portal.apps.onboarding.steps.allocation.get_allocations"
+    )
     get_allocations.return_value = {
         "hosts": {
             "vista.tacc.utexas.edu": {},
@@ -21,11 +23,15 @@ def get_allocations_mock(mocker):
 
 @pytest.fixture
 def get_allocations_failure_mock(mocker):
-    get_allocations = mocker.patch('portal.apps.onboarding.steps.allocation.get_allocations')
-    get_allocations.return_value = {'hosts': {},
-                                    'portal_alloc': None,
-                                    'active': [],
-                                    'inactive': []}
+    get_allocations = mocker.patch(
+        "portal.apps.onboarding.steps.allocation.get_allocations"
+    )
+    get_allocations.return_value = {
+        "hosts": {},
+        "portal_alloc": None,
+        "active": [],
+        "inactive": [],
+    }
     yield get_allocations
 
 
@@ -48,12 +54,12 @@ def get_allocations_with_expected_systems_check_failure_mock(mocker):
 
 @pytest.fixture
 def allocation_step_complete_mock(mocker):
-    yield mocker.patch.object(AllocationStep, 'complete')
+    yield mocker.patch.object(AllocationStep, "complete")
 
 
 @pytest.fixture
 def allocation_step_log_mock(mocker):
-    yield mocker.patch.object(AllocationStep, 'log')
+    yield mocker.patch.object(AllocationStep, "log")
 
 
 def test_get_allocations_with_expected_systems_check_success(

@@ -6,7 +6,7 @@ from django.http import JsonResponse
 class FormsView(BaseApiView):
 
     def get(self, request):
-        form_name = request.GET.get('form_name')
+        form_name = request.GET.get("form_name")
         form = settings.FORMS.get(form_name)
 
         return JsonResponse({"response": form})

@@ -16,10 +16,7 @@ from portal.apps.search.tasks import tapis_indexer
 from portal.views.base import BaseApiView
 from portal.libs.exceptions import PortalLibException
 from portal.exceptions.api import ApiException
-from portal.apps.webhooks.utils import (
-    validate_webhook,
-    execute_callback
-)
+from portal.apps.webhooks.utils import validate_webhook, execute_callback
 from portal.apps.workspace.api.utils import check_job_for_timeout
 
 from django.conf import settings
@@ -46,10 +43,13 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     # Validate the job UUID against the owner
     if job_data.owner != job_owner:
         logger.error(
-            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data.owner,
-                                                                                                 job_data.status,
-                                                                                                 job_owner))
-        raise PortalLibException("Unable to find a related valid job for this notification.")
+            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(
+                job_data.owner, job_data.status, job_owner
+            )
+        )
+        raise PortalLibException(
+            "Unable to find a related valid job for this notification."
+        )
 
     # Check to see if the job state should generate a notification
     if job_data.status in disallowed_states:
@@ -60,7 +60,7 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     return job_data
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class JobsWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from the Tapis
@@ -81,17 +81,17 @@ class JobsWebhookView(BaseApiView):
         """
         subscription = json.loads(request.body)
 
-        job = json.loads(subscription['event']['data'])
+        job = json.loads(subscription["event"]["data"])
 
-        user = get_user_model().objects.get(username=job['jobOwner'])
+        user = get_user_model().objects.get(username=job["jobOwner"])
         client = user.tapis_oauth.client
 
         try:
-            username = job['jobOwner']
-            job_uuid = job['jobUuid']
-            job_status = job['newJobStatus']
-            job_name = job['jobName']
-            job_old_status = job['oldJobStatus']
+            username = job["jobOwner"]
+            job_uuid = job["jobUuid"]
+            job_status = job["newJobStatus"]
+            job_name = job["jobName"]
+            job_old_status = job["oldJobStatus"]
 
             # Do nothing on job status not in portal notification states
             if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
@@ -106,47 +106,61 @@ class JobsWebhookView(BaseApiView):
             if job_status == job_old_status:
                 return HttpResponse("OK")
 
-            logger.info('JOB STATUS CHANGE: UUID={} status={}'.format(job_uuid, job_status))
+            logger.info(
+                "JOB STATUS CHANGE: UUID={} status={}".format(job_uuid, job_status)
+            )
 
             event_data = {
-                Notification.EVENT_TYPE: 'job',
+                Notification.EVENT_TYPE: "job",
                 Notification.STATUS: Notification.INFO,
                 Notification.USER: username,
                 Notification.EXTRA: {
                     "name": job_name,
                     "owner": username,
                     "status": job_status,
-                    "uuid": job_uuid
-                }
+                    "uuid": job_uuid,
+                },
             }
 
             # get additional job information only after the job has reached a terminal state
-            non_terminal_states = list(set(settings.PORTAL_JOB_NOTIFICATION_STATES) - set(TERMINAL_JOB_STATES))
-            job_details = validate_tapis_job(job_uuid, username, disallowed_states=non_terminal_states)
+            non_terminal_states = list(
+                set(settings.PORTAL_JOB_NOTIFICATION_STATES) - set(TERMINAL_JOB_STATES)
+            )
+            job_details = validate_tapis_job(
+                job_uuid, username, disallowed_states=non_terminal_states
+            )
             if job_details:
-                event_data[Notification.EXTRA]['remoteOutcome'] = job_details.remoteOutcome
-                event_data[Notification.EXTRA]['status'] = job_details.status
+                event_data[Notification.EXTRA][
+                    "remoteOutcome"
+                ] = job_details.remoteOutcome
+                event_data[Notification.EXTRA]["status"] = job_details.status
 
                 try:
-                    logger.info('Indexing job output for job={}'.format(job_uuid))
+                    logger.info("Indexing job output for job={}".format(job_uuid))
 
-                    tapis_indexer.apply_async(kwargs={'access_token': client.access_token.access_token,
-                                                      'systemId': job_details.archiveSystemId,
-                                                      'filePath': job_details.archiveSystemDir})
+                    tapis_indexer.apply_async(
+                        kwargs={
+                            "access_token": client.access_token.access_token,
+                            "systemId": job_details.archiveSystemId,
+                            "filePath": job_details.archiveSystemDir,
+                        }
+                    )
                 except Exception as e:
-                    logger.exception('Error starting async task to index job output: {}'.format(e))
+                    logger.exception(
+                        "Error starting async task to index job output: {}".format(e)
+                    )
 
             with transaction.atomic():
                 Notification.objects.create(**event_data)
 
-            return HttpResponse('OK')
+            return HttpResponse("OK")
 
         except (ObjectDoesNotExist, BaseTapyException, PortalLibException) as e:
             logger.exception(e)
             return HttpResponseBadRequest("ERROR")
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class InteractiveWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from interactive jobs
@@ -157,11 +171,11 @@ class InteractiveWebhookView(BaseApiView):
         Creates a notification with a link to the interactive job event.
 
         """
-        event_type = request.POST.get('event_type', None)
-        job_uuid = request.POST.get('job_uuid', None)
-        job_owner = request.POST.get('owner', None)
-        address = request.POST.get('address', None)
-        message = request.POST.get('message', None)
+        event_type = request.POST.get("event_type", None)
+        job_uuid = request.POST.get("job_uuid", None)
+        job_owner = request.POST.get("owner", None)
+        address = request.POST.get("address", None)
+        message = request.POST.get("message", None)
 
         if not address:
             msg = "Missing required interactive webhook parameter: address"
@@ -172,7 +186,7 @@ class InteractiveWebhookView(BaseApiView):
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
             Notification.USER: job_owner,
-            Notification.ACTION_LINK: address
+            Notification.ACTION_LINK: address,
         }
 
         if message:
@@ -190,7 +204,7 @@ class InteractiveWebhookView(BaseApiView):
             event_data[Notification.EXTRA] = {
                 "name": valid_state.name,
                 "status": valid_state.status,
-                "uuid": valid_state.uuid
+                "uuid": valid_state.uuid,
             }
 
         except (HTTPError, BaseTapyException, PortalLibException) as e:
@@ -199,10 +213,10 @@ class InteractiveWebhookView(BaseApiView):
 
         Notification.objects.create(**event_data)
 
-        return HttpResponse('OK')
+        return HttpResponse("OK")
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class CallbackWebhookView(BaseApiView):
     """
     Validates incoming webhook and executes registered callbacks
@@ -213,4 +227,4 @@ class CallbackWebhookView(BaseApiView):
         if external_call is None:
             raise ApiException
         execute_callback(external_call, request)
-        return HttpResponse('OK')
+        return HttpResponse("OK")

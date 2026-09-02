@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspace', '0005_merge_20230119_1627'),
+        ("workspace", "0005_merge_20230119_1627"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='jobsubmission',
-            name='data',
+            model_name="jobsubmission",
+            name="data",
             field=models.JSONField(null=True),
         ),
     ]

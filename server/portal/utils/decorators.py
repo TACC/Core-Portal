@@ -9,7 +9,6 @@ from functools import wraps
 from django.http import JsonResponse
 from portal.utils.jwt_auth import login_user_agave_jwt
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -38,6 +37,7 @@ def agave_jwt_login(func):
             pass
         ```
     """
+
     @wraps(func)
     def decorated_function(request, *args, **kwargs):
         """Decorated function."""
@@ -56,6 +56,7 @@ def handle_uncaught_exceptions(message):
     :param str message: Error message for the json repsonse
 
     """
+
     def _decorator(fn):
 
         @wraps(fn)
@@ -64,8 +65,10 @@ def handle_uncaught_exceptions(message):
                 return fn(self, *args, **kw)
             except Exception:
                 logger.exception("Handling uncaught exception")
-                return JsonResponse({'message': message}, status=500)
+                return JsonResponse({"message": message}, status=500)
+
         return wrapper
+
     return _decorator
 
 

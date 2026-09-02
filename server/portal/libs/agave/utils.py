@@ -2,6 +2,7 @@
 
 .. module:: portal.libs.agave.utils
 """
+
 import logging
 import os
 from django.conf import settings
@@ -22,48 +23,46 @@ def to_camel_case(input_str):
     :return: lowerCamelCase string
     :rtype: str
     """
-    left_cnt = len(input_str) - len(input_str.lstrip('_'))
-    right_cnt = len(input_str) - len(input_str.rstrip('_'))
-    comps = input_str[left_cnt:].split('_')
-    right_side = ''.join(w.title() for w in comps[1:])
-    camel_case = ''.join(
-        ['_' * left_cnt,
-         comps[0],
-         right_side,
-         '_' * right_cnt]
-    )
+    left_cnt = len(input_str) - len(input_str.lstrip("_"))
+    right_cnt = len(input_str) - len(input_str.rstrip("_"))
+    comps = input_str[left_cnt:].split("_")
+    right_side = "".join(w.title() for w in comps[1:])
+    camel_case = "".join(["_" * left_cnt, comps[0], right_side, "_" * right_cnt])
     return camel_case
 
 
 def iterate_level(client, system, path, limit=100):
     """Iterate over a filesystem level yielding an attrdict for each file/folder
-        on the level.
-        :param str client: an Agave client
-        :param str system: system
-        :param str path: path to walk
-        :param int limit: Number of docs to retrieve per API call
+    on the level.
+    :param str client: an Agave client
+    :param str system: system
+    :param str path: path to walk
+    :param int limit: Number of docs to retrieve per API call
 
-        :rtype agavepy.agave.AttrDict
+    :rtype agavepy.agave.AttrDict
     """
     offset = 0
 
     while True:
-        _page = client.files.listFiles(systemId=system,
-                                       path=path,
-                                       offset=int(offset),
-                                       limit=int(limit))
-        page = list(map(lambda f: {
-            'system': system,
-            'type': 'dir' if f.type == 'dir' else 'file',
-            'format': 'folder' if f.type == 'dir' else 'raw',
-            'mimeType': f.mimeType,
-            'path': f.path,
-            'name': f.name,
-            'length': f.size,
-            'lastModified': f.lastModified,
-            '_links': {
-                'self': {'href': f.url}
-            }}, _page))
+        _page = client.files.listFiles(
+            systemId=system, path=path, offset=int(offset), limit=int(limit)
+        )
+        page = list(
+            map(
+                lambda f: {
+                    "system": system,
+                    "type": "dir" if f.type == "dir" else "file",
+                    "format": "folder" if f.type == "dir" else "raw",
+                    "mimeType": f.mimeType,
+                    "path": f.path,
+                    "name": f.name,
+                    "length": f.size,
+                    "lastModified": f.lastModified,
+                    "_links": {"self": {"href": f.url}},
+                },
+                _page,
+            )
+        )
         yield from page
         offset += limit
         if len(page) != limit:
@@ -108,26 +107,19 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     folders = []
     files = []
     for agave_file in iterate_level(client, system, path):
-        if agave_file['name'] == '.':
+        if agave_file["name"] == ".":
             continue
-        if ignore_hidden and agave_file['name'][0] == '.':
+        if ignore_hidden and agave_file["name"][0] == ".":
             continue
-        if agave_file['format'] == 'folder':
+        if agave_file["format"] == "folder":
             folders.append(agave_file)
         else:
             files.append(agave_file)
     if not bottom_up:
         yield (path, folders, files)
     for child in folders:
-        for (
-                child_path,
-                child_folders,
-                child_files
-        ) in walk_levels(
-            client,
-            system,
-            child['path'],
-            bottom_up=bottom_up
+        for child_path, child_folders, child_files in walk_levels(
+            client, system, child["path"], bottom_up=bottom_up
         ):
             yield (child_path, child_folders, child_files)
 
@@ -138,16 +130,18 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
 def service_account():
     """Return a Tapis instance with the admin account."""
     return Tapis(
-        base_url=settings.TAPIS_TENANT_BASEURL,
-        access_token=settings.TAPIS_ADMIN_JWT)
+        base_url=settings.TAPIS_TENANT_BASEURL, access_token=settings.TAPIS_ADMIN_JWT
+    )
 
 
 def user_account(access_token):
     """Return a Tapis instance with the user credentials"""
-    return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
-                 client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
-                 client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
-                 access_token=access_token)
+    return Tapis(
+        base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
+        client_id=getattr(settings, "TAPIS_CLIENT_ID"),
+        client_key=getattr(settings, "TAPIS_CLIENT_KEY"),
+        access_token=access_token,
+    )
 
 
 def text_preview(url):
@@ -163,10 +157,12 @@ def text_preview(url):
     """
     try:
         resp = requests.get(url)
-        if (resp.content or (resp.encoding is not None and resp.encoding.lower() == 'utf-8')):
+        if resp.content or (
+            resp.encoding is not None and resp.encoding.lower() == "utf-8"
+        ):
             content = resp.text
             # Raises UnicodeDecodeError for files with non-ascii characters
-            content.encode('ascii', 'strict')
+            content.encode("ascii", "strict")
             return content
         else:
             raise ValueError("File does not contain text")
@@ -181,22 +177,21 @@ def increment_file_name(listing, file_name):
         _ext = os.path.splitext(file_name)[1]
         _name = os.path.splitext(file_name)[0]
         _inc = "({})".format(inc)
-        file_name = '{}{}{}'.format(_name, _inc, _ext)
+        file_name = "{}{}{}".format(_name, _inc, _ext)
 
         while any(x.name for x in listing if x.name == file_name):
             inc += 1
             _inc = "({})".format(inc)
-            file_name = '{}{}{}'.format(_name, _inc, _ext)
+            file_name = "{}{}{}".format(_name, _inc, _ext)
     return file_name
 
 
 def get_file_size(client, system, path):
-    """ Get file size
+    """Get file size
     :param client: an Agave client
     :param system: system of file
     :param path: path of file
     :return: file size in bytes
     """
-    file_response = client.files.listFiles(systemId=system,
-                                           path=path)
+    file_response = client.files.listFiles(systemId=system, path=path)
     return int(file_response[0].size)

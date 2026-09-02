@@ -16,15 +16,30 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SetupEvent',
+            name="SetupEvent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time', models.DateTimeField(auto_now_add=True)),
-                ('step', models.CharField(max_length=300)),
-                ('state', models.CharField(max_length=16)),
-                ('message', models.CharField(max_length=300)),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField(null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("time", models.DateTimeField(auto_now_add=True)),
+                ("step", models.CharField(max_length=300)),
+                ("state", models.CharField(max_length=16)),
+                ("message", models.CharField(max_length=300)),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField(null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

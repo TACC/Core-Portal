@@ -13,21 +13,22 @@ class IntroMessages(models.Model):
     """
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="+",
-        on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE
     )
 
     datetime = models.DateTimeField(default=timezone.now, blank=True)
 
     # Each variable represents that intro message status
     # True means message has not been dismissed by user
-    component = models.CharField(max_length=300, default='')
+    component = models.CharField(max_length=300, default="")
     unread = models.BooleanField(default=True)
 
     # Make each type of IntroMessage unique
     class Meta:
-        unique_together = ('user', 'component',)
+        unique_together = (
+            "user",
+            "component",
+        )
 
 
 class CustomMessageTemplate(models.Model):
@@ -36,33 +37,61 @@ class CustomMessageTemplate(models.Model):
     Used for storing admin-controlled messages for specific components that utilize CustomMessages.
     """
 
-    MESSAGE_TYPES = [('info', 'Info'), ('success', 'Success'),
-                     ('warning', 'Warn'), ('error', 'Error')]
+    MESSAGE_TYPES = [
+        ("info", "Info"),
+        ("success", "Success"),
+        ("warning", "Warn"),
+        ("error", "Error"),
+    ]
 
-    COMPONENTS = [('DASHBOARD', 'Dashboard'), ('DATA', 'Data Files'),
-                  ('APPLICATIONS', 'Applications'), ('ALLOCATIONS', 'Allocations'),
-                  ('HISTORY', 'History'), ('UI', 'UI'), ('ACCOUNT', 'Account'),
-                  ('UNPROTECTED', 'Unprotected'), ('ONBOARDING', 'Onboarding'),
-                  ('SUBMISSIONS', 'Submissions'), ('ONBOARDINGADMIN', 'Onboarding Admin'),
-                  ('SEARCH', 'Search')]
+    COMPONENTS = [
+        ("DASHBOARD", "Dashboard"),
+        ("DATA", "Data Files"),
+        ("APPLICATIONS", "Applications"),
+        ("ALLOCATIONS", "Allocations"),
+        ("HISTORY", "History"),
+        ("UI", "UI"),
+        ("ACCOUNT", "Account"),
+        ("UNPROTECTED", "Unprotected"),
+        ("ONBOARDING", "Onboarding"),
+        ("SUBMISSIONS", "Submissions"),
+        ("ONBOARDINGADMIN", "Onboarding Admin"),
+        ("SEARCH", "Search"),
+    ]
 
-    component = models.CharField(help_text='Component type', max_length=20, choices=COMPONENTS, default='Dashboard')
-    message_type = models.CharField(help_text='Message type', max_length=20, choices=MESSAGE_TYPES, default='info')
+    component = models.CharField(
+        help_text="Component type",
+        max_length=20,
+        choices=COMPONENTS,
+        default="Dashboard",
+    )
+    message_type = models.CharField(
+        help_text="Message type", max_length=20, choices=MESSAGE_TYPES, default="info"
+    )
     dismissible = models.BooleanField(default=False)
-    message = models.TextField(help_text='Message content (max 1000 characters)', max_length=1000, default='', blank=True)
+    message = models.TextField(
+        help_text="Message content (max 1000 characters)",
+        max_length=1000,
+        default="",
+        blank=True,
+    )
 
     def to_dict(self):
         return {
-            'id': self.id,
-            'component': self.component,
-            'message_type': self.message_type,
-            'dismissible': self.dismissible,
-            'message': self.message
+            "id": self.id,
+            "component": self.component,
+            "message_type": self.message_type,
+            "dismissible": self.dismissible,
+            "message": self.message,
         }
 
     def __str__(self):
-        return "%s | %s | %s | %s" % (self.message_type, self.component,
-                                      ('dismissible' if self.dismissible else 'not dismissible'), self.message[0:20])
+        return "%s | %s | %s | %s" % (
+            self.message_type,
+            self.component,
+            ("dismissible" if self.dismissible else "not dismissible"),
+            self.message[0:20],
+        )
 
 
 class CustomMessages(models.Model):
@@ -70,10 +99,9 @@ class CustomMessages(models.Model):
 
     Used for storing messages instances that were created by admin and handles status of each message.
     """
+
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="+",
-        on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE
     )
 
     template = models.ForeignKey(
@@ -85,4 +113,7 @@ class CustomMessages(models.Model):
     unread = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('user', 'template',)
+        unique_together = (
+            "user",
+            "template",
+        )

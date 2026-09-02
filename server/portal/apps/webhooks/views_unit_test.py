@@ -4,7 +4,6 @@ from django.conf import settings
 import json
 import pytest
 
-
 pytestmark = pytest.mark.django_db
 
 
@@ -12,9 +11,9 @@ pytestmark = pytest.mark.django_db
 def webhook_url():
     webhook_url = register_webhook(
         callback="portal.apps.webhooks.views_unit_test.MockCallback",
-        callback_data={"key": "value"}
+        callback_data={"key": "value"},
     )
-    yield webhook_url[len(settings.VANITY_BASE_URL):]
+    yield webhook_url[len(settings.VANITY_BASE_URL) :]
 
 
 class MockCallback(WebhookCallback):
@@ -26,9 +25,13 @@ class MockCallback(WebhookCallback):
 
 
 def test_callback(client, webhook_url):
-    response = client.post(webhook_url, {"incoming": "data"}, content_type='application/json')
+    response = client.post(
+        webhook_url, {"incoming": "data"}, content_type="application/json"
+    )
     assert response.status_code == 200
-    response = client.post(webhook_url, {"incoming": "data"}, content_type='application/json')
+    response = client.post(
+        webhook_url, {"incoming": "data"}, content_type="application/json"
+    )
     assert response.status_code == 400
     response = client.post("/webhooks/callbacks/invalid/")
     assert response.status_code == 400

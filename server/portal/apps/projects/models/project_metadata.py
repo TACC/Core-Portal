@@ -1,4 +1,5 @@
 """Models for representing project metadata"""
+
 import uuid
 from django.utils import timezone
 from django.db import models
@@ -11,8 +12,8 @@ user_model = get_user_model()
 
 
 def snake_to_camel(snake_str):
-    components = snake_str.split('_')
-    return components[0] + ''.join(x.title() for x in components[1:])
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
 
 
 def uuid_pk():
@@ -50,7 +51,7 @@ class ProjectMetadata(models.Model):
     users = models.ManyToManyField(
         to=user_model,
         related_name="projects",
-        help_text="Users who have access to a project."
+        help_text="Users who have access to a project.",
     )
     base_project = models.ForeignKey(
         "self",
@@ -89,7 +90,9 @@ class ProjectMetadata(models.Model):
     def get_entity_by_project_id_and_path(cls, project_id: str, path: str):
         """Return a single metadata object for a given project ID and path"""
         try:
-            return cls.objects.get(base_project__value__projectId=project_id, value__path=path)
+            return cls.objects.get(
+                base_project__value__projectId=project_id, value__path=path
+            )
         except cls.DoesNotExist:
             return None
 
@@ -100,7 +103,7 @@ class ProjectMetadata(models.Model):
             "name": self.name,
             "value": self.value,
             "created": self.created,
-            "lastUpdated": self.last_updated
+            "lastUpdated": self.last_updated,
         }
 
     def sync_users(self):
