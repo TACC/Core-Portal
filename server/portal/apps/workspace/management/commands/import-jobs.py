@@ -25,15 +25,13 @@ class Command(BaseCommand):
             offset = 0
             total = 0
             while not done:
-                jobs = agave.jobs.list(
-                    query={"owner": user.username}, offset=offset, limit=100
-                )
+                jobs = agave.jobs.list(query={"owner": user.username}, offset=offset, limit=100)
                 for job in jobs:
                     if not any(existing.jobId == job["id"] for existing in userjobs):
                         job = JobSubmission.objects.create(
                             user=user,
                             jobId=job["id"],
-                            time=dateutil.parser.parse(job["created"]),
+                            time=dateutil.parser.parse(job["created"])
                         )
                 offset += 100
                 done = len(jobs) < 100

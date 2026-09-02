@@ -54,7 +54,7 @@ def initialize_project_graph(project_id: str):
         "name": project_model.name,
         "projectType": project_type,
         "order": 0,
-        "label": project_model.value.get("title"),
+        "label": project_model.value.get("title")
     }
 
     if project_type == "other":
@@ -83,7 +83,7 @@ def traverse_graph(project_graph, root_node, path_components):
     for component in path_components:
         found = False
         for successor in project_graph.successors(current_node):
-            name = project_graph.nodes[successor]["label"]
+            name = project_graph.nodes[successor]['label']
             if name == component:
                 current_node = successor
                 found = True
@@ -120,9 +120,7 @@ def get_root_node(project_id: str) -> Dict[str, Any]:
     return {"id": "NODE_ROOT", **project_graph.nodes["NODE_ROOT"]}
 
 
-def update_node_in_project(
-    project_id: str, node_id: str, new_parent: str = None, new_name: str = None
-):
+def update_node_in_project(project_id: str, node_id: str, new_parent: str = None, new_name: str = None):
     """Update the database entry for a project graph to update a node."""
     with transaction.atomic():
         graph_model = ProjectMetadata.objects.select_for_update().get(
@@ -153,10 +151,7 @@ def update_node_in_project(
 def _get_trash_node_uuid(project_graph: nx.DiGraph) -> str | None:
     """Return the metadata UUID for the trash node under NODE_ROOT, if present."""
     for successor in project_graph.successors("NODE_ROOT"):
-        if (
-            project_graph.nodes[successor].get("label")
-            == settings.TAPIS_DEFAULT_TRASH_NAME
-        ):
+        if project_graph.nodes[successor].get("label") == settings.TAPIS_DEFAULT_TRASH_NAME:
             return project_graph.nodes[successor]["uuid"]
     return None
 
@@ -190,9 +185,7 @@ def get_or_create_trash_entity(project_id: str):
     return new_entity
 
 
-def add_node_to_project(
-    project_id: str, parent_node: str, meta_uuid: str, name: str, label: str
-):
+def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name: str, label: str):
     """Update the database entry for a project graph to add a node."""
     # Lock the project graph's tale row to prevent conflicting updates.
     with transaction.atomic():
@@ -201,7 +194,7 @@ def add_node_to_project(
         )
         project_graph = nx.node_link_graph(graph_model.value)
 
-        updated_graph, new_node_id = _add_node_to_graph(
+        (updated_graph, new_node_id) = _add_node_to_graph(
             project_graph, parent_node, meta_uuid, name, label
         )
 
@@ -258,30 +251,30 @@ def build_project_tree(full_project_id: str):
         node = graph.nodes[node_id]
 
         # Build the node's path from the labels of its ancestors (excluding root).
-        if nx.has_path(graph, "NODE_ROOT", node_id):
-            path_nodes = nx.shortest_path(graph, "NODE_ROOT", node_id)[1:]
-            node["path"] = "/".join(
-                graph.nodes[parent]["label"]
+        if nx.has_path(graph, 'NODE_ROOT', node_id):
+            path_nodes = nx.shortest_path(graph, 'NODE_ROOT', node_id)[1:]
+            node['path'] = '/'.join(
+                graph.nodes[parent]['label']
                 for parent in path_nodes
-                if "label" in graph.nodes[parent]
+                if 'label' in graph.nodes[parent]
             )
         else:
-            node["path"] = ""
+            node['path'] = ""
 
-        if node.get("value"):
-            metadata = get_ordered_value(node["name"], node["value"])
-            file_objs = node["value"].get("fileObjs", [])
+        if node.get('value'):
+            metadata = get_ordered_value(node['name'], node['value'])
+            file_objs = node['value'].get('fileObjs', [])
         else:
-            entity = ProjectMetadata.objects.get(uuid=node.get("uuid"))
+            entity = ProjectMetadata.objects.get(uuid=node.get('uuid'))
             metadata = get_ordered_value(entity.name, entity.value)
-            file_objs = entity.value.get("fileObjs", [])
+            file_objs = entity.value.get('fileObjs', [])
 
-        node["metadata"] = metadata
-        node["fileObjs"] = [
+        node['metadata'] = metadata
+        node['fileObjs'] = [
             {
                 **file_obj,
-                "id": file_obj.get("uuid"),
-                "metadata": get_ordered_value(constants.FILE, file_obj.get("value")),
+                'id': file_obj.get('uuid'),
+                'metadata': get_ordered_value(constants.FILE, file_obj.get('value')),
             }
             for file_obj in file_objs
         ]
@@ -297,11 +290,7 @@ def get_path_uuid_mapping(project_id: str):
     project_graph = nx.node_link_graph(graph_model.value)
     path_uuid_mapping = {}
     for node_id in project_graph.nodes:
-        path_nodes = nx.shortest_path(project_graph, "NODE_ROOT", node_id)[1:]
-        path = "/".join(
-            project_graph.nodes[parent]["label"]
-            for parent in path_nodes
-            if "label" in project_graph.nodes[parent]
-        )
+        path_nodes = nx.shortest_path(project_graph, 'NODE_ROOT', node_id)[1:]
+        path = '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
         path_uuid_mapping[path] = project_graph.nodes[node_id]["uuid"]
     return path_uuid_mapping

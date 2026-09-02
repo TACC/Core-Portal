@@ -7,15 +7,16 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="Link",
+            name='Link',
             fields=[
-                ("agave_uri", models.TextField(primary_key=True, serialize=False)),
-                ("postit_url", models.TextField()),
-                ("updated", models.DateTimeField(auto_now=True)),
+                ('agave_uri', models.TextField(primary_key=True, serialize=False)),
+                ('postit_url', models.TextField()),
+                ('updated', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

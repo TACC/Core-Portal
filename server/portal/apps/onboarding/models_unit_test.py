@@ -1,6 +1,8 @@
+
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.models import SetupEvent
 import pytest
+
 
 pytestmark = pytest.mark.django_db
 
@@ -11,7 +13,7 @@ def onboarding_event(authenticated_user):
         user=authenticated_user,
         state=SetupState.PENDING,
         step="TestStep",
-        message="test message",
+        message="test message"
     )
     yield event
 

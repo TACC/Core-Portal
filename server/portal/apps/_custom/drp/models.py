@@ -21,30 +21,16 @@ class DrpFileMetadata(BaseFileMetadata):
     )
 
     is_advanced_image_file: Optional[bool] = False
-    image_type: Optional[
-        Literal[
-            "8_bit",
-            "16_bit_signed",
-            "16_bit_unsigned",
-            "32_bit_signed",
-            "32_bit_unsigned",
-            "32_bit_real",
-            "64_bit_real",
-            "24_bit_rgb",
-            "24_bit_rgb_planar",
-            "24_bit_bgr",
-            "24_bit_integer",
-            "32_bit_argb",
-            "32_bit_abgr",
-            "1_bit_bitmap",
-        ]
-    ] = None
+    image_type: Optional[Literal[
+        '8_bit', '16_bit_signed', '16_bit_unsigned', '32_bit_signed', '32_bit_unsigned', '32_bit_real', '64_bit_real',
+        '24_bit_rgb', '24_bit_rgb_planar', '24_bit_bgr', '24_bit_integer', '32_bit_argb', '32_bit_abgr', '1_bit_bitmap',
+    ]] = None
     height: Optional[NonNegativeInt] = None
     width: Optional[NonNegativeInt] = None
     number_of_images: Optional[NonNegativeInt] = None
     offset_to_first_image: Optional[int] = None
     gap_between_images: Optional[int] = None
-    byte_order: Optional[Literal["big_endian", "little_endian"]] = None
+    byte_order: Optional[Literal['big_endian', 'little_endian']] = None
     use_binary_correction: Optional[bool] = None
 
 
@@ -63,7 +49,11 @@ class DrpDatasetMetadata(BaseMetadataModel):
     description: Optional[str] = None
     uuid: Optional[str] = None
     data_type: Literal[
-        "sample", "origin_data", "digital_dataset", "analysis_data", "file"
+        "sample",
+        "origin_data",
+        "digital_dataset",
+        "analysis_data",
+        "file"
     ]
     file_objs: list[FileObj] = []
 
@@ -80,7 +70,7 @@ class DrpSampleMetadata(DrpDatasetMetadata):
         "fibrous_media",
         "coal",
         "energy_storage",
-        "other",
+        "other"
     ]
 
     porous_media_other_description: Optional[str] = None
@@ -103,9 +93,12 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     grain_size_min: Optional[NonNegativeFloat] = None
     grain_size_max: Optional[NonNegativeFloat] = None
     grain_size_avg: Optional[NonNegativeFloat] = None
-    grain_size_units: Optional[
-        Literal["nanometer", "micrometer", "millimeter", "other"]
-    ] = None
+    grain_size_units: Optional[Literal[
+        "nanometer",
+        "micrometer",
+        "millimeter",
+        "other"
+    ]] = None
     porosity: Optional[float] = None
     geographical_location: Optional[str] = None
     date_of_collection: Optional[str] = None
@@ -127,9 +120,12 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
     voxel_x: Optional[NonNegativeFloat] = None
     voxel_y: Optional[NonNegativeFloat] = None
     voxel_z: Optional[NonNegativeFloat] = None
-    voxel_units: Optional[Literal["nanometer", "micrometer", "millimeter", "other"]] = (
-        None
-    )
+    voxel_units: Optional[Literal[
+        "nanometer",
+        "micrometer",
+        "millimeter",
+        "other"
+    ]] = None
     dimensionality: Optional[str] = None
     digital_dataset: Optional[str] = None
     external_uri: Optional[str] = None  # TODO_DRP: Remove in new model
@@ -145,7 +141,7 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
         "geometric_analysis",
         "experimental",
         "characterization",
-        "other",
+        "other"
     ]
     external_uri: Optional[str] = None
     sample: str

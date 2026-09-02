@@ -9,83 +9,38 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("accounts", "0001_initial"),
+        ('accounts', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="SSHKeys",
+            name='SSHKeys',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "user",
-                    models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="ssh_keys",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='ssh_keys', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name="Keys",
+            name='Keys',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("system", models.TextField(unique=True)),
-                ("private", models.TextField()),
-                ("public", models.TextField()),
-                (
-                    "ssh_keys",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="+",
-                        to="accounts.SSHKeys",
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('system', models.TextField(unique=True)),
+                ('private', models.TextField()),
+                ('public', models.TextField()),
+                ('ssh_keys', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='accounts.SSHKeys')),
             ],
         ),
         migrations.CreateModel(
-            name="HostKeys",
+            name='HostKeys',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("hostname", models.TextField()),
-                ("private", models.TextField()),
-                ("public", models.TextField()),
-                (
-                    "ssh_keys",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="+",
-                        to="accounts.SSHKeys",
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('hostname', models.TextField()),
+                ('private', models.TextField()),
+                ('public', models.TextField()),
+                ('ssh_keys', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='accounts.SSHKeys')),
             ],
             options={
-                "unique_together": {("hostname", "ssh_keys")},
+                'unique_together': {('hostname', 'ssh_keys')},
             },
         ),
     ]

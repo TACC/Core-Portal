@@ -3,7 +3,6 @@
 .. :module:: portal.apps.projects.models.metadata
    :synopsis: Metadata model for projects.
 """
-
 import logging
 from django.conf import settings
 from django.db import models
@@ -34,7 +33,6 @@ class AbstractProjectMetadata(models.Model):
     :param co_pis: Django user Many-to-Many relation.
     :param team_members: Django user Many-to-Many relation.
     """
-
     title = models.TextField()
     project_id = models.CharField(max_length=255, db_index=True)
     description = models.TextField(blank=True, null=True)
@@ -46,32 +44,35 @@ class AbstractProjectMetadata(models.Model):
         related_query_name="owner_%(class)s",
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE
     )
     pi = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="rel_pi_%(class)s",
-        related_query_name="pi_%(class)s",
+        related_name='rel_pi_%(class)s',
+        related_query_name='pi_%(class)s',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE
     )
     co_pis = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="rel_co_pi_%(class)s",
-        related_query_name="co_pi_%(class)s",
+        related_name='rel_co_pi_%(class)s',
+        related_query_name='co_pi_%(class)s',
         blank=True,
     )
     team_members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="rel_member_%(class)s",
-        related_query_name="member_%(class)s",
+        related_name='rel_member_%(class)s',
+        related_query_name='member_%(class)s',
         blank=True,
     )
 
     def __str__(self):
         """Str -> self.prj_id - self.title."""
-        return "{prj_id} - {title}".format(prj_id=self.project_id, title=self.title)
+        return '{prj_id} - {title}'.format(
+            prj_id=self.project_id,
+            title=self.title
+        )
 
 
 class LegacyProjectMetadata(AbstractProjectMetadata):

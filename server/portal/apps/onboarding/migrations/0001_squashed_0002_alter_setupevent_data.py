@@ -7,10 +7,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("onboarding", "0001_initial"),
-        ("onboarding", "0002_alter_setupevent_data"),
-    ]
+    replaces = [('onboarding', '0001_initial'), ('onboarding', '0002_alter_setupevent_data')]
 
     initial = True
 
@@ -20,30 +17,15 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="SetupEvent",
+            name='SetupEvent',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("time", models.DateTimeField(auto_now_add=True)),
-                ("step", models.CharField(max_length=300)),
-                ("state", models.CharField(max_length=16)),
-                ("message", models.CharField(max_length=300)),
-                ("data", models.JSONField(null=True)),
-                (
-                    "user",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="+",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('time', models.DateTimeField(auto_now_add=True)),
+                ('step', models.CharField(max_length=300)),
+                ('state', models.CharField(max_length=16)),
+                ('message', models.CharField(max_length=300)),
+                ('data', models.JSONField(null=True)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

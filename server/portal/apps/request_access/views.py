@@ -7,17 +7,16 @@ class IndexView(TemplateView):
     """
     Request Access view.
     """
-
-    template_name = "portal/apps/workbench/index.html"
+    template_name = 'portal/apps/workbench/index.html'
 
     def dispatch(self, request, *args, **kwargs):
 
         if request.user.is_authenticated:
-            return redirect("/workbench/dashboard/")
+            return redirect('/workbench/dashboard/')
 
         return super(IndexView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context["DEBUG"] = settings.DEBUG
+        context['DEBUG'] = settings.DEBUG
         return context

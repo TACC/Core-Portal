@@ -2,14 +2,13 @@
 .. :module:: apps.accounts.managers.accounts
    :synopsis: Manager handling anything pertaining to accounts
 """
-
 import logging
 from importlib import import_module
 from django.conf import settings
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
-    SSHException,
+    SSHException
 )
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 
@@ -25,23 +24,23 @@ def _lookup_keys_manager(username, password, token):
     """
     mgr_str = getattr(
         settings,
-        "PORTAL_KEYS_MANAGER",
+        'PORTAL_KEYS_MANAGER',
     )
-    module_str, cls_str = mgr_str.rsplit(".", 1)
+    module_str, cls_str = mgr_str.rsplit('.', 1)
     module = import_module(module_str)
     cls = getattr(module, cls_str)
     return cls(username, password, token)
 
 
 def add_pub_key_to_resource(
-    user,
-    username,
-    password,
-    token,
-    system_id,
-    pub_key,
-    hostname=None,
-    port=22,
+        user,
+        username,
+        password,
+        token,
+        system_id,
+        pub_key,
+        hostname=None,
+        port=22,
 ):
     """Add Public Key to Remote Resource
 
@@ -67,7 +66,11 @@ def add_pub_key_to_resource(
 
         transport = mgr.get_transport(hostname, port)
         message = mgr.add_public_key(
-            system_id, hostname, pub_key, port=port, transport=transport
+            system_id,
+            hostname,
+            pub_key,
+            port=port,
+            transport=transport
         )
         status = 200
     except Exception as exc:
@@ -85,11 +88,12 @@ def add_pub_key_to_resource(
             # May occur when system is down
             message = "KeyCannotBeAdded"  # KeyCannnotBeAdded exception does not contain a message?
             status = 503
-        except (ChannelException, SSHException) as exc:
+        except (
+            ChannelException,
+            SSHException
+        ) as exc:
             # cannot ssh to system
-            message = str(
-                type(exc)
-            )  # paramiko exceptions do not contain a string message?
+            message = str(type(exc))  # paramiko exceptions do not contain a string message?
             status = 500  # Bad gateway
 
     return success, message, status

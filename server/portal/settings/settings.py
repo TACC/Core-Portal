@@ -23,12 +23,12 @@ logger = logging.getLogger(__file__)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-if os.path.isfile(os.path.join(BASE_DIR, "settings", "settings_custom.py")):
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
     from portal.settings import settings_custom
 else:
     from portal.settings import settings_default as settings_custom
 
-if os.path.isfile(os.path.join(BASE_DIR, "settings", "settings_forms.py")):
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_forms.py')):
     from portal.settings import settings_forms
 else:
     settings_forms = None
@@ -37,178 +37,185 @@ else:
 DEBUG = settings_custom._DEBUG
 
 FIXTURE_DIRS = [
-    os.path.join(BASE_DIR, "fixtures"),
+    os.path.join(BASE_DIR, 'fixtures'),
 ]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = settings_secret._SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 # Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME = "coresessionid"  # use the sessionid in your views code
+SESSION_COOKIE_NAME = 'coresessionid'  # use the sessionid in your views code
 # the module to store sessions data
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE = 24 * 60 * 60 * 7  # the number of seconds for only 7 for example
+SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
 # whether the csrf token cookie should be secure (https:// only)
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_NAME = "csrfcookie"
+CSRF_COOKIE_NAME = 'csrfcookie'
 
 #
-CSRF_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = 'Strict'
 # for local testing
-CSRF_TRUSTED_ORIGINS = getattr(settings_custom, "_CSRF_TRUSTED_ORIGINS", [])
+CSRF_TRUSTED_ORIGINS = getattr(settings_custom, '_CSRF_TRUSTED_ORIGINS', [])
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-ALLOWED_HOSTS = ["*"]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ALLOWED_HOSTS = ['*']
 
 # https://docs.djangoproject.com/en/3.2/releases/3.0/#security
-X_FRAME_OPTIONS = "SAMEORIGIN"
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
-PORTAL_CSS_FILENAMES = getattr(settings_custom, "_PORTAL_CSS_FILENAMES", [])
+PORTAL_CSS_FILENAMES = getattr(settings_custom, '_PORTAL_CSS_FILENAMES', [])
 
-ROOT_URLCONF = "portal.urls"
+ROOT_URLCONF = 'portal.urls'
 
 # Application definition
 
 INSTALLED_APPS = [
+
     # Django Channels
-    "channels",
-    "daphne",
+    'channels',
+    'daphne',
+
     # Core Django.
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "django.contrib.sitemaps",
-    "django.contrib.sessions.middleware",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'django.contrib.sitemaps',
+    'django.contrib.sessions.middleware',
+
     # Pipeline.
-    "termsandconditions",
-    "impersonate",
+    'termsandconditions',
+    'impersonate',
+
     # Custom apps.
-    "portal.apps.accounts",
-    "portal.apps.auth",
-    "portal.apps.tickets",
-    "portal.apps.licenses",
-    "portal.apps.notifications",
-    "portal.apps.news",
-    "portal.apps.onboarding",
-    "portal.apps.search",
-    "portal.apps.signals",
-    "portal.apps.webhooks",
-    "portal.apps.workbench",
-    "portal.apps.workspace",
-    "portal.apps.datafiles",
-    "portal.apps.system_monitor",
-    "portal.apps.googledrive_integration",
-    "portal.apps.projects",
-    "portal.apps.public_data",
-    "portal.apps.request_access",
-    "portal.apps.site_search",
-    "portal.apps.jupyter_mounts",
-    "portal.apps.portal_messages",
-    "portal.apps.publications",
+    'portal.apps.accounts',
+    'portal.apps.auth',
+    'portal.apps.tickets',
+    'portal.apps.licenses',
+    'portal.apps.notifications',
+    'portal.apps.news',
+    'portal.apps.onboarding',
+    'portal.apps.search',
+    'portal.apps.signals',
+    'portal.apps.webhooks',
+    'portal.apps.workbench',
+    'portal.apps.workspace',
+    'portal.apps.datafiles',
+    'portal.apps.system_monitor',
+    'portal.apps.googledrive_integration',
+    'portal.apps.projects',
+    'portal.apps.public_data',
+    'portal.apps.request_access',
+    'portal.apps.site_search',
+    'portal.apps.jupyter_mounts',
+    'portal.apps.portal_messages',
+    'portal.apps.publications',
 ]
 
 MIDDLEWARE = [
     # Django core middleware.
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "portal.apps.auth.middleware.TapisTokenRefreshMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'portal.apps.auth.middleware.TapisTokenRefreshMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
+
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
 ]
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            os.path.join(BASE_DIR, "templates"),
-            os.path.join(BASE_DIR, "../../client/dist"),
-        ],
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, '../../client/dist')],
         # 'APP_DIRS': True,
-        "OPTIONS": {
-            "context_processors": [
+        'OPTIONS': {
+            'context_processors': [
                 # Django core processors
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+
                 # what are these for?
-                "django.template.context_processors.i18n",
-                "django.template.context_processors.media",
-                "django.template.context_processors.csrf",  # Needed?
-                "django.template.context_processors.tz",
-                "django.template.context_processors.static",
-                "django_settings_export.settings_export",
-                "portal.utils.contextprocessors.analytics",
-                "portal.utils.contextprocessors.debug",
-                "portal.utils.contextprocessors.messages",
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.csrf',   # Needed?
+                'django.template.context_processors.tz',
+                'django.template.context_processors.static',
+                'django_settings_export.settings_export',
+                'portal.utils.contextprocessors.analytics',
+                'portal.utils.contextprocessors.debug',
+                'portal.utils.contextprocessors.messages',
+
             ],
-            "loaders": [
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "portal.wsgi.application"
+WSGI_APPLICATION = 'portal.wsgi.application'
 
-AUTHENTICATION_BACKENDS = [
-    "portal.apps.auth.backends.TapisOAuthBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
+AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.TapisOAuthBackend',
+                           'django.contrib.auth.backends.ModelBackend']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": (
-            "django.contrib.auth.password_validation."
-            "UserAttributeSimilarityValidator"
-        ),
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'UserAttributeSimilarityValidator'),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation." "MinimumLengthValidator"),
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'MinimumLengthValidator'),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation." "CommonPasswordValidator"),
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'CommonPasswordValidator'),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation." "NumericPasswordValidator"),
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'NumericPasswordValidator'),
     },
 ]
 
-IMPERSONATE = {"REQUIRE_SUPERUSER": True}
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True
+}
 
 # this can be set to just '/' if we're not using core portal to create cms sessions
-LOGOUT_REDIRECT_URL = getattr(settings_custom, "_LOGOUT_REDIRECT_URL", "/")
-LOGIN_REDIRECT_URL = getattr(settings_custom, "_LOGIN_REDIRECT_URL", "/")
-LOGIN_URL = "/auth/tapis/"
+LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
+LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
+LOGIN_URL = '/auth/tapis/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = "en"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = 'en'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
@@ -218,31 +225,31 @@ USE_TZ = True
 
 LANGUAGES = (
     # Customize this
-    ("en", "English"),
+    ('en', 'English'),
 )
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = "/core/static/"
-MEDIA_URL = "/core/media/"
+STATIC_URL = '/core/static/'
+MEDIA_URL = '/core/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "../static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "../media")
+STATIC_ROOT = os.path.join(BASE_DIR, '../static')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "../../client/dist"),
+    os.path.join(BASE_DIR, '../../client/dist'),
     # Serve fonts using the cep.dev hostname in debug mode
-    ("src/fonts", os.path.join(BASE_DIR, "../../client/src/fonts")),
+    ('src/fonts', os.path.join(BASE_DIR, '../../client/src/fonts'))
 ]
 
 STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
 FIXTURE_DIRS = [
-    os.path.join(BASE_DIR, "fixtures"),
+    os.path.join(BASE_DIR, 'fixtures'),
 ]
 
 """
@@ -253,13 +260,13 @@ SETTINGS: LOCAL
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": settings_secret._DJANGO_DB_ENGINE,
-        "NAME": settings_secret._DJANGO_DB_NAME,
-        "USER": settings_secret._DJANGO_DB_USER,
-        "PASSWORD": settings_secret._DJANGO_DB_PASSWORD,
-        "HOST": settings_secret._DJANGO_DB_HOST,
-        "PORT": settings_secret._DJANGO_DB_PORT,
+    'default': {
+        'ENGINE': settings_secret._DJANGO_DB_ENGINE,
+        'NAME': settings_secret._DJANGO_DB_NAME,
+        'USER': settings_secret._DJANGO_DB_USER,
+        'PASSWORD': settings_secret._DJANGO_DB_PASSWORD,
+        'HOST': settings_secret._DJANGO_DB_HOST,
+        'PORT': settings_secret._DJANGO_DB_PORT
     }
 }
 
@@ -267,13 +274,13 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.2/topics/cache/
 
 CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "memcached:11211",
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION': 'memcached:11211',
     }
 }
 
-WEBSOCKET_URL = "/ws/"
+WEBSOCKET_URL = '/ws/'
 
 # TAS Authentication.
 TAS_URL = settings_secret._TAS_URL
@@ -285,7 +292,7 @@ RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
 RT_QUEUE = settings_custom._RT_QUEUE
-RT_TAG = getattr(settings_custom, "_RT_TAG", "")
+RT_TAG = getattr(settings_custom, '_RT_TAG', "")
 
 
 # Google Analytics.
@@ -309,76 +316,79 @@ def portal_filter(record):
 
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
+    'version': 1,
+    'disable_existing_loggers': False,
     "filters": {
         "portalFilter": {
             "()": "django.utils.log.CallbackFilter",
             "callback": portal_filter,
         },
     },
-    "formatters": {
-        "default": {
-            "format": "[DJANGO] %(levelname)s %(asctime)s UTC %(module)s "
-            "%(name)s.%(funcName)s:%(lineno)s: %(message)s"
+    'formatters': {
+        'default': {
+            'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        "tapis": {
-            "format": "[TAPIS] %(levelname)s %(asctime)s UTC %(module)s "
-            "%(name)s.%(funcName)s:%(lineno)s: %(message)s"
+        'tapis': {
+            'format': '[TAPIS] %(levelname)s %(asctime)s UTC %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        "metrics": {
-            "format": "[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:"
-            " %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s"
-            " info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=%(portal)s tenant=%(tenant)s"
-        },
-    },
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "/var/log/portal/portal.log",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "formatter": "default",
-        },
-        "metrics": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "metrics",
-            "filters": ["portalFilter"],
+        'metrics': {
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
+                      ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=%(portal)s tenant=%(tenant)s'
         },
     },
-    "loggers": {
-        "django": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": True,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
         },
-        "portal": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/var/log/portal/portal.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'default',
         },
-        "metrics": {
-            "handlers": ["metrics"],
-            "filters": ["portalFilter"],
-            "level": "INFO",
+        'metrics': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'metrics',
+            'filters': ['portalFilter']
         },
-        "paramiko": {"handlers": ["console"], "level": "DEBUG"},
-        "celery": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
         },
-        "daphne": {
-            "handlers": [
-                "console",
+        'portal': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+        'metrics': {
+            'handlers': ['metrics'],
+            'filters': ['portalFilter'],
+            'level': 'INFO',
+        },
+        'paramiko': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        },
+        'celery': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'daphne': {
+            'handlers': [
+                'console',
             ],
-            "level": "INFO",
-        },
+            'level': 'INFO'
+        }
     },
 }
 
@@ -386,7 +396,7 @@ LOGGING = {
 SETTINGS: TACC
 """
 
-IS_TACC_PORTAL = getattr(settings_custom, "_IS_TACC_PORTAL", True)
+IS_TACC_PORTAL = getattr(settings_custom, '_IS_TACC_PORTAL', True)
 
 """
 SETTINGS: TAPIS
@@ -400,147 +410,145 @@ TAPIS_CLIENT_ID = settings_secret._TAPIS_CLIENT_ID
 TAPIS_CLIENT_KEY = settings_secret._TAPIS_CLIENT_KEY
 
 # Long-live portal admin access token
-TAPIS_ADMIN_JWT = getattr(settings_secret, "_TAPIS_ADMIN_JWT", "")
+TAPIS_ADMIN_JWT = getattr(settings_secret, '_TAPIS_ADMIN_JWT', '')
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
 AGAVE_JWT_PUBKEY = (
-    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\n"
-    "M4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n"
-    "0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\n"
-    "RS4HrKGJTzxaCcU7OQIDAQAB"
+    'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\n'
+    'M4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n'
+    '0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\n'
+    'RS4HrKGJTzxaCcU7OQIDAQAB'
 )
 AGAVE_JWT_HEADER = settings_custom._AGAVE_JWT_HEADER
-AGAVE_JWT_ISSUER = "wso2.org/products/am"
-AGAVE_JWT_USER_CLAIM_FIELD = "http://wso2.org/claims/fullname"
+AGAVE_JWT_ISSUER = 'wso2.org/products/am'
+AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
 
 """
 SETTINGS: CELERY
 """
 
-_BROKER_URL_PROTOCOL = "amqp://"
+_BROKER_URL_PROTOCOL = 'amqp://'
 _BROKER_URL_USERNAME = settings_secret._BROKER_URL_USERNAME
 _BROKER_URL_PWD = settings_secret._BROKER_URL_PWD
 _BROKER_URL_HOST = settings_secret._BROKER_URL_HOST
 _BROKER_URL_PORT = settings_secret._BROKER_URL_PORT
 _BROKER_URL_VHOST = settings_secret._BROKER_URL_VHOST
 
-CELERY_BROKER_URL = "".join(
+CELERY_BROKER_URL = ''.join(
     [
-        _BROKER_URL_PROTOCOL,
-        _BROKER_URL_USERNAME,
-        ":",
-        _BROKER_URL_PWD,
-        "@",
-        _BROKER_URL_HOST,
-        ":",
-        _BROKER_URL_PORT,
-        "/",
-        _BROKER_URL_VHOST,
+        _BROKER_URL_PROTOCOL, _BROKER_URL_USERNAME, ':',
+        _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
+        _BROKER_URL_PORT, '/', _BROKER_URL_VHOST
     ]
 )
 
-_RESULT_BACKEND_PROTOCOL = "redis://"
+_RESULT_BACKEND_PROTOCOL = 'redis://'
 _RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
 _RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
 _RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
 
-CELERY_RESULT_BACKEND = "".join(
+CELERY_RESULT_BACKEND = ''.join(
     [
         _RESULT_BACKEND_PROTOCOL,
-        _RESULT_BACKEND_HOST,
-        ":",
-        _RESULT_BACKEND_PORT,
-        "/",
-        _RESULT_BACKEND_DB,
+        _RESULT_BACKEND_HOST, ':', _RESULT_BACKEND_PORT,
+        '/', _RESULT_BACKEND_DB
     ]
 )
 
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 CELERYD_HIJACK_ROOT_LOGGER = False
-CELERYD_LOG_FORMAT = (
-    "[DJANGO] $(processName)s %(levelname)s %(asctime)s "
-    "%(module)s %(name)s.%(funcName)s:%(lineno)s: "
-    "%(message)s"
-)
+CELERYD_LOG_FORMAT = ('[DJANGO] $(processName)s %(levelname)s %(asctime)s '
+                      '%(module)s %(name)s.%(funcName)s:%(lineno)s: '
+                      '%(message)s')
 
-CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_QUEUES = (
     Queue(
-        "default",
-        Exchange("default"),
-        routing_key="default",
-        queue_arguments={"x-max-priority": 10},
+        'default',
+        Exchange('default'),
+        routing_key='default',
+        queue_arguments={
+            'x-max-priority': 10
+        }
     ),
     # Use to queue indexing tasks
     Queue(
-        "indexing",
-        Exchange("indexing"),
-        routing_key="indexing",
-        queue_arguments={"x-max-priority": 10},
+        'indexing',
+        Exchange('indexing'),
+        routing_key='indexing',
+        queue_arguments={
+            'x-max-priority': 10
+        }
     ),
     # Use to queue tasks which handle files
     Queue(
-        "files",
-        Exchange("files"),
-        routing_key="files",
-        queue_arguments={"x-max-priority": 10},
+        'files',
+        Exchange('files'),
+        routing_key='files',
+        queue_arguments={
+            'x-max-priority': 10
+        }
     ),
     # Use to queue tasks which mainly call external APIs
     Queue(
-        "api",
-        Exchange("api"),
-        routing_key="api",
-        queue_arguments={"x-max-priority": 10},
+        'api',
+        Exchange('api'),
+        routing_key='api',
+        queue_arguments={
+            'x-max-priority': 10
+        }
     ),
     # Use to queue tasks handling onboarding
     Queue(
-        "onboard",
-        Exchange("onboard"),
-        routing_key="onboard",
-        queue_arguments={"x-max-priority": 10},
+        'onboard',
+        Exchange('onboard'),
+        routing_key='onboard',
+        queue_arguments={
+            'x-max-priority': 10
+        }
     ),
 )
-CELERY_TASK_DEFAULT_QUEUE = "default"
-CELERY_TASK_DEFAULT_EXCHANGE = "default"
-CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
 SETTINGS: TACC EXECUTION SYSTEMS.
 """
 TACC_EXEC_SYSTEMS = {
-    "corral": {
-        "work_dir": "/work2/{}",
-        "scratch_dir": "/work2/{}",
-        "home_dir": "/home/{}",
+    'corral': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/work2/{}',
+        'home_dir': '/home/{}'
     },
-    "stampede2": {
-        "work_dir": "/work2/{}",
-        "scratch_dir": "/scratch/{}",
-        "home_dir": "/home1/{}",
+    'stampede2': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
     },
-    "stampede3": {
-        "work_dir": "/work2/{}",
-        "scratch_dir": "/scratch/{}",
-        "home_dir": "/home1/{}",
+    'stampede3': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
     },
-    "frontera": {
-        "work_dir": "/work2/{}",
-        "scratch_dir": "HOST_EVAL(SCRATCH)",
-        "home_dir": "/home1/{}",
+    'frontera': {
+        'work_dir': '/work2/{}',
+        'scratch_dir': 'HOST_EVAL(SCRATCH)',
+        'home_dir': '/home1/{}'
     },
-    "ls6": {
-        "work_dir": "/work/{}",
-        "scratch_dir": "/scratch/{}",
-        "home_dir": "/home1/{}",
+    'ls6': {
+        'work_dir': '/work/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
     },
-    "vista": {
-        "work_dir": "/work/{}",
-        "scratch_dir": "/scratch/{}",
-        "home_dir": "/home1/{}",
+    'vista': {
+        'work_dir': '/work/{}',
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home1/{}'
     },
 }
 
@@ -549,163 +557,142 @@ SETTINGS: DATA DEPOT
 """
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
-    settings_custom, "_PORTAL_DATAFILES_STORAGE_SYSTEMS", []
+    settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
-PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next(
-    (sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys.get("default")), None
-)
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys.get('default')), None)
 
 PORTAL_SEARCH_MANAGERS = {
-    "my-data": "portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager",
-    "shared": "portal.apps.search.api.managers.shared_search.SharedSearchManager",
-    "cms": "portal.apps.search.api.managers.cms_search.CMSSearchManager",
-    "my-projects": "portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager",
-    "public": "portal.apps.search.api.managers.public_search.PublicSearchManager",
+    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
+    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
+    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
+    'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
+    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager'
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
-FORMS = getattr(settings_forms, "_FORMS", {})
+FORMS = getattr(settings_forms, '_FORMS', {})
 
 """
 SETTINGS: EXTERNAL DATA RESOURCES
 """
 
-EXTERNAL_RESOURCE_SECRETS = getattr(settings_secret, "_EXTERNAL_RESOURCE_SECRETS", {})
+EXTERNAL_RESOURCE_SECRETS = getattr(settings_secret, '_EXTERNAL_RESOURCE_SECRETS', {})
 
 
 PORTAL_WORKSPACE_MANAGERS = {
-    "private": "portal.apps.workspace.managers.private.FileManager",
-    "shared": "portal.apps.workspace.managers.shared.FileManager",
+    'private': 'portal.apps.workspace.managers.private.FileManager',
+    'shared': 'portal.apps.workspace.managers.shared.FileManager',
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 
-TAPIS_DEFAULT_TRASH_NAME = getattr(
-    settings_custom, "_TAPIS_DEFAULT_TRASH_NAME", ".Trash"
-)
+TAPIS_DEFAULT_TRASH_NAME = getattr(settings_custom, '_TAPIS_DEFAULT_TRASH_NAME', '.Trash')
 
-PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom._PORTAL_PROJECTS_SYSTEM_PREFIX
+PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_SYSTEM_PREFIX
 
-PORTAL_PROJECTS_ID_PREFIX = settings_custom._PORTAL_PROJECTS_ID_PREFIX
+PORTAL_PROJECTS_ID_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_ID_PREFIX
 
-PORTAL_PROJECTS_ROOT_DIR = settings_custom._PORTAL_PROJECTS_ROOT_DIR
+PORTAL_PROJECTS_ROOT_DIR = settings_custom.\
+    _PORTAL_PROJECTS_ROOT_DIR
 
-PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_custom._PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_custom.\
+    _PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
-PORTAL_PROJECTS_ROOT_HOST = settings_custom._PORTAL_PROJECTS_ROOT_HOST
+PORTAL_PROJECTS_ROOT_HOST = settings_custom.\
+    _PORTAL_PROJECTS_ROOT_HOST
 
 PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = getattr(
-    settings_custom, "_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX", None
-)
+    settings_custom, '_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX', None)
 
 PORTAL_PROJECTS_REVIEW_ROOT_DIR = getattr(
-    settings_custom, "_PORTAL_PROJECTS_REVIEW_ROOT_DIR", None
-)
+    settings_custom, '_PORTAL_PROJECTS_REVIEW_ROOT_DIR', None)
 
 PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = getattr(
-    settings_custom, "_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME", None
-)
+    settings_custom, '_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME', None)
 
 PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = getattr(
-    settings_custom, "_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX", None
-)
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX', None)
 
 PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = getattr(
-    settings_custom, "_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR", None
-)
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR', None)
 
 PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = getattr(
-    settings_custom, "_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME", None
-)
+    settings_custom, '_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME', None)
 
 PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME", None
-)
+    settings_custom, '_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME', None)
 
-PROJECT_ADMIN_GROUP = getattr(settings_custom, "_PROJECT_ADMIN_GROUP", "Project Admin")
+PROJECT_ADMIN_GROUP = getattr(settings_custom, '_PROJECT_ADMIN_GROUP', 'Project Admin')
 
 PORTAL_PUBLICATION_DATACITE_SHOULDER = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_DATACITE_SHOULDER", None
-)
+    settings_custom, '_PORTAL_PUBLICATION_DATACITE_SHOULDER', None)
 
 PORTAL_PUBLICATION_DATACITE_URL_PREFIX = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_DATACITE_URL_PREFIX", None
-)
+    settings_custom, '_PORTAL_PUBLICATION_DATACITE_URL_PREFIX', None)
 
-DATACITE_URL = getattr(settings_custom, "_DATACITE_URL", None)
+DATACITE_URL = getattr(
+    settings_custom, '_DATACITE_URL', None)
 
-DATACITE_USER = getattr(settings_secret, "_DATACITE_USER", None)
+DATACITE_USER = getattr(
+    settings_secret, '_DATACITE_USER', None)
 
-DATACITE_PASS = getattr(settings_secret, "_DATACITE_PASS", None)
+DATACITE_PASS = getattr(
+    settings_secret, '_DATACITE_PASS', None)
 
-PORTAL_PROJECTS_PRIVATE_KEY = settings_secret._PORTAL_PROJECTS_PRIVATE_KEY
+PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
+    _PORTAL_PROJECTS_PRIVATE_KEY
 
-PORTAL_PROJECTS_PUBLIC_KEY = settings_secret._PORTAL_PROJECTS_PUBLIC_KEY
+PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
+    _PORTAL_PROJECTS_PUBLIC_KEY
 
-COMMUNITY_INDEX_SCHEDULE = settings_custom._COMMUNITY_INDEX_SCHEDULE
+COMMUNITY_INDEX_SCHEDULE = settings_custom.\
+    _COMMUNITY_INDEX_SCHEDULE
 
-PORTAL_PROJECTS_PEMS_APP_ID = settings_custom._PORTAL_PROJECTS_PEMS_APP_ID
+PORTAL_PROJECTS_PEMS_APP_ID = settings_custom.\
+    _PORTAL_PROJECTS_PEMS_APP_ID
 
-PORTAL_KEYS_MANAGER = settings_custom._PORTAL_KEYS_MANAGER
+PORTAL_KEYS_MANAGER = settings_custom.\
+    _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(
-    settings_custom, "_PORTAL_USER_ACCOUNT_SETUP_STEPS", []
-)
+PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(settings_custom, '_PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
-PORTAL_NAMESPACE = settings_custom._PORTAL_NAMESPACE
+PORTAL_NAMESPACE = settings_custom.\
+    _PORTAL_NAMESPACE
 
-PORTAL_PROJECTS_SYSTEM_PORT = getattr(
-    settings_custom, "_PORTAL_PROJECTS_SYSTEM_PORT", 22
-)
+PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_custom, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
 
 PORTAL_APPS_NAMES_SEARCH = settings_custom._PORTAL_APPS_NAMES_SEARCH
 
-PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, "_PORTAL_APPS_DEFAULT_TAB", "")
+PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
 PORTAL_PUBLICATION_PUBLISHER = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_PUBLISHER", PORTAL_NAMESPACE
-)
+    settings_custom, '_PORTAL_PUBLICATION_PUBLISHER', PORTAL_NAMESPACE)
 
 PORTAL_PUBLICATION_ARCHIVE_APP_ID = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_ID", None
-)
+    settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_ID', None)
 
 PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION", None
-)
+    settings_custom, '_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION', None)
 
 PORTAL_PUBLICATION_RANCH_SYSTEM_ID = getattr(
-    settings_custom, "_PORTAL_PUBLICATION_RANCH_SYSTEM_ID", None
+    settings_custom, '_PORTAL_PUBLICATION_RANCH_SYSTEM_ID', None)
+
+ALLOCATIONS_TO_EXCLUDE = (
+    getattr(settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"])
 )
 
-ALLOCATIONS_TO_EXCLUDE = getattr(
-    settings_custom, "_ALLOCATIONS_TO_EXCLUDE", ["DesignSafe-DCV", "DesignSafe-Corral"]
-)
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
-PORTAL_JOB_NOTIFICATION_STATES = [
-    "PENDING",
-    "STAGING_INPUTS",
-    "RUNNING",
-    "ARCHIVING",
-    "BLOCKED",
-    "PAUSED",
-    "FINISHED",
-    "CANCELLED",
-    "FAILED",
-]
+NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', '')
 
-NGROK_DOMAIN = os.environ.get("NGROK_DOMAIN", "")
+PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
-PORTAL_ALLOCATION = getattr(settings_custom, "_PORTAL_ALLOCATION", "")
-
-PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(
-    settings_custom, "_PORTAL_PROJECTS_USE_SET_FACL_JOB", True
-)
+PORTAL_PROJECTS_USE_SET_FACL_JOB = getattr(settings_custom, '_PORTAL_PROJECTS_USE_SET_FACL_JOB', True)
 
 # When True, project creation builds the metadata graph and file listings
-PORTAL_PROJECTS_ENABLE_METADATA = getattr(
-    settings_custom, "_PORTAL_PROJECTS_ENABLE_METADATA", False
-)
+PORTAL_PROJECTS_ENABLE_METADATA = getattr(settings_custom, '_PORTAL_PROJECTS_ENABLE_METADATA', False)
 
 # Vanity URL for the portal. Backwards compatibility with old _WH_BASE_URL setting.
 # Also include support for NGINX_SERVER_NAME environment variable if no settings are set.
@@ -733,43 +720,37 @@ ES_AUTH = settings_secret._ES_AUTH
 ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
 
 HAYSTACK_CONNECTIONS = {
-    "default": {
-        "ENGINE": "haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine",
-        "URL": ES_HOSTS,
-        "INDEX_NAME": ES_INDEX_PREFIX.format("cms"),
-        "KWARGS": {"http_auth": ES_AUTH},
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ES_HOSTS,
+        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+        'KWARGS': {'http_auth': ES_AUTH}
     }
 }
-HAYSTACK_ROUTERS = [
-    "aldryn_search.router.LanguageRouter",
-]
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
-ALDRYN_SEARCH_DEFAULT_LANGUAGE = "en"
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-SYSTEM_MONITOR_DISPLAY_LIST = getattr(
-    settings_custom, "_SYSTEM_MONITOR_DISPLAY_LIST", []
-)
+SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
-SYSTEM_MONITOR_URL = getattr(
-    settings_custom, "_SYSTEM_MONITOR_URL", "https://tap.tacc.utexas.edu/status/"
-)
+SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://tap.tacc.utexas.edu/status/')
 
-DOCS_CHATBOT_URL = getattr(settings_custom, "_DOCS_CHATBOT_URL", None)
+DOCS_CHATBOT_URL = getattr(settings_custom, '_DOCS_CHATBOT_URL', None)
 
 """
 SETTINGS: EXPORTS
 """
 
 SETTINGS_EXPORT = [
-    "PORTAL_ICON_FILENAME",
-    "PORTAL_CSS_FILENAMES",
-    "DEBUG",
-    "GOOGLE_ANALYTICS_PROPERTY_ID",
-    "PORTAL_NAMESPACE",
-    "WORKBENCH_SETTINGS",
-    "DOCS_CHATBOT_URL",
-    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
+    'PORTAL_ICON_FILENAME',
+    'PORTAL_CSS_FILENAMES',
+    'DEBUG',
+    'GOOGLE_ANALYTICS_PROPERTY_ID',
+    'PORTAL_NAMESPACE',
+    'WORKBENCH_SETTINGS',
+    'DOCS_CHATBOT_URL',
+    'PORTAL_USER_ACCOUNT_SETUP_STEPS',
 ]
 
 """
@@ -777,130 +758,72 @@ SETTINGS: SUPPORTED FILE PREVIEW TYPES
 """
 
 SUPPORTED_MS_WORD = [
-    ".doc",
-    ".dot",
-    ".docx",
-    ".docm",
-    ".dotx",
-    ".dotm",
-    ".docb",
+    '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
 ]
 SUPPORTED_MS_EXCEL = [
-    ".xls",
-    ".xlt",
-    ".xlm",
-    ".xlsx",
-    ".xlsm",
-    ".xltx",
-    ".xltm",
+    '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
 ]
 SUPPORTED_MS_POWERPOINT = [
-    ".ppt",
-    ".pot",
-    ".pps",
-    ".pptx",
-    ".pptm",
-    ".potx",
-    ".ppsx",
-    ".ppsm",
-    ".sldx",
-    ".sldm",
+    '.ppt', '.pot', '.pps', '.pptx', '.pptm',
+    '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
 ]
 
-SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
+SUPPORTED_MS_OFFICE = (
+    SUPPORTED_MS_WORD +
+    SUPPORTED_MS_POWERPOINT +
+    SUPPORTED_MS_EXCEL
+)
 
 SUPPORTED_IMAGE_PREVIEW_EXTS = [
-    ".png",
-    ".gif",
-    ".jpg",
-    ".jpeg",
+    '.png', '.gif', '.jpg', '.jpeg',
 ]
 
 SUPPORTED_TEXT_PREVIEW_EXTS = [
-    ".as",
-    ".as3",
-    ".asm",
-    ".bat",
-    ".c",
-    ".cc",
-    ".cmake",
-    ".cpp",
-    ".cs",
-    ".css",
-    ".csv",
-    ".cxx",
-    ".diff",
-    ".groovy",
-    ".h",
-    ".haml",
-    ".hh",
-    ".java",
-    ".js",
-    ".less",
-    ".m",
-    ".make",
-    ".md",
-    ".ml",
-    ".mm",
-    ".msg",
-    ".php",
-    ".pl",
-    ".properties",
-    ".py",
-    ".rb",
-    ".sass",
-    ".scala",
-    ".script",
-    ".sh",
-    ".sml",
-    ".sql",
-    ".txt",
-    ".vi",
-    ".vim",
-    ".xml",
-    ".xsd",
-    ".xsl",
-    ".yaml",
-    ".yml",
-    ".tcl",
-    ".json",
-    ".out",
-    ".err",
-    ".f",
+    '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
+    '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
+    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
+    '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
+    '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
+    '.out', '.err', '.f',
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [
-    ".pdf",
+    '.pdf',
 ]
 
-SUPPORTED_IPYNB_PREVIEW_EXTS = [".ipynb"]
+SUPPORTED_IPYNB_PREVIEW_EXTS = [
+    '.ipynb'
+]
 
-SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [".htm", ".html"]
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
+    '.htm', '.html'
+]
 
-SUPPORTED_BRAINMAP_PREVIEW_EXTS = [".nii", ".nii.gz"]
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
+    '.nii', '.nii.gz'
+]
 
-SUPPORTED_PREVIEW_EXTENSIONS = (
-    SUPPORTED_IMAGE_PREVIEW_EXTS
-    + SUPPORTED_TEXT_PREVIEW_EXTS
-    + SUPPORTED_OBJECT_PREVIEW_EXTS
-    + SUPPORTED_MS_OFFICE
-    + SUPPORTED_IPYNB_PREVIEW_EXTS
-    + SUPPORTED_BRAINMAP_PREVIEW_EXTS
-)
+SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                SUPPORTED_TEXT_PREVIEW_EXTS +
+                                SUPPORTED_OBJECT_PREVIEW_EXTS +
+                                SUPPORTED_MS_OFFICE +
+                                SUPPORTED_IPYNB_PREVIEW_EXTS +
+                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
 
 
 # Channels
-ASGI_APPLICATION = "portal.asgi.application"
+ASGI_APPLICATION = 'portal.asgi.application'
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
             "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
         },
     },
-    "short-lived": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
+    'short-lived': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
             "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
         },
     },
@@ -909,42 +832,42 @@ CHANNEL_LAYERS = {
 """
 SETTINGS: WORKBENCH SETTINGS
 """
-WORKBENCH_SETTINGS = getattr(settings_custom, "_WORKBENCH_SETTINGS", {})
-WORKBENCH_SETTINGS.update({"trashPath": TAPIS_DEFAULT_TRASH_NAME})
-WORKBENCH_SETTINGS.setdefault("showUserNews", False)
+WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
+WORKBENCH_SETTINGS.update({'trashPath': TAPIS_DEFAULT_TRASH_NAME})
+WORKBENCH_SETTINGS.setdefault('showUserNews', False)
 
 """
 SETTINGS: RECAPTCHA
 """
-RECAPTCHA_SECRET_KEY = getattr(settings_secret, "_RECAPTCHA_SECRET_KEY", None)
-RECAPTCHA_SITE_KEY = getattr(settings_secret, "_RECAPTCHA_SITE_KEY", None)
+RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
+RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
-PORTAL_ELEVATED_ROLES = getattr(settings_custom, "_PORTAL_ELEVATED_ROLES", {})
+PORTAL_ELEVATED_ROLES = getattr(settings_custom, '_PORTAL_ELEVATED_ROLES', {})
 
 """
 SETTINGS: EMAIL
 """
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = getattr(settings_custom, "_SMTP_HOST", "localhost")
-EMAIL_PORT = getattr(settings_custom, "_SMTP_PORT", 25)
-EMAIL_HOST_USER = getattr(settings_custom, "_SMTP_USER", "")
-EMAIL_HOST_PASSWORD = getattr(settings_custom, "_SMTP_PASSWORD", "")
-DEFAULT_FROM_EMAIL = getattr(settings_custom, "_DEFAULT_FROM_EMAIL", "")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getattr(settings_custom, '_SMTP_HOST', 'localhost')
+EMAIL_PORT = getattr(settings_custom, '_SMTP_PORT', 25)
+EMAIL_HOST_USER = getattr(settings_custom, '_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = getattr(settings_custom, '_SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = getattr(settings_custom, '_DEFAULT_FROM_EMAIL', '')
 
 """
 SETTINGS: INTERNAL DOCS
 """
-INTERNAL_DOCS_ROOT = getattr(settings_custom, "_INTERNAL_DOCS_ROOT", "")
-INTERNAL_DOCS_URL = getattr(settings_custom, "_INTERNAL_DOCS_URL", "")
+INTERNAL_DOCS_ROOT = getattr(settings_custom, '_INTERNAL_DOCS_ROOT', '')
+INTERNAL_DOCS_URL = getattr(settings_custom, '_INTERNAL_DOCS_URL', '')
 
 
 """
 SETTINGS: LOCAL OVERRIDES
 """
-if os.path.isfile(os.path.join(BASE_DIR, "settings", "settings_local.py")):
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *  # noqa: F403, F401
 
 """
 SETTINGS: PUBLICATIONS
 """
-PUBLICATION_REVIEWERS = getattr(settings_secret, "_PUBLICATION_REVIEWERS", [])
+PUBLICATION_REVIEWERS = getattr(settings_secret, '_PUBLICATION_REVIEWERS', [])

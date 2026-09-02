@@ -6,55 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("workspace", "0003_apptraycategory_apptrayentry"),
+        ('workspace', '0003_apptraycategory_apptrayentry'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name="apptrayentry",
-            name="htmlId",
+            model_name='apptrayentry',
+            name='htmlId',
         ),
         migrations.RemoveField(
-            model_name="apptrayentry",
-            name="lastRetrieved",
+            model_name='apptrayentry',
+            name='lastRetrieved',
         ),
         migrations.RemoveField(
-            model_name="apptrayentry",
-            name="name",
+            model_name='apptrayentry',
+            name='name',
         ),
         migrations.RemoveField(
-            model_name="apptrayentry",
-            name="revision",
+            model_name='apptrayentry',
+            name='revision',
         ),
         migrations.RemoveField(
-            model_name="apptrayentry",
-            name="shortDescription",
+            model_name='apptrayentry',
+            name='shortDescription',
         ),
         migrations.AlterField(
-            model_name="apptrayentry",
-            name="appId",
-            field=models.CharField(
-                help_text="The id of this app. The app id + version denotes a unique app",
-                max_length=64,
-            ),
+            model_name='apptrayentry',
+            name='appId',
+            field=models.CharField(help_text='The id of this app. The app id + version denotes a unique app', max_length=64),
         ),
         migrations.AlterField(
-            model_name="apptrayentry",
-            name="appType",
-            field=models.CharField(
-                choices=[("tapis", "Tapis"), ("html", "HTML")],
-                default="tapis",
-                help_text="Application type",
-                max_length=10,
-            ),
+            model_name='apptrayentry',
+            name='appType',
+            field=models.CharField(choices=[('tapis', 'Tapis'), ('html', 'HTML')], default='tapis', help_text='Application type', max_length=10),
         ),
         migrations.AlterField(
-            model_name="apptrayentry",
-            name="label",
-            field=models.CharField(
-                blank=True,
-                help_text="The display name of this app in the App Tray",
-                max_length=64,
-            ),
+            model_name='apptrayentry',
+            name='label',
+            field=models.CharField(blank=True, help_text='The display name of this app in the App Tray', max_length=64),
         ),
     ]

@@ -114,12 +114,8 @@ def create_shared_workspace(
     workspace_num,
 ):
     # Create project
-    project = mock_create_shared_workspace(
-        client, title, description, keywords, mock_owner
-    )
-    mock_create_shared_workspace.assert_called_with(
-        client, title, description, keywords, mock_owner
-    )
+    project = mock_create_shared_workspace(client, title, description, keywords, mock_owner)
+    mock_create_shared_workspace.assert_called_with(client, title, description, keywords, mock_owner)
     assert project == f"test.project.test.project-{workspace_num}"
     client.systems.getSystem.return_value = TapisResult(
         id=f"test.project.test.project-{workspace_num}",
@@ -583,9 +579,7 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
             new_username = "new_user"
             mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
             mock_get_project.assert_called_once_with(
-                client,
-                workspace_id,
-                f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}",
+                client, workspace_id, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
             )
             mock_service_account.assert_called()
 
@@ -1147,22 +1141,14 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         new_keywords = "Updated Keywords"
         client.systems.updateSystem.return_value = TapisResult(
             id="test.project.test.project-2",
-            notes={
-                "title": new_title,
-                "description": new_description,
-                "keywords": new_keywords,
-            },
+            notes={"title": new_title, "description": new_description, "keywords": new_keywords},
             effectiveUserId="wma_prtl",
             port=22,
             authnCredential={"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY},
         )
         client.systems.updateSystem(
             systemId="test.project.test.project-2",
-            notes={
-                "title": new_title,
-                "description": new_description,
-                "keywords": new_keywords,
-            },
+            notes={"title": new_title, "description": new_description, "keywords": new_keywords},
         )
 
         # Validate updateSystem call arguments

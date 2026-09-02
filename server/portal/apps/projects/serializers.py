@@ -3,7 +3,6 @@
 .. module:: portal.apps.projects.serializers
    :synopsis: Serializer classes for project objects.
 """
-
 import logging
 import datetime
 import json
@@ -14,7 +13,7 @@ from portal.libs.agave.utils import to_camel_case
 LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=redefined-builtin, invalid-name
-all = ["MetadataJSONSerializer"]
+all = ['MetadataJSONSerializer']
 
 
 def _seralize_user(user):
@@ -23,10 +22,10 @@ def _seralize_user(user):
     :param user: User model instance.
     """
     return {
-        "last_name": user.last_name,
-        "first_name": user.first_name,
-        "email": user.email,
-        "username": user.username,
+        'last_name': user.last_name,
+        'first_name': user.first_name,
+        'email': user.email,
+        'username': user.username
     }
 
 
@@ -45,7 +44,8 @@ class MetadataJSONSerializer(json.JSONEncoder):
                 if isinstance(val, datetime.datetime):
                     ret[attname] = val.isoformat()
                 elif (
-                    field.remote_field and field.remote_field.model is get_user_model()
+                        field.remote_field and
+                        field.remote_field.model is get_user_model()
                 ):
                     # is a foreignkey field to UserModel.
                     attname = to_camel_case(field.name)
@@ -64,7 +64,10 @@ class MetadataJSONSerializer(json.JSONEncoder):
                 attname = to_camel_case(field.name)
                 related = getattr(obj, field.name)
                 if field.remote_field.model is get_user_model():
-                    ret[attname] = [_seralize_user(user) for user in related.iterator()]
+                    ret[attname] = [
+                        _seralize_user(user) for user in
+                        related.iterator()
+                    ]
                 else:
                     ret[attname] = field.value_to_string(obj)
             return ret
