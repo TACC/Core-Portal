@@ -1,0 +1,25 @@
+/* To add enough specificity to overwrite styles from anonymous-layers */
+.has-cms-ui {
+  /* BOOTSTRAP */
+
+  /* FAQ: Dropped in Bootstrap 5 */
+  /* https://getbootstrap.com/docs/5.3/migration/#forms-1 */
+  .input-group-prepend {
+      margin-right: -1px;
+  }
+
+  /* C-BUTTON--NEW.CSS */
+
+  [class*='_c-button'] {
+    font-size: inherit;
+  }
+
+  /* SEARCHBAR.MODULE.SCSS */
+
+  /* Hacks */
+
+  [class*='_container'],
+  [class*='_input'] {
+    font-size: inherit;
+  }
+}
