@@ -256,11 +256,19 @@ You may auto-fix your linting errors to conform with configured standards, for s
 - `npm run lint:css -- --fix`
 - `npm run prettier:fix`
 
-Server-side Python code is formatted with Black (configured via `.pre-commit-config.yaml`) and linted via Flake8. Both are enforced on commits to the repo. To see server side linting errors, run `flake8` from the command line.
+Server-side Python code is formatted and linted via Ruff (configured via `.pre-commit-config.yaml` and `pyproject.toml`), and is enforced on commits to the repo. To check for server-side linting and formatting errors, run `ruff check` and `ruff format --check` from the command line.
 To do so, run the following in the `core_portal_django` container:
 
+```bash
+ruff check .
+ruff format --check .
 ```
-flake8
+
+To automatically fix linting errors and format code:
+
+```bash
+ruff check --fix .
+ruff format .
 ```
 
 ### Testing

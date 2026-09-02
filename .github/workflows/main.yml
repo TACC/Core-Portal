@@ -21,7 +21,7 @@ jobs:
           pipx install poetry
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
           cache: "poetry"
@@ -57,7 +57,7 @@ jobs:
           pipx install poetry
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
           cache: "poetry"
@@ -67,15 +67,15 @@ jobs:
           cd server
           poetry install --with dev
 
-      - name: Server-Side Linting
+      - name: Run Ruff check
         run: |
           cd server
-          poetry run flake8
+          poetry run ruff check --output-format=github .
 
-      - name: Run Black Check
+      - name: Run Ruff format check
         run: |
           cd server
-          poetry run black --check --diff .
+          poetry run ruff format --check .
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-24.04
