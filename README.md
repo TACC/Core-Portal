@@ -10,7 +10,7 @@ The base Portal code for TACC WMA Workspace Portals
 
 # Local Development Setup
 
-## Prerequisites for running the portal application
+## Prerequisites for running the portal application:
 
 * Docker > 28
 * Python 3.12.x

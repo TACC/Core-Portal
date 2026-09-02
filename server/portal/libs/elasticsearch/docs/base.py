@@ -24,12 +24,12 @@ class IndexedProject(Document):
     name = Text()
     host = Text()
     owner = Object(
-            properties={
-                'username': Keyword(),
-                'firstName': Text(),
-                'lastName': Text(),
-                'email': Text()
-            }
+        properties={
+            'username': Keyword(),
+            'firstName': Text(),
+            'lastName': Text(),
+            'email': Text()
+        }
     )
     updated = Date()
 
@@ -185,3 +185,13 @@ class IndexedAllocation(Document):
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('allocations')
+
+
+class IndexedPublication(Document):
+    """Elasticsearch model for published works"""
+
+    # pylint: disable=too-few-public-methods
+    class Index:
+        """Index meta settings"""
+
+        name = settings.ES_INDEX_PREFIX.format('publications')

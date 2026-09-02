@@ -113,3 +113,6 @@ _EXTERNAL_RESOURCE_SECRETS = {
         "directory": "external-resources"
     }
 }
+
+_DATACITE_USER = "tdl.tacc"
+_DATACITE_PASS = "CHANGEME"

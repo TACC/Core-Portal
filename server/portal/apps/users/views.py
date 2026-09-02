@@ -30,6 +30,8 @@ class AuthenticatedView(BaseApiView):
         if request.user.is_authenticated:
             u = request.user
 
+            groups = [group.name for group in u.groups.all()]
+
             out = {
                 "first_name": u.first_name,
                 "username": u.username,
@@ -39,6 +41,7 @@ class AuthenticatedView(BaseApiView):
                     "expires_in": u.tapis_oauth.expires_in,
                 },
                 "isStaff": u.is_staff,
+                "groups": groups
             }
 
             return JsonResponse(out)

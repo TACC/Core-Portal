@@ -28,6 +28,10 @@
   height: 100%;
 }
 
+.error-condensed {
+  height: 20%;
+}
+
 .button {
   background-color: var(--global-color-accent--normal);
   border-color: var(--global-color-accent--normal);
@@ -36,10 +40,16 @@
   align-items: center;
   justify-content: flex-end;
   white-space: nowrap;
+  margin-top: 1rem;
 
   i {
     display: flex;
     padding-right: 5px;
     font-size: 1.3em;
   }
+}
+
+.modal-body {
+  max-height: 80vh;
+  overflow: auto;
 }
