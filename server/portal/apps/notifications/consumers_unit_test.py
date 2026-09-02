@@ -1,7 +1,6 @@
 import pytest
-from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
-
+from channels.layers import get_channel_layer
 from .consumers import NotificationsConsumer
 
 
