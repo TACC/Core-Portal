@@ -1,13 +1,11 @@
 import logging
-from typing import NotRequired, TypedDict
-
 from django.conf import settings
-from tapipy.errors import BaseTapyException, InternalServerError
+from typing import TypedDict, NotRequired, Optional
+from tapipy.errors import InternalServerError, BaseTapyException
 from tapipy.tapis import TapisResult
-
-from portal.apps.auth.models import TapisOAuthToken
 from portal.apps.notifications.models import Notification
 from portal.apps.users.utils import get_user_data
+from portal.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +19,7 @@ class PortalDataFilesSystem(TypedDict):
     api: str
     homeDir: str
     hostEval: NotRequired[str]
-    icon: NotRequired[str | None]
+    icon: NotRequired[Optional[str]]
     siteSearchPriority: NotRequired[int]
     resourceProvider: NotRequired[str]
     readOnly: NotRequired[bool]
@@ -41,7 +39,9 @@ def notify(username, operation, status, extra):
     Notification.objects.create(**event_data)
 
 
-def evaluate_datafiles_storage_system(tapis: TapisOAuthToken, system: PortalDataFilesSystem, default_host_eval: str = None) -> PortalDataFilesSystem:
+def evaluate_datafiles_storage_system(
+    tapis: TapisOAuthToken, system: PortalDataFilesSystem, default_host_eval: str = None
+) -> PortalDataFilesSystem:
     """Evaluate storage system homeDir or hostEval for user
 
     Args:
@@ -56,7 +56,9 @@ def evaluate_datafiles_storage_system(tapis: TapisOAuthToken, system: PortalData
     if "homeDir" in system:
         home_dir_vars = {"username": tapis.user.username}
         if "{tasdir}" in system["homeDir"]:
-            home_dir_vars["tasdir"] = get_user_data(tapis.user.username)["homeDirectory"]
+            home_dir_vars["tasdir"] = get_user_data(tapis.user.username)[
+                "homeDirectory"
+            ]
 
         evaluated_system = {
             **system,
@@ -87,15 +89,21 @@ def evaluate_datafiles_storage_system(tapis: TapisOAuthToken, system: PortalData
         elif system["scheme"] == "projects":
             # For projects systems, determine resource provider based on projects host evaluation
             projects_host = settings.PORTAL_PROJECTS_ROOT_HOST
-            evaluated_system["resourceProvider"] = _get_resource_provider_from_host(projects_host)
+            evaluated_system["resourceProvider"] = _get_resource_provider_from_host(
+                projects_host
+            )
         else:
             system_def = tapis.client.systems.getSystem(systemId=system["system"])
-            evaluated_system["resourceProvider"] = _get_resource_provider_from_system(system_def)
+            evaluated_system["resourceProvider"] = _get_resource_provider_from_system(
+                system_def
+            )
 
     return evaluated_system
 
 
-def evaluate_datafiles_storage_systems(tapis: TapisOAuthToken, systems: list, default_host_eval: str = None) -> list:
+def evaluate_datafiles_storage_systems(
+    tapis: TapisOAuthToken, systems: list, default_host_eval: str = None
+) -> list:
     """Evaluate storage systems homeDir or hostEval for user
 
     Args:
@@ -110,7 +118,9 @@ def evaluate_datafiles_storage_systems(tapis: TapisOAuthToken, systems: list, de
     evaluated_systems = []
     for system in systems:
         try:
-            evaluated_systems.append(evaluate_datafiles_storage_system(tapis, system, default_host_eval))
+            evaluated_systems.append(
+                evaluate_datafiles_storage_system(tapis, system, default_host_eval)
+            )
         except (BaseTapyException, KeyError, AttributeError):
             logger.exception(
                 "Error evaluating storage system %s for user %s",
@@ -129,7 +139,9 @@ def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
         list: List of evaluated storage system definitions
     """
     logger.info("Getting user storage systems for user: %s", tapis.user.username)
-    systems = tapis.client.systems.getSystems(listType="ALL", limit="-1", select="id,notes,host", orderBy="id")
+    systems = tapis.client.systems.getSystems(
+        listType="ALL", limit="-1", select="id,notes,host", orderBy="id"
+    )
 
     available_systems = [
         {
@@ -144,7 +156,9 @@ def get_user_storage_systems(tapis: TapisOAuthToken) -> list:
         for system in systems
     ]
 
-    return evaluate_datafiles_storage_systems(tapis, available_systems, default_host_eval="HOME")
+    return evaluate_datafiles_storage_systems(
+        tapis, available_systems, default_host_eval="HOME"
+    )
 
 
 def _get_resource_provider_from_system(system: TapisResult) -> str:

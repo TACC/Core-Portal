@@ -3,34 +3,36 @@
 .. :module:: portal.apps.projects.managers.base
    :synopsis: Manager for projects
 """
-
 import logging
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
-
-from portal.apps.projects.models import Project, ProjectId
-from portal.apps.projects.models.utils import get_latest_project_directory, get_latest_project_storage
-from portal.apps.projects.serializers import MetadataJSONSerializer
 from portal.libs.agave.utils import service_account
-
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.elasticsearch.docs.base import IndexedProject
+from portal.apps.projects.models import Project, ProjectId
+from portal.apps.projects.serializers import MetadataJSONSerializer
+from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
+from django.core.exceptions import ObjectDoesNotExist
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("{}.{}".format("metrics", __name__))
+METRICS = logging.getLogger('{}.{}'.format('metrics', __name__))
 # pylint: enable=invalid-name
 
 
-class ProjectsManager:
+class ProjectsManager(object):
     """Projects Manager."""
 
     meta_serializer_cls = MetadataJSONSerializer
 
-    def __init__(self, user, *args, **kwagrs):  # pylint: disable=unused-argument
+    def __init__(
+            self,
+            user,
+            *args,
+            **kwagrs
+    ):  # pylint: disable=unused-argument
         """Projects Manager init.
 
         :param user: Django user instance.
@@ -43,22 +45,23 @@ class ProjectsManager:
         :param str username: Username.
         :param str project_id: Project Id.
         """
-        logger.info("Adding ACLs for %s in project %s", username, project_id)
+        logger.info('Adding ACLs for %s in project %s', username, project_id)
         client = service_account()
-        job = client.jobs.submit(
-            body={
-                "name": f"{username}-{project_id}-acls",
-                "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
-                "archive": False,
-                "parameters": {
-                    "projectId": project_id,
-                    "username": username,
-                    "action": "add",
-                    "root_dir": project_root,
-                },
+        job = client.jobs.submit(body={
+            "name": "{username}-{project_id}-acls".format(
+                username=username,
+                project_id=project_id
+            ),
+            "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
+            "archive": False,
+            "parameters": {
+                "projectId": project_id,
+                "username": username,
+                "action": "add",
+                "root_dir": project_root,
             }
-        )
-        logger.info("Add ACLs job id: %s", job.id)
+        })
+        logger.info('Add ACLs job id: %s', job.id)
 
     def _remove_acls(self, username, project_id, project_root):
         """Run an agave job to set ACLs.
@@ -66,22 +69,23 @@ class ProjectsManager:
         :param str username: Username.
         :param str project_id: Project Id.
         """
-        logger.info("Removing ACLs for %s in project %s", username, project_id)
+        logger.info('Removing ACLs for %s in project %s', username, project_id)
         client = service_account()
-        job = client.jobs.submit(
-            body={
-                "name": f"{username}-{project_id}-acls",
-                "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
-                "archive": False,
-                "parameters": {
-                    "projectId": project_id,
-                    "username": username,
-                    "action": "remove",
-                    "root_dir": project_root,
-                },
+        job = client.jobs.submit(body={
+            "name": "{username}-{project_id}-acls".format(
+                username=username,
+                project_id=project_id
+            ),
+            "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
+            "archive": False,
+            "parameters": {
+                "projectId": project_id,
+                "username": username,
+                "action": "remove",
+                "root_dir": project_root,
             }
-        )
-        logger.info("Remove ACLs job id: %s", job.id)
+        })
+        logger.info('Remove ACLs job id: %s', job.id)
 
     # TOODv3: deprecate with projects
     # def get_by_system_id(self, system_id):
@@ -105,7 +109,10 @@ class ProjectsManager:
 
         :param str project_id: Project Id.
         """
-        prj = Project(self.user.tapis_oauth.client, project_id)
+        prj = Project(
+            self.user.tapis_oauth.client,
+            project_id
+        )
         if not prj.storage.uuid:
             raise Exception("No project.")
         return prj
@@ -152,54 +159,81 @@ class ProjectsManager:
             ProjectId.objects.create(value=max_value_found)
             prjId = ProjectId.next_id()
 
-        project_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{prjId}"
+        project_id = '{prefix}-{prjId}'.format(
+            prefix=settings.PORTAL_PROJECTS_ID_PREFIX,
+            prjId=prjId
+        )
 
         try:
-            prj = Project.create(self.user.tapis_oauth.client, title, project_id, self.user)
+            prj = Project.create(
+                self.user.tapis_oauth.client,
+                title,
+                project_id,
+                self.user
+            )
         except ValueError:
             # Tapis StorageSystem or ProjectMetadata with this ProjectID already exists,
             # try to update to latest project value and recreate
-            logger.info(f"Project with id: {project_id} already exists")
+            logger.info('Project with id: {} already exists'.format(project_id))
 
             latest_storage_system_id = get_latest_project_storage()
             latest_project_id = get_latest_project_directory()
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
 
-            logger.info(f"Updating ProjectId to latest project dir or storage system id: {max_value_found}")
+            logger.info('Updating ProjectId to latest project dir or storage system id: {}'.format(max_value_found))
 
             ProjectId.update(max_value_found)
-            project_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{ProjectId.next_id()}"
-            prj = Project.create(self.user.tapis_oauth.client, title, project_id, self.user)
+            project_id = '{prefix}-{prj_id}'.format(
+                prefix=settings.PORTAL_PROJECTS_ID_PREFIX,
+                prj_id=ProjectId.next_id()
+            )
+            prj = Project.create(
+                self.user.tapis_oauth.client,
+                title,
+                project_id,
+                self.user
+            )
 
-        prj.storage.update_role(self.user.username, "ADMIN")
-        METRICS.info(f"user:{self.user.username} created project: id={project_id}, title:{title}")
+        prj.storage.update_role(
+            self.user.username,
+            'ADMIN'
+        )
+        METRICS.info('user:{} created project: id={}, title:{}'.format(self.user.username, project_id, title))
 
         return prj
 
     def list(self, offset=0, limit=100):
         """List projects."""
-        return [prj.storage for prj in Project.listing(self.user.tapis_oauth.client, offset=offset, limit=limit)]
+        return [prj.storage for prj in Project.listing(
+            self.user.tapis_oauth.client,
+            offset=offset,
+            limit=limit
+        )]
 
     def search(self, query_string, offset=0, limit=100):
         """Search projects by query string"""
         search_result = IndexedProject.search()
-        search_result = search_result.query("query_string", query=query_string, minimum_should_match="80%")
+        search_result = search_result.query("query_string",
+                                            query=query_string,
+                                            minimum_should_match="80%")
 
         search_result = search_result.execute()
         result_ids = list(map(lambda hit: hit.projectId, search_result))
 
         project_list = self.list()
-        filtered_list = filter(lambda prj: prj.name in result_ids, project_list)
+        filtered_list = filter(lambda prj: prj.name in result_ids,
+                               project_list)
 
         return list(filtered_list)
 
     def apply_permissions(self, project, username, acl):
-        """Index project and update acls"""
+        """Index project and update acls
+        """
         project_id = project.project_id
         project_root = project.storage.storage.root_dir
-        if acl == "add":
+        if acl == 'add':
             self._add_acls(username, project_id, project_root)
-        elif acl == "remove":
+        elif acl == 'remove':
             self._remove_acls(username, project_id, project_root)
 
     def transfer_ownership(self, project_id, old_owner, new_owner):
@@ -208,7 +242,10 @@ class ProjectsManager:
         """
         old_pi = get_user_model().objects.get(username=old_owner)
         new_pi = get_user_model().objects.get(username=new_owner)
-        prj = Project(service_account(), project_id)
+        prj = Project(
+            service_account(),
+            project_id
+        )
         prj.transfer_pi(old_pi, new_pi)
         return prj
 
@@ -224,15 +261,15 @@ class ProjectsManager:
         """
         user = get_user_model().objects.get(username=username)
         prj = self.get_project(project_id)
-        if member_type == "team_member":
+        if member_type == 'team_member':
             prj.add_member(user)
-        elif member_type == "co_pi":
+        elif member_type == 'co_pi':
             prj.add_co_pi(user)
-        elif member_type == "pi":
+        elif member_type == 'pi':
             prj.add_pi(user)
         else:
-            raise Exception("Invalid member type.")
-        self.apply_permissions(prj, username, "add")
+            raise Exception('Invalid member type.')
+        self.apply_permissions(prj, username, 'add')
         return prj
 
     def remove_member(self, project_id, member_type, username):
@@ -244,15 +281,15 @@ class ProjectsManager:
         """
         user = get_user_model().objects.get(username=username)
         prj = self.get_project(project_id)
-        if member_type == "team_member":
+        if member_type == 'team_member':
             prj.remove_member(user)
-        elif member_type == "co_pi":
+        elif member_type == 'co_pi':
             prj.remove_co_pi(user)
-        elif member_type == "pi":
+        elif member_type == 'pi':
             prj.remove_pi(user)
         else:
-            raise Exception("Invalid member type.")
-        self.apply_permissions(prj, username, "remove")
+            raise Exception('Invalid member type.')
+        self.apply_permissions(prj, username, 'remove')
         return prj
 
     def change_system_role(self, project_id, username, new_role):
@@ -274,7 +311,7 @@ class ProjectsManager:
         :param dict data: Data to update.
         """
         meta = project.metadata
-        logger.debug("data: %s", data)
+        logger.debug('data: %s', data)
         for field in data:
             try:
                 # We have to check if the attribute is in the class
@@ -299,7 +336,7 @@ class ProjectsManager:
         :param project: project instance.
         :param dict data: Data to update.
         """
-        title = data.get("title")
+        title = data.get('title')
 
         if title is not None:
             project.storage.description = title
@@ -316,8 +353,8 @@ class ProjectsManager:
         :param str project_id: Project Id.
         :param dict data: Dictionary where keys are project's field names.
         """
-        data.pop("id", None)
-        data.pop("project_id", None)
+        data.pop('id', None)
+        data.pop('project_id', None)
         # When accessing a project's metadata it's a good practice to
         # instantiate a Project class instead of using ProjectMetadata
         # directly. This way we use Agave's permission model indirectly.

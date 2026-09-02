@@ -1,21 +1,19 @@
-import logging
-import random
-import string
-from importlib import import_module
-from inspect import isclass
-
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
-
 from portal.apps.webhooks.callback import WebhookCallback
 from portal.apps.webhooks.models import ExternalCall
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+import random
+import string
+from inspect import isclass
+from importlib import import_module
+import logging
 
 logger = logging.getLogger(__name__)
 
 
 def get_webhook_id():
     chars = string.ascii_letters + string.digits
-    return "".join(random.choice(chars) for i in range(16))
+    return ''.join(random.choice(chars) for i in range(16))
 
 
 def register_webhook(callback=None, callback_data=None, user=None):
@@ -23,8 +21,13 @@ def register_webhook(callback=None, callback_data=None, user=None):
 
     Create an instance of ExternalCall and return the associated callback URL
     """
-    external_call = ExternalCall.objects.create(callback=callback, callback_data=callback_data, user=user, webhook_id=get_webhook_id())
-    return f"{settings.VANITY_BASE_URL}/webhooks/callbacks/{external_call.webhook_id}/"
+    external_call = ExternalCall.objects.create(
+        callback=callback,
+        callback_data=callback_data,
+        user=user,
+        webhook_id=get_webhook_id()
+    )
+    return "{}/webhooks/callbacks/{}/".format(settings.VANITY_BASE_URL, external_call.webhook_id)
 
 
 def validate_webhook(webhook_id):
@@ -41,15 +44,25 @@ def validate_webhook(webhook_id):
 
 
 def load_callback(callback_name):
-    """load_callback"""
-    module_str, callable_str = callback_name.rsplit(".", 1)
+    """load_callback
+
+    """
+    module_str, callable_str = callback_name.rsplit('.', 1)
     module = import_module(module_str)
     call = getattr(module, callable_str)
     if not isclass(call):
-        raise ValueError(f"{callback_name} is not a class")
+        raise ValueError(
+            "{callback_name} is not a class".format(
+                callback_name=callback_name
+            )
+        )
     callback_instance = call()
     if not isinstance(callback_instance, WebhookCallback):
-        raise ValueError(f"{callback_name} is not a subclass of WebhookCallback")
+        raise ValueError(
+            "{callback_name} is not a subclass of WebhookCallback".format(
+                callback_name=callback_name
+            )
+        )
     return callback_instance
 
 

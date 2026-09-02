@@ -4,19 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("datafiles", "0001_initial"),
+        ('datafiles', '0001_initial'),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name="link",
-            old_name="agave_uri",
-            new_name="tapis_uri",
+            model_name='link',
+            old_name='agave_uri',
+            new_name='tapis_uri',
         ),
         migrations.AddField(
-            model_name="link",
-            name="expiration",
+            model_name='link',
+            name='expiration',
             field=models.DateTimeField(null=True),
         ),
     ]

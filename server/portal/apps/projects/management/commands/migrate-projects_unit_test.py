@@ -1,9 +1,9 @@
-import pytest
-from django.core import management
-from django.db.models import signals
-
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
+from django.core import management
+from django.db.models import signals
+import pytest
+
 
 pytestmark = pytest.mark.django_db
 
@@ -29,29 +29,32 @@ def ownerless_project(django_db_reset_sequences):
 
 @pytest.fixture
 def mock_project_metadata(mocker, ownerless_project):
-    yield mocker.patch.object(Project, "_get_metadata", return_value=ownerless_project)
+    yield mocker.patch.object(Project, '_get_metadata', return_value=ownerless_project)
 
 
 @pytest.fixture
 def mock_project_storage(mocker):
-    yield mocker.patch.object(Project, "_get_storage")
+    yield mocker.patch.object(Project, '_get_storage')
 
 
 @pytest.fixture
 def mock_service_account(mocker):
-    mock = mocker.patch("portal.apps.projects.management.commands.migrate-projects.service_account")
+    mock = mocker.patch('portal.apps.projects.management.commands.migrate-projects.service_account')
     yield mock.return_value
 
 
 @pytest.fixture
 def mock_index_project(mocker):
-    mock = mocker.patch("portal.apps.search.tasks.index_project")
+    mock = mocker.patch('portal.apps.search.tasks.index_project')
     yield mock
 
 
 @pytest.mark.skip(reason="role management different in v3")
 def test_migrate_projects(regular_user, mock_project_metadata, mock_project_storage, mock_index_project, service_account, mock_service_account):
-    mock_project_storage.return_value.roles.to_dict.return_value = {"wma_prtl": "OWNER", "username": "ADMIN"}
+    mock_project_storage.return_value.roles.to_dict.return_value = {
+        'wma_prtl': 'OWNER',
+        'username': 'ADMIN'
+    }
     management.call_command("migrate-projects")
     assert LegacyProjectMetadata.objects.all()[0].pi.username == regular_user.username
     assert mock_index_project.apply_async.called
@@ -59,6 +62,10 @@ def test_migrate_projects(regular_user, mock_project_metadata, mock_project_stor
 
 @pytest.mark.skip(reason="role management different in v3")
 def test_migrate_projects_wrong_admins(regular_user, mock_project_metadata, mock_project_storage, mock_service_account):
-    mock_project_storage.return_value.roles.to_dict.return_value = {"wma_prtl": "OWNER", "username": "ADMIN", "username2": "ADMIN"}
+    mock_project_storage.return_value.roles.to_dict.return_value = {
+        'wma_prtl': 'OWNER',
+        'username': 'ADMIN',
+        'username2': 'ADMIN'
+    }
     management.call_command("migrate-projects")
     assert LegacyProjectMetadata.objects.all()[0].pi is None

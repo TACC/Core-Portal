@@ -1,35 +1,53 @@
 # from portal.utils.encryption import createKeyPair
-import logging
-from typing import Literal
-
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.db import transaction
-from tapipy.tapis import Tapis
-
+from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
+from tapipy.tapis import Tapis
+from typing import Literal
+from django.db import transaction
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
-from portal.libs.agave.utils import service_account
 
+import logging
 logger = logging.getLogger(__name__)
 
 
 def set_workspace_permissions(client: Tapis, username: str, system_id: str, role: str):
     """Apply read/write/execute permissions to a user on a system."""
 
-    system_pems = {"reader": ["READ", "EXECUTE"], "writer": ["READ", "EXECUTE"], "admin": ["READ", "EXECUTE", "MODIFY"]}
+    system_pems = {
+        "reader": ["READ", "EXECUTE"],
+        "writer": ["READ", "EXECUTE"],
+        "admin": ["READ", "EXECUTE", "MODIFY"]
+    }
 
-    files_pems = {"reader": "READ", "writer": "MODIFY", "admin": "MODIFY"}
+    files_pems = {
+        "reader": "READ",
+        "writer": "MODIFY",
+        "admin": "MODIFY"
+    }
 
     logger.info(f"Adding {username} permissions to Tapis system {system_id}")
-    client.systems.grantUserPerms(systemId=system_id, userName=username, permissions=system_pems[role])
+    client.systems.grantUserPerms(
+        systemId=system_id,
+        userName=username,
+        permissions=system_pems[role])
 
     if role == "reader":
-        client.systems.revokeUserPerms(systemId=system_id, userName=username, permissions=["MODIFY"])
-        client.files.deletePermissions(systemId=system_id, path="/", username=username)
+        client.systems.revokeUserPerms(systemId=system_id,
+                                       userName=username,
+                                       permissions=["MODIFY"])
+        client.files.deletePermissions(systemId=system_id,
+                                       path="/",
+                                       username=username)
 
-    client.files.grantPermissions(systemId=system_id, path="/", username=username, permission=files_pems[role])
+    client.files.grantPermissions(
+        systemId=system_id,
+        path="/",
+        username=username,
+        permission=files_pems[role]
+    )
 
 
 def get_acl_string(usernames: str, role: str) -> str:
@@ -42,7 +60,12 @@ def get_acl_string(usernames: str, role: str) -> str:
         "none": "d:u:{username},u:{username}",
     }
 
-    return ",".join([acl_string_map[role].format(username=username) for username in usernames.split(",")])
+    return ",".join(
+        [
+            acl_string_map[role].format(username=username)
+            for username in usernames.split(",")
+        ]
+    )
 
 
 def set_workspace_acls(client, system_id, path, root_dir, usernames, operation, role):
@@ -71,7 +94,9 @@ def set_workspace_acls(client, system_id, path, root_dir, usernames, operation, 
         )
 
 
-def submit_workspace_acls_job(client, usernames, system_id, path, role, action=Literal["add", "remove"]):
+def submit_workspace_acls_job(
+    client, usernames, system_id, path, role, action=Literal["add", "remove"]
+):
     """
     Submit a job to set ACLs on a project for a list of comma-separated users. This should be used if
     we are setting ACLs on an existing project, since there might be too many files for
@@ -108,7 +133,9 @@ def submit_workspace_acls_job(client, usernames, system_id, path, role, action=L
 def create_workspace_dir(workspace_id: str, system_id=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, **kwargs) -> str:
     client = service_account()
     path = f"{workspace_id}"
-    client.files.mkdir(systemId=system_id, path=path, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    client.files.mkdir(systemId=system_id,
+                       path=path,
+                       headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return path
 
 
@@ -125,8 +152,11 @@ def create_workspace_system(client, workspace_id: str, title: str, description: 
         "canExec": False,
         "rootDir": root_dir,
         "effectiveUserId": settings.PORTAL_ADMIN_USERNAME,
-        "authnCredential": {"privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY, "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY},
-        "notes": {"title": title, "description": description, "keywords": keywords},
+        "authnCredential": {
+            "privateKey": settings.PORTAL_PROJECTS_PRIVATE_KEY,
+            "publicKey": settings.PORTAL_PROJECTS_PUBLIC_KEY
+        },
+        "notes": {"title": title, "description": description, "keywords": keywords}
     }
     if owner:
         system_args["owner"] = owner
@@ -144,7 +174,8 @@ def increment_workspace_count(force=None) -> int:
     if force:
         new_count = force
 
-    client.systems.patchSystem(systemId=root, notes={"count": new_count})
+    client.systems.patchSystem(systemId=root,
+                               notes={"count": new_count})
     return new_count
 
 
@@ -164,12 +195,18 @@ def create_shared_workspace(client: Tapis, title: str, description: str, keyword
 
     # Service client creates directory and gives owner write permissions
     create_workspace_dir(workspace_id, **kwargs)
-    set_workspace_acls(
-        service_client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, workspace_id, f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}", owner, "add", "writer"
-    )
+    set_workspace_acls(service_client,
+                       settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
+                       workspace_id,
+                       f"{settings.PORTAL_PROJECTS_ROOT_DIR}/{workspace_id}",
+                       owner,
+                       "add",
+                       "writer")
 
     # User creates the system and adds their credential
-    system_id = create_workspace_system(client, workspace_id, title, description, keywords, owner=owner)
+    system_id = create_workspace_system(
+        client, workspace_id, title, description, keywords, owner=owner
+    )
 
     # Give portal admin full permissions
     portal_admin = settings.PORTAL_ADMIN_USERNAME
@@ -179,7 +216,12 @@ def create_shared_workspace(client: Tapis, title: str, description: str, keyword
     return system_id
 
 
-def add_user_to_workspace(client: Tapis, workspace_id: str, username: str, role="writer", system_id=None, system_name=None):
+def add_user_to_workspace(client: Tapis,
+                          workspace_id: str,
+                          username: str,
+                          role="writer",
+                          system_id=None,
+                          system_name=None):
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
@@ -187,7 +229,13 @@ def add_user_to_workspace(client: Tapis, workspace_id: str, username: str, role=
     system_id = system_id or f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     # system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
     prj = client.systems.getSystem(systemId=system_id)
-    set_workspace_acls(service_client, system_id, "/", prj.rootDir, username, "add", role)
+    set_workspace_acls(service_client,
+                       system_id,
+                       "/",
+                       prj.rootDir,
+                       username,
+                       "add",
+                       role)
 
     # Share system to allow listing of users
     client.systems.shareSystem(systemId=system_id, users=[username])
@@ -204,7 +252,13 @@ def change_user_role(client, workspace_id: str, username: str, new_role):
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     prj = client.systems.getSystem(systemId=system_id)
-    set_workspace_acls(service_client, system_id, "/", prj.rootDir, username, "add", new_role)
+    set_workspace_acls(service_client,
+                       system_id,
+                       "/",
+                       prj.rootDir,
+                       username,
+                       "add",
+                       new_role)
     set_workspace_permissions(client, username, system_id, new_role)
 
 
@@ -218,10 +272,20 @@ def remove_user(client, workspace_id: str, username: str, system_id=None, system
     system_name = system_name or f"{settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME}"
     prj = client.systems.getSystem(systemId=system_id)
 
-    set_workspace_acls(service_client, system_id, "/", prj.rootDir, username, "remove", "none")
+    set_workspace_acls(service_client,
+                       system_id,
+                       "/",
+                       prj.rootDir,
+                       username,
+                       "remove",
+                       "none")
     client.systems.unShareSystem(systemId=system_id, users=[username])
-    client.systems.revokeUserPerms(systemId=system_id, userName=username, permissions=["READ", "MODIFY", "EXECUTE"])
-    client.files.deletePermissions(systemId=system_id, username=username, path="/")
+    client.systems.revokeUserPerms(systemId=system_id,
+                                   userName=username,
+                                   permissions=["READ", "MODIFY", "EXECUTE"])
+    client.files.deletePermissions(systemId=system_id,
+                                   username=username,
+                                   path="/")
 
     return get_project(client, workspace_id, system_id)
 
@@ -233,11 +297,20 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
     service_client = service_account()
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     prj = client.systems.getSystem(systemId=system_id)
-    set_workspace_acls(service_client, system_id, "/", prj.rootDir, new_owner, "add", "writer")
+    set_workspace_acls(service_client,
+                       system_id,
+                       "/",
+                       prj.rootDir,
+                       new_owner,
+                       "add",
+                       "writer")
 
     # Ensure old owner retains access to Tapis system, as `changeSystemOwner` removes access for old owner
     client.systems.shareSystem(systemId=system_id, users=[old_owner])
-    client.systems.grantUserPerms(systemId=system_id, userName=old_owner, permissions=["READ", "EXECUTE"])
+    client.systems.grantUserPerms(
+        systemId=system_id,
+        userName=old_owner,
+        permissions=["READ", "EXECUTE"])
 
     client.systems.changeSystemOwner(systemId=system_id, userName=new_owner)
     return get_project(client, workspace_id)
@@ -245,7 +318,10 @@ def transfer_ownership(client, workspace_id: str, new_owner: str, old_owner: str
 
 def update_project(client, workspace_id: str, title: str, description: str, keywords: str):
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
-    client.systems.patchSystem(systemId=system_id, notes={"title": title, "description": description, "keywords": keywords})
+    client.systems.patchSystem(systemId=system_id,
+                               notes={"title": title,
+                                      "description": description,
+                                      "keywords": keywords})
 
     return get_project(client, workspace_id)
 
@@ -279,11 +355,14 @@ def list_projects(client, root_system_id=None):
     query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
 
     if root_system_id:
-        root_system = next((system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system["system"] == root_system_id), None)
+        root_system = next(
+            (system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['system'] == root_system_id),
+            None
+        )
         if root_system:
             query += f"~(rootDir.like.{root_system['rootDir']}*)"
-            is_review_system = root_system.get("reviewProject", False)
-            is_publication_system = root_system.get("publicationProject", False)
+            is_review_system = root_system.get('reviewProject', False)
+            is_publication_system = root_system.get('publicationProject', False)
         else:
             is_review_system = False
             is_publication_system = False
@@ -291,7 +370,7 @@ def list_projects(client, root_system_id=None):
         is_review_system = False
         is_publication_system = False
 
-    community_system = next((system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system["scheme"] == "community"), None)
+    community_system = next((system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system['scheme'] == 'community'), None)
 
     if community_system and not is_review_system and not is_publication_system:
         community_data_query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)~(rootDir.like.{community_system['homeDir']}*)"
@@ -300,24 +379,27 @@ def list_projects(client, root_system_id=None):
 
     # use limit as -1 to allow search to corelate with
     # all projects available to the api user
-    listing = client.systems.getSystems(listType="ALL", search=query, select=fields, limit=-1)
+    listing = client.systems.getSystems(listType='ALL',
+                                        search=query,
+                                        select=fields,
+                                        limit=-1)
     if community_data_query:
-        community_listing = client.systems.getSystems(listType="ALL", search=community_data_query, select=fields, limit=-1)
+        community_listing = client.systems.getSystems(listType='ALL',
+                                                      search=community_data_query,
+                                                      select=fields,
+                                                      limit=-1)
         listing = community_listing + listing
 
-    serialized_listing = map(
-        lambda prj: {
-            "id": prj.id,
-            "path": prj.rootDir,
-            "name": prj.id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1],
-            "host": prj.host,
-            "updated": prj.updated,
-            "owner": get_project_user(prj.owner),
-            "title": getattr(prj.notes, "title", None),
-            "description": getattr(prj.notes, "description", None),
-        },
-        listing,
-    )
+    serialized_listing = map(lambda prj: {
+        "id": prj.id,
+        "path": prj.rootDir,
+        "name": prj.id.split(f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.")[1],
+        "host": prj.host,
+        "updated": prj.updated,
+        "owner": get_project_user(prj.owner),
+        "title": getattr(prj.notes, "title", None),
+        "description": getattr(prj.notes, "description", None)
+    }, listing)
     projects = list(serialized_listing)
     projects.sort(key=lambda p: p.get("updated") or "", reverse=True)
     return projects
@@ -331,14 +413,16 @@ def get_project(client, workspace_id, system_id=None):
     users = [{"user": get_project_user(system.owner), "access": "owner"}]
     share_users = [u for u in shares.users if u not in [system.owner, settings.PORTAL_ADMIN_USERNAME]]
     for username in share_users:
-        perms = client.files.getPermissions(systemId=system_id, path="/", username=username)
-        if perms.permission == "MODIFY":
-            access = "edit"
-        elif perms.permission == "READ":
-            access = "read"
+        perms = client.files.getPermissions(systemId=system_id,
+                                            path="/",
+                                            username=username)
+        if perms.permission == 'MODIFY':
+            access = 'edit'
+        elif perms.permission == 'READ':
+            access = 'read'
         else:
             logger.info(f"System shared to user without proper Tapis file permissions: {system_id}, username: {username}")
-            access = "none"
+            access = 'none'
 
         users.append({"user": get_project_user(username), "access": access})
 
@@ -349,6 +433,7 @@ def get_project(client, workspace_id, system_id=None):
         "projectId": workspace_id,
         "members": users,
         "keywords": getattr(system.notes, "keywords", None),
+
     }
 
 
@@ -356,22 +441,23 @@ def get_workspace_role(client, workspace_id, username):
     system_id = f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
     system = client.systems.getSystem(systemId=system_id)
     if system.owner == username:
-        return "OWNER"
+        return 'OWNER'
 
-    perms = client.files.getPermissions(systemId=system_id, path="/", username=username)
-    if perms.permission == "MODIFY":
-        return "USER"
+    perms = client.files.getPermissions(systemId=system_id,
+                                        path="/",
+                                        username=username)
+    if perms.permission == 'MODIFY':
+        return 'USER'
 
-    if perms.permission == "READ":
-        return "GUEST"
+    if perms.permission == 'READ':
+        return 'GUEST'
 
     return None
 
 
 @transaction.atomic
-def create_publication_workspace(
-    client, source_workspace_id: str, source_system_id: str, target_workspace_id: str, target_system_id: str, title: str, description="", is_review=False
-):
+def create_publication_workspace(client, source_workspace_id: str, source_system_id: str, target_workspace_id: str,
+                                 target_system_id: str, title: str, description="", is_review=False):
 
     portal_admin_username = settings.PORTAL_ADMIN_USERNAME
     service_client = service_account()
@@ -389,7 +475,12 @@ def create_publication_workspace(
     source_project = ProjectMetadata.get_project_by_id(source_system_id)
     project_value = get_ordered_value(constants.PROJECT, source_project.value)
 
-    project_data = {**project_value, "project_id": target_system_id, "is_review_project": is_review, "is_published_project": not is_review}
+    project_data = {
+        **project_value,
+        "project_id": target_system_id,
+        "is_review_project": is_review,
+        "is_published_project": not is_review
+    }
 
     # Create and save the new project metadata
     new_project = create_project_metadata(project_data)
@@ -399,14 +490,17 @@ def create_publication_workspace(
     create_workspace_dir(target_workspace_id, root_system_name)
 
     query = f"(id.eq.{target_system_id})"
-    listing = service_client.systems.getSystems(listType="ALL", search=query, select="id,deleted", showDeleted=True, limit=-1)
+    listing = service_client.systems.getSystems(listType='ALL', search=query, select="id,deleted",
+                                                showDeleted=True, limit=-1)
 
     if listing and listing[0].deleted:
         service_client.systems.undeleteSystem(systemId=target_system_id)
     else:
         # Create the target workspace system
         create_workspace_system(
-            service_client, target_workspace_id, title, description, None, None, f"{system_prefix}.{target_workspace_id}", f"{root_dir}/{target_workspace_id}"
+            service_client, target_workspace_id, title, description, None, None,
+            f"{system_prefix}.{target_workspace_id}",
+            f"{root_dir}/{target_workspace_id}"
         )
 
     # Configure workspace ACLs

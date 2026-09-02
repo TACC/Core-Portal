@@ -4,7 +4,6 @@
 """
 
 from abc import ABCMeta, abstractmethod
-
 from six import add_metaclass
 
 
@@ -23,6 +22,12 @@ class AbstractKeysManager:
     """
 
     @abstractmethod
-    def add_public_key(self, system_id, hostname, port, public_key):  # pylint: disable=too-many-arguments
+    def add_public_key(
+            self,
+            system_id,
+            hostname,
+            port,
+            public_key
+    ):  # pylint: disable=too-many-arguments
         """Adds public key to `authorized_keys`"""
         return NotImplemented

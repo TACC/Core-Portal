@@ -1,9 +1,8 @@
-import pytest
-from django.db.models import signals
-
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
+from django.db.models import signals
 from portal.apps.onboarding.steps.test_steps import MockStep
+import pytest
 
 
 @pytest.fixture(autouse=True)
@@ -65,7 +64,7 @@ def test_str(mock_step):
 
 
 def test_settings(mock_step):
-    assert mock_step.settings == {"key": "value"}
+    assert mock_step.settings == {'key': 'value'}
 
 
 def test_step_missing(regular_user, settings):
@@ -77,7 +76,7 @@ def test_step_missing(regular_user, settings):
 def test_step_setting_missing(regular_user, settings):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+            'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
         }
     ]
     mock_step = MockStep(regular_user)

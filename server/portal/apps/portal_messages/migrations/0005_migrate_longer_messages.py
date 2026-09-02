@@ -4,14 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("portal_messages", "0004_migrate_intro_messages"),
+        ('portal_messages', '0004_migrate_intro_messages'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="custommessagetemplate",
-            name="message",
-            field=models.TextField(blank=True, default="", help_text="Message content (max 1000 characters)", max_length=1000),
+            model_name='custommessagetemplate',
+            name='message',
+            field=models.TextField(blank=True, default='', help_text='Message content (max 1000 characters)', max_length=1000),
         ),
     ]

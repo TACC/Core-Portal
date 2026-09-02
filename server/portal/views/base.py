@@ -4,14 +4,12 @@
 """
 
 import logging
-
-from django.core.exceptions import PermissionDenied
-from django.http import Http404, JsonResponse
-from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
-from tapipy.errors import BaseTapyException
-
+from django.views.generic import View
+from django.http import JsonResponse, Http404
+from django.core.exceptions import PermissionDenied
 from portal.exceptions.api import ApiException
+from tapipy.errors import BaseTapyException
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +26,7 @@ class BaseApiView(View):
         to be available in the logs and in Opbeat's UI.
         """
         try:
-            return super().dispatch(request, *args, **kwargs)
+            return super(BaseApiView, self).dispatch(request, *args, **kwargs)
         except (PermissionDenied, Http404) as e:
             # log information but re-raise exception to let django handle response
             logger.error(e, exc_info=True)
@@ -38,10 +36,16 @@ class BaseApiView(View):
             message = e.response.reason
             extra = e.extra
             if status != 404:
-                logger.error("%s: %s", message, e.response.text, exc_info=True, extra=extra)
+                logger.error(
+                    '%s: %s',
+                    message,
+                    e.response.text,
+                    exc_info=True,
+                    extra=extra
+                )
             else:
-                logger.info("Error %s", message, exc_info=True, extra=extra)
-            return JsonResponse({"message": message}, status=400)
+                logger.info('Error %s', message, exc_info=True, extra=extra)
+            return JsonResponse({'message': message}, status=400)
         except (ConnectionError, HTTPError, BaseTapyException) as e:
             # status code and json content from ConnectionError/HTTPError exceptions
             # are used in the returned response. Note: the handling of these two exceptions
@@ -57,16 +61,39 @@ class BaseApiView(View):
                     message = "Unknown Error"
                 if status in [404, 403]:
                     logger.warning(
-                        "%s: %s", message, e.response.text, exc_info=True, extra={"username": request.user.username, "session_key": request.session.session_key}
+                        '%s: %s',
+                        message,
+                        e.response.text,
+                        exc_info=True,
+                        extra={
+                            'username': request.user.username,
+                            'session_key': request.session.session_key
+                        }
                     )
                 else:
                     logger.error(
-                        "%s: %s", message, e.response.text, exc_info=True, extra={"username": request.user.username, "session_key": request.session.session_key}
+                        '%s: %s',
+                        message,
+                        e.response.text,
+                        exc_info=True,
+                        extra={
+                            'username': request.user.username,
+                            'session_key': request.session.session_key
+                        }
                     )
             else:
-                logger.error(e, exc_info=True, extra={"username": request.user.username, "session_key": request.session.session_key})
+                logger.error(
+                    e,
+                    exc_info=True,
+                    extra={
+                        'username': request.user.username,
+                        'session_key': request.session.session_key
+                    }
+                )
                 message = str(e)
-            return JsonResponse({"message": message}, status=status)
+            return JsonResponse({'message': message}, status=status)
         except Exception as e:  # pylint: disable=broad-except
             logger.error(e, exc_info=True)
-            return JsonResponse({"message": "Something went wrong here..."}, status=500)
+            return JsonResponse(
+                {'message': "Something went wrong here..."},
+                status=500)

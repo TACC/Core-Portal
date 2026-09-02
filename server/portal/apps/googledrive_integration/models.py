@@ -1,14 +1,15 @@
-import base64
-import logging
-import pickle
-
-import google.oauth2.credentials
-import jsonpickle
-from django.conf import settings
-from django.db import models
-from django.utils import encoding
 from google.auth.transport.requests import Request
 from googleapiclient import discovery
+from django.conf import settings
+from django.db import models
+import google.oauth2.credentials
+import logging
+
+import base64
+import pickle
+
+from django.utils import encoding
+import jsonpickle
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +18,12 @@ class CredentialsField(models.Field):
     """Django ORM field for storing OAuth2 Credentials."""
 
     def __init__(self, *args, **kwargs):
-        if "null" not in kwargs:
-            kwargs["null"] = True
-        super().__init__(*args, **kwargs)
+        if 'null' not in kwargs:
+            kwargs['null'] = True
+        super(CredentialsField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
-        return "BinaryField"
+        return 'BinaryField'
 
     def from_db_value(self, value, expression, connection):
         """Overrides ``models.Field`` method. This converts the value
@@ -39,9 +40,11 @@ class CredentialsField(models.Field):
             return value
         else:
             try:
-                return jsonpickle.decode(base64.b64decode(encoding.smart_bytes(value)).decode())
+                return jsonpickle.decode(
+                    base64.b64decode(encoding.smart_bytes(value)).decode())
             except ValueError:
-                return pickle.loads(base64.b64decode(encoding.smart_bytes(value)))
+                return pickle.loads(
+                    base64.b64decode(encoding.smart_bytes(value)))
 
     def get_prep_value(self, value):
         """Overrides ``models.Field`` method. This is used to convert
@@ -51,7 +54,8 @@ class CredentialsField(models.Field):
         if value is None:
             return None
         else:
-            return encoding.smart_str(base64.b64encode(jsonpickle.encode(value).encode()))
+            return encoding.smart_str(
+                base64.b64encode(jsonpickle.encode(value).encode()))
 
     def value_to_string(self, obj):
         """Convert the field value from the provided model to a string.
@@ -72,8 +76,8 @@ class GoogleDriveUserToken(models.Model):
     """
     Represents an OAuth Token for a Google Drive user
     """
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="googledrive_user_token", on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, related_name='googledrive_user_token', on_delete=models.CASCADE)
     credentials = CredentialsField()
 
     @property
@@ -81,5 +85,6 @@ class GoogleDriveUserToken(models.Model):
         if not self.credentials.valid:
             request = Request()
             self.credentials.refresh(request)
-        drive = discovery.build("drive", "v3", credentials=self.credentials, cache_discovery=False)
+        drive = discovery.build(
+            'drive', 'v3', credentials=self.credentials, cache_discovery=False)
         return drive

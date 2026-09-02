@@ -1,14 +1,13 @@
-import requests
+from portal.apps.onboarding.steps.abstract import AbstractStep
+from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from requests.auth import HTTPBasicAuth
-
-from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.steps.abstract import AbstractStep
+import requests
 
 
 class MFAStep(AbstractStep):
     def __init__(self, user):
-        super().__init__(user)
+        super(MFAStep, self).__init__(user)
         self.user_confirm = "Confirm MFA Pairing"
 
     def display_name(self):
@@ -35,8 +34,8 @@ class MFAStep(AbstractStep):
     def mfa_check(self):
         auth = HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
         response = requests.get(self.tas_pairings_url(), auth=auth)
-        pairings = response.json()["result"]
-        return any(pairing["type"] == "tacc-soft-token" for pairing in pairings)
+        pairings = response.json()['result']
+        return any(pairing['type'] == 'tacc-soft-token' for pairing in pairings)
 
     def process(self):
         if self.mfa_check():
@@ -53,4 +52,4 @@ class MFAStep(AbstractStep):
             self.prepare()
 
     def tas_pairings_url(self):
-        return f"{settings.TAS_URL}/tup/users/{self.user.username}/pairings"
+        return "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username)
