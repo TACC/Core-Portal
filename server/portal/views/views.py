@@ -4,9 +4,28 @@ from django.views.static import serve
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
 
 logger = logging.getLogger(__name__)
 
+@csrf_exempt
+@require_POST
+def csp_report(request):
+    logger = logging.getLogger("csp_reports")
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        logger.warning("Malformed CSP report body: %r", request.body[:500])
+        return HttpResponse(status=204)
+
+    report = payload.get("csp-report", payload)
+
+    logger.warning("CSP violation: %s", json.dumps(report))
+
+    return HttpResponse(status=204)
 
 def project_version(request):
     try:
