@@ -4,14 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("webhooks", "0002_auto_20221221_2114"),
+        ('webhooks', '0002_auto_20221221_2114'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="externalcall",
-            name="callback_data",
+            model_name='externalcall',
+            name='callback_data',
             field=models.JSONField(null=True),
         ),
     ]

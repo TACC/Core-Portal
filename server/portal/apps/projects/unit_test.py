@@ -25,7 +25,9 @@ pytestmark = pytest.mark.django_db
 # Fixtures
 @pytest.fixture
 def mock_service_account(mocker):
-    yield mocker.patch("portal.apps.projects.models.base.service_account", autospec=True)
+    yield mocker.patch(
+        "portal.apps.projects.models.base.service_account", autospec=True
+    )
 
 
 @pytest.fixture()
@@ -128,7 +130,9 @@ def create_shared_workspace(
         owner=mock_owner,
         rootDir=f"/corral/tacc/aci/CEP/projects/test.project-{workspace_num}",
     )
-    client.systems.getSystem.assert_called_with(systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME)
+    client.systems.getSystem.assert_called_with(
+        systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+    )
     client.systems.patchSystem.assert_called_with(
         systemId=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
         notes={"count": workspace_num},
@@ -380,10 +384,15 @@ def test_project_create(mock_tapis_client, mock_owner, authenticated_user):
         created_project = client.systems.createSystem.call_args[1]
         assert created_project["id"] == expected_result.id
         assert created_project["notes"]["title"] == expected_result.notes.title
-        assert created_project["notes"]["description"] == expected_result.notes.description
+        assert (
+            created_project["notes"]["description"] == expected_result.notes.description
+        )
         assert created_project["effectiveUserId"] == expected_result.effectiveUserId
         assert created_project["port"] == expected_result.port
-        assert created_project["authnCredential"]["privateKey"] == expected_result.authnCredential.privateKey
+        assert (
+            created_project["authnCredential"]["privateKey"]
+            == expected_result.authnCredential.privateKey
+        )
 
 
 # Testing if there are two projects Tapis
@@ -569,7 +578,9 @@ def test_add_member(mock_tapis_client, mock_owner, authenticated_user):
         else:
             new_username = "new_user"
             mock_add_user_to_workspace(client, workspace_id, new_username, "writer")
-            mock_get_project.assert_called_once_with(client, workspace_id, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}")
+            mock_get_project.assert_called_once_with(
+                client, workspace_id, f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{workspace_id}"
+            )
             mock_service_account.assert_called()
 
             mock_service_account().files.setFacl.assert_called_with(
@@ -830,7 +841,9 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             {"user": ws_o.get_project_user("username"), "access": "owner"},
             {"user": ws_o.get_project_user(new_username), "access": "writer"},
         ]
-        client.files.getPermissions.return_value = TapisResult(id=new_username, permission="MODIFY")
+        client.files.getPermissions.return_value = TapisResult(
+            id=new_username, permission="MODIFY"
+        )
         role = mock_get_workspace_role(mock_tapis_client, workspace_id, new_username)
         assert role == "USER"
 
@@ -864,7 +877,9 @@ def test_get_workspace_role(mock_tapis_client, mock_owner, authenticated_user):
             {"user": ws_o.get_project_user(new_username), "access": "writer"},
             {"user": ws_o.get_project_user("GuestAccount"), "access": "reader"},
         ]
-        client.files.getPermissions.return_value = TapisResult(id="GuestAccount", permission="READ")
+        client.files.getPermissions.return_value = TapisResult(
+            id="GuestAccount", permission="READ"
+        )
         role = mock_get_workspace_role(mock_tapis_client, workspace_id, "GuestAccount")
         assert role == "GUEST"
 
@@ -1108,11 +1123,16 @@ def test_update_project(mock_tapis_client, mock_owner, authenticated_user):
         created_project = client.systems.createSystem.call_args[1]
         assert created_project["id"] == expected_result.id
         assert created_project["notes"]["title"] == expected_result.notes.title
-        assert created_project["notes"]["description"] == expected_result.notes.description
+        assert (
+            created_project["notes"]["description"] == expected_result.notes.description
+        )
         assert created_project["notes"]["keywords"] == expected_result.notes.keywords
         assert created_project["effectiveUserId"] == expected_result.effectiveUserId
         assert created_project["port"] == expected_result.port
-        assert created_project["authnCredential"]["privateKey"] == expected_result.authnCredential.privateKey
+        assert (
+            created_project["authnCredential"]["privateKey"]
+            == expected_result.authnCredential.privateKey
+        )
 
         # Change the title and description
         # Change the title and description

@@ -11,25 +11,22 @@
     context, if these classes were a direct representation of Agave resources
     then they should live in `portal.libs.agave.models`
 """
-
 import logging
 import os
-
+from django.db import models, transaction
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models, transaction
-
-from portal.apps.accounts.models import SSHKeys
-
+from portal.utils import encryption as EncryptionUtil
+from portal.libs.agave.utils import service_account
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 # from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.projects import utils as ProjectsUtils
-from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
-from portal.libs.agave.utils import service_account
-from portal.utils import encryption as EncryptionUtil
+from portal.apps.projects.exceptions import NotAuthorizedError
+from portal.apps.accounts.models import SSHKeys
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -40,32 +37,57 @@ def set_storage_auth(storage):
     """Set up storage auth details."""
     if not settings.PORTAL_PROJECTS_PRIVATE_KEY:
         key = EncryptionUtil.create_private_key()
-        priv_key = EncryptionUtil.export_key(key, "PEM")
-        pub_key = EncryptionUtil.export_key(EncryptionUtil.create_public_key(key), "OpenSSH")
+        priv_key = EncryptionUtil.export_key(
+            key,
+            'PEM'
+        )
+        pub_key = EncryptionUtil.export_key(
+            EncryptionUtil.create_public_key(key),
+            'OpenSSH'
+        )
         storage.storage.auth.public_key = pub_key
         storage.storage.auth.private_key = priv_key
 
         try:
             SSHKeys.objects.save_keys(
-                get_user_model().objects.get(username=settings.PORTAL_ADMIN_USERNAME), system_id=storage.id, priv_key=priv_key, pub_key=pub_key
+                get_user_model().objects.get(
+                    username=settings.PORTAL_ADMIN_USERNAME
+                ),
+                system_id=storage.id,
+                priv_key=priv_key,
+                pub_key=pub_key
             )
         except Exception as exc:  # pylint:disable=broad-except
-            logger.error("There was an error saving the ssh keys locally: %s", exc, exc_info=True)
+            logger.error(
+                'There was an error saving the ssh keys locally: %s',
+                exc,
+                exc_info=True
+            )
     else:
-        storage.storage.auth.private_key = settings.PORTAL_PROJECTS_PRIVATE_KEY
-        storage.storage.auth.public_key = settings.PORTAL_PROJECTS_PUBLIC_KEY
+        storage.storage.auth.private_key = (
+            settings.PORTAL_PROJECTS_PRIVATE_KEY
+        )
+        storage.storage.auth.public_key = (
+            settings.PORTAL_PROJECTS_PUBLIC_KEY
+        )
 
     storage.storage.auth.username = settings.PORTAL_ADMIN_USERNAME
     storage.storage.auth.type = storage.AUTH_TYPES.SSHKEYS
     return storage
 
 
-class Project:
+class Project(object):
     """Project class."""
 
     metadata_name = settings.PORTAL_PROJECTS_SYSTEM_PREFIX
 
-    def __init__(self, client, project_id, metadata=None, storage=None):
+    def __init__(
+            self,
+            client,
+            project_id,
+            metadata=None,
+            storage=None
+    ):
         """Project Init.
 
         .. note:: When initializing a project we first retrieve the
@@ -116,7 +138,10 @@ class Project:
         if self.storage.storage.root_dir:
             return self.storage.storage.root_dir
 
-        return os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, self.storage.name)
+        return os.path.join(
+            settings.PORTAL_PROJECTS_ROOT_DIR,
+            self.storage.name
+        )
 
     def _get_metadata(self):
         """Get metadata record for project.
@@ -137,7 +162,12 @@ class Project:
 
             # Look for admin in tapis roles, and add as PI
             roles = self.storage.roles.to_dict().items()
-            admins = list(filter(lambda role_tuple: role_tuple[0] != "wma_prtl" and (role_tuple[1] == "ADMIN" or role_tuple[1] == "OWNER"), roles))
+            admins = list(
+                filter(
+                    lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
+                    roles
+                )
+                )
             if len(admins) == 1:
                 # Exactly one admin found, assign as PI
                 try:
@@ -209,14 +239,19 @@ class Project:
         """
 
         # Create a default metadata object
-        defaults = {"title": title}
+        defaults = {
+            'title': title
+        }
 
         # If owner is specified for metadata, insert it
         # into the parameters for the model
         if owner:
-            defaults["owner"] = owner
+            defaults['owner'] = owner
 
-        (meta, created) = LegacyProjectMetadata.objects.get_or_create(project_id=project_id, defaults=defaults)
+        (meta, created) = LegacyProjectMetadata.objects.get_or_create(
+            project_id=project_id,
+            defaults=defaults
+        )
         return meta
 
     @staticmethod
@@ -230,7 +265,13 @@ class Project:
         ProjectsUtils.delete_project_dir(project_id)
 
     @classmethod
-    def create(cls, client, title, project_id, owner):
+    def create(
+            cls,
+            client,
+            title,
+            project_id,
+            owner
+    ):
         """Create a project.
 
         :param client: Agave client
@@ -240,9 +281,17 @@ class Project:
         cls._create_dir(project_id)
 
         try:
-            storage = cls._create_storage(title, ProjectsUtils.project_id_to_system_id(project_id), project_id)
+            storage = cls._create_storage(
+                title,
+                ProjectsUtils.project_id_to_system_id(project_id),
+                project_id
+            )
 
-            meta = cls._create_metadata(title, project_id, owner)
+            meta = cls._create_metadata(
+                title,
+                project_id,
+                owner
+            )
 
         except Exception as e:
             cls._delete_dir(project_id)
@@ -297,16 +346,18 @@ class Project:
         :param str username: Username to check for pems.
         """
         role = self.storage.roles.for_user(username)
-        if role is not None and (role.role == role.ADMIN or role.role == role.OWNER):
+        if (role is not None and
+                (role.role == role.ADMIN or
+                 role.role == role.OWNER)):
             return True
 
         return False
 
     def transfer_pi(self, old_pi, new_pi):
         new_pi_role = self.get_project_role(new_pi)
-        if new_pi_role == "team_member":
+        if new_pi_role == 'team_member':
             self.remove_member(new_pi)
-        elif new_pi_role == "co_pi":
+        elif new_pi_role == 'co_pi':
             self.remove_co_pi(new_pi)
         self.add_pi(new_pi)
         self.add_co_pi(old_pi)
@@ -318,7 +369,7 @@ class Project:
         """
         if not self._ac._token == service_account()._token:
             if not self._can_edit_member(self._ac.token.token_username):
-                raise NotAuthorizedError(extra={"user": user})
+                raise NotAuthorizedError(extra={'user': user})
 
     def add_pi(self, user):
         """Add PI to project.
@@ -328,7 +379,10 @@ class Project:
         """
         self._auth_check(user)
 
-        self.storage.roles.add(user.username, "OWNER")
+        self.storage.roles.add(
+            user.username,
+            'OWNER'
+        )
         self.storage.roles.save()
         self.metadata.pi = user
         self.save_metadata()
@@ -355,7 +409,10 @@ class Project:
         """
         self._auth_check(user)
 
-        self.storage.roles.add(user.username, "ADMIN")
+        self.storage.roles.add(
+            user.username,
+            'ADMIN'
+        )
         self.storage.roles.save()
         self.metadata.co_pis.add(user)
         self.save_metadata()
@@ -385,7 +442,10 @@ class Project:
         """
         self._auth_check(user)
 
-        self.storage.roles.add(user.username, "USER")
+        self.storage.roles.add(
+            user.username,
+            'USER'
+        )
         self.storage.roles.save()
         self.metadata.team_members.add(user)
         self.save_metadata()
@@ -407,12 +467,12 @@ class Project:
     def change_project_role(self, user, old_role, new_role):
         # account for difference between role name (team_member) and method
         #  names (add_member, remove_member)
-        if old_role == "team_member":
-            old_role = "member"
-        if new_role == "team_member":
-            new_role = "member"
-        add_new_role = getattr(self, f"add_{new_role}")
-        remove_old_role = getattr(self, f"remove_{old_role}")
+        if old_role == 'team_member':
+            old_role = 'member'
+        if new_role == 'team_member':
+            new_role = 'member'
+        add_new_role = getattr(self, "add_{}".format(new_role))
+        remove_old_role = getattr(self, "remove_{}".format(old_role))
         remove_old_role(user)
         add_new_role(user)
 
@@ -424,17 +484,17 @@ class Project:
         role = None
 
         if self.metadata.pi.username == username:
-            role = "pi"
+            role = 'pi'
 
         try:
             self.metadata.co_pis.get(username=username)
-            role = "co_pi"
+            role = 'co_pi'
         except get_user_model().DoesNotExist:
             pass
 
         try:
             self.metadata.team_members.get(username=username)
-            role = "team_member"
+            role = 'team_member'
         except get_user_model().DoesNotExist:
             pass
 
@@ -464,12 +524,19 @@ class Project:
         self.storage.update()
 
     def change_storage_system_role(self, user, new_role):
-        self.storage.roles.add(user.username, new_role)
+        self.storage.roles.add(
+            user.username,
+            new_role
+        )
         self.storage.roles.save()
 
     def __repr__(self):
         """Repr."""
-        return f"Project({self.project_id}, {self.metadata}, {self.storage})"
+        return 'Project({project_id}, {metadata}, {storage})'.format(
+            project_id=self.project_id,
+            metadata=self.metadata,
+            storage=self.storage
+        )
 
     def __str__(self):
         """Str -> self.project_id."""
@@ -494,7 +561,7 @@ class ProjectId(models.Model):
         If there is no project id row to update, one is created.
         """
         try:
-            row = cls.objects.select_for_update().latest("last_updated")
+            row = cls.objects.select_for_update().latest('last_updated')
             row.value = value
             row.save()
         except ObjectDoesNotExist:
@@ -505,7 +572,7 @@ class ProjectId(models.Model):
     @transaction.atomic
     def next_id(cls):
         """Return next id."""
-        row = cls.objects.select_for_update().latest("last_updated")
+        row = cls.objects.select_for_update().latest('last_updated')
         row.value += 1
         row.save()
         return row.value

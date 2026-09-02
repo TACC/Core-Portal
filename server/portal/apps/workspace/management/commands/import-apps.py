@@ -1,11 +1,13 @@
 import logging
-
-from django.conf import settings
 from django.core.management import BaseCommand
+from django.conf import settings
 from tapipy.errors import NotFoundError
-
-from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 from portal.libs.agave.utils import service_account
+from portal.apps.workspace.models import (
+    AppTrayCategory,
+    AppTrayEntry
+)
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +22,14 @@ class Command(BaseCommand):
     help = "Import all app metadata from the tenant into AppTrayCategory and AppTrayEntry models"
 
     def add_arguments(self, parser):
-        parser.add_argument("-n", "--names", type=str, help="Portal app names to import")
-        parser.add_argument("-c", "--clean", action="store_true", help="Remove nonexistant apps")
-        parser.add_argument("-s", "--skip", action="store_true", help="Skip import")
+        parser.add_argument('-n', '--names', type=str, help="Portal app names to import")
+        parser.add_argument('-c', '--clean', action='store_true', help="Remove nonexistant apps")
+        parser.add_argument('-s', '--skip', action='store_true', help="Skip import")
 
     def clean(self):
         client = service_account()
 
-        portal_apps = AppTrayEntry.objects.filter(appType="tapis")
+        portal_apps = AppTrayEntry.objects.filter(appType='tapis')
         if portal_apps:
             logger.info("Deleting app entries with no corresponding app in tenant")
 
@@ -38,7 +40,7 @@ class Command(BaseCommand):
                 else:
                     client.apps.getAppLatestVersion(appId=app.appId)
             except NotFoundError:
-                logger.info("App not found. id: {} and version: {}:. Deleting...".format(app.appId, app.version or "None"))
+                logger.info("App not found. id: {} and version: {}:. Deleting...".format(app.appId, app.version or 'None'))
                 app.delete()
 
     def import_apps(self, portal_names):
@@ -52,25 +54,30 @@ class Command(BaseCommand):
         data = client.apps.searchAppsRequestBody(search=query, select="id,notes,version")
         for app in data:
             try:
-                category = app.notes.get("category") or "Uncategorized"
-                category_entry, _ = AppTrayCategory.objects.get_or_create(category=category)
-
-                app_entry = AppTrayEntry.objects.get_or_create(
-                    category=category_entry, icon=app.notes.get("icon") or "", version=app.get("version") or "", appId=app.get("id")
+                category = app.notes.get('category') or "Uncategorized"
+                category_entry, _ = AppTrayCategory.objects.get_or_create(
+                    category=category
                 )
 
-                logger.info(f"Imported {app_entry}")
+                app_entry = AppTrayEntry.objects.get_or_create(
+                    category=category_entry,
+                    icon=app.notes.get('icon') or "",
+                    version=app.get('version') or "",
+                    appId=app.get('id')
+                )
+
+                logger.info("Imported {}".format(app_entry))
             except Exception:
                 logger.exception("Error importing application")
-                logger.info(f"Following app could not be imported: {app}")
+                logger.info("Following app could not be imported: {}".format(app))
 
     def handle(self, *args, **options):
-        if options["clean"]:
+        if options['clean']:
             self.clean()
 
-        if not options["skip"]:
-            if options["names"]:
-                portal_names = options["names"].split(",")
+        if not options['skip']:
+            if options['names']:
+                portal_names = options['names'].split(',')
             else:
                 portal_names = settings.PORTAL_APPS_NAMES_SEARCH
 

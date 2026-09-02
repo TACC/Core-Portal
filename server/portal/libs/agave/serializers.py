@@ -3,10 +3,8 @@
    :synopsis: Necessary classes to serialize a class which
     wrapps an agave object into a dict.
 """
-
-import json
 import logging
-
+import json
 from tapipy.tapis import TapisResult
 
 # pylint: disable=invalid-name

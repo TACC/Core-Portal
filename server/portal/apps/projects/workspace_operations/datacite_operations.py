@@ -1,8 +1,8 @@
 import datetime
+from typing import Optional
 import json
-
-import networkx as nx
 import requests
+import networkx as nx
 from django.conf import settings
 
 
@@ -108,7 +108,9 @@ def get_datacite_json(pub_graph: nx.DiGraph):
         identifier = {}
         if {"publicationLink"} <= r_data.keys():
             publication_type = r_data.get("publicationType", None)
-            identifier["relationType"] = relation_mapping.get(publication_type, "References")
+            identifier["relationType"] = relation_mapping.get(
+                publication_type, "References"
+            )
             identifier["relatedIdentifier"] = r_data["publicationLink"]
             identifier["relatedIdentifierType"] = "URL"
             if "publicationDoi" in r_data:
@@ -119,7 +121,7 @@ def get_datacite_json(pub_graph: nx.DiGraph):
     return datacite_json
 
 
-def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
+def upsert_datacite_json(datacite_json: dict, doi: Optional[str] = None):
     """
     Create a draft DOI in datacite with the specified metadata. If a DOI is specified,
     the metadata for that DOI is updated instead.
@@ -130,7 +132,9 @@ def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     datacite_payload = {
         "data": {
             "type": "dois",
-            "relationships": {"client": {"data": {"type": "clients", "id": settings.DATACITE_USER}}},
+            "relationships": {
+                "client": {"data": {"type": "clients", "id": settings.DATACITE_USER}}
+            },
             "attributes": datacite_json,
         }
     }

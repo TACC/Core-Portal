@@ -4,9 +4,7 @@
 """
 
 import logging
-
 import paramiko
-
 from portal.apps.accounts.managers.abstract import AbstractKeysManager
 
 # pylint: disable=invalid-name
@@ -20,15 +18,18 @@ class KeyCannotBeAdded(Exception):
     Exception raised when there is an error adding a public key
     to `~/.ssh/authorized_keys`
     """
-
     def __init__(self, msg, output, error_output, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(KeyCannotBeAdded, self).__init__(*args, **kwargs)
         self.msg = msg
         self.output = output
         self.error_output = error_output
 
     def __str__(self):
-        return f"{self.msg}: {self.output} \n {self.error_output}"
+        return '{msg}: {output} \n {error}'.format(
+            msg=self.msg,
+            output=self.output,
+            error=self.error_output
+        )
 
 
 class KeysManager(AbstractKeysManager):
@@ -46,18 +47,32 @@ class KeysManager(AbstractKeysManager):
         self.password = password
         self.token = token
 
-    def _ssh_prompt_handler(self, title, instructions, prompt_list):
+    def _ssh_prompt_handler(
+            self,
+            title,
+            instructions,
+            prompt_list
+    ):
         """SSH Prompt Handler
 
         This method handles SSH prompts from cloud resources
         """
-        answers = {"password": self.password, "tacc_token_code": self.token, "tacc_token": self.token, f"totp_code_for_{self.username}": self.token}
+        answers = {
+            'password': self.password,
+            'tacc_token_code': self.token,
+            'tacc_token': self.token,
+            f'totp_code_for_{self.username}': self.token
+        }
         resp = []
-        logger.debug("title: %s", title)
-        logger.debug("instructions: %s", instructions)
-        logger.debug("list: %s", prompt_list)
+        logger.debug('title: %s', title)
+        logger.debug('instructions: %s', instructions)
+        logger.debug('list: %s', prompt_list)
         for prmpt in prompt_list:
-            prmpt_str = prmpt[0].lower().strip().replace(" ", "_").replace(":", "")
+            prmpt_str = prmpt[0]\
+                .lower()\
+                .strip()\
+                .replace(' ', '_')\
+                .replace(':', '')
             resp.append(answers[prmpt_str])
         return resp
 
@@ -81,7 +96,10 @@ class KeysManager(AbstractKeysManager):
 
         :return str: comment
         """
-        comment = f"{self.username}@{system_id}"
+        comment = '{username}@{system_id}'.format(
+            username=self.username,
+            system_id=system_id
+        )
         return comment
 
     def _get_add_pub_key_command(self, system_id, public_key):
@@ -93,17 +111,25 @@ class KeysManager(AbstractKeysManager):
         :return str: command
         """
         comment = self._get_pub_key_comment(system_id)
-        string = " ".join([public_key, comment])
+        string = ' '.join([public_key, comment])
         command = (
             'if [ ! -f "~/.ssh/authorized_keys" ]; then '
-            "mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys "
-            "&& chmod 0600 ~/.ssh/authorized_keys; fi && "
-            f'grep -q -F "{string}" ~/.ssh/authorized_keys || '
-            f'echo "{string}" >> ~/.ssh/authorized_keys'
-        )
+            'mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys '
+            '&& chmod 0600 ~/.ssh/authorized_keys; fi && '
+            'grep -q -F "{string}" ~/.ssh/authorized_keys || '
+            'echo "{string}" >> ~/.ssh/authorized_keys').format(
+                string=string
+            )
         return command
 
-    def add_public_key(self, system_id, hostname, public_key, port=22, transport=None):  # pylint: disable=too-many-arguments, arguments-differ
+    def add_public_key(
+            self,
+            system_id,
+            hostname,
+            public_key,
+            port=22,
+            transport=None
+    ):  # pylint: disable=too-many-arguments, arguments-differ
         """Adds public key to `authorized_keys`
 
         :param str sytem_id: System Id
@@ -125,20 +151,24 @@ class KeysManager(AbstractKeysManager):
         status = channel.recv_exit_status()
         output = channel.makefile()
         stderr = channel.makefile_stderr()
-        output_lines = ""
+        output_lines = ''
         for line in output.readlines():
-            output_lines += line + "\n"
+            output_lines += line + '\n'
             logger.debug(line)
 
         if status == -1:
-            logger.info("No response from the server")
+            logger.info('No response from the server')
         elif status == 0:
-            logger.info(f"Public key added successfully to {hostname}")
+            logger.info('Public key added successfully to {}'.format(hostname))
         elif status > 0:
-            error_lines = ""
+            error_lines = ''
             for line in stderr.readlines():
-                error_lines += line + "\n"
+                error_lines += line + '\n'
 
-            raise KeyCannotBeAdded("Error adding public key", output_lines, error_lines)
+            raise KeyCannotBeAdded(
+                'Error adding public key',
+                output_lines,
+                error_lines
+            )
         trans.close()
         return output_lines

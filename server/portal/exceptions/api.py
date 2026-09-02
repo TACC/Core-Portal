@@ -2,7 +2,6 @@
 .. module: portal.exceptions.api
    :synopsis: Exceptions used within the API
 """
-
 from requests.exceptions import RequestException
 from requests.models import Response
 
@@ -26,7 +25,14 @@ class ApiException(RequestException):
 
     """
 
-    def __init__(self, message=None, status=None, extra=None, *args, **kwargs):
+    def __init__(
+            self,
+            message=None,
+            status=None,
+            extra=None,
+            *args,
+            **kwargs
+    ):
         """Custom exception based on
            :class:`~requests.exceptions.RequestException`
 
@@ -44,7 +50,7 @@ class ApiException(RequestException):
         ...         response=e.response
         ...     )
         """
-        super().__init__(*args, **kwargs)
+        super(ApiException, self).__init__(*args, **kwargs)
         response = self.response or Response()
         response.status_code = status or response.status_code
         response.reason = message or response.reason

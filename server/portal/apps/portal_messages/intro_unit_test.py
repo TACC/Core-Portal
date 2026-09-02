@@ -1,6 +1,5 @@
 import pytest
-
-from portal.apps.portal_messages.models import CustomMessages, CustomMessageTemplate, IntroMessages
+from portal.apps.portal_messages.models import IntroMessages, CustomMessageTemplate, CustomMessages
 
 
 @pytest.fixture
@@ -16,7 +15,7 @@ confirm that the JSON is coming back as expected.
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user, intromessage_mock):
-    response = client.get("/api/portal_messages/intro/")
+    response = client.get('/api/portal_messages/intro/')
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == [{"component": "HISTORY", "unread": False}]
@@ -30,7 +29,7 @@ User should be redirected to login
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get_unauthenticated_user(client, regular_user):
-    response = client.get("/api/portal_messages/intro/")
+    response = client.get('/api/portal_messages/intro/')
     assert response.status_code == 302
 
 
@@ -40,17 +39,19 @@ def test_intromessages_get_unauthenticated_user(client, regular_user):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
     body = {
-        "ACCOUNT": "True",
-        "ALLOCATIONS": "True",
-        "APPLICATIONS": "True",
-        "DASHBOARD": "True",
-        "DATA": "True",
-        "HISTORY": "False",
-        "TICKETS": "True",
-        "UI": "True",
+        'ACCOUNT': 'True',
+        'ALLOCATIONS': 'True',
+        'APPLICATIONS': 'True',
+        'DASHBOARD': 'True',
+        'DATA': 'True',
+        'HISTORY': 'False',
+        'TICKETS': 'True',
+        'UI': 'True'
     }
 
-    response = client.put("/api/portal_messages/intro/", content_type="application/json", data=body)
+    response = client.put('/api/portal_messages/intro/',
+                          content_type="application/json",
+                          data=body)
     assert response.status_code == 200
     # should be eight rows in the database for the user
     assert len(IntroMessages.objects.all()) == 8
@@ -66,7 +67,7 @@ def test_intromessages_put(client, authenticated_user):
 
 @pytest.fixture
 def custommessagetemplate_mock():
-    template = CustomMessageTemplate.objects.create(component="HISTORY", message_type="warning", message="test message", dismissible=True)
+    template = CustomMessageTemplate.objects.create(component='HISTORY', message_type='warning', message='test message', dismissible=True)
     yield template
 
 
@@ -84,22 +85,20 @@ confirm that the JSON is coming back as expected.
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get(client, authenticated_user, custommessage_mock, custommessagetemplate_mock):
-    response = client.get("/api/portal_messages/custom/")
+    response = client.get('/api/portal_messages/custom/')
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == {
-        "messages": [
-            {
-                "template": {
-                    "id": custommessagetemplate_mock.id,
-                    "component": "HISTORY",
-                    "message_type": "warning",
-                    "dismissible": True,
-                    "message": "test message",
-                },
-                "unread": True,
-            }
-        ]
+        'messages': [{
+            "template": {
+                'id': custommessagetemplate_mock.id,
+                'component': 'HISTORY',
+                'message_type': 'warning',
+                'dismissible': True,
+                'message': 'test message'
+            },
+            "unread": True
+        }]
     }
 
 
@@ -111,7 +110,7 @@ User should be redirected to login
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_custommessages_get_unauthenticated_user(client, regular_user):
-    response = client.get("/api/portal_messages/custom/")
+    response = client.get('/api/portal_messages/custom/')
     assert response.status_code == 302
 
 
@@ -123,13 +122,18 @@ def test_custommessages_put(client, authenticated_user, custommessage_mock, cust
     original_message = CustomMessages.objects.get(template__id=custommessagetemplate_mock.id)
     assert original_message.unread is True
 
-    body = {"templateId": custommessagetemplate_mock.id, "unread": False}
+    body = {
+        'templateId': custommessagetemplate_mock.id,
+        'unread': False
+    }
 
-    response = client.put("/api/portal_messages/custom/", content_type="application/json", data=body)
+    response = client.put('/api/portal_messages/custom/',
+                          content_type="application/json",
+                          data=body)
     assert response.status_code == 200
 
     assert len(CustomMessages.objects.all()) == 1
 
-    db_message = CustomMessages.objects.get(template__id=body["templateId"])
+    db_message = CustomMessages.objects.get(template__id=body['templateId'])
     # Ensure that it updated the value correctly
-    assert db_message.unread == body["unread"]
+    assert db_message.unread == body['unread']

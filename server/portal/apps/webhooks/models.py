@@ -1,5 +1,5 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 
 
@@ -13,7 +13,12 @@ class ExternalCall(models.Model):
     webhook_id = models.CharField(max_length=16, primary_key=True)
 
     # Associated user for webhook events
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="+",
+        on_delete=models.CASCADE,
+        null=True
+    )
 
     # Timestamp for outbound external call
     time = models.DateTimeField(default=timezone.now)
@@ -29,7 +34,10 @@ class ExternalCall(models.Model):
     accepting = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return "{webhook_id} ({accepting})".format(webhook_id=self.webhook_id, accepting="Accepting Webhooks" if self.accepting else "Not accepting webhooks")
+        return '{webhook_id} ({accepting})'.format(
+            webhook_id=self.webhook_id,
+            accepting="Accepting Webhooks" if self.accepting else "Not accepting webhooks"
+        )
 
     def __str__(self):
         return self.__unicode__()

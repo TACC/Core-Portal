@@ -2,11 +2,9 @@
 
 import logging
 from hashlib import sha256
-
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
 from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
@@ -21,7 +19,9 @@ class TapisToken(BaseApiView):
 
         # By accessing client(), we ensure that there is a non-expired access_token which can be immediately used
         client = request.user.tapis_oauth.client
-        session_key_hash = sha256((request.session.session_key or "").encode()).hexdigest()
+        session_key_hash = sha256(
+            (request.session.session_key or "").encode()
+        ).hexdigest()
 
         return JsonResponse(
             {

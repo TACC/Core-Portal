@@ -1,10 +1,8 @@
 import logging
-
-from tapipy.errors import BaseTapyException
-
-from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abstract import AbstractStep
+from portal.apps.onboarding.state import SetupState
 from portal.libs.agave.utils import service_account
+from tapipy.errors import BaseTapyException
 from portal.utils.encryption import createKeyPair
 
 logger = logging.getLogger(__name__)
@@ -21,7 +19,9 @@ def create_system_credentials_with_password(
     """
     Set a username/password as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using password")
+    logger.info(
+        f"Creating user credential for {username} on Tapis system {system_id} using password"
+    )
     data = {
         "password": password,
         "loginUser": loginUser or username,
@@ -46,7 +46,9 @@ def create_system_credentials_with_keys(
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using keys")
+    logger.info(
+        f"Creating user credential for {username} on Tapis system {system_id} using keys"
+    )
     data = {
         "privateKey": private_key,
         "publicKey": public_key,
@@ -69,24 +71,36 @@ def create_system_credentials_with_tms(
     """
     Create user's auth credential on a Tapis system. This Tapis API uses TMS.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using TMS")
-    client.systems.createUserCredential(systemId=system_id, userName=username, createTmsKeys=True, skipCredentialCheck=skipCredentialCheck)
+    logger.info(
+        f"Creating user credential for {username} on Tapis system {system_id} using TMS"
+    )
+    client.systems.createUserCredential(
+        systemId=system_id,
+        userName=username,
+        createTmsKeys=True,
+        skipCredentialCheck=skipCredentialCheck
+    )
 
 
 def set_user_permissions(user, system_id):
     """Apply read/write/execute permissions to files and read permissions on the system."""
     logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
     client = service_account()
-    client.systems.grantUserPerms(systemId=system_id, userName=user.username, permissions=["READ"])
-    client.files.grantPermissions(systemId=system_id, path="/", username=user.username, permission="MODIFY")
+    client.systems.grantUserPerms(
+        systemId=system_id, userName=user.username, permissions=["READ"]
+    )
+    client.files.grantPermissions(
+        systemId=system_id, path="/", username=user.username, permission="MODIFY"
+    )
 
 
 class SystemAccessStepV3(AbstractStep):
+
     def __init__(self, user):
         """
         Call super class constructor
         """
-        super().__init__(user)
+        super(SystemAccessStepV3, self).__init__(user)
 
     def display_name(self):
         return "System Access"

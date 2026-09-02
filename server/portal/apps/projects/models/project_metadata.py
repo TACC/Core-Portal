@@ -1,21 +1,18 @@
 """Models for representing project metadata"""
-
 import uuid
-
-from django.contrib.auth import get_user_model
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core.validators import MinLengthValidator
-from django.db import models
 from django.utils import timezone
-
+from django.db import models
+from django.core.validators import MinLengthValidator
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth import get_user_model
 from portal.apps.projects.schema_models import constants
 
 user_model = get_user_model()
 
 
 def snake_to_camel(snake_str):
-    components = snake_str.split("_")
-    return components[0] + "".join(x.title() for x in components[1:])
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 
 def uuid_pk():
@@ -35,7 +32,9 @@ class ProjectMetadata(models.Model):
 
     """
 
-    uuid = models.CharField(max_length=100, primary_key=True, default=uuid_pk, editable=False)
+    uuid = models.CharField(
+        max_length=100, primary_key=True, default=uuid_pk, editable=False
+    )
     name = models.CharField(
         max_length=100,
         validators=[MinLengthValidator(1)],
@@ -43,14 +42,23 @@ class ProjectMetadata(models.Model):
     )
     value = models.JSONField(
         encoder=DjangoJSONEncoder,
-        help_text=("JSON document containing file metadata, including title/description"),
+        help_text=(
+            "JSON document containing file metadata, including title/description"
+        ),
     )
 
-    users = models.ManyToManyField(to=user_model, related_name="projects", help_text="Users who have access to a project.")
+    users = models.ManyToManyField(
+        to=user_model,
+        related_name="projects",
+        help_text="Users who have access to a project."
+    )
     base_project = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
-        help_text=("Base project containing this entity.For top-level project metadata, this is `self`."),
+        help_text=(
+            "Base project containing this entity."
+            "For top-level project metadata, this is `self`."
+        ),
     )
     created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
@@ -63,7 +71,9 @@ class ProjectMetadata(models.Model):
     @property
     def project_graph(self):
         """Convenience method for returning the project graph metadata"""
-        return self.__class__.objects.get(name=constants.PROJECT_GRAPH, base_project=self.base_project)
+        return self.__class__.objects.get(
+            name=constants.PROJECT_GRAPH, base_project=self.base_project
+        )
 
     @classmethod
     def get_project_by_id(cls, project_id: str):
@@ -85,7 +95,13 @@ class ProjectMetadata(models.Model):
 
     def to_dict(self):
         """dict representation."""
-        return {"uuid": self.uuid, "name": self.name, "value": self.value, "created": self.created, "lastUpdated": self.last_updated}
+        return {
+            "uuid": self.uuid,
+            "name": self.name,
+            "value": self.value,
+            "created": self.created,
+            "lastUpdated": self.last_updated
+        }
 
     def sync_users(self):
         """Sync associated users with the user list in the metadata."""

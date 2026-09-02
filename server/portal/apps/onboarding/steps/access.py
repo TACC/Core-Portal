@@ -7,7 +7,7 @@ class RequestAccessStep(AbstractStep):
         """
         Call super class constructor
         """
-        super().__init__(user)
+        super(RequestAccessStep, self).__init__(user)
         self.user_confirm = "Request Portal Access"
         self.staff_approve = "Grant Portal Access"
         self.staff_deny = "Deny Access Request"
@@ -20,7 +20,7 @@ class RequestAccessStep(AbstractStep):
                   After sending the request, wait for their approval."""
 
     def prepare(self):
-        super().prepare()
+        super(RequestAccessStep, self).prepare()
         self.state = SetupState.PENDING
         self.log("Waiting for access check")
 
@@ -43,8 +43,18 @@ class RequestAccessStep(AbstractStep):
             return
 
         if action == "staff_approve":
-            self.complete(f"Portal access request approved by {request.user.username}")
+            self.complete(
+                "Portal access request approved by {user}".format(
+                    user=request.user.username
+                )
+            )
         elif action == "staff_deny":
-            self.deny("Portal access request has not been approved.")
+            self.deny(
+                "Portal access request has not been approved."
+            )
         else:
-            self.fail(f"Invalid client action {action}")
+            self.fail(
+                "Invalid client action {action}".format(
+                    action=action
+                )
+            )

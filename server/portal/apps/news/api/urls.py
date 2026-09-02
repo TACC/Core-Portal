@@ -2,7 +2,7 @@ from django.urls import path
 
 from portal.apps.news.api.views import UserNewsView
 
-app_name = "news_api"
+app_name = 'news_api'
 urlpatterns = [
-    path("", UserNewsView.as_view(), name="list"),
+    path('', UserNewsView.as_view(), name='list'),
 ]
