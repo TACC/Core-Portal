@@ -30,6 +30,9 @@ class PortalProfile(models.Model):
     # setup_complete will be set to True on first login
     setup_complete = models.BooleanField(default=False)
 
+    institution = models.CharField(max_length=255, null=True)
+    orcid_id = models.CharField(max_length=255, null=True)
+
     def send_mail(self, subject, body=None):
         """Send mail to user"""
         send_mail(subject,

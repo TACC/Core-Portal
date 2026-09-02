@@ -75,13 +75,6 @@ export const helloWorldAppFixture = {
         containerArgs: [],
         schedulerOptions: [
           {
-            arg: '--tapis-profile tacc',
-            name: 'TACC Scheduler Profile',
-            description: 'Scheduler profile for HPC clusters at TACC',
-            inputMode: 'FIXED',
-            notes: {},
-          },
-          {
             arg: '--job-name ${JobName}',
             name: 'Slurm job name',
             description:

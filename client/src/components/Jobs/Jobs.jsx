@@ -237,6 +237,7 @@ function JobsView({
             resultCount={jobs.length}
             dataType="Jobs"
             infiniteScroll
+            forbidWhitespace
             disabled={isJobLoading || isNotificationLoading}
           />
           <Button
