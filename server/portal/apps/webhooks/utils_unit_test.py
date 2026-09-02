@@ -1,12 +1,6 @@
-
 from portal.apps.webhooks.models import ExternalCall
 from portal.apps.webhooks.callback import WebhookCallback
-from portal.apps.webhooks.utils import (
-    load_callback,
-    register_webhook,
-    validate_webhook,
-    execute_callback
-)
+from portal.apps.webhooks.utils import load_callback, register_webhook, validate_webhook, execute_callback
 import pytest
 
 
@@ -28,12 +22,12 @@ def mock_invalid_function():
 
 
 def test_load_callback():
-    result = load_callback('portal.apps.webhooks.utils_unit_test.MockCallback')
+    result = load_callback("portal.apps.webhooks.utils_unit_test.MockCallback")
     assert isinstance(result, MockCallback)
     with pytest.raises(ValueError):
-        load_callback('portal.apps.webhooks.utils_unit_test.InvalidCallback')
+        load_callback("portal.apps.webhooks.utils_unit_test.InvalidCallback")
     with pytest.raises(ValueError):
-        load_callback('portal.apps.webhooks.utils_unit_test.mock_invalid_function')
+        load_callback("portal.apps.webhooks.utils_unit_test.mock_invalid_function")
 
 
 def test_register_webhook(mock_webhook_id, regular_user):
@@ -60,9 +54,6 @@ def test_validate_webhook(mock_webhook_id):
 
 
 def test_execute_callback():
-    register_webhook(
-        callback='portal.apps.webhooks.utils_unit_test.MockCallback',
-        callback_data={"key": "value"}
-    )
+    register_webhook(callback="portal.apps.webhooks.utils_unit_test.MockCallback", callback_data={"key": "value"})
     external_callback = ExternalCall.objects.all()[0]
     execute_callback(external_callback, "mock_request")

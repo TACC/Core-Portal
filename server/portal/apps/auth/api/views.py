@@ -19,9 +19,7 @@ class TapisToken(BaseApiView):
 
         # By accessing client(), we ensure that there is a non-expired access_token which can be immediately used
         client = request.user.tapis_oauth.client
-        session_key_hash = sha256(
-            (request.session.session_key or "").encode()
-        ).hexdigest()
+        session_key_hash = sha256((request.session.session_key or "").encode()).hexdigest()
 
         return JsonResponse(
             {

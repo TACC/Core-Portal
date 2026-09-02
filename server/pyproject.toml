@@ -69,7 +69,7 @@ requests-mock = "^1.10.0"
 ruff = "^0.16.5"
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py312"
 
 [tool.ruff.lint]

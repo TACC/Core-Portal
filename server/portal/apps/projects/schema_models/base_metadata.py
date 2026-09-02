@@ -20,9 +20,7 @@ class BaseMetadataModel(BaseModel):
 
     def model_dump(self, *args, **kwargs):
         # default by_alias to true for camelCase serialization
-        return partial(super().model_dump, by_alias=True, exclude_none=True)(
-            *args, **kwargs
-        )
+        return partial(super().model_dump, by_alias=True, exclude_none=True)(*args, **kwargs)
 
 
 class BaseFileMetadata(BaseMetadataModel):

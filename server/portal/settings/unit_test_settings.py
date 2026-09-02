@@ -21,168 +21,153 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SITE_ID = 1
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '__CHANGE_ME!__'
+SECRET_KEY = "__CHANGE_ME!__"
 # SECURITY WARNING: don't run with debug turned on in production!
 # Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME = 'sessionid'  # use the sessionid in your views code
+SESSION_COOKIE_NAME = "sessionid"  # use the sessionid in your views code
 # the module to store sessions data
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
+SESSION_COOKIE_AGE = 24 * 60 * 60 * 7  # the number of seconds for only 7 for example
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 # Custom Portal Template Assets
-PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_ADMIN_USERNAME = 'wma_prtl'
+PORTAL_ICON_FILENAME = "path/to/icon.ico"
+PORTAL_ADMIN_USERNAME = "wma_prtl"
 
 # Application definition
 
-ROOT_URLCONF = 'portal.urls'
+ROOT_URLCONF = "portal.urls"
 
 
 INSTALLED_APPS = [
-
     # Django Channels
-    'channels',
-    'daphne',
-
+    "channels",
+    "daphne",
     # Core Django.
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'django.contrib.sitemaps',
-    'django.contrib.sessions.middleware',
-
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
+    "django.contrib.sessions.middleware",
     # Pipeline.
-    'termsandconditions',
-    'impersonate',
-
+    "termsandconditions",
+    "impersonate",
     # Custom apps.
-    'portal.apps.accounts',
-    'portal.apps.auth',
-    'portal.apps.tickets',
-    'portal.apps.licenses',
-    'portal.apps.notifications',
-    'portal.apps.news',
-    'portal.apps.onboarding',
-    'portal.apps.search',
-    'portal.apps.webhooks',
-    'portal.apps.workbench',
-    'portal.apps.workspace',
-    'portal.apps.system_monitor',
-    'portal.apps.googledrive_integration',
-    'portal.apps.datafiles',
-    'portal.apps.projects',
-    'portal.apps.portal_messages',
-    'portal.apps.publications',
-
+    "portal.apps.accounts",
+    "portal.apps.auth",
+    "portal.apps.tickets",
+    "portal.apps.licenses",
+    "portal.apps.notifications",
+    "portal.apps.news",
+    "portal.apps.onboarding",
+    "portal.apps.search",
+    "portal.apps.webhooks",
+    "portal.apps.workbench",
+    "portal.apps.workspace",
+    "portal.apps.system_monitor",
+    "portal.apps.googledrive_integration",
+    "portal.apps.datafiles",
+    "portal.apps.projects",
+    "portal.apps.portal_messages",
+    "portal.apps.publications",
 ]
 
 MIDDLEWARE = [
     # Django core middleware.
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "impersonate.middleware.ImpersonateMiddleware",  # must be AFTER django.contrib.auth
 ]
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-
-                'portal.utils.contextprocessors.analytics',
-                'portal.utils.contextprocessors.debug',
-                'portal.utils.contextprocessors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "portal.utils.contextprocessors.analytics",
+                "portal.utils.contextprocessors.debug",
+                "portal.utils.contextprocessors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'portal.wsgi.application'
+WSGI_APPLICATION = "portal.wsgi.application"
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
-LOGIN_REDIRECT_URL = '/index/'
+LOGIN_REDIRECT_URL = "/index/"
 LOGOUT_REDIRECT_URL = "/cms/logout/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-LANGUAGES = [
-    ('en-us', 'US English')
-]
+LANGUAGES = [("en-us", "US English")]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 ]
 
 FIXTURE_DIRS = [
-    os.path.join(BASE_DIR, 'fixtures'),
+    os.path.join(BASE_DIR, "fixtures"),
 ]
 
 STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test'
-    }
-}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "test"}}
 
 # DATABASES = {
 #     'default': {
@@ -197,122 +182,126 @@ DATABASES = {
 
 ALLOCATION_SYSTEMS = []
 
-PORTAL_NAMESPACE = 'test'
-PORTAL_ALLOCATION = 'test'
+PORTAL_NAMESPACE = "test"
+PORTAL_ALLOCATION = "test"
 PORTAL_PROJECTS_USE_SET_FACL_JOB = False
-PROJECT_ADMIN_GROUP = 'Project Admin'
+PROJECT_ADMIN_GROUP = "Project Admin"
 
 
-PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
+PORTAL_KEYS_MANAGER = "portal.apps.accounts.managers.ssh_keys.KeysManager"
+PORTAL_PROJECTS_PEMS_APP_ID = "pems.app-test"
 
-PORTAL_PROJECTS_SYSTEM_PREFIX = 'test.project'
+PORTAL_PROJECTS_SYSTEM_PREFIX = "test.project"
 
 PORTAL_PROJECTS_ENABLE_METADATA = False
 
-PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = 'test.project.published'
+PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "test.project.published"
 
 PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
 
 PORTAL_PUBLICATION_PUBLISHER = None
 
-PORTAL_PROJECTS_ID_PREFIX = 'test.project'
+PORTAL_PROJECTS_ID_PREFIX = "test.project"
 
-PORTAL_PROJECTS_ROOT_DIR = '/path/to/root'
+PORTAL_PROJECTS_ROOT_DIR = "/path/to/root"
 
-PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'projects.system.name'
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = "projects.system.name"
 
-PORTAL_PROJECTS_ROOT_HOST = 'host.for.projects.tacc.utexas.edu'
+PORTAL_PROJECTS_ROOT_HOST = "host.for.projects.tacc.utexas.edu"
 
 PORTAL_PROJECTS_SYSTEM_PORT = 22
 
-PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
-                               'change this'
-                               '-----END RSA PRIVATE KEY-----')
-PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
+PORTAL_PROJECTS_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----change this-----END RSA PRIVATE KEY-----"
+PORTAL_PROJECTS_PUBLIC_KEY = "ssh-rsa change this"
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
-        'settings': {
-            'key': 'value'
-        }
-    }
+    {"step": "portal.apps.onboarding.steps.test_steps.MockStep", "settings": {"key": "value"}}
 ]
-PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
+PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = "dev"
 
 PORTAL_DATA_DEPOT_MANAGERS = {
-    'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
-    'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
-    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
+    "my-data": "portal.apps.data_depot.managers.private_data.FileManager",
+    "shared": "portal.apps.data_depot.managers.shared.FileManager",
+    "my-projects": "portal.apps.data_depot.managers.projects.FileManager",
+    "google-drive": "portal.apps.data_depot.managers.google_drive.FileManager",
 }
 
 PORTAL_SEARCH_MANAGERS = {
-    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
-    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
+    "my-data": "portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager",
+    "shared": "portal.apps.search.api.managers.shared_search.SharedSearchManager",
+    "cms": "portal.apps.search.api.managers.cms_search.CMSSearchManager",
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
+PORTAL_JOB_NOTIFICATION_STATES = [
+    "PENDING",
+    "STAGING_INPUTS",
+    "RUNNING",
+    "ARCHIVING",
+    "BLOCKED",
+    "PAUSED",
+    "FINISHED",
+    "CANCELLED",
+    "FAILED",
+]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
         "client_secret": "test",
         "client_id": "test",
         "name": "Google Drive",
-        "directory": "external-resources"
+        "directory": "external-resources",
     }
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
 PORTAL_WORKSPACE_MANAGERS = {
-    'private': 'portal.apps.workspace.managers.private.FileManager',
-    'shared': 'portal.apps.workspace.managers.shared.FileManager',
+    "private": "portal.apps.workspace.managers.private.FileManager",
+    "shared": "portal.apps.workspace.managers.shared.FileManager",
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.
-TAS_URL = 'https://test.com'
-TAS_CLIENT_KEY = 'test'
-TAS_CLIENT_SECRET = 'test'
+TAS_URL = "https://test.com"
+TAS_CLIENT_KEY = "test"
+TAS_CLIENT_SECRET = "test"
 # Redmine Tracker Authentication.
-RT_URL = 'test'
-RT_HOST = 'https://test.com'
-RT_UN = 'test'
-RT_PW = 'test'
-RT_QUEUE = 'test'
-RT_TAG = 'test_tag'
+RT_URL = "test"
+RT_HOST = "https://test.com"
+RT_UN = "test"
+RT_PW = "test"
+RT_QUEUE = "test"
+RT_TAG = "test_tag"
 
 # Tapis Tenant.
-TAPIS_TENANT_BASEURL = 'https://example.tapis.io'
+TAPIS_TENANT_BASEURL = "https://example.tapis.io"
 
 # Tapis Client Configuration
-TAPIS_CLIENT_ID = 'test'
-TAPIS_CLIENT_KEY = 'test'
-TAPIS_ADMIN_JWT = 'test'
-TAPIS_DEFAULT_TRASH_NAME = 'test'
+TAPIS_CLIENT_ID = "test"
+TAPIS_CLIENT_KEY = "test"
+TAPIS_ADMIN_JWT = "test"
+TAPIS_DEFAULT_TRASH_NAME = "test"
 
-AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
-AGAVE_JWT_ISSUER = 'wso2.org/products/am'
-AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
+AGAVE_JWT_HEADER = "HTTP_X_AGAVE_HEADER"
+AGAVE_JWT_ISSUER = "wso2.org/products/am"
+AGAVE_JWT_USER_CLAIM_FIELD = "http://wso2.org/claims/fullname"
 
-ES_HOSTS = ['test.com']
+ES_HOSTS = ["test.com"]
 ES_AUTH = "user:password"
 ES_INDEX_PREFIX = "test-staging-{}"
 
 SYSTEM_MONITOR_URL = "https://sysmon.example.com/foo.json"
 
 HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': ('haystack.backends.elasticsearch_backend.'
-                   'ElasticsearchSearchEngine'),
-        'URL': 'test:9200/',
-        'INDEX_NAME': 'cms',
+    "default": {
+        "ENGINE": ("haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine"),
+        "URL": "test:9200/",
+        "INDEX_NAME": "cms",
     }
 }
-HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+HAYSTACK_ROUTERS = [
+    "aldryn_search.router.LanguageRouter",
+]
 
 """
 SETTINGS: RECAPTCHA TESTING KEY
@@ -326,229 +315,251 @@ SETTINGS: LOGGING
 """
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'default': {
-            'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s"
         },
-        'metrics': {
-            'format': '[METRICS-TEST] %(levelname)s %(module)s %(name)s.'
-                      '%(funcName)s:%(lineno)s: %(message)s '
-                      'user=%(user)s sessionId=%(sessionId)s '
-                      'op=%(operation)s info=%(info)s'
+        "metrics": {
+            "format": "[METRICS-TEST] %(levelname)s %(module)s %(name)s."
+            "%(funcName)s:%(lineno)s: %(message)s "
+            "user=%(user)s sessionId=%(sessionId)s "
+            "op=%(operation)s info=%(info)s"
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'default',
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "default",
         },
-        'metrics_console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'metrics',
-        }
+        "metrics_console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "metrics",
+        },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
         },
-        'portal': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+        "portal": {
+            "handlers": ["console"],
+            "level": "DEBUG",
         },
-        'metrics': {
-            'handlers': ['metrics_console'],
-            'level': 'INFO',
+        "metrics": {
+            "handlers": ["metrics_console"],
+            "level": "INFO",
         },
-        'paramiko': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
-        }
+        "paramiko": {"handlers": ["console"], "level": "DEBUG"},
     },
 }
 
 MIGRATION_MODULES = {
-    'auth': None,
-    'contenttypes': None,
-
-
-    'default': None,
-    'core': None,
-    'profiles': None,
+    "auth": None,
+    "contenttypes": None,
+    "default": None,
+    "core": None,
+    "profiles": None,
 }
 
-COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
+COMMUNITY_INDEX_SCHEDULE = {"hour": 0, "minute": 0, "day_of_week": 0}
 
 """
 SETTINGS: SUPPORTED FILE PREVIEW TYPES
 """
 
 SUPPORTED_MS_WORD = [
-    '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
+    ".doc",
+    ".dot",
+    ".docx",
+    ".docm",
+    ".dotx",
+    ".dotm",
+    ".docb",
 ]
 SUPPORTED_MS_EXCEL = [
-    '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
+    ".xls",
+    ".xlt",
+    ".xlm",
+    ".xlsx",
+    ".xlsm",
+    ".xltx",
+    ".xltm",
 ]
 SUPPORTED_MS_POWERPOINT = [
-    '.ppt', '.pot', '.pps', '.pptx', '.pptm',
-    '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+    ".ppt",
+    ".pot",
+    ".pps",
+    ".pptx",
+    ".pptm",
+    ".potx",
+    ".ppsx",
+    ".ppsm",
+    ".sldx",
+    ".sldm",
 ]
 
-SUPPORTED_MS_OFFICE = (
-    SUPPORTED_MS_WORD +
-    SUPPORTED_MS_POWERPOINT +
-    SUPPORTED_MS_EXCEL
-)
+SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
 
 SUPPORTED_IMAGE_PREVIEW_EXTS = [
-    '.png', '.gif', '.jpg', '.jpeg',
+    ".png",
+    ".gif",
+    ".jpg",
+    ".jpeg",
 ]
 
 SUPPORTED_TEXT_PREVIEW_EXTS = [
-    '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
-    '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
-    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
-    '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
-    '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
-    '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
-    '.out', '.err', '.f',
+    ".as",
+    ".as3",
+    ".asm",
+    ".bat",
+    ".c",
+    ".cc",
+    ".cmake",
+    ".cpp",
+    ".cs",
+    ".css",
+    ".csv",
+    ".cxx",
+    ".diff",
+    ".groovy",
+    ".h",
+    ".haml",
+    ".hh",
+    ".java",
+    ".js",
+    ".less",
+    ".m",
+    ".make",
+    ".md",
+    ".ml",
+    ".mm",
+    ".msg",
+    ".php",
+    ".pl",
+    ".properties",
+    ".py",
+    ".rb",
+    ".sass",
+    ".scala",
+    ".script",
+    ".sh",
+    ".sml",
+    ".sql",
+    ".txt",
+    ".vi",
+    ".vim",
+    ".xml",
+    ".xsd",
+    ".xsl",
+    ".yaml",
+    ".yml",
+    ".tcl",
+    ".json",
+    ".out",
+    ".err",
+    ".f",
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [
-    '.pdf',
+    ".pdf",
 ]
 
-SUPPORTED_IPYNB_PREVIEW_EXTS = [
-    '.ipynb'
-]
+SUPPORTED_IPYNB_PREVIEW_EXTS = [".ipynb"]
 
-SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
-    '.htm', '.html'
-]
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [".htm", ".html"]
 
-SUPPORTED_BRAINMAP_PREVIEW_EXTS = [
-    '.nii', '.nii.gz'
-]
+SUPPORTED_BRAINMAP_PREVIEW_EXTS = [".nii", ".nii.gz"]
 
-SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
-                                SUPPORTED_TEXT_PREVIEW_EXTS +
-                                SUPPORTED_OBJECT_PREVIEW_EXTS +
-                                SUPPORTED_MS_OFFICE +
-                                SUPPORTED_IPYNB_PREVIEW_EXTS +
-                                SUPPORTED_BRAINMAP_PREVIEW_EXTS)
+SUPPORTED_PREVIEW_EXTENSIONS = (
+    SUPPORTED_IMAGE_PREVIEW_EXTS
+    + SUPPORTED_TEXT_PREVIEW_EXTS
+    + SUPPORTED_OBJECT_PREVIEW_EXTS
+    + SUPPORTED_MS_OFFICE
+    + SUPPORTED_IPYNB_PREVIEW_EXTS
+    + SUPPORTED_BRAINMAP_PREVIEW_EXTS
+)
 
 # Channels
-ASGI_APPLICATION = 'portal.asgi.application'
+ASGI_APPLICATION = "portal.asgi.application"
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 
 PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
-        'name': 'My Data (Work)',
-        'system': 'cloud.data',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/home/{username}',
-        'icon': None,
-        'default': True
+        "name": "My Data (Work)",
+        "system": "cloud.data",
+        "scheme": "private",
+        "api": "tapis",
+        "homeDir": "/home/{username}",
+        "icon": None,
+        "default": True,
     },
     {
-        'name': 'My Data (Frontera)',
-        'system': 'frontera',
-        'scheme': 'private',
-        'api': 'tapis',
-        'homeDir': '/home1/{tasdir}',
-        'icon': None,
+        "name": "My Data (Frontera)",
+        "system": "frontera",
+        "scheme": "private",
+        "api": "tapis",
+        "homeDir": "/home1/{tasdir}",
+        "icon": None,
     },
     {
-        'name': 'Community Data',
-        'system': 'cloud.data',
-        'scheme': 'community',
-        'api': 'tapis',
-        'homeDir': '/path/to/community',
-        'icon': None,
-        'siteSearchPriority': 1
+        "name": "Community Data",
+        "system": "cloud.data",
+        "scheme": "community",
+        "api": "tapis",
+        "homeDir": "/path/to/community",
+        "icon": None,
+        "siteSearchPriority": 1,
     },
     {
-        'name': 'Public Data',
-        'system': 'cloud.data',
-        'scheme': 'public',
-        'api': 'tapis',
-        'homeDir': '/path/to/public',
-        'icon': 'publications',
-        'siteSearchPriority': 0
+        "name": "Public Data",
+        "system": "cloud.data",
+        "scheme": "public",
+        "api": "tapis",
+        "homeDir": "/path/to/public",
+        "icon": "publications",
+        "siteSearchPriority": 0,
     },
+    {"name": "Shared Workspaces", "scheme": "projects", "api": "tapis", "icon": "publications"},
     {
-        'name': 'Shared Workspaces',
-        'scheme': 'projects',
-        'api': 'tapis',
-        'icon': 'publications'
+        "name": "Google Drive",
+        "system": "googledrive",
+        "scheme": "private",
+        "api": "googledrive",
+        "icon": None,
+        "integration": "portal.apps.googledrive_integration",
     },
-    {
-        'name': 'Google Drive',
-        'system': 'googledrive',
-        'scheme': 'private',
-        'api': 'googledrive',
-        'icon': None,
-        'integration': 'portal.apps.googledrive_integration'
-    }
 ]
-PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next((sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['default'] is True), None)
+PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM = next(
+    (sys for sys in PORTAL_DATAFILES_STORAGE_SYSTEMS if sys["default"] is True), None
+)
 
 
 """
 SETTINGS: TACC EXECUTION SYSTEMS
 """
 TACC_EXEC_SYSTEMS = {
-    'corral': {
-        'work_dir': '/work2/{}',
-        'scratch_dir': '/work2/{}',
-        'home_dir': '/home/{}'
-    },
-    'stampede2': {
-        'work_dir': '/work2/{}',
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home1/{}'
-    },
-    'frontera': {
-        'work_dir': '/work2/{}',
-        'scratch_dir': '/scratch1/{}',
-        'home_dir': '/home1/{}'
-    },
-    'ls6': {
-        'work_dir': '/work/{}',
-        'scratch_dir': '/scratch/{}',
-        'home_dir': '/home1/{}'
-    },
+    "corral": {"work_dir": "/work2/{}", "scratch_dir": "/work2/{}", "home_dir": "/home/{}"},
+    "stampede2": {"work_dir": "/work2/{}", "scratch_dir": "/scratch/{}", "home_dir": "/home1/{}"},
+    "frontera": {"work_dir": "/work2/{}", "scratch_dir": "/scratch1/{}", "home_dir": "/home1/{}"},
+    "ls6": {"work_dir": "/work/{}", "scratch_dir": "/scratch/{}", "home_dir": "/home1/{}"},
 }
 
 VANITY_BASE_URL = "https://testserver"
 
-WORKBENCH_SETTINGS = {
-    "debug": False
-}
+WORKBENCH_SETTINGS = {"debug": False}
 
-PORTAL_ELEVATED_ROLES = {
-  "is_staff": {
-    "groups": [],
-    "usernames": []
-  },
-  "is_superuser": {
-    "groups": [],
-    "usernames": []
-  }
-}
+PORTAL_ELEVATED_ROLES = {"is_staff": {"groups": [], "usernames": []}, "is_superuser": {"groups": [], "usernames": []}}
 
-INTERNAL_DOCS_URL = 'core/internal-docs/'
-INTERNAL_DOCS_ROOT = ''
+INTERNAL_DOCS_URL = "core/internal-docs/"
+INTERNAL_DOCS_ROOT = ""
 
 IS_TACC_PORTAL = True

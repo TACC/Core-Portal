@@ -15,9 +15,7 @@ TRASH = f"{PORTAL_NAMESPACE}.project.trash"
 # Override with portal-specific constants (domain entity types, or explicit
 # overrides of the names above)
 try:
-    _portal_constants = importlib.import_module(
-        f"portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.constants"
-    )
+    _portal_constants = importlib.import_module(f"portal.apps._custom.{settings.PORTAL_NAMESPACE.lower()}.constants")
     for _name in dir(_portal_constants):
         if _name.isupper() and not _name.startswith("_"):
             globals()[_name] = getattr(_portal_constants, _name)

@@ -27,9 +27,7 @@ def test_auth_tapis(client, mocker):
 def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     mock_authenticate = mocker.patch("portal.apps.auth.views.authenticate")
     mock_tapis_token_post = mocker.patch("portal.apps.auth.views.requests.post")
-    mock_launch_setup_checks = mocker.patch(
-        "portal.apps.auth.views.launch_setup_checks"
-    )
+    mock_launch_setup_checks = mocker.patch("portal.apps.auth.views.launch_setup_checks")
 
     # add auth to session
     session = client.session
@@ -40,9 +38,7 @@ def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     mock_tapis_token_post.return_value.status_code = 200
     mock_authenticate.return_value = regular_user
 
-    response = client.get(
-        f"/auth/tapis/callback/?state={TEST_STATE}&code=83163624a0bc41c4a376e0acb16a62f9"
-    )
+    response = client.get(f"/auth/tapis/callback/?state={TEST_STATE}&code=83163624a0bc41c4a376e0acb16a62f9")
     assert response.status_code == 302
     assert response.url == settings.LOGIN_REDIRECT_URL
     assert mock_launch_setup_checks.call_count == 1
@@ -81,14 +77,10 @@ def test_session_lifetime_endpoint(client, regular_user):
 
 
 def test_launch_setup_checks(regular_user, mocker):
-    mock_execute_setup_steps = mocker.patch(
-        "portal.apps.auth.views.execute_setup_steps"
-    )
-    mocker.patch('portal.apps.auth.views.index_allocations')
+    mock_execute_setup_steps = mocker.patch("portal.apps.auth.views.execute_setup_steps")
+    mocker.patch("portal.apps.auth.views.index_allocations")
     launch_setup_checks(regular_user)
-    mock_execute_setup_steps.apply_async.assert_called_with(
-        args=[regular_user.username]
-    )
+    mock_execute_setup_steps.apply_async.assert_called_with(args=[regular_user.username])
 
 
 def test_launch_setup_checks_already_onboarded(regular_user, mocker):

@@ -7,6 +7,7 @@ class WebhookCallback(object):
     An abstract base class for executing callback functions upon
     receiving a validated webhook.
     """
+
     def __init__(self):
         pass
 
