@@ -1,13 +1,14 @@
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
+import requests
 from django.conf import settings
 from requests.auth import HTTPBasicAuth
-import requests
+
+from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.abstract import AbstractStep
 
 
 class MFAStep(AbstractStep):
     def __init__(self, user):
-        super(MFAStep, self).__init__(user)
+        super().__init__(user)
         self.user_confirm = "Confirm MFA Pairing"
 
     def display_name(self):
@@ -17,8 +18,9 @@ class MFAStep(AbstractStep):
         return """First, set up multi-factor authentication on the
                 <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu">TACC User Portal</a>
                 using the
-                <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu/tutorials/multifactor-authentication#tacctokenapp">TACC Token App</a>,
-                then confirm the pairing was successful."""
+                <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu/tutorials/multifactor-authentication#tacctokenapp">
+                TACC Token App
+                </a>, then confirm the pairing was successful."""
 
     def custom_status(self):
         if self.state == SetupState.COMPLETED:
@@ -52,4 +54,4 @@ class MFAStep(AbstractStep):
             self.prepare()
 
     def tas_pairings_url(self):
-        return "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username)
+        return f"{settings.TAS_URL}/tup/users/{self.user.username}/pairings"

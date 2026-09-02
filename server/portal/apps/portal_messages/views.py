@@ -4,14 +4,15 @@
               and generate CustomMessages
 """
 
-import logging
-from portal.views.base import BaseApiView
-from django.http import JsonResponse
-from portal.apps.portal_messages.models import IntroMessages, CustomMessages, CustomMessageTemplate
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 import json
+import logging
 
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+
+from portal.apps.portal_messages.models import CustomMessages, CustomMessageTemplate, IntroMessages
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 

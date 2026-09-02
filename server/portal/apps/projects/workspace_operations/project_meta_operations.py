@@ -1,15 +1,17 @@
 import operator
 import os
 import uuid
-from django.db import models, transaction
-from django.conf import settings
 from pathlib import Path
 from typing import get_args
+
 import networkx as nx
-from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
-from portal.apps.projects.schema_models import constants
+from django.conf import settings
+from django.db import models, transaction
+
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.schema_models.base_metadata import PartialEntityWithFiles, FileObj
+from portal.apps.projects.schema_models import constants
+from portal.apps.projects.schema_models.base_metadata import FileObj, PartialEntityWithFiles
+from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
 from portal.apps.projects.workspace_operations.graph_operations import (
     get_node_from_path,
     get_node_from_uuid,
@@ -71,7 +73,8 @@ def get_value(project_id, path):
 def get_ordered_value(name, value):
     """
     Return the metadata in the order defined in the Pydantic model.
-    Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be updated to use camelCase.
+    Also converts camelCase keys to snake_case. This is a temporary workaround until fields in settings_forms.py can be
+    updated to use camelCase.
     """
     schema = SCHEMA_MAPPING.get(name)
 

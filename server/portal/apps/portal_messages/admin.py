@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from portal.apps.portal_messages.models import CustomMessageTemplate
 
 

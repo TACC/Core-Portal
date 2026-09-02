@@ -1,15 +1,17 @@
 import json
-from portal.views.base import BaseApiView
+import logging
+
+import networkx as nx
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
-from portal.exceptions.api import ApiException
+
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
-import networkx as nx
-from portal.apps.projects.workspace_operations.project_meta_operations import patch_file_obj_entity
 from portal.apps.projects.tasks import process_file
 from portal.apps.projects.views import get_project_client
-import logging
+from portal.apps.projects.workspace_operations.project_meta_operations import patch_file_obj_entity
+from portal.exceptions.api import ApiException
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 

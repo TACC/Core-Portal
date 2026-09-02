@@ -3,15 +3,17 @@
    :synopsis: Unit tests for Agave libraries.
 """
 
+import copy
+import json
 import logging
 import os
-import json
-import copy
-from mock import patch, call
-from django.test import TestCase
+from unittest.mock import call, patch
+
 from django.conf import settings
-from portal.libs.agave import utils as AgaveUtils
+from django.test import TestCase
 from tapipy.tapis import TapisResult
+
+from portal.libs.agave import utils as AgaveUtils
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -23,7 +25,7 @@ class TestAgaveUtils(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestAgaveUtils, cls).setUpClass()
+        super().setUpClass()
         cls.magave_patcher = patch("portal.apps.auth.models.TapisOAuthToken.client", autospec=True)
         cls.magave = cls.magave_patcher.start()
 

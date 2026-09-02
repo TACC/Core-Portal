@@ -3,12 +3,13 @@
    :synopsis: Utilities to handle encryption and ssh keys
 """
 
-import logging
 import base64
-from Crypto.PublicKey import RSA
+import logging
+
+from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
-from Crypto import Random
+from Crypto.PublicKey import RSA
 from django.conf import settings
 
 # pylint: disable=invalid-name

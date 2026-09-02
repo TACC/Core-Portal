@@ -1,8 +1,10 @@
-from mock import patch
+from unittest.mock import patch
+
 import pytest
-from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.test import TransactionTestCase
+
 from portal.apps.workspace.models import JobSubmission
 
 

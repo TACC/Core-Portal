@@ -1,7 +1,8 @@
 from django.conf import settings
-from portal.libs.agave.utils import service_account
-from portal.libs.agave.operations import iterate_listing
+
 from portal.apps.projects.models.base import Project
+from portal.libs.agave.operations import iterate_listing
+from portal.libs.agave.utils import service_account
 
 
 def get_latest_project_storage(max_project_id=None):

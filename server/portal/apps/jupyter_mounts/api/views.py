@@ -1,15 +1,15 @@
-from portal.utils.decorators import agave_jwt_login
-from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
-from portal.apps.auth.models import TapisOAuthToken
-from portal.views.base import BaseApiView
-from portal.apps.projects.workspace_operations.shared_workspace_operations import list_projects, get_workspace_role
-from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
-
 import logging
 
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+
+from portal.apps.auth.models import TapisOAuthToken
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems
+from portal.apps.projects.workspace_operations.shared_workspace_operations import get_workspace_role, list_projects
+from portal.utils.decorators import agave_jwt_login
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class JupyterMountsApiView(BaseApiView):
                     }
                 )
             except Exception:
-                logger.exception("Could not retrieve system {}".format(system))
+                logger.exception(f"Could not retrieve system {system}")
         return result
 
     def getLocalStorageSystems(self, tapis_oauth: TapisOAuthToken) -> list:
@@ -63,7 +63,7 @@ class JupyterMountsApiView(BaseApiView):
                     }
                 )
             except Exception:
-                logger.exception("Could not retrieve system {}".format(system))
+                logger.exception(f"Could not retrieve system {system}")
         return result
 
     def getProjectSystems(self, tapis_oauth: TapisOAuthToken) -> list:
@@ -88,9 +88,7 @@ class JupyterMountsApiView(BaseApiView):
             result.append(
                 {
                     "path": project["path"],
-                    "mountPath": "/{namespace}/My Projects/{name}".format(
-                        namespace=settings.PORTAL_NAMESPACE, name=name
-                    ),
+                    "mountPath": f"/{settings.PORTAL_NAMESPACE}/My Projects/{name}",
                     "pems": permissions,
                 }
             )

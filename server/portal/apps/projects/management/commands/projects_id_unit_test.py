@@ -1,8 +1,9 @@
 from io import StringIO
+
 import pytest
 from django.core.management import call_command
-from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
 
+from portal.apps.projects.models.utils import get_latest_project_directory, get_latest_project_storage
 
 pytestmark = pytest.mark.django_db
 

@@ -4,13 +4,14 @@
 """
 
 import logging
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from portal.utils import encryption as EncryptionUtil
 
+from portal.utils import encryption as EncryptionUtil
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -93,12 +94,12 @@ class SSHKeysManager(models.Manager):
         try:
             Keys.objects.get(ssh_keys__user=user, system=system_id)
         except ObjectDoesNotExist:
-            ssh_keys = super(SSHKeysManager, self).create(user=user)
+            ssh_keys = super().create(user=user)
             Keys.objects.create(ssh_keys=ssh_keys, system=system_id, private=priv_key, public=pub_key)
             return ssh_keys
         raise ValueError(
-            """A set of keys for system: '{system}' and username: '{username}'
-               already exists""".format(system=system_id, username=user.username)
+            f"""A set of keys for system: '{system_id}' and username: '{user.username}'
+               already exists"""
         )
 
     def update_keys(self, user, system_id, priv_key, pub_key):
@@ -123,15 +124,15 @@ class SSHKeysManager(models.Manager):
             keys = Keys.objects.get(ssh_keys__user=user, system=system_id)
         except ObjectDoesNotExist:
             try:
-                ssh_keys = super(SSHKeysManager, self).get_queryset().get(user=user)
+                ssh_keys = super().get_queryset().get(user=user)
             except ObjectDoesNotExist:
-                ssh_keys = super(SSHKeysManager, self).create(user=user)
+                ssh_keys = super().create(user=user)
             keys = Keys.objects.create(ssh_keys=ssh_keys, system=system_id)
 
         keys.public = pub_key
         keys.private = priv_key
         keys.save()
-        return super(SSHKeysManager, self).get_queryset().get(user=user)
+        return super().get_queryset().get(user=user)
 
     def save_hostname_keys(
         self,
@@ -159,12 +160,12 @@ class SSHKeysManager(models.Manager):
         try:
             HostKeys.objects.get(ssh_keys__user=user, hostname=hostname)
         except ObjectDoesNotExist:
-            ssh_keys = super(SSHKeysManager, self).create(user=user)
+            ssh_keys = super().create(user=user)
             HostKeys.objects.create(ssh_keys=ssh_keys, hostname=hostname, private=priv_key, public=pub_key)
             return ssh_keys
         raise ValueError(
-            """A set of keys for hostname: '{hostname}' and username: '{username}'
-               already exists""".format(hostname=hostname, username=user.username)
+            f"""A set of keys for hostname: '{hostname}' and username: '{user.username}'
+               already exists"""
         )
 
     def update_hostname_keys(self, user, hostname, priv_key, pub_key):
@@ -189,15 +190,15 @@ class SSHKeysManager(models.Manager):
             keys = HostKeys.objects.get(ssh_keys__user=user, hostname=hostname)
         except ObjectDoesNotExist:
             try:
-                ssh_keys = super(SSHKeysManager, self).get_queryset().get(user=user)
+                ssh_keys = super().get_queryset().get(user=user)
             except ObjectDoesNotExist:
-                ssh_keys = super(SSHKeysManager, self).create(user=user)
+                ssh_keys = super().create(user=user)
             keys = HostKeys.objects.create(ssh_keys=ssh_keys, hostname=hostname)
 
         keys.public = pub_key
         keys.private = priv_key
         keys.save()
-        return super(SSHKeysManager, self).get_queryset().get(user=user)
+        return super().get_queryset().get(user=user)
 
 
 class SSHKeys(models.Model):
@@ -290,7 +291,7 @@ class Keys(models.Model):
     public = models.TextField()
 
     def __init__(self, *args, **kwargs):
-        super(Keys, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._private = self.private
 
     def private_key(self):
@@ -306,11 +307,11 @@ class Keys(models.Model):
         """
         if self.private != self._private or self.pk is None:
             self.private = EncryptionUtil.encrypt(self.private)
-        super(Keys, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._private = self.private
 
     def __str__(self):
-        return "{username}: {system}".format(username=self.ssh_keys.user.username, system=self.system)
+        return f"{self.ssh_keys.user.username}: {self.system}"
 
 
 class HostKeys(models.Model):
@@ -330,7 +331,7 @@ class HostKeys(models.Model):
         unique_together = (("hostname", "ssh_keys"),)
 
     def __init__(self, *args, **kwargs):
-        super(HostKeys, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._private = self.private
 
     def private_key(self):
@@ -346,8 +347,8 @@ class HostKeys(models.Model):
         """
         if self.private != self._private or self.pk is None:
             self.private = EncryptionUtil.encrypt(self.private)
-        super(HostKeys, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._private = self.private
 
     def __str__(self):
-        return "{username}: {host}".format(username=self.ssh_keys.user.username, host=self.hostname)
+        return f"{self.ssh_keys.user.username}: {self.hostname}"

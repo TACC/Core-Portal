@@ -5,6 +5,7 @@
 """
 
 import logging
+
 from django.conf import settings
 from django.db import models
 
@@ -71,7 +72,7 @@ class AbstractProjectMetadata(models.Model):
 
     def __str__(self):
         """Str -> self.prj_id - self.title."""
-        return "{prj_id} - {title}".format(prj_id=self.project_id, title=self.title)
+        return f"{self.project_id} - {self.title}"
 
 
 class LegacyProjectMetadata(AbstractProjectMetadata):

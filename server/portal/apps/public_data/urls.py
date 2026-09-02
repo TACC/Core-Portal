@@ -4,8 +4,10 @@
 """
 
 import re
-from django.urls import re_path
+
 from django.conf import settings
+from django.urls import re_path
+
 from portal.apps.public_data.views import IndexView
 
 app_name = "public_data"

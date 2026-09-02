@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GoogleDriveFile(object):
+class GoogleDriveFile:
     """Represents a google drive file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
@@ -147,12 +147,12 @@ class GoogleDriveFile(object):
     def path(self):
         if self._parent:
             if self._parent.name == "My Drive":
-                path = "/{}".format(self.name)
+                path = f"/{self.name}"
             else:
                 path = "/".join([self._parent.path, self.name])
         elif "parents" in self._item:
             parent = self
-            path = "{}".format(self.name)
+            path = f"{self.name}"
             while True:
                 try:
                     self._path_collection.insert(
@@ -164,7 +164,7 @@ class GoogleDriveFile(object):
                         .execute()
                     )
                     parent_name = "" if parent.name == "My Drive" else parent.name
-                    path = "{}/{}".format(parent_name, path)
+                    path = f"{parent_name}/{path}"
                 except (AttributeError, KeyError):
                     break
         else:

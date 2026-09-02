@@ -4,11 +4,12 @@
 """
 
 import logging
+
 from portal.libs.exceptions import PortalLibException
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("metrics.{}".format(__name__))
+METRICS = logging.getLogger(f"metrics.{__name__}")
 # pylint: enable=invalid-name
 
 

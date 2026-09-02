@@ -1,7 +1,9 @@
-from .project_membership import ProjectMembershipStep
+import logging
+
 from portal.apps.onboarding.state import SetupState
 from portal.apps.users.utils import get_allocations
-import logging
+
+from .project_membership import ProjectMembershipStep
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +13,7 @@ class SystemAccessStep(ProjectMembershipStep):
         """
         Call super class constructor
         """
-        super(SystemAccessStep, self).__init__(user)
+        super().__init__(user)
         self.user_confirm = "Request System Access"
         self.staff_deny = "Deny System Access Request"
 

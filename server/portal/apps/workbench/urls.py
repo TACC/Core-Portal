@@ -4,6 +4,7 @@
 """
 
 from django.urls import re_path
+
 from portal.apps.workbench.views import IndexView
 
 app_name = "workbench"

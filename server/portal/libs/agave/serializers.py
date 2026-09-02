@@ -4,8 +4,9 @@
     wrapps an agave object into a dict.
 """
 
-import logging
 import json
+import logging
+
 from tapipy.tapis import TapisResult
 
 # pylint: disable=invalid-name

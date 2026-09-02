@@ -1,8 +1,9 @@
-from django.core.management import BaseCommand
-from django.conf import settings
 import elasticsearch
+from django.conf import settings
+from django.core.management import BaseCommand
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections  # noqa: F401
+
 from portal.libs.elasticsearch.indexes import setup_files_index
 
 
@@ -44,9 +45,8 @@ class Command(BaseCommand):
 
         if not swap_only:
             confirm = input(
-                'This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(
-                    reindex_index_alias
-                )
+                f'This will delete any documents in the index "{reindex_index_alias}" and recreate the index. '
+                "Continue? (Y/n) "
             )
             if confirm != "Y":
                 self.stdout.write("Aborting reindex.")

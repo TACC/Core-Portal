@@ -18,17 +18,17 @@ Including another URLconf
 """
 
 from django.conf import settings
-from django.contrib import admin
 from django.conf.urls.static import static
+from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from portal.apps.auth.views import tapis_oauth as login
-from portal.views.views import project_version as portal_version
+from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from django.views.generic.base import TemplateView
-from django.urls import path, re_path, include
 from impersonate import views as impersonate_views
-from portal.views.views import health_check
-from portal.views.views import serve_docs
+
+from portal.apps.auth.views import tapis_oauth as login
+from portal.views.views import health_check, serve_docs
+from portal.views.views import project_version as portal_version
 
 admin.autodiscover()
 

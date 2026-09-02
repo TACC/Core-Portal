@@ -1,11 +1,11 @@
 import json
 import logging
 import os
+from unittest.mock import MagicMock, patch
 
 import pytest
-from django.contrib.auth.models import Group
 from django.conf import settings
-from mock import MagicMock, patch
+from django.contrib.auth.models import Group
 from tapipy.errors import InternalServerError, UnauthorizedError
 from tapipy.tapis import TapisResult
 
@@ -365,16 +365,12 @@ def test_tapis_file_view_preview_supported_non_text_files(
     mock_tapis_client.files.listFiles.return_value = [TapisResult(**f) for f in agave_file_listing_mock]
     mock_tapis_client.files.createPostIt.return_value = TapisResult(redeemUrl=POSTIT_HREF, expiration=None)
     response = client.put(
-        "/api/datafiles/tapis/preview/private/frontera.home.username/test_text.{}/".format(EXTENSION),
+        f"/api/datafiles/tapis/preview/private/frontera.home.username/test_text.{EXTENSION}/",
         content_type="application/json",
         data={"href": "https//tapis.example/href"},
     )
 
-    href = (
-        POSTIT_HREF
-        if TYPE != "ms-office"
-        else "https://view.officeapps.live.com/op/view.aspx?src={}".format(POSTIT_HREF)
-    )
+    href = POSTIT_HREF if TYPE != "ms-office" else f"https://view.officeapps.live.com/op/view.aspx?src={POSTIT_HREF}"
 
     assert response.status_code == 200
     assert response.json() == {"data": {"href": href, "fileType": TYPE, "content": None, "error": None}}

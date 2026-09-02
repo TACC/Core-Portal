@@ -1,7 +1,8 @@
-import pytest
+import io
 import json
 import os
-import io
+
+import pytest
 from django.conf import settings
 
 
@@ -171,7 +172,7 @@ def test_tickets_get_history(client, authenticated_user, mock_rtutil):
     assert response.status_code == 200
     result = json.loads(response.content)
     assert len(result["ticket_history"]) == 5
-    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    full_name = f"{authenticated_user.first_name} {authenticated_user.last_name}"
     assert result["ticket_history"][2]["Creator"] == full_name
     assert result["ticket_history"][3]["Creator"] == "RT System"
     assert result["ticket_history"][4]["Creator"] == full_name
@@ -190,7 +191,7 @@ def test_tickets_get_history_handle_service_accounts(
     response = client.get("/api/tickets/1/history")
     assert response.status_code == 200
     result = json.loads(response.content)
-    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    full_name = f"{authenticated_user.first_name} {authenticated_user.last_name}"
     assert result["ticket_history"][2]["Creator"] == full_name
     assert result["ticket_history"][3]["Creator"] == "RT System"
     assert result["ticket_history"][4]["Creator"] == full_name
@@ -209,7 +210,7 @@ def test_tickets_post_history_reply_with_text(client, authenticated_user, mock_r
     mock_rtutil.replyToTicket.assert_called_with(
         ticket_id=1,
         files=[],
-        reply_text="reply text\n[Reply submitted on behalf of {}]".format(authenticated_user.username),
+        reply_text=f"reply text\n[Reply submitted on behalf of {authenticated_user.username}]",
     )
 
 
@@ -222,7 +223,7 @@ def test_tickets_post_history_reply_with_multiline_text(
     mock_rtutil.replyToTicket.assert_called_with(
         ticket_id=1,
         files=[],
-        reply_text="reply text\n[Reply submitted on behalf of {}]".format(authenticated_user.username),
+        reply_text=f"reply text\n[Reply submitted on behalf of {authenticated_user.username}]",
     )
 
 
@@ -250,4 +251,4 @@ def test_tickets_post_history_reply_with_text_and_attachment(
     _, kwargs = mock_rtutil.replyToTicket.call_args
     assert kwargs["ticket_id"] == 1
     assert len(kwargs["files"]) == 1
-    assert kwargs["reply_text"] == "reply text\n[Reply submitted on behalf of {}]".format(authenticated_user.username)
+    assert kwargs["reply_text"] == f"reply text\n[Reply submitted on behalf of {authenticated_user.username}]"

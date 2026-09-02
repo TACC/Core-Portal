@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField as DjangoJSONField
 from django.db.models import Field
 
-
 # NOTE: TODO_django: Django v3 introduces a native JSONField, so this file will be obsolete.
 # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.JSONField
 

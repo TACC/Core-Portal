@@ -1,4 +1,5 @@
 import pytest
+
 from portal.apps.projects.models.base import Project
 
 

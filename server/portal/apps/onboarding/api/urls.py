@@ -4,8 +4,8 @@
 """
 
 from django.urls import path
-from portal.apps.onboarding.api import views
 
+from portal.apps.onboarding.api import views
 
 app_name = "portal_onboarding_api"
 urlpatterns = [

@@ -4,6 +4,7 @@
 """
 
 from django.urls import re_path
+
 from portal.apps.site_search.views import IndexView
 
 app_name = "site_search"

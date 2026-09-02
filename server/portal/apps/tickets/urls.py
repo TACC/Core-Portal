@@ -1,4 +1,5 @@
 from django.urls import path
+
 from portal.apps.tickets import views
 
 app_name = "tickets"

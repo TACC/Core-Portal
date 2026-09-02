@@ -1,21 +1,23 @@
+import json
 import logging
-from portal.views.base import BaseApiView
+
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import (
     Http404,
-    JsonResponse,
     HttpResponseBadRequest,
+    JsonResponse,
 )
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
-from django.conf import settings
+
+from portal.apps.onboarding.execute import execute_setup_steps, execute_single_step, load_setup_step, log_setup_state
 from portal.apps.onboarding.models import SetupEvent, SetupEventEncoder
-from portal.apps.onboarding.execute import log_setup_state, load_setup_step, execute_single_step, execute_setup_steps
 from portal.apps.onboarding.state import SetupState
 from portal.apps.users.utils import q_to_model_queries
-import json
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -155,9 +157,7 @@ class SetupStepView(BaseApiView):
         if not request.user.is_staff:
             raise PermissionDenied
         setup_step.state = SetupState.COMPLETED
-        setup_step.log(
-            "{step} marked complete by {staff}".format(step=setup_step.display_name(), staff=request.user.username)
-        )
+        setup_step.log(f"{setup_step.display_name()} marked complete by {request.user.username}")
 
     def reset(self, request, setup_step):
         """
@@ -165,16 +165,14 @@ class SetupStepView(BaseApiView):
         """
         if not request.user.is_staff:
             raise PermissionDenied
-        setup_step.log("{step} reset by {staff}".format(step=setup_step.display_name(), staff=request.user.username))
+        setup_step.log(f"{setup_step.display_name()} reset by {request.user.username}")
 
         # Mark the user's setup_complete as False
         setup_step.user.profile.setup_complete = False
         setup_step.user.profile.save()
         log_setup_state(
             setup_step.user,
-            "{user} setup marked incomplete, due to reset of {step}".format(
-                user=setup_step.user.username, step=setup_step.step_name()
-            ),
+            f"{setup_step.user.username} setup marked incomplete, due to reset of {setup_step.step_name()}",
         )
         setup_step.prepare()
 
@@ -182,11 +180,7 @@ class SetupStepView(BaseApiView):
         """
         Call client_action on a setup step
         """
-        setup_step.log(
-            "{action} action on {step} by {username}".format(
-                action=action, step=setup_step.step_name(), username=request.user.username
-            )
-        )
+        setup_step.log(f"{action} action on {setup_step.step_name()} by {request.user.username}")
         setup_step.client_action(action, data, request)
 
     def post(self, request, username):

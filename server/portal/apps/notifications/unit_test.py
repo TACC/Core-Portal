@@ -1,14 +1,13 @@
-from django.test import TestCase
-from django.test import Client
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from unittest import skip
 import json
+import logging
 import os
+from unittest import skip
+
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
 
 from .models import Notification
-
-import logging
 
 logger = logging.getLogger(__name__)
 

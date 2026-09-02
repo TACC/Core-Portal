@@ -1,25 +1,23 @@
 import json
 import logging
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from requests import HTTPError
 from tapipy.errors import BaseTapyException
 
 from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import tapis_indexer
-from portal.views.base import BaseApiView
-from portal.libs.exceptions import PortalLibException
-from portal.exceptions.api import ApiException
-from portal.apps.webhooks.utils import validate_webhook, execute_callback
+from portal.apps.webhooks.utils import execute_callback, validate_webhook
 from portal.apps.workspace.api.utils import check_job_for_timeout
-
-from django.conf import settings
+from portal.exceptions.api import ApiException
+from portal.libs.exceptions import PortalLibException
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +41,8 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     # Validate the job UUID against the owner
     if job_data.owner != job_owner:
         logger.error(
-            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(
-                job_data.owner, job_data.status, job_owner
-            )
+            f"Tapis job (owner='{job_data.owner}', status='{job_data.status}) "
+            " for this event (owner='{job_owner}') is not valid"
         )
         raise PortalLibException("Unable to find a related valid job for this notification.")
 
@@ -94,9 +91,7 @@ class JobsWebhookView(BaseApiView):
             # Do nothing on job status not in portal notification states
             if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.info(
-                    "Job UUID {} for owner {} entered {} state (no notification sent)".format(
-                        job_uuid, username, job_status
-                    )
+                    f"Job UUID {job_uuid} for owner {username} entered {job_status} state (no notification sent)"
                 )
                 return HttpResponse("OK")
 
@@ -104,7 +99,7 @@ class JobsWebhookView(BaseApiView):
             if job_status == job_old_status:
                 return HttpResponse("OK")
 
-            logger.info("JOB STATUS CHANGE: UUID={} status={}".format(job_uuid, job_status))
+            logger.info(f"JOB STATUS CHANGE: UUID={job_uuid} status={job_status}")
 
             event_data = {
                 Notification.EVENT_TYPE: "job",
@@ -121,7 +116,7 @@ class JobsWebhookView(BaseApiView):
                 event_data[Notification.EXTRA]["status"] = job_details.status
 
                 try:
-                    logger.info("Indexing job output for job={}".format(job_uuid))
+                    logger.info(f"Indexing job output for job={job_uuid}")
 
                     tapis_indexer.apply_async(
                         kwargs={
@@ -131,7 +126,7 @@ class JobsWebhookView(BaseApiView):
                         }
                     )
                 except Exception as e:
-                    logger.exception("Error starting async task to index job output: {}".format(e))
+                    logger.exception(f"Error starting async task to index job output: {e}")
 
             with transaction.atomic():
                 Notification.objects.create(**event_data)
@@ -179,9 +174,7 @@ class InteractiveWebhookView(BaseApiView):
         try:
             valid_state = validate_tapis_job(job_uuid, job_owner, TERMINAL_JOB_STATES)
             if not valid_state:
-                raise PortalLibException(
-                    "Interactive Job UUID {} for user {} was in invalid state".format(job_uuid, job_owner)
-                )
+                raise PortalLibException(f"Interactive Job UUID {job_uuid} for user {job_owner} was in invalid state")
             event_data[Notification.EXTRA] = {
                 "name": valid_state.name,
                 "status": valid_state.status,

@@ -1,25 +1,26 @@
-from typing import Optional
-from django.conf import settings
-import logging
 import json
+import logging
 from io import StringIO
-from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
-from portal.apps.projects.models.project_metadata import ProjectMetadata
+
 import networkx as nx
 from celery import shared_task
-from portal.apps.projects.schema_models import constants
-from portal.libs.agave.utils import user_account, service_account
-from portal.apps.publications.models import Publication, PublicationRequest
-from portal.apps.projects.workspace_operations.datacite_operations import (
-    get_datacite_json,
-    upsert_datacite_json,
-    publish_datacite_doi,
-)
-from django.db import transaction
-from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
-from portal.apps.search.tasks import index_publication
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.db import transaction
+
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.schema_models import constants
+from portal.apps.projects.workspace_operations.datacite_operations import (
+    get_datacite_json,
+    publish_datacite_doi,
+    upsert_datacite_json,
+)
+from portal.apps.projects.workspace_operations.graph_operations import remove_trash_nodes
+from portal.apps.projects.workspace_operations.shared_workspace_operations import remove_user
+from portal.apps.publications.models import Publication, PublicationRequest
+from portal.apps.search.tasks import index_publication
+from portal.libs.agave.utils import service_account, user_account
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,9 @@ def publication_request_callback(
     with transaction.atomic():
         # Commented out cleanup to prevent breaking admin role functionality
         # user_client.systems.unShareSystem(systemId=source_system_id, users=[portal_admin_username])
-        # user_client.systems.revokeUserPerms(systemId=source_system_id, userName=portal_admin_username, permissions=["READ", "MODIFY", "EXECUTE"])
+        # user_client.systems.revokeUserPerms(
+        #     systemId=source_system_id, userName=portal_admin_username, permissions=["READ", "MODIFY", "EXECUTE"]
+        # )
         # user_client.files.deletePermissions(systemId=source_system_id, username=portal_admin_username, path="/")
         # logger.info(f'Removed service account from workspace {source_workspace_id}')
 
@@ -190,7 +193,7 @@ def archive_publication_files(project_id: str):
 
 
 @shared_task(bind=True, max_retries=3, queue="default")
-def publish_project(self, project_id: str, version: Optional[int] = 1):
+def publish_project(self, project_id: str, version: int | None = 1):
 
     review_system_prefix = settings.PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX
     published_system_prefix = settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX

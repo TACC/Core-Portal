@@ -4,8 +4,8 @@
 """
 
 import logging
-from elasticsearch_dsl import analyzer, token_filter, tokenizer
 
+from elasticsearch_dsl import analyzer, token_filter, tokenizer
 
 logger = logging.getLogger(__name__)
 

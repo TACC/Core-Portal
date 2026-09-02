@@ -3,23 +3,26 @@ Auth views.
 """
 
 import logging
-import time
-import requests
-import secrets
 import math
+import secrets
+import time
+
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render
-from django.utils import timezone
 from django.contrib.sessions.models import Session
-from .models import TapisOAuthToken
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils import timezone
+
 from portal.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
 from portal.apps.users.tasks import index_allocations
 from portal.apps.users.utils import check_user_groups
 from portal.utils import get_client_ip
+
+from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -134,7 +137,7 @@ def tapis_oauth_callback(request):
     state = request.GET.get("state")
 
     if request.session["auth_state"] != state:
-        msg = "OAuth Authorization State mismatch!? auth_state=%s does not match returned state=%s" % (
+        msg = "OAuth Authorization State mismatch!? auth_state={} does not match returned state={}".format(
             request.session["auth_state"],
             state,
         )
@@ -196,7 +199,7 @@ def tapis_oauth_callback(request):
     else:
         if "error" in request.GET:
             error = request.GET["error"]
-            logger.warning("Authorization failed: %s" % error)
+            logger.warning(f"Authorization failed: {error}")
 
         return HttpResponseRedirect(reverse("portal_accounts:logout"))
 

@@ -1,6 +1,6 @@
 from django.urls import re_path
-from portal.apps.notifications.views import ManageNotificationsView
 
+from portal.apps.notifications.views import ManageNotificationsView
 
 app_name = "notifications"
 urlpatterns = [

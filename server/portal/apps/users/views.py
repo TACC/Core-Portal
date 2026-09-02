@@ -1,32 +1,33 @@
-import logging
-import requests
 import json
+import logging
+
+import requests
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.utils.decorators import method_decorator
+from elasticsearch_dsl import Q
+from pytas.http import TASClient
 from zeep import Client
-from zeep.transports import Transport
 from zeep.cache import InMemoryCache
 from zeep.exceptions import Fault
+from zeep.transports import Transport
 
-from portal.views.base import BaseApiView
 from portal.apps.users import utils as users_utils
-from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, HttpResponseBadRequest, JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.conf import settings
-from elasticsearch_dsl import Q
-from portal.libs.elasticsearch.docs.base import IndexedFile
-from pytas.http import TASClient
 from portal.apps.users.utils import (
-    get_allocations,
-    get_user_data,
-    get_per_user_allocation_usage,
     add_user,
-    remove_user,
+    get_allocations,
+    get_per_user_allocation_usage,
     get_project_from_id,
     get_project_users_from_id,
+    get_user_data,
+    remove_user,
 )
+from portal.libs.elasticsearch.docs.base import IndexedFile
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -129,12 +130,14 @@ class AllocationsView(BaseApiView):
     def get(self, request):
         """Returns active user allocations on TACC resources
 
-        : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
+        : returns: {'response': {'active': allocations,
+            'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive,
+            'hosts': hosts}}
         : rtype: dict
         """
         data = get_allocations(request.user.username)
 
-        # This line iterates through all the projects in the active allocations and filters out the ones that are excluded in settings.
+        # Filter active allocations to remove projects excluded in settings.
         filtered_projects = [
             project for project in data["active"] if project.get("projectName") not in settings.ALLOCATIONS_TO_EXCLUDE
         ]
@@ -244,7 +247,8 @@ class TasUsersView(BaseApiView):
             tas_client.service.EditProjectUser(user_id, user_role)
         except Exception:
             raise Exception(
-                f"Error assigning user: {user_id} new role: {user_role} to project name:id : {project_name}:{project_id}"
+                f"Error assigning user: {user_id} new role: {user_role} "
+                f"to project name:id : {project_name}:{project_id}"
             )
 
         return JsonResponse({"response": "ok"})
@@ -260,11 +264,11 @@ class AllocationUsageView(BaseApiView):
 @method_decorator(login_required, name="dispatch")
 class AllocationManagementView(BaseApiView):
     def post(self, request, project_id, user_id):
-        logger.info("Adding {} to TAS project {}".format(user_id, project_id))
+        logger.info(f"Adding {user_id} to TAS project {project_id}")
         add_user(project_id, user_id)
         return JsonResponse({"response": "ok"})
 
     def delete(self, request, project_id, user_id):
-        logger.info("Deleting {} to TAS project {}".format(user_id, project_id))
+        logger.info(f"Deleting {user_id} to TAS project {project_id}")
         remove_user(project_id, user_id)
         return JsonResponse({"response": "ok"})

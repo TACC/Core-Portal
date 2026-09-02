@@ -3,9 +3,9 @@
    :synopsis: Onboarding models
 """
 
-from django.db import models
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 
 
 class SetupEvent(models.Model):
@@ -33,14 +33,7 @@ class SetupEvent(models.Model):
     data = models.JSONField(null=True)
 
     def __str__(self):
-        return "{username} {time} {step} ({state}) - {message} ({data})".format(
-            username=self.user.username,
-            time=self.time,
-            step=self.step,
-            state=self.state,
-            message=self.message,
-            data=self.data,
-        )
+        return f"{self.user.username} {self.time} {self.step} ({self.state}) - {self.message} ({self.data})"
 
     def to_dict(self):
         return {
@@ -59,4 +52,4 @@ class SetupEventEncoder(DjangoJSONEncoder):
             event = obj
             return event.to_dict()
         else:
-            return super(SetupEventEncoder, self).default(obj)
+            return super().default(obj)

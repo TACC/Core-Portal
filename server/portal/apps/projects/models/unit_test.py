@@ -4,13 +4,13 @@
    :synopsis: Projects app unit tests.
 """
 
-from portal.apps.projects.models.metadata import LegacyProjectMetadata
-from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.utils import get_latest_project_storage
-
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 import pytest
+
+from portal.apps.projects.models.base import Project
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
+from portal.apps.projects.models.utils import get_latest_project_storage
 
 
 @pytest.fixture()
