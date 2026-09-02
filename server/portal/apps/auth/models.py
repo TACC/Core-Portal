@@ -1,5 +1,4 @@
-"""Auth models
-"""
+"""Auth models"""
 
 import logging
 import time
@@ -19,7 +18,8 @@ class TapisOAuthToken(models.Model):
 
     Use this class to store login details as well as refresh a token.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth', on_delete=models.CASCADE)
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="tapis_oauth", on_delete=models.CASCADE)
     access_token = models.CharField(max_length=2048)
     refresh_token = models.CharField(max_length=2048)
     expires_in = models.BigIntegerField()
@@ -60,10 +60,10 @@ class TapisOAuthToken(models.Model):
         :rtype: dict
         """
         return {
-            'access_token': self.access_token,
-            'refresh_token': self.refresh_token,
-            'created': self.created,
-            'expires_in': self.expires_in
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token,
+            "created": self.created,
+            "expires_in": self.expires_in,
         }
 
     @property
@@ -79,9 +79,7 @@ class TapisOAuthToken(models.Model):
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
-            "."
-        )[0]
+        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(".")[0]
 
         client = Tapis(
             base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
@@ -110,4 +108,4 @@ class TapisOAuthToken(models.Model):
     def __str__(self):
         access_token_masked = self.access_token[-5:]
         refresh_token_masked = self.refresh_token[-5:]
-        return f'access_token:{access_token_masked} refresh_token:{refresh_token_masked} expires_in:{self.expires_in} created:{self.created}'
+        return f"access_token:{access_token_masked} refresh_token:{refresh_token_masked} expires_in:{self.expires_in} created:{self.created}"

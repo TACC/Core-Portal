@@ -53,9 +53,7 @@ class SystemKeysView(BaseApiView):
 
         if default_authn_method == "TMS_KEYS":
             try:
-                create_system_credentials_with_tms(
-                    client, tapis_username, system_id
-                )
+                create_system_credentials_with_tms(client, tapis_username, system_id)
                 http_status = 200
                 result = "OK"
             except BaseTapyException as e:
@@ -67,9 +65,7 @@ class SystemKeysView(BaseApiView):
                 http_status = e.response.status_code
                 result = e.message
         elif default_authn_method == "PKI_KEYS":
-            logger.info(
-                f"Resetting credentials for user {tapis_username} on system {system_id}"
-            )
+            logger.info(f"Resetting credentials for user {tapis_username} on system {system_id}")
             priv_key_str, publ_key_str = createKeyPair()
 
             success, result, http_status = AccountsManager.add_pub_key_to_resource(
@@ -83,9 +79,7 @@ class SystemKeysView(BaseApiView):
             )
 
             if not success:
-                logger.error(
-                    f"Failed to push keys for user {tapis_username} on system {system_id}: {result}"
-                )
+                logger.error(f"Failed to push keys for user {tapis_username} on system {system_id}: {result}")
                 return JsonResponse({"message": result}, status=http_status)
 
             create_system_credentials_with_keys(
@@ -120,9 +114,7 @@ class SystemKeysView(BaseApiView):
         tapis_system = client.systems.getSystem(systemId=system_id)
 
         portal_system = {
-            "name": tapis_system.notes.get(
-                "label", tapis_system.notes.get("title", tapis_system.id)
-            ),
+            "name": tapis_system.notes.get("label", tapis_system.notes.get("title", tapis_system.id)),
             "system": tapis_system.id,
             "scheme": "private",
             "api": "tapis",
@@ -134,6 +126,4 @@ class SystemKeysView(BaseApiView):
             request.user.tapis_oauth, portal_system, default_host_eval="HOME"
         )
 
-        return JsonResponse(
-            {"system": evaluated_system, "message": result}, status=http_status
-        )
+        return JsonResponse({"system": evaluated_system, "message": result}, status=http_status)

@@ -11,13 +11,11 @@ from channels.auth import AuthMiddlewareStack
 import portal.apps.notifications.routing
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'portal.settings.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings.settings")
 django.setup()
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            portal.apps.notifications.routing.websocket_urlpatterns
-        )
-    )
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(URLRouter(portal.apps.notifications.routing.websocket_urlpatterns)),
+    }
+)

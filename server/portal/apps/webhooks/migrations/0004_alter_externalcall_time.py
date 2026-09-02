@@ -5,15 +5,14 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('webhooks', '0001_squashed_0003_alter_externalcall_callback_data'),
+        ("webhooks", "0001_squashed_0003_alter_externalcall_callback_data"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='externalcall',
-            name='time',
+            model_name="externalcall",
+            name="time",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

@@ -6,33 +6,71 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('portal_messages', '0001_initial'),
+        ("portal_messages", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CustomMessageTemplate',
+            name="CustomMessageTemplate",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('component', models.CharField(choices=[('Dashboard', 'DASHBOARD'), ('Data Files', 'DATA'), ('Applications', 'APPLICATIONS'), ('Allocations', 'ALLOCATIONS'), ('History', 'HISTORY'), ('Account', 'ACCOUNT')], default='Dashboard', help_text='Component type', max_length=20)),
-                ('message_type', models.CharField(choices=[('info', 'Info'), ('success', 'Success'), ('warning', 'Warn'), ('error', 'Error')], default='info', help_text='Message type', max_length=20)),
-                ('dismissible', models.BooleanField(default=False)),
-                ('message', models.CharField(blank=True, max_length=200, default='', help_text='Message content (max 200 characters)')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "component",
+                    models.CharField(
+                        choices=[
+                            ("Dashboard", "DASHBOARD"),
+                            ("Data Files", "DATA"),
+                            ("Applications", "APPLICATIONS"),
+                            ("Allocations", "ALLOCATIONS"),
+                            ("History", "HISTORY"),
+                            ("Account", "ACCOUNT"),
+                        ],
+                        default="Dashboard",
+                        help_text="Component type",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "message_type",
+                    models.CharField(
+                        choices=[("info", "Info"), ("success", "Success"), ("warning", "Warn"), ("error", "Error")],
+                        default="info",
+                        help_text="Message type",
+                        max_length=20,
+                    ),
+                ),
+                ("dismissible", models.BooleanField(default=False)),
+                (
+                    "message",
+                    models.CharField(
+                        blank=True, max_length=200, default="", help_text="Message content (max 200 characters)"
+                    ),
+                ),
             ],
         ),
-
         migrations.CreateModel(
-            name='CustomMessages',
+            name="CustomMessages",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='portal_messages.CustomMessageTemplate')),
-                ('unread', models.BooleanField(default=True)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="+", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to="portal_messages.CustomMessageTemplate",
+                    ),
+                ),
+                ("unread", models.BooleanField(default=True)),
             ],
             options={
-                'unique_together': {('user', 'template')},
+                "unique_together": {("user", "template")},
             },
         ),
     ]

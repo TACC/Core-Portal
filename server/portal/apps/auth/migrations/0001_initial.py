@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,16 +14,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AgaveOAuthToken',
+            name="AgaveOAuthToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token_type', models.CharField(max_length=255)),
-                ('scope', models.CharField(max_length=255)),
-                ('access_token', models.CharField(max_length=255)),
-                ('refresh_token', models.CharField(max_length=255)),
-                ('expires_in', models.BigIntegerField()),
-                ('created', models.BigIntegerField()),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='agave_oauth', to=settings.AUTH_USER_MODEL)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("token_type", models.CharField(max_length=255)),
+                ("scope", models.CharField(max_length=255)),
+                ("access_token", models.CharField(max_length=255)),
+                ("refresh_token", models.CharField(max_length=255)),
+                ("expires_in", models.BigIntegerField()),
+                ("created", models.BigIntegerField()),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="agave_oauth",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

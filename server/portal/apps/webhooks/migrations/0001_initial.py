@@ -8,7 +8,6 @@ import portal.apps.webhooks.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,14 +16,22 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ExternalCall',
+            name="ExternalCall",
             fields=[
-                ('webhook_id', models.CharField(max_length=16, primary_key=True, serialize=False)),
-                ('time', models.DateTimeField(default=datetime.datetime.now)),
-                ('callback', models.CharField(max_length=300, null=True)),
-                ('callback_data', portal.apps.webhooks.fields.JSONField(null=True)),
-                ('accepting', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("webhook_id", models.CharField(max_length=16, primary_key=True, serialize=False)),
+                ("time", models.DateTimeField(default=datetime.datetime.now)),
+                ("callback", models.CharField(max_length=300, null=True)),
+                ("callback_data", portal.apps.webhooks.fields.JSONField(null=True)),
+                ("accepting", models.BooleanField(default=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

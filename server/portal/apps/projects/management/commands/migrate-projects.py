@@ -16,9 +16,9 @@ class Command(BaseCommand):
     """Command class."""
 
     help = (
-        'Reconcile projects from CEPv1 migration that do not have '
-        'a PI assigned. This will attempt to assign the creator of '
-        'these projects as PI, as well as index all projects.'
+        "Reconcile projects from CEPv1 migration that do not have "
+        "a PI assigned. This will attempt to assign the creator of "
+        "these projects as PI, as well as index all projects."
     )
 
     def handle(self, *args, **options):
@@ -33,8 +33,10 @@ class Command(BaseCommand):
                     roles = storage.roles.to_dict().items()
                     admins = list(
                         filter(
-                            lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
-                            roles
+                            lambda role_tuple: (
+                                role_tuple[0] != "wma_prtl" and (role_tuple[1] == "ADMIN" or role_tuple[1] == "OWNER")
+                            ),
+                            roles,
                         )
                     )
                     if len(admins) != 1:
@@ -42,10 +44,9 @@ class Command(BaseCommand):
                     # Get first role tuple, first item in tuple which is username
                     admin = get_user_model().objects.get(username=admins[0][0])
                     project.add_pi(admin)
-                    logger.info("Set {admin} as PI on {project_id}".format(
-                        admin=admin.username,
-                        project_id=meta.project_id
-                    ))
+                    logger.info(
+                        "Set {admin} as PI on {project_id}".format(admin=admin.username, project_id=meta.project_id)
+                    )
 
                 except Exception as e:
                     logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))

@@ -44,11 +44,7 @@ class AllocationStep(AbstractStep):
 
                 if missing_hosts:
                     self.state = SetupState.FAILED
-                    self.log(
-                        "User {0} is missing allocations on: {1}".format(
-                            self.user.username, missing_hosts
-                        )
-                    )
+                    self.log("User {0} is missing allocations on: {1}".format(self.user.username, missing_hosts))
                     return
                 self.log("Expected host allocations found: {0}".format(matched_hosts))
 

@@ -52,16 +52,10 @@ class TapisTokenRefreshMiddleware:
         if not tapis_oauth.expired:
             return
 
-        logger.info(
-            f"Tapis OAuth token expired for user {request.user.username}. Refreshing token"
-        )
+        logger.info(f"Tapis OAuth token expired for user {request.user.username}. Refreshing token")
         with transaction.atomic():
             # Get a lock on this user's token row in db.
-            latest_token = (
-                TapisOAuthToken.objects.select_for_update()
-                .filter(user=request.user)
-                .first()
-            )
+            latest_token = TapisOAuthToken.objects.select_for_update().filter(user=request.user).first()
             if latest_token.expired:
                 try:
                     logger.info("Refreshing Tapis OAuth token")
@@ -75,7 +69,5 @@ class TapisTokenRefreshMiddleware:
                     return HttpResponseRedirect(reverse("login"))
 
             else:
-                logger.info(
-                    "Token updated by another request. Refreshing token from DB."
-                )
+                logger.info("Token updated by another request. Refreshing token from DB.")
                 tapis_oauth.refresh_from_db()

@@ -5,20 +5,19 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('notifications', '0001_initial'),
+        ("notifications", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='broadcast',
-            name='datetime',
+            model_name="broadcast",
+            name="datetime",
             field=models.DateTimeField(blank=True, default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='notification',
-            name='datetime',
+            model_name="notification",
+            name="datetime",
             field=models.DateTimeField(blank=True, default=django.utils.timezone.now),
         ),
     ]

@@ -23,20 +23,15 @@ class AbstractStep:
 
         try:
             steps = settings.PORTAL_USER_ACCOUNT_SETUP_STEPS
-            step_dict = next(
-                step for step in steps if step['step'] == self.step_name()
-            )
-            self.settings = step_dict['settings']
+            step_dict = next(step for step in steps if step["step"] == self.step_name())
+            self.settings = step_dict["settings"]
         except Exception:
             self.settings = None
 
         try:
             # Restore event history
             self.events = [
-                event for event in SetupEvent.objects.filter(
-                    user=user,
-                    step=self.step_name()
-                ).order_by('time')
+                event for event in SetupEvent.objects.filter(user=user, step=self.step_name()).order_by("time")
             ]
             self.last_event = self.events[-1] if len(self.events) > 0 else None
             self.state = self.last_event.state
@@ -49,11 +44,7 @@ class AbstractStep:
         needs to set the state of the setup step for this user.
         """
         self.last_event = SetupEvent.objects.create(
-            user=self.user,
-            step=self.step_name(),
-            state=self.state,
-            message=message,
-            data=data
+            user=self.user, step=self.step_name(), state=self.state, message=message, data=data
         )
         self.events.append(self.last_event)
 
@@ -80,16 +71,11 @@ class AbstractStep:
 
     def __str__(self):
         return "<{step} for {username} is {state}>".format(
-            step=self.step_name(),
-            state=self.state,
-            username=self.user.username
+            step=self.step_name(), state=self.state, username=self.user.username
         )
 
     def step_name(self):
-        return "{module}.{classname}".format(
-            module=self.__module__,
-            classname=self.__class__.__name__
-        )
+        return "{module}.{classname}".format(module=self.__module__, classname=self.__class__.__name__)
 
     @abstractmethod
     def display_name(self):

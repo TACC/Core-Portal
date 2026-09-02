@@ -29,21 +29,18 @@ def user_without_client_mock(django_user_model, django_db_reset_sequences):
     """
     user = django_user_model.objects.create_user(username="testuser2", password="password")
     TapisOAuthToken.objects.create(
-        user=user,
-        access_token="1234fsf",
-        refresh_token="123123123",
-        expires_in=14400,
-        created=1523633447)
+        user=user, access_token="1234fsf", refresh_token="123123123", expires_in=14400, created=1523633447
+    )
     yield user
 
 
 def test_client_passes_tenant_id(user_without_client_mock, mocker):
-    mock_tapis = mocker.patch('portal.apps.auth.models.Tapis')
+    mock_tapis = mocker.patch("portal.apps.auth.models.Tapis")
     tapis_oauth = TapisOAuthToken.objects.get(user=user_without_client_mock)
     _ = tapis_oauth.client
     mock_tapis.assert_called_once_with(
         base_url=settings.TAPIS_TENANT_BASEURL,
-        tenant_id='example',
+        tenant_id="example",
         client_id=settings.TAPIS_CLIENT_ID,
         client_key=settings.TAPIS_CLIENT_KEY,
         access_token=tapis_oauth.access_token,
