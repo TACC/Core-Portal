@@ -31,6 +31,4 @@ def test_handle_tapis_ssh_exception_files_client_ssh_op_err1(mock_logger):
     message = "FILES_CLIENT_SSH_OP_ERR1"
     exception = BaseTapyException(message)
     view._handle_tapis_ssh_exception(exception)
-    mock_logger.exception.assert_called_once_with(
-        f"Error retrieving search results due to TAPIS SSH related error: message: {message}"
-    )
+    mock_logger.exception.assert_called_once_with(f"Error retrieving search results due to TAPIS SSH related error: message: {message}")

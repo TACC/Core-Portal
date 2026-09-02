@@ -1,13 +1,13 @@
-from django.conf import settings
-from portal.apps.workspace.api.views import AppsTrayView
-from portal.apps.workspace.models import AppTrayCategory
-from portal.apps.workspace.models import JobSubmission
 import json
 import os
-import pytest
-from tapipy.tapis import TapisResult
-from django.core.management import call_command
 
+import pytest
+from django.conf import settings
+from django.core.management import call_command
+from tapipy.tapis import TapisResult
+
+from portal.apps.workspace.api.views import AppsTrayView
+from portal.apps.workspace.models import AppTrayCategory, JobSubmission
 
 pytest.mark.django_db(transaction=True)
 
@@ -39,10 +39,7 @@ def tapis_apps_list():
         app_tray_data = json.load(f)
 
         for entry in app_tray_data:
-            if (
-                entry.get("model") == "workspace.apptrayentry"
-                and entry["fields"]["appType"] == "tapis"
-            ):
+            if entry.get("model") == "workspace.apptrayentry" and entry["fields"]["appType"] == "tapis":
                 app = TapisResult(
                     **{
                         "id": entry["fields"]["appId"],
@@ -57,9 +54,7 @@ def tapis_apps_list():
 @pytest.fixture
 def tapis_get_systems_list():
     system_list = []
-    with open(
-        os.path.join(settings.BASE_DIR, "fixtures/tapis/systems/listing.json")
-    ) as f:
+    with open(os.path.join(settings.BASE_DIR, "fixtures/tapis/systems/listing.json")) as f:
         systems = json.load(f)
         for entry in systems:
             system_list.append(TapisResult(**entry))
@@ -147,9 +142,7 @@ def test_job_post_invalid(
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert response.json() == {
-        "message": "user:username is trying to run an unsupported job action: invalid action for job uuid: 1234"
-    }
+    assert response.json() == {"message": "user:username is trying to run an unsupported job action: invalid action for job uuid: 1234"}
 
 
 def test_job_post_is_logged_for_metrics(
@@ -191,11 +184,7 @@ def test_job_post_is_logged_for_metrics(
     }
 
     # Ensure metric-related logging is being performed
-    logging_metric_mock.assert_called_with(
-        "user:{} is submitting job:{}".format(
-            authenticated_user.username, tapis_job_submission
-        )
-    )
+    logging_metric_mock.assert_called_with(f"user:{authenticated_user.username} is submitting job:{tapis_job_submission}")
 
 
 def request_jobs_util(client, authenticated_user, query_params={}):
@@ -227,9 +216,7 @@ def test_get_jobs_bad_offset(client, authenticated_user, mock_tapis_client):
 
 def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
     view = AppsTrayView()
-    app = TapisResult(
-        **{"id": "myapp-0.1", "version": "0.1", "notes": {"label": "Matlab"}}
-    )
+    app = TapisResult(**{"id": "myapp-0.1", "version": "0.1", "notes": {"label": "Matlab"}})
     mock_tapis_client.apps.getApps.return_value = [app]
     expected_list = [
         {
@@ -246,9 +233,7 @@ def test_tray_get_private_apps(authenticated_user, mock_tapis_client, mocker):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_tray_get_public_apps(
-    django_db_blocker, mock_tapis_client, authenticated_user, tapis_apps_list
-):
+def test_tray_get_public_apps(django_db_blocker, mock_tapis_client, authenticated_user, tapis_apps_list):
     # Load fixtures
     with django_db_blocker.unblock():
         call_command("loaddata", "app-tray.json")
@@ -288,9 +273,7 @@ def test_get_app_dynamic_exec_sys(
     with django_db_blocker.unblock():
         call_command("loaddata", "app-tray.json")
 
-    with open(
-        os.path.join(settings.BASE_DIR, "fixtures/tapis/apps/hello-world-app-def.json")
-    ) as f:
+    with open(os.path.join(settings.BASE_DIR, "fixtures/tapis/apps/hello-world-app-def.json")) as f:
         app = json.load(f)
         if dynamic_exec_system:
             app["notes"]["dynamicExecSystems"] = [

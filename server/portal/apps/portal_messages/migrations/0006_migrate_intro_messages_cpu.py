@@ -1,14 +1,10 @@
 from django.conf import settings
 from django.db import migrations
 
-
-CPU_DASHBOARD_MESSAGE = (
-    "This page allows you to monitor your job status and get help with tickets. "
-)
+CPU_DASHBOARD_MESSAGE = "This page allows you to monitor your job status and get help with tickets. "
 
 CPU_DATAFILES_MESSAGE = (
-    "This page allows you to upload and manage your files. Management and actions "
-    "available are dependent on your authorizations for each folder and file."
+    "This page allows you to upload and manage your files. Management and actions available are dependent on your authorizations for each folder and file."
 )
 
 
@@ -28,7 +24,6 @@ def migrate_intro_messages(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("portal_messages", "0005_migrate_longer_messages"),
     ]

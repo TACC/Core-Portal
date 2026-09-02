@@ -1,34 +1,35 @@
 """
 Auth views.
 """
+
 import logging
-import time
-import requests
-import secrets
 import math
+import secrets
+import time
+
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render
-from django.utils import timezone
 from django.contrib.sessions.models import Session
-from .models import TapisOAuthToken
-from portal.apps.onboarding.execute import (
-    execute_setup_steps,
-    new_user_setup_check
-)
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils import timezone
+
+from portal.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
 from portal.apps.users.tasks import index_allocations
 from portal.apps.users.utils import check_user_groups
 from portal.utils import get_client_ip
 
+from .models import TapisOAuthToken
+
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger(f'metrics.{__name__}')
+METRICS = logging.getLogger(f"metrics.{__name__}")
 
 
 def logged_out(request):
-    return render(request, 'portal/apps/auth/logged_out.html')
+    return render(request, "portal/apps/auth/logged_out.html")
 
 
 def get_session_seconds_left(request):
@@ -44,12 +45,7 @@ def get_session_seconds_left(request):
     if not session_key:
         return 0
 
-    expire_date = (
-        Session.objects
-        .filter(session_key=session_key)
-        .values_list("expire_date", flat=True)
-        .first()
-    )
+    expire_date = Session.objects.filter(session_key=session_key).values_list("expire_date", flat=True).first()
     if not expire_date:
         return 0
 
@@ -74,40 +70,34 @@ def _get_auth_state():
 
 
 def tapis_oauth(request):
-    """First step for Tapis OAuth workflow.
-    """
+    """First step for Tapis OAuth workflow."""
     session = request.session
-    session['auth_state'] = _get_auth_state()
-    next_page = request.GET.get('next')
+    session["auth_state"] = _get_auth_state()
+    next_page = request.GET.get("next")
     if next_page:
-        session['next'] = next_page
+        session["next"] = next_page
 
     if request.is_secure():
-        protocol = 'https'
+        protocol = "https"
     else:
-        protocol = 'http'
+        protocol = "http"
 
     redirect_uri = f"{protocol}://{request.get_host()}{reverse('portal_auth:tapis_oauth_callback')}"
 
-    tenant_base_url = getattr(settings, 'TAPIS_TENANT_BASEURL')
-    client_id = getattr(settings, 'TAPIS_CLIENT_ID')
+    tenant_base_url = getattr(settings, "TAPIS_TENANT_BASEURL")
+    client_id = getattr(settings, "TAPIS_CLIENT_ID")
 
     METRICS.debug(f"user:{request.user.username} starting oauth redirect login")
     # Authorization code request
     authorization_url = (
-        f"{tenant_base_url}/v3/oauth2/authorize?"
-        f"client_id={client_id}&"
-        f"redirect_uri={redirect_uri}&"
-        "response_type=code&"
-        f"state={session['auth_state']}"
+        f"{tenant_base_url}/v3/oauth2/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&state={session['auth_state']}"
     )
 
     return HttpResponseRedirect(authorization_url)
 
 
 def launch_setup_checks(user):
-    """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks
-    """
+    """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
 
     # Check onboarding settings
     if settings.IS_TACC_PORTAL:
@@ -134,46 +124,40 @@ def launch_setup_checks(user):
 
 
 def tapis_oauth_callback(request):
-    """Tapis OAuth callback handler.
-    """
+    """Tapis OAuth callback handler."""
 
-    state = request.GET.get('state')
+    state = request.GET.get("state")
 
-    if request.session['auth_state'] != state:
-        msg = (
-            'OAuth Authorization State mismatch!? auth_state=%s '
-            'does not match returned state=%s' % (
-                request.session['auth_state'], state
-            )
-        )
+    if request.session["auth_state"] != state:
+        msg = "OAuth Authorization State mismatch!? auth_state=%s does not match returned state=%s" % (request.session["auth_state"], state)
         logger.warning(msg)
-        return HttpResponseBadRequest('Authorization State Failed')
+        return HttpResponseBadRequest("Authorization State Failed")
 
-    if 'code' in request.GET:
+    if "code" in request.GET:
         # obtain a token for the user
         if request.is_secure():
-            protocol = 'https'
+            protocol = "https"
         else:
-            protocol = 'http'
+            protocol = "http"
         redirect_uri = f"{protocol}://{request.get_host()}{reverse('portal_auth:tapis_oauth_callback')}"
-        code = request.GET['code']
+        code = request.GET["code"]
 
         body = {
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': redirect_uri,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
         }
         response = requests.post(f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/tokens", data=body, auth=(settings.TAPIS_CLIENT_ID, settings.TAPIS_CLIENT_KEY))
         response_json = response.json()
         token_data = {
-            'created': int(time.time()),
-            'access_token': response_json['result']['access_token']['access_token'],
-            'refresh_token': response_json['result']['refresh_token']['refresh_token'],
-            'expires_in': response_json['result']['access_token']['expires_in']
+            "created": int(time.time()),
+            "access_token": response_json["result"]["access_token"]["access_token"],
+            "refresh_token": response_json["result"]["refresh_token"]["refresh_token"],
+            "expires_in": response_json["result"]["access_token"]["expires_in"],
         }
 
         # log user in
-        user = authenticate(backend='tapis', token=token_data['access_token'])
+        user = authenticate(backend="tapis", token=token_data["access_token"])
 
         if user:
             TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
@@ -192,22 +176,18 @@ def tapis_oauth_callback(request):
                 },
             )
         else:
-            messages.error(
-                request,
-                'Authentication failed. Please try again. If this problem '
-                'persists please submit a support ticket.'
-            )
-            return HttpResponseRedirect(reverse('portal_accounts:logout'))
+            messages.error(request, "Authentication failed. Please try again. If this problem persists please submit a support ticket.")
+            return HttpResponseRedirect(reverse("portal_accounts:logout"))
     else:
-        if 'error' in request.GET:
-            error = request.GET['error']
-            logger.warning('Authorization failed: %s' % error)
+        if "error" in request.GET:
+            error = request.GET["error"]
+            logger.warning("Authorization failed: %s" % error)
 
-        return HttpResponseRedirect(reverse('portal_accounts:logout'))
+        return HttpResponseRedirect(reverse("portal_accounts:logout"))
 
-    redirect = getattr(settings, 'LOGIN_REDIRECT_URL', '/')
-    if 'next' in request.session:
-        redirect += '?next=' + request.session.pop('next')
+    redirect = getattr(settings, "LOGIN_REDIRECT_URL", "/")
+    if "next" in request.session:
+        redirect += "?next=" + request.session.pop("next")
 
     response = HttpResponseRedirect(redirect)
     return response

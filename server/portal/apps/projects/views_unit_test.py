@@ -1,18 +1,20 @@
-import pytest
-from hashlib import sha256
-from portal.apps.projects.managers.base import ProjectsManager
-from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.views import get_project_client, get_project_for_user
-from portal.apps.search.tasks import tapis_project_listing_indexer
-from portal.libs.elasticsearch.indexes import IndexedProject
-from mock import MagicMock
 import json
-from tapipy.tapis import TapisResult
+from hashlib import sha256
+from unittest.mock import MagicMock
+
+import pytest
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.test import override_settings
-from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
+from django.test.client import BOUNDARY, MULTIPART_CONTENT, encode_multipart
+from tapipy.tapis import TapisResult
+
+from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
+from portal.apps.projects.views import get_project_client, get_project_for_user
+from portal.apps.search.tasks import tapis_project_listing_indexer
+from portal.libs.elasticsearch.indexes import IndexedProject
 
 
 @pytest.fixture
@@ -32,9 +34,7 @@ def mock_project_mgr(mocker):
 
 @pytest.fixture()
 def mock_service_account(mocker):
-    return mocker.patch(
-        "portal.apps.projects.workspace_operations.shared_workspace_operations.service_account"
-    )
+    return mocker.patch("portal.apps.projects.workspace_operations.shared_workspace_operations.service_account")
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ def project_list(authenticated_user):
 def test_get_project_client_uses_service_account_for_project_admin(authenticated_user, mocker):
     group = Group.objects.create(name=settings.PROJECT_ADMIN_GROUP)
     authenticated_user.groups.add(group)
-    mock_service_account = mocker.patch('portal.apps.projects.views.service_account')
+    mock_service_account = mocker.patch("portal.apps.projects.views.service_account")
 
     client = get_project_client(authenticated_user)
 
@@ -127,7 +127,7 @@ def test_get_project_for_user_allows_project_admin(authenticated_user):
     authenticated_user.groups.add(group)
     project = ProjectMetadata.objects.create(
         name=constants.PROJECT,
-        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+        value={"projectId": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123", "users": []},
     )
 
     result = get_project_for_user(project.project_id, authenticated_user)
@@ -138,26 +138,22 @@ def test_get_project_for_user_allows_project_admin(authenticated_user):
 def test_get_project_for_user_allows_tapis_write_role(authenticated_user, mocker):
     project = ProjectMetadata.objects.create(
         name=constants.PROJECT,
-        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+        value={"projectId": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123", "users": []},
     )
-    mock_get_workspace_role = mocker.patch(
-        'portal.apps.projects.views.get_workspace_role', return_value='USER'
-    )
+    mock_get_workspace_role = mocker.patch("portal.apps.projects.views.get_workspace_role", return_value="USER")
 
     result = get_project_for_user(project.project_id, authenticated_user)
 
     assert result == project
-    mock_get_workspace_role.assert_called_once_with(
-        authenticated_user.tapis_oauth.client, 'PRJ-123', authenticated_user.username
-    )
+    mock_get_workspace_role.assert_called_once_with(authenticated_user.tapis_oauth.client, "PRJ-123", authenticated_user.username)
 
 
 def test_get_project_for_user_denies_tapis_guest_role(authenticated_user, mocker):
     project = ProjectMetadata.objects.create(
         name=constants.PROJECT,
-        value={'projectId': f'{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123', 'users': []},
+        value={"projectId": f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.PRJ-123", "users": []},
     )
-    mocker.patch('portal.apps.projects.views.get_workspace_role', return_value='GUEST')
+    mocker.patch("portal.apps.projects.views.get_workspace_role", return_value="GUEST")
 
     with pytest.raises(ProjectMetadata.DoesNotExist):
         get_project_for_user(project.project_id, authenticated_user)
@@ -185,12 +181,8 @@ def test_projects_get(
     }
     fields = "id,host,description,notes,updated,owner,rootDir"
     query = f"(id.like.{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.*)"
-    mock_tapis_client.systems.getSystems.assert_any_call(
-        listType="ALL", search=query, select=fields, limit=-1
-    )
-    mock_project_search_indexer.delay.assert_called_with(
-        [project_list["api_response"][0]]
-    )
+    mock_tapis_client.systems.getSystems.assert_any_call(listType="ALL", search=query, select=fields, limit=-1)
+    mock_project_search_indexer.delay.assert_called_with([project_list["api_response"][0]])
 
 
 def test_projects_search(
@@ -201,9 +193,7 @@ def test_projects_search(
     mock_project_search_indexer,
     project_list,
 ):
-    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
-        IndexedProject(**project_list["api_response"][1])
-    ]
+    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [IndexedProject(**project_list["api_response"][1])]
 
     mock_tapis_client.systems.getSystems.side_effect = [
         [project_list["tapis_response"][1]],
@@ -216,9 +206,7 @@ def test_projects_search(
         "status": 200,
         "response": [project_list["api_response"][1]],
     }
-    mock_project_search_indexer.delay.assert_called_with(
-        [project_list["api_response"][1]]
-    )
+    mock_project_search_indexer.delay.assert_called_with([project_list["api_response"][1]])
 
 
 def test_projects_search_result_not_in_tapis(
@@ -227,9 +215,7 @@ def test_projects_search_result_not_in_tapis(
     mock_project_search_indexer,
     project_list,
 ):
-    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [
-        IndexedProject(**project_list["api_response"][1])
-    ]
+    mock_project_index.search.return_value.query.return_value.extra.return_value.execute.return_value = [IndexedProject(**project_list["api_response"][1])]
 
     response = client.get("/api/projects/?query_string=bar")
     assert response.status_code == 200
@@ -237,9 +223,7 @@ def test_projects_search_result_not_in_tapis(
     mock_project_search_indexer.delay.assert_called_with([])
 
 
-def test_projects_post(
-    authenticated_user, client, mock_service_account, mock_tapis_client
-):
+def test_projects_post(authenticated_user, client, mock_service_account, mock_tapis_client):
 
     response = client.post(
         "/api/projects/",
@@ -263,9 +247,7 @@ def test_projects_post(
     mock_service_account().files.mkdir.assert_called_with(
         systemId="projects.system.name",
         path="test.project-2",
-        headers={
-            "X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"
-        },
+        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"},
     )
     mock_service_account().files.setFacl.assert_called_with(
         systemId="projects.system.name",
@@ -275,15 +257,11 @@ def test_projects_post(
         aclString=f"d:u:{authenticated_user.username}:rwX,u:{authenticated_user.username}:rwX",
     )
     mock_tapis_client.systems.createSystem.assert_called()
-    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
-        "test.project.test.project-2"
-    )
+    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains("test.project.test.project-2")
 
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
-def test_projects_post_setfacl_job(
-    authenticated_user, client, mock_service_account, mock_tapis_client
-):
+def test_projects_post_setfacl_job(authenticated_user, client, mock_service_account, mock_tapis_client):
     response = client.post(
         "/api/projects/",
         {
@@ -305,9 +283,7 @@ def test_projects_post_setfacl_job(
     mock_service_account().files.mkdir.assert_called_with(
         systemId="projects.system.name",
         path="test.project-2",
-        headers={
-            "X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"
-        },
+        headers={"X-Tapis-Tracking-ID": f"portals.{sha256(client.session.session_key.encode()).hexdigest()}"},
     )
     mock_service_account().files.setFacl.assert_not_called()
     mock_service_account().jobs.submitJob.assert_called_with(
@@ -332,18 +308,12 @@ def test_projects_post_setfacl_job(
         tags=["portalName:test"],
     )
     mock_tapis_client.systems.createSystem.assert_called()
-    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains(
-        "test.project.test.project-2"
-    )
+    assert mock_tapis_client.systems.createSystem.call_args_list[0].contains("test.project.test.project-2")
 
 
-def test_project_instance_get_by_id(
-    authenticated_user, client, mock_tapis_client, project_list
-):
+def test_project_instance_get_by_id(authenticated_user, client, mock_tapis_client, project_list):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
-        **{"users": [authenticated_user.username]}
-    )
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(**{"users": [authenticated_user.username]})
 
     response = client.get("/api/projects/PRJ-123/")
     assert response.status_code == 200
@@ -370,13 +340,9 @@ def test_project_instance_get_by_id(
     }
 
 
-def test_project_instance_get_by_system(
-    authenticated_user, client, mock_tapis_client, project_list
-):
+def test_project_instance_get_by_system(authenticated_user, client, mock_tapis_client, project_list):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
-        **{"users": [authenticated_user.username]}
-    )
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(**{"users": [authenticated_user.username]})
 
     response = client.get("/api/projects/system/test.project.PRJ-123/")
     assert response.status_code == 200
@@ -404,16 +370,12 @@ def test_project_instance_get_by_system(
     }
 
 
-def test_project_instance_patch(
-    authenticated_user, client, mock_tapis_client, project_list
-):
+def test_project_instance_patch(authenticated_user, client, mock_tapis_client, project_list):
     updated_project = project_list["tapis_response"][0]
     updated_project.notes.title = "New Title"
     updated_project.notes.description = "new description"
     mock_tapis_client.systems.getSystem.return_value = updated_project
-    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
-        **{"users": [authenticated_user.username]}
-    )
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(**{"users": [authenticated_user.username]})
 
     response = client.patch(
         "/api/projects/PRJ-123/",
@@ -454,9 +416,7 @@ def test_project_instance_patch(
 
 
 def test_project_change_role(client, mock_project_mgr, project_list):
-    mock_project_mgr.change_project_role.return_value = MagicMock(
-        metadata={"projectId": "PRJ-123"}
-    )
+    mock_project_mgr.change_project_role.return_value = MagicMock(metadata={"projectId": "PRJ-123"})
 
     patch_body = {
         "action": "change_project_role",
@@ -467,16 +427,12 @@ def test_project_change_role(client, mock_project_mgr, project_list):
 
     response = client.patch("/api/projects/PRJ-123/members/", json.dumps(patch_body))
 
-    mock_project_mgr.change_project_role.assert_called_with(
-        "PRJ-123", "test_user", "co_pi", "team_member"
-    )
+    mock_project_mgr.change_project_role.assert_called_with("PRJ-123", "test_user", "co_pi", "team_member")
     assert response.status_code == 200
     assert response.json() == {"status": 200, "response": {"projectId": "PRJ-123"}}
 
 
-def test_project_change_system_role(
-    client, mock_service_account, mock_tapis_client, project_list
-):
+def test_project_change_system_role(client, mock_service_account, mock_tapis_client, project_list):
     # USER translates to writer role
     patch_body = {
         "action": "change_system_role",
@@ -510,9 +466,7 @@ def test_project_change_system_role(
 
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
-def test_project_change_system_role_setfacl_job(
-    client, mock_service_account, mock_tapis_client, project_list
-):
+def test_project_change_system_role_setfacl_job(client, mock_service_account, mock_tapis_client, project_list):
     mock_rootDir = mock_tapis_client.systems.getSystem().rootDir
 
     # USER translates to writer role
@@ -559,16 +513,10 @@ def test_project_change_system_role_setfacl_job(
     )
 
 
-def test_members_view_add(
-    authenticated_user, client, mock_tapis_client, project_list, mock_service_account
-):
+def test_members_view_add(authenticated_user, client, mock_tapis_client, project_list, mock_service_account):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
-        **{"users": [authenticated_user.username, "test_user"]}
-    )
-    mock_tapis_client.files.getPermissions.return_value = TapisResult(
-        **{"permission": "MODIFY"}
-    )
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(**{"users": [authenticated_user.username, "test_user"]})
+    mock_tapis_client.files.getPermissions.return_value = TapisResult(**{"permission": "MODIFY"})
 
     patch_body = {"action": "add_member", "username": "test_user"}
 
@@ -616,9 +564,7 @@ def test_members_view_add(
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user:rwX,u:test_user:rwX",
     )
-    mock_tapis_client.systems.shareSystem.assert_called_with(
-        systemId="test.project.PRJ-123", users=["test_user"]
-    )
+    mock_tapis_client.systems.shareSystem.assert_called_with(systemId="test.project.PRJ-123", users=["test_user"])
     mock_tapis_client.systems.grantUserPerms.assert_called_with(
         systemId="test.project.PRJ-123",
         userName="test_user",
@@ -633,16 +579,10 @@ def test_members_view_add(
 
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
-def test_members_view_add_setfacl_job(
-    authenticated_user, client, mock_service_account, mock_tapis_client, project_list
-):
+def test_members_view_add_setfacl_job(authenticated_user, client, mock_service_account, mock_tapis_client, project_list):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
-    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(
-        **{"users": [authenticated_user.username, "test_user"]}
-    )
-    mock_tapis_client.files.getPermissions.return_value = TapisResult(
-        **{"permission": "MODIFY"}
-    )
+    mock_tapis_client.systems.getShareInfo.return_value = TapisResult(**{"users": [authenticated_user.username, "test_user"]})
+    mock_tapis_client.files.getPermissions.return_value = TapisResult(**{"permission": "MODIFY"})
 
     patch_body = {"action": "add_member", "username": "test_user"}
 
@@ -701,9 +641,7 @@ def test_members_view_add_setfacl_job(
         },
         tags=["portalName:test"],
     )
-    mock_tapis_client.systems.shareSystem.assert_called_with(
-        systemId="test.project.PRJ-123", users=["test_user"]
-    )
+    mock_tapis_client.systems.shareSystem.assert_called_with(systemId="test.project.PRJ-123", users=["test_user"])
     mock_tapis_client.systems.grantUserPerms.assert_called_with(
         systemId="test.project.PRJ-123",
         userName="test_user",
@@ -717,9 +655,7 @@ def test_members_view_add_setfacl_job(
     )
 
 
-def test_members_view_remove(
-    client, mock_service_account, mock_tapis_client, project_list
-):
+def test_members_view_remove(client, mock_service_account, mock_tapis_client, project_list):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     patch_body = {"action": "remove_member", "username": "test_user"}
 
@@ -753,23 +689,17 @@ def test_members_view_remove(
         recursionMethod="PHYSICAL",
         aclString="d:u:test_user,u:test_user",
     )
-    mock_tapis_client.systems.unShareSystem.assert_called_with(
-        systemId="test.project.PRJ-123", users=["test_user"]
-    )
+    mock_tapis_client.systems.unShareSystem.assert_called_with(systemId="test.project.PRJ-123", users=["test_user"])
     mock_tapis_client.systems.revokeUserPerms.assert_called_with(
         systemId="test.project.PRJ-123",
         userName="test_user",
         permissions=["READ", "MODIFY", "EXECUTE"],
     )
-    mock_tapis_client.files.deletePermissions.assert_called_with(
-        systemId="test.project.PRJ-123", path="/", username="test_user"
-    )
+    mock_tapis_client.files.deletePermissions.assert_called_with(systemId="test.project.PRJ-123", path="/", username="test_user")
 
 
 @override_settings(PORTAL_PROJECTS_USE_SET_FACL_JOB=True)
-def test_members_view_remove_setfacl_job(
-    client, mock_service_account, mock_tapis_client, project_list
-):
+def test_members_view_remove_setfacl_job(client, mock_service_account, mock_tapis_client, project_list):
     mock_tapis_client.systems.getSystem.return_value = project_list["tapis_response"][0]
     patch_body = {"action": "remove_member", "username": "test_user"}
 
@@ -815,14 +745,10 @@ def test_members_view_remove_setfacl_job(
         },
         tags=["portalName:test"],
     )
-    mock_tapis_client.systems.unShareSystem.assert_called_with(
-        systemId="test.project.PRJ-123", users=["test_user"]
-    )
+    mock_tapis_client.systems.unShareSystem.assert_called_with(systemId="test.project.PRJ-123", users=["test_user"])
     mock_tapis_client.systems.revokeUserPerms.assert_called_with(
         systemId="test.project.PRJ-123",
         userName="test_user",
         permissions=["READ", "MODIFY", "EXECUTE"],
     )
-    mock_tapis_client.files.deletePermissions.assert_called_with(
-        systemId="test.project.PRJ-123", path="/", username="test_user"
-    )
+    mock_tapis_client.files.deletePermissions.assert_called_with(systemId="test.project.PRJ-123", path="/", username="test_user")

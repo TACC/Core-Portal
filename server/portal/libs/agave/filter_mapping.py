@@ -1,18 +1,5 @@
 filter_mapping = {
-    "Audio": [
-        "aac",
-        "aifc",
-        "aiff",
-        "amr",
-        "au",
-        "flac",
-        "m4a",
-        "mp3",
-        "ogg",
-        "ra",
-        "wav",
-        "wma"
-    ],
+    "Audio": ["aac", "aifc", "aiff", "amr", "au", "flac", "m4a", "mp3", "ogg", "ra", "wav", "wma"],
     "Code": [
         "c",
         "css",
@@ -59,93 +46,18 @@ filter_mapping = {
         "xsd",
         "xsl",
         "yaml",
-        "yml"
+        "yml",
     ],
-    "Documents": [
-        "doc",
-        "dot",
-        "docx",
-        "docm",
-        "dotx",
-        "dotm",
-        "docb"
-    ],
+    "Documents": ["doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
     "Folders": [],
-    "Images": [
-        "ai",
-        "bmp",
-        "gif",
-        "eps",
-        "jpeg",
-        "jpg",
-        "png",
-        "ps",
-        "psd",
-        "svg",
-        "tif",
-        "tiff",
-        "dcm",
-        "dicm",
-        "dicom",
-        "svs",
-        "tga"
-    ],
-    "Jupyter Notebook": [
-        "ipynb"
-    ],
-    "PDF": [
-        "pdf"
-    ],
-    "Presentation": [
-        "ppt",
-        "pot",
-        "pps",
-        "pptx",
-        "pptm",
-        "potx",
-        "ppsx",
-        "ppsm",
-        "sldx",
-        "sldm"
-    ],
-    "Spreadsheet": [
-        "xls",
-        "xlt",
-        "xlm",
-        "xlsx",
-        "xlsm",
-        "xltx",
-        "xltm"
-    ],
-    "Shape File": [
-        "shp",
-        "shx",
-        "dbf",
-        "sbn",
-        "sbx",
-        "fbn",
-        "fbx",
-        "ain",
-        "aih",
-        "atx",
-        "ixs",
-        "mxs",
-        "prj",
-        "xml",
-        "cpg"
-    ],
-    "Text": [
-        "err",
-        "log",
-        "out",
-        "txt"
-    ],
-    "ZIP": [
-        "zip",
-        "tar",
-        "gz",
-        "tgz"
-    ],
+    "Images": ["ai", "bmp", "gif", "eps", "jpeg", "jpg", "png", "ps", "psd", "svg", "tif", "tiff", "dcm", "dicm", "dicom", "svs", "tga"],
+    "Jupyter Notebook": ["ipynb"],
+    "PDF": ["pdf"],
+    "Presentation": ["ppt", "pot", "pps", "pptx", "pptm", "potx", "ppsx", "ppsm", "sldx", "sldm"],
+    "Spreadsheet": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm"],
+    "Shape File": ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
+    "Text": ["err", "log", "out", "txt"],
+    "ZIP": ["zip", "tar", "gz", "tgz"],
     "3D Visualization": [
         "pov",
         "vrml",
@@ -169,6 +81,6 @@ filter_mapping = {
         "collada",
         "3ds",
         "iges",
-        "step"
-    ]
+        "step",
+    ],
 }

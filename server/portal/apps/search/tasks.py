@@ -1,59 +1,65 @@
 import logging
-from django.conf import settings
+
 from celery import shared_task
-from portal.libs.agave.utils import user_account, service_account
-from portal.libs.elasticsearch.utils import index_listing, index_project_listing
-from portal.apps.projects.models.metadata import LegacyProjectMetadata
-from portal.libs.elasticsearch.docs.base import (IndexedProject, IndexedPublication)
+from django.conf import settings
 from elasticsearch.exceptions import NotFoundError
+
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
+from portal.libs.agave.utils import service_account, user_account
+from portal.libs.elasticsearch.docs.base import IndexedProject, IndexedPublication
+from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 
 logger = logging.getLogger(__name__)
 
 
 # Crawl and index agave files
-@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
-def tapis_indexer(self, systemId, access_token=None, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
+@shared_task(bind=True, max_retries=3, queue="indexing", retry_backoff=True, rate_limit="12/m")
+def tapis_indexer(self, systemId, access_token=None, filePath="/", recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
-    if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys.get('scheme', None) == 'projects'
-            and sys.get('hideSearchBar', None)
-            and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)), None):
+    if next(
+        (
+            sys
+            for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+            if sys.get("scheme", None) == "projects" and sys.get("hideSearchBar", None) and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)
+        ),
+        None,
+    ):
         return
 
-    from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
+    from portal.libs.elasticsearch.utils import index_level
 
     client = user_account(access_token) if access_token else service_account()
 
-    if not filePath.startswith('/'):
-        filePath = '/' + filePath
+    if not filePath.startswith("/"):
+        filePath = "/" + filePath
 
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
         index_level(filePath, folders, files, systemId, reindex=reindex)
     except Exception as exc:
-        logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
+        logger.error(f"Error walking files under system {systemId} and path {filePath}")
         raise self.retry(exc=exc)
 
     if recurse:
         for child in folders:
-            self.delay(systemId, filePath=child.get('path'), reindex=reindex)
+            self.delay(systemId, filePath=child.get("path"), reindex=reindex)
 
 
-@shared_task(bind=True, max_retries=3, queue='default')
+@shared_task(bind=True, max_retries=3, queue="default")
 def tapis_listing_indexer(self, listing):
     index_listing(listing)
 
 
-@shared_task(bind=True, queue='indexing')
+@shared_task(bind=True, queue="indexing")
 def index_community_data(self, reindex=False):
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
-        if sys['api'] == 'tapis' and sys['scheme'] in ['community', 'public']:
-            logger.info('INDEXING {} SYSTEM with file path {}'.format(sys['name'], sys.get("homeDir", "/")))
-            tapis_indexer.apply_async(args=[sys['system']], kwargs={'filePath': sys.get("homeDir", "/"), 'reindex': reindex})
+        if sys["api"] == "tapis" and sys["scheme"] in ["community", "public"]:
+            logger.info("INDEXING {} SYSTEM with file path {}".format(sys["name"], sys.get("homeDir", "/")))
+            tapis_indexer.apply_async(args=[sys["system"]], kwargs={"filePath": sys.get("homeDir", "/"), "reindex": reindex})
 
 
-@shared_task(bind=True, max_retries=3, queue='indexing')
+@shared_task(bind=True, max_retries=3, queue="indexing")
 def index_project(self, project_id):
     project = LegacyProjectMetadata.objects.get(project_id=project_id)
     project_dict = project.to_dict()
@@ -62,7 +68,7 @@ def index_project(self, project_id):
     project_doc.save()
 
 
-@shared_task(bind=True, max_retries=3, queue='default')
+@shared_task(bind=True, max_retries=3, queue="default")
 def tapis_project_listing_indexer(self, projects):
     index_project_listing(projects)
 

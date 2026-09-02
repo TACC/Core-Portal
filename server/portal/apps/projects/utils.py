@@ -2,10 +2,14 @@
 .. :module:: portal.apps.projects.models.utils
    :synopsis: Utils for projects
 """
+
 import logging
+
 from django.conf import settings
+
+from portal.libs.agave.operations import delete, mkdir
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.operations import mkdir, delete
+
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
@@ -13,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def create_project_dir(project_id):
     client = service_account()
-    return mkdir(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, '', project_id)
+    return mkdir(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, "", project_id)
 
 
 def delete_project_dir(project_id):
@@ -36,7 +40,4 @@ def project_id_to_system_id(project_id):
 
     :param str project_id: Project Id.
     """
-    return '{prefix}.{prj_id}'.format(
-        prefix=settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
-        prj_id=project_id
-    )
+    return f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"

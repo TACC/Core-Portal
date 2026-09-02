@@ -1,11 +1,13 @@
-from typing import Any, Dict
-import networkx as nx
-from django.db import transaction
-import uuid
 import copy
+import uuid
+from typing import Any
+
+import networkx as nx
 from django.conf import settings
-from portal.apps.projects.schema_models import constants
+from django.db import transaction
+
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.schema_models import constants
 
 
 def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:
@@ -14,17 +16,13 @@ def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:
     return int(max_order) + 1
 
 
-def _add_node_to_graph(
-    graph: nx.DiGraph, parent_node_id: str, meta_uuid: str, name: str, label: str
-) -> tuple[nx.DiGraph, str | None]:
+def _add_node_to_graph(graph: nx.DiGraph, parent_node_id: str, meta_uuid: str, name: str, label: str) -> tuple[nx.DiGraph, str | None]:
     """Add a node with data to a graph, and return the graph."""
     if not graph.has_node(parent_node_id):
         raise nx.exception.NodeNotFound
 
     # no-op if metadata with this UUID is already associated.
-    if meta_uuid in (
-        graph.nodes[node]["uuid"] for node in graph.successors(parent_node_id)
-    ):
+    if meta_uuid in (graph.nodes[node]["uuid"] for node in graph.successors(parent_node_id)):
         return (graph, None)
 
     _graph: nx.DiGraph = copy.deepcopy(graph)
@@ -54,15 +52,13 @@ def initialize_project_graph(project_id: str):
         "name": project_model.name,
         "projectType": project_type,
         "order": 0,
-        "label": project_model.value.get("title")
+        "label": project_model.value.get("title"),
     }
 
     if project_type == "other":
         # type Other projects have a "null" parent node above the project root, to
         # support multiple versions.
-        project_graph.add_node(
-            root_node_id, **{"uuid": None, "name": None, "projectType": "other"}
-        )
+        project_graph.add_node(root_node_id, **{"uuid": None, "name": None, "projectType": "other"})
         base_node_id = f"NODE_project_{uuid.uuid4()}"
         project_graph.add_node(base_node_id, **base_node_data)
         project_graph.add_edge(root_node_id, base_node_id)
@@ -83,7 +79,7 @@ def traverse_graph(project_graph, root_node, path_components):
     for component in path_components:
         found = False
         for successor in project_graph.successors(current_node):
-            name = project_graph.nodes[successor]['label']
+            name = project_graph.nodes[successor]["label"]
             if name == component:
                 current_node = successor
                 found = True
@@ -93,12 +89,10 @@ def traverse_graph(project_graph, root_node, path_components):
     return {"id": current_node, **project_graph.nodes[current_node]}
 
 
-def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
+def get_node_from_path(project_id: str, path: str) -> dict[str, Any]:
     """Return the node ID for the parent of a node with the given path."""
 
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
 
     path_parts = path.strip("/").split("/")
@@ -111,11 +105,9 @@ def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
     return node
 
 
-def get_root_node(project_id: str) -> Dict[str, Any]:
+def get_root_node(project_id: str) -> dict[str, Any]:
     """Return the root node for a project graph."""
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
     return {"id": "NODE_ROOT", **project_graph.nodes["NODE_ROOT"]}
 
@@ -123,9 +115,7 @@ def get_root_node(project_id: str) -> Dict[str, Any]:
 def update_node_in_project(project_id: str, node_id: str, new_parent: str = None, new_name: str = None):
     """Update the database entry for a project graph to update a node."""
     with transaction.atomic():
-        graph_model = ProjectMetadata.objects.select_for_update().get(
-            name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-        )
+        graph_model = ProjectMetadata.objects.select_for_update().get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
         project_graph = nx.node_link_graph(graph_model.value)
 
         if not project_graph.has_node(node_id):
@@ -136,9 +126,7 @@ def update_node_in_project(project_id: str, node_id: str, new_parent: str = None
             parent_node = new_parent
             if not project_graph.has_node(parent_node):
                 raise nx.exception.NodeNotFound
-            project_graph.remove_edge(
-                next(project_graph.predecessors(node_id)), node_id
-            )
+            project_graph.remove_edge(next(project_graph.predecessors(node_id)), node_id)
             project_graph.add_edge(parent_node, node_id)
 
         if new_name:
@@ -163,9 +151,7 @@ def get_or_create_trash_entity(project_id: str):
         create_entity_metadata,
     )
 
-    graph_model = ProjectMetadata.objects.select_for_update().get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    graph_model = ProjectMetadata.objects.select_for_update().get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
 
     trash_uuid = _get_trash_node_uuid(project_graph)
@@ -189,14 +175,10 @@ def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name:
     """Update the database entry for a project graph to add a node."""
     # Lock the project graph's tale row to prevent conflicting updates.
     with transaction.atomic():
-        graph_model = ProjectMetadata.objects.select_for_update().get(
-            name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-        )
+        graph_model = ProjectMetadata.objects.select_for_update().get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
         project_graph = nx.node_link_graph(graph_model.value)
 
-        (updated_graph, new_node_id) = _add_node_to_graph(
-            project_graph, parent_node, meta_uuid, name, label
-        )
+        (updated_graph, new_node_id) = _add_node_to_graph(project_graph, parent_node, meta_uuid, name, label)
 
         graph_model.value = nx.node_link_data(updated_graph)
         graph_model.save()
@@ -205,9 +187,7 @@ def add_node_to_project(project_id: str, parent_node: str, meta_uuid: str, name:
 
 def get_node_from_uuid(project_id: str, uuid: str):
     """Get a node from the project graph using its UUID."""
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
 
     for node_id in project_graph.nodes:
@@ -240,9 +220,7 @@ def build_project_tree(full_project_id: str):
         get_ordered_value,
     )
 
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id
-    )
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=full_project_id)
 
     graph = nx.node_link_graph(graph_model.value)
     graph = remove_trash_nodes(graph)
@@ -251,30 +229,26 @@ def build_project_tree(full_project_id: str):
         node = graph.nodes[node_id]
 
         # Build the node's path from the labels of its ancestors (excluding root).
-        if nx.has_path(graph, 'NODE_ROOT', node_id):
-            path_nodes = nx.shortest_path(graph, 'NODE_ROOT', node_id)[1:]
-            node['path'] = '/'.join(
-                graph.nodes[parent]['label']
-                for parent in path_nodes
-                if 'label' in graph.nodes[parent]
-            )
+        if nx.has_path(graph, "NODE_ROOT", node_id):
+            path_nodes = nx.shortest_path(graph, "NODE_ROOT", node_id)[1:]
+            node["path"] = "/".join(graph.nodes[parent]["label"] for parent in path_nodes if "label" in graph.nodes[parent])
         else:
-            node['path'] = ""
+            node["path"] = ""
 
-        if node.get('value'):
-            metadata = get_ordered_value(node['name'], node['value'])
-            file_objs = node['value'].get('fileObjs', [])
+        if node.get("value"):
+            metadata = get_ordered_value(node["name"], node["value"])
+            file_objs = node["value"].get("fileObjs", [])
         else:
-            entity = ProjectMetadata.objects.get(uuid=node.get('uuid'))
+            entity = ProjectMetadata.objects.get(uuid=node.get("uuid"))
             metadata = get_ordered_value(entity.name, entity.value)
-            file_objs = entity.value.get('fileObjs', [])
+            file_objs = entity.value.get("fileObjs", [])
 
-        node['metadata'] = metadata
-        node['fileObjs'] = [
+        node["metadata"] = metadata
+        node["fileObjs"] = [
             {
                 **file_obj,
-                'id': file_obj.get('uuid'),
-                'metadata': get_ordered_value(constants.FILE, file_obj.get('value')),
+                "id": file_obj.get("uuid"),
+                "metadata": get_ordered_value(constants.FILE, file_obj.get("value")),
             }
             for file_obj in file_objs
         ]
@@ -284,13 +258,11 @@ def build_project_tree(full_project_id: str):
 
 def get_path_uuid_mapping(project_id: str):
     """Return a mapping of node paths to UUIDs for a project graph."""
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
     path_uuid_mapping = {}
     for node_id in project_graph.nodes:
-        path_nodes = nx.shortest_path(project_graph, 'NODE_ROOT', node_id)[1:]
-        path = '/'.join(project_graph.nodes[parent]['label'] for parent in path_nodes if 'label' in project_graph.nodes[parent])
+        path_nodes = nx.shortest_path(project_graph, "NODE_ROOT", node_id)[1:]
+        path = "/".join(project_graph.nodes[parent]["label"] for parent in path_nodes if "label" in project_graph.nodes[parent])
         path_uuid_mapping[path] = project_graph.nodes[node_id]["uuid"]
     return path_uuid_mapping
