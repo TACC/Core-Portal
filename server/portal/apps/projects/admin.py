@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from portal.apps.projects.models.base import ProjectId
 
 
