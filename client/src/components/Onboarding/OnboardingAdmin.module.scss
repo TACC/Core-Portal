@@ -76,7 +76,6 @@
 .users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
   --cell-vertical-padding: 0.35em;
-  /* TODO: After, FP-103, use `composes:` not `@extend` */
   height: 100%;
   align-items: stretch;
   width: 100%;
