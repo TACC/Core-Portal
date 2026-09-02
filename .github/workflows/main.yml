@@ -72,6 +72,11 @@ jobs:
           cd server
           poetry run flake8
 
+      - name: Run Black Check
+        run: |
+          cd server
+          poetry run black --check --diff .
+
   Client_Side_Unit_Tests:
     runs-on: ubuntu-24.04
     steps:
