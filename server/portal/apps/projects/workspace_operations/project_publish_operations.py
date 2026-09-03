@@ -237,6 +237,8 @@ def publish_project(self, project_id: str, version: Optional[int] = 1):
 
         pub_tree = nx.node_link_graph(published_project.project_graph.value)
         pub_tree.nodes["NODE_ROOT"]["version"] = version
+        pub_tree.nodes["NODE_ROOT"]["value"]["doi"] = doi
+        pub_tree.nodes["NODE_ROOT"]["value"]["publicationDate"] = published_project.created
         published_project.project_graph.value = nx.node_link_data(pub_tree)
         published_project.value['doi'] = doi
         published_project.value['publicationDate'] = published_project.created
