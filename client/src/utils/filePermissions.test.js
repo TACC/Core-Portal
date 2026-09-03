@@ -12,6 +12,7 @@ const privateFixture = {
   ],
   scheme: 'private',
   api: 'tapis',
+  customPermissionCheck: () => true,
 };
 const publicFixture = {
   files: [
@@ -25,6 +26,7 @@ const publicFixture = {
   ],
   scheme: 'public',
   api: 'tapis',
+  customPermissionCheck: () => true,
 };
 const multipleFilesFixture = {
   files: [
@@ -45,6 +47,7 @@ const multipleFilesFixture = {
   ],
   scheme: 'private',
   api: 'tapis',
+  customPermissionCheck: () => true,
 };
 describe('getFilePermissions utility function', () => {
   it.each([

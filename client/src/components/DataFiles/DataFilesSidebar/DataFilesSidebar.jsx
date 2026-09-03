@@ -11,6 +11,7 @@ import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
 import { useTapisToken } from 'hooks/datafiles';
 import { useRouteMatch } from 'react-router-dom';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
 
 const DataFilesAddButton = ({ readOnly }) => {
@@ -82,7 +83,8 @@ const DataFilesAddButton = ({ readOnly }) => {
           </DropdownItem>
           {sharedWorkspaces && !sharedWorkspaces.readOnly && (
             <DropdownItem onClick={toggleAddProjectModal}>
-              <i className="icon-folder" /> Shared Workspace
+              <i className="icon-folder" />{' '}
+              {getSharedWorkspaceDisplayName(sharedWorkspaces.name)}
             </DropdownItem>
           )}
           <DropdownItem divider />
@@ -109,21 +111,36 @@ const DataFilesSidebar = ({ readOnly }) => {
     shallowEqual
   );
 
+  const user = useSelector((state) => state.authenticatedUser.user);
+
   const match = useRouteMatch();
 
   var sidebarItems = [];
 
   systems.forEach((sys) => {
-    sidebarItems.push({
-      to: `${match.path}/${sys.api}/${sys.scheme}/${
-        sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
-      }`,
-      label: sys.name,
-      iconName: sys.icon || 'my-data',
-      disabled: false,
-      hidden: false,
-      category: sys.resourceProvider,
-    });
+    if (sys.scheme === 'projects') {
+      if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
+        sidebarItems.push({
+          to: `${match.path}/${sys.api}/${sys.scheme}/${sys.system}`,
+          label: sys.name,
+          iconName: sys.icon || 'my-data',
+          disabled: false,
+          hidden: false,
+          category: sys.resourceProvider,
+        });
+      }
+    } else {
+      sidebarItems.push({
+        to: `${match.path}/${sys.api}/${sys.scheme}/${
+          sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
+        }`,
+        label: sys.name,
+        iconName: sys.icon || 'my-data',
+        disabled: false,
+        hidden: false,
+        category: sys.resourceProvider,
+      });
+    }
   });
 
   const addItems = [

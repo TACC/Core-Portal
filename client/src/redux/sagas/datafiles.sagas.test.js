@@ -145,6 +145,7 @@ describe('fetchFiles', () => {
         type: 'FETCH_FILES_SUCCESS',
         payload: {
           files: [{ name: 'testfile', system: 'test.system' }],
+          folderMetadata: undefined,
           reachedEnd: true,
           section: 'FilesListing',
           nextPageToken: undefined,
@@ -606,7 +607,7 @@ describe('copyFiles', () => {
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
-        body: '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname"}',
+        body: '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname","metadata":null}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
         method: 'PUT',

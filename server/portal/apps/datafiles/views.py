@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 from tapipy.errors import InternalServerError, UnauthorizedError
 from portal.views.base import BaseApiView
-from portal.utils import get_client_ip
+from portal.utils import check_group_membership, get_client_ip
 from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
@@ -32,6 +32,32 @@ from portal.apps.datafiles.utils import evaluate_datafiles_storage_systems, get_
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
+
+
+def check_project_admin_group(user):
+    """Check whether a user belongs to the project admin group."""
+    return check_group_membership(user, settings.PROJECT_ADMIN_GROUP)
+
+
+def is_project_system(system):
+    """Return whether a Tapis system is managed as a portal project system."""
+    project_prefixes = tuple(
+        prefix
+        for prefix in (
+            getattr(settings, 'PORTAL_PROJECTS_SYSTEM_PREFIX', None),
+            getattr(settings, 'PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX', None),
+            getattr(settings, 'PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX', None),
+        )
+        if prefix
+    )
+    return bool(system and project_prefixes and system.startswith(project_prefixes))
+
+
+def get_tapis_client(user, system=None):
+    """Return the correct Tapis client for a user and optional project system."""
+    if is_project_system(system) and check_project_admin_group(user):
+        return service_account()
+    return user.tapis_oauth.client
 
 
 class SystemListingView(BaseApiView):
@@ -62,7 +88,8 @@ class SystemListingView(BaseApiView):
                 response['default_host'] = system_def.host
                 response['default_system_id'] = default_system_id
         else:
-            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] == 'public']
+            response['system_list'] = [sys for sys in portal_systems if sys['scheme'] ==
+                                       'public' or sys['system'] == settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME]
 
         return JsonResponse(response)
 
@@ -72,11 +99,13 @@ class SystemDefinitionView(BaseApiView):
 
     def get(self, request, systemId):
         try:
-            client = request.user.tapis_oauth.client
+            client = get_tapis_client(request.user, systemId)
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == systemId:
+                client = service_account()
+            elif settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX and systemId.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse({'message': 'Unauthorized'}, status=401)
@@ -94,11 +123,13 @@ class TapisFilesView(BaseApiView):
     @retry(UnauthorizedError, tries=3, max_time=15)
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
-            client = request.user.tapis_oauth.client
+            client = get_tapis_client(request.user, system)
         except AttributeError:
             # Make sure that we only let unauth'd users see public systems
             public_sys = next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['scheme'] == 'public'), None)
             if public_sys and public_sys['system'] == system and path.startswith(public_sys['homeDir'].strip('/')):
+                client = service_account()
+            elif system and settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX and system.startswith(settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX):
                 client = service_account()
             else:
                 return JsonResponse(
@@ -185,7 +216,7 @@ class TapisFilesView(BaseApiView):
             handler=None, system=None, path='/'):
         body = json.loads(request.body)
         try:
-            client = request.user.tapis_oauth.client
+            client = get_tapis_client(request.user, system)
         except AttributeError:
             return HttpResponseForbidden("This data requires authentication to view.")
 
@@ -206,7 +237,7 @@ class TapisFilesView(BaseApiView):
                              }
                          })
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-            response = tapis_put_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", body=body)
+            response = tapis_put_handler(client, scheme, system, path, operation, body, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -215,9 +246,13 @@ class TapisFilesView(BaseApiView):
 
     def post(self, request, operation=None, scheme=None,
              handler=None, system=None, path='/'):
+
+        metadata_json = request.POST.get("metadata")
+        metadata = json.loads(metadata_json) if metadata_json else None
         body = request.FILES.dict()
+
         try:
-            client = request.user.tapis_oauth.client
+            client = get_tapis_client(request.user, system)
         except AttributeError:
             return HttpResponseForbidden("This data requires authentication to upload.")
 
@@ -243,7 +278,8 @@ class TapisFilesView(BaseApiView):
                 },
             )
             session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-            response = tapis_post_handler(client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}",  body=body)
+            response = tapis_post_handler(client, scheme, system, path, operation, {
+                                          **body, 'metadata': metadata}, tapis_tracking_id=f"portals.{session_key_hash}")
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             raise exc
@@ -298,7 +334,7 @@ class GoogleDriveFilesView(BaseApiView):
         return JsonResponse({"data": response})
 
 
-def get_client(user, api):
+def get_client(user, api, system=None):
     client_mappings = {
         'tapis': 'tapis_oauth',
         'shared': 'tapis_oauth',
@@ -306,6 +342,8 @@ def get_client(user, api):
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
     }
+    if api in ('tapis', 'shared') and is_project_system(system) and check_project_admin_group(user):
+        return service_account()
     return getattr(user, client_mappings[api]).client
 
 
@@ -313,8 +351,8 @@ class TransferFilesView(BaseApiView):
     def put(self, request, filetype):
         body = json.loads(request.body)
 
-        src_client = get_client(request.user, body['src_api'])
-        dest_client = get_client(request.user, body['dest_api'])
+        src_client = get_client(request.user, body['src_api'], body.get('src_system'))
+        dest_client = get_client(request.user, body['dest_api'], body.get('dest_system'))
         METRICS.info('Data Files',
                      extra={
                          'user': request.user.username,
@@ -344,7 +382,7 @@ class TransferFilesView(BaseApiView):
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
 
-        client = request.user.tapis_oauth.client
+        client = get_tapis_client(request.user, system)
 
         # Create postit for unlimited use with a valid period of 1 year
         postit = client.files.createPostIt(systemId=system, path=path, allowedUses=-1, validSeconds=31536000)
@@ -357,8 +395,8 @@ class LinkView(BaseApiView):
         )
         return {"data": postit_redeem_url, "expiration": postit.expiration}
 
-    def delete_link(self, request, link):
-        client = request.user.tapis_oauth.client
+    def delete_link(self, request, system, link):
+        client = get_tapis_client(request.user, system)
 
         postitId = link.get_uuid()
 
@@ -410,7 +448,7 @@ class LinkView(BaseApiView):
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
-        response = self.delete_link(request, link)
+        response = self.delete_link(request, system, link)
         return JsonResponse({"data": response})
 
     def post(self, request, scheme, system, path):
@@ -421,16 +459,16 @@ class LinkView(BaseApiView):
         except Link.DoesNotExist:
             METRICS.info('Data Files',
                          extra={
-                              'user': request.user.username,
-                              'sessionId': getattr(request.session, 'session_key', ''),
-                              'operation': 'create-postit',
-                              'agent': request.META.get('HTTP_USER_AGENT'),
-                              'ip': get_client_ip(request),
-                              'info': {
-                                  'api': 'tapis',
-                                  'systemId': system,
-                                  'filePath': path,
-                                  'query': request.GET.dict()}
+                             'user': request.user.username,
+                             'sessionId': getattr(request.session, 'session_key', ''),
+                             'operation': 'create-postit',
+                             'agent': request.META.get('HTTP_USER_AGENT'),
+                             'ip': get_client_ip(request),
+                             'info': {
+                                 'api': 'tapis',
+                                 'systemId': system,
+                                 'filePath': path,
+                                 'query': request.GET.dict()}
                          })
             # Link doesn't exist - proceed with creating one
             postit = self.create_postit(request, scheme, system, path)
@@ -456,7 +494,7 @@ class LinkView(BaseApiView):
                                  'query': request.GET.dict()}
                          })
             link = Link.objects.get(tapis_uri=f"{system}/{path}")
-            self.delete_link(request, link)
+            self.delete_link(request, system, link)
         except Link.DoesNotExist:
             raise ApiException("Could not find pre-existing link")
         postit = self.create_postit(request, scheme, system, path)

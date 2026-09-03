@@ -14,6 +14,9 @@ describe('Submissions', () => {
     });
     const store = mockStore({
       systems: systemsFixture,
+      workbench: {
+        config: {},
+      },
       files: {
         operationStatus: { upload: true },
       },
@@ -32,6 +35,9 @@ describe('SubmissionsUpload', () => {
   it('renders the submissions page and displays the max file size', () => {
     const store = mockStore({
       systems: systemsFixture,
+      workbench: {
+        config: {},
+      },
       files: {
         operationStatus: { upload: true },
       },
