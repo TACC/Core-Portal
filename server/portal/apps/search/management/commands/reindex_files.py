@@ -12,7 +12,7 @@ class Command(BaseCommand):
     This command reindexes all documents in the default files index in order to
     apply new mappings/analyzers. It does NOT crawl Agave for file metadata, it
     only uses data that already exists in the file index. Usage is as simple as
-    running `./manage.py reindex-files`.
+    running `./manage.py reindex_files`.
 
     This works by resetting the index aliased as settings.ES_REINDEX_INDEX_ALIAS
     (applying any new mappings/analyzers defined in the portal.libs.elasticsearch.docs.base.IndexedFile
