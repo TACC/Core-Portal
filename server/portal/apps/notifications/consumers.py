@@ -45,12 +45,8 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         if user.is_anonymous:
             # Connection has no logged in user, nothing to disconnect
             return
-        await self.channel_layer.group_discard(
-            group=str(user.id), channel=self.channel_name
-        )
-        await self.channel_layer.group_discard(
-            group="portal_events", channel=self.channel_name
-        )
+        await self.channel_layer.group_discard(group=str(user.id), channel=self.channel_name)
+        await self.channel_layer.group_discard(group="portal_events", channel=self.channel_name)
 
     async def portal_notification(self, event):
         """

@@ -59,10 +59,7 @@ def get_tas_allocations(username):
 
             # Separate active and inactive allocations and make single entry for each project
             if resource["allocation"]["status"] == "Active":
-                if (
-                    resource["host"] in hosts
-                    and charge_code not in hosts[resource["host"]]
-                ):
+                if resource["host"] in hosts and charge_code not in hosts[resource["host"]]:
                     hosts[resource["host"]].append(charge_code)
                 elif resource["host"] not in hosts:
                     hosts[resource["host"]] = [charge_code]
@@ -74,9 +71,7 @@ def get_tas_allocations(username):
                     active_allocations[charge_code] = {
                         "title": tas_proj["title"],
                         "projectId": tas_proj["id"],
-                        "pi": "{} {}".format(
-                            tas_proj["pi"]["firstName"], tas_proj["pi"]["lastName"]
-                        ),
+                        "pi": "{} {}".format(tas_proj["pi"]["firstName"], tas_proj["pi"]["lastName"]),
                         "projectName": tas_proj["chargeCode"],
                         "systems": [resource],
                     }
@@ -87,9 +82,7 @@ def get_tas_allocations(username):
                     inactive_allocations[charge_code] = {
                         "title": tas_proj["title"],
                         "projectId": tas_proj["id"],
-                        "pi": "{} {}".format(
-                            tas_proj["pi"]["firstName"], tas_proj["pi"]["lastName"]
-                        ),
+                        "pi": "{} {}".format(tas_proj["pi"]["firstName"], tas_proj["pi"]["lastName"]),
                         "projectName": tas_proj["chargeCode"],
                         "systems": [resource],
                     }

@@ -1,4 +1,3 @@
-
 from mock import MagicMock
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abstract import AbstractStep
@@ -123,18 +122,10 @@ class MockStaffStep(AbstractStep):
             return
 
         if action == "staff_approve":
-            self.complete(
-                "Approved by {user}".format(
-                    user=request.user.username
-                )
-            )
+            self.complete("Approved by {user}".format(user=request.user.username))
             self.staff_approve_spy(action, data, request)
         elif action == "staff_deny":
-            self.fail(
-                "Denied by {user}".format(
-                    user=request.user.username
-                )
-            )
+            self.fail("Denied by {user}".format(user=request.user.username))
             self.staff_deny_spy(action, data, request)
 
 

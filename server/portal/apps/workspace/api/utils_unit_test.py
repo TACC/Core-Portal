@@ -34,9 +34,7 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
         "metadata": None,
     }
 
-    result = push_keys_required_if_not_credentials_ensured(
-        authenticated_user, "test_system", "/"
-    )
+    result = push_keys_required_if_not_credentials_ensured(authenticated_user, "test_system", "/")
 
     assert result is False
     mock_tapis_client.systems.createUserCredential.assert_called_once_with(
@@ -68,18 +66,14 @@ def test_push_keys_required_if_not_credentials_ensured_credentials_ok(
         "metadata": None,
     }
 
-    result = push_keys_required_if_not_credentials_ensured(
-        authenticated_user, "test_system", "/"
-    )
+    result = push_keys_required_if_not_credentials_ensured(authenticated_user, "test_system", "/")
 
     assert result is False
     mock_should_push_keys.assert_not_called()
     mock_create_system_credentials_with_tms.assert_not_called()
 
 
-def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
-    authenticated_user, mock_tapis_client
-):
+def test_push_keys_required_if_not_credentials_ensured_push_keys_required(authenticated_user, mock_tapis_client):
     """
     Test that the push_keys_required_if_not_credentials_ensured function
     returns True when the user does not have system credentials
@@ -97,9 +91,7 @@ def test_push_keys_required_if_not_credentials_ensured_push_keys_required(
     mock_tapis_client.files.listFiles.side_effect = UnauthorizedError()
     mock_tapis_client.systems.getSystem.return_value = tapis_system
 
-    result = push_keys_required_if_not_credentials_ensured(
-        authenticated_user, "test_system", "/"
-    )
+    result = push_keys_required_if_not_credentials_ensured(authenticated_user, "test_system", "/")
 
     assert result is True
     mock_tapis_client.systems.createUserCredential.assert_not_called()

@@ -18,25 +18,28 @@ def conf_raw(img, file):
     # slices, width, height should be converted to ints
     # NOTE: If an 8-bit raw comes through, we need to set the datatype for that to unsigned.
 
-    logger.info(f'img: {img}')
+    logger.info(f"img: {img}")
 
-    prefix_map = {'little_endian': '<', 'big_endian': '>'}
+    prefix_map = {"little_endian": "<", "big_endian": ">"}
     suffix_map = {
-        '8_bit': 'u1', '16_bit_unsigned': 'u2', '32_bit_unsigned': 'u4', '64_bit_unsigned': 'u8',
-        '8_bit_signed': 'i1', '16_bit_signed': 'i2', '32_bit_signed': 'i4', '64_bit_signed': 'i8',
-        '32_bit_real': 'f4', '64_bit_real': 'f8'
+        "8_bit": "u1",
+        "16_bit_unsigned": "u2",
+        "32_bit_unsigned": "u4",
+        "64_bit_unsigned": "u8",
+        "8_bit_signed": "i1",
+        "16_bit_signed": "i2",
+        "32_bit_signed": "i4",
+        "64_bit_signed": "i8",
+        "32_bit_real": "f4",
+        "64_bit_real": "f8",
     }
 
-    prefix = prefix_map.get(img['byte_order'], '|')  # Default to native byte order if unknown
-    suffix = suffix_map.get(img['image_type'])
+    prefix = prefix_map.get(img["byte_order"], "|")  # Default to native byte order if unknown
+    suffix = suffix_map.get(img["image_type"])
     datatype = prefix + suffix
 
     file_data = np.frombuffer(file, dtype=datatype)
-    return file_data.reshape([
-        int(img['number_of_images']),
-        int(img['height']),
-        int(img['width'])
-    ])
+    return file_data.reshape([int(img["number_of_images"]), int(img["height"]), int(img["width"])])
 
 
 def conf_tiff(file):
@@ -47,15 +50,15 @@ def conf_tiff(file):
 
 
 def binary_correction(img):
-    logger.debug('Correcting for Binary values...')
+    logger.debug("Correcting for Binary values...")
     min_value = np.min(img)
     max_value = np.max(img)
-    k = 255/(max_value-min_value)
-    offset = -k*min_value
+    k = 255 / (max_value - min_value)
+    offset = -k * min_value
 
     image1 = np.floor(img * k + offset)
     del img
-    return image1.astype('uint8')
+    return image1.astype("uint8")
 
 
 def create_thumbnail(img):
@@ -67,33 +70,33 @@ def create_thumbnail(img):
     if len(img.shape) == 3 and 3 not in img.shape:
         width = img.shape[2]
         height = img.shape[1]
-        depth_slice = int(np.ceil(img.shape[0]/2))
+        depth_slice = int(np.ceil(img.shape[0] / 2))
     elif len(img.shape) == 3 and 3 in img.shape:
         # TODO: Handle RGB files shape ==> (h, w, 3)
-        logger.debug('handle RGB')
+        logger.debug("handle RGB")
 
     # preserve aspect ratio and resize to fit.
-    modifier = dim_max/width if width > height else dim_max/height
-    resized_width = width*modifier
-    resized_height = height*modifier
+    modifier = dim_max / width if width > height else dim_max / height
+    resized_width = width * modifier
+    resized_height = height * modifier
 
     fig = plt.figure()
     fig.set_size_inches(resized_width, resized_height, dpi)
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
     ax.set_axis_off()
     fig.add_axes(ax)
     # TODO: Swap color mapping if image is bitmap/8bit
     # plt.set_cmap('gray') if img.invert_colors else plt.set_cmap('Greys')
-    plt.set_cmap('Greys')
+    plt.set_cmap("Greys")
     if depth_slice is not None:
-        logger.debug('Creating Thumbnail from 3D tif')
-        ax.imshow(img[depth_slice, :, :], aspect='equal', vmin=0, vmax=255)
+        logger.debug("Creating Thumbnail from 3D tif")
+        ax.imshow(img[depth_slice, :, :], aspect="equal", vmin=0, vmax=255)
     else:
-        logger.debug('Creating Thumbnail from FLAT tif')
-        ax.imshow(img, aspect='equal')
+        logger.debug("Creating Thumbnail from FLAT tif")
+        ax.imshow(img, aspect="equal")
 
     buffer = io.BytesIO()
-    plt.savefig(buffer, format='jpeg', dpi=dpi)
+    plt.savefig(buffer, format="jpeg", dpi=dpi)
     buffer.seek(0)
 
     plt.close(fig)
@@ -102,27 +105,35 @@ def create_thumbnail(img):
 
 
 def create_histogram(img):
-    logger.debug('Creating Histogram')
+    logger.debug("Creating Histogram")
     nbins = 256
     fig_hist = plt.figure(figsize=(4, 2.4))
-    freq, bins, patches = plt.hist(img.reshape([np.size(img),]), nbins, density=True)
-    plt.xlabel('Gray value')
-    plt.ylabel('Probability')
+    freq, bins, patches = plt.hist(
+        img.reshape(
+            [
+                np.size(img),
+            ]
+        ),
+        nbins,
+        density=True,
+    )
+    plt.xlabel("Gray value")
+    plt.ylabel("Probability")
     plt.tight_layout()
 
     image_buffer = io.BytesIO()
-    fig_hist.savefig(image_buffer, format='jpeg', dpi=200)
+    fig_hist.savefig(image_buffer, format="jpeg", dpi=200)
     image_buffer.seek(0)
     plt.close(fig_hist)
 
     csv_buffer = io.StringIO()
-    histwriter = csv.writer(csv_buffer, delimiter=',')
-    histwriter.writerow(('Value', 'Probability'))
+    histwriter = csv.writer(csv_buffer, delimiter=",")
+    histwriter.writerow(("Value", "Probability"))
     for i in range(np.size(freq)):
         histwriter.writerow((bins[i], freq[i]))
     csv_buffer.seek(0)
 
-    logger.debug('Histogram Created')
+    logger.debug("Histogram Created")
 
     return image_buffer.getvalue(), csv_buffer.getvalue()
 
@@ -138,10 +149,10 @@ def create_animation(img):
         bytes: Binary data of the animated GIF.
     """
     if len(img.shape) < 3 or (len(img.shape) == 3 and 3 in img.shape):
-        logger.debug('Image is not a 3D array')
+        logger.debug("Image is not a 3D array")
         return  # Exit if the image is not a 3D array
 
-    logger.debug('Creating Animated Gif')
+    logger.debug("Creating Animated Gif")
 
     class AnimatedGif:
         def __init__(self):
@@ -150,18 +161,18 @@ def create_animation(img):
 
         def add(self, image, h, w, dpi=100):
             self.fig.set_size_inches(w, h, dpi)
-            ax1 = plt.Axes(self.fig, [0., 0., 1., 1.])
+            ax1 = plt.Axes(self.fig, [0.0, 0.0, 1.0, 1.0])
             ax1.set_axis_off()
             self.fig.add_axes(ax1)
-            plt.set_cmap('Greys')
-            plt_im = ax1.imshow(image, aspect='equal', vmin=0, vmax=255)
+            plt.set_cmap("Greys")
+            plt_im = ax1.imshow(image, aspect="equal", vmin=0, vmax=255)
             self.images.append([plt_im])
 
         def save_to_tempfile(self):
             """Saves the animation to a temporary file and returns its binary content."""
             with tempfile.NamedTemporaryFile(suffix=".gif", delete=True) as temp_file:
                 animation = anim.ArtistAnimation(self.fig, self.images)
-                animation.save(temp_file.name, writer='imagemagick', fps=6)
+                animation.save(temp_file.name, writer="imagemagick", fps=6)
                 temp_file.seek(0)  # Reset pointer to the beginning
                 return temp_file.read()  # Read binary content
 
@@ -188,7 +199,7 @@ def create_animation(img):
     # Save the animation to a temporary file and return its binary data
     gif_binary_data = animated_gif.save_to_tempfile()
 
-    logger.debug('Animated Gif Created')
+    logger.debug("Animated Gif Created")
     return gif_binary_data
 
 
@@ -202,10 +213,10 @@ def resize_cover_image(img):
     ext = ext.lower()
 
     format_map = {
-        '.jpg': 'JPEG',
-        '.jpeg': 'JPEG',
-        '.png': 'PNG',
-        '.gif': 'GIF',
+        ".jpg": "JPEG",
+        ".jpeg": "JPEG",
+        ".png": "PNG",
+        ".gif": "GIF",
     }
 
     image_format = format_map.get(ext)

@@ -3,6 +3,7 @@
 The base Portal code for TACC WMA Workspace Portals
 
 ### Related Repositories:
+
 - [Camino], a Docker container-based deployment scheme
 - [Core CMS], the base CMS code for TACC WMA CMS Websites
 - [Core Styles], the shared UI pattern code for TACC WMA CMS Websites
@@ -12,9 +13,9 @@ The base Portal code for TACC WMA Workspace Portals
 
 ## Prerequisites for running the portal application:
 
-* Docker > 28
-* Python 3.12.x
-* Nodejs 24.x (LTS)
+- Docker > 28
+- Python 3.12.x
+- Nodejs 24.x (LTS)
 
 The Core Portal can be run using [Docker][1].
 
@@ -36,7 +37,7 @@ NOTE: This may require a computer restart to take effect.
 3. Navigate to `./server/conf/nginx/certificates`
 4. Select `ca.pem`
 5. Under the "All" or "Certificates" tab,\
-    Search for CEP and double click on the certificate
+   Search for CEP and double click on the certificate
 6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
 7. Close the window to save.
 
@@ -50,54 +51,54 @@ NOTE: This may require a computer restart to take effect.
 #### Firefox UI
 
 1. Go to preferences
-3. Search for Authorities
-4. Click on "View Certificates" under "Certificates"
-5. On the Certificate Manager go to the "Authorities" tab
-6. Click on "Import..."
-7. Browse to `./server/conf/nginx/certificates`
-8. Select `ca.pem`
+2. Search for Authorities
+3. Click on "View Certificates" under "Certificates"
+4. On the Certificate Manager go to the "Authorities" tab
+5. Click on "Import..."
+6. Browse to `./server/conf/nginx/certificates`
+7. Select `ca.pem`
 
 #### Firefox CLI (not tested)
 
 1. `sudo apt-get install libnss3-tools` (or proper package manager)
 2. `certutil -A -n "cepCA" -t "TCu,Cu,Tu" -i ca.pem -d ${DBDIR}`
 3. `$DBDIR` differs from browser to browser for more info:
-    Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
-    Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
+   Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
+   Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
 ### Generating new Certs for Local development.
+
 This operation should be done yearly when local certs expire, and the results committed to the repo. Typically the local CA should NOT be re=generated and added to your keychain, since we mint them to last several years. From the `server/conf/nginx/certificates` directory:
+
 1. `openssl req -newkey rsa:2048 -noenc -keyout cep.test.key -out cep.test.csr`
 2. `openssl x509 -req -CA ca.pem -CAkey ca.key -in cep.test.csr -out cep.test.crt -days 365 -CAcreateserial -extfile cep.test.ext`
-After this you will need to restart the Nginx container if it is running.
+   After this you will need to restart the Nginx container if it is running.
 
 ### Setup local access to the portal:
 
-  1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
-      - `sudo vim /etc/hosts`
+1. Add a record to your local `hosts` file for `127.0.0.1 cep.test`
+   - `sudo vim /etc/hosts`
 
-  2. Do this step after going through the server and client code configuration steps in next section.
+2. Do this step after going through the server and client code configuration steps in next section.
 
-     Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
+   Direct your browser to `https://cep.test`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.test/login`.
 
-     _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
-      1. Open the Network app utility
-      2. Select network connection you’re on (wifi, ethernet, etc)
-      3. Go to “Advanced”
-      4. Go to “TCP/IP” tab
-      5. Under “Configure IPv6” dropdown, select “Link-local only”
-      6. Hit “OK”
-      7. Hit “Apply”
+   _NOTE: If when navigating to `https://cep.test` you see a "Server not found" error while on the VPN, follow these steps and try again:_
+   1. Open the Network app utility
+   2. Select network connection you’re on (wifi, ethernet, etc)
+   3. Go to “Advanced”
+   4. Go to “TCP/IP” tab
+   5. Under “Configure IPv6” dropdown, select “Link-local only”
+   6. Hit “OK”
+   7. Hit “Apply”
 
-     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
+   _NOTE: When logging in, make sure that you are going through SSL (`https://cep.test/login`). After succesful login, you can use the debug server at `https://cep.test`._
 
-     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
-
+   _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
 ### Code Configuration
 
 After you clone the repository locally, there are several configuration steps required to prepare the project.
-
 
 #### Create settings and secrets
 
@@ -106,7 +107,7 @@ After you clone the repository locally, there are several configuration steps re
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu/entry/bedc97190d3a907cb44488785440595c)
 
 - Copy `server/conf/env_files/ngrok.sample.env` to `server/conf/env_files/ngrok.env`
-    - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
+  - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` in `ngrok.env` to enable webhook notifications locally_
 
 ##### CMS
 
@@ -117,18 +118,20 @@ After you clone the repository locally, there are several configuration steps re
 - To override any standard or custom CMS settings, create a `server/conf/cms/settings_local.py`
 
 #### Build the image for the portal's django container:
+
     make build
+
 OR
 
     docker compose -f ./server/conf/docker/docker-compose.yml build
 
-
 #### Start the development environment:
+
     make start
+
 OR
 
     docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up
-
 
 #### Install client-side dependencies and bundle code:
 
@@ -136,9 +139,39 @@ OR
     npm ci
     npm run build
 
--  _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
+- _Notes: During local development you can also use `npm run dev` to set a live reload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS LTS and not an earlier version. You will also need the port 3000 available locally._
 
--  _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
+- _Notes: If your settings.DEBUG is set to true, you will have to use `npm run dev` to have a functional app. In DEBUG setting, the requests are handled via [vite][2]._
+
+#### Set up pre-commit hooks:
+
+Install `pre-commit` on macOS via Homebrew (bash) or script:
+
+```bash
+brew install pre-commit
+# or
+curl https://pre-commit.com/install-local.py | python3 -
+```
+
+Or install via `pip` or `pipx`:
+
+```bash
+pip install pre-commit
+# or
+pipx install pre-commit
+```
+
+Enable `pre-commit` in this repository to run hooks automatically on commit:
+
+```bash
+pre-commit install
+```
+
+Optionally, run `pre-commit` against all files in the repo:
+
+```bash
+pre-commit run --all-files
+```
 
 #### Initialize the application in the `core_portal_django` container:
 
@@ -157,19 +190,20 @@ OR
 
 You may optionally create sample pages in the CMS at https://cep.test/.
 
-*NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
+_NOTE_: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
 ### Setting up search index:
 
 Requirements:
+
 - At least one page in CMS (see above).
 - At least [15% of free disk space](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
 - For Mac/Windows
-    - At least 4GB of RAM allocated to Docker (see Docker Desktop > Settings > Resources > Advanced).
+  - At least 4GB of RAM allocated to Docker (see Docker Desktop > Settings > Resources > Advanced).
 - For Linux (Locally)
-    - Run `sudo sysctl -w vm.max_map_count=2146999999` (The minimum required by [ES](https://www.elastic.co/guide/en/elasticsearch/reference/master/_maximum_map_count_check.html) is 262144 but it doesn't seem to work).
-    - Run `sudo sysctl -w vm.overcommit_memory=1`.
-    - Run `sudo sysctl -p` (In order to persist in `/etc/sysctl.conf`).
+  - Run `sudo sysctl -w vm.max_map_count=2146999999` (The minimum required by [ES](https://www.elastic.co/guide/en/elasticsearch/reference/master/_maximum_map_count_check.html) is 262144 but it doesn't seem to work).
+  - Run `sudo sysctl -w vm.overcommit_memory=1`.
+  - Run `sudo sysctl -p` (In order to persist in `/etc/sysctl.conf`).
 
 First, rebuild the cms search index:
 
@@ -182,6 +216,7 @@ Then, use the django shell in the `core_portal_django` container—
     python3 manage.py shell
 
 —to run the following code to set up the search index:
+
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
 setup_files_index(force=True)
@@ -202,8 +237,8 @@ setup_allocations_index(force=True)
 ```
 ngrok http 443
 ```
-3. Then, take the `https` url generated by ngrok and paste it into the `WH_BASE_URL` setting in `settings_local.py`
 
+3. Then, take the `https` url generated by ngrok and paste it into the `WH_BASE_URL` setting in `settings_local.py`
 
 ### Linting and Formatting Conventions
 
@@ -211,34 +246,42 @@ Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and i
 
 1. Navigate to `client/` directory.
 1. Run `npm run lint`, which is the same as linting both languages independently:
-    - `npm run lint:js`
-    - `npm run lint:css`
-    - `npm run prettier:check`
+   - `npm run lint:js`
+   - `npm run lint:css`
+   - `npm run prettier:check`
 
 You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
+
 - `npm run lint:js -- --fix`
 - `npm run lint:css -- --fix`
 - `npm run prettier:fix`
 
-Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `flake8` from the command line.
+Server-side Python code is formatted and linted via Ruff (configured via `.pre-commit-config.yaml` and `pyproject.toml`), and is enforced on commits to the repo. To check for server-side linting and formatting errors, run `ruff check` and `ruff format --check` from the command line.
 To do so, run the following in the `core_portal_django` container:
 
+```bash
+ruff check .
+ruff format --check .
 ```
-flake8
+
+To automatically fix linting errors and format code:
+
+```bash
+ruff check --fix .
+ruff format .
 ```
 
 ### Testing
 
 Server-side python testing is run through pytest. Start docker container first by `docker exec -it core_portal_django bash`, Then run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
 
-Client-side javascript testing is run through Jest. Run `npm run test`* from the `client` folder to ensure tests are running correctly.
+Client-side javascript testing is run through Jest. Run `npm run test`\* from the `client` folder to ensure tests are running correctly.
 
 \* To run tests without console logging, run `npm run test -- --silent`.
 
 #### Test Coverage
 
 Coverage is sent to codecov on commits to the repo (see Github Actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to `main`.
-
 
 #### Production Deployment
 
@@ -259,41 +302,44 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 ### Contributing
 
 #### Development Workflow
+
 We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `main`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
+
 - "Feature branches" contain major and minor updates, bug fixes and hot fixes, and other changes with respective branch prefixes:
-    - `feat/` for features and updates
-    - `fix/` for bugfixes and hotfixes
-    - `refactor/` for large internal changes
-    - `style/` for code style changes (white-space, formatting, etc.)
-    - `chore/` for no-op changes
-    - `docs/` for documentation
-    - `perf/` for performance improvements
-    - `test/` for test case updates
-    - or other "types" from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+  - `feat/` for features and updates
+  - `fix/` for bugfixes and hotfixes
+  - `refactor/` for large internal changes
+  - `style/` for code style changes (white-space, formatting, etc.)
+  - `chore/` for no-op changes
+  - `docs/` for documentation
+  - `perf/` for performance improvements
+  - `test/` for test case updates
+  - or other "types" from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 #### Testing Core Styles Changes Locally
 
 1. Clone [Core Styles] (if you haven't already).
 2. Tell project to temporarily use your [Core Styles] clone:
-    ```bash
-    npm link path-to/Core-Styles # e.g. npm link ../../Core-Styles
-    ```
+
+   ```bash
+   npm link path-to/Core-Styles # e.g. npm link ../../Core-Styles
+   ```
 
 3. Make changes in your [Core Styles] clone as necessary.
 4. Test changes.
-    - Changes to imported files during `npm run dev` will trigger livereload.
+   - Changes to imported files during `npm run dev` will trigger livereload.
 5. Commit successful changes to a [Core Styles] branch.
 
 - _Note: [If you run `npm install` or `npm ci`, the link is destroyed.](https://github.com/npm/cli/issues/2380#issuecomment-1029967927) Repeat the above steps to restore it._
 
 #### Best Practices
+
 Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
 
 ### Resources
 
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-* [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)
-
+- [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+- [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)
 
 <!-- Link Aliases -->
 

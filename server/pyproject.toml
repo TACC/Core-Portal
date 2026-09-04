@@ -6,7 +6,7 @@ authors = [
   { name = "TACC-WMA", email = "wma-portals@tacc.utexas.edu" },
 ]
 readme = "README.md"
-requires-python = "^3.12"
+requires-python = "==3.12.*"
 dynamic = [ "dependencies" ]
 
 [tool.poetry]
@@ -64,9 +64,19 @@ mock = "^5.0.2"
 pytest-cov = "^4.0.0"
 pytest-django = "^4.5.2"
 pytest-asyncio = "^0.21.1"
-flake8 = "^6.0.0"
 coverage = "^7.2.5"
 requests-mock = "^1.10.0"
+ruff = "^0.16.5"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/*.py" = ["E501", "RUF012"]
 
 [build-system]
 requires = ["poetry-core"]

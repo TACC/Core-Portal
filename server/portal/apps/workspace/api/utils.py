@@ -27,19 +27,11 @@ def check_job_for_timeout(job):
         if isinstance(job.notes, str):
             notes = json.loads(job.notes)
         else:
-            notes = (
-                job.notes
-                if isinstance(job.notes, dict)
-                else getattr(job.notes, "__dict__", {})
-            )
+            notes = job.notes if isinstance(job.notes, dict) else getattr(job.notes, "__dict__", {})
 
         is_failed = job.status == "FAILED"
-        is_interactive = (
-            notes.get("isInteractive", False) if isinstance(notes, dict) else False
-        )
-        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(
-            job.remoteJobId
-        )
+        is_interactive = notes.get("isInteractive", False) if isinstance(notes, dict) else False
+        has_timeout_message = job.lastMessage in get_tapis_timeout_error_messages(job.remoteJobId)
 
         if is_failed and is_interactive and has_timeout_message:
             job.status = "FINISHED"
@@ -59,9 +51,7 @@ def should_push_keys(system_def: object, username) -> bool:
     """
     If defaultAuthnMethod is not TMS_KEYS, return true. Otherwise, false.
     """
-    return (not is_tms_system(system_def)) and (
-        system_def.get("effectiveUserId") == username
-    )
+    return (not is_tms_system(system_def)) and (system_def.get("effectiveUserId") == username)
 
 
 def system_credentials_ok(user: object, system_id: str, path: str = "/") -> bool:
@@ -97,9 +87,7 @@ def test_system_access_ok(user: object, system_id: str, path: str = "/") -> bool
         raise e
 
 
-def push_keys_required_if_not_credentials_ensured(
-    user: object, system_id: str, path: str = "/"
-) -> bool:
+def push_keys_required_if_not_credentials_ensured(user: object, system_id: str, path: str = "/") -> bool:
     """
     Check if system credentials are required to be pushed by the user on the system, or attempt
     to create credentials if they are not present.
@@ -116,9 +104,7 @@ def push_keys_required_if_not_credentials_ensured(
         if is_tms_system(system_def):
             if settings.IS_TACC_PORTAL is False:
                 return True
-            create_system_credentials_with_tms(
-                tapis, user.username, system_id
-            )
+            create_system_credentials_with_tms(tapis, user.username, system_id)
 
         elif should_push_keys(system_def, user.username):
             logger.info(

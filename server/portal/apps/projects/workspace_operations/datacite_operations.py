@@ -108,9 +108,7 @@ def get_datacite_json(pub_graph: nx.DiGraph):
         identifier = {}
         if {"publicationLink"} <= r_data.keys():
             publication_type = r_data.get("publicationType", None)
-            identifier["relationType"] = relation_mapping.get(
-                publication_type, "References"
-            )
+            identifier["relationType"] = relation_mapping.get(publication_type, "References")
             identifier["relatedIdentifier"] = r_data["publicationLink"]
             identifier["relatedIdentifierType"] = "URL"
             if "publicationDoi" in r_data:
@@ -132,9 +130,7 @@ def upsert_datacite_json(datacite_json: dict, doi: Optional[str] = None):
     datacite_payload = {
         "data": {
             "type": "dois",
-            "relationships": {
-                "client": {"data": {"type": "clients", "id": settings.DATACITE_USER}}
-            },
+            "relationships": {"client": {"data": {"type": "clients", "id": settings.DATACITE_USER}}},
             "attributes": datacite_json,
         }
     }
