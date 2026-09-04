@@ -89,7 +89,10 @@ const DataFilesShowPathModal = React.memo(() => {
             <>
               <span className={styles['storage-host']}>Storage Host</span>
               <span className={styles['storage-values']}>
-                {definition.host}
+                {/* users are only supposed to access data.tacc */}
+                {definition.host === 'cloud.data.tacc.utexas.edu'
+                  ? 'data.tacc.utexas.edu'
+                  : definition.host}
               </span>
               <span className={styles['storage-path']}>Storage Path</span>
               <TextCopyField
