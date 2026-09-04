@@ -1,9 +1,11 @@
-from django.conf import settings
-from portal.views.base import BaseApiView
-from django.http import JsonResponse
-import requests
 import json
 import logging
+
+import requests
+from django.conf import settings
+from django.http import JsonResponse
+
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -41,16 +43,14 @@ class SysmonDataView(BaseApiView):
             systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
             for sys in requested_systems:
                 if sys not in systems_json:
-                    logger.info("System information for {} is missing. Assuming not operational status.".format(sys))
+                    logger.info(f"System information for {sys} is missing. Assuming not operational status.")
                     systems.append(_get_unoperational_system(sys))
                     continue
                 try:
                     system = System(systems_json[sys]).to_dict()
                     systems.append(system)
                 except Exception:
-                    logger.exception(
-                        "Problem gather system information for {}: Assuming not operational status".format(sys)
-                    )
+                    logger.exception(f"Problem gather system information for {sys}: Assuming not operational status")
                     systems.append(_get_unoperational_system(sys))
             return JsonResponse(systems, safe=False)
 

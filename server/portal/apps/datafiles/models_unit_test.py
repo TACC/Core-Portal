@@ -1,5 +1,6 @@
-from portal.apps.datafiles.models import Link
 import pytest
+
+from portal.apps.datafiles.models import Link
 
 
 @pytest.mark.django_db

@@ -1,5 +1,6 @@
-from portal.apps.googledrive_integration import views
 from django.urls import path
+
+from portal.apps.googledrive_integration import views
 
 app_name = "googledrive_integration"
 urlpatterns = [

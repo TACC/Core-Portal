@@ -1,11 +1,13 @@
+import logging
+
+from django.conf import settings
 from django.http import JsonResponse
 from elasticsearch_dsl import Search
-from portal.libs.agave.operations import search as search_operation
-from portal.views.base import BaseApiView
-from django.conf import settings
-from portal.libs.agave.utils import service_account
-import logging
 from tapipy.errors import BaseTapyException
+
+from portal.libs.agave.operations import search as search_operation
+from portal.libs.agave.utils import service_account
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +113,6 @@ class SiteSearchApiView(BaseApiView):
             # in case of these error types, user is not authenticated
             # or does not have access do not fail the entire search
             # request, log the issue.
-            logger.exception("Error retrieving search results due to TAPIS SSH related error: {}".format(str(e)))
+            logger.exception(f"Error retrieving search results due to TAPIS SSH related error: {str(e)}")
         else:
             raise

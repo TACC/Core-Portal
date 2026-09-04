@@ -1,9 +1,10 @@
-from mock import MagicMock
-from portal.apps.accounts.managers.accounts import add_pub_key_to_resource
-from portal.apps.accounts.managers.ssh_keys import KeysManager
-from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from paramiko.ssh_exception import AuthenticationException, ChannelException, SSHException
+from unittest.mock import MagicMock
+
 import pytest
+from paramiko.ssh_exception import AuthenticationException, ChannelException, SSHException
+
+from portal.apps.accounts.managers.accounts import add_pub_key_to_resource
+from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded, KeysManager
 
 
 @pytest.fixture

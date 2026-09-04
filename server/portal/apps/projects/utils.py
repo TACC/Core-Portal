@@ -4,9 +4,11 @@
 """
 
 import logging
+
 from django.conf import settings
+
+from portal.libs.agave.operations import delete, mkdir
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.operations import mkdir, delete
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -38,4 +40,4 @@ def project_id_to_system_id(project_id):
 
     :param str project_id: Project Id.
     """
-    return "{prefix}.{prj_id}".format(prefix=settings.PORTAL_PROJECTS_SYSTEM_PREFIX, prj_id=project_id)
+    return f"{settings.PORTAL_PROJECTS_SYSTEM_PREFIX}.{project_id}"

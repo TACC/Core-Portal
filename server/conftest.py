@@ -1,11 +1,13 @@
-import pytest
-from mock import MagicMock
 import json
 import os
 import tempfile
-from portal.apps.auth.models import TapisOAuthToken
-from portal.apps.accounts.models import PortalProfile
+from unittest.mock import MagicMock
+
+import pytest
 from django.conf import settings
+
+from portal.apps.accounts.models import PortalProfile
+from portal.apps.auth.models import TapisOAuthToken
 
 
 @pytest.fixture

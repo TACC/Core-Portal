@@ -1,7 +1,8 @@
 """Data Depot API Urls"""
 
-from portal.apps.projects import views
 from django.urls import path
+
+from portal.apps.projects import views
 
 app_name = "projects"
 urlpatterns = [

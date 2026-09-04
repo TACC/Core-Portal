@@ -1,15 +1,16 @@
 # from portal.utils.encryption import createKeyPair
-from portal.libs.agave.utils import service_account
-from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.schema_models import constants
-from tapipy.tapis import Tapis
+import logging
 from typing import Literal
-from django.db import transaction
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
+from django.db import transaction
+from tapipy.tapis import Tapis
 
-import logging
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.schema_models import constants
+from portal.apps.projects.workspace_operations.project_meta_operations import create_project_metadata, get_ordered_value
+from portal.libs.agave.utils import service_account
 
 logger = logging.getLogger(__name__)
 

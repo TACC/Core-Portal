@@ -1,15 +1,16 @@
+import logging
+
 import google_auth_oauthlib.flow
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.core.cache import cache
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
-from portal.apps.googledrive_integration.models import GoogleDriveUserToken
-from django.core.cache import cache
 
-import logging
+from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class IndexView(TemplateView):
     template_name = "portal/apps/workbench/index.html"
 
     def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["setup_complete"] = (
             False if self.request.user.is_anonymous else self.request.user.profile.setup_complete
         )
@@ -30,7 +31,7 @@ class IndexView(TemplateView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        return super(IndexView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 def get_client_config():
@@ -73,12 +74,12 @@ def oauth2_callback(request):
         googledrive = request.session["googledrive"]
     else:
         logger.error("Could not retrieve googledrive from session")
-        cache.set("{0}_googledrive_error".format(request.session.session_key), error, error_timeout)
+        cache.set(f"{request.session.session_key}_googledrive_error", error, error_timeout)
         return HttpResponseRedirect("/accounts/profile")
 
     if not (state == googledrive["state"]):
         logger.error("Could not retrieve state from googledrive stored var")
-        cache.set("{0}_googledrive_error".format(request.session.session_key), error, error_timeout)
+        cache.set(f"{request.session.session_key}_googledrive_error", error, error_timeout)
         return HttpResponseRedirect("/accounts/profile")
 
     try:
@@ -90,10 +91,10 @@ def oauth2_callback(request):
             ],
             state=state,
         )
-        flow.redirect_uri = "https://{}{}".format(request.get_host(), redirect_uri)
+        flow.redirect_uri = f"https://{request.get_host()}{redirect_uri}"
 
         # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-        authorization_response = "https://{}{}".format(request.get_host(), request.get_full_path())
+        authorization_response = f"https://{request.get_host()}{request.get_full_path()}"
 
         flow.fetch_token(authorization_response=authorization_response)
 
@@ -115,8 +116,8 @@ def oauth2_callback(request):
         GoogleDriveUserToken.objects.update_or_create(user=request.user, defaults={"credentials": credentials})
 
     except Exception as e:
-        logger.exception("Unable to complete Google Drive integration setup: %s" % e)
-        cache.set("{0}_googledrive_error".format(request.session.session_key), error, error_timeout)
+        logger.exception(f"Unable to complete Google Drive integration setup: {e}")
+        cache.set(f"{request.session.session_key}_googledrive_error", error, error_timeout)
 
     return HttpResponseRedirect("/accounts/profile")
 
@@ -142,7 +143,7 @@ def disconnect(request):
 
         else:
             logger.error("Disconnect Google Drive; google drive account revoke error.", extra={"user": request.user})
-            logger.debug("status code:{}".format(status_code))
+            logger.debug(f"status code:{status_code}")
 
             return HttpResponseRedirect("/accounts/profile")
 
@@ -151,6 +152,6 @@ def disconnect(request):
 
     except Exception as e:
         logger.error("Disconnect Google Drive; GoogleDriveUserToken delete error.", extra={"user": request.user})
-        logger.exception("google drive delete error: {}".format(e))
+        logger.exception(f"google drive delete error: {e}")
 
     return HttpResponseRedirect("/accounts/profile")

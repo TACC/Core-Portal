@@ -1,14 +1,15 @@
 from django.urls import path, re_path
+
 from portal.apps.users.views import (
-    SearchView,
-    AuthenticatedView,
-    UsageView,
-    AllocationsView,
-    TeamView,
-    UserDataView,
-    TasUsersView,
-    AllocationUsageView,
     AllocationManagementView,
+    AllocationsView,
+    AllocationUsageView,
+    AuthenticatedView,
+    SearchView,
+    TasUsersView,
+    TeamView,
+    UsageView,
+    UserDataView,
 )
 
 app_name = "users"

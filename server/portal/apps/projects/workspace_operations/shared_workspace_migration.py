@@ -4,18 +4,18 @@ Migration scripts for bringing Shared Workspaces from V2 to V3.
 
 import requests
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned
+from tapipy.errors import BaseTapyException, NotFoundError
+
 from portal.apps.projects.models import LegacyProjectMetadata
 from portal.apps.projects.workspace_operations.shared_workspace_operations import (
-    create_workspace_system,
     add_user_to_workspace,
+    create_workspace_system,
 )
 from portal.libs.agave.utils import service_account
-
+from portal.settings import settings_custom
 from portal.settings.settings_secret import _AGAVE_SUPER_TOKEN as v2_token
 from portal.settings.settings_secret import _AGAVE_TENANT_BASEURL as v2_url
-from portal.settings import settings_custom
-from django.core.exceptions import MultipleObjectsReturned
-from tapipy.errors import NotFoundError, BaseTapyException
 
 ROLE_MAP = {
     "USER": "writer",
@@ -26,8 +26,11 @@ ROLE_MAP = {
 
 
 def get_role(project_id, username):
-    system_id = f"{getattr(settings_custom, '_PORTAL_PROJECTS_SYSTEM_PREFIX_V2', settings.PORTAL_PROJECTS_SYSTEM_PREFIX)}.{project_id}"
-    headers = {"Authorization": "Bearer {}".format(v2_token)}
+    system_prefix = getattr(
+        settings_custom, "_PORTAL_PROJECTS_SYSTEM_PREFIX_V2", settings.PORTAL_PROJECTS_SYSTEM_PREFIX
+    )
+    system_id = f"{system_prefix}.{project_id}"
+    headers = {"Authorization": f"Bearer {v2_token}"}
     req = requests.get(f"{v2_url}/systems/v2/{system_id}/roles/{username}", headers=headers)
     if req.status_code != 200:
         return None

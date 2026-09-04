@@ -1,11 +1,13 @@
-from django.test import TestCase, override_settings
-from mock import patch, Mock
-from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
-from portal.utils import check_group_membership
-from portal.utils.translations import url_parse_inputs
-from portal.utils.jwt_auth import login_user_agave_jwt
 from datetime import timedelta
+from unittest.mock import Mock, patch
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.test import TestCase, override_settings
+
+from portal.utils import check_group_membership
+from portal.utils.jwt_auth import login_user_agave_jwt
+from portal.utils.translations import url_parse_inputs
 
 
 class TestTranslations(TestCase):
@@ -15,7 +17,7 @@ class TestTranslations(TestCase):
 
     def setUp(self):
         """Setup."""
-        super(TestTranslations, self).setUp()
+        super().setUp()
         self.user = get_user_model().objects.get(username="username")
         self.job = {
             "inputs": {

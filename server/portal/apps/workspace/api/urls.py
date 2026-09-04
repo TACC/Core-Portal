@@ -1,8 +1,8 @@
 """Workpace API Urls"""
 
 from django.urls import re_path
-from portal.apps.workspace.api import views
 
+from portal.apps.workspace.api import views
 
 app_name = "workspace_api"
 urlpatterns = [

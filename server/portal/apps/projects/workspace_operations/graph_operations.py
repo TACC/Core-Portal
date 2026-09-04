@@ -1,11 +1,13 @@
-from typing import Any, Dict
-import networkx as nx
-from django.db import transaction
-import uuid
 import copy
+import uuid
+from typing import Any
+
+import networkx as nx
 from django.conf import settings
-from portal.apps.projects.schema_models import constants
+from django.db import transaction
+
 from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.schema_models import constants
 
 
 def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:
@@ -89,7 +91,7 @@ def traverse_graph(project_graph, root_node, path_components):
     return {"id": current_node, **project_graph.nodes[current_node]}
 
 
-def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
+def get_node_from_path(project_id: str, path: str) -> dict[str, Any]:
     """Return the node ID for the parent of a node with the given path."""
 
     graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
@@ -105,7 +107,7 @@ def get_node_from_path(project_id: str, path: str) -> Dict[str, Any]:
     return node
 
 
-def get_root_node(project_id: str) -> Dict[str, Any]:
+def get_root_node(project_id: str) -> dict[str, Any]:
     """Return the root node for a project graph."""
     graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)

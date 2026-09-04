@@ -1,8 +1,8 @@
 import datetime
-from typing import Optional
 import json
-import requests
+
 import networkx as nx
+import requests
 from django.conf import settings
 
 
@@ -119,7 +119,7 @@ def get_datacite_json(pub_graph: nx.DiGraph):
     return datacite_json
 
 
-def upsert_datacite_json(datacite_json: dict, doi: Optional[str] = None):
+def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     """
     Create a draft DOI in datacite with the specified metadata. If a DOI is specified,
     the metadata for that DOI is updated instead.

@@ -1,18 +1,20 @@
-import pytest
-from hashlib import sha256
-from portal.apps.projects.managers.base import ProjectsManager
-from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.views import get_project_client, get_project_for_user
-from portal.apps.search.tasks import tapis_project_listing_indexer
-from portal.libs.elasticsearch.indexes import IndexedProject
-from mock import MagicMock
 import json
-from tapipy.tapis import TapisResult
+from hashlib import sha256
+from unittest.mock import MagicMock
+
+import pytest
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.test import override_settings
-from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
+from django.test.client import BOUNDARY, MULTIPART_CONTENT, encode_multipart
+from tapipy.tapis import TapisResult
+
+from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
+from portal.apps.projects.views import get_project_client, get_project_for_user
+from portal.apps.search.tasks import tapis_project_listing_indexer
+from portal.libs.elasticsearch.indexes import IndexedProject
 
 
 @pytest.fixture

@@ -5,18 +5,19 @@
 """
 
 import logging
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+
+from portal.apps.projects.models import Project, ProjectId
+from portal.apps.projects.models.utils import get_latest_project_directory, get_latest_project_storage
+from portal.apps.projects.serializers import MetadataJSONSerializer
 from portal.libs.agave.utils import service_account
 
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.elasticsearch.docs.base import IndexedProject
-from portal.apps.projects.models import Project, ProjectId
-from portal.apps.projects.serializers import MetadataJSONSerializer
-from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
-from django.core.exceptions import ObjectDoesNotExist
-
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ METRICS = logging.getLogger("{}.{}".format("metrics", __name__))
 # pylint: enable=invalid-name
 
 
-class ProjectsManager(object):
+class ProjectsManager:
     """Projects Manager."""
 
     meta_serializer_cls = MetadataJSONSerializer
@@ -46,7 +47,7 @@ class ProjectsManager(object):
         client = service_account()
         job = client.jobs.submit(
             body={
-                "name": "{username}-{project_id}-acls".format(username=username, project_id=project_id),
+                "name": f"{username}-{project_id}-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
                 "parameters": {
@@ -69,7 +70,7 @@ class ProjectsManager(object):
         client = service_account()
         job = client.jobs.submit(
             body={
-                "name": "{username}-{project_id}-acls".format(username=username, project_id=project_id),
+                "name": f"{username}-{project_id}-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
                 "parameters": {
@@ -151,29 +152,27 @@ class ProjectsManager(object):
             ProjectId.objects.create(value=max_value_found)
             prjId = ProjectId.next_id()
 
-        project_id = "{prefix}-{prjId}".format(prefix=settings.PORTAL_PROJECTS_ID_PREFIX, prjId=prjId)
+        project_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{prjId}"
 
         try:
             prj = Project.create(self.user.tapis_oauth.client, title, project_id, self.user)
         except ValueError:
             # Tapis StorageSystem or ProjectMetadata with this ProjectID already exists,
             # try to update to latest project value and recreate
-            logger.info("Project with id: {} already exists".format(project_id))
+            logger.info(f"Project with id: {project_id} already exists")
 
             latest_storage_system_id = get_latest_project_storage()
             latest_project_id = get_latest_project_directory()
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
 
-            logger.info("Updating ProjectId to latest project dir or storage system id: {}".format(max_value_found))
+            logger.info(f"Updating ProjectId to latest project dir or storage system id: {max_value_found}")
 
             ProjectId.update(max_value_found)
-            project_id = "{prefix}-{prj_id}".format(
-                prefix=settings.PORTAL_PROJECTS_ID_PREFIX, prj_id=ProjectId.next_id()
-            )
+            project_id = f"{settings.PORTAL_PROJECTS_ID_PREFIX}-{ProjectId.next_id()}"
             prj = Project.create(self.user.tapis_oauth.client, title, project_id, self.user)
 
         prj.storage.update_role(self.user.username, "ADMIN")
-        METRICS.info("user:{} created project: id={}, title:{}".format(self.user.username, project_id, title))
+        METRICS.info(f"user:{self.user.username} created project: id={project_id}, title:{title}")
 
         return prj
 

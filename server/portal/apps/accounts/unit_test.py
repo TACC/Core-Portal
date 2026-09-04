@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user
+from django.http import HttpResponseRedirect
 
 
 def test_account_redirect(client):

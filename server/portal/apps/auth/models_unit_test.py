@@ -1,6 +1,8 @@
-import pytest
 import time
+
+import pytest
 from django.conf import settings
+
 from portal.apps.auth.models import TapisOAuthToken
 
 pytestmark = pytest.mark.django_db

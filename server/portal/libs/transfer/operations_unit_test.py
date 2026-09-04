@@ -1,6 +1,7 @@
-import pytest
 import io
-from mock import MagicMock, call
+from unittest.mock import MagicMock, call
+
+import pytest
 
 
 @pytest.fixture

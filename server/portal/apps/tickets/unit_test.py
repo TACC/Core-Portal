@@ -1,8 +1,8 @@
 import pytest
-from django.http import HttpResponse
-from django.http import HttpRequest
-from portal.apps.tickets.utils import get_recaptcha_verification
+from django.http import HttpRequest, HttpResponse
+
 from portal.apps.tickets import rtUtil
+from portal.apps.tickets.utils import get_recaptcha_verification
 
 
 @pytest.fixture(autouse=True)

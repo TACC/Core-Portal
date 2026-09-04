@@ -1,6 +1,8 @@
-from tapipy.tapis import TapisResult
+from unittest.mock import patch
+
 from tapipy.errors import UnauthorizedError
-from mock import patch
+from tapipy.tapis import TapisResult
+
 from portal.apps.workspace.api.utils import (
     push_keys_required_if_not_credentials_ensured,
 )
@@ -10,7 +12,8 @@ def test_push_keys_required_if_not_credentials_ensured_successful_credential_cre
     authenticated_user, mock_tapis_client
 ):
     """
-    Test that the push_keys_required_if_not_credentials_ensured function returns False when the user has system credentials
+    Test that the push_keys_required_if_not_credentials_ensured function
+    returns False when the user has system credentials
     and the system does not require keys to be pushed.
     """
     system = {

@@ -1,9 +1,9 @@
-from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import LegacyProjectMetadata
+import pytest
 from django.core import management
 from django.db.models import signals
-import pytest
 
+from portal.apps.projects.models.base import Project
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
 
 pytestmark = pytest.mark.django_db
 

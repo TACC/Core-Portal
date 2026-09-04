@@ -179,7 +179,7 @@ pre-commit run --all-files
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
-    python3 manage.py import-apps # Add set of example apps used in Frontera portal (optional)
+    python3 manage.py import_apps # Add set of example apps used in Frontera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
 

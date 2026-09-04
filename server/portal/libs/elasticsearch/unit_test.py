@@ -1,16 +1,17 @@
-from mock import patch, call
+from unittest.mock import call, patch
+
 from django.test import TestCase
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response.hit import Hit
 
-from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_indexes
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes, setup_projects_index
 from portal.libs.elasticsearch.utils import (
-    index_listing,
-    index_level,
-    file_uuid_sha256,
-    walk_children,
-    grouper,
     delete_recursive,
+    file_uuid_sha256,
+    grouper,
+    index_level,
+    index_listing,
+    walk_children,
 )
 
 

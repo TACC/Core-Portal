@@ -2,8 +2,10 @@
 
 import json
 import logging
+
 from django.conf import settings
-from tapipy.errors import BaseTapyException, UnauthorizedError, ForbiddenError
+from tapipy.errors import BaseTapyException, ForbiddenError, UnauthorizedError
+
 from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_tms
 from portal.exceptions.api import ApiException
 
@@ -13,7 +15,8 @@ logger = logging.getLogger(__name__)
 def get_tapis_timeout_error_messages(job_id):
     return [
         "JOBS_EARLY_TERMINATION Job terminated by Tapis because: TIME_EXPIRED",
-        f'JOBS_USER_APP_FAILURE The user application ({job_id}) ended with remote status "TIMEOUT" and returned exit code: 0:0.',
+        f"JOBS_USER_APP_FAILURE The user application ({job_id}) ended with remote "
+        'status "TIMEOUT" and returned exit code: 0:0.',
     ]
 
 

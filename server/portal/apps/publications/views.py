@@ -6,30 +6,31 @@
 
 import json
 import logging
-from django.contrib.auth.decorators import login_required
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models, transaction
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from portal.exceptions.api import ApiException
-from portal.views.base import BaseApiView
-from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
+from elasticsearch_dsl import Q
+
+from portal.apps.notifications.models import Notification
+from portal.apps.projects.models.project_metadata import ProjectMetadata
+from portal.apps.projects.views import get_project_for_user
 from portal.apps.projects.workspace_operations.project_publish_operations import (
     copy_graph_and_files_for_review_system,
     publish_project,
-    update_and_cleanup_review_project,
     send_publication_rejected_email_to_authors,
     send_publication_reviewed_email_to_reviewers,
+    update_and_cleanup_review_project,
 )
-from django.db import transaction
-from portal.apps.notifications.models import Notification
+from portal.apps.projects.workspace_operations.shared_workspace_operations import create_publication_workspace
 from portal.apps.publications.models import Publication, PublicationRequest
-from portal.apps.projects.models.project_metadata import ProjectMetadata
-from portal.apps.projects.views import get_project_for_user
-from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
+from portal.exceptions.api import ApiException
 from portal.libs.elasticsearch.docs.base import IndexedPublication
-from elasticsearch_dsl import Q
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 

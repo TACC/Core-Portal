@@ -3,21 +3,23 @@
    :synopsis: Account's systems views
 """
 
-import logging
 import json
-from django.http import JsonResponse
+import logging
+
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from portal.views.base import BaseApiView
-from portal.apps.accounts.managers import accounts as AccountsManager
 from tapipy.errors import BaseTapyException
+
+from portal.apps.accounts.managers import accounts as AccountsManager
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
 from portal.apps.onboarding.steps.system_access_v3 import (
     create_system_credentials_with_keys,
-    create_system_credentials_with_tms,
     create_system_credentials_with_password,
+    create_system_credentials_with_tms,
 )
 from portal.utils.encryption import createKeyPair
-from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
+from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)
 

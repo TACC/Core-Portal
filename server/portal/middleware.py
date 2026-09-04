@@ -1,8 +1,9 @@
-from django.contrib import messages
-from django.conf import settings
-from termsandconditions.models import TermsAndConditions
-from termsandconditions.middleware import TermsAndConditionsRedirectMiddleware, is_path_protected
 import logging
+
+from django.conf import settings
+from django.contrib import messages
+from termsandconditions.middleware import TermsAndConditionsRedirectMiddleware, is_path_protected
+from termsandconditions.models import TermsAndConditions
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +29,9 @@ class PortalTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                         request,
                         "<h4>Please Accept the Terms of Use</h4>"
                         "You have not yet agreed to the current Terms of Use. "
-                        'Please <a href="%s">CLICK HERE</a> to review and '
+                        f'Please <a href="{accept_url}">CLICK HERE</a> to review and '
                         "accept the Terms of Use.<br>Acceptance of the Terms of "
                         "Use is required for continued use of the portal "
-                        "resources." % accept_url,
+                        "resources.",
                     )
         return None

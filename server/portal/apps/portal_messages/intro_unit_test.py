@@ -1,5 +1,6 @@
 import pytest
-from portal.apps.portal_messages.models import IntroMessages, CustomMessageTemplate, CustomMessages
+
+from portal.apps.portal_messages.models import CustomMessages, CustomMessageTemplate, IntroMessages
 
 
 @pytest.fixture

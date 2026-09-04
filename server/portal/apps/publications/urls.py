@@ -1,7 +1,8 @@
 """Publications API Urls"""
 
-from portal.apps.publications import views
 from django.urls import path
+
+from portal.apps.publications import views
 
 app_name = "publications_api"
 urlpatterns = [

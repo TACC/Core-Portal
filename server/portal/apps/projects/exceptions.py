@@ -5,8 +5,8 @@
 """
 
 import logging
-from portal.exceptions.api import ApiException
 
+from portal.exceptions.api import ApiException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,4 +27,4 @@ class NotAuthorizedError(ApiException):  # pylint:disable=too-many-ancestors
         """
         msg = "User is not Authorized."
         sts = 403
-        super(NotAuthorizedError, self).__init__(message=message or msg, status=status or sts, extra=extra, **kwargs)
+        super().__init__(message=message or msg, status=status or sts, extra=extra, **kwargs)

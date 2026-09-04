@@ -1,7 +1,7 @@
-from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.models import SetupEvent
 import pytest
 
+from portal.apps.onboarding.models import SetupEvent
+from portal.apps.onboarding.state import SetupState
 
 pytestmark = pytest.mark.django_db
 

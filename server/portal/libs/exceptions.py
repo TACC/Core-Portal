@@ -7,7 +7,7 @@ import logging
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("metrics.{}".format(__name__))
+METRICS = logging.getLogger(f"metrics.{__name__}")
 # pylint: enable=invalid-name
 
 

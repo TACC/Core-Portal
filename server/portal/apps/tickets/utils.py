@@ -1,7 +1,8 @@
-from portal.apps.tickets import rtUtil
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.conf import settings
 import requests
+from django.conf import settings
+from django.http import HttpResponseBadRequest, JsonResponse
+
+from portal.apps.tickets import rtUtil
 
 METADATA_HEADER = "*** Ticket Metadata ***"
 
@@ -12,20 +13,20 @@ def create_ticket(username, first_name, last_name, email, cc, subject, problem_d
     if subject is None or email is None or problem_description is None:
         return HttpResponseBadRequest()
 
-    metadata = "{}\n\n".format(METADATA_HEADER)
-    metadata += "Client info:\n{}\n\n".format(info)
+    metadata = f"{METADATA_HEADER}\n\n"
+    metadata += f"Client info:\n{info}\n\n"
 
     for key in ["HTTP_REFERER", "HTTP_USER_AGENT", "HTTP_HOST"]:
         metadata += "{}:\n{}\n\n".format(key, meta.get(key, "None"))
 
     if username:
-        metadata += "authenticated_user:\n{}\n\n".format(username)
-        metadata += "authenticated_user_email:\n{}\n\n".format(email)
-        metadata += "authenticated_user_first_name:\n{}\n\n".format(first_name)
-        metadata += "authenticated_user_last_name:\n{}\n\n".format(last_name)
+        metadata += f"authenticated_user:\n{username}\n\n"
+        metadata += f"authenticated_user_email:\n{email}\n\n"
+        metadata += f"authenticated_user_first_name:\n{first_name}\n\n"
+        metadata += f"authenticated_user_last_name:\n{last_name}\n\n"
     else:
-        metadata += "user_first_name:\n{}\n\n".format(first_name)
-        metadata += "user_last_name:\n{}\n\n".format(last_name)
+        metadata += f"user_first_name:\n{first_name}\n\n"
+        metadata += f"user_last_name:\n{last_name}\n\n"
 
     problem_description += "\n\n" + metadata
 

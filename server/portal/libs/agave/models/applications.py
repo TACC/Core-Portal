@@ -3,10 +3,12 @@
    :synopsis: Classes to represent Agave Applications
 """
 
-from collections import namedtuple
 import logging
+from collections import namedtuple
+
 from cached_property import cached_property_with_ttl
-from portal.libs.agave.exceptions import ValidationError, CreationError, DeletionError, APIError
+
+from portal.libs.agave.exceptions import APIError, CreationError, DeletionError, ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.permissions import ApplicationPermissions
 
@@ -76,7 +78,7 @@ class Application(BaseAgaveResource):
 
         wrapped.update(**kwargs)
 
-        super(Application, self).__init__(client, **wrapped)
+        super().__init__(client, **wrapped)
 
         self.id = getattr(self, "id", None)
         self.name = getattr(self, "name", None)
@@ -126,7 +128,7 @@ class Application(BaseAgaveResource):
         return ApplicationPermissions(self._ac, pems, self)
 
     def __str__(self):
-        return "{id}".format(id=self.id)
+        return f"{self.id}"
 
     # def __repr__(self):
     #     return '{class_name}(id={id}, label={label})'.format(
@@ -191,7 +193,7 @@ class Application(BaseAgaveResource):
         """Validate self.execution_type"""
         types = self._EXECUTION_TYPE
         if self.execution_type not in types:
-            raise ValidationError("'execution_type' should be one of: {types}".format(types=types))
+            raise ValidationError(f"'execution_type' should be one of: {types}")
 
     def validate_version(self):
         """Validate self.version"""
@@ -212,7 +214,7 @@ class Application(BaseAgaveResource):
         """Validate self.parallelism"""
         types = self._PARALLELISM
         if self.parallelism not in types:
-            raise ValidationError("'parallelism' should be one of: {types}".format(types=types))
+            raise ValidationError(f"'parallelism' should be one of: {types}")
 
     def validate_short_description(self):
         """Validate self.short_description"""
