@@ -64,6 +64,10 @@ const DataFilesSwitch = React.memo(() => {
     shallowEqual
   );
 
+  const hasProjectRootSystem = systems.some(
+    (s) => s.scheme === 'projects' && s.system
+  );
+
   return (
     <Switch>
       {DataFilesProjectPublish && (
@@ -98,33 +102,60 @@ const DataFilesSwitch = React.memo(() => {
       )}
       <Route
         exact
-        path={`${path}/tapis/projects/:system`}
-        render={({ match: { params } }) => {
-          const system = systems.find((s) => s.system === params.system);
-
-          if (system.publicationProject) {
-            return <DataFilesPublicationsList rootSystem={params.system} />;
-          } else if (system.reviewProject) {
-            return <DataFilesReviewProjectList rootSystem={params.system} />;
-          }
-
-          return <DataFilesProjectsList rootSystem={params.system} />;
-        }}
+        path={`${path}/tapis/projects`}
+        render={() => <DataFilesProjectsList />}
       />
-      <Route
-        path={`${path}/tapis/projects/:root_system/:system/:path*`}
-        render={({ match: { params } }) => {
-          const decodedPath = getDecodedPath(params.path);
+      {hasProjectRootSystem ? (
+        <>
+          <Route
+            exact
+            path={`${path}/tapis/projects/:system`}
+            render={({ match: { params } }) => {
+              const system = systems.find((s) => s.system === params.system);
 
-          return (
-            <DataFilesProjectFileListing
-              rootSystem={params.root_system}
-              system={params.system}
-              path={decodedPath}
-            />
-          );
-        }}
-      />
+              if (system.publicationProject) {
+                return (
+                  <DataFilesPublicationsList rootSystem={params.system} />
+                );
+              } else if (system.reviewProject) {
+                return (
+                  <DataFilesReviewProjectList rootSystem={params.system} />
+                );
+              }
+
+              return <DataFilesProjectsList rootSystem={params.system} />;
+            }}
+          />
+          <Route
+            path={`${path}/tapis/projects/:root_system/:system/:path*`}
+            render={({ match: { params } }) => {
+              const decodedPath = getDecodedPath(params.path);
+
+              return (
+                <DataFilesProjectFileListing
+                  rootSystem={params.root_system}
+                  system={params.system}
+                  path={decodedPath}
+                />
+              );
+            }}
+          />
+        </>
+      ) : (
+        <Route
+          path={`${path}/tapis/projects/:system/:path*`}
+          render={({ match: { params } }) => {
+            const decodedPath = getDecodedPath(params.path);
+
+            return (
+              <DataFilesProjectFileListing
+                system={params.system}
+                path={decodedPath}
+              />
+            );
+          }}
+        />
+      )}
       <Route
         path={`${path}/:api/:scheme/:system/:path*`}
         render={({ match: { params } }) => {

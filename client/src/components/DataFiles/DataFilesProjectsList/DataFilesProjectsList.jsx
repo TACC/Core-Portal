@@ -82,7 +82,11 @@ const DataFilesProjectsList = ({ modal, rootSystem }) => {
       Cell: (el) => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`}
+          to={
+            rootSystem
+              ? `/workbench/data/tapis/projects/${rootSystem}/${el.row.original.id}`
+              : `/workbench/data/tapis/projects/${el.row.original.id}`
+          }
           onClick={(e) => listingCallback(e, el)}
         >
           {el.value}
