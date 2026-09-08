@@ -11,16 +11,10 @@ from portal.apps.projects.schema_models import constants
 
 
 def has_sibling_with_label(project_id: str, parent_node_id: str, label: str) -> bool:
-    """Return True if a sibling of parent_node_id already has the given label.
-    """
-    graph_model = ProjectMetadata.objects.get(
-        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
-    )
+    """Return True if a sibling of parent_node_id already has the given label."""
+    graph_model = ProjectMetadata.objects.get(name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id)
     project_graph = nx.node_link_graph(graph_model.value)
-    return any(
-        project_graph.nodes[child].get("label") == label
-        for child in project_graph.successors(parent_node_id)
-    )
+    return any(project_graph.nodes[child].get("label") == label for child in project_graph.successors(parent_node_id))
 
 
 def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:

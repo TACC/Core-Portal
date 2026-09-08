@@ -631,15 +631,17 @@ class ProjectEntityView(BaseApiView):
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
-            target_name = value.get('name')
-            source_node = get_node_from_path(project_id, path) if path else (
-                get_node_from_uuid(project_id, entity_uuid) if entity_uuid else None
+            target_name = value.get("name")
+            source_node = (
+                get_node_from_path(project_id, path)
+                if path
+                else (get_node_from_uuid(project_id, entity_uuid) if entity_uuid else None)
             )
-            current_name = source_node.get('label') if source_node else None
+            current_name = source_node.get("label") if source_node else None
 
             if target_name and target_name != current_name:
                 parent_node = get_node_from_path(project_id, updated_path)
-                if has_sibling_with_label(project_id, parent_node['id'], target_name):
+                if has_sibling_with_label(project_id, parent_node["id"], target_name):
                     raise ApiException("Entity with name already exists", status=400)
 
             try:
