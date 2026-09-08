@@ -3,6 +3,7 @@ import logging
 
 import networkx as nx
 from django.conf import settings
+from django.http import HttpResponse, Http404
 from django.views.generic.base import TemplateView
 
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
@@ -64,3 +65,20 @@ class IndexView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+class DataciteJsonPreviewView(View):
+    """Plain-text preview of the exact JSON payload submitted to DataCite for a published project."""
+
+    def get(self, request, project_id, *args, **kwargs):
+        try:
+            pub = Publication.objects.get(project_id=project_id)
+        except Publication.DoesNotExist:
+            raise Http404(f"No publication found for project {project_id}")
+
+        pub_tree = nx.node_link_graph(pub.tree)
+        datacite_json = get_datacite_json(pub_tree)
+
+        return HttpResponse(
+            json.dumps(datacite_json, indent=2),
+            content_type='text/plain',
+        )
