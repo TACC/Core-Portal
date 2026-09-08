@@ -66,8 +66,53 @@ class IndexView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
+
+def get_schema_org_json(pub, project_id):
+    """Build a schema.org/Dataset JSON-LD object for a published project. Unlike the payload embedded today in the page's <script type="application/ld+json"> tag (which is just the raw DataCite payload reused as-is), this maps the same project metadata onto proper schema.org/Dataset terms for Google Dataset Search.
+    """
+    base_meta = pub.value
+    doi = base_meta.get("doi")
+
+    creators = []
+    for author in base_meta.get("authors", []):
+        name = f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
+        creator = {"@type": "Person", "name": name}
+        if base_meta.get("institution"):
+            creator["affiliation"] = {"@type": "Organization", "name": base_meta["institution"]}
+        creators.append(creator)
+
+    schema_org_json = {
+        "@context": {
+            "@language": "en",
+            "@vocab": "https://schema.org"
+        },
+        "@type": "Dataset",
+        "name": base_meta.get("title"),
+        "conformsTo": "http://mlcommons.org/croissant/1.0",
+        "description": base_meta.get("description"),
+        "citeAs": "@Article{asano21pass, author = \"Yuki M. Asano and Christian Rupprecht and ...",
+        "license": base_meta.get("license"),
+        "url": f"{settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX}/{project_id}",
+        "identifier": f"https://doi.org/{doi}" if doi else None,
+        "creator": creators,
+        "publisher": {
+            "@type": "Organization",
+            "name": settings.PORTAL_PUBLICATION_PUBLISHER,
+        },
+        "keywords": base_meta.get("keywords"),
+        "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
+        "includedInDataCatalog": {
+            "@type": "DataCatalog",
+            "name": settings.PORTAL_PUBLICATION_PUBLISHER,
+        },
+    }
+
+    # Drop empty/unset fields so the JSON-LD stays clean
+    return {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
+
+
 class DataciteJsonPreviewView(View):
-    """Plain-text preview of the exact JSON payload submitted to DataCite for a published project."""
+    """Plain-text preview of the DataCite payload and schema.org JSON-LD for a published project."""
 
     def get(self, request, project_id, *args, **kwargs):
         try:
@@ -77,8 +122,15 @@ class DataciteJsonPreviewView(View):
 
         pub_tree = nx.node_link_graph(pub.tree)
         datacite_json = get_datacite_json(pub_tree)
+        schema_org_json = get_schema_org_json(pub, project_id)
 
-        return HttpResponse(
-            json.dumps(datacite_json, indent=2),
-            content_type='text/plain',
+        body = (
+            "# DataCite payload (submitted to DataCite on publish)\n"
+            f"{json.dumps(datacite_json, indent=2)}\n"
+            "\n"
+            "# schema.org/Dataset JSON-LD (for Google Dataset Search)\n"
+            f"{json.dumps(schema_org_json, indent=2)}\n"
         )
+
+        return HttpResponse(body, content_type="text/plain")
+
