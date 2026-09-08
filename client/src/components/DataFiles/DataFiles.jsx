@@ -114,9 +114,7 @@ const DataFilesSwitch = React.memo(() => {
               const system = systems.find((s) => s.system === params.system);
 
               if (system.publicationProject) {
-                return (
-                  <DataFilesPublicationsList rootSystem={params.system} />
-                );
+                return <DataFilesPublicationsList rootSystem={params.system} />;
               } else if (system.reviewProject) {
                 return (
                   <DataFilesReviewProjectList rootSystem={params.system} />
