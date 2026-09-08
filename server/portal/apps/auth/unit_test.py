@@ -1,10 +1,12 @@
-from django.test import TransactionTestCase, override_settings
-from django.contrib.auth import get_user_model
-from mock import patch, MagicMock
-from portal.apps.auth.backends import TapisOAuthBackend
-from requests import Response
-from portal.apps.auth.views import launch_setup_checks
+from unittest.mock import MagicMock, patch
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.test import TransactionTestCase, override_settings
+from requests import Response
+
+from portal.apps.auth.backends import TapisOAuthBackend
+from portal.apps.auth.views import launch_setup_checks
 
 pytestmark = pytest.mark.django_db
 
@@ -20,7 +22,7 @@ def test_launch_setup_checks(mocker, regular_user, settings):
 
 class TestTapisOAuthBackend(TransactionTestCase):
     def setUp(self):
-        super(TestTapisOAuthBackend, self).setUp()
+        super().setUp()
         self.backend = TapisOAuthBackend()
         self.mock_response = MagicMock(autospec=Response)
         self.mock_requests_patcher = patch("portal.apps.auth.backends.requests.get", return_value=self.mock_response)
@@ -33,7 +35,7 @@ class TestTapisOAuthBackend(TransactionTestCase):
         self.mock_user_data = self.mock_user_data_patcher.start()
 
     def tearDown(self):
-        super(TestTapisOAuthBackend, self).tearDown()
+        super().tearDown()
         self.mock_requests_patcher.stop()
         self.mock_user_data_patcher.stop()
 

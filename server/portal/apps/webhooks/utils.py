@@ -1,12 +1,14 @@
-from portal.apps.webhooks.callback import WebhookCallback
-from portal.apps.webhooks.models import ExternalCall
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+import logging
 import random
 import string
-from inspect import isclass
 from importlib import import_module
-import logging
+from inspect import isclass
+
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
+from portal.apps.webhooks.callback import WebhookCallback
+from portal.apps.webhooks.models import ExternalCall
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ def register_webhook(callback=None, callback_data=None, user=None):
     external_call = ExternalCall.objects.create(
         callback=callback, callback_data=callback_data, user=user, webhook_id=get_webhook_id()
     )
-    return "{}/webhooks/callbacks/{}/".format(settings.VANITY_BASE_URL, external_call.webhook_id)
+    return f"{settings.VANITY_BASE_URL}/webhooks/callbacks/{external_call.webhook_id}/"
 
 
 def validate_webhook(webhook_id):
@@ -46,10 +48,10 @@ def load_callback(callback_name):
     module = import_module(module_str)
     call = getattr(module, callable_str)
     if not isclass(call):
-        raise ValueError("{callback_name} is not a class".format(callback_name=callback_name))
+        raise ValueError(f"{callback_name} is not a class")
     callback_instance = call()
     if not isinstance(callback_instance, WebhookCallback):
-        raise ValueError("{callback_name} is not a subclass of WebhookCallback".format(callback_name=callback_name))
+        raise ValueError(f"{callback_name} is not a subclass of WebhookCallback")
     return callback_instance
 
 

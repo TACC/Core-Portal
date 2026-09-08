@@ -1,20 +1,23 @@
-import os
 import base64
 import logging
+import os
 from pathlib import Path
+
 from celery import shared_task
 from django.db import transaction
-from portal.libs.agave.utils import user_account
+
+from portal.apps.notifications.models import Notification
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 from portal.apps.projects.schema_models import constants
+from portal.apps.projects.schema_models.base_metadata import FileObj
+from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
 from portal.apps.projects.workspace_operations.project_meta_operations import (
     add_file_associations,
     create_file_obj,
     get_file_obj,
     get_ordered_value,
 )
-from portal.apps.projects.workspace_operations.graph_operations import get_path_uuid_mapping
-from portal.apps.projects.schema_models.base_metadata import FileObj
+from portal.libs.agave.utils import user_account
 from portal.libs.files.file_processing import (
     binary_correction,
     conf_raw,
@@ -23,7 +26,6 @@ from portal.libs.files.file_processing import (
     create_histogram,
     create_thumbnail,
 )
-from portal.apps.notifications.models import Notification
 
 logger = logging.getLogger(__name__)
 

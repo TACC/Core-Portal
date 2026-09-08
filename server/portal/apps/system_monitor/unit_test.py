@@ -1,6 +1,7 @@
-import pytest
 import json
 import os
+
+import pytest
 from django.conf import settings
 from django.http import Http404
 

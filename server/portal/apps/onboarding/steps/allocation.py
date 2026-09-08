@@ -1,5 +1,5 @@
-from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
+from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.users.utils import get_allocations
 
 
@@ -8,13 +8,16 @@ class AllocationStep(AbstractStep):
         """
         Call super class constructor
         """
-        super(AllocationStep, self).__init__(user)
+        super().__init__(user)
 
     def display_name(self):
         return "Allocations"
 
     def description(self):
-        return """Accessing your allocations. If unsuccessful, verify the PI has added you to the allocations for this project."""
+        return (
+            "Accessing your allocations. If unsuccessful, verify the PI "
+            "has added you to the allocations for this project."
+        )
 
     def prepare(self):
         self.state = SetupState.PENDING
@@ -32,7 +35,7 @@ class AllocationStep(AbstractStep):
         if not allocations.get("active"):
             self.state = SetupState.FAILED
             self.log(
-                """User {0} does not have any allocations""".format(self.user.username),
+                f"""User {self.user.username} does not have any allocations""",
             )
         else:
             if "expected_hosts" in self.settings:
@@ -44,8 +47,8 @@ class AllocationStep(AbstractStep):
 
                 if missing_hosts:
                     self.state = SetupState.FAILED
-                    self.log("User {0} is missing allocations on: {1}".format(self.user.username, missing_hosts))
+                    self.log(f"User {self.user.username} is missing allocations on: {missing_hosts}")
                     return
-                self.log("Expected host allocations found: {0}".format(matched_hosts))
+                self.log(f"Expected host allocations found: {matched_hosts}")
 
             self.complete("Allocations retrieved", data=allocations)

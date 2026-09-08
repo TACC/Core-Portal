@@ -1,16 +1,18 @@
 import json
 import os
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlencode
-from mock import patch, MagicMock
-from django.test import TestCase, TransactionTestCase, override_settings
+
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from tapipy.tapis import TapisResult
+
 from portal.apps.notifications.models import Notification
 from portal.apps.signals.receivers import send_notification_ws
-from portal.libs.exceptions import PortalLibException
 from portal.apps.webhooks.views import validate_tapis_job
+from portal.libs.exceptions import PortalLibException
 
 
 class TestValidateTapisJob(TestCase):

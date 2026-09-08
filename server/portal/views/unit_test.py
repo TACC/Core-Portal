@@ -1,11 +1,12 @@
-import pytest
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.http import Http404
-from portal.exceptions.api import ApiException
-from portal.libs.exceptions import PortalLibException
-import requests
 import json
 
+import pytest
+import requests
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import Http404
+
+from portal.exceptions.api import ApiException
+from portal.libs.exceptions import PortalLibException
 
 # route to be used for testing purposes
 API_ROUTE = "/api/system-monitor/"
@@ -83,7 +84,7 @@ def test_connectionerror_httperror_with_response(ExceptionClass, status_code, cl
 @pytest.mark.parametrize("status_code", [403, 404, NON_403_404])
 def test_connectionerror_httperror_non_json_content(ExceptionClass, status_code, client, api_method_mock):
     test_response = requests.Response()
-    test_response._content = "Non json error content".encode("utf-8")
+    test_response._content = b"Non json error content"
     test_response.status_code = status_code
 
     api_method_mock.side_effect = requests.exceptions.HTTPError(response=test_response)

@@ -5,9 +5,10 @@
 
 import logging
 import os
+
+import requests
 from django.conf import settings
 from tapipy.tapis import Tapis
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -116,8 +117,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     if not bottom_up:
         yield (path, folders, files)
     for child in folders:
-        for child_path, child_folders, child_files in walk_levels(client, system, child["path"], bottom_up=bottom_up):
-            yield (child_path, child_folders, child_files)
+        yield from walk_levels(client, system, child["path"], bottom_up=bottom_up)
 
     if bottom_up:
         yield (path, folders, files)
@@ -168,13 +168,13 @@ def increment_file_name(listing, file_name):
         inc = 1
         _ext = os.path.splitext(file_name)[1]
         _name = os.path.splitext(file_name)[0]
-        _inc = "({})".format(inc)
-        file_name = "{}{}{}".format(_name, _inc, _ext)
+        _inc = f"({inc})"
+        file_name = f"{_name}{_inc}{_ext}"
 
         while any(x.name for x in listing if x.name == file_name):
             inc += 1
-            _inc = "({})".format(inc)
-            file_name = "{}{}{}".format(_name, _inc, _ext)
+            _inc = f"({inc})"
+            file_name = f"{_name}{_inc}{_ext}"
     return file_name
 
 

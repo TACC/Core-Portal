@@ -1,4 +1,5 @@
 import os
+
 from celery import Celery
 from celery.schedules import crontab
 from django.conf import settings
@@ -28,4 +29,4 @@ if settings.COMMUNITY_INDEX_SCHEDULE:
 
 @app.task(bind=True)
 def debug_task(self):
-    print(("Request: {0!r}".format(self.request)))
+    print(f"Request: {self.request!r}")

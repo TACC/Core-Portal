@@ -3,15 +3,17 @@
    :synopsis: Wrapper classes for ES different doc types.
 """
 
-import logging
 import datetime
+import logging
+
 from django.conf import settings
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Document, Date, Object, Text, Long, Boolean, Keyword
+from elasticsearch_dsl import Boolean, Date, Document, Keyword, Long, Object, Text
+
 from portal.libs.elasticsearch.analyzers import (
-    path_analyzer,
     file_analyzer,
     file_pattern_analyzer,
+    path_analyzer,
     reverse_file_analyzer,
 )
 from portal.libs.elasticsearch.utils import file_uuid_sha256, get_sha256_hash
@@ -81,14 +83,14 @@ class IndexedFile(Document):
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
         """
         self.lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         """
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
         """
         lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).update(lastUpdated=lastUpdated, *args, **kwargs)
+        return super().update(lastUpdated=lastUpdated, *args, **kwargs)
 
     @classmethod
     def from_path(cls, system, path):

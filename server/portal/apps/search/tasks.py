@@ -1,11 +1,13 @@
 import logging
-from django.conf import settings
+
 from celery import shared_task
-from portal.libs.agave.utils import user_account, service_account
-from portal.libs.elasticsearch.utils import index_listing, index_project_listing
-from portal.apps.projects.models.metadata import LegacyProjectMetadata
-from portal.libs.elasticsearch.docs.base import IndexedProject, IndexedPublication
+from django.conf import settings
 from elasticsearch.exceptions import NotFoundError
+
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
+from portal.libs.agave.utils import service_account, user_account
+from portal.libs.elasticsearch.docs.base import IndexedProject, IndexedPublication
+from portal.libs.elasticsearch.utils import index_listing, index_project_listing
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +30,8 @@ def tapis_indexer(
     ):
         return
 
-    from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
+    from portal.libs.elasticsearch.utils import index_level
 
     client = user_account(access_token) if access_token else service_account()
 
@@ -40,7 +42,7 @@ def tapis_indexer(
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
         index_level(filePath, folders, files, systemId, reindex=reindex)
     except Exception as exc:
-        logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
+        logger.error(f"Error walking files under system {systemId} and path {filePath}")
         raise self.retry(exc=exc)
 
     if recurse:

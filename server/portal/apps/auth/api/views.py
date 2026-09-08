@@ -2,9 +2,11 @@
 
 import logging
 from hashlib import sha256
-from django.http import JsonResponse
+
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+
 from portal.views.base import BaseApiView
 
 logger = logging.getLogger(__name__)

@@ -1,13 +1,13 @@
 from django.urls import path
-from portal.apps.datafiles.views import (
-    TapisFilesView,
-    GoogleDriveFilesView,
-    TransferFilesView,
-    LinkView,
-    SystemListingView,
-    SystemDefinitionView,
-)
 
+from portal.apps.datafiles.views import (
+    GoogleDriveFilesView,
+    LinkView,
+    SystemDefinitionView,
+    SystemListingView,
+    TapisFilesView,
+    TransferFilesView,
+)
 
 app_name = "users"
 urlpatterns = [

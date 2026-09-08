@@ -1,6 +1,7 @@
-from mock import MagicMock
-from tapipy.errors import BaseTapyException
+from unittest.mock import MagicMock
+
 import pytest
+from tapipy.errors import BaseTapyException
 
 
 @pytest.fixture

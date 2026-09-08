@@ -4,7 +4,9 @@
 """
 
 import logging
+
 import paramiko
+
 from portal.apps.accounts.managers.abstract import AbstractKeysManager
 
 # pylint: disable=invalid-name
@@ -20,13 +22,13 @@ class KeyCannotBeAdded(Exception):
     """
 
     def __init__(self, msg, output, error_output, *args, **kwargs):
-        super(KeyCannotBeAdded, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.msg = msg
         self.output = output
         self.error_output = error_output
 
     def __str__(self):
-        return "{msg}: {output} \n {error}".format(msg=self.msg, output=self.output, error=self.error_output)
+        return f"{self.msg}: {self.output} \n {self.error_output}"
 
 
 class KeysManager(AbstractKeysManager):
@@ -84,7 +86,7 @@ class KeysManager(AbstractKeysManager):
 
         :return str: comment
         """
-        comment = "{username}@{system_id}".format(username=self.username, system_id=system_id)
+        comment = f"{self.username}@{system_id}"
         return comment
 
     def _get_add_pub_key_command(self, system_id, public_key):
@@ -101,9 +103,9 @@ class KeysManager(AbstractKeysManager):
             'if [ ! -f "~/.ssh/authorized_keys" ]; then '
             "mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys "
             "&& chmod 0600 ~/.ssh/authorized_keys; fi && "
-            'grep -q -F "{string}" ~/.ssh/authorized_keys || '
-            'echo "{string}" >> ~/.ssh/authorized_keys'
-        ).format(string=string)
+            f'grep -q -F "{string}" ~/.ssh/authorized_keys || '
+            f'echo "{string}" >> ~/.ssh/authorized_keys'
+        )
         return command
 
     def add_public_key(self, system_id, hostname, public_key, port=22, transport=None):  # pylint: disable=too-many-arguments, arguments-differ
@@ -136,7 +138,7 @@ class KeysManager(AbstractKeysManager):
         if status == -1:
             logger.info("No response from the server")
         elif status == 0:
-            logger.info("Public key added successfully to {}".format(hostname))
+            logger.info(f"Public key added successfully to {hostname}")
         elif status > 0:
             error_lines = ""
             for line in stderr.readlines():

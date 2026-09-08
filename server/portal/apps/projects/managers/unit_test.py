@@ -6,10 +6,12 @@
 
 import logging
 import os
+
+import pytest
 from django.conf import settings
+
 from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.models.base import ProjectId
-import pytest
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import rt
 from django.conf import settings
-from datetime import datetime
 from requests.auth import HTTPBasicAuth
 
 

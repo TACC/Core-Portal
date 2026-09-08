@@ -1,10 +1,9 @@
-import logging
-import urllib.request
-import urllib.parse
-import urllib.error
-from urllib.parse import urlparse
 import copy
-
+import logging
+import urllib.error
+import urllib.parse
+import urllib.request
+from urllib.parse import urlparse
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ def url_parse_inputs(job):
         if isinstance(value, str):
             parsed = urlparse(value)
             if parsed.scheme:
-                job["inputs"][key] = "{}://{}{}".format(parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
+                job["inputs"][key] = f"{parsed.scheme}://{parsed.netloc}{urllib.parse.quote(parsed.path)}"
             else:
                 job["inputs"][key] = urllib.parse.quote(parsed.path)
         else:
@@ -27,7 +26,7 @@ def url_parse_inputs(job):
             parsed_values = []
             for input in value:
                 parsed = urlparse(input)
-                input = "{}://{}{}".format(parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
+                input = f"{parsed.scheme}://{parsed.netloc}{urllib.parse.quote(parsed.path)}"
                 parsed_values.append(input)
             job["inputs"][key] = parsed_values
     return job

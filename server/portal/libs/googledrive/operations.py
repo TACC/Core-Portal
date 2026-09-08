@@ -1,9 +1,9 @@
-import os
 import io
-import magic
 import logging
-from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
+import os
 
+import magic
+from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +15,8 @@ def listing(client, system, path, offset=None, limit=100, nextPageToken=None, *a
     listing_call = (
         client.files()
         .list(
-            q="'{}' in parents and trashed=False".format(path),
-            fields="files({}), nextPageToken".format(fields),
+            q=f"'{path}' in parents and trashed=False",
+            fields=f"files({fields}), nextPageToken",
             pageSize=limit,
             pageToken=nextPageToken,
         )
@@ -53,10 +53,8 @@ def search(client, system, path, offset=None, limit=100, nextPageToken=None, que
     listing_call = (
         client.files()
         .list(
-            q=("'{path}' in parents and trashed=False and name contains '{query_string}'").format(
-                path=path, query_string=query_string
-            ),
-            fields="files({}), nextPageToken".format(fields),
+            q=(f"'{path}' in parents and trashed=False and name contains '{query_string}'"),
+            fields=f"files({fields}), nextPageToken",
             pageSize=limit,
             pageToken=nextPageToken,
         )

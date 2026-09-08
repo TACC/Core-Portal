@@ -1,9 +1,11 @@
 import logging
-from django.http import JsonResponse, HttpResponseBadRequest
+
 from django.conf import settings
+from django.http import HttpResponseBadRequest, JsonResponse
+from pytas.http import TASClient
+
 from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
-from pytas.http import TASClient
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ class RequestAccessView(BaseApiView):
             else:
                 return JsonResponse({"message": "Incorrect password"}, status=401)
         except Exception as e:
-            logger.error("Incorrect password for user: {user}. {exc}".format(user=username, exc=e))
+            logger.error(f"Incorrect password for user: {username}. {e}")
             return JsonResponse({"message": "Incorrect password"}, status=401)
 
         if email is None or problem_description is None:

@@ -1,7 +1,9 @@
-from portal.apps.onboarding.steps.allocation import AllocationStep
-from django.conf import settings
-from mock import ANY
+from unittest.mock import ANY
+
 import pytest
+from django.conf import settings
+
+from portal.apps.onboarding.steps.allocation import AllocationStep
 
 
 @pytest.fixture

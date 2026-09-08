@@ -1,7 +1,9 @@
 import json
-from django.conf import settings
+
 from celery import shared_task
+from django.conf import settings
 from pytas.http import TASClient
+
 from portal.libs.elasticsearch.docs.base import IndexedAllocation
 from portal.libs.elasticsearch.utils import get_sha256_hash
 

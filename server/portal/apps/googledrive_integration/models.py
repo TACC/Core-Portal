@@ -1,15 +1,14 @@
-from google.auth.transport.requests import Request
-from googleapiclient import discovery
-from django.conf import settings
-from django.db import models
-import google.oauth2.credentials
-import logging
-
 import base64
+import logging
 import pickle
 
-from django.utils import encoding
+import google.oauth2.credentials
 import jsonpickle
+from django.conf import settings
+from django.db import models
+from django.utils import encoding
+from google.auth.transport.requests import Request
+from googleapiclient import discovery
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class CredentialsField(models.Field):
     def __init__(self, *args, **kwargs):
         if "null" not in kwargs:
             kwargs["null"] = True
-        super(CredentialsField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_internal_type(self):
         return "BinaryField"

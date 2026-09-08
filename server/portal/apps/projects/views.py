@@ -6,36 +6,28 @@
 
 import json
 import logging
-from django.http import HttpRequest, JsonResponse
 from hashlib import sha256
-from django.contrib.auth.decorators import login_required
+from pathlib import Path
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.db import models, transaction
+from django.http import HttpRequest, JsonResponse
+from django.http.multipartparser import MultiPartParser
 from django.utils.decorators import method_decorator
-from portal.libs.agave.utils import service_account
-from portal.utils import check_group_membership, get_client_ip
-from portal.utils.decorators import agave_jwt_login
-from portal.exceptions.api import ApiException
-from portal.views.base import BaseApiView
-from portal.apps.projects.managers.base import ProjectsManager
-from portal.apps.projects.workspace_operations.shared_workspace_operations import (
-    list_projects,
-    get_project,
-    create_shared_workspace,
-    update_project,
-    get_workspace_role,
-    change_user_role,
-    add_user_to_workspace,
-    remove_user,
-    transfer_ownership,
-    increment_workspace_count,
-)
-from portal.apps.search.tasks import tapis_project_listing_indexer
-from portal.libs.elasticsearch.indexes import IndexedProject
 from elasticsearch_dsl import Q
+
+from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.models.project_metadata import ProjectMetadata
-from django.db import transaction
+from portal.apps.projects.schema_models import constants
 from portal.apps.projects.schema_models.schema import SCHEMA_MAPPING
-from django.db import models
+from portal.apps.projects.tasks import sync_files_without_metadata
+from portal.apps.projects.workspace_operations.graph_operations import (
+    add_node_to_project,
+    build_project_tree,
+    get_node_from_path,
+    initialize_project_graph,
+)
 from portal.apps.projects.workspace_operations.project_meta_operations import (
     create_entity_metadata,
     create_project_metadata,
@@ -45,18 +37,27 @@ from portal.apps.projects.workspace_operations.project_meta_operations import (
     patch_file_obj_entity,
     patch_project_entity,
 )
-from portal.libs.agave.operations import mkdir
-from pathlib import Path
-from portal.apps.projects.schema_models import constants
-from portal.apps.projects.workspace_operations.graph_operations import (
-    add_node_to_project,
-    initialize_project_graph,
-    get_node_from_path,
-    build_project_tree,
+from portal.apps.projects.workspace_operations.shared_workspace_operations import (
+    add_user_to_workspace,
+    change_user_role,
+    create_shared_workspace,
+    get_project,
+    get_workspace_role,
+    increment_workspace_count,
+    list_projects,
+    remove_user,
+    transfer_ownership,
+    update_project,
 )
-from portal.apps.projects.tasks import sync_files_without_metadata
+from portal.apps.search.tasks import tapis_project_listing_indexer
+from portal.exceptions.api import ApiException
+from portal.libs.agave.operations import mkdir
+from portal.libs.agave.utils import service_account
+from portal.libs.elasticsearch.indexes import IndexedProject
 from portal.libs.files.file_processing import resize_cover_image
-from django.http.multipartparser import MultiPartParser
+from portal.utils import check_group_membership, get_client_ip
+from portal.utils.decorators import agave_jwt_login
+from portal.views.base import BaseApiView
 
 LOGGER = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")

@@ -1,15 +1,17 @@
-from django.dispatch import receiver
-from portal.apps.signals.signals import portal_event
+import copy
+import logging
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from portal.apps.notifications.models import Notification
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.search.tasks import index_project
-from django.contrib.auth import get_user_model
-import logging
-import copy
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from portal.apps.signals.signals import portal_event
 
 channel_layer = get_channel_layer()
 

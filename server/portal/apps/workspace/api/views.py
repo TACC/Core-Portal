@@ -3,34 +3,35 @@
    :synopsys: Views to handle Workspace API
 """
 
-import logging
 import json
+import logging
 from urllib.parse import urlparse
-from django.http import JsonResponse
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.urls import reverse
-from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
+from django.db.models.functions import Coalesce
+from django.http import JsonResponse
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from tapipy.tapis import TapisResult
-from portal.views.base import BaseApiView
-from portal.exceptions.api import ApiException
+
+from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
-from portal.libs.agave.utils import service_account
-from portal.libs.agave.serializers import BaseTapisResultSerializer
+from portal.apps.workspace.api.utils import check_job_for_timeout, push_keys_required_if_not_credentials_ensured
 
 # TODOv3: dropV2Jobs
-from portal.apps.workspace.models import JobSubmission
-from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
-from .handlers.tapis_handlers import tapis_get_handler
-from portal.apps.workspace.api.utils import check_job_for_timeout, push_keys_required_if_not_credentials_ensured
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry, JobSubmission
+from portal.exceptions.api import ApiException
+from portal.libs.agave.serializers import BaseTapisResultSerializer
+from portal.libs.agave.utils import service_account
 from portal.utils import get_client_ip
-from portal.apps.datafiles.utils import evaluate_datafiles_storage_system
+from portal.views.base import BaseApiView
 
+from .handlers.tapis_handlers import tapis_get_handler
 
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger("metrics.{}".format(__name__))
+METRICS = logging.getLogger(f"metrics.{__name__}")
 
 
 def _app_license_type(app_def):
@@ -277,14 +278,16 @@ class JobsView(BaseApiView):
         qs_upper = query_string.upper() if query_string else ""
         qs_title = query_string.title() if query_string else ""
 
-        # TODO WP-1116: all status search add-ons to be removed and added to drop-down feature on frontend
+        # TODO WP-1116: all status search add-ons to be removed and added to
+        # drop-down feature on frontend
         if status_searches:
             enhanced_status_conditions = []
 
             for status in status_searches:
                 if status == "FINISHED":
                     enhanced_status_conditions.append(
-                        "(status = 'FINISHED' OR (status = 'FAILED' AND (lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
+                        "(status = 'FINISHED' OR (status = 'FAILED' AND "
+                        "(lastMessage LIKE '%TIME_EXPIRED%' OR lastMessage LIKE '%TIMEOUT%')))"
                     )
                 elif status == "FAILED":
                     enhanced_status_conditions.append("(status = 'FAILED')")
@@ -336,7 +339,8 @@ class JobsView(BaseApiView):
         # (ii) FAILED jobs that are interactive and have the timeout/expired message (will be shown as FINISHED on UI)
 
         # For "Failed" search, want to get all
-        # (i) FAILED jobs except those that were interactive and have the timeout/expired message (excluded because they are shown as FINISHED on UI)
+        # (i) FAILED jobs except those that were interactive and have the timeout/expired message
+        # (excluded because they are shown as FINISHED on UI)
         is_finished = "FINISHED" in status_searches
         is_failed = "FAILED" in status_searches
 
@@ -437,7 +441,7 @@ class JobsView(BaseApiView):
 
         if job_uuid and job_action:
             if job_action == "resubmit":
-                logger.info("user:{} is resubmitting job uuid:{}".format(username, job_uuid))
+                logger.info(f"user:{username} is resubmitting job uuid:{job_uuid}")
                 data = tapis.jobs.resubmitJob(
                     jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
                 )
@@ -461,7 +465,7 @@ class JobsView(BaseApiView):
                     )
 
             elif job_action == "cancel":
-                logger.info("user:{} is canceling/stopping job uuid:{}".format(username, job_uuid))
+                logger.info(f"user:{username} is canceling/stopping job uuid:{job_uuid}")
                 data = tapis.jobs.cancelJob(
                     jobUuid=job_uuid, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
                 )
@@ -485,9 +489,8 @@ class JobsView(BaseApiView):
                     )
             else:
                 raise ApiException(
-                    "user:{} is trying to run an unsupported job action: {} for job uuid: {}".format(
-                        username, job_action, job_uuid
-                    ),
+                    f"user:{username} is trying to run an unsupported job action: {job_action}"
+                    f" for job uuid: {job_uuid}",
                     status=400,
                 )
 
@@ -501,15 +504,13 @@ class JobsView(BaseApiView):
 
         elif not job_post:
             raise ApiException(
-                "user:{} is submitting a request with no job body.".format(
-                    username,
-                ),
+                f"user:{username} is submitting a request with no job body.",
                 status=400,
             )
 
         # submit job
         else:
-            logger.info("processing job submission for user:{}: {}".format(username, job_post))
+            logger.info(f"processing job submission for user:{username}: {job_post}")
 
             # Provide default job archive configuration if none is provided and portal has default system
             if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
@@ -540,13 +541,16 @@ class JobsView(BaseApiView):
                 if lic is None:
                     raise ApiException("You are missing the required license for this application.")
 
-                # TODOv3: Multistring licenses break environment variables. Determine how to handle multistring licenses, if needed at all.
+                # TODOv3: Multistring licenses break environment variables.
+                # Determine how to handle multistring licenses, if needed at all.
                 # https://jira.tacc.utexas.edu/browse/WP-70
                 # license_var = {
                 #     "key": "_license",
                 #     "value": lic.license_as_str()
                 # }
-                # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
+                # job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get("envVariables", []) + [
+                #     license_var
+                # ]
 
             # Test file listing on relevant systems to determine whether keys need to be pushed manually
             for system_id in list(filter(None, [job_post.get("archiveSystemId"), execSystemId])):
@@ -596,7 +600,7 @@ class JobsView(BaseApiView):
                 }
             ]
 
-            logger.info("user:{} is submitting job:{}".format(username, job_post))
+            logger.info(f"user:{username} is submitting job:{job_post}")
             response = tapis.jobs.submitJob(
                 **job_post, headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"}
             )
@@ -636,11 +640,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get("user_role")
         system_id = request.GET.get("system_id")
         if roles:
-            logger.info("user:{} tapis.systems.listRoles system_id:{}".format(request.user.username, system_id))
+            logger.info(f"user:{request.user.username} tapis.systems.listRoles system_id:{system_id}")
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            logger.info("user:{} tapis.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
+            logger.info(f"user:{request.user.username} tapis.systems.getRoleForUser system_id:{system_id}")
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -649,7 +653,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body["role"]
         system_id = body["system_id"]
-        logger.info("user:{} tapis.systems.updateRole system_id:{}".format(request.user.username, system_id))
+        logger.info(f"user:{request.user.username} tapis.systems.updateRole system_id:{system_id}")
         role_body = {"username": request.user.username, "role": role}
         agc = service_account()
         data = agc.systems.updateRole(systemId=system_id, body=role_body)
@@ -824,7 +828,8 @@ class AppsTrayView(BaseApiView):
         """
         tabs, html_definitions = self.getPublicApps(request.user)
 
-        # Add "My Apps" tab with all of the user's private and shared apps that are enabled, or all available apps if no public apps are enabled
+        # Add "My Apps" tab with all of the user's private and shared apps
+        # that are enabled, or all available apps if no public apps are enabled
         my_apps = self.getPrivateApps(request.user)
         shared_apps = self.getSharedApps(request.user)
 
@@ -843,7 +848,7 @@ class TapisAppsView(BaseApiView):
             return JsonResponse({"message": "This view requires authentication."}, status=403)
 
         get_params = request.GET.dict()
-        logger.info("user:%s op:%s query_params:%s" % (request.user.username, operation, get_params))
+        logger.info(f"user:{request.user.username} op:{operation} query_params:{get_params}")
         response = tapis_get_handler(client, operation, **get_params)
 
         return JsonResponse({"data": response})

@@ -1,6 +1,8 @@
-from mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
-from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation, IndexedProject
+
+from portal.libs.elasticsearch.docs.base import IndexedAllocation, IndexedFile, IndexedProject
 
 
 class TestIndexedFile(TestCase):

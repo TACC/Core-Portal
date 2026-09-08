@@ -1,8 +1,8 @@
-from portal.apps.webhooks.models import ExternalCall
-from portal.apps.webhooks.callback import WebhookCallback
-from portal.apps.webhooks.utils import load_callback, register_webhook, validate_webhook, execute_callback
 import pytest
 
+from portal.apps.webhooks.callback import WebhookCallback
+from portal.apps.webhooks.models import ExternalCall
+from portal.apps.webhooks.utils import execute_callback, load_callback, register_webhook, validate_webhook
 
 pytestmark = pytest.mark.django_db
 
@@ -13,7 +13,7 @@ class MockCallback(WebhookCallback):
         assert webhook_request == "mock_request"
 
 
-class InvalidCallback(object):
+class InvalidCallback:
     pass
 
 

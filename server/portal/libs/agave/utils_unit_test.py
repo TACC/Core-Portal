@@ -1,6 +1,7 @@
 import pytest
-from portal.libs.agave.utils import text_preview, get_file_size
 from tapipy.tapis import TapisResult
+
+from portal.libs.agave.utils import get_file_size, text_preview
 
 POSTIT_URL = "https://tapis.example/postit/something"
 

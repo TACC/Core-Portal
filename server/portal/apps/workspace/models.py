@@ -1,5 +1,5 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.utils import timezone
 
 
@@ -29,7 +29,7 @@ class AppTrayCategory(models.Model):
     )
 
     def __str__(self):
-        return "%s" % (self.category)
+        return f"{self.category}"
 
 
 class AppTrayEntry(models.Model):
@@ -48,8 +48,8 @@ class AppTrayEntry(models.Model):
 
     def __str__(self):
         if self.appType == "html":
-            return "%s: %s (HTML)" % (self.label, self.appId)
-        return "%s%s%s" % (
+            return f"{self.label}: {self.appId} (HTML)"
+        return "{}{}{}".format(
             f"{self.label}: " if self.label else "",
             self.appId,
             f"-{self.version}" if self.version else "",

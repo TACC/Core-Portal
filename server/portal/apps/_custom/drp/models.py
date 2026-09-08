@@ -1,10 +1,11 @@
-from typing import Optional, Literal
-from pydantic import ConfigDict, NonNegativeInt, NonNegativeFloat
+from typing import Literal
+
+from pydantic import ConfigDict, NonNegativeFloat, NonNegativeInt
 
 from portal.apps.projects.schema_models.base_metadata import (
+    BaseFileMetadata,
     BaseMetadataModel,
     BaseProjectMetadata,
-    BaseFileMetadata,
     FileObj,
 )
 
@@ -20,8 +21,8 @@ class DrpFileMetadata(BaseFileMetadata):
         extra="forbid",
     )
 
-    is_advanced_image_file: Optional[bool] = False
-    image_type: Optional[
+    is_advanced_image_file: bool | None = False
+    image_type: (
         Literal[
             "8_bit",
             "16_bit_signed",
@@ -38,18 +39,19 @@ class DrpFileMetadata(BaseFileMetadata):
             "32_bit_abgr",
             "1_bit_bitmap",
         ]
-    ] = None
-    height: Optional[NonNegativeInt] = None
-    width: Optional[NonNegativeInt] = None
-    number_of_images: Optional[NonNegativeInt] = None
-    offset_to_first_image: Optional[int] = None
-    gap_between_images: Optional[int] = None
-    byte_order: Optional[Literal["big_endian", "little_endian"]] = None
-    use_binary_correction: Optional[bool] = None
+        | None
+    ) = None
+    height: NonNegativeInt | None = None
+    width: NonNegativeInt | None = None
+    number_of_images: NonNegativeInt | None = None
+    offset_to_first_image: int | None = None
+    gap_between_images: int | None = None
+    byte_order: Literal["big_endian", "little_endian"] | None = None
+    use_binary_correction: bool | None = None
 
 
 class DrpProjectMetadata(BaseProjectMetadata):
-    license: Optional[str] = "ODC-BY 1.0"
+    license: str | None = "ODC-BY 1.0"
 
 
 class DrpDatasetMetadata(BaseMetadataModel):
@@ -60,8 +62,8 @@ class DrpDatasetMetadata(BaseMetadataModel):
     )
 
     name: str
-    description: Optional[str] = None
-    uuid: Optional[str] = None
+    description: str | None = None
+    uuid: str | None = None
     data_type: Literal["sample", "origin_data", "digital_dataset", "analysis_data", "file"]
     file_objs: list[FileObj] = []
 
@@ -70,10 +72,18 @@ class DrpSampleMetadata(DrpDatasetMetadata):
     """Model for DRP Sample Metadata"""
 
     porous_media_type: Literal[
-        "sandstone", "soil", "carbonate", "granite", "beads", "fibrous_media", "coal", "energy_storage", "other"
+        "sandstone",
+        "soil",
+        "carbonate",
+        "granite",
+        "beads",
+        "fibrous_media",
+        "coal",
+        "energy_storage",
+        "other",
     ]
 
-    porous_media_other_description: Optional[str] = None
+    porous_media_other_description: str | None = None
 
     source: Literal[
         "natural",
@@ -81,25 +91,25 @@ class DrpSampleMetadata(DrpDatasetMetadata):
         "artificial",
         "computer_generated",
     ]
-    collection_method: Optional[str] = None
-    onshore_offshore: Optional[Literal["onshore", "offshore"]] = None
-    depth: Optional[str] = None
-    total_vertical_depth: Optional[str] = None
-    water_depth: Optional[str] = None
-    geographic_origin: Optional[str] = None
-    procedure: Optional[str] = None
-    equipment: Optional[str] = None
-    algorithm_description: Optional[str] = None
-    grain_size_min: Optional[NonNegativeFloat] = None
-    grain_size_max: Optional[NonNegativeFloat] = None
-    grain_size_avg: Optional[NonNegativeFloat] = None
-    grain_size_units: Optional[Literal["nanometer", "micrometer", "millimeter", "other"]] = None
-    porosity: Optional[float] = None
-    geographical_location: Optional[str] = None
-    date_of_collection: Optional[str] = None
-    date_of_creation: Optional[str] = None
-    identifier: Optional[str] = None
-    location: Optional[str] = None  # TODO_DRP: Remove in new model
+    collection_method: str | None = None
+    onshore_offshore: Literal["onshore", "offshore"] | None = None
+    depth: str | None = None
+    total_vertical_depth: str | None = None
+    water_depth: str | None = None
+    geographic_origin: str | None = None
+    procedure: str | None = None
+    equipment: str | None = None
+    algorithm_description: str | None = None
+    grain_size_min: NonNegativeFloat | None = None
+    grain_size_max: NonNegativeFloat | None = None
+    grain_size_avg: NonNegativeFloat | None = None
+    grain_size_units: Literal["nanometer", "micrometer", "millimeter", "other"] | None = None
+    porosity: float | None = None
+    geographical_location: str | None = None
+    date_of_collection: str | None = None
+    date_of_creation: str | None = None
+    identifier: str | None = None
+    location: str | None = None  # TODO_DRP: Remove in new model
 
 
 class DrpOriginDatasetMetadata(DrpDatasetMetadata):
@@ -107,18 +117,18 @@ class DrpOriginDatasetMetadata(DrpDatasetMetadata):
 
     is_segmented: Literal["yes", "no"]
     sample: str
-    imaging_center: Optional[str] = None
-    imaging_equipment_and_model: Optional[str] = None
-    image_format: Optional[str] = None
-    image_dimensions: Optional[str] = None
-    image_byte_order: Optional[str] = None
-    voxel_x: Optional[NonNegativeFloat] = None
-    voxel_y: Optional[NonNegativeFloat] = None
-    voxel_z: Optional[NonNegativeFloat] = None
-    voxel_units: Optional[Literal["nanometer", "micrometer", "millimeter", "other"]] = None
-    dimensionality: Optional[str] = None
-    digital_dataset: Optional[str] = None
-    external_uri: Optional[str] = None  # TODO_DRP: Remove in new model
+    imaging_center: str | None = None
+    imaging_equipment_and_model: str | None = None
+    image_format: str | None = None
+    image_dimensions: str | None = None
+    image_byte_order: str | None = None
+    voxel_x: NonNegativeFloat | None = None
+    voxel_y: NonNegativeFloat | None = None
+    voxel_z: NonNegativeFloat | None = None
+    voxel_units: Literal["nanometer", "micrometer", "millimeter", "other"] | None = None
+    dimensionality: str | None = None
+    digital_dataset: str | None = None
+    external_uri: str | None = None  # TODO_DRP: Remove in new model
 
 
 class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
@@ -126,10 +136,15 @@ class DrpAnalysisDatasetMetadata(DrpDatasetMetadata):
 
     is_segmented: Literal["yes", "no"]
     dataset_type: Literal[
-        "machine_learning", "simulation", "geometric_analysis", "experimental", "characterization", "other"
+        "machine_learning",
+        "simulation",
+        "geometric_analysis",
+        "experimental",
+        "characterization",
+        "other",
     ]
-    external_uri: Optional[str] = None
+    external_uri: str | None = None
     sample: str
     # base_origin_data: Optional[str] = None
-    digital_dataset: Optional[str] = None
-    digital_dataset_other_information: Optional[str] = None
+    digital_dataset: str | None = None
+    digital_dataset_other_information: str | None = None

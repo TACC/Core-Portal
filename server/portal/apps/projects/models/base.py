@@ -14,21 +14,22 @@
 
 import logging
 import os
-from django.db import models, transaction
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from portal.utils import encryption as EncryptionUtil
-from portal.libs.agave.utils import service_account
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models, transaction
+
+from portal.apps.accounts.models import SSHKeys
 
 # TODOv3: deprecate with projects
 # from portal.libs.agave.models.systems.storage import StorageSystem
 # from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.projects import utils as ProjectsUtils
-from portal.apps.projects.models.metadata import LegacyProjectMetadata
 from portal.apps.projects.exceptions import NotAuthorizedError
-from portal.apps.accounts.models import SSHKeys
-
+from portal.apps.projects.models.metadata import LegacyProjectMetadata
+from portal.libs.agave.utils import service_account
+from portal.utils import encryption as EncryptionUtil
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ def set_storage_auth(storage):
     return storage
 
 
-class Project(object):
+class Project:
     """Project class."""
 
     metadata_name = settings.PORTAL_PROJECTS_SYSTEM_PREFIX
@@ -420,8 +421,8 @@ class Project(object):
             old_role = "member"
         if new_role == "team_member":
             new_role = "member"
-        add_new_role = getattr(self, "add_{}".format(new_role))
-        remove_old_role = getattr(self, "remove_{}".format(old_role))
+        add_new_role = getattr(self, f"add_{new_role}")
+        remove_old_role = getattr(self, f"remove_{old_role}")
         remove_old_role(user)
         add_new_role(user)
 
@@ -478,9 +479,7 @@ class Project(object):
 
     def __repr__(self):
         """Repr."""
-        return "Project({project_id}, {metadata}, {storage})".format(
-            project_id=self.project_id, metadata=self.metadata, storage=self.storage
-        )
+        return f"Project({self.project_id}, {self.metadata}, {self.storage})"
 
     def __str__(self):
         """Str -> self.project_id."""

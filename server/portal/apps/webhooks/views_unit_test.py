@@ -1,9 +1,10 @@
-from portal.apps.webhooks.utils import register_webhook
-from portal.apps.webhooks.callback import WebhookCallback
-from django.conf import settings
 import json
-import pytest
 
+import pytest
+from django.conf import settings
+
+from portal.apps.webhooks.callback import WebhookCallback
+from portal.apps.webhooks.utils import register_webhook
 
 pytestmark = pytest.mark.django_db
 

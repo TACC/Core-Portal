@@ -1,9 +1,10 @@
 import logging
 import os
-from django.views.static import serve
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import Http404, HttpResponse, JsonResponse
+from django.views.static import serve
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +17,13 @@ def project_version(request):
         if "ref:" in head:
             # we're on a branch
             branch = head.split(":")[1].strip()
-            with open(".git/{0}".format(branch)) as f:
-                version = "{}:{}".format(branch, f.readline())
+            with open(f".git/{branch}") as f:
+                version = f"{branch}:{f.readline()}"
         else:
             # we're in a detached head, e.g., a tag. would be nice to show tag name...
             version = head
 
-    except IOError:
+    except OSError:
         logger.warning("Unable to read project version from git HEAD")
         version = "UNKNOWN"
 

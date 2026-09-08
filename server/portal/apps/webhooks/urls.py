@@ -1,8 +1,8 @@
 """Webhooks URLs"""
 
 from django.urls import path
-from portal.apps.webhooks import views
 
+from portal.apps.webhooks import views
 
 app_name = "webhooks"
 urlpatterns = [

@@ -4,12 +4,14 @@
 """
 
 import logging
-from requests.exceptions import ConnectionError, HTTPError
-from django.views.generic import View
-from django.http import JsonResponse, Http404
+
 from django.core.exceptions import PermissionDenied
-from portal.exceptions.api import ApiException
+from django.http import Http404, JsonResponse
+from django.views.generic import View
+from requests.exceptions import ConnectionError, HTTPError
 from tapipy.errors import BaseTapyException
+
+from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ class BaseApiView(View):
         to be available in the logs and in Opbeat's UI.
         """
         try:
-            return super(BaseApiView, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         except (PermissionDenied, Http404) as e:
             # log information but re-raise exception to let django handle response
             logger.error(e, exc_info=True)

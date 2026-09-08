@@ -1,4 +1,5 @@
 from django.urls import path
+
 from portal.apps.system_monitor import views
 
 app_name = "system_monitor"

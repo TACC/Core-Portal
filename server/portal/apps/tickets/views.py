@@ -1,7 +1,7 @@
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 @login_required

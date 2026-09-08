@@ -5,12 +5,13 @@
 """
 
 # from django.core.urlresolvers import reverse
-from portal.apps.googledrive_integration.models import GoogleDriveUserToken
-from mock import MagicMock
-from google.oauth2.credentials import Credentials
-import pytest
-
 import logging
+from unittest.mock import MagicMock
+
+import pytest
+from google.oauth2.credentials import Credentials
+
+from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 
 logger = logging.getLogger("portal.apps.googledrive_integration.views")
 

@@ -10,11 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import logging
 import os
 import uuid
-import logging
 from hashlib import sha256
+
 from kombu import Exchange, Queue
+
 from portal.settings import settings_secret
 
 logger = logging.getLogger(__file__)
@@ -318,7 +320,8 @@ LOGGING = {
         "metrics": {
             "format": "[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:"
             " %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s"
-            " info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=%(portal)s tenant=%(tenant)s"
+            " info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s"
+            " portal=%(portal)s tenant=%(tenant)s"
         },
     },
     "handlers": {
