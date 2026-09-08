@@ -640,9 +640,7 @@ class ProjectEntityView(BaseApiView):
             if target_name and target_name != current_name:
                 parent_node = get_node_from_path(project_id, updated_path)
                 if has_sibling_with_label(project_id, parent_node['id'], target_name):
-                    raise ApiException(
-                        f"Entity with name already exists", status=400
-                    )
+                    raise ApiException("Entity with name already exists", status=400)
 
             try:
                 new_name = move_entity(client, project_id, path, updated_path, value, entity_uuid)
@@ -671,7 +669,7 @@ class ProjectEntityView(BaseApiView):
 
         parent_node = get_node_from_path(project_id, path)
         if has_sibling_with_label(project_id, parent_node["id"], value.get("name")):
-            raise ApiException(f"Entity with name already exists", status=400)
+            raise ApiException("Entity with name already exists", status=400)
 
         with transaction.atomic():
             new_meta = create_entity_metadata(
