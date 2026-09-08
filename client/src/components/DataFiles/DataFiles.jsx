@@ -98,11 +98,6 @@ const DataFilesSwitch = React.memo(() => {
       )}
       <Route
         exact
-        path={`${path}/tapis/projects`}
-        render={() => <DataFilesProjectsList />}
-      />
-      <Route
-        exact
         path={`${path}/tapis/projects/:system`}
         render={({ match: { params } }) => {
           const system = systems.find((s) => s.system === params.system);
