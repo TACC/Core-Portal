@@ -14,18 +14,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(agave_jwt_login, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(agave_jwt_login, name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class JupyterMountsApiView(BaseApiView):
     """JupyterMountsApiView
 
     This API returns a list of mount definitions for JupyterHub
     """
+
     def getDatafilesStorageSystems(self, tapis_oauth: TapisOAuthToken) -> list:
         result = []
         non_private_systems = [
-            sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys['api'] == 'tapis' and (sys['scheme'] == 'community' or sys['scheme'] == 'public')
+            sys
+            for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+            if sys["api"] == "tapis" and (sys["scheme"] == "community" or sys["scheme"] == "public")
         ]
         for system in evaluate_datafiles_storage_systems(tapis_oauth, non_private_systems):
             try:
@@ -33,10 +35,9 @@ class JupyterMountsApiView(BaseApiView):
                     {
                         "path": system.get("homeDir", "/"),
                         "mountPath": "/{namespace}/{name}".format(
-                            namespace=settings.PORTAL_NAMESPACE,
-                            name=system['name']
+                            namespace=settings.PORTAL_NAMESPACE, name=system["name"]
                         ),
-                        "pems": "ro"
+                        "pems": "ro",
                     }
                 )
             except Exception:
@@ -46,21 +47,19 @@ class JupyterMountsApiView(BaseApiView):
     def getLocalStorageSystems(self, tapis_oauth: TapisOAuthToken) -> list:
         result = []
         private_tapis_systems = [
-            sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys['api'] == 'tapis' and sys['scheme'] == 'private'
+            sys
+            for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+            if sys["api"] == "tapis" and sys["scheme"] == "private"
         ]
-        for system in evaluate_datafiles_storage_systems(
-            tapis_oauth, private_tapis_systems
-        ):
+        for system in evaluate_datafiles_storage_systems(tapis_oauth, private_tapis_systems):
             try:
                 result.append(
                     {
-                        "path": system['homeDir'],
+                        "path": system["homeDir"],
                         "mountPath": "/{namespace}/{name}".format(
-                            namespace=settings.PORTAL_NAMESPACE,
-                            name=system['name']
+                            namespace=settings.PORTAL_NAMESPACE, name=system["name"]
                         ),
-                        "pems": "rw"
+                        "pems": "rw",
                     }
                 )
             except Exception:
@@ -90,16 +89,18 @@ class JupyterMountsApiView(BaseApiView):
                 {
                     "path": project["path"],
                     "mountPath": "/{namespace}/My Projects/{name}".format(
-                        namespace=settings.PORTAL_NAMESPACE,
-                        name=name),
-                    "pems": permissions
+                        namespace=settings.PORTAL_NAMESPACE, name=name
+                    ),
+                    "pems": permissions,
                 }
             )
         return result
 
     def get(self, request):
         tapis_oauth = request.user.tapis_oauth
-        mounts = self.getDatafilesStorageSystems(tapis_oauth) + \
-            self.getLocalStorageSystems(tapis_oauth) + \
-            self.getProjectSystems(tapis_oauth)
+        mounts = (
+            self.getDatafilesStorageSystems(tapis_oauth)
+            + self.getLocalStorageSystems(tapis_oauth)
+            + self.getProjectSystems(tapis_oauth)
+        )
         return JsonResponse(mounts, safe=False)

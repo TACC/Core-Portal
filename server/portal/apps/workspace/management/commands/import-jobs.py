@@ -29,9 +29,7 @@ class Command(BaseCommand):
                 for job in jobs:
                     if not any(existing.jobId == job["id"] for existing in userjobs):
                         job = JobSubmission.objects.create(
-                            user=user,
-                            jobId=job["id"],
-                            time=dateutil.parser.parse(job["created"])
+                            user=user, jobId=job["id"], time=dateutil.parser.parse(job["created"])
                         )
                 offset += 100
                 done = len(jobs) < 100

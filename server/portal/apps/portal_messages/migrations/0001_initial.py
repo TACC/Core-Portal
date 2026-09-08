@@ -7,7 +7,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,16 +15,21 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='IntroMessages',
+            name="IntroMessages",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('datetime', models.DateTimeField(blank=True, default=django.utils.timezone.now)),
-                ('component', models.CharField(default='', max_length=300)),
-                ('unread', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("datetime", models.DateTimeField(blank=True, default=django.utils.timezone.now)),
+                ("component", models.CharField(default="", max_length=300)),
+                ("unread", models.BooleanField(default=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="+", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'component')},
+                "unique_together": {("user", "component")},
             },
         ),
     ]

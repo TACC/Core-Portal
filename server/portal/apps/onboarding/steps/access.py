@@ -43,18 +43,8 @@ class RequestAccessStep(AbstractStep):
             return
 
         if action == "staff_approve":
-            self.complete(
-                "Portal access request approved by {user}".format(
-                    user=request.user.username
-                )
-            )
+            self.complete("Portal access request approved by {user}".format(user=request.user.username))
         elif action == "staff_deny":
-            self.deny(
-                "Portal access request has not been approved."
-            )
+            self.deny("Portal access request has not been approved.")
         else:
-            self.fail(
-                "Invalid client action {action}".format(
-                    action=action
-                )
-            )
+            self.fail("Invalid client action {action}".format(action=action))

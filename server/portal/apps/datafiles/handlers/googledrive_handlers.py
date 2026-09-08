@@ -6,9 +6,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 allowed_actions = {
-    'private': ['listing', 'search', 'copy'],
-    'public': [],
-    'community': [],
+    "private": ["listing", "search", "copy"],
+    "public": [],
+    "community": [],
 }
 
 
@@ -19,8 +19,7 @@ def googledrive_get_handler(client, scheme, system, path, operation, **kwargs):
     return op(client, system, path, **kwargs)
 
 
-def googledrive_put_handler(client, scheme, system,
-                            path, operation, body=None):
+def googledrive_put_handler(client, scheme, system, path, operation, body=None):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
 

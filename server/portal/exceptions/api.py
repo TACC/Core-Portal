@@ -2,6 +2,7 @@
 .. module: portal.exceptions.api
    :synopsis: Exceptions used within the API
 """
+
 from requests.exceptions import RequestException
 from requests.models import Response
 
@@ -25,14 +26,7 @@ class ApiException(RequestException):
 
     """
 
-    def __init__(
-            self,
-            message=None,
-            status=None,
-            extra=None,
-            *args,
-            **kwargs
-    ):
+    def __init__(self, message=None, status=None, extra=None, *args, **kwargs):
         """Custom exception based on
            :class:`~requests.exceptions.RequestException`
 

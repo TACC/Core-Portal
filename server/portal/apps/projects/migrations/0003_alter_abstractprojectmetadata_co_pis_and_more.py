@@ -6,31 +6,54 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('projects', '0002_auto_20210312_1743'),
+        ("projects", "0002_auto_20210312_1743"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='co_pis',
-            field=models.ManyToManyField(blank=True, related_name='rel_co_pi_%(class)s', related_query_name='co_pi_%(class)s', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="co_pis",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="rel_co_pi_%(class)s",
+                related_query_name="co_pi_%(class)s",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='rel_owner_%(class)s', related_query_name='owner_%(class)s', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="owner",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="rel_owner_%(class)s",
+                related_query_name="owner_%(class)s",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='pi',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='rel_pi_%(class)s', related_query_name='pi_%(class)s', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="pi",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="rel_pi_%(class)s",
+                related_query_name="pi_%(class)s",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='abstractprojectmetadata',
-            name='team_members',
-            field=models.ManyToManyField(blank=True, related_name='rel_member_%(class)s', related_query_name='member_%(class)s', to=settings.AUTH_USER_MODEL),
+            model_name="abstractprojectmetadata",
+            name="team_members",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="rel_member_%(class)s",
+                related_query_name="member_%(class)s",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

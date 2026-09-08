@@ -3,10 +3,7 @@ from django.http import JsonResponse
 import json
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.api.views import (
-    SetupStepView,
-    get_user_onboarding
-)
+from portal.apps.onboarding.api.views import SetupStepView, get_user_onboarding
 import pytest
 import logging
 
@@ -17,12 +14,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture(autouse=True)
 def mocked_executor(mocker):
-    yield mocker.patch('portal.apps.onboarding.api.views.execute_setup_steps')
+    yield mocker.patch("portal.apps.onboarding.api.views.execute_setup_steps")
 
 
 @pytest.fixture(autouse=True)
 def mocked_log_setup_state(mocker):
-    yield mocker.patch('portal.apps.onboarding.api.views.log_setup_state')
+    yield mocker.patch("portal.apps.onboarding.api.views.log_setup_state")
 
 
 """
@@ -31,19 +28,19 @@ SetupStepView tests
 
 
 def test_get_user(client, authenticated_user):
-    response = client.get('/api/onboarding/user/{}/'.format(authenticated_user.username))
+    response = client.get("/api/onboarding/user/{}/".format(authenticated_user.username))
     assert response.status_code == 200
     result = json.loads(response.content)
     assert result["username"] == "username"
 
 
 def test_get_user_unauthenticated_forbidden(client, regular_user):
-    response = client.get('/api/onboarding/user/{}/'.format(regular_user.username))
+    response = client.get("/api/onboarding/user/{}/".format(regular_user.username))
     assert response.status_code == 302
 
 
 def test_get_other_user_forbidden(client, authenticated_user, regular_user2):
-    response = client.get('/api/onboarding/user/{}/'.format(regular_user2.username))
+    response = client.get("/api/onboarding/user/{}/".format(regular_user2.username))
     assert response.status_code == 403
 
 
@@ -77,8 +74,8 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
     result = json.loads(response.content)
     assert result["username"] == authenticated_user.username
     assert "steps" in result
-    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
-    assert result["steps"][0]["displayName"] == 'Mock Step'
+    assert result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert result["steps"][0]["displayName"] == "Mock Step"
     assert result["steps"][0]["state"] == SetupState.COMPLETED
     assert len(result["steps"][0]["events"]) == 2
 
@@ -86,14 +83,13 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
 def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocker):
     mock_execute_single_step = mocker.patch("portal.apps.onboarding.api.views.execute_single_step")
     response = client.get("/api/onboarding/user/{}".format(authenticated_user.username), follow=True)
-    mock_execute_single_step.apply_async.assert_called_with(args=[
-        authenticated_user.username,
-        'portal.apps.onboarding.steps.test_steps.MockStep'
-    ], countdown=2)
+    mock_execute_single_step.apply_async.assert_called_with(
+        args=[authenticated_user.username, "portal.apps.onboarding.steps.test_steps.MockStep"], countdown=2
+    )
     result = json.loads(response.content)
     assert result["username"] == authenticated_user.username
     assert "steps" in result
-    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
+    assert result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
     assert result["steps"][0]["state"] == SetupState.PROCESSING
 
 
@@ -102,14 +98,14 @@ def test_incomplete_post(client, authenticated_user):
     response = client.post(
         "/api/onboarding/user/{}/".format(authenticated_user),
         content_type="application/json",
-        data=json.dumps({"action": "user_confirm"})
+        data=json.dumps({"action": "user_confirm"}),
     )
     assert response.status_code == 400
 
     response = client.post(
         "/api/onboarding/user/{}/".format(authenticated_user),
         content_type="application/json",
-        data=json.dumps({"step": "setupstep"})
+        data=json.dumps({"step": "setupstep"}),
     )
     assert response.status_code == 400
 
@@ -120,28 +116,16 @@ def test_client_action(regular_user, rf):
     mock_step.step_name.return_value = "Mock Step"
     request = rf.post("/api/onboarding/user/username")
     request.user = regular_user
-    view.client_action(
-        request,
-        mock_step,
-        "user_confirm",
-        None
-    )
+    view.client_action(request, mock_step, "user_confirm", None)
     mock_step.log.assert_called()
-    mock_step.client_action.assert_called_with(
-        "user_confirm",
-        None,
-        request
-    )
+    mock_step.client_action.assert_called_with("user_confirm", None, request)
 
 
 def test_reset_not_staff(client, authenticated_user):
     response = client.post(
         "/api/onboarding/user/{}/".format(authenticated_user.username),
-        content_type='application/json',
-        data=json.dumps({
-            "action": "reset",
-            "step": "portal.apps.onboarding.steps.test_steps.MockStep"
-        })
+        content_type="application/json",
+        data=json.dumps({"action": "reset", "step": "portal.apps.onboarding.steps.test_steps.MockStep"}),
     )
     assert response.status_code == 403
 
@@ -172,11 +156,8 @@ def test_complete_not_staff(client, authenticated_user, regular_user2):
 def test_complete(client, authenticated_staff, regular_user, mock_steps, mocked_executor):
     response = client.post(
         "/api/onboarding/user/{}/".format(regular_user.username),
-        content_type='application/json',
-        data=json.dumps({
-            "action": "complete",
-            "step": "portal.apps.onboarding.steps.test_steps.MockStep"
-        })
+        content_type="application/json",
+        data=json.dumps({"action": "complete", "step": "portal.apps.onboarding.steps.test_steps.MockStep"}),
     )
 
     # set_state should have put MockStep in COMPLETED, as per request
@@ -222,9 +203,7 @@ def test_get_no_profile(client, authenticated_staff, regular_user):
     response_data = json.loads(response.content)
 
     # regular_user should not appear in results
-    assert not any(
-        [True for user in response_data['users'] if user['username'] == regular_user.username]
-    )
+    assert not any([True for user in response_data["users"] if user["username"] == regular_user.username])
 
 
 def test_get(client, authenticated_staff, regular_user, mock_steps):
@@ -251,14 +230,14 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     assert users[0]["username"] == regular_user.username
 
     # User regular_user's last event should be MockStep
-    assert users[0]['steps'][0]['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert users[0]["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
 
     # There should be two users returned
     assert len(users) == 2
 
     # Assertions with 'showIncompleteOnly=true'
     assert users_incomplete[0]["username"] == regular_user.username
-    assert users_incomplete[0]['steps'][0]['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert users_incomplete[0]["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
 
     # There should be one user since only one user has setup_complete = True
     assert len(users_incomplete) == 1
@@ -274,7 +253,7 @@ def test_get_search(client, authenticated_staff, regular_user, mock_steps):
     assert users[0]["username"] == regular_user.username
 
     # User regular_user's last event should be MockStep
-    assert users[0]['steps'][0]['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert users[0]["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
 
     # There should be two users returned
     assert len(users) == 1
