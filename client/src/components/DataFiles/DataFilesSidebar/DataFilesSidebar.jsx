@@ -121,9 +121,7 @@ const DataFilesSidebar = ({ readOnly }) => {
     if (sys.scheme === 'projects') {
       if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
         sidebarItems.push({
-          to: `${match.path}/${sys.api}/${sys.scheme}${
-            sys.system ? `/${sys.system}` : ''
-          }`,
+          to: `${match.path}/${sys.api}/${sys.scheme}/${sys.system}`,
           label: sys.name,
           iconName: sys.icon || 'my-data',
           disabled: false,
