@@ -1,6 +1,6 @@
 """
 .. module:: portal.apps.site_search.urls
-   :synopsis: Site Search URLs
+    :synopsis: Site Search URLs
 """
 
 import re

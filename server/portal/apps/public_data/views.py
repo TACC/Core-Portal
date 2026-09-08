@@ -4,7 +4,7 @@ import logging
 import networkx as nx
 from django.conf import settings
 from django.http import HttpResponse, Http404
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.publications.models import Publication
