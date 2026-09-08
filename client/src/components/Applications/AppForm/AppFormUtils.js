@@ -353,7 +353,7 @@ export const isTargetPathEmpty = (targetPathFieldValue) => {
 
   targetPathFieldValue = targetPathFieldValue.trim();
 
-  if (targetPathFieldValue.trim() === '') {
+  if (targetPathFieldValue === '' || targetPathFieldValue === '*') {
     return true;
   }
 
@@ -369,7 +369,7 @@ export const isTargetPathEmpty = (targetPathFieldValue) => {
  */
 export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
   if (isTargetPathEmpty(targetPathFieldValue)) {
-    return '*';
+    return '';
   }
 
   return targetPathFieldValue;

@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
 import logging
+
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ def check_connection(username):
     """
     user = get_user_model().objects.get(username=username)
     drive = user.googledrive_user_token.client
-    request = drive.about().get(fields='user')
+    request = drive.about().get(fields="user")
     response = request.execute()
-    googledrive_user = response['user']
+    googledrive_user = response["user"]
     return googledrive_user
