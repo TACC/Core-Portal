@@ -13,7 +13,7 @@ function* executeOperation(
 ) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: 'RUNNING', operation: 'dynamicform' },
+    payload: { status: { state: 'RUNNING' }, operation: 'dynamicform' },
   });
 
   // filter out empty values from the metadata
@@ -61,7 +61,7 @@ function* executeOperation(
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'SUCCESS', operation: 'dynamicform' },
+      payload: { status: { state: 'SUCCESS' }, operation: 'dynamicform' },
     });
 
     yield put({
@@ -79,7 +79,10 @@ function* executeOperation(
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'ERROR', operation: 'dynamicform' },
+      payload: {
+        status: { state: 'ERROR', message: e.message },
+        operation: 'dynamicform',
+      },
     });
   }
 }

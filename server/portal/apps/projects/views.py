@@ -33,7 +33,7 @@ from portal.apps.projects.workspace_operations.project_meta_operations import cr
 from portal.libs.agave.operations import mkdir
 from pathlib import Path
 from portal.apps.projects.schema_models import constants
-from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path, build_project_tree
+from portal.apps.projects.workspace_operations.graph_operations import add_node_to_project, initialize_project_graph, get_node_from_path, get_node_from_uuid, build_project_tree, has_sibling_with_label
 from portal.apps.projects.tasks import sync_files_without_metadata
 from portal.libs.files.file_processing import resize_cover_image
 from django.http.multipartparser import MultiPartParser
@@ -629,6 +629,19 @@ class ProjectEntityView(BaseApiView):
             except Exception as exc:
                 raise ApiException("Error updating file metadata", status=500) from exc
         else:
+            requested_name = value.get('name')
+            source_node = get_node_from_path(project_id, path) if path else (
+                get_node_from_uuid(project_id, entity_uuid) if entity_uuid else None
+            )
+            current_name = source_node.get('label') if source_node else None
+
+            if requested_name and requested_name != current_name:
+                parent_node = get_node_from_path(project_id, updated_path)
+                if has_sibling_with_label(project_id, parent_node['id'], requested_name):
+                    raise ApiException(
+                        f"Entity with name already exists", status=400
+                    )
+
             try:
                 new_name = move_entity(client, project_id, path, updated_path, value, entity_uuid)
                 patch_entity_and_node(project_id, value, path, updated_path, new_name, entity_uuid)
@@ -656,13 +669,19 @@ class ProjectEntityView(BaseApiView):
         name = req_body.get("name", "")
         path = req_body.get("path", "")
 
-        new_meta = create_entity_metadata(project_id, getattr(constants, name.upper()), {
-            **value,
-        })
-
-        # FOR CREATING GRAPH
         parent_node = get_node_from_path(project_id, path)
-        add_node_to_project(project_id, parent_node['id'], new_meta.uuid, new_meta.name, value['name'])
+        if has_sibling_with_label(project_id, parent_node['id'], value.get('name')):
+            raise ApiException(
+                f"Entity with name already exists", status=400
+            )
+
+        with transaction.atomic():
+            new_meta = create_entity_metadata(project_id, getattr(constants, name.upper()), {
+                **value,
+            })
+
+            # FOR CREATING GRAPH
+            add_node_to_project(project_id, parent_node['id'], new_meta.uuid, new_meta.name, value['name'])
 
         # FOR CREATING DATA FILE FOLDER
         if (value and path):

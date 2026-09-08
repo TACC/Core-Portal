@@ -26,7 +26,7 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
   const { setFieldValue, values, handleChange, handleBlur } =
     useFormikContext();
 
-  const status = useSelector(
+  const { state: status, message: errorMessage } = useSelector(
     (state) => state.files.operationStatus.dynamicform
   );
 
@@ -362,7 +362,9 @@ const DynamicForm = ({ initialFormFields, onChange }) => {
         return (
           <>
             {status === 'ERROR' && (
-              <InlineMessage type="error">An error has occurred</InlineMessage>
+              <InlineMessage type="error">
+                {errorMessage || 'An error has occurred'}
+              </InlineMessage>
             )}
             <Button
               type={'primary'}

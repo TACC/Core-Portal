@@ -8,6 +8,19 @@ from portal.apps.projects.schema_models import constants
 from portal.apps.projects.models.project_metadata import ProjectMetadata
 
 
+def has_sibling_with_label(project_id: str, parent_node_id: str, label: str) -> bool:
+    """Return True if a sibling of parent_node_id already has the given label.
+    """
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+    return any(
+        project_graph.nodes[child].get("label") == label
+        for child in project_graph.successors(parent_node_id)
+    )
+
+
 def _get_next_child_order(graph: nx.DiGraph, parent_node: str) -> int:
     child_nodes = graph.successors(parent_node)
     max_order = max((graph.nodes[child]["order"] for child in child_nodes), default=-1)
