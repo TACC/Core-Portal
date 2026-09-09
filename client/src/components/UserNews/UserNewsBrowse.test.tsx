@@ -6,9 +6,9 @@ import renderComponent from 'utils/testing';
 import * as ROUTES from '../../constants/routes';
 import type { UserNewsResponse } from '../../hooks/news';
 import UserNewsBrowse from './UserNewsBrowse';
-import useUserNews from 'hooks/news/useUserNews';
+import { useUserNews } from '@tacc/core-hooks';
 
-vi.mock('hooks/news/useUserNews');
+vi.mock('@tacc/core-hooks');
 
 const mockStore = configureStore();
 
