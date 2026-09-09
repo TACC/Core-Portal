@@ -85,6 +85,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: pnpm/setup@v2
         with:
+          version: 12
           runtime: node@24
           cache-dependency-path: "client/pnpm-lock.yaml"
           package-json-file: "client/package.json"
@@ -114,6 +115,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: pnpm/setup@v2
         with:
+          version: 12
           runtime: node@24
           cache-dependency-path: "client/pnpm-lock.yaml"
           package-json-file: "client/package.json"
