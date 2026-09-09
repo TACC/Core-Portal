@@ -88,6 +88,7 @@ jobs:
           version: 12
           runtime: node@24
           cache: true
+          package-json-file: "client/package.json"
 
 
       - name: npm ci
@@ -117,6 +118,7 @@ jobs:
           version: 12
           runtime: node@24
           cache: true
+          package-json-file: "client/package.json"
 
       - name: npm ci
         run: |
