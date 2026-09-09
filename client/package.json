@@ -43,7 +43,7 @@
     "yup": "^0.28.1"
   },
   "scripts": {
-    "lint": "npm run lint:js && npm run lint:css && npm run prettier:check",
+    "lint": "pnpm run lint:js && pnpm run lint:css && pnpm run prettier:check",
     "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:css": "stylelint '**/*.{css,scss,sass}'",
     "lint:js:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
