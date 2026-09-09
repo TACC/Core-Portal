@@ -130,8 +130,8 @@ class DataciteJsonPreviewView(View):
 
         body = (
             "# DataCite payload (submitted to DataCite on publish)\n"
-            f"{json.dumps(datacite_json, indent=2)}\n"
-            "\n"
+            # f"{json.dumps(datacite_json, indent=2)}\n"
+            # "\n"
             "# schema.org/Dataset JSON-LD (for Google Dataset Search)\n"
             f"{json.dumps(schema_org_json, indent=2)}\n"
         )
