@@ -87,8 +87,8 @@ jobs:
         with:
           version: 12
           runtime: node@24
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
+          cache: true
+
 
       - name: npm ci
         run: |
@@ -116,8 +116,7 @@ jobs:
         with:
           version: 12
           runtime: node@24
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
+          cache: true
 
       - name: npm ci
         run: |
