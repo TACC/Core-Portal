@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_schema_org_json(pub, project_id):
-    """Build a schema.org/Dataset JSON-LD object for a published project. Unlike the payload embedded today in the page's <script type="application/ld+json"> tag (which is just the raw DataCite payload reused as-is), this maps the same project metadata onto proper schema.org/Dataset terms for Google Dataset Search.
+    """Build a schema.org/Dataset JSON-LD object for a published project. The current embedded payload in the page's <script type="application/ld+json"> tag is the raw DataCite payload reused. This maps the project metadata onto proper schema.org/Dataset terms for Google Dataset Search.
     """
+
     base_meta = pub.value
     doi = base_meta.get("doi")
 
@@ -137,4 +138,3 @@ class DataciteJsonPreviewView(View):
         )
 
         return HttpResponse(body, content_type="text/plain")
-
