@@ -83,12 +83,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js for use with actions
-        uses: pnpm/setup@v1
+        uses: pnpm/setup@v2
         with:
           version: 12
           runtime: node@24
           cache: true
-          package-json-file: "client/package.json"
+          working-directory: client
 
 
       - name: npm ci
@@ -113,12 +113,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js for use with actions
-        uses: pnpm/setup@v1
+        uses: pnpm/setup@v2
         with:
           version: 12
           runtime: node@24
           cache: true
-          package-json-file: "client/package.json"
+          working-directory: client
 
       - name: npm ci
         run: |
