@@ -4,6 +4,21 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@tanstack/react-query':
+      specifier: ^5.59.16
+      version: 5.102.8
+    axios:
+      specifier: ^1.7.7
+      version: 1.20.0
+    react:
+      specifier: ^18.3.1
+      version: 18.3.1
+    typescript:
+      specifier: ^5.9.3
+      version: 5.9.3
+
 importers:
 
   .:
@@ -23,14 +38,20 @@ importers:
       '@niivue/niivue':
         specifier: ^0.32.0
         version: 0.32.0
+      '@tacc/core-hooks':
+        specifier: workspace:*
+        version: link:packages/core-hooks
       '@tanstack/react-query':
-        specifier: ^5.59.16
+        specifier: 'catalog:'
         version: 5.102.8(react@18.3.1)
+      '@types/react-router-dom':
+        specifier: ^5.3.3
+        version: 5.3.3
       antd:
         specifier: ^5.29.3
         version: 5.29.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       axios:
-        specifier: ^1.7.7
+        specifier: 'catalog:'
         version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       bowser:
         specifier: ^2.9.0
@@ -63,7 +84,7 @@ importers:
         specifier: ^6.9.0
         version: 6.14.1
       react:
-        specifier: ^18.3.1
+        specifier: 'catalog:'
         version: 18.3.1
       react-copy-to-clipboard:
         specifier: ^5.0.2
@@ -220,7 +241,7 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       typescript-eslint:
         specifier: ^8.54.0
@@ -234,6 +255,22 @@ importers:
       weak-key:
         specifier: ^1.0.1
         version: 1.0.3
+
+  packages/core-hooks:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.102.8(react@18.3.1)
+      axios:
+        specifier: 'catalog:'
+        version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.1.11(@types/node@26.5.0)(@vitest/coverage-v8@4.1.11)(jsdom@16.7.0(supports-color@8.1.1))(vite@6.4.3(@types/node@26.5.0)(jiti@2.7.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
 
 packages:
 
@@ -1700,6 +1737,9 @@ packages:
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
+  '@types/history@4.7.11':
+    resolution: {integrity: sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==}
+
   '@types/hoist-non-react-statics@3.3.7':
     resolution: {integrity: sha512-PQTyIulDkIDro8P+IHbKCsw7U2xxBYflVzW/FgWdCAePD9xGSidgA76/GeJ6lBKoblyhf9pBY763gbrN+1dI8g==}
     peerDependencies:
@@ -1748,6 +1788,12 @@ packages:
 
   '@types/react-redux@7.1.34':
     resolution: {integrity: sha512-GdFaVjEbYv4Fthm2ZLvj1VSCedV7TqE5y1kNwnjSdBOTXuRSgowux6J8TAct15T3CKBr63UMk+2CO7ilRhyrAQ==}
+
+  '@types/react-router-dom@5.3.3':
+    resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
+
+  '@types/react-router@5.1.20':
+    resolution: {integrity: sha512-jGjmu/ZqS7FjSH6owMcD5qpq19+1RS9DeVRqfl1FeBMxTDQAGwlMWOcs52NDoXaNKyG3d1cYQFMs9rCrb88o9Q==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -7007,6 +7053,8 @@ snapshots:
     dependencies:
       '@types/node': 26.5.0
 
+  '@types/history@4.7.11': {}
+
   '@types/hoist-non-react-statics@3.3.7(@types/react@18.3.31)':
     dependencies:
       '@types/react': 18.3.31
@@ -7055,6 +7103,17 @@ snapshots:
       '@types/react': 18.3.31
       hoist-non-react-statics: 3.3.2
       redux: 4.2.1
+
+  '@types/react-router-dom@5.3.3':
+    dependencies:
+      '@types/history': 4.7.11
+      '@types/react': 18.3.31
+      '@types/react-router': 5.1.20
+
+  '@types/react-router@5.1.20':
+    dependencies:
+      '@types/history': 4.7.11
+      '@types/react': 18.3.31
 
   '@types/react-transition-group@4.4.12(@types/react@18.3.31)':
     dependencies:
