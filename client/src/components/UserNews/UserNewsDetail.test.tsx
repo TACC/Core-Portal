@@ -1,7 +1,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import UserNewsDetail from './UserNewsDetail';
 import { waitForElementToBeRemoved } from '@testing-library/react';
@@ -26,7 +25,7 @@ describe('UserNewsDetail', () => {
       history
     );
 
-    expect(getByTestId(/loading-spinner/)).toBeDefined();
+    expect(getByTestId(/loading-spinner/)).toBeInTheDocument();
     await waitForElementToBeRemoved(() => queryByTestId(/loading-spinner/));
   });
 
@@ -42,7 +41,7 @@ describe('UserNewsDetail', () => {
       history
     );
 
-    await findByText(/Update not found/i);
+    expect(await findByText(/Update not found/i)).toBeInTheDocument();
   });
 
   it('renders an error message when request fails', async () => {
@@ -63,7 +62,9 @@ describe('UserNewsDetail', () => {
       store,
       history
     );
-    await findByText(/Unable to load user updates/i);
+    expect(
+      await findByText(/Unable to load user updates/i)
+    ).toBeInTheDocument();
   });
 
   it('renders selected detail timeline and passes sanitize false', async () => {
@@ -77,9 +78,10 @@ describe('UserNewsDetail', () => {
       store,
       history
     );
-    await waitForElementToBeRemoved(() => queryByTestId(/loading-spinner/));
-    await findByText(/TACC Resource Login and Job Submissions/);
-    expect(getByText(/Updated/)).toBeTruthy();
-    expect(getByText(/Original Message/)).toBeTruthy();
+    expect(
+      await findByText(/TACC Resource Login and Job Submissions/)
+    ).toBeInTheDocument();
+    expect(getByText(/Updated/)).toBeInTheDocument();
+    expect(getByText(/Original Message/)).toBeInTheDocument();
   });
 });

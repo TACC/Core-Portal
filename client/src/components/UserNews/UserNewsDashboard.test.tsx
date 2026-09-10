@@ -1,6 +1,5 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import UserNewsDashboard from './UserNewsDashboard';
 import { waitForElementToBeRemoved } from '@testing-library/react';
@@ -18,17 +17,18 @@ describe('UserNewsDashboard', () => {
       store
     );
 
-    expect(getByTestId(/loading-spinner/)).toBeDefined();
+    expect(getByTestId(/loading-spinner/)).toBeInTheDocument();
     await waitForElementToBeRemoved(() => queryByTestId(/loading-spinner/));
   });
 
   it('renders a link when news items are loaded in', async () => {
     const { findByRole } = renderComponent(<UserNewsDashboard />, store);
 
-    const link = await findByRole('link', {
-      name: 'TACC Resource Login and Job Submissions',
-    });
-    expect(link.getAttribute('href')).toBe('/user-news/107637');
+    expect(
+      await findByRole('link', {
+        name: 'TACC Resource Login and Job Submissions',
+      })
+    ).toHaveAttribute('href', '/user-news/107637');
   });
 
   it('renders an error message', async () => {
@@ -39,6 +39,6 @@ describe('UserNewsDashboard', () => {
     );
     const { findByText } = renderComponent(<UserNewsDashboard />, store);
 
-    await findByText(/An error has occurred/);
+    expect(await findByText(/An error has occurred/)).toBeInTheDocument();
   });
 });

@@ -1,6 +1,5 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import * as ROUTES from '../../constants/routes';
 import UserNewsBrowse from './UserNewsBrowse';
@@ -11,7 +10,6 @@ import {
 } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '@tacc/test-fixtures';
-import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
 
@@ -24,7 +22,7 @@ describe('UserNewsBrowse', () => {
       store
     );
 
-    expect(getByTestId(/loading-spinner/)).toBeDefined();
+    expect(getByTestId(/loading-spinner/)).toBeInTheDocument();
     await waitForElementToBeRemoved(() => queryByTestId(/loading-spinner/));
   });
 
@@ -36,7 +34,9 @@ describe('UserNewsBrowse', () => {
     );
 
     const { findByText } = renderComponent(<UserNewsBrowse />, store);
-    await findByText(/Unable to load user updates/i);
+    expect(
+      await findByText(/Unable to load user updates/i)
+    ).toBeInTheDocument();
   });
 
   it('renders heading, date label, and clickable title link', async () => {
@@ -45,11 +45,12 @@ describe('UserNewsBrowse', () => {
       store
     );
     await findByText(/User Updates/i);
-    const linkElement = getByRole('link', {
-      name: /TACC Resource Login and Job Submissions/,
-    });
-    expect(linkElement.getAttribute('href')).toBe('/user-news/107637');
-    expect(getByText(/Updated/)).toBeTruthy();
+    expect(
+      getByRole('link', {
+        name: /TACC Resource Login and Job Submissions/,
+      })
+    ).toHaveAttribute('href', '/user-news/107637');
+    expect(getByText(/Updated/)).toBeInTheDocument();
   });
 
   it('renders empty state when no updates are available', async () => {
@@ -58,6 +59,6 @@ describe('UserNewsBrowse', () => {
     );
 
     const { findByText } = renderComponent(<UserNewsBrowse />, store);
-    await findByText(/No recent updates found/i);
+    expect(await findByText(/No recent updates found/i)).toBeInTheDocument();
   });
 });

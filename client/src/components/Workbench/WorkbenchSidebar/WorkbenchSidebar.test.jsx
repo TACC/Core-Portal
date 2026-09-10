@@ -7,7 +7,6 @@ import { initialState as workbench } from '../../../redux/reducers/workbench.red
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
 import WorkbenchSidebar from './index';
-import '@testing-library/jest-dom/extend-expect';
 
 const PUBLIC_PAGES = [
   'Dashboard',
