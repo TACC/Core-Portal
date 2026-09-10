@@ -23,4 +23,4 @@ export interface UserNewsResponse {
   }[];
 }
 
-export { useUserNews } from "./useUserNews";
+export { useUserNews } from './useUserNews';
