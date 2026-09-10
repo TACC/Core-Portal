@@ -53,7 +53,7 @@
     "prettier:check": "prettier --check src",
     "prettier:fix": "prettier --write src",
     "build": "vite build",
-    "test": "TZ=America/Chicago vitest run --coverage",
+    "test": "TZ=America/Chicago vitest run --coverage --silent=passed-only",
     "test:watch": "TZ=America/Chicago vitest watch",
     "staging": "vite preview",
     "dev": "vite"
