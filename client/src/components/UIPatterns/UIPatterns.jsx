@@ -10,6 +10,7 @@ import UIPatternsPaginator from './UIPatternsPaginator';
 import UIPatternsButton from './UIPatternsButton';
 import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
+import { Button as ShadcnButton } from '@tacc/core-components/components/ui/button';
 
 function UIPatterns() {
   return (
@@ -19,6 +20,22 @@ function UIPatterns() {
       header="UI Patterns"
       content={
         <>
+          <h1 style={{ marginTop: '2rem' }}>Version 4</h1>
+          <div className={styles['list-item']}>
+            <h6>Button (ShadCN)</h6>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <ShadcnButton variant="default">Default</ShadcnButton>
+              <ShadcnButton variant="outline">Outline</ShadcnButton>
+              <ShadcnButton variant="secondary">Secondary</ShadcnButton>
+              <ShadcnButton variant="ghost">Ghost</ShadcnButton>
+              <ShadcnButton variant="destructive">Destructive</ShadcnButton>
+              <ShadcnButton variant="link">Link</ShadcnButton>
+            </div>
+          </div>
+
+          <hr />
+
+          <h1 style={{ marginTop: '2rem' }}>Version 3</h1>
           <div className={styles['list-item']}>
             <h6>Section</h6>
             <UIPatternsSection />
