@@ -14,9 +14,16 @@ from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
 
-# Properties Croissant (http://mlcommons.org/croissant/1.0) requires on a conformant Dataset.
-# If any of these end up missing/empty for a publication, that publication cannot honestly
-# claim `conformsTo` and get_schema_org_json raises rather than silently dropping the field.
+# Properties every schema.org/Dataset must have for Google Dataset Search to consider the page
+# eligible for a dataset rich result, Croissant conformance aside. If either ends up
+# missing/empty for a publication, get_schema_org_json raises rather than silently emitting a
+# Dataset that fails Google's own baseline requirements.
+REQUIRED_DATASET_FIELDS = ("name", "description")
+
+# Properties Croissant (http://mlcommons.org/croissant/1.0) additionally requires on a
+# conformant Dataset, on top of REQUIRED_DATASET_FIELDS above. If any of these end up
+# missing/empty for a publication, that publication cannot honestly claim `conformsTo` and
+# get_schema_org_json raises rather than silently dropping the field.
 # `url`/`identifier` are also hard-required, but checked separately in get_schema_org_json --
 # see the comment there -- since their PORTAL_PUBLICATION_DATACITE_URL_PREFIX-driven fallback
 # means they're never actually empty/missing from the built dict the way these fields are.
@@ -287,11 +294,14 @@ def get_schema_org_json(pub, project_id, request):
     # Drop empty/unset fields so the JSON-LD stays clean
     schema_org_json = {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
 
-    # `distribution` is only required when the publication actually has files to list --
-    # see the `has_files` note above.
-    required_fields = REQUIRED_CROISSANT_FIELDS if has_files else [
-        field for field in REQUIRED_CROISSANT_FIELDS if field != "distribution"
-    ]
+    # `distribution` is only required when the publication actually has files to list -- see
+    # the `has_files` note above. REQUIRED_DATASET_FIELDS (name/description) apply either way --
+    # they're baseline Google Dataset Search requirements, not a Croissant-specific claim.
+    required_fields = list(REQUIRED_DATASET_FIELDS) + (
+        list(REQUIRED_CROISSANT_FIELDS)
+        if has_files
+        else [field for field in REQUIRED_CROISSANT_FIELDS if field != "distribution"]
+    )
     missing = [field for field in required_fields if field not in schema_org_json]
 
     # `url` (and `identifier`, when there's no DOI to use instead) both fall back to
@@ -306,12 +316,17 @@ def get_schema_org_json(pub, project_id, request):
             missing.append("identifier")
 
     if missing:
+        # Only blame the Croissant claim specifically when a Croissant-only field is what's
+        # actually missing -- a missing name/description fails Google's baseline Dataset
+        # requirements regardless of whether this publication has files to be Croissant about.
         reason = (
             "it cannot honestly claim conformsTo http://mlcommons.org/croissant/1.0"
-            if has_files
+            if has_files and any(field in missing for field in REQUIRED_CROISSANT_FIELDS)
             else "its published Dataset metadata is incomplete"
         )
         fix_hints = {
+            "name": "the publication's title",
+            "description": "the publication's description",
             "distribution": "its file listing",
             "url": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
             "identifier": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
