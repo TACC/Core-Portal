@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width">
-    <meta name="description" content="{{ site.description }}">
+    <meta name="description" content="{% block meta_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}

@@ -20,6 +20,7 @@
 {% endif %}
 {% endblock %}
 {% block title %} Workbench {% endblock %}
+{% block meta_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}
