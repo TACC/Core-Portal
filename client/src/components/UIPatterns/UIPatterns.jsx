@@ -12,7 +12,7 @@ import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
 import { Button } from '@tacc/core-components/components/ui/button';
 
-const SHADCN_BUTTON_VARIANTS = [
+const BUTTON_VARIANTS = [
   'default',
   'outline',
   'secondary',
@@ -20,8 +20,8 @@ const SHADCN_BUTTON_VARIANTS = [
   'destructive',
   'link',
 ];
-const SHADCN_BUTTON_TEXT_SIZES = ['xs', 'sm', 'default', 'lg'];
-const SHADCN_BUTTON_ICON_SIZES = ['icon-xs', 'icon-sm', 'icon', 'icon-lg'];
+const BUTTON_TEXT_SIZES = ['xs', 'sm', 'default', 'lg'];
+const BUTTON_ICON_SIZES = ['icon-xs', 'icon-sm', 'icon', 'icon-lg'];
 
 function UIPatterns() {
   return (
@@ -34,7 +34,7 @@ function UIPatterns() {
           <h1 style={{ marginTop: '2rem' }}>Version 4</h1>
           <div className={styles['list-item']}>
             <h6>Button (ShadCN) &mdash; variant &times; size</h6>
-            {SHADCN_BUTTON_VARIANTS.map((variant) => (
+            {BUTTON_VARIANTS.map((variant) => (
               <div
                 key={variant}
                 style={{
@@ -54,12 +54,12 @@ function UIPatterns() {
                 >
                   {variant}
                 </span>
-                {SHADCN_BUTTON_TEXT_SIZES.map((size) => (
+                {BUTTON_TEXT_SIZES.map((size) => (
                   <Button key={size} variant={variant} size={size}>
                     {size}
                   </Button>
                 ))}
-                {SHADCN_BUTTON_ICON_SIZES.map((size) => (
+                {BUTTON_ICON_SIZES.map((size) => (
                   <Button
                     key={size}
                     variant={variant}
@@ -75,7 +75,7 @@ function UIPatterns() {
           <div className={styles['list-item']}>
             <h6>Button (ShadCN) &mdash; disabled</h6>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {SHADCN_BUTTON_VARIANTS.map((variant) => (
+              {BUTTON_VARIANTS.map((variant) => (
                 <Button key={variant} variant={variant} disabled>
                   {variant}
                 </Button>
