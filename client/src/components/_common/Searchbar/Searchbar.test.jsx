@@ -1,6 +1,5 @@
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';

@@ -10,6 +10,7 @@
     "@mui/x-tree-view": "^7.26.0",
     "@niivue/niivue": "^0.32.0",
     "@tacc/core-hooks": "workspace:*",
+    "@tacc/test-fixtures": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@types/react-router-dom": "^5.3.3",
     "antd": "^5.29.3",
@@ -52,7 +53,7 @@
     "prettier:check": "prettier --check src",
     "prettier:fix": "prettier --write src",
     "build": "vite build",
-    "test": "TZ=America/Chicago vitest run --coverage",
+    "test": "TZ=America/Chicago vitest run --coverage --silent=passed-only",
     "test:watch": "TZ=America/Chicago vitest watch",
     "staging": "vite preview",
     "dev": "vite"
@@ -75,7 +76,7 @@
   "devDependencies": {
     "@rollup/plugin-eslint": "^9.2.0",
     "@tacc/core-styles": "^2.58.0",
-    "@testing-library/jest-dom": "^5.0.2",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.0.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/js-cookie": "^3.0.6",
@@ -84,7 +85,7 @@
     "@types/react-redux": "^7.1.18",
     "@typescript-eslint/parser": "^8.8.0",
     "@vitejs/plugin-react": "^5.1.3",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^5.0.0",
     "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9.39.2",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -96,6 +97,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.3.0",
     "jiti": "^2.6.1",
+    "msw": "catalog:",
     "postcss-preset-env": "^10.0.2",
     "prettier": "^3.8.1",
     "react-test-renderer": "^18.3.1",
@@ -109,7 +111,7 @@
     "typescript": "catalog:",
     "typescript-eslint": "^8.54.0",
     "vite": "^6.4.1",
-    "vitest": "^4.0.18",
+    "vitest": "^5.0.0",
     "weak-key": "^1.0.1"
   }
 }

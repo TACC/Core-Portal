@@ -5,8 +5,6 @@ import RequestAccess from './RequestAccess';
 import { initialRequestAccessState as requestAccess } from '../../redux/reducers/requestAccess.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 
-import '@testing-library/jest-dom/extend-expect';
-
 const mockStore = configureStore();
 
 describe('RequestAccess', () => {

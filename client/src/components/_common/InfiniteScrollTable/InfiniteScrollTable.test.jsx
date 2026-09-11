@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import InfiniteScrollTable from './InfiniteScrollTable';
-import '@testing-library/jest-dom/extend-expect';
 
 const tableData = [
   {

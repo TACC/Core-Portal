@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import Message, * as MSG from './Message';
 import { vi } from 'vitest';
 

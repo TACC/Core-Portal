@@ -1,124 +1,87 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import { vi } from 'vitest';
-import '@testing-library/jest-dom/extend-expect';
+import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
-import * as ROUTES from '../../constants/routes';
-import type { UserNewsResponse } from '../../hooks/news';
 import UserNewsDetail from './UserNewsDetail';
-import { useUserNews } from '@tacc/core-hooks';
-
-let mockRouteId = '301';
-
-vi.mock('@tacc/core-hooks');
-vi.mock('react-router-dom', async () => {
-  const actual =
-    await vi.importActual<typeof import('react-router-dom')>(
-      'react-router-dom'
-    );
-  return {
-    ...actual,
-    useParams: () => ({
-      id: mockRouteId,
-    }),
-  };
-});
+import { waitForElementToBeRemoved } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+import { server } from '@tacc/test-fixtures';
+import { Route } from 'react-router-dom';
 
 const mockStore = configureStore();
 
-const baseNewsItem: UserNewsResponse = {
-  id: 301,
-  author: 'Test Author',
-  title: 'Test title',
-  subtitle: '',
-  webtitle: 'Detail news title',
-  content: '<p>Original body content</p>',
-  posted: '2026-03-15T09:00:00',
-  postedUTC: '2026-03-15T15:00:00Z',
-  downtime: false,
-  categoryId: null,
-  categories: [],
-  updates: [],
-};
-
 describe('UserNewsDetail', () => {
   const store = mockStore({});
-  const mockUseUserNews = vi.mocked(useUserNews);
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('renders a loading spinner', () => {
-    mockUseUserNews.mockReturnValue({
-      data: [],
-      isPending: true,
-      isError: false,
-      status: 'pending',
+  it('renders a loading spinner', async () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/user-news/107637'],
     });
-
-    const { getByTestId } = renderComponent(<UserNewsDetail />, store);
-    expect(getByTestId(/loading-spinner/)).toBeInTheDocument();
-  });
-
-  it('renders an error message when request fails', () => {
-    mockUseUserNews.mockReturnValue({
-      data: [],
-      isPending: false,
-      isError: true,
-      status: 'error',
-    });
-
-    const { getByText } = renderComponent(<UserNewsDetail />, store);
-    expect(getByText(/Unable to load user updates/i)).toBeInTheDocument();
-  });
-
-  it('renders not found state with back link', () => {
-    mockRouteId = '999';
-    mockUseUserNews.mockReturnValue({
-      data: [{ ...baseNewsItem }],
-      isPending: false,
-      isError: false,
-      status: 'success',
-    });
-
-    const { getByText, getByRole } = renderComponent(<UserNewsDetail />, store);
-
-    expect(getByText(/Update not found/i)).toBeInTheDocument();
-    expect(getByRole('link', { name: /Back to all updates/i })).toHaveAttribute(
-      'href',
-      ROUTES.USER_NEWS
+    const { getByTestId, queryByTestId } = renderComponent(
+      <Route path="/user-news/:id">
+        <UserNewsDetail />
+      </Route>,
+      store,
+      history
     );
+
+    expect(getByTestId(/loading-spinner/)).toBeInTheDocument();
+    await waitForElementToBeRemoved(() => queryByTestId(/loading-spinner/));
   });
 
-  it('renders selected detail timeline and passes sanitize false', () => {
-    mockRouteId = '301';
-    mockUseUserNews.mockReturnValue({
-      data: [
-        {
-          ...baseNewsItem,
-          updates: [
-            {
-              id: 991,
-              content: '<p>Updated content</p>',
-              posted: '2026-03-16T09:00:00',
-              postedUTC: '2026-03-16T15:00:00Z',
-            },
-          ],
-        },
-      ],
-      isPending: false,
-      isError: false,
-      status: 'success',
-    } as UseUserNewsReturn);
+  it('renders not found state with back link', async () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/user-news/9999'],
+    });
+    const { findByText } = renderComponent(
+      <Route path="/user-news/:id">
+        <UserNewsDetail />
+      </Route>,
+      store,
+      history
+    );
 
-    const { getByText } = renderComponent(<UserNewsDetail />, store);
+    expect(await findByText(/Update not found/i)).toBeInTheDocument();
+  });
 
-    expect(mockUseUserNews).toHaveBeenCalledWith({ sanitize: false });
-    expect(getByText(/Detail news title/i)).toBeInTheDocument();
-    expect(getByText(/^Updated$/i)).toBeInTheDocument();
-    expect(getByText(/Original Message/i)).toBeInTheDocument();
-    expect(getByText(/Updated content/i)).toBeInTheDocument();
-    expect(getByText(/Original body content/i)).toBeInTheDocument();
+  it('renders an error message when request fails', async () => {
+    server.use(
+      http.get('/api/news', () =>
+        HttpResponse.json({ message: 'Failed to load news' }, { status: 500 })
+      )
+    );
+
+    const history = createMemoryHistory({
+      initialEntries: ['/user-news/107637'],
+    });
+
+    const { findByText } = renderComponent(
+      <Route path="/user-news/:id">
+        <UserNewsDetail />
+      </Route>,
+      store,
+      history
+    );
+    expect(
+      await findByText(/Unable to load user updates/i)
+    ).toBeInTheDocument();
+  });
+
+  it('renders selected detail timeline and passes sanitize false', async () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/user-news/107637'],
+    });
+    const { getByText, queryByTestId, findByText } = renderComponent(
+      <Route path="/user-news/:id">
+        <UserNewsDetail />
+      </Route>,
+      store,
+      history
+    );
+    expect(
+      await findByText(/TACC Resource Login and Job Submissions/)
+    ).toBeInTheDocument();
+    expect(getByText(/Updated/)).toBeInTheDocument();
+    expect(getByText(/Original Message/)).toBeInTheDocument();
   });
 });

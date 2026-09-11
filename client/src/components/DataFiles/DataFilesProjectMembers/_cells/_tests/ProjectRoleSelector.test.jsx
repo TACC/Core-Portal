@@ -2,7 +2,6 @@ import React from 'react';
 import fetchMock from 'fetch-mock';
 import { vi } from 'vitest';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import ProjectRoleSelector from '../ProjectRoleSelector';
 import { waitFor, screen, fireEvent } from '@testing-library/react';

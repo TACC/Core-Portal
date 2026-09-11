@@ -1,6 +1,5 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -28,7 +27,6 @@ import {
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
-import '@testing-library/jest-dom/extend-expect';
 import timekeeper from 'timekeeper';
 
 const frozenDate = '2023-10-01';

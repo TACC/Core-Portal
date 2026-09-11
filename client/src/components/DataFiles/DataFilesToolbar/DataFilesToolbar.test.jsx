@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-  toHaveClass,
-  toBeDisabled,
-} from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
@@ -12,7 +8,6 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
 const mockStore = configureStore();
-expect.extend({ toHaveClass, toBeDisabled });
 describe('ToolbarButton', () => {
   const store = mockStore({});
   it('renders button with correct text', () => {
