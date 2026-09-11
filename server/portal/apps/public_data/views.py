@@ -294,6 +294,11 @@ def get_schema_org_json(pub, project_id, request):
         "description": base_meta.get("description"),
         "citeAs": _get_cite_as(base_meta, doi, project_id, request),
         "license": _get_license(base_meta, project_id),
+        # Every publication this view serves is published to the public, unauthenticated Tapis
+        # download route built in _get_distribution -- there's no embargo/access-tier concept in
+        # the publish workflow, so this is unconditionally true rather than sourced from
+        # base_meta. Revisit if/when a restricted-access publication type is introduced.
+        "isAccessibleForFree": True,
         "url": _get_landing_page_url(project_id, request),
         "identifier": f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request),
         "creator": creators,
