@@ -59,6 +59,11 @@ class FileObj(BaseMetadataModel):
     uuid: str | None = None
     value: dict | None = None
     columns: list[FileColumn] | None = None
+    # Content hash, hex-encoded. Like `columns`, this is meant to be populated at publish time
+    # (there is no hashing pipeline yet -- this field just gives one somewhere to land) so the
+    # Croissant `distribution` built from stored metadata in public_data/views.py can include a
+    # cr:FileObject `sha256` without hashing file content on every page request.
+    sha256: str | None = None
 
 
 class PartialTrashEntity(BaseMetadataModel):

@@ -70,11 +70,17 @@ def _get_distribution(base_meta, project_id, request):
             "contentUrl": content_url,
         }
 
+        # Croissant requires encodingFormat on every FileObject -- fall back to the generic
+        # "unknown binary" MIME type rather than omitting the field when the name's extension
+        # isn't recognized, so this never silently drops a required property.
         encoding_format, _ = mimetypes.guess_type(name)
-        if encoding_format:
-            file_object["encodingFormat"] = encoding_format
+        file_object["encodingFormat"] = encoding_format or "application/octet-stream"
         if file_obj.get("length") is not None:
             file_object["contentSize"] = f"{file_obj['length']} B"
+        # Only present once a publish-time hashing step populates it (see FileObj.sha256) --
+        # computing it here would mean downloading every file on every page request.
+        if file_obj.get("sha256"):
+            file_object["sha256"] = file_obj["sha256"]
 
         distribution.append(file_object)
 
