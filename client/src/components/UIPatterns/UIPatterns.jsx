@@ -12,6 +12,17 @@ import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
 import { Button as ShadcnButton } from '@tacc/core-components/components/ui/button';
 
+const SHADCN_BUTTON_VARIANTS = [
+  'default',
+  'outline',
+  'secondary',
+  'ghost',
+  'destructive',
+  'link',
+];
+const SHADCN_BUTTON_TEXT_SIZES = ['xs', 'sm', 'default', 'lg'];
+const SHADCN_BUTTON_ICON_SIZES = ['icon-xs', 'icon-sm', 'icon', 'icon-lg'];
+
 function UIPatterns() {
   return (
     <Section
@@ -22,14 +33,53 @@ function UIPatterns() {
         <>
           <h1 style={{ marginTop: '2rem' }}>Version 4</h1>
           <div className={styles['list-item']}>
-            <h6>Button (ShadCN)</h6>
+            <h6>Button (ShadCN) &mdash; variant &times; size</h6>
+            {SHADCN_BUTTON_VARIANTS.map((variant) => (
+              <div
+                key={variant}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  flexWrap: 'wrap',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                <span
+                  style={{
+                    width: 80,
+                    fontFamily: 'monospace',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {variant}
+                </span>
+                {SHADCN_BUTTON_TEXT_SIZES.map((size) => (
+                  <ShadcnButton key={size} variant={variant} size={size}>
+                    {size}
+                  </ShadcnButton>
+                ))}
+                {SHADCN_BUTTON_ICON_SIZES.map((size) => (
+                  <ShadcnButton
+                    key={size}
+                    variant={variant}
+                    size={size}
+                    aria-label={size}
+                  >
+                    &#9733;
+                  </ShadcnButton>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className={styles['list-item']}>
+            <h6>Button (ShadCN) &mdash; disabled</h6>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <ShadcnButton variant="default">Default</ShadcnButton>
-              <ShadcnButton variant="outline">Outline</ShadcnButton>
-              <ShadcnButton variant="secondary">Secondary</ShadcnButton>
-              <ShadcnButton variant="ghost">Ghost</ShadcnButton>
-              <ShadcnButton variant="destructive">Destructive</ShadcnButton>
-              <ShadcnButton variant="link">Link</ShadcnButton>
+              {SHADCN_BUTTON_VARIANTS.map((variant) => (
+                <ShadcnButton key={variant} variant={variant} disabled>
+                  {variant}
+                </ShadcnButton>
+              ))}
             </div>
           </div>
 
