@@ -134,6 +134,11 @@ def get_schema_org_json(pub, project_id, request):
     base_meta = pub.value
     doi = base_meta.get("doi")
 
+    # A metadata-only / externally-hosted publication can legitimately have no files at all --
+    # that's different from having files that failed to make it into `distribution` (missing
+    # name/path on every fileObj), which is still a data bug. Only the latter should raise.
+    has_files = any(file_obj.get("type") == "file" for file_obj in base_meta.get("fileObjs", []))
+
     creators = []
     for author in base_meta.get("authors", []):
         name = f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
@@ -158,7 +163,10 @@ def get_schema_org_json(pub, project_id, request):
         },
         "@type": "Dataset",
         "name": base_meta.get("title"),
-        "conformsTo": "http://mlcommons.org/croissant/1.0",
+        # Croissant hard-requires `distribution`, so only claim conformance when there's at
+        # least one file to back it -- a fileless publication is still a valid plain
+        # schema.org/Dataset, just not a Croissant one.
+        "conformsTo": "http://mlcommons.org/croissant/1.0" if has_files else None,
         "description": base_meta.get("description"),
         "citeAs": _get_cite_as(base_meta, doi, project_id),
         "license": base_meta.get("license"),
@@ -182,13 +190,22 @@ def get_schema_org_json(pub, project_id, request):
     # Drop empty/unset fields so the JSON-LD stays clean
     schema_org_json = {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
 
-    missing = [field for field in REQUIRED_CROISSANT_FIELDS if field not in schema_org_json]
+    # `distribution` is only required when the publication actually has files to list --
+    # see the `has_files` note above.
+    required_fields = REQUIRED_CROISSANT_FIELDS if has_files else [
+        field for field in REQUIRED_CROISSANT_FIELDS if field != "distribution"
+    ]
+    missing = [field for field in required_fields if field not in schema_org_json]
     if missing:
+        reason = (
+            "it cannot honestly claim conformsTo http://mlcommons.org/croissant/1.0"
+            if has_files
+            else "its published Dataset metadata is incomplete"
+        )
         raise SchemaOrgValidationError(
-            f"Publication {project_id} is missing required Croissant/schema.org Dataset "
-            f"field(s) {', '.join(missing)}; it cannot honestly claim conformsTo "
-            "http://mlcommons.org/croissant/1.0. Fix the publication's metadata (or its "
-            "file listing, for `distribution`) before this page's JSON-LD can be trusted."
+            f"Publication {project_id} is missing required schema.org Dataset field(s) "
+            f"{', '.join(missing)}; {reason}. Fix the publication's metadata (or its file "
+            "listing, for `distribution`) before this page's JSON-LD can be trusted."
         )
 
     return schema_org_json
