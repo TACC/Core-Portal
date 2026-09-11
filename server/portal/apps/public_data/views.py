@@ -151,15 +151,28 @@ def get_schema_org_json(pub, project_id, request):
         "@context": {
             "@language": "en",
             "@vocab": "https://schema.org/",
-            # "cr" and "dct" are required so the Croissant-specific terms below resolve to
-            # the real MLCommons/Dublin-Core IRIs instead of silently falling back to a
-            # nonexistent "https://schema.org/citeAs" or "https://schema.org/conformsTo"
-            # under the bare @vocab. Without this mapping a strict Croissant validator
-            # (e.g. MLCommons' mlcroissant) would not recognize this record as Croissant.
+            # Verbatim (minus unused terms) from the Croissant spec's own recommended
+            # @context (Appendix 1). Every Croissant-specific key we emit anywhere in this
+            # document -- in `distribution` (cr:FileObject) or `recordSet` (cr:RecordSet,
+            # field/source/extract/fileObject/dataType/column) -- needs an explicit mapping
+            # here, or it silently falls back to the bare @vocab and resolves to a
+            # nonexistent "https://schema.org/<term>" instead of its real Croissant IRI. A
+            # strict Croissant validator (e.g. MLCommons' mlcroissant) would not recognize
+            # this record as Croissant without these.
             "cr": "http://mlcommons.org/croissant/",
             "dct": "http://purl.org/dc/terms/",
+            "sc": "https://schema.org/",
             "citeAs": "cr:citeAs",
+            "column": "cr:column",
             "conformsTo": "dct:conformsTo",
+            "dataType": {"@id": "cr:dataType", "@type": "@vocab"},
+            "extract": "cr:extract",
+            "field": "cr:field",
+            "fileObject": "cr:fileObject",
+            "fileSet": "cr:fileSet",
+            "key": "cr:key",
+            "recordSet": "cr:recordSet",
+            "source": "cr:source",
         },
         "@type": "Dataset",
         "name": base_meta.get("title"),
