@@ -10,7 +10,7 @@ import UIPatternsPaginator from './UIPatternsPaginator';
 import UIPatternsButton from './UIPatternsButton';
 import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
-import { Button as ShadcnButton } from '@tacc/core-components/components/ui/button';
+import { Button } from '@tacc/core-components/components/ui/button';
 
 const SHADCN_BUTTON_VARIANTS = [
   'default',
@@ -55,19 +55,19 @@ function UIPatterns() {
                   {variant}
                 </span>
                 {SHADCN_BUTTON_TEXT_SIZES.map((size) => (
-                  <ShadcnButton key={size} variant={variant} size={size}>
+                  <Button key={size} variant={variant} size={size}>
                     {size}
-                  </ShadcnButton>
+                  </Button>
                 ))}
                 {SHADCN_BUTTON_ICON_SIZES.map((size) => (
-                  <ShadcnButton
+                  <Button
                     key={size}
                     variant={variant}
                     size={size}
                     aria-label={size}
                   >
                     &#9733;
-                  </ShadcnButton>
+                  </Button>
                 ))}
               </div>
             ))}
@@ -76,9 +76,9 @@ function UIPatterns() {
             <h6>Button (ShadCN) &mdash; disabled</h6>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {SHADCN_BUTTON_VARIANTS.map((variant) => (
-                <ShadcnButton key={variant} variant={variant} disabled>
+                <Button key={variant} variant={variant} disabled>
                   {variant}
-                </ShadcnButton>
+                </Button>
               ))}
             </div>
           </div>
