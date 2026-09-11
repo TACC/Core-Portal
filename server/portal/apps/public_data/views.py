@@ -308,6 +308,15 @@ def get_schema_org_json(pub, project_id, request):
         },
         "keywords": base_meta.get("keywords"),
         "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
+        # Sourced from Publication.version (project_publish_operations.py bumps this on every
+        # republish), not from the URL's own `vN` suffix (see public_data/urls.py's `revision`
+        # group) -- Publication is keyed by bare project_id and update_or_create'd in place on
+        # republish, so it never retains old versions' value/tree. A stale `revision` in the URL
+        # (e.g. a DOI minted against v2, visited after a v3 republish) would still resolve here
+        # and render v3's content throughout, so claiming the URL's version number would
+        # contradict every other field in this same document. pub.version is the only value
+        # that's ever consistent with the content actually being rendered.
+        "version": pub.version,
         "includedInDataCatalog": {
             "@type": "DataCatalog",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
@@ -442,6 +451,18 @@ class IndexView(TemplateView):
         if project_id:
             try:
                 pub = Publication.objects.get(project_id=project_id)
+                # `revision` (the URL's `vN` suffix -- see public_data/urls.py) can't select a
+                # specific version's content: Publication is keyed by bare project_id and always
+                # holds only the latest republish (see get_schema_org_json's `version` comment).
+                # A mismatch means this link was minted against an older version that's since
+                # been superseded and is now silently rendering the current version instead --
+                # worth knowing about even though there's no old content left to serve.
+                revision = kwargs.get("revision")
+                if revision is not None and int(revision) != pub.version:
+                    logger.warning(
+                        f"Publication {project_id} was requested at revision {revision}, but "
+                        f"its current version is {pub.version}; serving current content."
+                    )
                 citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
                 context["schema_org_json"] = dumps_json_ld(schema_org_json)
                 context["citation_context"] = citation_context
