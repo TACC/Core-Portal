@@ -1,26 +1,42 @@
 {% extends "base.html" %}
 {% load static %}
 {% block google_citation_meta %}
-{% if citation_context %}
-    <meta name="keywords" content='{{ citation_context.keywords }}'> <!-- related experiments, subject; used in search -->
-    {% for entity in citation_context.entities %}
-        <meta name="DC.identifier" content="{{entity.doi}}">
-        <meta name="DC.publisher" content="{{ publisher }}">
-        <meta name="DC.title" content="{{entity.title}}">
-        <meta name="DC.date" content="{{entity.publication_date}}">
-        <meta name="DC.language" content="en">
-        <meta name="DC.creator" content="{% for author in entity.authors %}{{author.first_name}} {{ author.last_name}}; {% endfor %}">
-        <meta name="DC.type" content="dataset">
-    {% endfor %}
-    {% if schema_org_json %}
-    <script type="application/ld+json">
-        {{ schema_org_json|safe }}
-    </script>
-    {% endif %}
-{% endif %}
+  {% if citation_context %}
+      <meta name="keywords" content='{{ citation_context.keywords }}'> <!-- related experiments, subject; used in search -->
+      {% for entity in citation_context.entities %}
+          <meta name="DC.identifier" content="{{entity.doi}}">
+          <meta name="DC.publisher" content="{{ publisher }}">
+          <meta name="DC.title" content="{{entity.title}}">
+          <meta name="DC.date" content="{{entity.publication_date}}">
+          <meta name="DC.language" content="en">
+          <meta name="DC.creator" content="{% for author in entity.authors %}{{author.first_name}} {{ author.last_name}}; {% endfor %}">
+          <meta name="DC.type" content="dataset">
+          <!-- Google Scholar indexing tags: https://scholar.google.com/intl/en/scholar/inclusion.html#indexing -->
+          <meta name="citation_title" content="{{ entity.title }}">
+          {% for author in entity.citation_authors %}
+          <meta name="citation_author" content="{{ author }}">
+          {% endfor %}
+          {% if entity.citation_date %}<meta name="citation_publication_date" content="{{ entity.citation_date }}">{% endif %}
+          <meta name="citation_publisher" content="{{ publisher }}">
+          {% if entity.doi %}<meta name="citation_doi" content="{{ entity.doi }}">{% endif %}
+          {% if entity.abstract_url %}<meta name="citation_abstract_html_url" content="{{ entity.abstract_url }}">{% endif %}
+          {% if entity.pdf_url %}<meta name="citation_pdf_url" content="{{ entity.pdf_url }}">{% endif %}
+      {% endfor %}
+      {% if schema_org_json %}
+      <script type="application/ld+json">
+          {{ schema_org_json|safe }}
+      </script>
+      {% endif %}
+  {% endif %}
 {% endblock %}
 {% block title %} Workbench {% endblock %}
-{% block meta_description %}{% if citation_context.entities.0.description %}{{ citation_context.entities.0.description|truncatechars:160 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block meta_description %}
+  {% if citation_context.entities.0.description %}
+    {{ citation_context.entities.0.description|truncatechars:160 }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}
@@ -33,7 +49,6 @@
 {% endblock %}
 {% block scripts %}
   <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
-
   {% if DEBUG %}
     <script type="module">
       import RefreshRuntime from "http://localhost:3000/core/static/@react-refresh"
@@ -47,5 +62,4 @@
   {% else %}
     {% include "index.html" %}
   {% endif %}
-
 {% endblock %}

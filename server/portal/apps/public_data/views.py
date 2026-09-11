@@ -1,6 +1,7 @@
 import json
 import logging
 import mimetypes
+import re
 from urllib.parse import quote
 
 import networkx as nx
@@ -161,6 +162,49 @@ def _get_cite_as(base_meta, doi, project_id, request):
     return ". ".join(part for part in parts if part)
 
 
+def _format_citation_author(author):
+    """Format one author as "Last, First" -- the order Google Scholar's indexing guide asks
+    citation_author tags to use (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
+    Falls back to whichever name part is present if the other is missing, and to "" (filtered
+    out by the caller) if neither is.
+    """
+
+    last_name = (author.get("last_name") or "").strip()
+    first_name = (author.get("first_name") or "").strip()
+    if last_name and first_name:
+        return f"{last_name}, {first_name}"
+    return last_name or first_name
+
+
+def _format_citation_date(date_value):
+    """Reformat a stored ISO-ish date ("YYYY-MM-DD", optionally with a time component) into
+    the slash-separated "YYYY/MM/DD" form (or "YYYY/MM"/"YYYY" for a partial date) that Google
+    Scholar's citation_publication_date expects. A value that isn't recognizably ISO-formatted
+    is passed through unchanged rather than dropped -- a wrong-shaped date is still more useful
+    to Scholar than a missing one.
+    """
+
+    if not date_value:
+        return None
+    date_part = date_value[:10]
+    if re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", date_part):
+        return date_part.replace("-", "/")
+    return date_value
+
+
+def _get_citation_pdf_url(distribution):
+    """Pick the first PDF out of an already-built Croissant `distribution` list, for Google
+    Scholar's citation_pdf_url. Scholar only indexes a citation_pdf_url that's a direct,
+    unauthenticated link straight to a PDF -- exactly what `distribution`'s Tapis download URLs
+    already are -- so this filters the existing list instead of rebuilding one.
+    """
+
+    for file_object in distribution or []:
+        if file_object.get("encodingFormat") == "application/pdf":
+            return file_object.get("contentUrl")
+    return None
+
+
 def get_schema_org_json(pub, project_id, request):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in the page's <script type="application/ld+json"> tag for Google Dataset Search.
     """
@@ -283,23 +327,41 @@ def get_schema_org_json(pub, project_id, request):
 
 
 def get_citation_context(pub, request):
-    """Get Dublin Core metadata and the schema.org JSON-LD payload for a published project's page <head>."""
+    """Get Dublin Core and Google Scholar (citation_*) metadata, plus the schema.org JSON-LD
+    payload, for a published project's page <head>. The citation_* tags follow the Highwire
+    Press convention Google Scholar's indexing guide documents
+    (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
+    """
+
+    # Built first so its already-resolved `url` and `distribution` (with real, absolute
+    # download URLs) can be reused below instead of recomputed.
+    schema_org_json = get_schema_org_json(pub, pub.project_id, request)
+
+    base_meta = pub.value
+    authors = base_meta.get("authors", [])
+    publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date")
 
     citation_meta = {}
-    citation_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
+    citation_meta["keywords"] = ", ".join(base_meta.get("keywords", []))
     citation_meta["entities"] = [
         {
-            "title": pub.value.get("title"),
-            "description": pub.value.get("description"),
-            "doi": pub.value.get("doi"),
-            "authors": pub.value.get("authors", []),
-            "publication_date": pub.value.get("publicationDate") or pub.value.get("publication_date"),
+            "title": base_meta.get("title"),
+            "description": base_meta.get("description"),
+            "doi": base_meta.get("doi"),
+            "authors": authors,
+            # One "Last, First" string per author -- the template emits one <meta
+            # name="citation_author"> tag per entry, as Scholar's guide asks for.
+            "citation_authors": [
+                name for name in (_format_citation_author(author) for author in authors) if name
+            ],
+            "publication_date": publication_date,
+            "citation_date": _format_citation_date(publication_date),
+            "pdf_url": _get_citation_pdf_url(schema_org_json.get("distribution", [])),
+            "abstract_url": schema_org_json.get("url"),
         }
     ]
 
-    schema_org_json = get_schema_org_json(pub, pub.project_id, request)
-
-    pub_title = pub.value["title"]
+    pub_title = base_meta["title"]
     return citation_meta, schema_org_json, pub_title
 
 
