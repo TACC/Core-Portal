@@ -1,9 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
+    <!-- Analytics as early as possible in <head> (per Google's own gtag.js placement guidance),
+         but after charset -- charset must be the first thing in <head> so the browser never
+         has to re-parse the document if anything before it isn't plain ASCII. -->
+    {% include 'includes/analytics.html' %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width">
