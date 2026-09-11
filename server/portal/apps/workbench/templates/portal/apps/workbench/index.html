@@ -43,6 +43,20 @@
     {{ block.super }}
   {% endif %}
 {% endblock %}
+{% block og_title %}
+  {% if citation_context.entities.0.title %}
+    {{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+{% block og_description %}
+  {% if citation_context.entities.0.description %}
+    {{ citation_context.entities.0.description|truncatechars:160 }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}

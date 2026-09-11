@@ -11,12 +11,25 @@
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="{% block meta_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    <!-- Open Graph / Twitter Card, so links shared externally (Slack, Discord, LinkedIn, X/
+         Twitter, iMessage) get a title+description preview card. No og:image/twitter:image
+         yet -- there's no dataset-appropriate image asset to point them at (see PORTAL_ICON_
+         FILENAME below: a .ico favicon per deployment, which most unfurlers won't render as a
+         card image). Twitter's own Card parser falls back to og:title/og:description when
+         twitter:title/twitter:description are absent, and no other unfurler reads twitter:*
+         tags at all, so twitter:card is the only Twitter-specific tag needed here. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ settings.PORTAL_NAMESPACE }}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    <meta name="twitter:card" content="summary">
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
-    <link rel="canonical" href="{{request.get_full_path}}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <style>
