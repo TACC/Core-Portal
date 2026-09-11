@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_schema_org_json(pub, project_id):
-    """Build a schema.org/Dataset JSON-LD object for a published project. The current embedded payload in the page's <script type="application/ld+json"> tag is the raw DataCite payload reused. This maps the project metadata onto proper schema.org/Dataset terms for Google Dataset Search.
+    """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in the page's <script type="application/ld+json"> tag for Google Dataset Search.
     """
 
     base_meta = pub.value
@@ -30,7 +30,7 @@ def get_schema_org_json(pub, project_id):
     schema_org_json = {
         "@context": {
             "@language": "en",
-            "@vocab": "https://schema.org"
+            "@vocab": "https://schema.org/"
         },
         "@type": "Dataset",
         "name": base_meta.get("title"),
@@ -58,15 +58,13 @@ def get_schema_org_json(pub, project_id):
     return {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
 
 
-def get_google_scholar_context(pub):
-    # """Get context info for Google Scholar/Datacite"""
-    # pub_tree = nx.node_link_graph(pub.tree)
-    """Get context info for Google Scholar/schema.org JSON-LD"""
+def get_citation_context(pub):
+    """Get Dublin Core metadata and the schema.org JSON-LD payload for a
+    published project's page <head>."""
 
-    scholar_meta = {}
-    scholar_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
-    scholar_meta["citation_keywords"] = pub.value.get("keywords", [])
-    scholar_meta["entities"] = [
+    citation_meta = {}
+    citation_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
+    citation_meta["entities"] = [
         {
             "title": pub.value.get("title"),
             "description": pub.value.get("description"),
@@ -76,12 +74,10 @@ def get_google_scholar_context(pub):
         }
     ]
 
-    # datacite_json_list = [get_datacite_json(pub_tree)]
-    schema_org_json_list = [get_schema_org_json(pub, pub.project_id)]
+    schema_org_json = get_schema_org_json(pub, pub.project_id)
 
     pub_title = pub.value["title"]
-    # return scholar_meta, datacite_json_list, pub_title
-    return scholar_meta, schema_org_json_list, pub_title
+    return citation_meta, schema_org_json, pub_title
 
 
 class IndexView(TemplateView):
@@ -97,10 +93,9 @@ class IndexView(TemplateView):
         if project_id:
             try:
                 pub = Publication.objects.get(project_id=project_id)
-                scholar_context, datacite_context, title = get_google_scholar_context(pub)
-                context["dc_context"] = [json.dumps(ctx) for ctx in datacite_context]
-                context["scholar_context"] = scholar_context
-                context["citation_title"] = f"{project_id} | {title}"
+                citation_context, schema_org_json, _ = get_citation_context(pub)
+                context["schema_org_json"] = json.dumps(schema_org_json)
+                context["citation_context"] = citation_context
                 context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
             except Publication.DoesNotExist:
                 pass
