@@ -118,7 +118,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-lib/
+server/**/lib/
 lib64/
 parts/
 sdist/
