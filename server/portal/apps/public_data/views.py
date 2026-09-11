@@ -30,26 +30,46 @@ REQUIRED_DATASET_FIELDS = ("name", "description")
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
 
 # The publication form's "license" field (settings_forms.py / dpmp.settings_forms.py) is a
-# fixed `select`, not free text, so its stored value is always one of these known labels.
-# schema.org/Croissant expect `license` to be a URL (or CreativeWork), not a bare label, so
-# map known labels to their canonical license-deed URL. Unrecognized values (e.g. from a
-# portal config not listed here) fall back to the raw stored string rather than being dropped.
+# fixed `select`, not free text, so its stored value should always be one of these known
+# labels. schema.org/Croissant expect `license` to be a URL (or CreativeWork), not a bare
+# label, so map known labels to their canonical license-deed URL. A label with no entry here
+# is treated as a misconfiguration by _get_license below -- see its docstring -- rather than
+# silently passed through as non-conformant bare text.
 LICENSE_URLS = {
     "ODC-BY 1.0": "https://opendatacommons.org/licenses/by/1-0/",
 }
 
 
-def _get_license(base_meta):
-    """Resolve the publication's stored license selection to its canonical license-deed URL
-    when known; otherwise pass the raw value through unchanged."""
-
-    license_value = base_meta.get("license")
-    return LICENSE_URLS.get(license_value, license_value)
-
-
 class SchemaOrgValidationError(Exception):
     """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
     get_schema_org_json claims to emit."""
+
+
+def _get_license(base_meta, project_id):
+    """Resolve the publication's stored license selection to its canonical license-deed URL.
+
+    schema.org/Croissant require `license` to be a URL (or CreativeWork), not a bare label.
+    A stored value that's already a URL is passed through as-is; otherwise it must have an
+    entry in LICENSE_URLS. Silently falling back to the raw label for an unmapped value would
+    ship a non-conformant `license` and regress silently every time a new option is added to
+    the form's `select` without a matching LICENSE_URLS entry -- so this raises instead, the
+    same way every other required-but-malformed field here does.
+    """
+
+    license_value = base_meta.get("license")
+    if not license_value:
+        return license_value
+    if license_value.startswith("http://") or license_value.startswith("https://"):
+        return license_value
+    resolved = LICENSE_URLS.get(license_value)
+    if resolved is None:
+        raise SchemaOrgValidationError(
+            f"Publication {project_id} has license {license_value!r}, which has no entry in "
+            "LICENSE_URLS (portal/apps/public_data/views.py) and isn't itself a URL. "
+            "schema.org/Croissant require `license` to be a URL, not free text -- add a "
+            f"canonical license-deed URL for {license_value!r} to LICENSE_URLS."
+        )
+    return resolved
 
 
 def _get_distribution(base_meta, project_id, request):
@@ -273,7 +293,7 @@ def get_schema_org_json(pub, project_id, request):
         "conformsTo": "http://mlcommons.org/croissant/1.0" if has_files else None,
         "description": base_meta.get("description"),
         "citeAs": _get_cite_as(base_meta, doi, project_id, request),
-        "license": _get_license(base_meta),
+        "license": _get_license(base_meta, project_id),
         "url": _get_landing_page_url(project_id, request),
         "identifier": f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request),
         "creator": creators,
