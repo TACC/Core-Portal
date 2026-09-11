@@ -371,6 +371,24 @@ def get_citation_context(pub, request):
     return citation_meta, schema_org_json, pub_title
 
 
+# Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
+# anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
+# "</script>" (or "<", ">", "&" more generally) that publication title/description text could
+# otherwise contain to break out of the <script type="application/ld+json"> tag it's embedded
+# in (index.html renders this value with the `|safe` filter, so nothing else escapes it).
+_JSON_LD_HTML_ESCAPES = {
+    ord("<"): "\\u003c",
+    ord(">"): "\\u003e",
+    ord("&"): "\\u0026",
+}
+
+
+def dumps_json_ld(schema_org_json):
+    """Serialize a JSON-LD payload for safe embedding in a `<script>` tag."""
+
+    return json.dumps(schema_org_json).translate(_JSON_LD_HTML_ESCAPES)
+
+
 class IndexView(TemplateView):
     """
     Main workbench view.
@@ -385,7 +403,7 @@ class IndexView(TemplateView):
             try:
                 pub = Publication.objects.get(project_id=project_id)
                 citation_context, schema_org_json, _ = get_citation_context(pub, self.request)
-                context["schema_org_json"] = json.dumps(schema_org_json)
+                context["schema_org_json"] = dumps_json_ld(schema_org_json)
                 context["citation_context"] = citation_context
                 context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
             except Publication.DoesNotExist:
