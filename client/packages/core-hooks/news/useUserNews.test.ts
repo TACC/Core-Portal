@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from 'utils/apiClient';
-import useUserNews, { fetchUserNewsUtil } from './useUserNews';
+import { apiClient } from '../apiClient';
+import  { useUserNews, fetchUserNewsUtil } from './useUserNews';
 
 vi.mock('@tanstack/react-query');
-vi.mock('utils/apiClient');
+vi.mock('../apiClient');
 
 describe('fetchUserNewsUtil', () => {
   afterEach(() => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import useUserNews from 'hooks/news/useUserNews';
+import { useUserNews } from '@tacc/core-hooks';
 import {
   LoadingSpinner,
   Pill,

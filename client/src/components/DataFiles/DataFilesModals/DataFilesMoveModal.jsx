@@ -78,10 +78,8 @@ const DataFilesMoveModal = React.memo(() => {
         format === 'folder' &&
         !(
           // Remove files from the listing if they have been selected.
-          (
-            selectedFiles.map((f) => f.system).includes(system) &&
-            selectedFiles.map((f) => f.path).includes(path)
-          )
+          selectedFiles.map((f) => f.system).includes(system) &&
+          selectedFiles.map((f) => f.path).includes(path)
         )
       );
     },
