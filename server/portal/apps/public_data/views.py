@@ -16,7 +16,27 @@ logger = logging.getLogger(__name__)
 # Properties Croissant (http://mlcommons.org/croissant/1.0) requires on a conformant Dataset.
 # If any of these end up missing/empty for a publication, that publication cannot honestly
 # claim `conformsTo` and get_schema_org_json raises rather than silently dropping the field.
+# `url`/`identifier` are also hard-required, but checked separately in get_schema_org_json --
+# see the comment there -- since their PORTAL_PUBLICATION_DATACITE_URL_PREFIX-driven fallback
+# means they're never actually empty/missing from the built dict the way these fields are.
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
+
+# The publication form's "license" field (settings_forms.py / dpmp.settings_forms.py) is a
+# fixed `select`, not free text, so its stored value is always one of these known labels.
+# schema.org/Croissant expect `license` to be a URL (or CreativeWork), not a bare label, so
+# map known labels to their canonical license-deed URL. Unrecognized values (e.g. from a
+# portal config not listed here) fall back to the raw stored string rather than being dropped.
+LICENSE_URLS = {
+    "ODC-BY 1.0": "https://opendatacommons.org/licenses/by/1-0/",
+}
+
+
+def _get_license(base_meta):
+    """Resolve the publication's stored license selection to its canonical license-deed URL
+    when known; otherwise pass the raw value through unchanged."""
+
+    license_value = base_meta.get("license")
+    return LICENSE_URLS.get(license_value, license_value)
 
 
 class SchemaOrgValidationError(Exception):
@@ -99,7 +119,23 @@ def _get_record_sets(base_meta):
     return record_sets
 
 
-def _get_cite_as(base_meta, doi, project_id):
+def _get_landing_page_url(project_id, request):
+    """Build the publication's landing-page URL, guaranteed absolute.
+
+    `PORTAL_PUBLICATION_DATACITE_URL_PREFIX` defaults to None when unset (settings.py) and is
+    "" in at least one deployment's settings file -- either would otherwise produce a broken
+    value here ("None/<project_id>" or a bare "/<project_id>") instead of the absolute URI
+    schema.org/Croissant require for `url`. `request.build_absolute_uri` leaves an
+    already-absolute configured prefix untouched, and only resolves a blank one against the
+    current request's scheme/host, so a misconfigured setting degrades to a valid (if not
+    fully meaningful) absolute URL instead of an outright invalid relative one.
+    """
+
+    url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
+    return request.build_absolute_uri(f"{url_prefix}/{project_id}")
+
+
+def _get_cite_as(base_meta, doi, project_id, request):
     """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier), from metadata already available on the publication so it can't go stale like a hand-written  placeholder would.
     """
 
@@ -113,9 +149,7 @@ def _get_cite_as(base_meta, doi, project_id):
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date") or ""
     year = publication_date[:4] if publication_date else ""
 
-    identifier = (
-        f"https://doi.org/{doi}" if doi else f"{settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX}/{project_id}"
-    )
+    identifier = f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request)
 
     parts = [
         author_names,
@@ -181,10 +215,10 @@ def get_schema_org_json(pub, project_id, request):
         # schema.org/Dataset, just not a Croissant one.
         "conformsTo": "http://mlcommons.org/croissant/1.0" if has_files else None,
         "description": base_meta.get("description"),
-        "citeAs": _get_cite_as(base_meta, doi, project_id),
-        "license": base_meta.get("license"),
-        "url": f"{settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX}/{project_id}",
-        "identifier": f"https://doi.org/{doi}" if doi else None,
+        "citeAs": _get_cite_as(base_meta, doi, project_id, request),
+        "license": _get_license(base_meta),
+        "url": _get_landing_page_url(project_id, request),
+        "identifier": f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request),
         "creator": creators,
         "publisher": {
             "@type": "Organization",
@@ -209,16 +243,40 @@ def get_schema_org_json(pub, project_id, request):
         field for field in REQUIRED_CROISSANT_FIELDS if field != "distribution"
     ]
     missing = [field for field in required_fields if field not in schema_org_json]
+
+    # `url` (and `identifier`, when there's no DOI to use instead) both fall back to
+    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX via _get_landing_page_url. That fallback goes
+    # through request.build_absolute_uri, which always yields *some* absolute-looking string
+    # even when the setting is unset/blank -- so an unconfigured prefix can't be caught by
+    # checking for an empty value in schema_org_json the way the other required fields are.
+    # Check the setting directly instead.
+    if not settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX:
+        missing.append("url")
+        if not doi:
+            missing.append("identifier")
+
     if missing:
         reason = (
             "it cannot honestly claim conformsTo http://mlcommons.org/croissant/1.0"
             if has_files
             else "its published Dataset metadata is incomplete"
         )
+        fix_hints = {
+            "distribution": "its file listing",
+            "url": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
+            "identifier": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
+        }
+        # dict.fromkeys dedupes while keeping order, so when `url` and `identifier` are
+        # missing for the same underlying reason (an unconfigured prefix), the hint only
+        # names that setting once instead of twice.
+        hints = ", ".join(dict.fromkeys(fix_hints[field] for field in missing if field in fix_hints))
+        where = f" (check {hints})" if hints else ""
+        if "identifier" in missing and not doi:
+            where += " or give the publication a DOI"
         raise SchemaOrgValidationError(
             f"Publication {project_id} is missing required schema.org Dataset field(s) "
-            f"{', '.join(missing)}; {reason}. Fix the publication's metadata (or its file "
-            "listing, for `distribution`) before this page's JSON-LD can be trusted."
+            f"{', '.join(missing)}; {reason}. Fix the publication's metadata{where} before "
+            "this page's JSON-LD can be trusted."
         )
 
     return schema_org_json
