@@ -30,6 +30,7 @@ export default defineConfig([
   {
     rules: {
       'react/jsx-key': 0,
+      'react/react-in-jsx-scope': 0,
       'jsx-a11y/anchor-is-valid': 0,
       'react-hooks/exhaustive-deps': 0,
       'react-hooks/rules-of-hooks': 0,
