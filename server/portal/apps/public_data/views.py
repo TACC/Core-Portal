@@ -50,6 +50,52 @@ def _get_distribution(base_meta, project_id, request):
     return distribution
 
 
+def _get_record_sets(base_meta):
+    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known
+    columns) from the publication's file_objs.
+
+    This only ever reads metadata already stored on `fileObjs` (the `columns` field, populated
+    at publish time for recognized tabular formats) -- it does no file I/O of its own, since
+    this runs on every page request. Files with no known columns are simply skipped, so a
+    publication with no extracted schemas yet degrades to no `recordSet` at all rather than a
+    broken one.
+    """
+
+    record_sets = []
+    for file_obj in base_meta.get("fileObjs", []):
+        columns = file_obj.get("columns")
+        path = (file_obj.get("path") or "").lstrip("/")
+        if not columns or not path:
+            continue
+
+        record_sets.append(
+            {
+                "@type": "cr:RecordSet",
+                "@id": f"{path}/records",
+                "name": file_obj.get("name"),
+                "field": [
+                    {
+                        "@type": "cr:Field",
+                        "@id": f"{path}/{column['name']}",
+                        "name": column["name"],
+                        "dataType": column.get("dataType", "sc:Text"),
+                        "source": {
+                            # Links back to the matching entry this same publication's
+                            # `distribution` emits in _get_distribution, whose "@id" is
+                            # also the file's stripped path.
+                            "fileObject": {"@id": path},
+                            "extract": {"column": column["name"]},
+                        },
+                    }
+                    for column in columns
+                    if column.get("name")
+                ],
+            }
+        )
+
+    return record_sets
+
+
 def _get_cite_as(base_meta, doi, project_id):
     """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's
     recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
@@ -130,6 +176,7 @@ def get_schema_org_json(pub, project_id, request):
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
         },
         "distribution": _get_distribution(base_meta, project_id, request),
+        "recordSet": _get_record_sets(base_meta),
     }
 
     # Drop empty/unset fields so the JSON-LD stays clean

@@ -32,6 +32,20 @@ class BaseFileMetadata(BaseMetadataModel):
     name: str | None = None
 
 
+class FileColumn(BaseMetadataModel):
+    """A single column/field discovered in a tabular file.
+
+    Populated at publish time (for recognized tabular formats) so that the
+    Croissant `recordSet` for a published project can be built from stored
+    metadata alone, with no file I/O at request time. `data_type` should be a
+    Croissant/schema.org type IRI, e.g. "sc:Text", "sc:Integer", "sc:Float",
+    "sc:Boolean", "sc:Date".
+    """
+
+    name: str
+    data_type: str = "sc:Text"
+
+
 class FileObj(BaseMetadataModel):
     """A file associated with a project graph entity."""
 
@@ -44,6 +58,7 @@ class FileObj(BaseMetadataModel):
     last_modified: str | None = None
     uuid: str | None = None
     value: dict | None = None
+    columns: list[FileColumn] | None = None
 
 
 class PartialTrashEntity(BaseMetadataModel):
