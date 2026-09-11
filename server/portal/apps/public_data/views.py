@@ -13,6 +13,16 @@ from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
 
+# Properties Croissant (http://mlcommons.org/croissant/1.0) requires on a conformant Dataset.
+# If any of these end up missing/empty for a publication, that publication cannot honestly
+# claim `conformsTo` and get_schema_org_json raises rather than silently dropping the field.
+REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
+
+
+class SchemaOrgValidationError(Exception):
+    """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
+    get_schema_org_json claims to emit."""
+
 
 def _get_distribution(base_meta, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file) from the publication's file_objs, pointing at the existing public, unauthenticated Tapis download route for the published project system.
@@ -51,14 +61,7 @@ def _get_distribution(base_meta, project_id, request):
 
 
 def _get_record_sets(base_meta):
-    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known
-    columns) from the publication's file_objs.
-
-    This only ever reads metadata already stored on `fileObjs` (the `columns` field, populated
-    at publish time for recognized tabular formats) -- it does no file I/O of its own, since
-    this runs on every page request. Files with no known columns are simply skipped, so a
-    publication with no extracted schemas yet degrades to no `recordSet` at all rather than a
-    broken one.
+    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known columns) from the publication's file_objs. This only ever reads metadata already stored on `fileObjs` (the `columns` field, populated at publish time for recognized tabular formats) -- it does no file I/O of its own, since this runs on every page request. Files with no known columns are simply skipped, so a publication with no extracted schemas yet degrades to no `recordSet` at all rather than a broken one.
     """
 
     record_sets = []
@@ -97,10 +100,7 @@ def _get_record_sets(base_meta):
 
 
 def _get_cite_as(base_meta, doi, project_id):
-    """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's
-    recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
-    from metadata already available on the publication so it can't go stale like a hand-written
-    placeholder would.
+    """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier), from metadata already available on the publication so it can't go stale like a hand-written  placeholder would.
     """
 
     authors = base_meta.get("authors", [])
@@ -180,12 +180,22 @@ def get_schema_org_json(pub, project_id, request):
     }
 
     # Drop empty/unset fields so the JSON-LD stays clean
-    return {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
+    schema_org_json = {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
+
+    missing = [field for field in REQUIRED_CROISSANT_FIELDS if field not in schema_org_json]
+    if missing:
+        raise SchemaOrgValidationError(
+            f"Publication {project_id} is missing required Croissant/schema.org Dataset "
+            f"field(s) {', '.join(missing)}; it cannot honestly claim conformsTo "
+            "http://mlcommons.org/croissant/1.0. Fix the publication's metadata (or its "
+            "file listing, for `distribution`) before this page's JSON-LD can be trusted."
+        )
+
+    return schema_org_json
 
 
 def get_citation_context(pub, request):
-    """Get Dublin Core metadata and the schema.org JSON-LD payload for a
-    published project's page <head>."""
+    """Get Dublin Core metadata and the schema.org JSON-LD payload for a published project's page <head>."""
 
     citation_meta = {}
     citation_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
@@ -247,14 +257,18 @@ class DataciteJsonPreviewView(View):
 
         pub_tree = nx.node_link_graph(pub.tree)
         datacite_json = get_datacite_json(pub_tree)
-        schema_org_json = get_schema_org_json(pub, project_id, request)
+
+        try:
+            schema_org_body = json.dumps(get_schema_org_json(pub, project_id, request), indent=2)
+        except SchemaOrgValidationError as e:
+            schema_org_body = f"INVALID: {e}"
 
         body = (
             "# DataCite payload (submitted to DataCite on publish)\n"
             # f"{json.dumps(datacite_json, indent=2)}\n"
             # "\n"
             "# schema.org/Dataset JSON-LD (for Google Dataset Search)\n"
-            f"{json.dumps(schema_org_json, indent=2)}\n"
+            f"{schema_org_body}\n"
         )
 
         return HttpResponse(body, content_type="text/plain")
