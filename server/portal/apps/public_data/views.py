@@ -501,7 +501,15 @@ class IndexView(TemplateView):
                 context["citation_context"] = citation_context
                 context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
             except Publication.DoesNotExist:
-                pass
+                # Unlike the catch-all fallback route (public_data/urls.py's `index_fallback`,
+                # which never captures a project_id and legitimately needs to keep rendering
+                # this same shell for the SPA's other in-app views), landing here means the URL
+                # matched the specific `{published_prefix}.{project_id}` pattern and named a
+                # project_id that doesn't exist. That's a real not-found, not a client-side
+                # route Django doesn't otherwise know about -- serving it as a 200 (as this used
+                # to) is exactly the soft-404 pattern Google's own guidance asks sites to avoid
+                # in favor of a genuine 404 status.
+                raise Http404(f"No publication found for project {project_id}")
             except Exception as e:
                 logger.exception(f"Failed to build meta tags for project {project_id}: {e}")
         context["setup_complete"] = (
