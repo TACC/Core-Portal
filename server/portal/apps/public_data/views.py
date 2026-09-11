@@ -72,6 +72,36 @@ def _get_license(base_meta, project_id):
     return resolved
 
 
+# Matches the standard ORCID iD checksum format -- 16 digits in four hyphenated groups, the
+# last character optionally "X" -- e.g. the canonical example "0000-0002-1825-0097".
+_ORCID_ID_RE = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
+
+
+def _get_orcid_same_as(author):
+    """Resolve an author's ORCID iD (however it's stored on the author dict) to its canonical
+    https://orcid.org/ profile URL, for that creator's `sameAs` -- or None if the author has no
+    (validly formed) ORCID.
+
+    No author record actually carries an ORCID anywhere in this codebase today -- the
+    author-entry form (DataFilesPublicationAuthorsModal.jsx) only collects first_name/
+    last_name/email, and neither the backend author schema (base_metadata.py) nor the DataCite
+    export (datacite_operations.py) has an ORCID field either. So this is forward-compatible:
+    a no-op until an `orcid` key shows up on an author dict, at which point `sameAs` starts
+    getting populated with no other change needed here. Unlike `license` (a REQUIRED_CROISSANT_
+    FIELDS entry), a malformed ORCID isn't worth failing the whole page's JSON-LD over -- it's
+    just dropped, the same way _format_citation_date degrades rather than raises.
+    """
+
+    orcid = (author.get("orcid") or "").strip()
+    if not orcid:
+        return None
+    if orcid.startswith("http://") or orcid.startswith("https://"):
+        return orcid
+    if _ORCID_ID_RE.fullmatch(orcid):
+        return f"https://orcid.org/{orcid}"
+    return None
+
+
 def _get_distribution(base_meta, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file) from the publication's file_objs, pointing at the existing public, unauthenticated Tapis download route for the published project system.
     """
@@ -256,6 +286,9 @@ def get_schema_org_json(pub, project_id, request):
         creator = {"@type": "Person", "name": name}
         if base_meta.get("institution"):
             creator["affiliation"] = {"@type": "Organization", "name": base_meta["institution"]}
+        same_as = _get_orcid_same_as(author)
+        if same_as:
+            creator["sameAs"] = same_as
         creators.append(creator)
 
     schema_org_json = {
