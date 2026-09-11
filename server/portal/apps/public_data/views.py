@@ -39,10 +39,20 @@ LICENSE_URLS = {
     "ODC-BY 1.0": "https://opendatacommons.org/licenses/by/1-0/",
 }
 
+# Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
+# anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
+# "</script>" (or "<", ">", "&" more generally) that publication title/description text could
+# otherwise contain to break out of the <script type="application/ld+json"> tag it's embedded
+# in (index.html renders this value with the `|safe` filter, so nothing else escapes it).
+_JSON_LD_HTML_ESCAPES = {
+    ord("<"): "\\u003c",
+    ord(">"): "\\u003e",
+    ord("&"): "\\u0026",
+}
 
-class SchemaOrgValidationError(Exception):
-    """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
-    get_schema_org_json claims to emit."""
+# Matches the standard ORCID iD checksum format -- 16 digits in four hyphenated groups, the
+# last character optionally "X" -- e.g. the canonical example "0000-0002-1825-0097".
+_ORCID_ID_RE = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
 
 
 def _get_license(base_meta, project_id):
@@ -70,11 +80,6 @@ def _get_license(base_meta, project_id):
             f"canonical license-deed URL for {license_value!r} to LICENSE_URLS."
         )
     return resolved
-
-
-# Matches the standard ORCID iD checksum format -- 16 digits in four hyphenated groups, the
-# last character optionally "X" -- e.g. the canonical example "0000-0002-1825-0097".
-_ORCID_ID_RE = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
 
 
 def _get_orcid_same_as(author):
@@ -453,22 +458,15 @@ def get_citation_context(pub, request):
     return citation_meta, schema_org_json, pub_title
 
 
-# Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
-# anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
-# "</script>" (or "<", ">", "&" more generally) that publication title/description text could
-# otherwise contain to break out of the <script type="application/ld+json"> tag it's embedded
-# in (index.html renders this value with the `|safe` filter, so nothing else escapes it).
-_JSON_LD_HTML_ESCAPES = {
-    ord("<"): "\\u003c",
-    ord(">"): "\\u003e",
-    ord("&"): "\\u0026",
-}
-
-
 def dumps_json_ld(schema_org_json):
     """Serialize a JSON-LD payload for safe embedding in a `<script>` tag."""
 
     return json.dumps(schema_org_json).translate(_JSON_LD_HTML_ESCAPES)
+
+
+class SchemaOrgValidationError(Exception):
+    """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
+    get_schema_org_json claims to emit."""
 
 
 class IndexView(TemplateView):
