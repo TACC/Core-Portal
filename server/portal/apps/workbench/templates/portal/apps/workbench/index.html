@@ -29,7 +29,13 @@
       {% endif %}
   {% endif %}
 {% endblock %}
-{% block title %} Workbench {% endblock %}
+{% block title %}
+  {% if citation_context.entities.0.title %}
+    {{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}
+  {% else %}
+    {{ settings.PORTAL_NAMESPACE }} Workbench
+  {% endif %}
+{% endblock %}
 {% block meta_description %}
   {% if citation_context.entities.0.description %}
     {{ citation_context.entities.0.description|truncatechars:160 }}
