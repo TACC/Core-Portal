@@ -2,7 +2,7 @@ import json
 import logging
 import mimetypes
 import re
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 import networkx as nx
 from django.conf import settings
@@ -108,11 +108,39 @@ def _get_orcid_same_as(author):
     return None
 
 
+def _get_configured_origin(request):
+    """Return the "scheme://host" that file/distribution URLs should be built against, so they
+    can never end up on a different domain than the one `_get_landing_page_url` resolves `url`/
+    `identifier`/`citeAs` against.
+
+    PORTAL_PUBLICATION_DATACITE_URL_PREFIX, when configured as an absolute URL, can legitimately
+    point at a different host than the one that served this request -- e.g. one deployment's
+    settings file sets it to "https://cep.test/data/tapis/projects/...", a host distinct from
+    wherever Django itself is actually reached. Building distribution/contentUrl (and therefore
+    citation_pdf_url) from request.build_absolute_uri instead -- the current request's own host
+    -- would silently put the dataset's `url` and its file/PDF download links on two different
+    domains: inconsistent for Croissant, and it breaks Google Scholar's requirement that
+    citation_pdf_url live in the same subdirectory as the citing HTML page. Falls back to the
+    current request's own scheme+host (the pre-existing behavior) when the prefix is unset or
+    isn't itself an absolute URL, matching _get_landing_page_url's own fallback for the same
+    setting.
+    """
+
+    url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
+    parsed = urlsplit(url_prefix)
+    if parsed.scheme and parsed.netloc:
+        return f"{parsed.scheme}://{parsed.netloc}"
+    return request.build_absolute_uri("/").rstrip("/")
+
+
 def _get_distribution(base_meta, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file) from the publication's file_objs, pointing at the existing public, unauthenticated Tapis download route for the published project system.
     """
 
     published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
+    # Resolved once and reused for every file below -- see _get_configured_origin's docstring
+    # for why this can't just be request.build_absolute_uri.
+    origin = _get_configured_origin(request)
 
     distribution = []
     for file_obj in base_meta.get("fileObjs", []):
@@ -123,8 +151,8 @@ def _get_distribution(base_meta, project_id, request):
         if not name or not path:
             continue
 
-        content_url = request.build_absolute_uri(
-            f"/api/datafiles/tapis/download/projects/{published_system_id}/{quote(path)}/"
+        content_url = (
+            f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{quote(path)}/"
         )
         file_object = {
             "@type": "cr:FileObject",
