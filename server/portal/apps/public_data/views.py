@@ -439,6 +439,13 @@ def get_schema_org_json(pub, project_id, request):
         "isAccessibleForFree": True,
         "url": _get_landing_page_url(project_id, request),
         "identifier": f"https://doi.org/{doi}" if doi else _get_landing_page_url(project_id, request),
+        # Recommended by both schema.org/Croissant -- a canonical URL for this exact dataset's
+        # identity, distinct from `url` (the landing *page*, which could theoretically move).
+        # Only worth stating when there's a real DOI to point at: with no DOI, `identifier`
+        # already falls back to this same landing-page `url` above, and sameAs===url would be a
+        # vacuous "same as itself" claim rather than a second, independent identity URL. Dropped
+        # by the empty-field cleanup below when doi is falsy, like `keywords`/`citation`.
+        "sameAs": f"https://doi.org/{doi}" if doi else None,
         "creator": creators,
         "publisher": {
             "@type": "Organization",
