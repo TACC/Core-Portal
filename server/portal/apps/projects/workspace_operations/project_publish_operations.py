@@ -224,7 +224,7 @@ def publish_project(self, project_id: str, version: int | None = 1):
             existing_doi = source_project.value.get("doi", None)
             logger.info(f"Attempting to mint DataCite DOI for project {project_id}, existing DOI: {existing_doi}")
 
-            datacite_json = get_datacite_json(publication_tree)
+            datacite_json = get_datacite_json(publication_tree, project_id)
             datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
             doi = datacite_resp["data"]["id"]
             logger.info(f"Successfully minted DataCite DOI for project {project_id}: {doi}")

@@ -760,7 +760,7 @@ class DataciteJsonPreviewView(View):
             raise Http404(f"No publication found for project {project_id}")
 
         pub_tree = nx.node_link_graph(pub.tree)
-        datacite_json = get_datacite_json(pub_tree)
+        datacite_json = get_datacite_json(pub_tree, project_id)
 
         try:
             schema_org_body = json.dumps(get_schema_org_json(pub, project_id, request), indent=2)
