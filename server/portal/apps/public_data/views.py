@@ -7,6 +7,7 @@ from urllib.parse import quote
 import networkx as nx
 from django.conf import settings
 from django.http import HttpResponse, Http404
+from django.utils.html import escape
 from django.views.generic.base import TemplateView, View
 
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
@@ -561,3 +562,43 @@ class DataciteJsonPreviewView(View):
         )
 
         return HttpResponse(body, content_type="text/plain")
+
+
+class SitemapView(View):
+    """XML sitemap (https://www.sitemaps.org/protocol.html) enumerating every published
+    dataset's landing-page URL, so crawlers -- and Google Dataset Search's own onboarding
+    guidance specifically recommends this for a dataset repository -- can discover publications
+    that aren't otherwise linked from a crawlable page (the workbench UI that lists them is a
+    client-rendered, authenticated-by-default SPA view).
+
+    Deliberately hand-rolled rather than django.contrib.sitemaps.Sitemap: that framework always
+    builds each <loc> as f"{protocol}://{domain}{location()}" against django.contrib.sites'
+    configured Site (not installed here -- see INSTALLED_APPS), which in any case only knows a
+    single domain -- whereas a publication's real landing-page URL is already resolved
+    per-deployment by _get_landing_page_url (via PORTAL_PUBLICATION_DATACITE_URL_PREFIX), which
+    some deployments point at a different host entirely. Reusing that same helper keeps every
+    <loc> here byte-identical to the `url`/canonical link the corresponding page already claims
+    for itself, instead of adding a second, independently-drifting way to build the same URL.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Mirrors the is_published filter publications/views.py already uses for its own
+        # (authenticated) publications listing.
+        publications = Publication.objects.filter(is_published=True).order_by("project_id")
+
+        entries = []
+        for pub in publications:
+            loc = escape(_get_landing_page_url(pub.project_id, request))
+            lastmod = (pub.last_updated or pub.created).date().isoformat()
+            entries.append(f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>")
+
+        # Sitemap protocol caps a single file at 50,000 URLs; this repository has nowhere near
+        # that many publications today, so a <sitemapindex> of multiple files isn't implemented.
+        body = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + "\n".join(entries)
+            + ("\n" if entries else "")
+            + "</urlset>\n"
+        )
+        return HttpResponse(body, content_type="application/xml")

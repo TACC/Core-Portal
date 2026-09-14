@@ -27,6 +27,7 @@ from django.views.generic.base import TemplateView
 from impersonate import views as impersonate_views
 
 from portal.apps.auth.views import tapis_oauth as login
+from portal.apps.public_data.views import SitemapView
 from portal.views.views import health_check, serve_docs
 from portal.views.views import project_version as portal_version
 
@@ -109,6 +110,9 @@ urlpatterns = [
         "accounts/applications/googledrive/",
         include("portal.apps.googledrive_integration.urls", namespace="googledrive_integration"),
     ),
+    # sitemap (published datasets), at the conventional root path crawlers/Search Console check
+    # by default -- not nested under public-data/'s own catch-all SPA route.
+    path("sitemap.xml", SitemapView.as_view(), name="sitemap"),
     # version check.
     path("version/", portal_version),
     # health check
