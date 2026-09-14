@@ -7,9 +7,11 @@ from urllib.parse import quote, urlsplit
 import networkx as nx
 from django.conf import settings
 from django.http import HttpResponse, Http404
+from django.urls import reverse
 from django.utils.html import escape
 from django.views.generic.base import TemplateView, View
 
+from portal.apps.datafiles.views import TapisFilesView
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.publications.models import Publication
 
@@ -116,14 +118,19 @@ def _get_configured_origin(request):
     PORTAL_PUBLICATION_DATACITE_URL_PREFIX, when configured as an absolute URL, can legitimately
     point at a different host than the one that served this request -- e.g. one deployment's
     settings file sets it to "https://cep.test/data/tapis/projects/...", a host distinct from
-    wherever Django itself is actually reached. Building distribution/contentUrl (and therefore
-    citation_pdf_url) from request.build_absolute_uri instead -- the current request's own host
-    -- would silently put the dataset's `url` and its file/PDF download links on two different
-    domains: inconsistent for Croissant, and it breaks Google Scholar's requirement that
-    citation_pdf_url live in the same subdirectory as the citing HTML page. Falls back to the
-    current request's own scheme+host (the pre-existing behavior) when the prefix is unset or
-    isn't itself an absolute URL, matching _get_landing_page_url's own fallback for the same
-    setting.
+    wherever Django itself is actually reached. Building distribution/contentUrl from
+    request.build_absolute_uri instead -- the current request's own host -- would silently put
+    the dataset's `url` and its file download links on two different domains, which is
+    inconsistent for Croissant. Falls back to the current request's own scheme+host (the
+    pre-existing behavior) when the prefix is unset or isn't itself an absolute URL, matching
+    `_get_landing_page_url`'s own fallback for the same setting.
+
+    This only guarantees the two land on the same *host* -- it says nothing about path, so it
+    doesn't by itself satisfy Google Scholar's stricter requirement that citation_pdf_url live in
+    the same subdirectory as the citing landing page (distribution/contentUrl's `/api/datafiles/
+    tapis/download/...` path tree is unrelated to wherever the landing page itself is served).
+    That's handled separately, by routing citation_pdf_url through `_get_publication_file_url`
+    instead -- see its docstring.
     """
 
     url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
@@ -272,17 +279,41 @@ def _get_record_sets(base_meta):
 def _get_landing_page_url(project_id, request):
     """Build the publication's landing-page URL, guaranteed absolute.
 
-    `PORTAL_PUBLICATION_DATACITE_URL_PREFIX` defaults to None when unset (settings.py) and is
-    "" in at least one deployment's settings file -- either would otherwise produce a broken
-    value here ("None/<project_id>" or a bare "/<project_id>") instead of the absolute URI
-    schema.org/Croissant require for `url`. `request.build_absolute_uri` leaves an
-    already-absolute configured prefix untouched, and only resolves a blank one against the
-    current request's scheme/host, so a misconfigured setting degrades to a valid (if not
-    fully meaningful) absolute URL instead of an outright invalid relative one.
+    The path always comes from reversing public_data/urls.py's own `index` pattern (in the
+    "publications" namespace, i.e. the `published-datasets/` mount) -- the one Django route that
+    actually renders this page's JSON-LD/citation meta tags, via IndexView -- rather than hand-
+    concatenating PORTAL_PUBLICATION_DATACITE_URL_PREFIX and project_id the way this used to.
+    That concatenation could (and for at least one deployment, did) produce a URL nothing
+    actually serves: PORTAL_PUBLICATION_DATACITE_URL_PREFIX defaults to None (settings.py) and is
+    "" in some deployments' settings, and is set to an unrelated path in at least one other --
+    none of which line up with where public_data/urls.py's `index` pattern actually matches.
+    reverse() can't drift from that route the way a hand-built string could.
+
+    Only the origin is still deployment-configurable, via the same PORTAL_PUBLICATION_
+    DATACITE_URL_PREFIX-driven host _get_configured_origin already resolves for file/distribution
+    URLs -- see its docstring for why a deployment can be reachable at a different public host
+    than the one serving this request.
     """
 
-    url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
-    return request.build_absolute_uri(f"{url_prefix}/{project_id}")
+    path = reverse("publications:index", kwargs={"project_id": project_id})
+    return f"{_get_configured_origin(request)}{path}"
+
+
+def _get_publication_file_url(project_id, path, request):
+    """Build the same-subdirectory-as-the-landing-page URL for one published file, via public_
+    data/urls.py's `file_download` pattern -- nested directly under the same path `_get_landing_
+    page_url` resolves `index` against, so a file served from here can never end up outside the
+    landing page's own subdirectory the way the datafiles app's generic `/api/datafiles/tapis/
+    download/...` route (used for Croissant's `distribution`/`contentUrl`, which carries no such
+    requirement) can. See PublicationFileDownloadView's docstring for why that distinction
+    matters -- this is only meant for citation_pdf_url.
+
+    `path` must be the file's raw (not percent-encoded) path: reverse() percent-encodes its own
+    kwargs, so passing an already-quote()'d path here would double-encode it.
+    """
+
+    url_path = reverse("publications:file_download", kwargs={"project_id": project_id, "path": path})
+    return f"{_get_configured_origin(request)}{url_path}"
 
 
 def _get_cite_as(base_meta, doi, project_id, request):
@@ -384,17 +415,51 @@ def _format_citation_date(date_value):
     return date_value
 
 
-def _get_citation_pdf_url(distribution):
-    """Pick the first PDF out of an already-built Croissant `distribution` list, for Google
-    Scholar's citation_pdf_url. Scholar only indexes a citation_pdf_url that's a direct,
-    unauthenticated link straight to a PDF -- exactly what `distribution`'s Tapis download URLs
-    already are -- so this filters the existing list instead of rebuilding one.
+def _get_citation_pdf_url(base_meta, project_id, request):
+    """Pick the first PDF out of the publication's fileObjs, for Google Scholar's
+    citation_pdf_url.
+
+    Deliberately doesn't reuse `distribution`'s own `contentUrl` the way this used to -- Scholar
+    (unlike Croissant, which has no such rule) requires citation_pdf_url to resolve in the same
+    subdirectory as the citing landing page, which `distribution`'s generic `/api/datafiles/
+    tapis/download/...` download links don't guarantee (see _get_configured_origin's docstring).
+    _get_publication_file_url's `file_download` route does, so this re-walks fileObjs (the same
+    way _get_distribution does) to build that URL instead. `distribution`/`contentUrl` is left
+    alone since Croissant doesn't need this.
     """
 
-    for file_object in distribution or []:
-        if file_object.get("encodingFormat") == "application/pdf":
-            return file_object.get("contentUrl")
+    for file_obj in base_meta.get("fileObjs", []):
+        if file_obj.get("type") != "file":
+            continue
+        name = file_obj.get("name")
+        path = (file_obj.get("path") or "").lstrip("/")
+        if not name or not path:
+            continue
+        encoding_format, _ = mimetypes.guess_type(name)
+        if encoding_format == "application/pdf":
+            return _get_publication_file_url(project_id, path, request)
     return None
+
+
+class PublicationFileDownloadView(View):
+    """Serve one published file at a URL nested under its publication's own landing-page path
+    (public_data/urls.py's `file_download` pattern), rather than the datafiles app's generic
+    `/api/datafiles/tapis/download/...` route -- so citation_pdf_url (built against this view via
+    _get_publication_file_url) can satisfy Google Scholar's requirement that citation_pdf_url
+    resolve in the same subdirectory as the citing landing page (see _get_configured_origin's
+    docstring), which the generic download route can't since it lives under a wholly separate
+    path tree from wherever a given deployment's landing page is served.
+
+    Just translates project_id into the published system id TapisFilesView expects and delegates
+    straight to it -- TapisFilesView already streams unauthenticated files off `public`-prefixed
+    Tapis systems (datafiles/views.py's PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX check), which is
+    exactly what a published project's system is, so there's no auth/streaming logic to
+    duplicate here.
+    """
+
+    def get(self, request, project_id, path):
+        system = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
+        return TapisFilesView.as_view()(request, operation="download", scheme="projects", system=system, path=path)
 
 
 def get_schema_org_json(pub, project_id, request):
@@ -511,16 +576,14 @@ def get_schema_org_json(pub, project_id, request):
     )
     missing = [field for field in required_fields if field not in schema_org_json]
 
-    # `url` (and `identifier`, when there's no DOI to use instead) both fall back to
-    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX via _get_landing_page_url. That fallback goes
-    # through request.build_absolute_uri, which always yields *some* absolute-looking string
-    # even when the setting is unset/blank -- so an unconfigured prefix can't be caught by
-    # checking for an empty value in schema_org_json the way the other required fields are.
-    # Check the setting directly instead.
-    if not settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX:
-        missing.append("url")
-        if not doi:
-            missing.append("identifier")
+    # `url` (and `identifier`, when there's no DOI to use instead) used to fall back to
+    # PORTAL_PUBLICATION_DATACITE_URL_PREFIX directly, which could silently degrade to a
+    # technically-absolute-but-meaningless URL when that setting was unset/blank -- not
+    # something the empty-value check above would catch. _get_landing_page_url now always
+    # reverses public_data/urls.py's own `index` route instead (see its docstring), which can't
+    # produce that kind of meaningless value: it's either a real, working landing-page URL, or
+    # reverse() raises NoReverseMatch outright. So there's nothing left for this function to
+    # separately guard against here.
 
     if missing:
         # Only blame the Croissant claim specifically when a Croissant-only field is what's
@@ -607,7 +670,7 @@ def get_citation_context(pub, request):
             ],
             "publication_date": publication_date,
             "citation_date": _format_citation_date(publication_date),
-            "pdf_url": _get_citation_pdf_url(schema_org_json.get("distribution", [])),
+            "pdf_url": _get_citation_pdf_url(base_meta, pub.project_id, request),
             "abstract_url": schema_org_json.get("url"),
         }
     ]
