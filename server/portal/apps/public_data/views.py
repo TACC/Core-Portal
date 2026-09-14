@@ -178,6 +178,30 @@ def _get_distribution(base_meta, project_id, request):
     return distribution
 
 
+def _get_cover_image_url(base_meta, request):
+    """Build an absolute download URL for the publication's cover image, for og:image/
+    twitter:image (link-unfurl preview cards in Slack/Discord/LinkedIn/X/iMessage).
+
+    Deliberately doesn't reuse _get_distribution's published_system_id (the per-project
+    `{PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}` system): the cover image isn't
+    transferred there. project_publish_operations.py's _transfer_cover_image copies it onto
+    PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME instead -- a single shared root system, at the
+    same relative path stored in `coverImage` -- so the download URL has to point there. Same
+    public, unauthenticated Tapis download route otherwise (datafiles/urls.py's
+    tapis/<operation>/<scheme>/<system>/<path> takes any system id, not just per-project
+    ones), and the same _get_configured_origin used for every other file URL in this module,
+    so this can't end up on a different host than `url`/`distribution` either.
+    """
+
+    cover_image_path = (base_meta.get("coverImage") or "").lstrip("/")
+    root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+    if not cover_image_path or not root_system:
+        return None
+
+    origin = _get_configured_origin(request)
+    return f"{origin}/api/datafiles/tapis/download/projects/{root_system}/{quote(cover_image_path)}/"
+
+
 def _get_record_sets(base_meta):
     """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known columns) from the publication's file_objs. This only ever reads metadata already stored on `fileObjs` (the `columns` field, populated at publish time for recognized tabular formats) -- it does no file I/O of its own, since this runs on every page request. Files with no known columns are simply skipped, so a publication with no extracted schemas yet degrades to no `recordSet` at all rather than a broken one.
     """
@@ -512,6 +536,9 @@ def get_citation_context(pub, request):
 
     citation_meta = {}
     citation_meta["keywords"] = ", ".join(base_meta.get("keywords", []))
+    # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
+    # single tags in <head>, not part of the citation_* block.
+    citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, request)
     citation_meta["entities"] = [
         {
             "title": base_meta.get("title"),

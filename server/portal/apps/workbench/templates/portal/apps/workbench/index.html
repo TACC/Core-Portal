@@ -62,6 +62,15 @@
     {{ block.super }}
   {% endif %}
 {% endblock %}
+{% block og_image %}
+  {% if citation_context.cover_image_url %}
+    <meta property="og:image" content="{{ citation_context.cover_image_url }}">
+    <meta name="twitter:image" content="{{ citation_context.cover_image_url }}">
+  {% endif %}
+{% endblock %}
+{% block twitter_card %}
+  {% if citation_context.cover_image_url %}summary_large_image{% else %}{{ block.super }}{% endif %}
+{% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}

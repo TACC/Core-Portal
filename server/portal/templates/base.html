@@ -23,12 +23,15 @@
          links (header/footer nav, docs, etc). -->
     <meta name="robots" content="{% block robots %}noindex, follow{% endblock %}">
     <!-- Open Graph / Twitter Card, so links shared externally (Slack, Discord, LinkedIn, X/
-         Twitter, iMessage) get a title+description preview card. No og:image/twitter:image
-         yet -- there's no dataset-appropriate image asset to point them at (see PORTAL_ICON_
-         FILENAME below: a .ico favicon per deployment, which most unfurlers won't render as a
-         card image). Twitter's own Card parser falls back to og:title/og:description when
-         twitter:title/twitter:description are absent, and no other unfurler reads twitter:*
-         tags at all, so twitter:card is the only Twitter-specific tag needed here. -->
+         Twitter, iMessage) get a title+description(+image) preview card. og:image/twitter:image
+         are emitted per-page (og_image block below, publication route only) from that
+         publication's own coverImage, since there's no portal-wide image worth using as a
+         fallback here (see PORTAL_ICON_FILENAME below: a .ico favicon per deployment, which
+         most unfurlers won't render as a card image) -- the generic app-shell route this
+         template otherwise renders just omits the tags. Twitter's own Card parser falls back to
+         og:title/og:description/og:image when the twitter:* equivalents are absent, and no
+         other unfurler reads twitter:* tags at all, so twitter:image/twitter:card are the only
+         Twitter-specific tags needed here. -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ settings.PORTAL_NAMESPACE }}">
     <!-- `canonical_url` (set by public_data's IndexView, publication route only) is the same
@@ -40,7 +43,11 @@
     <meta property="og:url" content="{{ canonical_url|default:request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
-    <meta name="twitter:card" content="summary">
+    {% block og_image %}{% endblock %}
+    <!-- "summary_large_image" only makes sense once there's an actual image (og_image block
+         above) to render large -- otherwise it's the same plain title+description card as
+         "summary", just requesting a layout the unfurler has nothing to fill. -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary{% endblock %}">
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}
