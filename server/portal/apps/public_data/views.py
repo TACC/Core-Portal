@@ -259,6 +259,49 @@ def _get_cite_as(base_meta, doi, project_id, request):
     return ". ".join(part for part in parts if part)
 
 
+def _get_citations(base_meta):
+    """Build the schema.org `citation` list -- CreativeWork entries for academic articles the
+    data provider recommends citing in addition to the dataset itself
+    (https://developers.google.com/search/docs/appearance/structured-data/dataset) -- from the
+    publication's `relatedPublications` entries. This is a distinct property from Croissant's
+    own `citeAs` (built by _get_cite_as above): `citeAs` says how to cite *this* dataset,
+    `citation` recommends *other* works to cite alongside it.
+
+    Only "context" and "linked_dataset" entries are used: those describe a publication this
+    dataset was produced in the context of (DataCite's IsDocumentedBy/IsPartOf relation --
+    see get_related_identifiers in datacite_operations.py) -- i.e. something worth citing
+    alongside the dataset. "cited_by" entries run the other direction (other work that cites
+    *this* dataset) and so aren't a citation recommendation to make about this dataset's own
+    page.
+    """
+
+    citations = []
+    for r_data in base_meta.get("relatedPublications", []):
+        if r_data.get("publicationType") not in ("context", "linked_dataset"):
+            continue
+        title = r_data.get("publicationTitle")
+        if not title:
+            continue
+
+        doi = r_data.get("publicationDoi")
+        citation = {
+            "@type": "CreativeWork",
+            "name": title,
+            "author": r_data.get("publicationAuthor"),
+            "datePublished": r_data.get("publicationDateOfPublication"),
+            "url": r_data.get("publicationLink"),
+            # Prefer the DOI (a stabler, more citable identifier than a plain link) when one's
+            # given -- same "https://doi.org/<doi>" form used for the dataset's own `identifier`
+            # elsewhere in this module.
+            "identifier": f"https://doi.org/{doi}" if doi else None,
+        }
+        if r_data.get("publicationPublisher"):
+            citation["publisher"] = {"@type": "Organization", "name": r_data["publicationPublisher"]}
+        citations.append({k: v for k, v in citation.items() if v not in (None, "")})
+
+    return citations
+
+
 def _format_citation_author(author):
     """Format one author as "Last, First" -- the order Google Scholar's indexing guide asks
     citation_author tags to use (https://scholar.google.com/intl/en/scholar/inclusion.html#indexing).
@@ -360,6 +403,10 @@ def get_schema_org_json(pub, project_id, request):
         "conformsTo": "http://mlcommons.org/croissant/1.0" if has_files else None,
         "description": base_meta.get("description"),
         "citeAs": _get_cite_as(base_meta, doi, project_id, request),
+        # Distinct from `citeAs` above -- see _get_citations' docstring. Optional/recommended
+        # per Google's own Dataset structured-data guidance, not Croissant-required, so an empty
+        # list here is fine and gets dropped by the empty-field cleanup below like `keywords`.
+        "citation": _get_citations(base_meta),
         "license": _get_license(base_meta, project_id),
         # Every publication this view serves is published to the public, unauthenticated Tapis
         # download route built in _get_distribution -- there's no embargo/access-tier concept in
