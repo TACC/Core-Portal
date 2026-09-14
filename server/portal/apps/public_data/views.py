@@ -546,6 +546,11 @@ def get_schema_org_json(pub, project_id, request):
         },
         "keywords": base_meta.get("keywords"),
         "datePublished": base_meta.get("publicationDate") or base_meta.get("publication_date"),
+        # Publication.last_updated (auto_now=True) already backs the sitemap's <lastmod> for
+        # this same publication -- reusing it here rather than sourcing from base_meta means
+        # `dateModified` tracks every republish (project_publish_operations.py's update_or_create)
+        # automatically, with no separate metadata field to keep in sync.
+        "dateModified": pub.last_updated.isoformat() if pub.last_updated else None,
         # Sourced from Publication.version (project_publish_operations.py bumps this on every
         # republish), not from the URL's own `vN` suffix (see public_data/urls.py's `revision`
         # group) -- Publication is keyed by bare project_id and update_or_create'd in place on
@@ -652,6 +657,10 @@ def get_citation_context(pub, request):
             # the same DOI-URL-or-landing-page value already resolved for the JSON-LD
             # `identifier` field above instead of recomputing (and risking drift from) it here.
             "identifier": schema_org_json.get("identifier"),
+            # DC.rights wants a URI too -- reuse the same canonical license-deed URL already
+            # resolved (via _get_license) for the JSON-LD `license` field above, rather than
+            # re-resolving (and risking drift from) it here.
+            "license": schema_org_json.get("license"),
             # One "First Last" string per author -- the template emits one <meta
             # name="DC.creator"> tag per entry, per Dublin Core's (unqualified/simple) creator
             # convention, the same way it already does for citation_author below.

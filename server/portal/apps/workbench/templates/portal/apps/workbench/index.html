@@ -9,6 +9,7 @@
           <meta name="DC.title" content="{{entity.title}}">
           <meta name="DC.date" content="{{entity.publication_date}}">
           <meta name="DC.language" content="en">
+          {% if entity.license %}<meta name="DC.rights" content="{{ entity.license }}">{% endif %}
           {% for creator in entity.dc_creators %}
           <meta name="DC.creator" content="{{ creator }}">
           {% endfor %}
@@ -32,7 +33,10 @@
   {% endif %}
 {% endblock %}
 {% block robots %}
-  {% if citation_context %}index, follow{% else %}{{ block.super }}{% endif %}
+  {# max-image-preview:large lets Search show this page's cover image (og:image below) at full
+     preview size in results instead of the small default thumbnail Google otherwise caps
+     unannotated pages to -- harmless to request even for a publication with no cover image. #}
+  {% if citation_context %}index, follow, max-image-preview:large{% else %}{{ block.super }}{% endif %}
 {% endblock %}
 {% block title %}
   {% if citation_context.entities.0.title %}
