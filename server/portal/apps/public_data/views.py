@@ -151,12 +151,19 @@ def _get_distribution(base_meta, project_id, request):
         if not name or not path:
             continue
 
+        # Percent-encoded once and reused for both `@id` and `contentUrl` below. `@id` is a
+        # JSON-LD identifier that (per the Croissant spec's own examples) doubles as an IRI
+        # reference resolved against this document's own URL -- leaving it as the raw path
+        # while `contentUrl` already percent-encodes the same path would let the two diverge,
+        # and would make `@id` an invalid IRI for any path containing characters (spaces, etc.)
+        # that aren't legal unescaped in one.
+        encoded_path = quote(path)
         content_url = (
-            f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{quote(path)}/"
+            f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{encoded_path}/"
         )
         file_object = {
             "@type": "cr:FileObject",
-            "@id": path,
+            "@id": encoded_path,
             "name": name,
             "contentUrl": content_url,
         }
@@ -213,22 +220,27 @@ def _get_record_sets(base_meta):
         if not columns or not path:
             continue
 
+        # Percent-encoded the same way _get_distribution encodes this same file's
+        # cr:FileObject "@id" (see its comment), so `source.fileObject.@id` below actually
+        # cross-references the matching `distribution` entry instead of silently failing to
+        # match it for any path containing characters that aren't legal unescaped in an IRI.
+        encoded_path = quote(path)
         record_sets.append(
             {
                 "@type": "cr:RecordSet",
-                "@id": f"{path}/records",
+                "@id": f"{encoded_path}/records",
                 "name": file_obj.get("name"),
                 "field": [
                     {
                         "@type": "cr:Field",
-                        "@id": f"{path}/{column['name']}",
+                        "@id": f"{encoded_path}/{quote(column['name'])}",
                         "name": column["name"],
                         "dataType": column.get("dataType", "sc:Text"),
                         "source": {
                             # Links back to the matching entry this same publication's
                             # `distribution` emits in _get_distribution, whose "@id" is
-                            # also the file's stripped path.
-                            "fileObject": {"@id": path},
+                            # also the file's percent-encoded stripped path.
+                            "fileObject": {"@id": encoded_path},
                             "extract": {"column": column["name"]},
                         },
                     }
