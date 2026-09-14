@@ -31,6 +31,9 @@
       {% endif %}
   {% endif %}
 {% endblock %}
+{% block robots %}
+  {% if citation_context %}index, follow{% else %}{{ block.super }}{% endif %}
+{% endblock %}
 {% block title %}
   {% if citation_context.entities.0.title %}
     {{ citation_context.entities.0.title }} | {{ settings.PORTAL_NAMESPACE }}
