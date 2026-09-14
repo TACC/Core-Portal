@@ -442,6 +442,21 @@ def get_citation_context(pub, request):
             "description": base_meta.get("description"),
             "doi": base_meta.get("doi"),
             "authors": authors,
+            # Dublin Core wants DC.identifier to be a resolvable URI, not a bare DOI -- reuse
+            # the same DOI-URL-or-landing-page value already resolved for the JSON-LD
+            # `identifier` field above instead of recomputing (and risking drift from) it here.
+            "identifier": schema_org_json.get("identifier"),
+            # One "First Last" string per author -- the template emits one <meta
+            # name="DC.creator"> tag per entry, per Dublin Core's (unqualified/simple) creator
+            # convention, the same way it already does for citation_author below.
+            "dc_creators": [
+                name
+                for name in (
+                    f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
+                    for author in authors
+                )
+                if name
+            ],
             # One "Last, First" string per author -- the template emits one <meta
             # name="citation_author"> tag per entry, as Scholar's guide asks for.
             "citation_authors": [
