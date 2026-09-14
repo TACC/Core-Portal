@@ -34,6 +34,10 @@
          Twitter-specific tags needed here. -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ settings.PORTAL_NAMESPACE }}">
+    <!-- Matches the `<html lang="en">` above (and DC.language/@language elsewhere in this
+         document) -- og:locale wants the longer language_TERRITORY form, not a bare language
+         code, so "en" becomes "en_US" here rather than being reused verbatim. -->
+    <meta property="og:locale" content="en_US">
     <!-- `canonical_url` (set by public_data's IndexView, publication route only) is the same
          _get_landing_page_url-derived value already used for this page's JSON-LD `url` -- falls
          back to the current request's own URL everywhere else, so og:url/canonical never claim
