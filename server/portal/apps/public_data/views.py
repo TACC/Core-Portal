@@ -133,6 +133,22 @@ def _get_configured_origin(request):
     return request.build_absolute_uri("/").rstrip("/")
 
 
+def _format_content_size(num_bytes):
+    """Format a byte count as Croissant/schema.org's `contentSize` expects -- schema.org's own
+    docs describe the property as "File size in (mega/kilo)bytes", and both its and Croissant's
+    published examples use a scaled, human-readable unit (e.g. "18MB"), not a raw byte count.
+    A bare "<n> B" value is technically valid Text but unreadable at real file sizes, so this
+    scales to the largest unit that keeps the mantissa under 1024, matching the convention
+    those examples use.
+    """
+
+    size = float(num_bytes)
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if size < 1024 or unit == "TB":
+            return f"{int(size)} {unit}" if unit == "B" else f"{size:.1f} {unit}"
+        size /= 1024
+
+
 def _get_distribution(base_meta, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file) from the publication's file_objs, pointing at the existing public, unauthenticated Tapis download route for the published project system.
     """
@@ -174,7 +190,7 @@ def _get_distribution(base_meta, project_id, request):
         encoding_format, _ = mimetypes.guess_type(name)
         file_object["encodingFormat"] = encoding_format or "application/octet-stream"
         if file_obj.get("length") is not None:
-            file_object["contentSize"] = f"{file_obj['length']} B"
+            file_object["contentSize"] = _format_content_size(file_obj["length"])
         # Only present once a publish-time hashing step populates it (see FileObj.sha256) --
         # computing it here would mean downloading every file on every page request.
         if file_obj.get("sha256"):
