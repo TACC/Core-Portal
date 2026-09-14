@@ -514,6 +514,15 @@ class IndexView(TemplateView):
                 context["schema_org_json"] = dumps_json_ld(schema_org_json)
                 context["citation_context"] = citation_context
                 context["publisher"] = settings.PORTAL_PUBLICATION_PUBLISHER
+                # Reuse the same _get_landing_page_url-derived value already resolved for the
+                # JSON-LD's own `url` (rather than falling back to base.html's default
+                # request.build_absolute_uri) so <link rel="canonical">/og:url can't disagree
+                # with what this same page's structured data claims as its URL -- see
+                # _get_landing_page_url's docstring for why that's not just the current
+                # request's own URL (a stale ?vN revision link, or a deployment where
+                # PORTAL_PUBLICATION_DATACITE_URL_PREFIX points at a different host than the
+                # one serving this request).
+                context["canonical_url"] = schema_org_json.get("url")
             except Publication.DoesNotExist:
                 # Unlike the catch-all fallback route (public_data/urls.py's `index_fallback`,
                 # which never captures a project_id and legitimately needs to keep rendering
