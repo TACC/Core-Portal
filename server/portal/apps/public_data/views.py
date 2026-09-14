@@ -570,7 +570,12 @@ def get_citation_context(pub, request):
     publication_date = base_meta.get("publicationDate") or base_meta.get("publication_date")
 
     citation_meta = {}
-    citation_meta["keywords"] = ", ".join(base_meta.get("keywords", []))
+    # `keywords` (base_metadata.py) is typed `str | list[str] | None` -- the DPMP form stores it
+    # as a single free-text, comma-separated string, not a list, so joining unconditionally
+    # would join its individual characters instead of leaving it alone. Only join when it's
+    # actually a list; pass a string straight through.
+    kw = base_meta.get("keywords") or ""
+    citation_meta["keywords"] = ", ".join(kw) if isinstance(kw, list) else kw
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
     # single tags in <head>, not part of the citation_* block.
     citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, request)
