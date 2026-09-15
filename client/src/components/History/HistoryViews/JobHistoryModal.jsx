@@ -83,6 +83,7 @@ function JobHistoryContent({
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const hasEnded = isTerminalState(jobDetails.status);
+  const portalName = useSelector((state) => state.workbench.portalName);
 
   const appDataObj = {
     'App ID': jobDetails.appId,
@@ -249,8 +250,9 @@ function JobHistoryContent({
             Cancel Job
           </Button>
         )}
-        {hasEnded && version === 'v3' && (
+        {hasEnded && version === 'v3' && portalName !== 'Frontera' && (
           // TODOv3: dropV2Jobs
+          // WP-1367: removes 'Resubmit Job' button for Frontera Portal only
           <Button
             type="primary"
             attr="submit"
