@@ -1,5 +1,6 @@
 .git
 .cache
+**/.venv/
 **/settings_secret.py
 **/settings_custom.py
 **/settings_local.py
