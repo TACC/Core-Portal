@@ -82,6 +82,7 @@
     ]
   },
   "devDependencies": {
+    "@csstools/postcss-global-data": "^4.0.0",
     "@rollup/plugin-eslint": "^9.2.0",
     "@tacc/core-styles": "^2.58.0",
     "@tailwindcss/vite": "catalog:",

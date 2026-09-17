@@ -56,13 +56,14 @@ const FormField = ({
   tapisFile,
   SelectModal,
   tags = false,
+  parameterSet,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
   const [openTapisFileModal, setOpenTapisFileModal] = useState(false);
-  const { id, name, parameterSet } = props;
+  const { id, name } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
 
@@ -187,5 +188,6 @@ FormField.propTypes = {
   /** The [`<InputGroupAddon>` `addonType`](https://reactstrap.github.io/components/input-group/) to add */
   addonType: PropTypes.oneOf(['prepend', 'append']),
   tags: PropTypes.bool,
+  parameterSet: PropTypes.string,
 };
 export default FormField;

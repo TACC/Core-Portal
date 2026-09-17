@@ -81,26 +81,36 @@ const InfiniteScrollTable = ({
         className={`${className} InfiniteScrollTable o-fixed-header-table`}
       >
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
+          {headerGroups.map((headerGroup) => {
+            const { key: headerGroupKey, ...headerGroupProps } =
+              headerGroup.getHeaderGroupProps();
+            return (
+              <tr key={headerGroupKey} {...headerGroupProps}>
+                {headerGroup.headers.map((column) => {
+                  const { key: columnKey, ...columnProps } =
+                    column.getHeaderProps();
+                  return (
+                    <th key={columnKey} {...columnProps}>
+                      {column.render('Header')}
+                    </th>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()} {...getRowProps(row)}>
+              <tr key={rowKey} {...rowProps} {...getRowProps(row)}>
                 {row.cells.map((cell) => {
+                  const { key: cellKey, ...cellProps } = cell.getCellProps({
+                    className: cell.column.className,
+                  });
                   return (
-                    <td
-                      {...cell.getCellProps({
-                        className: cell.column.className,
-                      })}
-                    >
+                    <td key={cellKey} {...cellProps}>
                       {cell.render('Cell')}
                     </td>
                   );

@@ -21,12 +21,14 @@ const DataFilesDownloadMessageModal = () => {
     shallowEqual
   );
 
-  const selectedFiles = useSelector(
-    ({ files: { selected, listing } }) =>
-      selected.FilesListing.map((i) => ({
-        ...listing.FilesListing[i],
-      })),
-    shallowEqual
+  const selectedIndices = useSelector(
+    (state) => state.files.selected.FilesListing
+  );
+  const listing = useSelector((state) => state.files.listing.FilesListing);
+
+  const selectedFiles = useMemo(
+    () => selectedIndices.map((i) => ({ ...listing[i] })),
+    [selectedIndices, listing]
   );
 
   const onClosed = () => {

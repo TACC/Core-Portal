@@ -38,18 +38,25 @@ const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps({
+            onClick: () => {
+              clickHandler(row.values.listing);
+            },
+          });
           return (
             <tr
-              {...row.getRowProps({
-                onClick: () => {
-                  clickHandler(row.values.listing);
-                },
-              })}
+              key={rowKey}
+              {...rowProps}
               className={getStyleName(row.values.listing)}
             >
-              {row.cells.map((cell) => (
-                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-              ))}
+              {row.cells.map((cell) => {
+                const { key: cellKey, ...cellProps } = cell.getCellProps();
+                return (
+                  <td key={cellKey} {...cellProps}>
+                    {cell.render('Cell')}
+                  </td>
+                );
+              })}
             </tr>
           );
         })}

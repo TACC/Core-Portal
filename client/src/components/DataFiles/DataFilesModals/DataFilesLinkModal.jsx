@@ -22,6 +22,8 @@ import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './DataFilesLinkModal.module.scss';
 import './DataFilesLinkModal.scss';
 
+const EMPTY_SELECTED_FILE = {};
+
 const statusPropType = PropTypes.shape({
   error: PropTypes.string,
   url: PropTypes.string,
@@ -126,9 +128,9 @@ const DataFilesLinkModal = () => {
   const [message, setMessage] = useState(null);
   const file = useSelector((state) => {
     if (!state.files.modalProps.link) {
-      return {};
+      return EMPTY_SELECTED_FILE;
     }
-    return state.files.modalProps.link.selectedFile || {};
+    return state.files.modalProps.link.selectedFile || EMPTY_SELECTED_FILE;
   });
 
   const dispatch = useDispatch();

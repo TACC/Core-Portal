@@ -15,6 +15,8 @@ import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
 
+const EMPTY_FILE_LIST = [];
+
 export const ToolbarButton = ({
   text,
   iconName,
@@ -134,7 +136,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   });
 
   const trashedFiles = useSelector((state) =>
-    inTrash ? state.files.listing.FilesListing : []
+    inTrash ? state.files.listing.FilesListing : EMPTY_FILE_LIST
   );
 
   const status = useSelector((state) => state.files.operationStatus.trash);

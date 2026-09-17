@@ -31,12 +31,14 @@ function JobsView({
   const version = location.pathname.includes('jobsv2') ? 'v2' : 'v3';
   const dispatch = useDispatch();
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const { error, jobs } = useSelector((state) => {
-    return version === 'v3'
-      ? { ...state.jobs, jobs: state.jobs.list }
-      : // TODOv3: dropV2Jobs
-        { ...state.jobsv2, jobs: state.jobsv2.list };
-  });
+  const error = useSelector((state) =>
+    // TODOv3: dropV2Jobs
+    version === 'v3' ? state.jobs.error : state.jobsv2.error
+  );
+  const jobs = useSelector((state) =>
+    // TODOv3: dropV2Jobs
+    version === 'v3' ? state.jobs.list : state.jobsv2.list
+  );
 
   const hideDataFiles = useSelector(
     (state) => state.workbench.config.hideDataFiles

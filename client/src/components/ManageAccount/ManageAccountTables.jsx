@@ -19,17 +19,19 @@ export const TableTemplate = ({ attributes }) => {
       <tbody>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps();
           return row.cells.map((cell) => {
             const className =
               cell.column.Header === 'Research Bio' ? 'research-bio' : null;
+            const { key: cellKey, ...cellProps } = cell.getCellProps({
+              className,
+            });
             return (
-              <tr {...row.getRowProps()} key={cell.getCellProps().key}>
+              <tr {...rowProps} key={cellKey}>
                 <th className={className}>
                   <span>{cell.column.render('Header')}</span>
                 </th>
-                <td {...cell.getCellProps({ className })} key={null}>
-                  {cell.render('Cell')}
-                </td>
+                <td {...cellProps}>{cell.render('Cell')}</td>
               </tr>
             );
           });
