@@ -92,6 +92,4 @@ const OnboardingUser = () => {
 
 OnboardingUser.propTypes = {};
 
-OnboardingUser.defaultProps = {};
-
 export default OnboardingUser;

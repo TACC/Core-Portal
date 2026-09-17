@@ -48,12 +48,12 @@ InfiniteScrollNoDataRow.propTypes = {
 const InfiniteScrollTable = ({
   tableColumns,
   tableData,
-  onInfiniteScroll,
-  isLoading,
-  className,
-  noDataText,
-  getRowProps,
-  columnMemoProps,
+  onInfiniteScroll = (offset) => {},
+  isLoading = false,
+  className = '',
+  noDataText = '',
+  getRowProps = (row) => {},
+  columnMemoProps = [],
 }) => {
   const columns = React.useMemo(() => tableColumns, columnMemoProps);
   const data = React.useMemo(() => tableData, [tableData]);
@@ -129,14 +129,6 @@ InfiniteScrollTable.propTypes = {
   getRowProps: PropTypes.func,
   columnMemoProps: PropTypes.arrayOf(PropTypes.any),
   cell: PropTypes.object,
-};
-InfiniteScrollTable.defaultProps = {
-  onInfiniteScroll: (offset) => {},
-  isLoading: false,
-  className: '',
-  noDataText: '',
-  getRowProps: (row) => {},
-  columnMemoProps: [],
 };
 
 export default InfiniteScrollTable;

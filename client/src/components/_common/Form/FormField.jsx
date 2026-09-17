@@ -16,7 +16,7 @@ import './FormField.scss';
 import { Select } from 'antd';
 
 /** A limited-choice wrapper for `FormField` */
-const FormFieldWrapper = ({ children, type }) => {
+const FormFieldWrapper = ({ children, type = 'FormGroup' }) => {
   let wrapper;
 
   switch (type) {
@@ -37,9 +37,6 @@ FormFieldWrapper.propTypes = {
   /** Which wrapper to use */
   type: PropTypes.oneOf(['InputGroup', 'FormGroup', '']),
 };
-FormFieldWrapper.defaultProps = {
-  type: 'FormGroup',
-};
 
 /**
  * A standard form field that supports some customization and presets.
@@ -55,9 +52,10 @@ const FormField = ({
   addonType,
   label,
   description,
-  required,
+  required = false,
   tapisFile,
   SelectModal,
+  tags = false,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -152,7 +150,7 @@ const FormField = ({
         ) : (
           <>
             {hasAddon && addonType === 'prepend' ? addon : null}
-            {props.tags ? (
+            {tags ? (
               <Select
                 mode="tags"
                 tokenSeparators={[',']}
@@ -190,17 +188,4 @@ FormField.propTypes = {
   addonType: PropTypes.oneOf(['prepend', 'append']),
   tags: PropTypes.bool,
 };
-FormField.defaultProps = {
-  id: undefined,
-  name: undefined,
-  label: undefined,
-  description: undefined,
-  required: false,
-  tapisFile: undefined,
-  SelectModal: undefined,
-  addon: undefined,
-  addonType: undefined,
-  tags: false,
-};
-
 export default FormField;

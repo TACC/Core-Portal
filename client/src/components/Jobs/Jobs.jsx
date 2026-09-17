@@ -21,10 +21,10 @@ import Searchbar from '_common/Searchbar';
 import queryStringParser from 'query-string';
 
 function JobsView({
-  showDetails,
-  showFancyStatus,
-  rowProps,
-  includeSearchbar,
+  showDetails = false,
+  showFancyStatus = false,
+  rowProps = (row) => {},
+  includeSearchbar = true,
 }) {
   // TODOv3: dropV2Jobs
   const location = useLocation();
@@ -283,11 +283,4 @@ JobsView.propTypes = {
   rowProps: PropTypes.func,
   includeSearchbar: PropTypes.bool,
 };
-JobsView.defaultProps = {
-  showDetails: false,
-  showFancyStatus: false,
-  rowProps: (row) => {},
-  includeSearchbar: true,
-};
-
 export default JobsView;

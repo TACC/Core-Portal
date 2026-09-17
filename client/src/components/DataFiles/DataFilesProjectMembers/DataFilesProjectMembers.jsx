@@ -13,9 +13,9 @@ const DataFilesProjectMembers = ({
   members,
   onAdd,
   onRemove,
-  onTransfer,
-  mode,
-  loading,
+  onTransfer = () => {},
+  mode = 'addremove',
+  loading = false,
 }) => {
   const dispatch = useDispatch();
 
@@ -299,12 +299,6 @@ DataFilesProjectMembers.propTypes = {
   onTransfer: PropTypes.func,
   mode: PropTypes.string,
   loading: PropTypes.bool,
-};
-
-DataFilesProjectMembers.defaultProps = {
-  onTransfer: () => {},
-  mode: 'addremove',
-  loading: false,
 };
 
 export default DataFilesProjectMembers;

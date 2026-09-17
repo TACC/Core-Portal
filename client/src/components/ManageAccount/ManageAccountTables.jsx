@@ -290,7 +290,7 @@ export const PasswordInformation = () => {
     </article>
   );
 };
-const WebsiteCell = ({ cell: { value } }) => {
+const WebsiteCell = ({ cell: { value } = { value: '' } }) => {
   const website = value ? value.trim() : '';
   if (website) {
     const url = !/^(?:f|ht)tps?:\/\//.test(website)
@@ -307,8 +307,7 @@ const WebsiteCell = ({ cell: { value } }) => {
 WebsiteCell.propTypes = {
   cell: shape({ value: string }),
 };
-WebsiteCell.defaultProps = { cell: { value: '' } };
-const OrcidCell = ({ cell: { value } }) => (
+const OrcidCell = ({ cell: { value } = { value: '' } }) => (
   <a
     className="wb-link"
     href={`https://orcid.org/${value}`}
@@ -319,4 +318,3 @@ const OrcidCell = ({ cell: { value } }) => (
   </a>
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
-OrcidCell.defaultProps = WebsiteCell.defaultProps;

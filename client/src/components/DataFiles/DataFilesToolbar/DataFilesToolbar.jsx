@@ -18,9 +18,9 @@ import canCompressForDownload from 'utils/canCompressForDownload';
 export const ToolbarButton = ({
   text,
   iconName,
-  onClick,
-  disabled,
-  className,
+  onClick = () => {},
+  disabled = true,
+  className = '',
 }) => {
   const iconClassName = `action icon-${iconName}`;
   return (
@@ -34,11 +34,6 @@ export const ToolbarButton = ({
       {text}
     </Button>
   );
-};
-ToolbarButton.defaultProps = {
-  onClick: () => {},
-  disabled: true,
-  className: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,

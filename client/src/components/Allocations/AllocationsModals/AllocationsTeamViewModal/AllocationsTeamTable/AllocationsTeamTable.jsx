@@ -5,7 +5,7 @@ import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
 import styles from './AllocationsTeamTable.module.scss';
 
-const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
+const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
@@ -67,5 +67,4 @@ AllocationsTeamTable.propTypes = {
     username: string.isRequired,
   }),
 };
-AllocationsTeamTable.defaultProps = { visible: {}, rawData: [] };
 export default AllocationsTeamTable;

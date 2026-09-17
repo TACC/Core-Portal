@@ -6,7 +6,7 @@ import { arrayOf, shape, string } from 'prop-types';
 import { getSystemName } from 'utils/systems';
 import styles from './AllocationsUsageTable.module.scss';
 
-const AllocationsUsageTable = ({ rawData }) => {
+const AllocationsUsageTable = ({ rawData = [] }) => {
   const location = useLocation();
   const data = React.useMemo(() => {
     if (location.pathname.includes('approved')) {
@@ -87,6 +87,5 @@ AllocationsUsageTable.propTypes = {
     })
   ),
 };
-AllocationsUsageTable.defaultProps = { rawData: [] };
 
 export default AllocationsUsageTable;

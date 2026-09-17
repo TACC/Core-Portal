@@ -25,7 +25,7 @@ export const LAYOUT_CLASS_MAP = {
 export const DEFAULT_LAYOUT = 'default';
 export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 
-const DataFilesUploadModal = ({ className, layout }) => {
+const DataFilesUploadModal = ({ className = '', layout = DEFAULT_LAYOUT }) => {
   const history = useHistory();
   const location = useLocation();
 
@@ -183,9 +183,4 @@ DataFilesUploadModal.propTypes = {
   /** Layout */
   layout: PropTypes.oneOf(LAYOUTS),
 };
-DataFilesUploadModal.defaultProps = {
-  className: '',
-  layout: DEFAULT_LAYOUT,
-};
-
 export default DataFilesUploadModal;

@@ -30,7 +30,16 @@ const statusPropType = PropTypes.shape({
   expiration: PropTypes.string,
 });
 
-const DataFilesLinkActions = ({ status, onClick }) => {
+const DataFilesLinkActions = ({
+  status = {
+    error: null,
+    url: '',
+    method: null,
+    loading: false,
+    expiration: '',
+  },
+  onClick,
+}) => {
   const disabled = status && status.method != null;
 
   if (status && status.url) {
@@ -73,17 +82,7 @@ DataFilesLinkActions.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-DataFilesLinkActions.defaultProps = {
-  status: {
-    error: null,
-    url: '',
-    method: null,
-    loading: false,
-    expiration: '',
-  },
-};
-
-const DataFilesLinkStatus = ({ status }) => {
+const DataFilesLinkStatus = ({ status = null }) => {
   if (!status) {
     return null;
   }
@@ -116,10 +115,6 @@ const DataFilesLinkStatus = ({ status }) => {
 
 DataFilesLinkStatus.propTypes = {
   status: statusPropType,
-};
-
-DataFilesLinkStatus.defaultProps = {
-  status: null,
 };
 
 const DataFilesLinkModal = () => {

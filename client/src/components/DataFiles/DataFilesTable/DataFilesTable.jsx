@@ -268,7 +268,7 @@ const DataFilesTableRow = ({
   style,
   index,
   rowCount,
-  row,
+  row = {},
   section,
   rowSelectCallback,
   shadeEvenRows,
@@ -337,16 +337,14 @@ DataFilesTableRow.propTypes = {
   rowSelectCallback: PropTypes.func.isRequired,
   shadeEvenRows: PropTypes.bool.isRequired,
 };
-DataFilesTableRow.defaultProps = { row: {} };
-
 const DataFilesTable = ({
   data,
   columns,
   rowSelectCallback,
   scrollBottomCallback,
   section,
-  hideHeader,
-  shadeEvenRows,
+  hideHeader = false,
+  shadeEvenRows = false,
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -495,11 +493,6 @@ DataFilesTable.propTypes = {
   section: PropTypes.string.isRequired,
   hideHeader: PropTypes.bool,
   shadeEvenRows: PropTypes.bool,
-};
-
-DataFilesTable.defaultProps = {
-  hideHeader: false,
-  shadeEvenRows: false,
 };
 
 export default DataFilesTable;

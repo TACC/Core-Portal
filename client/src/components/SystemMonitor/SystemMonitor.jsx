@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import styles from './SystemMonitor.module.scss';
 
-const SystemsList = ({ system }) => {
+const SystemsList = ({ system = '' }) => {
   let systemList = useSelector((state) => state.systemMonitor.list);
 
   systemList = system
@@ -109,11 +109,8 @@ const SystemsList = ({ system }) => {
 SystemsList.propTypes = {
   system: PropTypes.string,
 };
-SystemsList.defaultProps = {
-  system: '',
-};
 
-const SystemMonitorView = ({ system }) => {
+const SystemMonitorView = ({ system = '' }) => {
   const { loading } = useSelector((state) => state.systemMonitor);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -128,9 +125,6 @@ const SystemMonitorView = ({ system }) => {
 
 SystemMonitorView.propTypes = {
   system: PropTypes.string,
-};
-SystemMonitorView.defaultProps = {
-  system: '',
 };
 
 export default SystemMonitorView;
