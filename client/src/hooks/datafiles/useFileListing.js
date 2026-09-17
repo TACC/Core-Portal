@@ -10,9 +10,7 @@ function useFileListing(section = 'FilesListing') {
   const { status: renameStatus } = useRename();
 
   const rawListing = useSelector((state) => state?.files?.listing?.[section]);
-  const trashStatus = useSelector(
-    (state) => state.files.operationStatus.trash
-  );
+  const trashStatus = useSelector((state) => state.files.operationStatus.trash);
   const selectedFiles = useSelector(
     (state) => state.files.selected?.FilesListing
   );
