@@ -124,6 +124,7 @@ To maintain compatibility with existing UI:
     --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*
 @layer base {
   * {
     @apply tw:border-border tw:outline-ring/50;
@@ -135,3 +136,4 @@ To maintain compatibility with existing UI:
     @apply tw:font-sans;
     }
 }
+*/
