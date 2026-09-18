@@ -1,5 +1,4 @@
 import { put, takeLatest, call, select } from 'redux-saga/effects';
-import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchAppDefinitionUtil(appId, appVersion) {

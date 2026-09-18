@@ -1,7 +1,6 @@
 import { put, takeLatest, call, all } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
-import 'cross-fetch';
 
 export function* fetchTickets(action) {
   yield put({ type: 'TICKET_LIST_FETCH_STARTED' });

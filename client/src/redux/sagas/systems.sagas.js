@@ -1,5 +1,4 @@
 import { put, takeLeading, call, select } from 'redux-saga/effects';
-import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 function* pushSystemKeys(action) {

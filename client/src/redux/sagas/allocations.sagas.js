@@ -10,7 +10,6 @@ import {
 import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import Cookies from 'js-cookie';
-import 'cross-fetch';
 
 export function* getAllocations() {
   yield put({ type: 'START_ADD_ALLOCATIONS' });

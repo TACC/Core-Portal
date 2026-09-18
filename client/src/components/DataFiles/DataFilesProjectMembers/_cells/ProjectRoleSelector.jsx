@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
-import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
 import { Button } from '_common';
 import LoadingSpinner from '_common/LoadingSpinner';
