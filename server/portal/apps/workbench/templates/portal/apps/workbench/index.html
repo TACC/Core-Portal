@@ -33,9 +33,7 @@
   {% endif %}
 {% endblock %}
 {% block robots %}
-  {# max-image-preview:large lets Search show this page's cover image (og:image below) at full
-     preview size in results instead of the small default thumbnail Google otherwise caps
-     unannotated pages to -- harmless to request even for a publication with no cover image. #}
+  {# max-image-preview:large lets Search show this page's cover image (og:image below) at full preview size in results instead of the small default thumbnail Google otherwise caps unannotated pages to -- harmless to request even for a publication with no cover image. #}
   {% if citation_context %}index, follow, max-image-preview:large{% else %}{{ block.super }}{% endif %}
 {% endblock %}
 {% block title %}
