@@ -13,6 +13,13 @@ module.exports = {
   // SEE: Rules: https://github.com/stylelint/stylelint-config-standard/blob/master/index.js
   extends: 'stylelint-config-standard',
 
+  overrides: [
+    {
+      files: ['**/*.scss', '**/*.sass'],
+      customSyntax: 'postcss-scss',
+    },
+  ],
+
   // SEE: https://stylelint.io/user-guide/rules/list
   rules: {
     //
