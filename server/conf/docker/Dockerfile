@@ -71,6 +71,7 @@ FROM python-base AS production
 # install node 24.x
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 RUN apt-get install -y nodejs
+RUN npm install -g pnpm
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 

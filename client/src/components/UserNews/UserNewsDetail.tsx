@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import useUserNews from 'hooks/news/useUserNews';
+import { useUserNews } from '@tacc/core-hooks';
 import { LoadingSpinner, Pill, Section, SectionTableWrapper } from '_common';
 import * as ROUTES from '../../constants/routes';
 import renderHtml from 'utils/renderHtml';

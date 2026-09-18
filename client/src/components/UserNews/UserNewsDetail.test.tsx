@@ -6,11 +6,11 @@ import renderComponent from 'utils/testing';
 import * as ROUTES from '../../constants/routes';
 import type { UserNewsResponse } from '../../hooks/news';
 import UserNewsDetail from './UserNewsDetail';
-import useUserNews from 'hooks/news/useUserNews';
+import { useUserNews } from '@tacc/core-hooks';
 
 let mockRouteId = '301';
 
-vi.mock('hooks/news/useUserNews');
+vi.mock('@tacc/core-hooks');
 vi.mock('react-router-dom', async () => {
   const actual =
     await vi.importActual<typeof import('react-router-dom')>(
