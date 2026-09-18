@@ -4,15 +4,13 @@ import mimetypes
 import re
 from urllib.parse import quote, urlsplit
 
-import networkx as nx
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import Http404, HttpResponse
 from django.urls import reverse
 from django.utils.html import escape
 from django.views.generic.base import TemplateView, View
 
 from portal.apps.datafiles.views import TapisFilesView
-from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
@@ -157,7 +155,9 @@ def _format_content_size(num_bytes):
 
 
 def _get_distribution(base_meta, project_id, request):
-    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file) from the publication's file_objs, pointing at the existing public, unauthenticated Tapis download route for the published project system.
+    """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file)
+    from the publication's file_objs, pointing at the existing public, unauthenticated Tapis
+    download route for the published project system.
     """
 
     published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
@@ -233,7 +233,12 @@ def _get_cover_image_url(base_meta, request):
 
 
 def _get_record_sets(base_meta):
-    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known columns) from the publication's file_objs. This only ever reads metadata already stored on `fileObjs` (the `columns` field, populated at publish time for recognized tabular formats) -- it does no file I/O of its own, since this runs on every page request. Files with no known columns are simply skipped, so a publication with no extracted schemas yet degrades to no `recordSet` at all rather than a broken one.
+    """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known
+    columns) from the publication's file_objs. This only ever reads metadata already stored
+    on `fileObjs` (the `columns` field, populated at publish time for recognized tabular
+    formats) -- it does no file I/O of its own, since this runs on every page request. Files
+    with no known columns are simply skipped, so a publication with no extracted schemas yet
+    degrades to no `recordSet` at all rather than a broken one.
     """
 
     record_sets = []
@@ -317,7 +322,10 @@ def _get_publication_file_url(project_id, path, request):
 
 
 def _get_cite_as(base_meta, doi, project_id, request):
-    """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier), from metadata already available on the publication so it can't go stale like a hand-written  placeholder would.
+    """Build a plain-text citation for the Croissant `citeAs` property, following DataCite's
+    recommended citation format (Creator(s) (PublicationYear). Title. Publisher. Identifier),
+    from metadata already available on the publication so it can't go stale like a hand-written
+    placeholder would.
     """
 
     authors = base_meta.get("authors", [])
@@ -463,7 +471,8 @@ class PublicationFileDownloadView(View):
 
 
 def get_schema_org_json(pub, project_id, request):
-    """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in the page's <script type="application/ld+json"> tag for Google Dataset Search.
+    """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
+    the page's <script type="application/ld+json"> tag for Google Dataset Search.
     """
 
     base_meta = pub.value
@@ -768,8 +777,8 @@ class DataciteJsonPreviewView(View):
         except Publication.DoesNotExist:
             raise Http404(f"No publication found for project {project_id}")
 
-        pub_tree = nx.node_link_graph(pub.tree)
-        datacite_json = get_datacite_json(pub_tree, project_id)
+        # pub_tree = nx.node_link_graph(pub.tree)
+        # datacite_json = get_datacite_json(pub_tree, project_id)
 
         try:
             schema_org_body = json.dumps(get_schema_org_json(pub, project_id, request), indent=2)

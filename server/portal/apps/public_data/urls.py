@@ -8,7 +8,7 @@ import re
 from django.conf import settings
 from django.urls import re_path
 
-from portal.apps.public_data.views import IndexView, DataciteJsonPreviewView, PublicationFileDownloadView
+from portal.apps.public_data.views import DataciteJsonPreviewView, IndexView, PublicationFileDownloadView
 
 app_name = "public_data"
 
