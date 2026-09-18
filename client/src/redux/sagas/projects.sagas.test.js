@@ -29,7 +29,7 @@ describe('Projects Sagas', () => {
         [matchers.call.fn(fetchProjectsListing), projectsListingFixture],
       ])
       .put({ type: 'PROJECTS_GET_LISTING_STARTED' })
-      .call(fetchProjectsListing, null)
+      .call(fetchProjectsListing, null, undefined)
       .put({
         type: 'PROJECTS_GET_LISTING_SUCCESS',
         payload: projectsListingFixture,
@@ -81,7 +81,10 @@ describe('Projects Sagas', () => {
       })
       .hasFinalState({
         ...initialState,
-        metadata: projectMetadataFixture,
+        metadata: {
+          ...initialState.metadata,
+          members: projectMetadataResponse.members,
+        },
         operation: {
           name: 'member',
           loading: false,

@@ -35,24 +35,30 @@ const DescriptionList = ({ className, data, density, direction }) => {
 
   return (
     <dl className={`${className} ${containerStyleNames}`} data-testid="list">
-      {Object.entries(data).map(([key, value]) => (
-        <React.Fragment key={key}>
-          <dt className={styles.key} data-testid="key">
-            {key}
-          </dt>
-          {Array.isArray(value) ? (
-            value.map((val) => (
-              <dd className={valueClassName} data-testid="value" key={uuidv4()}>
-                {val}
+      {Object.entries(data)
+        .filter(([key, _]) => !key.startsWith('_'))
+        .map(([key, value]) => (
+          <React.Fragment key={key}>
+            <dt className={styles.key} data-testid="key">
+              {key}
+            </dt>
+            {Array.isArray(value) ? (
+              value.map((val) => (
+                <dd
+                  className={valueClassName}
+                  data-testid="value"
+                  key={uuidv4()}
+                >
+                  {val}
+                </dd>
+              ))
+            ) : (
+              <dd className={valueClassName} data-testid="value">
+                {value}
               </dd>
-            ))
-          ) : (
-            <dd className={valueClassName} data-testid="value">
-              {value}
-            </dd>
-          )}
-        </React.Fragment>
-      ))}
+            )}
+          </React.Fragment>
+        ))}
     </dl>
   );
 };

@@ -29,6 +29,6 @@
   border: 1px solid #afafaf;
 }
 
-.modal-header.has-MuiTabs .MuiTabs-indicator {
+.modal-header:has(.MuiTabs-root) .MuiTabs-indicator {
   background-color: white;
 }

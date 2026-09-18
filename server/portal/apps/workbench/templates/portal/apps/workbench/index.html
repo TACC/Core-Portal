@@ -1,5 +1,39 @@
 {% extends "base.html" %}
 {% load static %}
+{% block google_citation_meta %}
+{% if scholar_context %}
+    <meta name="keywords" content='{{ scholar_context.keywords }}'> <!-- related experiments, subject; used in search -->
+    <meta name="citation_publisher" content="{{ publisher }}">
+    <meta name="citation_language" content="en">
+    {% for keyword in scholar_context.citation_keywords %}
+    <meta name="citation_keywords" content="{{keyword}}">
+    {% endfor %}
+    {% for entity in scholar_context.entities %}
+        <meta name="citation_title" content="{{entity.title}}">
+        <meta name="citation_publication_date" content="{{entity.publication_date}}">
+        <meta name="citation_doi" content="{{entity.doi}}">
+        <meta name="citation_description" content="{{ entity.description }}">
+        {% for author in entity.authors %}
+            <meta name="citation_author" content="{{author.first_name}} {{author.last_name}}">
+            <meta name="citation_author_institution" content="{{author.institution}}">
+        {% endfor %}
+        <meta name="identifier" content="{{entity.doi}}">
+        <meta name="DC.identifier" content="{{entity.doi}}">
+        <meta name="DC.publisher" content="{{ publisher }}">
+        <meta name="DC.title" content="{{entity.title}}">
+        <meta name="DC.date" content="{{entity.publication_date}}">
+        <meta name="DC.language" content="en">
+        <meta name="DC.creator" content="{% for author in entity.authors %}{{author.first_name}} {{ author.last_name}}; {% endfor %}">
+        <meta name="DC.type" content="dataset">
+    {% endfor %}
+    <meta name="citation_abstract_html_url" content="">
+    {% for dc_json in dc_context %}
+    <script type="application/ld+json">
+        {{ dc_json | safe }}
+    </script>
+    {% endfor %}
+{% endif %}
+{% endblock %}
 {% block title %} Workbench {% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
