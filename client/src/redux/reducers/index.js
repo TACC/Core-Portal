@@ -25,6 +25,7 @@ import { onboarding } from './onboarding.reducers';
 import projects from './projects.reducers';
 import { users } from './users.reducers';
 import siteSearch from './siteSearch.reducers';
+import publications from './publications.reducers';
 
 export default combineReducers({
   jobs,
@@ -53,4 +54,5 @@ export default combineReducers({
   projects,
   users,
   siteSearch,
+  publications,
 });

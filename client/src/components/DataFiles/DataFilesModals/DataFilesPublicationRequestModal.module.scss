@@ -1,0 +1,44 @@
+.panel-content {
+  width: 100%;
+  overflow-y: scroll;
+
+  /* Cross-browser solution to padding ignored by overflow (in spec-compliant Firefox) */
+  /* SEE: https://stackoverflow.com/a/38997047/11817077 */
+  padding-bottom: 0;
+  &::after {
+    content: '';
+    display: block;
+    height: var(--padding);
+  }
+}
+
+dl.panel-content {
+  --buffer-horz: 12px; /* ~10px design * 1.2 design-to-app ratio */
+  --buffer-vert: 10px; /* gut feel based loosely on random space from design */
+  --border: var(--global-border-width--normal) solid
+    var(--global-color-primary--light);
+}
+
+dl.panel-content > dt,
+dl.panel-content > dd {
+  padding-left: var(--buffer-horz);
+  padding-right: var(--buffer-horz);
+  padding-top: var(--buffer-vert);
+}
+
+dl.panel-content > dt {
+  border-top: var(--border);
+}
+dl.panel-content > dt:first-of-type {
+  border-top: none;
+}
+
+dl.panel-content > dt:nth-of-type(even),
+dl.panel-content > dd:nth-of-type(even) {
+  background-color: var(--global-color-primary--x-light);
+}
+
+/* Remove the colon from top-level labels */
+dl.panel-content > dt::after {
+  display: none;
+}

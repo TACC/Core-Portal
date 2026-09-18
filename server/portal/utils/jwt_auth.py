@@ -5,15 +5,14 @@
 
 import logging
 from base64 import b64decode
-from six import text_type
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login
-from django.core.exceptions import ObjectDoesNotExist
-import jwt as pyjwt
-from cryptography.hazmat.primitives.serialization import load_der_public_key
-from cryptography.exceptions import UnsupportedAlgorithm
 
+import jwt as pyjwt
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.primitives.serialization import load_der_public_key
+from django.conf import settings
+from django.contrib.auth import get_user_model, login
+from django.core.exceptions import ObjectDoesNotExist
+from six import text_type
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,13 +30,13 @@ def _decode_jwt(jwt):
         key_der = b64decode(pubkey)
         key = load_der_public_key(key_der)
     except (TypeError, ValueError, UnsupportedAlgorithm):
-        LOGGER.exception('Could not load public key.')
+        LOGGER.exception("Could not load public key.")
         return {}
 
     try:
         decoded = pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
     except pyjwt.exceptions.DecodeError as exc:
-        LOGGER.exception('Could not decode JWT. %s', exc)
+        LOGGER.exception("Could not decode JWT. %s", exc)
         return {}
     return decoded
 
@@ -49,10 +48,10 @@ def _get_jwt_payload(request):
     :return: JWT payload
     :rtype: str
     """
-    payload = request.META.get(getattr(settings, 'AGAVE_JWT_HEADER', ''))
+    payload = request.META.get(getattr(settings, "AGAVE_JWT_HEADER", ""))
     if payload and isinstance(payload, text_type):
         # Header encoding (see RFC5987)
-        payload = payload.encode('iso-8859-1')
+        payload = payload.encode("iso-8859-1")
 
     return payload
 
@@ -74,18 +73,15 @@ def login_user_agave_jwt(request):
     if not jwt_payload:
         return None
 
-    username = jwt_payload.get(
-        getattr(settings, 'AGAVE_JWT_USER_CLAIM_FIELD', ''),
-        ''
-    )
+    username = jwt_payload.get(getattr(settings, "AGAVE_JWT_USER_CLAIM_FIELD", ""), "")
     try:
         user = get_user_model().objects.get(username=username)
     except ObjectDoesNotExist:
-        LOGGER.exception('Could not find JWT user: %s', username)
+        LOGGER.exception("Could not find JWT user: %s", username)
         user = None
 
     if user is not None:
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        user.backend = "django.contrib.auth.backends.ModelBackend"
         login(request, user)
 
         # Refresh tapis oauth token

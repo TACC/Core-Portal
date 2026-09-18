@@ -1,0 +1,54 @@
+/* DATASET LIST */
+
+/* Root */
+
+ul.data-tree,
+.data-tree ul {
+    list-style: none;
+}
+ul.data-tree {
+    padding-left: unset;
+}
+
+/* Items */
+
+/* To indent all expanded content */
+.data-tree {
+    --indent: 1.5rem;
+}
+.data-tree__item details {
+    margin-left: var(--indent);
+}
+.data-tree__item summary {
+    margin-left: calc(-1 * var(--indent));
+}
+.data-tree__item summary.u-summary-with-a-link::before,
+.data-tree__item summary.u-summary-fake-marker::before {
+    width: var(--indent);
+    display: inline-block;
+    font-size: 20px;
+}
+
+
+/* Elements */
+
+/* for nested lists */
+.data-tree__item ul {
+    margin-block: 1rem;
+}
+
+/* for parent list (if not root) and nested lists */
+.data-tree ul:has(details) {
+    padding-left: var(--indent);
+}
+.data-tree ul:not(:has(details)) {
+    padding-left: calc(var(--indent) * 2);
+}
+
+
+/* Components */
+
+/* to reduce excess width of table key */
+.data-tree th.c-data-list__key {
+    width: 22ch;
+}

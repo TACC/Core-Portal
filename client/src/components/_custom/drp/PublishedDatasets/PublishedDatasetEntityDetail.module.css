@@ -1,0 +1,9 @@
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+
+    nav button {
+        font-size: 14px !important;
+    }
+}
