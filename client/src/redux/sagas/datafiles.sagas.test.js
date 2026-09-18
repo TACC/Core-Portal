@@ -72,9 +72,9 @@ describe('fetchSystems', () => {
       .run();
   });
 
-  it('runs fetch', () => {
+  it('runs fetch', async () => {
     const apiResult = fetchSystemsUtil();
-    expect(apiResult).resolves.toEqual({ private: 'test.private' });
+    expect(await apiResult).toEqual({ private: 'test.private' });
     expect(fetch).toBeCalledWith('/api/datafiles/systems/list/');
   });
 });
@@ -205,7 +205,7 @@ describe('fetchFiles', () => {
       .run();
   });
 
-  it('test fetchFilesUtil makes correct call', () => {
+  it('test fetchFilesUtil makes correct call', async () => {
     const apiResult = fetchFilesUtil(
       'tapis',
       'private',
@@ -215,7 +215,7 @@ describe('fetchFiles', () => {
       100,
       undefined
     );
-    expect(apiResult).resolves.toEqual('200 response');
+    expect(await apiResult).toEqual('200 response');
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/listing/private/test.system/path/to/file/?limit=100&nextPageToken&offset=0&query_string='
     );

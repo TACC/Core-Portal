@@ -1,6 +1,7 @@
 allowBuilds:
   "@parcel/watcher": true
   esbuild: true
+  msw: true
 
 packages:
   - "packages/*"
@@ -10,3 +11,4 @@ catalog:
   "@tanstack/react-query": "^5.59.16"
   "axios": "^1.7.7"
   "typescript": "^5.9.3"
+  msw: ^2.15.0
