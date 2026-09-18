@@ -107,6 +107,9 @@ const DataFilesPublicationsList = ({ rootSystem, basePath }) => {
     {
       Header: 'Keywords',
       accessor: 'keywords',
+      Cell: (el) => (
+        <span>{Array.isArray(el.value) ? el.value.join(', ') : el.value}</span>
+      ),
     },
   ];
 

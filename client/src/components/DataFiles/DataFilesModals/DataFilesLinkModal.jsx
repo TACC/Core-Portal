@@ -22,6 +22,8 @@ import { formatDateTimeFromValue } from 'utils/timeFormat';
 import styles from './DataFilesLinkModal.module.scss';
 import './DataFilesLinkModal.scss';
 
+const EMPTY_SELECTED_FILE = {};
+
 const statusPropType = PropTypes.shape({
   error: PropTypes.string,
   url: PropTypes.string,
@@ -30,7 +32,16 @@ const statusPropType = PropTypes.shape({
   expiration: PropTypes.string,
 });
 
-const DataFilesLinkActions = ({ status, onClick }) => {
+const DataFilesLinkActions = ({
+  status = {
+    error: null,
+    url: '',
+    method: null,
+    loading: false,
+    expiration: '',
+  },
+  onClick,
+}) => {
   const disabled = status && status.method != null;
 
   if (status && status.url) {
@@ -73,17 +84,7 @@ DataFilesLinkActions.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-DataFilesLinkActions.defaultProps = {
-  status: {
-    error: null,
-    url: '',
-    method: null,
-    loading: false,
-    expiration: '',
-  },
-};
-
-const DataFilesLinkStatus = ({ status }) => {
+const DataFilesLinkStatus = ({ status = null }) => {
   if (!status) {
     return null;
   }
@@ -118,10 +119,6 @@ DataFilesLinkStatus.propTypes = {
   status: statusPropType,
 };
 
-DataFilesLinkStatus.defaultProps = {
-  status: null,
-};
-
 const DataFilesLinkModal = () => {
   const isOpen = useSelector((state) => state.files.modals.link);
   const status = useSelector((state) => state.files.operationStatus.link);
@@ -131,9 +128,9 @@ const DataFilesLinkModal = () => {
   const [message, setMessage] = useState(null);
   const file = useSelector((state) => {
     if (!state.files.modalProps.link) {
-      return {};
+      return EMPTY_SELECTED_FILE;
     }
-    return state.files.modalProps.link.selectedFile || {};
+    return state.files.modalProps.link.selectedFile || EMPTY_SELECTED_FILE;
   });
 
   const dispatch = useDispatch();

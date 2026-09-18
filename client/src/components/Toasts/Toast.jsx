@@ -73,7 +73,7 @@ const NotificationToast = () => {
   );
 };
 
-export const ToastMessage = ({ notification }) => {
+export const ToastMessage = ({ notification = undefined }) => {
   const systemList = useSelector(
     (state) => state.systems.storage.configuration
   );
@@ -105,9 +105,6 @@ ToastMessage.propTypes = {
     status: PropTypes.string,
   }),
 };
-ToastMessage.defaultProps = {
-  notification: undefined,
-};
 
 /**
  * Returns a human readable message from a job update event.
@@ -128,7 +125,7 @@ ToastMessage.defaultProps = {
  * getToastMessage(n, systemList)
  */
 export const getToastMessage = (
-  { extra, event_type: eventType, message, status, operation },
+  { extra = {}, event_type: eventType, message = '', status, operation },
   systemList,
   projectList
 ) => {
@@ -164,10 +161,6 @@ getToastMessage.propTypes = {
   status: PropTypes.string,
   operation: PropTypes.string,
   systemList: PropTypes.list,
-};
-getToastMessage.defaultProps = {
-  extra: {},
-  message: '',
 };
 
 export default NotificationToast;

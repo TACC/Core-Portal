@@ -26,7 +26,7 @@ PaginatorPage.propTypes = {
   current: PropTypes.number.isRequired,
 };
 
-const Paginator = ({ pages, current, callback, spread }) => {
+const Paginator = ({ pages, current, callback, spread = 11 }) => {
   let start, end;
   if (pages === 1 || pages === 2) {
     end = 0;
@@ -95,10 +95,6 @@ Paginator.propTypes = {
   current: PropTypes.number.isRequired,
   callback: PropTypes.func.isRequired,
   spread: PropTypes.number, // Number of page buttons to show
-};
-
-Paginator.defaultProps = {
-  spread: 11,
 };
 
 export default Paginator;

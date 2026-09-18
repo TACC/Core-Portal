@@ -302,7 +302,8 @@ def list_projects(client, root_system_id=None):
             (system for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if system["system"] == root_system_id), None
         )
         if root_system:
-            query += f"~(rootDir.like.{root_system['rootDir']}*)"
+            if root_system.get("rootDir"):
+                query += f"~(rootDir.like.{root_system['rootDir']}*)"
             is_review_system = root_system.get("reviewProject", False)
             is_publication_system = root_system.get("publicationProject", False)
         else:

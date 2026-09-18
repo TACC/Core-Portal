@@ -7,6 +7,8 @@ import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProject
 import styles from './DataFilesManageProject.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
 
+const NOT_LOADING_OR_ERRORED = { loading: false, error: false };
+
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -23,10 +25,7 @@ const DataFilesManageProjectModal = () => {
     ) {
       return state.projects.operation;
     }
-    return {
-      loading: false,
-      error: false,
-    };
+    return NOT_LOADING_OR_ERRORED;
   });
 
   const canEditSystem = members

@@ -10,9 +10,12 @@ import { vi } from 'vitest';
 import { useExtract } from 'hooks/datafiles/mutations';
 
 const mockStore = configureStore();
-global.fetch = vi.fn();
+//global.fetch = vi.fn();
 
 describe('DataFiles', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
   afterEach(() => {
     fetch.mockClear();
   });
