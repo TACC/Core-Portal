@@ -28,7 +28,7 @@ export default defineConfig({
   },
 
   server: {
-    origin: 'cep.test',
+    origin: 'https://cep.test',
     port: 3000,
     cors: {
       origin: ['https://cep.test'],

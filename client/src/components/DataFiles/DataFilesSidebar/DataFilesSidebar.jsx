@@ -105,7 +105,7 @@ const DataFilesAddButton = ({ readOnly }) => {
   );
 };
 
-const DataFilesSidebar = ({ readOnly }) => {
+const DataFilesSidebar = ({ readOnly = false }) => {
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
@@ -159,10 +159,6 @@ const DataFilesSidebar = ({ readOnly }) => {
 
 DataFilesSidebar.propTypes = {
   readOnly: PropTypes.bool,
-};
-
-DataFilesSidebar.defaultProps = {
-  readOnly: false,
 };
 
 export default DataFilesSidebar;

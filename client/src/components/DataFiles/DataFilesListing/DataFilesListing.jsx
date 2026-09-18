@@ -43,7 +43,7 @@ const DataFilesListing = ({
   scheme,
   system,
   path,
-  isPublic,
+  isPublic = false,
   rootSystem,
   basePath,
 }) => {
@@ -262,8 +262,4 @@ DataFilesListing.propTypes = {
   path: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
 };
-DataFilesListing.defaultProps = {
-  isPublic: false,
-};
-
 export default DataFilesListing;

@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -67,12 +67,14 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
-  const downSystems = useSelector((state) =>
-    state.systemMonitor
-      ? state.systemMonitor.list
-          .filter((currSystem) => !currSystem.is_operational)
-          .map((downSys) => downSys.hostname)
-      : []
+  const downSystems = useSelector(
+    (state) =>
+      state.systemMonitor
+        ? state.systemMonitor.list
+            .filter((currSystem) => !currSystem.is_operational)
+            .map((downSys) => downSys.hostname)
+        : [],
+    shallowEqual
   );
   const reloadPage = (sys) => {
     dispatch({
@@ -268,7 +270,7 @@ const DataFilesTableRow = ({
   style,
   index,
   rowCount,
-  row,
+  row = {},
   section,
   rowSelectCallback,
   shadeEvenRows,
@@ -304,8 +306,9 @@ const DataFilesTableRow = ({
         data-testid="file-listing-item"
       >
         {row.cells.map((cell) => {
+          const { key, ...cellProps } = cell.getCellProps();
           return (
-            <div className="td" {...cell.getCellProps()}>
+            <div className="td" key={key} {...cellProps}>
               {cell.render('Cell')}
             </div>
           );
@@ -337,16 +340,14 @@ DataFilesTableRow.propTypes = {
   rowSelectCallback: PropTypes.func.isRequired,
   shadeEvenRows: PropTypes.bool.isRequired,
 };
-DataFilesTableRow.defaultProps = { row: {} };
-
 const DataFilesTable = ({
   data,
   columns,
   rowSelectCallback,
   scrollBottomCallback,
   section,
-  hideHeader,
-  shadeEvenRows,
+  hideHeader = false,
+  shadeEvenRows = false,
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -443,17 +444,24 @@ const DataFilesTable = ({
         <div {...getTableProps()}>
           <div ref={tableHeader}>
             {headerGroups.map((headerGroup) => {
+              const { key: headerGroupKey, ...headerGroupProps } =
+                headerGroup.getHeaderGroupProps();
               return hideHeader ? null : (
                 <div
-                  {...headerGroup.getHeaderGroupProps()}
+                  key={headerGroupKey}
+                  {...headerGroupProps}
                   className="tr tr-header"
                   style={{ width }}
                 >
-                  {headerGroup.headers.map((column) => (
-                    <div {...column.getHeaderProps()} className="td">
-                      {column.render('Header')}
-                    </div>
-                  ))}
+                  {headerGroup.headers.map((column) => {
+                    const { key: columnKey, ...columnProps } =
+                      column.getHeaderProps();
+                    return (
+                      <div key={columnKey} {...columnProps} className="td">
+                        {column.render('Header')}
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
@@ -495,11 +503,6 @@ DataFilesTable.propTypes = {
   section: PropTypes.string.isRequired,
   hideHeader: PropTypes.bool,
   shadeEvenRows: PropTypes.bool,
-};
-
-DataFilesTable.defaultProps = {
-  hideHeader: false,
-  shadeEvenRows: false,
 };
 
 export default DataFilesTable;

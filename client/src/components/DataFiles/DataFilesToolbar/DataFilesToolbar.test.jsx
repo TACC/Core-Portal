@@ -5,7 +5,17 @@ import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { useDispatch } from 'react-redux';
 import { vi } from 'vitest';
+
+vi.mock('react-redux', async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual,
+    useDispatch: vi.fn(actual.useDispatch),
+  };
+});
 
 const mockStore = configureStore();
 describe('ToolbarButton', () => {
@@ -501,9 +511,7 @@ describe('DataFilesToolbar', () => {
       id: 123,
     };
     // Create a spy that watches for the dispatch call
-    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      mockDispatch
-    );
+    useDispatch.mockReturnValue(mockDispatch);
     // Create the store
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,

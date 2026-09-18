@@ -19,7 +19,7 @@ const BreadcrumbsDropdown = ({
   path,
   basePath,
   section,
-  isPublic,
+  isPublic = false,
 }) => {
   // encode path to handle special characters
   path = path.split('/').map(encodeURIComponent).join('/');
@@ -171,10 +171,6 @@ BreadcrumbsDropdown.propTypes = {
   path: PropTypes.string.isRequired,
   section: PropTypes.string,
   isPublic: PropTypes.bool,
-};
-
-BreadcrumbsDropdown.defaultProps = {
-  isPublic: false,
 };
 
 export default BreadcrumbsDropdown;
