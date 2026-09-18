@@ -1,5 +1,5 @@
 .description-textarea {
-  min-height: 10em;
+  min-height: 100px;
 }
 
 .button-container {
@@ -10,4 +10,9 @@
 
 .update-button {
   margin-left: auto;
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow: auto;
 }

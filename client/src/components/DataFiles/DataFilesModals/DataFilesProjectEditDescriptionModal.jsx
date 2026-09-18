@@ -1,11 +1,14 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, Message } from '_common';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './DataFilesProjectEditDescription.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
+import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -34,6 +37,27 @@ const DataFilesProjectEditDescriptionModal = () => {
   const enableWorkspaceKeywords =
     useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
     true;
+  const sharedWorkspacesDisplayName = useSelector((state) =>
+    getSharedWorkspaceDisplayName(
+      getDefaultProjectSystem(state.systems.storage.configuration)?.name
+    )
+  );
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesProjectEditDescriptionModalAddon } = useAddonComponents({
+    portalName,
+  });
+
+  const isOwner = useSelector(
+    (state) =>
+      state.projects.metadata.members
+        .filter((member) =>
+          member.user
+            ? member.user.username === state.authenticatedUser?.user?.username
+            : { access: null }
+        )
+        .map((currentUser) => currentUser.access === 'owner')[0]
+  );
 
   const initialValues = useMemo(
     () => ({
@@ -61,53 +85,64 @@ const DataFilesProjectEditDescriptionModal = () => {
             title: values.title,
             description: values.description || '',
             keywords: values.keywords || [],
+            metadata: DataFilesProjectEditDescriptionModalAddon ? values : null,
           },
+          modal: 'editproject',
         },
       });
     },
     [projectId, dispatch]
   );
 
-  const validationSchema = Yup.object().shape({
-    title: Yup.string()
-      .min(3, 'Title must be at least 3 characters')
-      .max(maxTitleLength, `Title must be at most ${maxTitleLength} characters`)
-      .required('Please enter a title.'),
-    description: Yup.string()
-      .min(
-        minDescriptionLength,
-        `Description must be at least ${minDescriptionLength} characters`
-      )
-      .when([], {
-        is: () => minDescriptionLength > 0,
-        then: (schema) => schema.required('Please enter a description.'),
-        otherwise: (schema) => schema.notRequired(),
+  const [validationSchema, setValidationSchema] = useState(
+    Yup.object().shape({
+      title: Yup.string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(
+          maxTitleLength,
+          `Title must be at most ${maxTitleLength} characters`
+        )
+        .required('Please enter a title.'),
+      description: Yup.string()
+        .min(
+          minDescriptionLength,
+          `Description must be at least ${minDescriptionLength} characters`
+        )
+        .when([], {
+          is: () => minDescriptionLength > 0,
+          then: (schema) => schema.required('Please enter a description.'),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      ...(enableWorkspaceKeywords && {
+        keywords: Yup.array().of(Yup.string()),
       }),
-    keywords: Yup.array().of(Yup.string()),
-  });
+    })
+  );
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Edit Workspace
-      </ModalHeader>
-      <ModalBody>
-        <Formik
-          initialValues={initialValues}
-          initialTouched={{
-            title: true,
-            description: true,
-            keywords: true,
-          }}
-          onSubmit={setProjectTitleDescription}
-          validationSchema={validationSchema}
-          validateOnMount
-        >
-          {({ isValid, dirty }) => (
-            <Form>
+    <Modal size="xl" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
+      {/* <ModalBody> */}
+      <Formik
+        initialValues={initialValues}
+        initialTouched={{
+          title: true,
+          description: true,
+          keywords: true,
+        }}
+        onSubmit={setProjectTitleDescription}
+        validationSchema={validationSchema}
+        validateOnMount
+      >
+        {({ isValid, dirty }) => (
+          <Form>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
+              Edit {sharedWorkspacesDisplayName}
+            </ModalHeader>
+            <ModalBody className={styles['modal-body']}>
               <FormField
                 name="title"
                 aria-label="title"
+                disabled={!isOwner}
                 label={
                   <div>
                     Title{' '}
@@ -121,6 +156,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 <FormField
                   name="description"
                   aria-label="description"
+                  disabled={!isOwner}
                   label={
                     <div>
                       Description{' '}
@@ -143,6 +179,11 @@ const DataFilesProjectEditDescriptionModal = () => {
                   className={styles['description-textarea']}
                 />
               )}
+              {DataFilesProjectEditDescriptionModalAddon && (
+                <DataFilesProjectEditDescriptionModalAddon
+                  setValidationSchema={setValidationSchema}
+                />
+              )}
               <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">
@@ -160,10 +201,11 @@ const DataFilesProjectEditDescriptionModal = () => {
                   Update Changes
                 </Button>
               </div>
-            </Form>
-          )}
-        </Formik>
-      </ModalBody>
+            </ModalBody>
+          </Form>
+        )}
+      </Formik>
+      {/* </ModalBody> */}
     </Modal>
   );
 };

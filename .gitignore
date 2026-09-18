@@ -22,6 +22,7 @@ server/docs
 *settings_secret.py
 *settings_custom.py
 *settings_local.py
+*settings_forms.py
 
 docker_repo.var
 server/src
