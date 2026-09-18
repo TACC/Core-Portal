@@ -181,9 +181,7 @@ def _get_distribution(base_meta, project_id, request):
         # and would make `@id` an invalid IRI for any path containing characters (spaces, etc.)
         # that aren't legal unescaped in one.
         encoded_path = quote(path)
-        content_url = (
-            f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{encoded_path}/"
-        )
+        content_url = f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{encoded_path}/"
         file_object = {
             "@type": "cr:FileObject",
             "@id": encoded_path,
@@ -676,16 +674,13 @@ def get_citation_context(pub, request):
             "dc_creators": [
                 name
                 for name in (
-                    f"{author.get('first_name', '')} {author.get('last_name', '')}".strip()
-                    for author in authors
+                    f"{author.get('first_name', '')} {author.get('last_name', '')}".strip() for author in authors
                 )
                 if name
             ],
             # One "Last, First" string per author -- the template emits one <meta
             # name="citation_author"> tag per entry, as Scholar's guide asks for.
-            "citation_authors": [
-                name for name in (_format_citation_author(author) for author in authors) if name
-            ],
+            "citation_authors": [name for name in (_format_citation_author(author) for author in authors) if name],
             "publication_date": publication_date,
             "citation_date": _format_citation_date(publication_date),
             "pdf_url": _get_citation_pdf_url(base_meta, pub.project_id, request),
