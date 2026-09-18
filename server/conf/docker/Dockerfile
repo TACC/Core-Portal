@@ -9,9 +9,9 @@ ENV SERVER_PATH="/srv/www/portal/server"
 ENV PATH="$SERVER_PATH/.venv/bin:$PATH"
 
 WORKDIR $SERVER_PATH
-COPY server/pyproject.toml server/poetry.lock ./
+COPY server/pyproject.toml server/uv.lock ./
 # install runtime deps
-RUN --mount=type=cache,id=uv-core-prod,target=/uv/sync-prod uv sync --no-dev
+RUN --mount=type=cache,id=uv-core-prod,target=/uv/sync-prod uv sync --locked --no-dev
 
 
 FROM ghcr.io/pnpm/pnpm:12 AS node_build
@@ -28,7 +28,7 @@ RUN pnpm run build
 # `development` target is used for local development
 FROM python-base AS development
 WORKDIR $SERVER_PATH
-RUN --mount=type=cache,id=uv-core-dev,target=/uv/sync-dev uv sync --dev
+RUN --mount=type=cache,id=uv-core-dev,target=/uv/sync-dev uv sync --locked --dev
 COPY . /srv/www/portal
 
 RUN mkdir -p /var/log/portal
