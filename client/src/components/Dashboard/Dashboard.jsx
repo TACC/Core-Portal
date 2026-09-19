@@ -136,7 +136,7 @@ function DashboardTickets() {
       headerActions={
         <Link
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-          className="btn btn-secondary btn-sm"
+          className={styles['btn-new-ticket']}
         >
           New Ticket
         </Link>
