@@ -11,6 +11,7 @@ import {
   useFileListing,
   useModal,
   useTapisToken,
+  useAddonComponents,
 } from 'hooks/datafiles';
 import { useUpload } from 'hooks/datafiles/mutations';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
@@ -24,14 +25,15 @@ export const LAYOUT_CLASS_MAP = {
 export const DEFAULT_LAYOUT = 'default';
 export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 
-const DataFilesUploadModal = ({ className, layout }) => {
+const DataFilesUploadModal = ({ className = '', layout = DEFAULT_LAYOUT }) => {
   const history = useHistory();
   const location = useLocation();
 
   const reloadCallback = () => {
     history.push(location.pathname);
   };
-
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });
   const maxSizeLabel = useSelector(
     (state) => state.workbench.config.uploadModalMaxSizeLabel
   );
@@ -55,6 +57,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       upload({
         system: params.system,
         path: params.path || '',
+        scheme: params.scheme,
         files: filteredFiles,
         reloadCallback,
         tapisToken,
@@ -128,7 +131,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       >
         Upload Files
       </ModalHeader>
-      <ModalBody className={containerStyleNames}>
+      <ModalBody className={`${containerStyleNames} ${styles['modal-body']}`}>
         <div className={styles.dropzone} disabled={dropZoneDisabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
@@ -152,6 +155,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
             />
           </div>
         )}
+        {DataFilesUploadModalAddon && params.scheme === 'projects' && (
+          <DataFilesUploadModalAddon
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -174,9 +183,4 @@ DataFilesUploadModal.propTypes = {
   /** Layout */
   layout: PropTypes.oneOf(LAYOUTS),
 };
-DataFilesUploadModal.defaultProps = {
-  className: '',
-  layout: DEFAULT_LAYOUT,
-};
-
 export default DataFilesUploadModal;

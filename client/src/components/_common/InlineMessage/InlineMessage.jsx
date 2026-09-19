@@ -22,6 +22,5 @@ const InlineMessage = (props) => {
   return <Message {...messageProps} />;
 };
 InlineMessage.propTypes = Message.propTypes;
-InlineMessage.defaultProps = Message.defaultProps;
 
 export default InlineMessage;

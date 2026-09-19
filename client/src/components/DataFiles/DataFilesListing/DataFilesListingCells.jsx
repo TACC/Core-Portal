@@ -50,7 +50,20 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
+  ({
+    system,
+    path,
+    name,
+    format,
+    api,
+    scheme,
+    href,
+    isPublic = false,
+    basePath,
+    length,
+    metadata,
+    rootSystem,
+  }) => {
     const dispatch = useDispatch();
     const previewCallback = (e) => {
       e.stopPropagation();
@@ -63,19 +76,26 @@ export const FileNavCell = React.memo(
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href, length },
+          props: { api, scheme, system, path, name, href, length, metadata },
         },
       });
     };
 
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
+
+    // encoding for % and # in path. Done twice due to react-router encoding bug. fixed in react router v6
+    const effectivePath = path
+      .replace(/%/g, encodeURIComponent(encodeURIComponent('%')))
+      .replace(/#/g, encodeURIComponent(encodeURIComponent('#')));
 
     return (
       <>
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
+            to={`${basePath}/${api}/${scheme}${
+              rootSystem ? '/' + rootSystem : ''
+            }/${system}/${effectivePath}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}
@@ -99,10 +119,6 @@ FileNavCell.propTypes = {
   isPublic: PropTypes.bool,
   length: PropTypes.number.isRequired,
 };
-FileNavCell.defaultProps = {
-  isPublic: false,
-};
-
 export const FileLengthCell = ({ cell }) => {
   const bytes = cell.value;
 
@@ -121,7 +137,7 @@ LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
 };
 
-export const FileIcon = ({ format, path }) => {
+export const FileIcon = ({ format, path = '' }) => {
   const isFolder = format === 'folder';
   const isTrash =
     path === '/' + useSelector((state) => state.workbench.config.trashPath);
@@ -141,10 +157,6 @@ FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
   path: PropTypes.string,
 };
-FileIcon.defaultProps = {
-  path: '',
-};
-
 export const FileIconCell = ({ cell }) => {
   return (
     <FileIcon format={cell.row.original.format} path={cell.row.original.path} />
@@ -179,5 +191,23 @@ export const ViewPathCell = ({ file }) => {
 };
 
 ViewPathCell.propTypes = {
+  file: PropTypes.shape({}).isRequired,
+};
+
+export const DataTypeCell = ({ file }) => {
+  const dataType = file.metadata ? file.metadata.data_type : file.type;
+
+  const formatDatatype = (data_type) =>
+    data_type
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+  return dataType ? (
+    <span className="dataTypeBox">{formatDatatype(dataType)}</span>
+  ) : null;
+};
+
+DataTypeCell.propTypes = {
   file: PropTypes.shape({}).isRequired,
 };

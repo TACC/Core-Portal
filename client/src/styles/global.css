@@ -31,7 +31,7 @@
 @import url('./components/bootstrap.nav.css');
 @import url('./components/bootstrap.utils.css');
 @import url('./components/bootstrap.button.css');
-@import url('./components/mui.tabs.css');
+@import url('./components/bootstrap.tooltip.css');
 
 /* TRUMPS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */

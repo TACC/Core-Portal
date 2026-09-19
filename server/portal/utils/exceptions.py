@@ -2,6 +2,7 @@
 .. module:: portal.utils.exceptions
    :synopsis: Exceptions used across the portal
 """
+
 from requests.exceptions import RequestException
 from requests.models import Response
 
@@ -30,9 +31,9 @@ class PortalException(RequestException):
     >>>     raise PortalException("New Exception message", request = e.request, response = e.response)
 
     """
-    def __init__(self, message=None, status=None,
-                 extra=None, *args, **kwargs):
-        super(PortalException, self).__init__(*args, **kwargs)
+
+    def __init__(self, message=None, status=None, extra=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         response = self.response or Response()
         response.status_code = status or response.status_code
         response.reason = message or response.reason
@@ -43,9 +44,6 @@ class PortalException(RequestException):
 
 class ApiMethodNotAllowed(PortalException):
     """Custom 405 Method Not Allowed Exception"""
+
     def __init__(self, extra=None, *args, **kwargs):
-        super(ApiMethodNotAllowed, self).__init__(
-            message='Method Not Allowed',
-            status=405,
-            extra=extra
-            )
+        super().__init__(message="Method Not Allowed", status=405, extra=extra)

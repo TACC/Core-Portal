@@ -1,5 +1,5 @@
 import React from 'react';
-import useUserNews from 'hooks/news/useUserNews';
+import { useUserNews } from '@tacc/core-hooks';
 import { LoadingSpinner, Pill, SectionTableWrapper } from '_common';
 import { Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';

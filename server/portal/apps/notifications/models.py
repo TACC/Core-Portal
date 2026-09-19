@@ -1,9 +1,10 @@
-from django.db import models
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import timezone
-import logging
 import json
+import logging
+
 import six
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -13,29 +14,30 @@ class BaseNotify(models.Model):
 
     These are the base fields that every notification should have.
     """
+
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=timezone.now, blank=True)
     # Status should be SUCCESS, INFO, ERROR, WARNING,
     status = models.CharField(max_length=255)
     jobId = models.CharField(max_length=255, blank=True)
-    operation = models.CharField(max_length=255, default='')
-    message = models.TextField(default='')
-    extra = models.TextField(default='')
-    action_link = models.TextField(default='')
+    operation = models.CharField(max_length=255, default="")
+    message = models.TextField(default="")
+    extra = models.TextField(default="")
+    action_link = models.TextField(default="")
 
-    SUCCESS = GREEN = 'SUCCESS'
-    INFO = BLUE = 'INFO'
-    ERROR = RED = 'ERROR'
-    WARNING = ORANGE = 'WARNING'
-    EVENT_TYPE = 'event_type'
-    JOB_ID = 'jobId'
-    STATUS = 'status'
-    USER = USERNAME = 'user'
-    EXTRA = CONTENT = 'extra'
-    MESSAGE = 'message'
-    OPERATION = 'operation'
-    ACTION_LINK = 'action_link'
-    READ = 'read'
+    SUCCESS = GREEN = "SUCCESS"
+    INFO = BLUE = "INFO"
+    ERROR = RED = "ERROR"
+    WARNING = ORANGE = "WARNING"
+    EVENT_TYPE = "event_type"
+    JOB_ID = "jobId"
+    STATUS = "status"
+    USER = USERNAME = "user"
+    EXTRA = CONTENT = "extra"
+    MESSAGE = "message"
+    OPERATION = "operation"
+    ACTION_LINK = "action_link"
+    READ = "read"
 
     def to_dict(self):
         try:
@@ -43,14 +45,14 @@ class BaseNotify(models.Model):
         except ValueError:
             extra = {}
         d = {
-            'event_type': self.event_type,
-            'datetime': self.datetime.strftime('%s'),
-            'status': self.status,
-            'operation': self.operation,
-            'message': self.message,
-            'extra': extra,
-            'pk': self.pk,
-            'action_link': self.action_link
+            "event_type": self.event_type,
+            "datetime": self.datetime.strftime("%s"),
+            "status": self.status,
+            "operation": self.operation,
+            "message": self.message,
+            "extra": extra,
+            "pk": self.pk,
+            "action_link": self.action_link,
         }
         return d
 
@@ -63,10 +65,10 @@ class BaseNotify(models.Model):
                     try:
                         json.dumps(self.extra[key])
                     except TypeError:
-                        logger.debug('Keys with error: %s . Value: %s', key, self.extra[key])
+                        logger.debug("Keys with error: %s . Value: %s", key, self.extra[key])
                         raise
 
-        super(BaseNotify, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def extra_content(self):
@@ -91,12 +93,8 @@ class Notification(BaseNotify):
         self.save()
 
     def to_dict(self):
-        event_data = super(Notification, self).to_dict()
-        event_data.update({
-            'user': self.user,
-            'read': self.read,
-            'deleted': self.deleted
-        })
+        event_data = super().to_dict()
+        event_data.update({"user": self.user, "read": self.read, "deleted": self.deleted})
         return event_data
 
 
@@ -104,8 +102,6 @@ class Broadcast(BaseNotify):
     group = models.CharField(max_length=20)
 
     def to_dict(self):
-        event_data = super(Broadcast, self).to_dict()
-        event_data.update({
-            'group': self.group
-        })
+        event_data = super().to_dict()
+        event_data.update({"group": self.group})
         return event_data

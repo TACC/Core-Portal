@@ -120,22 +120,37 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
       {...getTableProps()}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const { key: headerGroupKey, ...headerGroupProps } =
+            headerGroup.getHeaderGroupProps();
+          return (
+            <tr key={headerGroupKey} {...headerGroupProps}>
+              {headerGroup.headers.map((column) => {
+                const { key: columnKey, ...columnProps } =
+                  column.getHeaderProps();
+                return (
+                  <th key={columnKey} {...columnProps}>
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
             <tr key={row.id}>
-              {row.cells.map((cell) => (
-                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-              ))}
+              {row.cells.map((cell) => {
+                const { key: cellKey, ...cellProps } = cell.getCellProps();
+                return (
+                  <td key={cellKey} {...cellProps}>
+                    {cell.render('Cell')}
+                  </td>
+                );
+              })}
             </tr>
           );
         })}

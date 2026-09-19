@@ -215,6 +215,9 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 # PROJECTS SETTINGS
 #######################
 
+# Enable the project metadata graph (entity/file metadata, publishing)
+_PORTAL_PROJECTS_ENABLE_METADATA = False
+
 _PORTAL_PROJECTS_SYSTEM_PREFIX = "cep.project"
 _PORTAL_PROJECTS_ID_PREFIX = "CEP"
 _PORTAL_PROJECTS_ROOT_DIR = "/corral/tacc/aci/CEP/projects"
@@ -223,6 +226,30 @@ _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+
+# For portals with publication and review systems
+_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = "cep.project.review"
+_PORTAL_PROJECTS_REVIEW_ROOT_DIR = "/corral/tacc/aci/CEP/projects/review"
+_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "cep.project.review"
+
+_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "cep.project.published"
+_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = "/corral/tacc/aci/CEP/projects/published"
+_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "cep.project.published"
+
+_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
+_PROJECT_ADMIN_GROUP = "Project Admin"
+
+#######################
+# PUBLICATION SETTINGS
+#######################
+
+_PORTAL_PUBLICATION_PUBLISHER = "CEP"
+_PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
+_PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+_DATACITE_URL = "https://api.test.datacite.org/"
 
 ########################
 # Custom Portal Template Assets
@@ -267,6 +294,7 @@ _WORKBENCH_SETTINGS = {
         "version": "latest",  # Can be set to "" to use the latest version
     },
     "makePublic": False,
+    "canPublish": False,
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
@@ -276,6 +304,11 @@ _WORKBENCH_SETTINGS = {
     "showUserNews": False,
     "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
     "hasUserGuide": True,
+    "hasCustomSagas": False,
+    "hasCustomEndpoints": False,
+    "hasCustomDataFilesToolbarChecks": False,
+    "addons": [],
+    "showDataFileType": False,
     "onboardingCompleteRedirect": "/workbench/",
     "minDescriptionLength": 50,
     "maxTitleLength": 150,
@@ -310,3 +343,7 @@ _PORTAL_ELEVATED_ROLES = {
 # PORTAL INTERNAL DOCS SETTINGS
 ##################################
 _INTERNAL_DOCS_URL = "core/internal-docs/"
+
+
+_SMTP_HOST = "relay.tacc.utexas.edu"
+_DEFAULT_FROM_EMAIL = "no-reply@cep.tacc.utexas.edu"

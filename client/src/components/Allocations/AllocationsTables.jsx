@@ -119,31 +119,41 @@ export const AllocationsTable = ({ page }) => {
       className={`allocations-table InfiniteScrollTable o-fixed-header-table ${styles.root}`}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                {column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const { key: headerGroupKey, ...headerGroupProps } =
+            headerGroup.getHeaderGroupProps();
+          return (
+            <tr key={headerGroupKey} {...headerGroupProps}>
+              {headerGroup.headers.map((column) => {
+                const { key: columnKey, ...columnProps } =
+                  column.getHeaderProps(column.getSortByToggleProps());
+                return (
+                  <th key={columnKey} {...columnProps}>
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
           rows.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps({
-                      className: cell.column.className,
-                    })}
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                ))}
+              <tr key={rowKey} {...rowProps}>
+                {row.cells.map((cell) => {
+                  const { key: cellKey, ...cellProps } = cell.getCellProps({
+                    className: cell.column.className,
+                  });
+                  return (
+                    <td key={cellKey} {...cellProps}>
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })

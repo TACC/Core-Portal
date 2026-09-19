@@ -1,0 +1,19 @@
+/* License */
+
+ul.license-list {
+    padding-left: unset;
+    list-style: none;
+}
+
+.license {
+    /* … */
+}
+.license__title:has(.icon) {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+.license__details {
+    /* to align with license__title text */
+    padding-left: 3.5em; /* icon width + gap between icon and text */
+}
