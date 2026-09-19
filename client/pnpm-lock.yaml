@@ -163,8 +163,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(rollup@4.63.1)
       '@tacc/core-styles':
-        specifier: ^2.58.0
-        version: 2.58.0(@csstools/postcss-design-tokens@4.0.5(postcss@8.5.28))(commander@9.5.0)(cssnano@5.1.15(postcss@8.5.28))(js-yaml@4.3.2)(merge-lite@1.0.2)(node-cmd@5.0.0)(postcss-banner@4.0.1)(postcss-cli@10.1.0(postcss@8.5.28))(postcss-import@15.1.0(postcss@8.5.28))(postcss-mixins@10.0.1(postcss@8.5.28))(postcss-preset-env@10.6.1(postcss@8.5.28))(postcss-replace@2.0.1(postcss@8.5.28))(postcss@8.5.28)
+        specifier: github:TACC/Core-Styles#fix/portal-info-colors
+        version: https://codeload.github.com/TACC/Core-Styles/tar.gz/731130d8b99e9b16e9c229946f6c3424f21a3e6a(@csstools/postcss-design-tokens@4.0.5(postcss@8.5.28))(commander@9.5.0)(cssnano@5.1.15(postcss@8.5.28))(js-yaml@4.3.2)(merge-lite@1.0.2)(node-cmd@5.0.0)(postcss-banner@4.0.1)(postcss-cli@10.1.0(postcss@8.5.28))(postcss-import@15.1.0(postcss@8.5.28))(postcss-mixins@10.0.1(postcss@8.5.28))(postcss-preset-env@10.6.1(postcss@8.5.28))(postcss-replace@2.0.1(postcss@8.5.28))(postcss@8.5.28)
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.3.3(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
@@ -328,7 +328,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.18
-        version: 4.1.11(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0(vitest@5.0.0))(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
+        version: 4.1.11(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0)(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
 
   packages/test-fixtures:
     dependencies:
@@ -1778,8 +1778,9 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@tacc/core-styles@2.58.0':
-    resolution: {integrity: sha512-MV70SVWot/n+96vDPmSRs8mRF0gM+H/XcY1Ba1/Ht1B19NWLnSIIvx89QDT4vQWP7VemFTOd9siaHoQtNpZVlA==}
+  '@tacc/core-styles@https://codeload.github.com/TACC/Core-Styles/tar.gz/731130d8b99e9b16e9c229946f6c3424f21a3e6a':
+    resolution: {gitHosted: true, integrity: sha512-blPTyqe1nliQv4qZXi0nwKEkQeAazRsBlgZGlIkTl84VnRQHj/OLUf0+GZCBvJDwYHR9OHeM6uimtxD/2OOMeQ==, tarball: https://codeload.github.com/TACC/Core-Styles/tar.gz/731130d8b99e9b16e9c229946f6c3424f21a3e6a}
+    version: 2.58.2
     engines: {node: '>=22.x', npm: '>=7.x'}
     hasBin: true
     peerDependencies:
@@ -7661,7 +7662,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@tacc/core-styles@2.58.0(@csstools/postcss-design-tokens@4.0.5(postcss@8.5.28))(commander@9.5.0)(cssnano@5.1.15(postcss@8.5.28))(js-yaml@4.3.2)(merge-lite@1.0.2)(node-cmd@5.0.0)(postcss-banner@4.0.1)(postcss-cli@10.1.0(postcss@8.5.28))(postcss-import@15.1.0(postcss@8.5.28))(postcss-mixins@10.0.1(postcss@8.5.28))(postcss-preset-env@10.6.1(postcss@8.5.28))(postcss-replace@2.0.1(postcss@8.5.28))(postcss@8.5.28)':
+  '@tacc/core-styles@https://codeload.github.com/TACC/Core-Styles/tar.gz/731130d8b99e9b16e9c229946f6c3424f21a3e6a(@csstools/postcss-design-tokens@4.0.5(postcss@8.5.28))(commander@9.5.0)(cssnano@5.1.15(postcss@8.5.28))(js-yaml@4.3.2)(merge-lite@1.0.2)(node-cmd@5.0.0)(postcss-banner@4.0.1)(postcss-cli@10.1.0(postcss@8.5.28))(postcss-import@15.1.0(postcss@8.5.28))(postcss-mixins@10.0.1(postcss@8.5.28))(postcss-preset-env@10.6.1(postcss@8.5.28))(postcss-replace@2.0.1(postcss@8.5.28))(postcss@8.5.28)':
     dependencies:
       '@csstools/postcss-design-tokens': 4.0.5(postcss@8.5.28)
       commander: 9.5.0
@@ -12223,7 +12224,7 @@ snapshots:
       sugarss: 4.0.1(postcss@8.5.28)
       yaml: 2.9.0
 
-  vitest@4.1.11(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0(vitest@5.0.0))(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0)):
+  vitest@4.1.11(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0)(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.11
       '@vitest/mocker': 4.1.11(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
