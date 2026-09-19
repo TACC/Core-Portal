@@ -106,9 +106,25 @@ TEMPLATES = [
                 "portal.utils.contextprocessors.analytics",
                 "portal.utils.contextprocessors.debug",
                 "portal.utils.contextprocessors.messages",
+                "django_settings_export.settings_export",
             ],
         },
     },
+]
+
+# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context processor above),
+# every `{{ settings.* }}` reference in a template (base.html's PORTAL_NAMESPACE/PORTAL_ICON_
+# FILENAME/PORTAL_CSS_FILENAMES, etc.) silently renders as an empty string under test settings,
+# since Django templates don't error on an undefined context variable.
+SETTINGS_EXPORT = [
+    "PORTAL_ICON_FILENAME",
+    "PORTAL_CSS_FILENAMES",
+    "DEBUG",
+    "GOOGLE_ANALYTICS_PROPERTY_ID",
+    "PORTAL_NAMESPACE",
+    "WORKBENCH_SETTINGS",
+    "DOCS_CHATBOT_URL",
+    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
 ]
 
 WSGI_APPLICATION = "portal.wsgi.application"
@@ -187,6 +203,12 @@ PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 PROJECT_ADMIN_GROUP = "Project Admin"
 
 
+PORTAL_CSS_FILENAMES = []
+
+GOOGLE_ANALYTICS_PROPERTY_ID = None
+
+DOCS_CHATBOT_URL = None
+
 PORTAL_KEYS_MANAGER = "portal.apps.accounts.managers.ssh_keys.KeysManager"
 PORTAL_PROJECTS_PEMS_APP_ID = "pems.app-test"
 
@@ -199,6 +221,28 @@ PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "test.project.published"
 PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
 
 PORTAL_PUBLICATION_PUBLISHER = None
+
+PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = "test.project.review"
+
+PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "test.project.review"
+
+PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
+
+PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+
+PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
+
+PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
+
+PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+
+PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+
+DATACITE_URL = "https://api.test.datacite.org/"
+
+DATACITE_USER = "test.datacite.user"
+
+DATACITE_PASS = "test-datacite-pass"
 
 PORTAL_PROJECTS_ID_PREFIX = "test.project"
 
