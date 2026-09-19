@@ -1,9 +1,11 @@
-"""Auth models
-"""
+"""Auth models"""
+
 import logging
 import time
-from django.db import models
+from urllib.parse import urlparse
+
 from django.conf import settings
+from django.db import models
 from tapipy.tapis import Tapis
 
 logger = logging.getLogger(__name__)
@@ -17,7 +19,8 @@ class TapisOAuthToken(models.Model):
 
     Use this class to store login details as well as refresh a token.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='tapis_oauth', on_delete=models.CASCADE)
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="tapis_oauth", on_delete=models.CASCADE)
     access_token = models.CharField(max_length=2048)
     refresh_token = models.CharField(max_length=2048)
     expires_in = models.BigIntegerField()
@@ -58,25 +61,36 @@ class TapisOAuthToken(models.Model):
         :rtype: dict
         """
         return {
-            'access_token': self.access_token,
-            'refresh_token': self.refresh_token,
-            'created': self.created,
-            'expires_in': self.expires_in
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token,
+            "created": self.created,
+            "expires_in": self.expires_in,
         }
 
     @property
-    def client(self):
+    def client(self) -> Tapis:
         """Tapis client.
+
+        Note: `tenant_id` is derived from TAPIS_TENANT_BASEURL (e.g. 'https://portals.tapis.io'
+        yields 'portals') and passed explicitly to the Tapis constructor. Without it,
+        tapipy looks it up by fetching all tenants from the Tapis registry
+        (GET /v3/sites + GET /v3/tenants) on every instantiation to derive tenant_id from
+        base_url. We pass `tenant_id` to constructor to avoid those two extra network calls.
 
         :return: Tapis client using refresh token.
         :rtype: :class:Tapis
         """
-        return Tapis(base_url=getattr(settings, 'TAPIS_TENANT_BASEURL'),
-                     client_id=getattr(settings, 'TAPIS_CLIENT_ID'),
-                     client_key=getattr(settings, 'TAPIS_CLIENT_KEY'),
-                     access_token=self.access_token,
-                     refresh_token=self.refresh_token,
-                     )
+        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(".")[0]
+
+        client = Tapis(
+            base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
+            tenant_id=tenant_id,
+            client_id=getattr(settings, "TAPIS_CLIENT_ID"),
+            client_key=getattr(settings, "TAPIS_CLIENT_KEY"),
+            access_token=self.access_token,
+            refresh_token=self.refresh_token,
+        )
+        return client
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -84,12 +98,18 @@ class TapisOAuthToken(models.Model):
         self.save()
 
     def refresh_tokens(self):
-        self.client.refresh_tokens()
-        self.update(created=int(time.time()),
-                    access_token=self.client.access_token.access_token,
-                    expires_in=self.client.access_token.expires_in().total_seconds())
+        client = self.client
+        client.refresh_tokens()
+        self.update(
+            created=int(time.time()),
+            access_token=client.access_token.access_token,
+            expires_in=client.access_token.expires_in().total_seconds(),
+        )
 
     def __str__(self):
         access_token_masked = self.access_token[-5:]
         refresh_token_masked = self.refresh_token[-5:]
-        return f'access_token:{access_token_masked} refresh_token:{refresh_token_masked} expires_in:{self.expires_in} created:{self.created}'
+        return (
+            f"access_token:{access_token_masked} refresh_token:{refresh_token_masked} "
+            f"expires_in:{self.expires_in} created:{self.created}"
+        )

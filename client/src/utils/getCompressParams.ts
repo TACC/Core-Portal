@@ -26,7 +26,7 @@ export const getCompressParams = (
     }`,
     archiveSystemId: archiveSystem,
     archiveSystemDir: archivePath,
-    archiveOnAppError: false,
+    archiveMode: 'NEVER',
     appId: compressApp.id,
     appVersion: compressApp.version,
     parameterSet: {

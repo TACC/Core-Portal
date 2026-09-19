@@ -10,9 +10,12 @@ import { vi } from 'vitest';
 import { useExtract } from 'hooks/datafiles/mutations';
 
 const mockStore = configureStore();
-global.fetch = vi.fn();
+//global.fetch = vi.fn();
 
 describe('DataFiles', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
   afterEach(() => {
     fetch.mockClear();
   });
@@ -22,12 +25,12 @@ describe('DataFiles', () => {
       workbench: {
         config: {
           extract: {
-            id: 'extract',
+            id: 'extract-express',
             version: '0.0.1',
           },
           compress: {
-            id: 'compress',
-            version: '0.0.4',
+            id: 'compress-express',
+            version: '0.0.1',
           },
         },
       },

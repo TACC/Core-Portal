@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
-  Nav,
-  NavItem,
-  NavLink,
   Dropdown,
   DropdownMenu,
   DropdownToggle,
@@ -12,12 +9,13 @@ import {
 } from 'reactstrap';
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
-
-import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { Icon } from '_common';
+import { useTapisToken } from 'hooks/datafiles';
+import { useRouteMatch } from 'react-router-dom';
+import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
 
 const DataFilesAddButton = ({ readOnly }) => {
+  const { data: tapisToken } = useTapisToken();
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -34,6 +32,9 @@ const DataFilesAddButton = ({ readOnly }) => {
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
+  );
+  const maxSizeLabel = useSelector(
+    (state) => state.workbench.config.uploadModalMaxSizeLabel
   );
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
@@ -82,19 +83,20 @@ const DataFilesAddButton = ({ readOnly }) => {
           </DropdownItem>
           {sharedWorkspaces && !sharedWorkspaces.readOnly && (
             <DropdownItem onClick={toggleAddProjectModal}>
-              <i className="icon-folder" /> Shared Workspace
+              <i className="icon-folder" />{' '}
+              {getSharedWorkspaceDisplayName(sharedWorkspaces.name)}
             </DropdownItem>
           )}
           <DropdownItem divider />
           <DropdownItem
             className={`complex-dropdown-item ${styles[writeItemStyle]}`}
             onClick={toggleUploadModal}
-            disabled={disabled}
+            disabled={disabled || !tapisToken}
           >
             <i className={`icon-upload`} />
             <span className="multiline-menu-item-wrapper">
               Upload
-              <small> Up to 500mb </small>
+              <small> Up to {maxSizeLabel || '2GB'} </small>
             </span>
           </DropdownItem>
         </DropdownMenu>
@@ -103,26 +105,42 @@ const DataFilesAddButton = ({ readOnly }) => {
   );
 };
 
-const DataFilesSidebar = ({ readOnly }) => {
+const DataFilesSidebar = ({ readOnly = false }) => {
   const systems = useSelector(
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
+
+  const user = useSelector((state) => state.authenticatedUser.user);
 
   const match = useRouteMatch();
 
   var sidebarItems = [];
 
   systems.forEach((sys) => {
-    sidebarItems.push({
-      to: `${match.path}/${sys.api}/${sys.scheme}/${
-        sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
-      }`,
-      label: sys.name,
-      iconName: sys.icon || 'my-data',
-      disabled: false,
-      hidden: false,
-    });
+    if (sys.scheme === 'projects') {
+      if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
+        sidebarItems.push({
+          to: `${match.path}/${sys.api}/${sys.scheme}/${sys.system}`,
+          label: sys.name,
+          iconName: sys.icon || 'my-data',
+          disabled: false,
+          hidden: false,
+          category: sys.resourceProvider,
+        });
+      }
+    } else {
+      sidebarItems.push({
+        to: `${match.path}/${sys.api}/${sys.scheme}/${
+          sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
+        }`,
+        label: sys.name,
+        iconName: sys.icon || 'my-data',
+        disabled: false,
+        hidden: false,
+        category: sys.resourceProvider,
+      });
+    }
   });
 
   const addItems = [
@@ -141,10 +159,6 @@ const DataFilesSidebar = ({ readOnly }) => {
 
 DataFilesSidebar.propTypes = {
   readOnly: PropTypes.bool,
-};
-
-DataFilesSidebar.defaultProps = {
-  readOnly: false,
 };
 
 export default DataFilesSidebar;

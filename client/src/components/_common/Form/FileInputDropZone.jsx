@@ -11,13 +11,13 @@ import './FileInputDropZone.scss';
  * and user can manage (e.g. delete those files) directly in this component.
  */
 function FileInputDropZone({
-  files,
+  files = null,
   onSetFiles,
-  onRejectedFiles,
+  onRejectedFiles = null,
   maxSize,
   maxSizeMessage,
-  onRemoveFile,
-  isSubmitted,
+  onRemoveFile = null,
+  isSubmitted = false,
 }) {
   const [rejectedFiles, setRejectedFiles] = useState([]);
 
@@ -55,7 +55,6 @@ function FileInputDropZone({
   const showFileList = (files && files.length > 0) || rejectedFiles.length > 0;
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <div {...getRootProps()} className="dropzone-area">
       <input {...getInputProps()} />
       {!showFileList && (
@@ -123,13 +122,6 @@ FileInputDropZone.propTypes = {
   isSubmitted: PropTypes.bool,
   maxSizeMessage: PropTypes.string.isRequired,
   maxSize: PropTypes.number.isRequired,
-};
-
-FileInputDropZone.defaultProps = {
-  files: null,
-  isSubmitted: false,
-  onRejectedFiles: null,
-  onRemoveFile: null,
 };
 
 export default FileInputDropZone;

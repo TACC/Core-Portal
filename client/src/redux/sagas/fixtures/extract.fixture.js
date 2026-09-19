@@ -5,7 +5,7 @@ export const extractApp = {
     sharedAppCtx: true,
     isPublic: true,
     tenant: 'portals',
-    id: 'extract',
+    id: 'extract-express',
     version: '0.0.1',
     description: 'Extract a tar, tar.gz, tgz, gz, or zip file.',
     owner: 'wma_prtl',

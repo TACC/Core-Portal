@@ -4,6 +4,7 @@ export const initialState = {
   portalName: '',
   setupComplete: window.__INITIAL_SETUP_COMPLETE__,
   recaptchaSiteKey: null,
+  isTACCPortal: null,
 };
 
 export default function workbench(state = initialState, action) {

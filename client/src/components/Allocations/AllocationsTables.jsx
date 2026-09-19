@@ -3,7 +3,14 @@ import { useTable, useSortBy } from 'react-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { string } from 'prop-types';
 import { Message } from '_common';
-import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
+import {
+  Title,
+  Team,
+  Systems,
+  Awarded,
+  Remaining,
+  Expires,
+} from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
 import styles from './AllocationsTables.module.scss';
@@ -17,7 +24,11 @@ export const useAllocations = (page) => {
     () => [
       {
         Header: 'Title',
-        accessor: 'projectName',
+        accessor: ({ title, projectName }) => ({
+          title,
+          projectName,
+        }),
+        Cell: Title,
         sortType: 'alphanumeric',
       },
       {
@@ -108,31 +119,41 @@ export const AllocationsTable = ({ page }) => {
       className={`allocations-table InfiniteScrollTable o-fixed-header-table ${styles.root}`}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                {column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const { key: headerGroupKey, ...headerGroupProps } =
+            headerGroup.getHeaderGroupProps();
+          return (
+            <tr key={headerGroupKey} {...headerGroupProps}>
+              {headerGroup.headers.map((column) => {
+                const { key: columnKey, ...columnProps } =
+                  column.getHeaderProps(column.getSortByToggleProps());
+                return (
+                  <th key={columnKey} {...columnProps}>
+                    {column.render('Header')}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
           rows.map((row) => {
             prepareRow(row);
+            const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps({
-                      className: cell.column.className,
-                    })}
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                ))}
+              <tr key={rowKey} {...rowProps}>
+                {row.cells.map((cell) => {
+                  const { key: cellKey, ...cellProps } = cell.getCellProps({
+                    className: cell.column.className,
+                  });
+                  return (
+                    <td key={cellKey} {...cellProps}>
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })

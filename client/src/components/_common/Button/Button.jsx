@@ -28,16 +28,16 @@ export const ATTRIBUTES = ['button', 'submit', 'reset'];
 
 const Button = ({
   children,
-  className,
-  iconNameBefore,
-  iconNameAfter,
-  type,
-  size,
-  dataTestid,
-  disabled,
-  onClick,
-  attr,
-  isLoading,
+  className = '',
+  iconNameBefore = '',
+  iconNameAfter = '',
+  type = 'secondary',
+  size = '', // unless `type="link", defaults to `short` after `propTypes`
+  dataTestid = undefined,
+  disabled = false,
+  onClick = null,
+  attr = 'button',
+  isLoading = false,
 }) => {
   function onclick(e) {
     if (disabled) {
@@ -50,7 +50,7 @@ const Button = ({
   }
 
   // Manage prop warnings
-  /* eslint-disable no-console */
+
   if (type === 'link' && size) {
     size = '';
     // Component will work, except `size` is ineffectual
@@ -72,7 +72,6 @@ const Button = ({
         'is automatically assigned `size="auto"`.'
     );
   }
-  /* eslint-enable no-console */
 
   return (
     <button
@@ -129,17 +128,4 @@ Button.propTypes = {
   attr: PropTypes.oneOf(ATTRIBUTES),
   isLoading: PropTypes.bool,
 };
-Button.defaultProps = {
-  className: '',
-  iconNameBefore: '',
-  iconNameAfter: '',
-  type: 'secondary',
-  size: '', // unless `type="link", defaults to `short` after `propTypes`
-  dataTestid: undefined,
-  disabled: false,
-  onClick: null,
-  attr: 'button',
-  isLoading: false,
-};
-
 export default Button;

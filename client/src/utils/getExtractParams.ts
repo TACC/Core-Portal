@@ -24,7 +24,7 @@ export const getExtractParams = (
     }`,
     archiveSystemId: file.system,
     archiveSystemDir: archivePath,
-    archiveOnAppError: false,
+    archiveMode: 'NEVER',
     appId: extractApp.id,
     appVersion: extractApp.version,
     parameterSet: {

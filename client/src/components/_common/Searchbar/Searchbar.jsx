@@ -8,17 +8,18 @@ import styles from './Searchbar.module.scss';
 
 const Searchbar = ({
   api,
-  scheme,
-  system,
-  path,
-  resultCount,
-  dataType,
+  scheme = '',
+  system = '',
+  path = '',
+  resultCount = 0,
+  dataType = '',
   filterTypes,
-  infiniteScroll,
-  className,
-  siteSearch,
+  infiniteScroll = true,
+  forbidWhitespace,
+  className = '',
+  siteSearch = false,
   sectionName,
-  disabled,
+  disabled = false,
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
@@ -75,6 +76,19 @@ const Searchbar = ({
     history.push(location.pathname);
   };
 
+  const getValidationMessage = (value) => {
+    if (/\s/.test(value) && forbidWhitespace)
+      return 'Search term must be a single word with no spaces.';
+    if (value.length < 3)
+      return 'Include at least 3 characters in your search.';
+    return '';
+  };
+
+  const onInput = (e) =>
+    e.target.setCustomValidity(getValidationMessage(e.target.value));
+  const onInvalid = (e) =>
+    e.target.setCustomValidity(getValidationMessage(e.target.value));
+
   const onChange = (e) => setQuery(e.target.value);
 
   return (
@@ -98,12 +112,8 @@ const Searchbar = ({
         <input
           type="search"
           minLength="3"
-          onInput={(e) => e.target.setCustomValidity('')}
-          onInvalid={(e) =>
-            e.target.setCustomValidity(
-              'Include at least 3 characters in your search.'
-            )
-          }
+          onInput={onInput}
+          onInvalid={onInvalid}
           onChange={onChange}
           value={query || ''}
           name="query"
@@ -165,24 +175,13 @@ Searchbar.propTypes = {
   resultCount: PropTypes.number,
   filterTypes: PropTypes.arrayOf(PropTypes.string),
   infiniteScroll: PropTypes.bool,
+  forbidWhitespace: PropTypes.bool,
   dataType: PropTypes.string.isRequired,
   sectionName: PropTypes.string,
   /** Additional className(s) for the root element */
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
   disabled: PropTypes.bool,
-};
-
-Searchbar.defaultProps = {
-  className: '',
-  scheme: '',
-  system: '',
-  path: '',
-  resultCount: 0,
-  siteSearch: false,
-  disabled: false,
-  infiniteScroll: true,
-  dataType: '',
 };
 
 export default Searchbar;

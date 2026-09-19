@@ -19,17 +19,19 @@ export const TableTemplate = ({ attributes }) => {
       <tbody>
         {rows.map((row) => {
           prepareRow(row);
+          const { key: rowKey, ...rowProps } = row.getRowProps();
           return row.cells.map((cell) => {
             const className =
               cell.column.Header === 'Research Bio' ? 'research-bio' : null;
+            const { key: cellKey, ...cellProps } = cell.getCellProps({
+              className,
+            });
             return (
-              <tr {...row.getRowProps()} key={cell.getCellProps().key}>
+              <tr {...rowProps} key={cellKey}>
                 <th className={className}>
                   <span>{cell.column.render('Header')}</span>
                 </th>
-                <td {...cell.getCellProps({ className })} key={null}>
-                  {cell.render('Cell')}
-                </td>
+                <td {...cellProps}>{cell.render('Cell')}</td>
               </tr>
             );
           });
@@ -106,7 +108,7 @@ export const ProfileInformation = () => {
     </SectionTableWrapper>
   );
 };
-/* eslint-disable react/no-danger */
+
 const LicenseCell = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
@@ -158,7 +160,7 @@ LicenseCell.propTypes = {
     }),
   }).isRequired,
 };
-/* eslint-enable react/no-danger */
+
 export const Licenses = () => {
   const { licenses } = useSelector((state) => state.profile.data);
 
@@ -290,7 +292,7 @@ export const PasswordInformation = () => {
     </article>
   );
 };
-const WebsiteCell = ({ cell: { value } }) => {
+const WebsiteCell = ({ cell: { value } = { value: '' } }) => {
   const website = value ? value.trim() : '';
   if (website) {
     const url = !/^(?:f|ht)tps?:\/\//.test(website)
@@ -307,8 +309,7 @@ const WebsiteCell = ({ cell: { value } }) => {
 WebsiteCell.propTypes = {
   cell: shape({ value: string }),
 };
-WebsiteCell.defaultProps = { cell: { value: '' } };
-const OrcidCell = ({ cell: { value } }) => (
+const OrcidCell = ({ cell: { value } = { value: '' } }) => (
   <a
     className="wb-link"
     href={`https://orcid.org/${value}`}
@@ -319,4 +320,3 @@ const OrcidCell = ({ cell: { value } }) => (
   </a>
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
-OrcidCell.defaultProps = WebsiteCell.defaultProps;

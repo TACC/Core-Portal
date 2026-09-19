@@ -176,6 +176,11 @@ export const updateValuesForQueue = (app, values) => {
     updatedValues.maxMinutes = queue.maxMinutes;
   }
 
+  updatedValues.queueSchedulerOptions = {};
+  queue.schedulerOptions?.forEach((opt) => {
+    updatedValues.queueSchedulerOptions[opt.name] = opt.arg;
+  });
+
   /* // TODOv3  HH:MM:SS form https://jira.tacc.utexas.edu/browse/WP-99
 
     const runtimeRegExp = new RegExp(
@@ -260,13 +265,12 @@ export const getAppQueueValues = (app, queues) => {
         (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
           app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
     )
-    .map((q) => q.name)
-    .filter((queueName) =>
+    .filter((q) =>
       app.definition.notes.queueFilter
-        ? app.definition.notes.queueFilter.includes(queueName)
+        ? app.definition.notes.queueFilter.includes(q.name)
         : true
     )
-    .sort();
+    .sort((a, b) => a.name.localeCompare(b.name));
 };
 
 /**
@@ -349,7 +353,7 @@ export const isTargetPathEmpty = (targetPathFieldValue) => {
 
   targetPathFieldValue = targetPathFieldValue.trim();
 
-  if (targetPathFieldValue.trim() === '') {
+  if (targetPathFieldValue === '' || targetPathFieldValue === '*') {
     return true;
   }
 
@@ -365,7 +369,7 @@ export const isTargetPathEmpty = (targetPathFieldValue) => {
  */
 export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
   if (isTargetPathEmpty(targetPathFieldValue)) {
-    return '*';
+    return '';
   }
 
   return targetPathFieldValue;
@@ -440,8 +444,8 @@ export const getAllocationList = (app, allocations, allocationToExecSysMap) => {
 /**
  * @param {*} allocationList
  * @param {*} portalAlloc
- * @returns portalAlloc if available, otherwise first item in allocation list.
- *          If list is empty, returns empty string.
+ * @returns portalAlloc if available. Otherwise, the first item in the allocationList if it is only one item long.
+ *          If neither of those are true, this returns empty string to force the user to choose.
  */
 export const getDefaultAllocation = (allocationList, portalAlloc) => {
   if (allocationList.includes(portalAlloc)) {
@@ -463,4 +467,36 @@ export const getExecSystemIdValidation = (app) => {
         .required(`A system is required to run this application.`)
         .oneOf(app.execSystems?.map((e) => e.id) ?? [])
     : Yup.string().notRequired();
+};
+
+export const getQueueSchedulerOptionsValidation = (queue) => {
+  if (!queue?.schedulerOptions) {
+    return undefined;
+  }
+
+  const validationShape = {};
+  queue.schedulerOptions.forEach((opt) => {
+    validationShape[opt.name] = Yup[opt.notes?.fieldType || 'string']();
+    if (opt.notes?.min) {
+      validationShape[opt.name] = validationShape[opt.name].min(
+        opt.notes.min,
+        `Must be at least ${opt.notes.min}`
+      );
+    }
+    if (opt.notes?.max) {
+      validationShape[opt.name] = validationShape[opt.name].max(
+        opt.notes.max,
+        `Must be at most ${opt.notes.max}`
+      );
+    }
+  });
+
+  return Yup.object({
+    ...Object.assign(
+      {},
+      ...queue.schedulerOptions.map((opt) => ({
+        [opt.name]: validationShape[opt.name],
+      }))
+    ),
+  });
 };

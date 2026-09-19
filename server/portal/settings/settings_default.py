@@ -97,6 +97,9 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "icon": "publications",
         "readOnly": False,
         "hideSearchBar": False,
+        "defaultProject": True,
+        "system": "cep.project.root",
+        "rootDir": "/corral/tacc/aci/CEP/projects",
     },
 ]
 
@@ -104,11 +107,13 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 # DJANGO APP: ONBOARDING
 ########################
 """
-Onboarding steps
+Onboarding Steps
+
 Each step is an object, with the full package name of the step class and
 an associated settings object.
 - If the 'settings' key is omitted, steps will have a default value of None for their settings attribute.
 - If the '_PORTAL_USER_ACCOUNT_SETUP_STEPS' secret is set to [], onboarding will be skipped.
+
 Example:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
@@ -118,11 +123,18 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         }
     }
 ]
+
 Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
-        'settings': {}
+        'settings': {
+            # Option A: Restrict portal login based on a single allocation resource.
+            # 'expected_hosts': ['vista.tacc.utexas.edu']
+
+            # Option B: Restrict portal login based on multiple allocation resources.
+            # 'expected_hosts': ['vista.tacc.utexas.edu','frontera.tacc.utexas.edu']
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
@@ -155,6 +167,10 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             'credentials_systems': ['cloud.data']  # Tapis systems to grant user credentials with TMS
         }
     },
+    {
+        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
+        'settings': {}
+    }
 ]
 """
 
@@ -227,29 +243,33 @@ _WORKBENCH_SETTINGS = {
     "makeLink": True,
     "viewPath": True,
     "compressApp": {
-        "id": "compress",
-        "version": "0.0.4",  # Can be set to "" to use the latest version
-    },
-    "extractApp": {
-        "id": "extract",
+        "id": "compress-express",
         "version": "0.0.1",  # Can be set to "" to use the latest version
     },
-    "makePublic": True,
+    "extractApp": {
+        "id": "extract-express",
+        "version": "0.0.1",  # Can be set to "" to use the latest version
+    },
+    "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
     "showSubmissions": False,
     "hideAllocations": False,
     "hideManageAccount": False,
     "hideSystemStatus": False,
+    "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
+    "showUserNews": True,
     "hasUserGuide": True,
     "onboardingCompleteRedirect": "/workbench/",
-    "maxDescriptionLength": 800,
+    "minDescriptionLength": 50,
     "maxTitleLength": 150,
     "enableWorkspaceKeywords": True,
     "noPHISystem": "",
     "customDashboardSection": None,
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
+    "uploadModalMaxSizeLabel": "2GB",
+    "uploadModalMaxSizeValue": 2147483648,
     "jobsv2Title": "Historic Jobs",
 }
 

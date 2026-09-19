@@ -70,6 +70,33 @@ describe('DataFilesCopyModal', () => {
     expect(store.getActions()).toEqual([
       { type: 'GET_SYSTEM_MONITOR' },
       {
+        payload: {
+          api: 'tapis',
+          default: true,
+          homeDir: '/home/username',
+          icon: null,
+          name: 'My Data (Work)',
+          path: '/home/username',
+          scheme: 'private',
+          section: 'modal',
+          system: 'corral.home.username',
+        },
+        type: 'FETCH_FILES',
+      },
+      {
+        payload: 'corral.home.username',
+        type: 'FETCH_SYSTEM_DEFINITION',
+      },
+      {
+        payload: {
+          operation: 'copy',
+          props: {
+            showProjects: false,
+          },
+        },
+        type: 'DATA_FILES_SET_MODAL_PROPS',
+      },
+      {
         type: 'PROJECTS_GET_LISTING',
         payload: { queryString: null, modal: 'copy' },
       },
@@ -78,6 +105,33 @@ describe('DataFilesCopyModal', () => {
 
     expect(store.getActions()).toEqual([
       { type: 'GET_SYSTEM_MONITOR' },
+      {
+        payload: {
+          api: 'tapis',
+          default: true,
+          homeDir: '/home/username',
+          icon: null,
+          name: 'My Data (Work)',
+          path: '/home/username',
+          scheme: 'private',
+          section: 'modal',
+          system: 'corral.home.username',
+        },
+        type: 'FETCH_FILES',
+      },
+      {
+        payload: 'corral.home.username',
+        type: 'FETCH_SYSTEM_DEFINITION',
+      },
+      {
+        payload: {
+          operation: 'copy',
+          props: {
+            showProjects: false,
+          },
+        },
+        type: 'DATA_FILES_SET_MODAL_PROPS',
+      },
       {
         type: 'PROJECTS_GET_LISTING',
         payload: { queryString: null, modal: 'copy' },
@@ -117,6 +171,33 @@ describe('DataFilesCopyModal', () => {
 
     expect(store.getActions()).toEqual([
       { type: 'GET_SYSTEM_MONITOR' },
+      {
+        payload: {
+          api: 'tapis',
+          default: true,
+          homeDir: '/home/username',
+          icon: null,
+          name: 'My Data (Work)',
+          path: '/home/username',
+          scheme: 'private',
+          section: 'modal',
+          system: 'corral.home.username',
+        },
+        type: 'FETCH_FILES',
+      },
+      {
+        payload: 'corral.home.username',
+        type: 'FETCH_SYSTEM_DEFINITION',
+      },
+      {
+        payload: {
+          operation: 'copy',
+          props: {
+            showProjects: false,
+          },
+        },
+        type: 'DATA_FILES_SET_MODAL_PROPS',
+      },
       {
         type: 'PROJECTS_GET_LISTING',
         payload: { queryString: null, modal: 'copy' },

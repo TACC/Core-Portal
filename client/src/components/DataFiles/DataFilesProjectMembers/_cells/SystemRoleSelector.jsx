@@ -12,7 +12,7 @@ const getSystemRole = async (projectId, username) => {
   if (!projectId || !username) return {};
   const url = `/api/projects/${projectId}/system-role/${username}/`;
   const request = await fetch(url, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
   });
   const data = await request.json();
@@ -22,7 +22,7 @@ const getSystemRole = async (projectId, username) => {
 const setSystemRole = async (projectId, username, role) => {
   const url = `/api/projects/${projectId}/members/`;
   const request = await fetch(url, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     credentials: 'same-origin',
     method: 'PATCH',
     body: JSON.stringify({

@@ -30,6 +30,11 @@ _RT_TAG = "core_portal"
 _CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
 
 ########################
+# TACC SETTINGS
+########################
+_IS_TACC_PORTAL = True
+
+########################
 # TAPIS SETTINGS
 ########################
 
@@ -66,6 +71,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/work/{tasdir}",
         "icon": None,
         "default": True,
+        "resourceProvider": "TACC",
     },
     {
         "name": "My Data (Frontera Scratch)",
@@ -74,6 +80,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "tapis",
         "hostEval": "SCRATCH",
         "icon": None,
+        "resourceProvider": "TACC",
     },
     {
         "name": "My Data (Frontera Home)",
@@ -82,6 +89,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "tapis",
         "homeDir": "/home1/{tasdir}",
         "icon": None,
+        "resourceProvider": "TACC",
     },
     {
         "name": "Community Data",
@@ -91,6 +99,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/corral/tacc/aci/CEP/community",
         "icon": None,
         "siteSearchPriority": 1,
+        "resourceProvider": "TACC",
     },
     {
         "name": "Public Data",
@@ -100,6 +109,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "homeDir": "/corral/tacc/aci/CEP/public",
         "icon": "publications",
         "siteSearchPriority": 0,
+        "resourceProvider": "TACC",
     },
     {
         "name": "Shared Workspaces",
@@ -108,6 +118,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "icon": "publications",
         "readOnly": False,
         "hideSearchBar": False,
+        "resourceProvider": "TACC",
     },
     {
         "name": "Google Drive",
@@ -116,6 +127,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         "api": "googledrive",
         "icon": None,
         "integration": "portal.apps.googledrive_integration",
+        "resourceProvider": "External Resources",
     },
 ]
 
@@ -203,6 +215,9 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 # PROJECTS SETTINGS
 #######################
 
+# Enable the project metadata graph (entity/file metadata, publishing)
+_PORTAL_PROJECTS_ENABLE_METADATA = False
+
 _PORTAL_PROJECTS_SYSTEM_PREFIX = "cep.project"
 _PORTAL_PROJECTS_ID_PREFIX = "CEP"
 _PORTAL_PROJECTS_ROOT_DIR = "/corral/tacc/aci/CEP/projects"
@@ -211,6 +226,30 @@ _PORTAL_PROJECTS_ROOT_HOST = "cloud.data.tacc.utexas.edu"
 _PORTAL_PROJECTS_SYSTEM_PORT = "22"
 _PORTAL_PROJECTS_PEMS_APP_ID = ""  # Defunct in v3
 _PORTAL_PROJECTS_USE_SET_FACL_JOB = True
+
+# For portals with publication and review systems
+_PORTAL_PROJECTS_REVIEW_SYSTEM_PREFIX = "cep.project.review"
+_PORTAL_PROJECTS_REVIEW_ROOT_DIR = "/corral/tacc/aci/CEP/projects/review"
+_PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "cep.project.review"
+
+_PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "cep.project.published"
+_PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = "/corral/tacc/aci/CEP/projects/published"
+_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "cep.project.published"
+
+_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
+_PROJECT_ADMIN_GROUP = "Project Admin"
+
+#######################
+# PUBLICATION SETTINGS
+#######################
+
+_PORTAL_PUBLICATION_PUBLISHER = "CEP"
+_PORTAL_PUBLICATION_ARCHIVE_APP_ID = ""
+_PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = ""
+_PORTAL_PUBLICATION_RANCH_SYSTEM_ID = ""
+_PORTAL_PUBLICATION_DATACITE_SHOULDER = ""
+_PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+_DATACITE_URL = "https://api.test.datacite.org/"
 
 ########################
 # Custom Portal Template Assets
@@ -254,21 +293,31 @@ _WORKBENCH_SETTINGS = {
         "id": "extract",
         "version": "latest",  # Can be set to "" to use the latest version
     },
-    "makePublic": True,
+    "makePublic": False,
+    "canPublish": False,
     "hideApps": False,
     "hideDataFiles": False,
     "hideAllocations": False,
     "showSubmissions": False,
     "hideManageAccount": False,
     "hideSystemStatus": False,
+    "showUserNews": False,
+    "hideOnboarding": not _PORTAL_USER_ACCOUNT_SETUP_STEPS,
     "hasUserGuide": True,
+    "hasCustomSagas": False,
+    "hasCustomEndpoints": False,
+    "hasCustomDataFilesToolbarChecks": False,
+    "addons": [],
+    "showDataFileType": False,
     "onboardingCompleteRedirect": "/workbench/",
-    "maxDescriptionLength": 800,
+    "minDescriptionLength": 50,
     "maxTitleLength": 150,
     "enableWorkspaceKeywords": True,
     "noPHISystem": "",
     "ticketAttachmentMaxSizeMessage": "Max File Size: 3MB",
     "ticketAttachmentMaxSize": 3145728,
+    "uploadModalMaxSizeLabel": "2GB",
+    "uploadModalMaxSizeValue": 2147483648,
     "customDashboardSection": {
         "header": "My Account",
         "links": [
@@ -294,3 +343,7 @@ _PORTAL_ELEVATED_ROLES = {
 # PORTAL INTERNAL DOCS SETTINGS
 ##################################
 _INTERNAL_DOCS_URL = "core/internal-docs/"
+
+
+_SMTP_HOST = "relay.tacc.utexas.edu"
+_DEFAULT_FROM_EMAIL = "no-reply@cep.tacc.utexas.edu"

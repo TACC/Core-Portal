@@ -51,6 +51,11 @@ export type TAppFileInput = {
   targetPath?: string;
 };
 
+type TAppNotesDynamicExecSystems = {
+  systemId: string;
+  profileName: string;
+};
+
 type TAppNotes = {
   label?: string;
   shortLabel?: string;
@@ -59,7 +64,7 @@ type TAppNotes = {
   isInteractive?: boolean;
   hideNodeCountAndCoresPerNode?: boolean;
   icon?: string;
-  dynamicExecSystems?: string[];
+  dynamicExecSystems?: TAppNotesDynamicExecSystems[];
   queueFilter?: string[];
   hideQueue?: boolean;
   hideAllocation?: boolean;
@@ -99,7 +104,8 @@ export type TTapisApp = {
     execSystemLogicalQueue: string;
     archiveSystemId: string;
     archiveSystemDir: string;
-    archiveOnAppError: boolean;
+    archiveOnAppError: boolean; // deprecated, use archiveMode
+    archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
     isMpi: boolean;
     mpiCmd: string;
     cmdPrefix?: string;
@@ -203,7 +209,8 @@ export type TTapisJob = {
   appId: string;
   appVersion: string;
   archiveCorrelationId?: string;
-  archiveOnAppError: boolean;
+  archiveOnAppError: boolean; // deprecated, use archiveMode
+  archiveMode: 'ALWAYS' | 'SKIP_ON_FAIL' | 'NEVER';
   archiveSystemDir: string;
   archiveSystemId: string;
   archiveTransactionId?: string;
@@ -287,6 +294,7 @@ export type TTapisSystemQueue = {
   maxMemoryMB: number;
   minMinutes: number;
   maxMinutes: number;
+  schedulerOptions: TAppArgSpec[];
 };
 
 type TTapisSystemQueueFilter = {
@@ -326,7 +334,7 @@ export type TTapisSystem = {
     {
       runtimeType: string;
       version?: string;
-    }
+    },
   ];
   jobWorkingDir: string;
   jobEnvVariables: [];
@@ -378,4 +386,20 @@ export type TTapisFile = {
   doi?: string;
   scheme?: string;
   api?: string;
+};
+
+export type TFormField = {
+  name: string;
+  label?: string;
+  type?: string;
+  options?: { value: string; label: string; [key: string]: unknown }[];
+  optgroups?: { options: { value: string; label: string }[] }[];
+  validation?: { required?: boolean; min?: number; max?: number };
+  fields?: TFormField[];
+  defaultValue?: unknown;
+  [key: string]: unknown;
+};
+
+export type TFormDefinition = {
+  form_fields: TFormField[];
 };

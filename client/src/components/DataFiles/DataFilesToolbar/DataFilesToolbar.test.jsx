@@ -1,18 +1,23 @@
 import React from 'react';
-import {
-  toHaveClass,
-  toBeDisabled,
-} from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { useDispatch } from 'react-redux';
 import { vi } from 'vitest';
 
+vi.mock('react-redux', async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual,
+    useDispatch: vi.fn(actual.useDispatch),
+  };
+});
+
 const mockStore = configureStore();
-expect.extend({ toHaveClass, toBeDisabled });
 describe('ToolbarButton', () => {
   const store = mockStore({});
   it('renders button with correct text', () => {
@@ -335,6 +340,52 @@ describe('DataFilesToolbar', () => {
     expect(testModal).toBeDefined();
   });
 
+  it('does not show "no folders" message for folder downloads in community/pubic data', async () => {
+    // Create a test folder
+    const testFolder = {
+      name: 'test',
+      type: 'folder',
+      length: 4000,
+      path: '/test',
+    };
+    // Create the store
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+            trashPath: '.Trash',
+          },
+        },
+        files: {
+          params: {
+            FilesListing: {
+              system: 'test',
+              path: 'test',
+              scheme: 'public',
+            },
+          },
+          listing: { FilesListing: [testFolder] },
+          selected: { FilesListing: [0] },
+          operationStatus: { trash: false },
+        },
+        systems: systemsFixture,
+        projects: { metadata: [] },
+        authenticatedUser: { user: { username: 'testuser' } },
+      })
+    );
+    // Click on the download button to try and download the file
+    fireEvent.click(getByText('Download'));
+    // Wait for the No Folders Modal
+    await waitFor(() => screen.queryByText('Download Unavailable'));
+    // Assign the No Folders Modal to a variable
+    const testModal = screen.queryByText('Download Unavailable');
+    // Test for the No Folders Modal
+    expect(testModal).toBeDefined();
+  });
+
   it('prompts compress for download of >1 files', async () => {
     const testFile = {
       name: 'test.txt',
@@ -440,7 +491,7 @@ describe('DataFilesToolbar', () => {
     await waitFor(() => screen.queryByText('Download Unavailable'));
     // Assign the Large Download Modal to a variable
     const testModalText = screen.queryByText(
-      'Compression is not available in this data system. It may be faster for files to be transferred to your My Data directory and download them there, but if they are larger than 2GB use Globus below.'
+      'Compression is not available in this data system. You may download files individually or transfer to your My Data directory and download them there, but if they are larger than 2GB use Globus below.'
     );
     // Test for the Large Download Modal
     expect(testModalText).toBeDefined();
@@ -460,9 +511,7 @@ describe('DataFilesToolbar', () => {
       id: 123,
     };
     // Create a spy that watches for the dispatch call
-    vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
-      mockDispatch
-    );
+    useDispatch.mockReturnValue(mockDispatch);
     // Create the store
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
@@ -514,8 +563,8 @@ describe('DataFilesToolbar', () => {
         allocations: { portal_alloc: undefined, active: [] },
         workbench: {
           config: {
-            extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.4' },
+            extractApp: { id: 'extract-express', version: '0.0.1' },
+            compressApp: { id: 'compress-express', version: '0.0.1' },
           },
         },
         files: {
@@ -546,8 +595,8 @@ describe('DataFilesToolbar', () => {
         allocations: { portal_alloc: undefined, active: ['foo'] },
         workbench: {
           config: {
-            extractApp: { id: 'extract', version: '0.0.3' },
-            compressApp: { id: 'compress', version: '0.0.4' },
+            extractApp: { id: 'extract-express', version: '0.0.1' },
+            compressApp: { id: 'compress-express', version: '0.0.1' },
           },
         },
         files: {

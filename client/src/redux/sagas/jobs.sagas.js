@@ -99,7 +99,7 @@ export async function postSubmitJobUtil(jobPayload) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': Cookies.get('csrftoken'),
+      'X-CSRFToken': Cookies.get('csrfcookie'),
     },
     body: JSON.stringify(jobPayload),
   });

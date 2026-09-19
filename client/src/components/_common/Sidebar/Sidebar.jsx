@@ -6,7 +6,14 @@ import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
 import emptyStringValidator from '_common/CommonUtils';
 
-const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
+const SidebarItem = ({
+  to,
+  iconName,
+  label,
+  children = null,
+  disabled = false,
+  hidden = false,
+}) => {
   return (
     <NavItem>
       <NavLink
@@ -29,6 +36,7 @@ const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
     </NavItem>
   );
 };
+
 SidebarItem.propTypes = {
   to: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
@@ -37,19 +45,34 @@ SidebarItem.propTypes = {
   disabled: PropTypes.bool,
   hidden: PropTypes.bool,
 };
-SidebarItem.defaultProps = {
-  children: null,
-  disabled: false,
-  hidden: false,
+
+/**
+ * Groups sidebar items by their category, returning an object where keys are categories and values are arrays of items.
+ * Items with no category are grouped under an empty string key. For empty string categories, the category label is not rendered in the sidebar.
+ *
+ * @param {*} items - An array of sidebar item objects, each potentially containing a 'category' property.
+ * @returns {Object} An object with category keys and arrays of sidebar items as values.
+ */
+const groupByCategory = (items) => {
+  return items
+    .filter((item) => !item.hidden)
+    .reduce((groups, item) => {
+      const category = item.category || '';
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(item);
+      return groups;
+    }, {});
 };
 
 const Sidebar = ({
   sidebarItems,
-  addItemsBefore,
-  addItemsAfter,
-  loading,
-  isMain,
+  addItemsBefore = [],
+  addItemsAfter = [],
+  loading = false,
+  isMain = false,
 }) => {
+  const groupedItems = groupByCategory(sidebarItems);
+
   return (
     <Nav
       className={`nav-sidebar ${styles['root']} ${
@@ -69,9 +92,18 @@ const Sidebar = ({
         : null}
 
       {!loading &&
-        sidebarItems.map(
-          (item) =>
-            !item.hidden && (
+        Object.entries(groupedItems).map(([category, items]) => (
+          <React.Fragment key={category}>
+            {/* Sidebar category label.
+            - Categories with empty strings will not have a label rendered.
+            - If there is only one category, regardless of value, it is not rendered.
+            */}
+            {category && Object.keys(groupedItems).length > 1 && (
+              <NavItem className={styles['category-label']}>
+                <span className={styles['category-text']}>{category}</span>
+              </NavItem>
+            )}
+            {items.map((item) => (
               <SidebarItem
                 to={item.to}
                 iconName={item.iconName}
@@ -81,8 +113,9 @@ const Sidebar = ({
               >
                 {item.children}
               </SidebarItem>
-            )
-        )}
+            ))}
+          </React.Fragment>
+        ))}
 
       {!loading && addItemsAfter
         ? addItemsAfter.map(
@@ -104,12 +137,6 @@ Sidebar.propTypes = {
   addItemsAfter: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
   isMain: PropTypes.bool,
-};
-Sidebar.defaultProps = {
-  addItemsBefore: [],
-  addItemsAfter: [],
-  loading: false,
-  isMain: false,
 };
 
 export default Sidebar;

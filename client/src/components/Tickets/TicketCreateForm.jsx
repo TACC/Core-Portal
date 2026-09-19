@@ -51,8 +51,8 @@ CreatedTicketInformation.propTypes = {
 };
 
 function TicketCreateForm({
-  authenticatedUser,
-  initialSubject,
+  authenticatedUser = null,
+  initialSubject = '',
   provideDashBoardLinkOnSuccess,
 }) {
   const creating = useSelector((state) => state.ticketCreate.creating);
@@ -94,7 +94,7 @@ function TicketCreateForm({
 
   const dispatch = useDispatch();
 
-  const isAuthenticated = authenticatedUser != null;
+  const isAuthenticated = !!authenticatedUser?.username;
 
   const formShape = {
     subject: Yup.string().required('Required'),
@@ -259,11 +259,6 @@ TicketCreateForm.propTypes = {
     isStaff: PropTypes.bool,
     oauth: PropTypes.shape({}),
   }),
-};
-
-TicketCreateForm.defaultProps = {
-  authenticatedUser: null,
-  initialSubject: '',
 };
 
 export default TicketCreateForm;

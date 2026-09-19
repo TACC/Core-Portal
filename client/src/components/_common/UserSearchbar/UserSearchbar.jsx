@@ -9,9 +9,9 @@ const UserSearchbar = ({
   members,
   onAdd,
   onChange,
-  isLoading,
+  isLoading = false,
   searchResults,
-  placeholder,
+  placeholder = 'Search by name',
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -83,14 +83,12 @@ const UserSearchbar = ({
         />
         <datalist id="user-search-list">
           {
-            /* eslint-disable */
             // Need to replace this component with a generalized solution from FP-743
             searchResults
               .filter((user) => !alreadyMember(user))
               .map((user) => (
                 <option value={formatUser(user)} key={user.username} />
               ))
-            /* eslint-enable */
           }
         </datalist>
       </div>
@@ -119,10 +117,6 @@ UserSearchbar.propTypes = {
     })
   ).isRequired,
   placeholder: PropTypes.string,
-};
-UserSearchbar.defaultProps = {
-  isLoading: false,
-  placeholder: 'Search by name',
 };
 
 export default UserSearchbar;

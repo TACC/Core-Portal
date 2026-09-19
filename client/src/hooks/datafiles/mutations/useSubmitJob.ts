@@ -33,7 +33,6 @@ export type TOutputValues = {
 };
 
 export interface TJobSubmit extends TConfigurationValues, TOutputValues {
-  archiveOnAppError?: boolean;
   appId: string;
   fileInputs?: TAppFileInput[];
   parameterSet?: TParameterSetSubmit;

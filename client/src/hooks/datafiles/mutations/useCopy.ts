@@ -16,6 +16,7 @@ export async function copyFileUtil({
   destSystem,
   destPath,
   destPathName,
+  metadata,
 }: {
   api: string;
   scheme: string;
@@ -27,6 +28,7 @@ export async function copyFileUtil({
   destSystem: string;
   destPath: string;
   destPathName: string;
+  metadata?: Record<string, any>;
 }) {
   let url: string, body: any;
   if (api === destApi) {
@@ -38,6 +40,7 @@ export async function copyFileUtil({
       file_name: filename,
       filetype,
       dest_path_name: destPathName,
+      metadata: metadata ?? null,
     };
   } else {
     url = `/api/datafiles/transfer/${filetype}/`;
@@ -55,7 +58,7 @@ export async function copyFileUtil({
   }
 
   const response = await apiClient.put(url, body, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') || '' },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') || '' },
     withCredentials: true,
   });
   return response.data;
@@ -117,6 +120,7 @@ function useCopy() {
           destSystem,
           destPath,
           destPathName: name,
+          metadata: file.metadata,
         },
         {
           onSuccess: () => {

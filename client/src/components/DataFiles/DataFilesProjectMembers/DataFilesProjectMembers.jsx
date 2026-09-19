@@ -13,15 +13,18 @@ const DataFilesProjectMembers = ({
   members,
   onAdd,
   onRemove,
-  onTransfer,
-  mode,
-  loading,
+  onTransfer = () => {},
+  mode = 'addremove',
+  loading = false,
 }) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector((state) => state.users.search.users);
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user.username
+  );
+  const projectsEnableMetadata = useSelector(
+    (state) => state.workbench.config.projectsEnableMetadata
   );
   const { query: authenticatedUserQuery } = useSystemRole(
     projectId ?? null,
@@ -46,11 +49,9 @@ const DataFilesProjectMembers = ({
 
   const [transferUser, setTransferUser] = useState(null);
 
-  /* eslint-disable */
   // The backend needs to camelcase this
   const formatUser = ({ first_name, last_name, email }) =>
     `${first_name} ${last_name} (${email})`;
-  /* eslint-enable */
 
   const userSearch = (e) => {
     setInputUser(e.target.value);
@@ -101,7 +102,7 @@ const DataFilesProjectMembers = ({
   };
 
   const memberColumn = {
-    Header: 'Members',
+    Header: projectsEnableMetadata ? 'Authors' : 'Members',
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
@@ -222,7 +223,7 @@ const DataFilesProjectMembers = ({
       {!readOnlyTeam && (
         <>
           <Label className="form-field__label" size="sm">
-            Add Member
+            Add {projectsEnableMetadata ? 'Authors' : 'Member'}
           </Label>
 
           <div className={styles['user-search']}>
@@ -256,14 +257,12 @@ const DataFilesProjectMembers = ({
               />
               <datalist id="user-search-list">
                 {
-                  /* eslint-disable */
                   // Need to replace this component with a generalized solution from FP-743
                   userSearchResults
                     .filter((user) => !alreadyMember(user))
                     .map((user) => (
                       <option value={formatUser(user)} key={user.username} />
                     ))
-                  /* eslint-enable */
                 }
               </datalist>
             </div>
@@ -300,12 +299,6 @@ DataFilesProjectMembers.propTypes = {
   onTransfer: PropTypes.func,
   mode: PropTypes.string,
   loading: PropTypes.bool,
-};
-
-DataFilesProjectMembers.defaultProps = {
-  onTransfer: () => {},
-  mode: 'addremove',
-  loading: false,
 };
 
 export default DataFilesProjectMembers;

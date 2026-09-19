@@ -1,8 +1,8 @@
 import eslint from '@rollup/plugin-eslint';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import tailwindcss from "@tailwindcss/vite";
 import { resolve } from 'path';
-import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,11 +14,13 @@ export default defineConfig({
       enforce: 'pre',
     },
     react(),
+    tailwindcss()
   ],
 
   resolve: {
     alias: {
       _common: resolve(__dirname, 'src/components/_common'),
+      _custom: resolve(__dirname, 'src/components/_custom'),
       hooks: resolve(__dirname, 'src/hooks'),
       utils: resolve(__dirname, 'src/utils'),
       styles: resolve(__dirname, 'src/styles'),
@@ -26,7 +28,7 @@ export default defineConfig({
   },
 
   server: {
-    origin: 'cep.test',
+    origin: 'https://cep.test',
     port: 3000,
     cors: {
       origin: ['https://cep.test'],
@@ -40,5 +42,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    setupFiles: ['vitest.setup.ts'],
   },
 });

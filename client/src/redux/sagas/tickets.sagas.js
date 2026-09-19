@@ -115,7 +115,7 @@ export function* postTicketReply(action) {
     const res = yield call(fetch, `/api/tickets/${ticketId}/history`, {
       method: 'POST',
       headers: {
-        'X-CSRFToken': Cookies.get('csrftoken'),
+        'X-CSRFToken': Cookies.get('csrfcookie'),
       },
       credentials: 'same-origin',
       body: action.payload.formData,
@@ -158,7 +158,7 @@ export function* postTicketCreate(action) {
     const res = yield call(fetch, `/api/tickets/`, {
       method: 'POST',
       headers: {
-        'X-CSRFToken': Cookies.get('csrftoken'),
+        'X-CSRFToken': Cookies.get('csrfcookie'),
       },
       credentials: 'same-origin',
       body: action.payload.formData,

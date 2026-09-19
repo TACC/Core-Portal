@@ -1,5 +1,12 @@
 export const initialState = {
-  user: null,
+  user: {
+    first_name: '',
+    username: '',
+    last_name: '',
+    email: '',
+    oauth: {},
+    isStaff: false,
+  },
 };
 
 export default function authenticatedUser(state = initialState, action) {

@@ -15,11 +15,11 @@ const { ResizeObserver } = window;
 
 beforeEach(() => {
   delete window.ResizeObserver;
-  window.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }));
+  window.ResizeObserver = vi.fn().mockImplementation(function () {
+    this.observe = vi.fn();
+    this.unobserve = vi.fn();
+    this.disconnect = vi.fn();
+  });
 });
 
 afterEach(() => {
@@ -70,6 +70,7 @@ const initialMockState = {
 
 describe('DataFilesProjectFileListing', () => {
   it('shows uses the Show More component for long descriptions', () => {
+    initialMockState.projects.metadata.keywords = [];
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing
@@ -144,5 +145,33 @@ describe('DataFilesProjectFileListing', () => {
 
     expect(getByText(/Edit Workspace/)).toBeDefined();
     expect(queryByText(/Manage Team/)).toBeNull();
+  });
+
+  it('hides Keywords heading when keyword length is 0', () => {
+    initialMockState.projects.metadata.keywords = [];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/Keywords/)).toBeNull();
+  });
+
+  it('inserts commas between keyword entries if they are in an array', () => {
+    initialMockState.projects.metadata.keywords = ['one', 'two', 'three'];
+    const store = mockStore(initialMockState);
+    const { queryByText } = renderComponent(
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
+      store
+    );
+
+    expect(queryByText(/one, two, three/)).toBeDefined();
   });
 });

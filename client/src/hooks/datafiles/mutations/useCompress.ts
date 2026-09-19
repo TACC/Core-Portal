@@ -44,6 +44,7 @@ function useCompress() {
   const { data: fullCompressApp } = useQuery({
     queryKey: ['compress-app', compressApp.id, compressApp.version],
     queryFn: () => getAppUtil(compressApp.id, compressApp.version),
+    enabled: !!compressApp.id && !!compressApp.version,
   });
 
   const allocationForCompress = useSelector((state: any) => {

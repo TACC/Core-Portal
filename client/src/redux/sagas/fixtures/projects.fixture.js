@@ -18,6 +18,7 @@ export const projectsListingFixture = [
 export const projectMetadataResponse = {
   title: 'My Project',
   projectId: 'TEST-1',
+  keywords: ['test'],
   description: 'Long description of shared workspace',
   created: '2020-12-08T16:34:54.354843+00:00',
   lastModified: '2020-12-08T16:34:54.828181+00:00',

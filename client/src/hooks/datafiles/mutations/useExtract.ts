@@ -34,6 +34,7 @@ function useExtract() {
   const { data: fullExtractApp } = useQuery({
     queryKey: ['extract-app', extractApp.id, extractApp.version],
     queryFn: () => getAppUtil(extractApp.id, extractApp.version),
+    enabled: !!extractApp.id && !!extractApp.version,
   });
   const allocationForExtract = useSelector((state: any) => {
     return getAllocationForToolbarAction(state.allocations, fullExtractApp);

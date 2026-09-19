@@ -13,8 +13,10 @@ import { useField } from 'formik';
 import PropTypes from 'prop-types';
 import './FormField.scss';
 
+import { Select } from 'antd';
+
 /** A limited-choice wrapper for `FormField` */
-const FormFieldWrapper = ({ children, type }) => {
+const FormFieldWrapper = ({ children, type = 'FormGroup' }) => {
   let wrapper;
 
   switch (type) {
@@ -35,9 +37,6 @@ FormFieldWrapper.propTypes = {
   /** Which wrapper to use */
   type: PropTypes.oneOf(['InputGroup', 'FormGroup', '']),
 };
-FormFieldWrapper.defaultProps = {
-  type: 'FormGroup',
-};
 
 /**
  * A standard form field that supports some customization and presets.
@@ -53,16 +52,18 @@ const FormField = ({
   addonType,
   label,
   description,
-  required,
+  required = false,
   tapisFile,
   SelectModal,
+  tags = false,
+  parameterSet,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta, helpers] = useField(props);
   const [openTapisFileModal, setOpenTapisFileModal] = useState(false);
-  const { id, name, parameterSet } = props;
+  const { id, name } = props;
   const hasAddon = addon !== undefined;
   const wrapperType = hasAddon ? 'InputGroup' : '';
 
@@ -150,7 +151,21 @@ const FormField = ({
         ) : (
           <>
             {hasAddon && addonType === 'prepend' ? addon : null}
-            <Input {...field} {...props} bsSize="sm" />
+            {tags ? (
+              <Select
+                mode="tags"
+                tokenSeparators={[',']}
+                style={{
+                  width: '100%',
+                  minHeight: '31px',
+                }}
+                value={field.value || []}
+                onChange={(value) => helpers.setValue(value)}
+                className="form-field-antd-tags"
+              />
+            ) : (
+              <Input {...field} {...props} bsSize="sm" />
+            )}
             {hasAddon && addonType === 'append' ? addon : null}
           </>
         )}
@@ -172,17 +187,7 @@ FormField.propTypes = {
   addon: PropTypes.node,
   /** The [`<InputGroupAddon>` `addonType`](https://reactstrap.github.io/components/input-group/) to add */
   addonType: PropTypes.oneOf(['prepend', 'append']),
+  tags: PropTypes.bool,
+  parameterSet: PropTypes.string,
 };
-FormField.defaultProps = {
-  id: undefined,
-  name: undefined,
-  label: undefined,
-  description: undefined,
-  required: false,
-  tapisFile: undefined,
-  SelectModal: undefined,
-  addon: undefined,
-  addonType: undefined,
-};
-
 export default FormField;

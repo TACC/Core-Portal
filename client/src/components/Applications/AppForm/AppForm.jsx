@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form, useFormikContext } from 'formik';
@@ -38,8 +38,13 @@ import {
   getAllocationList,
   getDefaultAllocation,
   getExecSystemIdValidation,
+  getQueueSchedulerOptionsValidation,
 } from './AppFormUtils';
-import { getExecSystemFromId, getDefaultExecSystem } from 'utils/apps';
+import {
+  getExecSystemFromId,
+  getDefaultExecSystem,
+  isValidDynamicExecSystems,
+} from 'utils/apps';
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -188,7 +193,22 @@ const HandleDependentFieldChanges = ({ app, formStateUpdateHandler }) => {
       if (JSON.stringify(updatedValues) !== JSON.stringify(values)) {
         setValues(updatedValues);
       }
+    } else if (values.allocation) {
+      const newExecSys = formStateUpdateHandler.setExecSysForAllocation(
+        values.allocation,
+        values.execSystemId
+      );
+      if (newExecSys?.id && newExecSys.id !== values.execSystemId) {
+        let updatedValues = { ...values, execSystemId: newExecSys.id };
+        updatedValues = execSystemChangeHandler(
+          app,
+          updatedValues,
+          formStateUpdateHandler
+        );
+        setValues(updatedValues);
+      }
     }
+
     setPreviousValues(values);
   }, [app, values, setValues, formStateUpdateHandler]);
   return null;
@@ -239,10 +259,18 @@ export const AppSchemaForm = ({ app }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
+  const allocationsState = useSelector((state) => state.allocations);
+  const storageState = useSelector((state) => state.systems.storage);
+  const jobSubmission = useSelector((state) => state.jobs.submit);
+  const systemMonitor = useSelector((state) => state.systemMonitor);
+  const hideManageAccount = useSelector(
+    (state) => state.workbench.config.hideManageAccount
+  );
+  const isTACCPortal = useSelector((state) => state.workbench.isTACCPortal);
+
   const {
     allocations,
     portalAlloc,
-    jobSubmission,
     hasDefaultAllocation,
     defaultStorageHost,
     hasStorageSystems,
@@ -250,64 +278,69 @@ export const AppSchemaForm = ({ app }) => {
     execSystem,
     defaultSystemId,
     defaultArchivePath,
-    keyService,
+    isTMSSystem,
     allocationToExecSysMap,
-  } = useSelector((state) => {
+  } = useMemo(() => {
     const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
       app,
-      state.allocations
+      allocationsState
     );
-    const { defaultHost, configuration, defaultSystemId } =
-      state.systems.storage;
-    const keyService = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
+    const { defaultHost, configuration, defaultSystemId } = storageState;
+    const isTMSSystem = pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS';
 
     const hasCorral =
       configuration.length &&
       ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
         defaultHost?.endsWith(s)
       );
-    const defaultSystem =
-      configuration.find((system) => system.id === defaultSystemId) ||
-      configuration[0];
-    const defaultArchivePath = `${
-      defaultSystem?.homeDir || '$WORK'
-    }/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`;
+    const defaultSystem = configuration.find(
+      (system) => system.system === defaultSystemId
+    );
+    const defaultArchivePath = defaultSystem
+      ? `${defaultSystem.homeDir}/tapis-jobs-archive/${'${JobCreateDate}'}/${'${JobName}-${JobUUID}'}`
+      : '';
 
     return {
       allocations: getAllocationList(
         app,
-        state.allocations,
+        allocationsState,
         allocationToExecSysMap
       ),
-      portalAlloc: state.allocations.portal_alloc,
-      jobSubmission: state.jobs.submit,
+      portalAlloc: allocationsState.portal_alloc,
       hasDefaultAllocation:
-        state.allocations.loading ||
-        state.systems.storage.loading ||
-        state.allocations.hosts[defaultHost] ||
-        hasCorral ||
-        defaultSystem?.notes?.noAllocationRequired,
+        allocationsState.loading ||
+        storageState.loading ||
+        allocationsState.hosts[defaultHost] || // User has allocation on default storage system
+        hasCorral || // If default storage system is Corral, no allocation needed
+        !defaultSystem || // If default storage system is not found, assume no allocation needed
+        defaultSystem?.notes?.noAllocationRequired || // If default storage system has note that allocation is not required, no allocation needed
+        (defaultSystem?.host && !isTACCHost(defaultSystem?.host)) || // If default storage system is not on TACC, no allocation needed
+        isTACCPortal === false, // If not a TACC portal, we are not tracking allocations
       defaultStorageHost: defaultHost,
       hasStorageSystems: configuration.length,
-      downSystems: state.systemMonitor
-        ? state.systemMonitor.list
+      downSystems: systemMonitor
+        ? systemMonitor.list
             .filter((currSystem) => !currSystem.is_operational)
             .map((downSys) => downSys.hostname)
         : [],
       execSystem:
         getDefaultExecSystem(
           app,
-          allocationToExecSysMap.get(state.allocations.portal_alloc) ?? []
+          allocationToExecSysMap.get(allocationsState.portal_alloc) ?? []
         ) ?? null,
       defaultSystemId,
       defaultArchivePath,
-      keyService,
+      isTMSSystem,
       allocationToExecSysMap,
     };
-  }, shallowEqual);
-  const hideManageAccount = useSelector(
-    (state) => state.workbench.config.hideManageAccount
-  );
+  }, [
+    app,
+    pushKeysSystem,
+    allocationsState,
+    storageState,
+    systemMonitor,
+    isTACCPortal,
+  ]);
 
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = (e) => {
@@ -360,14 +393,18 @@ export const AppSchemaForm = ({ app }) => {
     name: `${app.definition.id}-${app.definition.version}_${
       new Date().toISOString().split('.')[0]
     }`,
+    allocation: initialAllocation,
     nodeCount: app.definition.jobAttributes.nodeCount,
     coresPerNode: app.definition.jobAttributes.coresPerNode,
     maxMinutes: app.definition.jobAttributes.maxMinutes,
     archiveSystemId:
-      defaultSystemId || app.definition.jobAttributes.archiveSystemId,
+      defaultSystemId ||
+      app.definition.jobAttributes.archiveSystemId ||
+      undefined,
     archiveSystemDir:
-      defaultArchivePath || app.definition.jobAttributes.archiveSystemDir,
-    archiveOnAppError: true,
+      defaultArchivePath ||
+      app.definition.jobAttributes.archiveSystemDir ||
+      undefined,
     appId: app.definition.id,
     appVersion: app.definition.version,
     execSystemId: app.definition.jobAttributes.execSystemId,
@@ -375,6 +412,10 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   if (isJobTypeBATCH(app)) {
+    const initialQueue = getQueueValueForExecSystem(
+      app,
+      getExecSystemFromId(app, initialValues.execSystemId)
+    );
     initialValues.nodeCount = app.definition.jobAttributes.nodeCount;
     initialValues.coresPerNode = app.definition.jobAttributes.coresPerNode;
     initialValues.execSystemId = getDefaultExecSystem(
@@ -382,13 +423,17 @@ export const AppSchemaForm = ({ app }) => {
       formState.execSystems
     )?.id;
     initialValues.allocation = initialAllocation;
-    initialValues.execSystemLogicalQueue = getQueueValueForExecSystem(
-      app,
-      getExecSystemFromId(app, initialValues.execSystemId)
-    )?.name;
+    initialValues.execSystemLogicalQueue = initialQueue?.name;
+    if (initialQueue?.schedulerOptions) {
+      initialValues.queueSchedulerOptions = Object.assign(
+        {},
+        ...initialQueue.schedulerOptions?.map((opt) => ({
+          [opt.name]: opt.fieldType === 'number' ? Number(opt.arg) : opt.arg,
+        }))
+      );
+    }
   }
-
-  const sectionMessage = keyService ? (
+  const sectionMessage = isTMSSystem ? (
     <span>
       For help,{' '}
       <Link
@@ -407,7 +452,7 @@ export const AppSchemaForm = ({ app }) => {
         href="#"
         onClick={pushKeys}
       >
-        push your keys
+        create your Tapis system credentials.
       </a>
       .
     </span>
@@ -539,12 +584,13 @@ export const AppSchemaForm = ({ app }) => {
               maxMinutes: getMaxMinutesValidation(queue, app).required(
                 'Required max minutes'
               ),
-              archiveSystemId: Yup.string().notRequired(),
-              archiveSystemDir: Yup.string().notRequired(),
+              archiveSystemId: Yup.string().nullable(),
+              archiveSystemDir: Yup.string().nullable(),
               allocation:
                 exec_sys &&
                 isJobTypeBATCH(app) &&
                 isTACCHost(exec_sys?.host) &&
+                isTACCPortal &&
                 isSystemTypeSLURM(exec_sys)
                   ? getAllocationValidation(allocations).test(
                       'exec-systems-check',
@@ -558,6 +604,7 @@ export const AppSchemaForm = ({ app }) => {
                       }
                     )
                   : Yup.string().notRequired(),
+              queueSchedulerOptions: getQueueSchedulerOptionsValidation(queue),
             });
           });
         }}
@@ -655,6 +702,37 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             job.memoryMB = queue.maxMemoryMB;
           }
+          if (isAppUsingDynamicExecSystem(app)) {
+            if (!job.parameterSet.schedulerOptions) {
+              job.parameterSet.schedulerOptions = [];
+            }
+
+            if (!isValidDynamicExecSystems(app)) {
+              console.error(
+                'DynamicExecSystems for this application are invalid'
+              );
+            } else {
+              // pick the right profile for the right exec system
+              const selectedSystem =
+                app.definition.notes.dynamicExecSystems.find(
+                  (s) => s.systemId === job.execSystemId
+                );
+              const profileName = selectedSystem?.profileName;
+              if (!!profileName) {
+                job.parameterSet.schedulerOptions = [
+                  ...job.parameterSet.schedulerOptions.filter(
+                    (opt) => !opt.arg.startsWith('--tapis-profile')
+                  ),
+                  {
+                    name: 'TACC Scheduler Profile',
+                    arg: `--tapis-profile ${profileName}`,
+                    description: 'Scheduler profile for HPC clusters at TACC',
+                    include: true,
+                  },
+                ];
+              }
+            }
+          }
 
           // Add allocation scheduler option
           if (job.allocation) {
@@ -668,8 +746,8 @@ export const AppSchemaForm = ({ app }) => {
               include: true,
               arg: `-A ${job.allocation}`,
             });
-            delete job.allocation;
           }
+          delete job.allocation;
 
           // Add reservation scheduler option
           if (job.reservation) {
@@ -683,8 +761,22 @@ export const AppSchemaForm = ({ app }) => {
                 isReservation: true,
               },
             });
-            delete job.reservation;
           }
+          delete job.reservation;
+
+          if (job.queueSchedulerOptions) {
+            Object.entries(job.queueSchedulerOptions).forEach(
+              ([key, value]) => {
+                job.parameterSet.schedulerOptions.push({
+                  name: key,
+                  description: `Queue defined scheduler option: ${key}`,
+                  include: true,
+                  arg: String(value),
+                });
+              }
+            );
+          }
+          delete job.queueSchedulerOptions;
 
           dispatch({
             type: 'SUBMIT_JOB',
@@ -724,14 +816,20 @@ export const AppSchemaForm = ({ app }) => {
             app,
             values.execSystemId
           );
+          const selectedQueue = getQueueValueForExecSystem(
+            app,
+            selectedExecSystem,
+            values.execSystemLogicalQueue
+          );
           let missingAllocationMessage = '';
-          if (!hasDefaultAllocation && hasStorageSystems) {
-            // Check if allocation required for default storage system, aka archive system
+          // Check if allocation required for default storage system, aka archive system
+          if (!hasDefaultAllocation && defaultStorageHost) {
             missingAllocationMessage = `You need an allocation on ${getSystemName(
               defaultStorageHost
             )} to run this application.`;
           } else if (
-            // Check if allocation required for execution system
+            // Check if allocation required for execution system, only if isTACCPortal is true, and we are tracking allocations
+            isTACCPortal &&
             selectedExecSystem &&
             !allocations.length &&
             isTACCHost(selectedExecSystem?.host) &&
@@ -751,6 +849,23 @@ export const AppSchemaForm = ({ app }) => {
             !hasStorageSystems ||
             jobSubmission.submitting ||
             missingAllocationMessage;
+
+          const showAllocationSelect =
+            isJobTypeBATCH(app) &&
+            isTACCPortal &&
+            (isAppUsingDynamicExecSystem(app) ||
+              (selectedExecSystem &&
+                isSystemTypeSLURM(selectedExecSystem) &&
+                isTACCHost(selectedExecSystem?.host)));
+
+          const showAllocationText =
+            isJobTypeBATCH(app) &&
+            !isAppUsingDynamicExecSystem(app) &&
+            selectedExecSystem &&
+            !(
+              isSystemTypeSLURM(selectedExecSystem) &&
+              isTACCHost(selectedExecSystem?.host)
+            );
 
           return (
             <>
@@ -856,34 +971,33 @@ export const AppSchemaForm = ({ app }) => {
                     <div className="appSchema-header">
                       <span>Configuration</span>
                     </div>
-                    {isJobTypeBATCH(app) &&
-                      selectedExecSystem &&
-                      isSystemTypeSLURM(selectedExecSystem) &&
-                      (isTACCHost(selectedExecSystem?.host) ? (
-                        <FormField
-                          label="Allocation"
-                          name="allocation"
-                          description="Select the project allocation you would like to use with this job submission."
-                          type="select"
-                          required
-                        >
-                          <option hidden disabled>
-                            {' '}
+                    {showAllocationSelect && (
+                      <FormField
+                        label="Allocation"
+                        name="allocation"
+                        description="Select the project allocation you would like to use with this job submission."
+                        type="select"
+                        required
+                      >
+                        <option hidden disabled>
+                          {' '}
+                        </option>
+                        {allocations.sort().map((projectId) => (
+                          <option key={projectId} value={projectId}>
+                            {projectId}
                           </option>
-                          {allocations.sort().map((projectId) => (
-                            <option key={projectId} value={projectId}>
-                              {projectId}
-                            </option>
-                          ))}
-                        </FormField>
-                      ) : (
-                        <FormField
-                          label="Allocation"
-                          name="allocation"
-                          description="Enter the project allocation you would like to use with this job submission."
-                          type="text"
-                        />
-                      ))}
+                        ))}
+                      </FormField>
+                    )}
+                    {showAllocationText && (
+                      <FormField
+                        label="Allocation (case-sensitive)"
+                        name="allocation"
+                        description="Enter the project allocation you would like to use with this job submission."
+                        type="text"
+                        required
+                      />
+                    )}
                     {isJobTypeBATCH(app) &&
                       isAppUsingDynamicExecSystem(app) && (
                         <FormField
@@ -915,29 +1029,71 @@ export const AppSchemaForm = ({ app }) => {
                         </FormField>
                       )}
                     {isJobTypeBATCH(app) && (
-                      <FormField
-                        label="Queue"
-                        name="execSystemLogicalQueue"
-                        description="Select the queue this job will execute on."
-                        type="select"
-                        required
-                      >
-                        {formState.appQueueValues.map((queueName) => (
-                          <option key={queueName} value={queueName}>
-                            {queueName}
-                          </option>
-                        ))}
-                      </FormField>
+                      <>
+                        <FormField
+                          label="Queue"
+                          name="execSystemLogicalQueue"
+                          description="Select the queue this job will execute on."
+                          type="select"
+                          required
+                        >
+                          {formState.appQueueValues.map((q) => (
+                            <option key={q.name} value={q.name}>
+                              {`${!!q.description ? (q.description.startsWith(q.name) ? q.description : `${q.name} (${q.description})`) : q.name}`}
+                            </option>
+                          ))}
+                        </FormField>
+                        {selectedQueue?.schedulerOptions &&
+                          selectedQueue.schedulerOptions.map(
+                            (opt) =>
+                              !opt.notes?.isHidden && (
+                                <FormField
+                                  key={`queueSchedulerOptions.${opt.name}`}
+                                  name={`queueSchedulerOptions.${opt.name}`}
+                                  label={opt.notes?.label || opt.name}
+                                  description={opt.description}
+                                  type={opt.notes?.fieldType || 'text'}
+                                  required={opt.inputMode === 'REQUIRED'}
+                                >
+                                  {opt.notes?.enum_values
+                                    ? opt.notes?.enum_values.map((item) => {
+                                        let val = item;
+                                        if (val instanceof String) {
+                                          const tmp = {};
+                                          tmp[val] = val;
+                                          val = tmp;
+                                        }
+                                        return Object.entries(val).map(
+                                          ([key, value]) => (
+                                            <option key={key} value={key}>
+                                              {value}
+                                            </option>
+                                          )
+                                        );
+                                      })
+                                    : null}
+                                </FormField>
+                              )
+                          )}
+                      </>
                     )}
                     {isJobTypeBATCH(app) &&
-                      app.definition.notes.showReservation && (
+                      app.definition.notes.showReservation &&
+                      (isTACCPortal ? (
                         <FormField
-                          label="TACC Reservation"
+                          label="TACC Reservation (case-sensitive)"
                           name="reservation"
                           description="If you have a TACC reservation, enter the reservation string here."
                           type="text"
                         />
-                      )}
+                      ) : (
+                        <FormField
+                          label="Reservation (case-sensitive)"
+                          name="reservation"
+                          description="If you have a reservation, enter the reservation string here."
+                          type="text"
+                        />
+                      ))}
                     <FormField
                       label="Maximum Job Runtime (minutes)"
                       description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
@@ -977,7 +1133,8 @@ export const AppSchemaForm = ({ app }) => {
                       type="text"
                       required
                     />
-                    {!app.definition.notes.isInteractive ? (
+                    {!app.definition.notes.isInteractive &&
+                    app.definition.jobAttributes.archiveMode !== 'NEVER' ? (
                       <>
                         <FormField
                           label="Archive System"
@@ -995,7 +1152,8 @@ export const AppSchemaForm = ({ app }) => {
                           type="text"
                           placeholder={
                             defaultArchivePath ||
-                            app.definition.archiveSystemDir
+                            app.definition.archiveSystemDir ||
+                            ''
                           }
                         />
                       </>

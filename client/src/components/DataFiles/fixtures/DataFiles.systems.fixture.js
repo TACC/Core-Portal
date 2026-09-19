@@ -49,7 +49,7 @@ const systemsFixture = {
         homeDir: '/corral/tacc/aci/CEP/public',
       },
       {
-        name: 'Shared Workspaces',
+        name: 'Workspace',
         scheme: 'projects',
         api: 'tapis',
         icon: null,
@@ -84,7 +84,7 @@ const systemsFixture = {
     //errorMessage: null,
     //loading: false,
     defaultHost: 'frontera.tacc.utexas.edu',
-    defaultSystemId: 'frontera',
+    defaultSystemId: 'frontera.home.username',
   },
   // This definitions is required for the tests, some can be removed. Referencing datafiles.reducers.js
   definitions: {

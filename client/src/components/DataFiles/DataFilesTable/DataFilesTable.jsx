@@ -6,19 +6,41 @@ import React, {
   useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link, useLocation } from 'react-router-dom';
-import { useFileListing, useSystems } from 'hooks/datafiles';
+import {
+  Link,
+  useRouteMatch,
+  generatePath,
+  useHistory,
+} from 'react-router-dom';
+import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import styles from './DataFilesTable.module.scss';
 import * as ROUTES from '../../../constants/routes';
+
+/**
+ * Returns true if scroll position is within threshold pixels of the bottom of a list.
+ */
+export const isNearBottom = ({
+  scrollOffset,
+  itemCount,
+  rowHeight,
+  listHeight,
+  threshold,
+}) => {
+  const distanceFromBottom = itemCount * rowHeight - listHeight - scrollOffset;
+  return distanceFromBottom <= threshold;
+};
+
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
+  const match = useRouteMatch();
+  const history = useHistory();
 
   const isPublicSystem = params?.scheme === 'public';
 
@@ -45,17 +67,28 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
-  const downSystems = useSelector((state) =>
-    state.systemMonitor
-      ? state.systemMonitor.list
-          .filter((currSystem) => !currSystem.is_operational)
-          .map((downSys) => downSys.hostname)
-      : []
+  const downSystems = useSelector(
+    (state) =>
+      state.systemMonitor
+        ? state.systemMonitor.list
+            .filter((currSystem) => !currSystem.is_operational)
+            .map((downSys) => downSys.hostname)
+        : [],
+    shallowEqual
   );
+  const reloadPage = (sys) => {
+    dispatch({
+      type: 'UPDATE_STORAGE_SYSTEM_CONFIGURATION',
+      payload: sys,
+    });
+    const newPath = `${generatePath(match.path, sys)}${sys.homeDir || ''}`;
+    window.location.href = newPath; // TODO: replace with history.push when system storage configuration is updated
+    history.push(newPath);
+  };
   const pushKeys = (e) => {
     e.preventDefault();
     const props = {
-      onSuccess: {},
+      reloadCallback: reloadPage,
       system,
     };
     if (modalRefs.FileSelector) {
@@ -138,7 +171,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
                 href="#"
                 onClick={pushKeys}
               >
-                push your keys
+                create your Tapis system credentials.
               </a>
             </span>
           );
@@ -237,7 +270,7 @@ const DataFilesTableRow = ({
   style,
   index,
   rowCount,
-  row,
+  row = {},
   section,
   rowSelectCallback,
   shadeEvenRows,
@@ -273,8 +306,9 @@ const DataFilesTableRow = ({
         data-testid="file-listing-item"
       >
         {row.cells.map((cell) => {
+          const { key, ...cellProps } = cell.getCellProps();
           return (
-            <div className="td" {...cell.getCellProps()}>
+            <div className="td" key={key} {...cellProps}>
               {cell.render('Cell')}
             </div>
           );
@@ -306,16 +340,14 @@ DataFilesTableRow.propTypes = {
   rowSelectCallback: PropTypes.func.isRequired,
   shadeEvenRows: PropTypes.bool.isRequired,
 };
-DataFilesTableRow.defaultProps = { row: {} };
-
 const DataFilesTable = ({
   data,
   columns,
   rowSelectCallback,
   scrollBottomCallback,
   section,
-  hideHeader,
-  shadeEvenRows,
+  hideHeader = false,
+  shadeEvenRows = false,
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -335,7 +367,7 @@ const DataFilesTable = ({
     setTableHeight(height);
   };
 
-  const { reachedEnd } = useFileListing(section);
+  const { reachedEnd, loadingScroll } = useFileListing(section);
 
   const sizedColumns = useMemo(
     () => columns.map((col) => ({ ...col, width: col.width * tableWidth })),
@@ -356,13 +388,29 @@ const DataFilesTable = ({
   const itemCount = rows.length ? rows.length + 1 : 0;
   const onScroll = useCallback(
     ({ scrollOffset }) => {
-      const diff =
-        scrollOffset - itemCount * rowHeight + (tableHeight - headerHeight);
-      if (diff === 0 && !reachedEnd) {
+      if (
+        isNearBottom({
+          scrollOffset,
+          itemCount,
+          rowHeight,
+          listHeight: tableHeight - headerHeight,
+          threshold: rowHeight * 10,
+        }) &&
+        !reachedEnd &&
+        !loadingScroll
+      ) {
         scrollBottomCallback();
       }
     },
-    [rowHeight, itemCount, tableHeight, headerHeight, reachedEnd]
+    [
+      rowHeight,
+      itemCount,
+      tableHeight,
+      headerHeight,
+      reachedEnd,
+      loadingScroll,
+      scrollBottomCallback,
+    ]
   );
 
   // only bind render function when table data changes
@@ -396,17 +444,24 @@ const DataFilesTable = ({
         <div {...getTableProps()}>
           <div ref={tableHeader}>
             {headerGroups.map((headerGroup) => {
+              const { key: headerGroupKey, ...headerGroupProps } =
+                headerGroup.getHeaderGroupProps();
               return hideHeader ? null : (
                 <div
-                  {...headerGroup.getHeaderGroupProps()}
+                  key={headerGroupKey}
+                  {...headerGroupProps}
                   className="tr tr-header"
                   style={{ width }}
                 >
-                  {headerGroup.headers.map((column) => (
-                    <div {...column.getHeaderProps()} className="td">
-                      {column.render('Header')}
-                    </div>
-                  ))}
+                  {headerGroup.headers.map((column) => {
+                    const { key: columnKey, ...columnProps } =
+                      column.getHeaderProps();
+                    return (
+                      <div key={columnKey} {...columnProps} className="td">
+                        {column.render('Header')}
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
@@ -448,11 +503,6 @@ DataFilesTable.propTypes = {
   section: PropTypes.string.isRequired,
   hideHeader: PropTypes.bool,
   shadeEvenRows: PropTypes.bool,
-};
-
-DataFilesTable.defaultProps = {
-  hideHeader: false,
-  shadeEvenRows: false,
 };
 
 export default DataFilesTable;

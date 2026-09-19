@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { toBeInTheDocument } from '@testing-library/jest-dom/dist/matchers';
 import {
+  Title,
   Team,
   Systems,
   Awarded,
@@ -14,6 +14,7 @@ import systemAccessor from '../AllocationsUtils';
 
 const fixture = {
   projectId: 'TEST-Project',
+  projectName: 'Test Project',
   systems: [
     {
       name: 'Test System',
@@ -72,9 +73,20 @@ const Wrapper = ({ store, children }) => (
   <Provider store={store}>{children}</Provider>
 );
 
-expect.extend({ toBeInTheDocument });
 describe('Allocations Table Cells', () => {
   const { systems } = fixture;
+  it('should have a title and projectName in a cell', () => {
+    const title = fixture.title;
+    const projectName = fixture.projectName;
+    const { getByText } = render(
+      <Title
+        cell={{
+          value: { title: title, projectName: projectName },
+        }}
+      />
+    );
+    expect(getByText(/TEST-Team/)).toBeInTheDocument();
+  });
   it('should have a team view link in a cell', () => {
     const { getByText } = render(
       <Wrapper store={mockStore(mockInitialState)}>

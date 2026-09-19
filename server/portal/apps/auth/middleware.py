@@ -3,12 +3,14 @@ Auth middleware
 """
 
 import logging
+
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from tapipy.errors import BaseTapyException
+
 from portal.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
@@ -47,21 +49,15 @@ class TapisTokenRefreshMiddleware:
                 extra={"user": request.user.username},
             )
             logout(request)
-            return HttpResponseRedirect(reverse("portal_accounts:login"))
+            return HttpResponseRedirect(reverse("login"))
 
         if not tapis_oauth.expired:
             return
 
-        logger.info(
-            f"Tapis OAuth token expired for user {request.user.username}. Refreshing token"
-        )
+        logger.info(f"Tapis OAuth token expired for user {request.user.username}. Refreshing token")
         with transaction.atomic():
             # Get a lock on this user's token row in db.
-            latest_token = (
-                TapisOAuthToken.objects.select_for_update()
-                .filter(user=request.user)
-                .first()
-            )
+            latest_token = TapisOAuthToken.objects.select_for_update().filter(user=request.user).first()
             if latest_token.expired:
                 try:
                     logger.info("Refreshing Tapis OAuth token")
@@ -72,9 +68,8 @@ class TapisTokenRefreshMiddleware:
                         extra={"user": request.user.username},
                     )
                     logout(request)
-                    return HttpResponseRedirect(reverse("portal_accounts:login"))
+                    return HttpResponseRedirect(reverse("login"))
 
             else:
-                logger.info(
-                    "Token updated by another request. Refreshing token from DB."
-                )
+                logger.info("Token updated by another request. Refreshing token from DB.")
+                tapis_oauth.refresh_from_db()

@@ -8,7 +8,13 @@ import styles from './Checkbox.module.css';
 // RFE: Use (and style) an actual checkbox… `<input type="checkbox">`
 //      and still support `DataFilesListingCells`'s button usage (how?)
 //      (this would also resolve the aria/lint complications noted below)
-const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
+const Checkbox = ({
+  className = '',
+  isChecked = false,
+  tabIndex = 0,
+  role = 'checkbox',
+  ...props
+}) => {
   const rootStyleNames = [
     styles['root'],
     isChecked ? styles['is-checked'] : '',
@@ -25,7 +31,7 @@ const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
       role={role}
       // FAQ: `DataFilesListingCells` needs to pass `onClick` and `onKeyDown`,
       //      but adding those props introduces a mistaken jsx-a11y lint error
-      // eslint-disable-next-line react/jsx-props-no-spreading
+
       {...props}
     >
       <Icon className={styles['check']} name="approved-boxed-reverse" />
@@ -43,11 +49,4 @@ Checkbox.propTypes = {
   /** Standard HTML attribute [role] */
   role: PropTypes.string,
 };
-Checkbox.defaultProps = {
-  className: '',
-  isChecked: false,
-  tabIndex: 0,
-  role: 'checkbox',
-};
-
 export default Checkbox;

@@ -10,20 +10,23 @@ export async function trashUtil({
   system,
   path,
   homeDir,
+  metadata,
 }: {
   api: string;
   scheme: string;
   system: string;
   path: string;
   homeDir: string;
+  metadata?: Record<string, any>;
 }): Promise<{ file: any; path: string }> {
   const url = `/api/datafiles/${api}/trash/${scheme}/${system}/${path}/`;
   const body = {
     homeDir: homeDir,
+    metadata: metadata ?? null,
   };
   const response = await apiClient.put(url, body, {
     headers: {
-      'X-CSRFToken': Cookies.get('csrftoken' || ''),
+      'X-CSRFToken': Cookies.get('csrfcookie' || ''),
     },
     withCredentials: true,
   });
@@ -80,6 +83,7 @@ function useTrash() {
           system: destSystem,
           path: file.path,
           homeDir: homeDir,
+          metadata: file.metadata,
         },
         {
           onSuccess: (response: any) => {

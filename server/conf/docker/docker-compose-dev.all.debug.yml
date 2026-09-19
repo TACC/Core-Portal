@@ -21,7 +21,7 @@ services:
     container_name: core_portal_redis
 
   rabbitmq:
-    image: rabbitmq:4-management
+    image: rabbitmq:4.2-management
     volumes:
       - core_portal_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_portal_rabbitmq
     env_file: ../env_files/rabbitmq.env
@@ -35,11 +35,13 @@ services:
     command: ["memcached"]
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
     ulimits:
-      memlock: -1
+      memlock:
+        soft: -1
+        hard: -1
     environment:
-      - ES_HEAP_SIZE:1g
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
@@ -95,6 +97,7 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
       - ../nginx/certificates/cep.test.key:/etc/ssl/cep.test.key
     container_name: core_portal_websockets
@@ -111,16 +114,20 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
       - ../../docs:/var/www/portal/internal-docs/
+      # Below only used when uwsgi is used; see note below by command
+      - ../uwsgi/uwsgi_core.ini:/srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
+      - ../uwsgi/uwsgi_params:/etc/nginx/uwsgi_params
     dns:
       - 8.8.8.8
       - 8.8.4.4
     stdin_open: true
     tty: true
-    # ** NOTE: Run this uwsgi command below to run a uwsgi server instead of http server,
-    # ** matching deployed configurations. You must also edit nginx.conf. Be aware there
+    # ** NOTE: Run this uwsgi command below to run an uwsgi server instead of http server,
+    # ** matching deployed configurations. You **must** also edit nginx.conf. Be aware there
     # ** is no autoreload for local development with this enabled.
     # command: uwsgi --ini /srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
     command: python manage.py runserver --noasgi 0.0.0.0:6000
@@ -133,6 +140,7 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
     dns:

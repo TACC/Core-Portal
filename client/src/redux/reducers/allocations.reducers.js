@@ -1,7 +1,7 @@
 export const initialState = {
   active: [],
   inactive: [],
-  loading: true,
+  loading: false,
   teams: {},
   loadingUsernames: {},
   hosts: {},

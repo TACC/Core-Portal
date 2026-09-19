@@ -5,6 +5,9 @@ import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
+import { useAddonComponents } from 'hooks/datafiles';
+
+const NOT_LOADING_OR_ERRORED = { loading: false, error: false };
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
@@ -22,10 +25,7 @@ const DataFilesManageProjectModal = () => {
     ) {
       return state.projects.operation;
     }
-    return {
-      loading: false,
-      error: false,
-    };
+    return NOT_LOADING_OR_ERRORED;
   });
 
   const canEditSystem = members
@@ -38,6 +38,15 @@ const DataFilesManageProjectModal = () => {
     );
 
     return projectSystem?.readOnly || !canEditSystem;
+  });
+
+  const portalName = useSelector((state) => state.workbench.portalName);
+  const projectsEnableMetadata = useSelector(
+    (state) => state.workbench.config.projectsEnableMetadata
+  );
+
+  const { DataFilesManageProjectModalAddon } = useAddonComponents({
+    portalName,
   });
 
   const toggle = useCallback(() => {
@@ -128,7 +137,8 @@ const DataFilesManageProjectModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle} charCode="&#xe912;">
-          {readOnlyTeam ? 'View' : 'Manage'} Team
+          {readOnlyTeam ? 'View' : 'Manage'}{' '}
+          {projectsEnableMetadata ? 'Authors' : 'Team'}
         </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
@@ -143,7 +153,8 @@ const DataFilesManageProjectModal = () => {
           {error ? (
             <div className={styles.error}>
               <Message type="warn">
-                An error occurred while modifying team members
+                An error occurred while modifying{' '}
+                {projectsEnableMetadata ? 'authors' : 'team members'}
               </Message>
             </div>
           ) : null}
@@ -154,6 +165,9 @@ const DataFilesManageProjectModal = () => {
               </Button>
             ) : null}
           </div>
+          {DataFilesManageProjectModalAddon && (
+            <DataFilesManageProjectModalAddon projectId={projectId} />
+          )}
         </ModalBody>
       </Modal>
     </div>

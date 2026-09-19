@@ -1,10 +1,6 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import {
-  toHaveAttribute,
-  toHaveTextContent,
-} from '@testing-library/jest-dom/dist/matchers';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Layout as AllocationsLayout } from '../AllocationsLayout';
@@ -21,7 +17,6 @@ const mockInitialState = {
   portal_alloc: '',
   loadingPage: false,
 };
-expect.extend({ toHaveAttribute, toHaveTextContent });
 describe('Allocations Page Layout', () => {
   const mockStore = configureStore();
   let getByText, getAllByText;

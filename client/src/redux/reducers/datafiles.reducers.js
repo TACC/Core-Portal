@@ -21,6 +21,18 @@ export const addSystemDefinition = (system, definitionList) => {
   ];
 };
 
+// Helper function to update a system configuration in the list after a push keys operation
+const updateStorageSystemConfiguration = (configuration, systemConf) => {
+  const systemIndex = configuration.findIndex(
+    (s) => s.system === systemConf.system
+  );
+  if (systemIndex !== -1) {
+    const updated = configuration.splice(systemIndex, 1, systemConf);
+    return updated;
+  }
+  return configuration;
+};
+
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_STARTED':
@@ -43,6 +55,17 @@ export function systems(state = initialSystemState, action) {
           defaultHost: action.payload.default_host,
           defaultSystemId: action.payload.default_system_id,
           loading: false,
+        },
+      };
+    case 'UPDATE_STORAGE_SYSTEM_CONFIGURATION':
+      return {
+        ...state,
+        storage: {
+          ...state.storage,
+          configuration: updateStorageSystemConfiguration(
+            state.storage.configuration,
+            action.payload.system
+          ),
         },
       };
     case 'FETCH_SYSTEMS_ERROR':
@@ -112,6 +135,7 @@ export const initialFilesState = {
       error: null,
       loading: false,
     },
+    dynamicform: {},
     unavailDownload: {},
     noFolders: {},
   },
@@ -124,6 +148,7 @@ export const initialFilesState = {
     modal: false,
     message: '',
   },
+  folderMetadata: null,
   listing: {
     FilesListing: [],
     modal: [],
@@ -164,6 +189,8 @@ export const initialFilesState = {
     editproject: false,
     makePublic: false,
     downloadMessage: false,
+    dynamicform: false,
+    publicationRequest: false,
     unavailDownload: false,
     noFolders: false,
   },
@@ -179,6 +206,8 @@ export const initialFilesState = {
     showpath: {},
     makePublic: {},
     downloadMessage: {},
+    dynamicform: {},
+    publicationRequest: {},
     unavailDownload: {},
   },
   refs: {},
@@ -199,6 +228,10 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: true },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {
+          ...state.folderMetadata,
+          [action.payload.section]: null,
+        },
         listing: { ...state.listing, [action.payload.section]: [] },
         params: {
           ...state.params,
@@ -222,6 +255,10 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: false },
+        folderMetadata: {
+          ...state.folderMetadata,
+          [action.payload.section]: action.payload.folderMetadata,
+        },
         listing: {
           ...state.listing,
           [action.payload.section]: [...action.payload.files],
@@ -418,7 +455,7 @@ export function files(state = initialFilesState, action) {
           FilesListing: {
             api: 'tapis',
             scheme: 'projects',
-            system: '',
+            system: action.payload.system ?? '',
             path: '',
           },
         },

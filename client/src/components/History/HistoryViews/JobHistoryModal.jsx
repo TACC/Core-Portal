@@ -29,7 +29,7 @@ import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, children, disabled }) {
+function DataFilesLink({ path, children = null, disabled = false }) {
   const text = children || path;
   return (
     <NavLink
@@ -49,11 +49,6 @@ DataFilesLink.propTypes = {
   disabled: PropTypes.bool,
 };
 
-DataFilesLink.defaultProps = {
-  children: null,
-  disabled: false,
-};
-
 const reduceInputParameters = (data) =>
   data.reduce((acc, item) => {
     acc[item.label] = item.value;
@@ -62,8 +57,8 @@ const reduceInputParameters = (data) =>
 
 function JobHistoryContent({
   jobDetails,
-  jobDisplay,
-  jobName,
+  jobDisplay = {},
+  jobName = '',
   toggle,
   // TODOv3: dropV2Jobs
   version,
@@ -79,7 +74,6 @@ function JobHistoryContent({
     version === 'v3'
       ? getOutputPath(jobDetails)
       : `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
-  const hasOutput = isOutputState(jobDetails.status);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
@@ -204,9 +198,15 @@ function JobHistoryContent({
   const data = {
     Application: <DescriptionList data={appDataObj} />,
     Status: <DescriptionList data={statusDataObj} />,
-    Inputs: <DescriptionList data={inputAndParamsDataObj} />,
-    Configuration: <DescriptionList data={configDataObj} />,
-    Output: <DescriptionList data={outputDataObj} />,
+    ...(Object.keys(inputAndParamsDataObj).length && {
+      Inputs: <DescriptionList data={inputAndParamsDataObj} />,
+    }),
+    ...(Object.keys(configDataObj).length && {
+      Configuration: <DescriptionList data={configDataObj} />,
+    }),
+    ...(jobDetails.archiveMode !== 'NEVER' && {
+      Output: <DescriptionList data={outputDataObj} />,
+    }),
   };
 
   return (
@@ -220,13 +220,13 @@ function JobHistoryContent({
               Execution: (
                 <DataFilesLink
                   path={getExecutionPath(jobDetails)}
-                  disabled={hasOutput}
+                  disabled={outputLocation}
                 >
                   View in Data Files
                 </DataFilesLink>
               ),
               Output: (
-                <DataFilesLink path={outputLocation} disabled={!hasOutput}>
+                <DataFilesLink path={outputLocation} disabled={!outputLocation}>
                   View in Data Files
                 </DataFilesLink>
               ),
@@ -266,20 +266,15 @@ function JobHistoryContent({
 
 JobHistoryContent.propTypes = {
   jobName: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
+
   jobDetails: PropTypes.object.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
+
   jobDisplay: PropTypes.object.isRequired,
   toggle: PropTypes.func.isRequired,
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-JobHistoryContent.defaultProps = {
-  jobName: '',
-  jobDisplay: {},
-};
-
-function JobHistoryModal({ uuid, version }) {
+function JobHistoryModal({ uuid, version = 'v3' }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
       return state.jobDetail;
@@ -380,9 +375,4 @@ JobHistoryModal.propTypes = {
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-// TODOv3: dropV2Jobs
-JobHistoryModal.defaultProps = {
-  version: 'v3',
-};
-
 export default JobHistoryModal;

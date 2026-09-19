@@ -237,7 +237,7 @@ export function* searchUsers(action) {
 
 export const manageUtil = async (projectId, username, add = true) => {
   const r = await fetch(`/api/users/team/manage/${projectId}/${username}`, {
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    headers: { 'X-CSRFToken': Cookies.get('csrfcookie') },
     method: add ? 'POST' : 'DELETE',
   });
   const json = r.json();

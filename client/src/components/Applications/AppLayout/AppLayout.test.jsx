@@ -10,6 +10,7 @@ import filesFixture from '../../DataFiles/fixtures/DataFiles.files.fixture';
 import { appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
 import allocationsFixture from '../AppForm/fixtures/AppForm.allocations.fixture';
 import { helloWorldAppFixture } from '../AppForm/fixtures/AppForm.app.fixture';
+import { userFixture } from '../AppForm/fixtures/AppForm.authenticatedUser.fixture';
 import { jobsFixture } from '../AppForm/fixtures/AppForm.jobs.fixture';
 import renderComponent from 'utils/testing';
 
@@ -52,6 +53,9 @@ describe('AppsHeader', () => {
       files: filesFixture,
       apps: appTrayExpectedFixture,
       allocations: allocationsFixture,
+      authenticatedUser: {
+        user: userFixture,
+      },
       app: {
         error: {
           isError: false,

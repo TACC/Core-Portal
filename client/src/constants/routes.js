@@ -4,7 +4,7 @@ export const DATA = '/data';
 export const SUBMISSIONS = '/data-submission';
 export const ALLOCATIONS = '/allocations';
 export const APPLICATIONS = '/applications';
-export const PUBLICATIONS = '/publications';
+export const PUBLICATIONS = '/published-datasets';
 export const HISTORY = '/history';
 export const JOBS = '/jobs';
 // TODOv3: dropV2Jobs
@@ -17,3 +17,4 @@ export const ONBOARDINGADMIN = '/onboarding/admin';
 export const ACCOUNT = '/account';
 export const SEARCH = '/workbench/search';
 export const SYSTEM_STATUS = '/system-status';
+export const USER_NEWS = '/user-news';
