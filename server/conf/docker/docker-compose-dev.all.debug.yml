@@ -1,8 +1,8 @@
 services:
   cms:
-    image: taccwma/core-cms:latest
+    image: taccwma/core-cms:fix-1084-settings-overwrites
     volumes:
-      - ../cms/secrets.py:/code/taccsite_cms/secrets.py
+      - ../cms/settings:/code/taccsite_cms/settings/overwrites
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
