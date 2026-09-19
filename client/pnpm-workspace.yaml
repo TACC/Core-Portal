@@ -4,6 +4,8 @@ allowBuilds:
   msw: true
 
 minimumReleaseAge: 10080 # Only install packages >1 week old
+minimumReleaseAgeExclude:
+  - '@tacc/core-styles'
 
 packages:
   - "packages/*"

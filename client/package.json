@@ -84,7 +84,7 @@
   "devDependencies": {
     "@csstools/postcss-global-data": "^4.0.0",
     "@rollup/plugin-eslint": "^9.2.0",
-    "@tacc/core-styles": "github:TACC/Core-Styles#fix/portal-info-colors",
+    "@tacc/core-styles": "^2.58.3",
     "@tailwindcss/vite": "catalog:",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
