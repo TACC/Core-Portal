@@ -1,7 +1,9 @@
 import json
+import re
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.http import HttpResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -549,6 +551,28 @@ def test_publication_file_download_view_delegates_to_tapis_files_view(rf, settin
     assert response is mock_response
 
 
+def test_file_download_route_is_matched_before_index_fallback(client):
+    """public_data/urls.py's `file_download` pattern is listed before the catch-all
+    `index_fallback` (r"^.*$") specifically so a `/files/...` URL reaches
+    PublicationFileDownloadView instead of being swallowed by the SPA-shell fallback -- exercise
+    that ordering through the real URL resolver (client.get), not by calling the view directly.
+    """
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "a/b.csv"})
+    tapis_response = HttpResponse(b"file bytes", content_type="text/csv")
+    mock_dispatch = MagicMock(return_value=tapis_response)
+
+    with patch("portal.apps.public_data.views.TapisFilesView.as_view", return_value=mock_dispatch):
+        response = client.get(url)
+
+    assert response is tapis_response
+    mock_dispatch.assert_called_once()
+    _, call_kwargs = mock_dispatch.call_args
+    assert call_kwargs["operation"] == "download"
+    assert call_kwargs["scheme"] == "projects"
+    assert call_kwargs["system"] == "test.project.published.test.project-1"
+    assert call_kwargs["path"] == "a/b.csv"
+
+
 # ---------------------------------------------------------------------------
 # get_schema_org_json
 # ---------------------------------------------------------------------------
@@ -747,6 +771,124 @@ def test_index_view_fallback_route_has_no_publication_context(client, settings):
     assert response.context["setup_complete"] is False
     assert "schema_org_json" not in response.context
     assert "citation_context" not in response.context
+
+
+# ---------------------------------------------------------------------------
+# IndexView rendered HTML -- the actual served <head> tags, not just view context.
+#
+# get_schema_org_json/get_citation_context are unit-tested above in isolation, but nothing
+# confirms their output actually reaches the page: a wrong template variable name, a missing
+# `|safe`, or a broken block override in index.html/base.html would pass every test above while
+# silently breaking the SEO tags this feature exists to serve. These render the real template
+# (via the Django test client) and inspect response.content.
+# ---------------------------------------------------------------------------
+
+
+def test_index_view_renders_json_ld_script_tag(client, settings, publication):
+    settings.DEBUG = True
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    match = re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.DOTALL)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert payload["name"] == "Test Dataset"
+    assert payload["license"] == "https://opendatacommons.org/licenses/by/1-0/"
+    assert payload["@type"] == "Dataset"
+
+
+def test_index_view_renders_citation_and_dc_meta_tags(client, settings, publication):
+    settings.DEBUG = True
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    assert '<meta name="citation_title" content="Test Dataset">' in body
+    assert '<meta name="citation_author" content="Lovelace, Ada">' in body
+    assert '<meta name="citation_doi" content="10.1234/test-doi">' in body
+    assert '<meta name="citation_publisher" content="Test Publisher">' in body
+    assert '<meta name="DC.title" content="Test Dataset">' in body
+    assert '<meta name="DC.creator" content="Ada Lovelace">' in body
+    assert '<meta name="DC.rights" content="https://opendatacommons.org/licenses/by/1-0/">' in body
+    assert '<meta name="DC.identifier" content="https://doi.org/10.1234/test-doi">' in body
+
+
+def test_index_view_renders_citation_pdf_url_when_pdf_present(client, settings):
+    settings.DEBUG = True
+    pub = Publication.objects.create(
+        project_id="test.project-2",
+        value=valid_base_meta(
+            fileObjs=[{"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"}],
+        ),
+        tree={},
+    )
+    url = reverse("publications:index", kwargs={"project_id": pub.project_id})
+    body = client.get(url).content.decode()
+
+    expected_pdf_url = reverse(
+        "publications:file_download", kwargs={"project_id": pub.project_id, "path": "files/paper.pdf"}
+    )
+    assert f'<meta name="citation_pdf_url" content="http://testserver{expected_pdf_url}">' in body
+
+
+def test_index_view_renders_title_and_description_from_publication(client, settings, publication):
+    settings.DEBUG = True
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    title_match = re.search(r"<title>(.*?)</title>", body, re.DOTALL)
+    assert title_match is not None
+    assert title_match.group(1).strip() == "Test Dataset | test"
+    assert "A dataset for testing" in body
+
+
+def test_index_view_publication_route_is_indexable(client, settings, publication):
+    settings.DEBUG = True
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    assert 'content="' in body
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert "index, follow, max-image-preview:large" in robots_match.group(1)
+
+
+def test_index_view_fallback_route_is_noindex(client, settings):
+    settings.DEBUG = True
+    body = client.get("/published-datasets/not-a-real-project/").content.decode()
+
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert robots_match.group(1).strip() == "noindex, follow"
+    assert "citation_title" not in body
+    assert "application/ld+json" not in body
+
+
+def test_index_view_renders_og_image_when_cover_image_configured(client, settings, publication):
+    settings.DEBUG = True
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    expected_url = "http://testserver/api/datafiles/tapis/download/projects/root.system/cover.png/"
+    assert f'<meta property="og:image" content="{expected_url}">' in body
+    assert f'<meta name="twitter:image" content="{expected_url}">' in body
+    card_match = re.search(r'<meta name="twitter:card" content="([^"]*)">', body)
+    assert card_match is not None
+    assert card_match.group(1).strip() == "summary_large_image"
+
+
+def test_index_view_omits_og_image_without_cover_image_configured(client, settings, publication):
+    settings.DEBUG = True
+    url = reverse("publications:index", kwargs={"project_id": publication.project_id})
+    body = client.get(url).content.decode()
+
+    assert 'property="og:image"' not in body
+    assert 'name="twitter:image"' not in body
+    card_match = re.search(r'<meta name="twitter:card" content="([^"]*)">', body)
+    assert card_match is not None
+    assert card_match.group(1).strip() == "summary"
 
 
 # ---------------------------------------------------------------------------

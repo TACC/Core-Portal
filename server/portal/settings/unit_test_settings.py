@@ -106,9 +106,25 @@ TEMPLATES = [
                 "portal.utils.contextprocessors.analytics",
                 "portal.utils.contextprocessors.debug",
                 "portal.utils.contextprocessors.messages",
+                "django_settings_export.settings_export",
             ],
         },
     },
+]
+
+# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context processor above),
+# every `{{ settings.* }}` reference in a template (base.html's PORTAL_NAMESPACE/PORTAL_ICON_
+# FILENAME/PORTAL_CSS_FILENAMES, etc.) silently renders as an empty string under test settings,
+# since Django templates don't error on an undefined context variable.
+SETTINGS_EXPORT = [
+    "PORTAL_ICON_FILENAME",
+    "PORTAL_CSS_FILENAMES",
+    "DEBUG",
+    "GOOGLE_ANALYTICS_PROPERTY_ID",
+    "PORTAL_NAMESPACE",
+    "WORKBENCH_SETTINGS",
+    "DOCS_CHATBOT_URL",
+    "PORTAL_USER_ACCOUNT_SETUP_STEPS",
 ]
 
 WSGI_APPLICATION = "portal.wsgi.application"
@@ -186,6 +202,12 @@ PORTAL_ALLOCATION = "test"
 PORTAL_PROJECTS_USE_SET_FACL_JOB = False
 PROJECT_ADMIN_GROUP = "Project Admin"
 
+
+PORTAL_CSS_FILENAMES = []
+
+GOOGLE_ANALYTICS_PROPERTY_ID = None
+
+DOCS_CHATBOT_URL = None
 
 PORTAL_KEYS_MANAGER = "portal.apps.accounts.managers.ssh_keys.KeysManager"
 PORTAL_PROJECTS_PEMS_APP_ID = "pems.app-test"
