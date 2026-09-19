@@ -11,9 +11,11 @@ To **emulate** a specific project's CMS **settings**:
 2. Navigate to specific project.
 3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings/settings_custom.py`.
 
-To **override** any CMS **secrets**, edit `server/conf/cms/settings/settings_local.py`.
+To **override** any CMS **secrets**:
+1. Edit `server/conf/cms/settings/secrets.py`.
 
-To **override** any CMS **settings**, edit `server/conf/cms/settings/settings_local.py`.
+To **override** any CMS **settings**:
+1. Edit `server/conf/cms/settings/settings_local.py`.
 
 ## Advanced
 
