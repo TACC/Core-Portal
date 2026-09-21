@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from 'utils/apiClient';
+import { apiClient } from '../apiClient';
 import { UserNewsResponse } from '.';
 
 interface UseUserNewsOptions {
@@ -17,11 +17,9 @@ export async function fetchUserNewsUtil({
   return response.data?.response ?? [];
 }
 
-function useUserNews({ sanitize = false }: UseUserNewsOptions = {}) {
+export function useUserNews({ sanitize = false }: UseUserNewsOptions = {}) {
   return useQuery({
     queryKey: ['userNews', sanitize],
     queryFn: () => fetchUserNewsUtil({ sanitize }),
   });
 }
-
-export default useUserNews;

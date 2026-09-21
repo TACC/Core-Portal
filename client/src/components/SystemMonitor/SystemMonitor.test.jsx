@@ -4,7 +4,6 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import SystemsList from './SystemMonitor';
 import { BrowserRouter } from 'react-router-dom';
-import { toHaveAttribute } from '@testing-library/jest-dom/dist/matchers';
 
 const mockStore = configureStore();
 const list = [
@@ -60,7 +59,6 @@ describe('System Monitor Component', () => {
     expect(getByText('Unable to gather system information'));
   });
   it('should display the system name in each row', () => {
-    expect.extend({ toHaveAttribute });
     const store = mockStore({ systemMonitor: { list, loading: false } });
     const { getByText } = renderSystemMonitor(store);
 

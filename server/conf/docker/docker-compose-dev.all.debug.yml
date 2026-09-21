@@ -94,6 +94,7 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../nginx/certificates/cep.test.crt:/etc/ssl/cep.test.crt
       - ../nginx/certificates/cep.test.key:/etc/ssl/cep.test.key
     container_name: core_portal_websockets
@@ -110,6 +111,7 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
       - ../../docs:/var/www/portal/internal-docs/
@@ -135,6 +137,7 @@ services:
         required: false
     volumes:
       - ../../../.:/srv/www/portal
+      - /srv/www/portal/server/.venv # don't overwrite container venv with local files
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
     dns:

@@ -6,7 +6,14 @@ import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
 import emptyStringValidator from '_common/CommonUtils';
 
-const SidebarItem = ({ to, iconName, label, children, disabled, hidden }) => {
+const SidebarItem = ({
+  to,
+  iconName,
+  label,
+  children = null,
+  disabled = false,
+  hidden = false,
+}) => {
   return (
     <NavItem>
       <NavLink
@@ -39,12 +46,6 @@ SidebarItem.propTypes = {
   hidden: PropTypes.bool,
 };
 
-SidebarItem.defaultProps = {
-  children: null,
-  disabled: false,
-  hidden: false,
-};
-
 /**
  * Groups sidebar items by their category, returning an object where keys are categories and values are arrays of items.
  * Items with no category are grouped under an empty string key. For empty string categories, the category label is not rendered in the sidebar.
@@ -65,10 +66,10 @@ const groupByCategory = (items) => {
 
 const Sidebar = ({
   sidebarItems,
-  addItemsBefore,
-  addItemsAfter,
-  loading,
-  isMain,
+  addItemsBefore = [],
+  addItemsAfter = [],
+  loading = false,
+  isMain = false,
 }) => {
   const groupedItems = groupByCategory(sidebarItems);
 
@@ -136,13 +137,6 @@ Sidebar.propTypes = {
   addItemsAfter: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
   isMain: PropTypes.bool,
-};
-
-Sidebar.defaultProps = {
-  addItemsBefore: [],
-  addItemsAfter: [],
-  loading: false,
-  isMain: false,
 };
 
 export default Sidebar;

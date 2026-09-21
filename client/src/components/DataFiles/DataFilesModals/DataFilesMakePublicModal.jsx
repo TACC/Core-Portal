@@ -3,11 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, SectionMessage } from '_common';
 
+const EMPTY_SELECTED_FILE = {};
+
 const DataFilesMakePublicModal = () => {
   const isOpen = useSelector((state) => state.files.modals.makePublic);
 
   const selected = useSelector(
-    (state) => state.files.modalProps.makePublic.selectedFile || {}
+    (state) =>
+      state.files.modalProps.makePublic.selectedFile || EMPTY_SELECTED_FILE
   );
 
   const dispatch = useDispatch();

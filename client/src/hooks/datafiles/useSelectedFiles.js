@@ -1,14 +1,21 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 function useSelectedFiles() {
   const dispatch = useDispatch();
 
-  const selectedFiles = useSelector((state) =>
-    state.files.selected.FilesListing.map((i) => ({
-      ...state.files.listing?.FilesListing[i],
-      id: `${state.files.listing?.FilesListing[i].system}/${state.files.listing?.FilesListing[i].path}`,
-    }))
+  const selectedIndices = useSelector(
+    (state) => state.files.selected.FilesListing
+  );
+  const listing = useSelector((state) => state.files.listing?.FilesListing);
+
+  const selectedFiles = useMemo(
+    () =>
+      selectedIndices.map((i) => ({
+        ...listing?.[i],
+        id: `${listing?.[i].system}/${listing?.[i].path}`,
+      })),
+    [selectedIndices, listing]
   );
 
   const allSelected = useSelector(
