@@ -78,6 +78,7 @@ function JobHistoryContent({
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const hasEnded = isTerminalState(jobDetails.status);
+  const execSystemId = jobDetails.execSystemId;
 
   const appDataObj = {
     'App ID': jobDetails.appId,
@@ -244,8 +245,9 @@ function JobHistoryContent({
             Cancel Job
           </Button>
         )}
-        {hasEnded && version === 'v3' && (
+        {hasEnded && version === 'v3' && execSystemId !== 'frontera' && (
           // TODOv3: dropV2Jobs
+          // WP-1367: removes 'Resubmit Job' button for jobs run on Frontera only
           <Button
             type="primary"
             attr="submit"
