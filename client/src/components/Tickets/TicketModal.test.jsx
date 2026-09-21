@@ -4,7 +4,6 @@ import { render } from '@testing-library/react';
 import { default as TicketModal, TicketHistory } from './TicketModal';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import renderComponent from 'utils/testing';
 

@@ -127,6 +127,4 @@ OnboardingActions.propTypes = {
   step: stepPropType.isRequired,
 };
 
-OnboardingActions.defaultProps = {};
-
 export default OnboardingActions;

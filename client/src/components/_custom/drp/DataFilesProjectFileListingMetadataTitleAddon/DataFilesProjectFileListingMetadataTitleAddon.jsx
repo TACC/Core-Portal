@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Button } from '_common';
 import { useFileListing } from 'hooks/datafiles';
 import { MetadataTitle } from '_common/ProjectMetadata';
@@ -31,7 +31,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
       })[0];
 
     return userAccess || { canEditDataset: false };
-  });
+  }, shallowEqual);
 
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
     useDrpDatasetModals(projectId, portalName);

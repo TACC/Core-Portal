@@ -51,8 +51,8 @@ CreatedTicketInformation.propTypes = {
 };
 
 function TicketCreateForm({
-  authenticatedUser,
-  initialSubject,
+  authenticatedUser = null,
+  initialSubject = '',
   provideDashBoardLinkOnSuccess,
 }) {
   const creating = useSelector((state) => state.ticketCreate.creating);
@@ -259,11 +259,6 @@ TicketCreateForm.propTypes = {
     isStaff: PropTypes.bool,
     oauth: PropTypes.shape({}),
   }),
-};
-
-TicketCreateForm.defaultProps = {
-  authenticatedUser: null,
-  initialSubject: '',
 };
 
 export default TicketCreateForm;

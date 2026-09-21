@@ -15,12 +15,14 @@ import './DataFilesToolbar.scss';
 import { useTrash } from 'hooks/datafiles/mutations';
 import canCompressForDownload from 'utils/canCompressForDownload';
 
+const EMPTY_FILE_LIST = [];
+
 export const ToolbarButton = ({
   text,
   iconName,
-  onClick,
-  disabled,
-  className,
+  onClick = () => {},
+  disabled = true,
+  className = '',
 }) => {
   const iconClassName = `action icon-${iconName}`;
   return (
@@ -34,11 +36,6 @@ export const ToolbarButton = ({
       {text}
     </Button>
   );
-};
-ToolbarButton.defaultProps = {
-  onClick: () => {},
-  disabled: true,
-  className: '',
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
@@ -139,7 +136,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   });
 
   const trashedFiles = useSelector((state) =>
-    inTrash ? state.files.listing.FilesListing : []
+    inTrash ? state.files.listing.FilesListing : EMPTY_FILE_LIST
   );
 
   const status = useSelector((state) => state.files.operationStatus.trash);

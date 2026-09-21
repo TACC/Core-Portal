@@ -12,7 +12,7 @@ import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 import Searchbar from '_common/Searchbar';
 
-const DataFilesProjectsList = ({ modal, rootSystem }) => {
+const DataFilesProjectsList = ({ modal = null, rootSystem }) => {
   const { error, loading, projects } = useSelector(
     (state) => state.projects.listing
   );
@@ -166,8 +166,4 @@ const DataFilesProjectsList = ({ modal, rootSystem }) => {
 DataFilesProjectsList.propTypes = {
   modal: PropTypes.string,
 };
-DataFilesProjectsList.defaultProps = {
-  modal: null,
-};
-
 export default DataFilesProjectsList;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SectionMessage } from '_common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import parse from 'html-react-parser';
 import styles from './CustomMessage.module.scss';
 
@@ -25,7 +25,7 @@ function CustomMessage({ messageComponentName }) {
         message.unread && message.template.component === messageComponentName
       );
     });
-  });
+  }, shallowEqual);
 
   function onDismiss(dismissMessage) {
     const payload = {
