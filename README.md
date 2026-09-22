@@ -111,7 +111,7 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### CMS
 
-To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
+**Optional.** To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
 
 #### Build the image for the portal's django container:
 
