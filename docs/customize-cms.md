@@ -1,12 +1,10 @@
 # Customize a CMS
 
-This is all optional. You can develop Core-Portal without CMS customization.
+Optional. You can develop Core-Portal without CMS customization.
 
-## Basic
+Settings: `server/conf/cms/settings/overwrites/` (same path in the CMS container).
 
-CMS client settings live on the host at `server/conf/cms/settings/overwrites/` — the same path inside the CMS container (`taccsite_cms/settings/overwrites/`).
-
-**First-time setup** (optional files only; `settings_default.py` is already in the repo):
+Seed optional files (`settings_default.py` is already committed):
 
 ```sh
 BASE="https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites"
@@ -20,21 +18,12 @@ for name in settings_custom secrets settings_local; do
 done
 ```
 
-To create your own CMS test **content**, [learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv).
+[Learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv) for test content.
 
-To **emulate** a specific project's CMS **settings**:
-1. Visit https://github.com/TACC/Core-Portal-Deployments/blob/main/.
-2. Navigate to specific project.
-3. Use its `cms.settings_custom.py` as your `server/conf/cms/settings/overwrites/settings_custom.py`.
+To emulate another project's CMS settings: copy its `cms.settings_custom.py` from [Core-Portal-Deployments](https://github.com/TACC/Core-Portal-Deployments/blob/main/) to `server/conf/cms/settings/overwrites/settings_custom.py`.
 
-To **override** any CMS **secrets**:
-1. Edit `server/conf/cms/settings/overwrites/secrets.py`.
-
-To **override** any CMS **settings**:
-1. Edit `server/conf/cms/settings/overwrites/settings_local.py`.
+Edit `server/conf/cms/settings/overwrites/secrets.py` for secrets. Edit `settings_local.py` in that folder for other settings.
 
 ## Advanced
 
-To populate content from an existing CMS, follow and adapt instructions to [replicate a CMS database](https://tacc-main.atlassian.net/wiki/x/GwBJAg).
-
-> **Important:** This requires high-level server access or someone to give you a copy of the content.
+[Replicate a CMS database](https://tacc-main.atlassian.net/wiki/x/GwBJAg) (needs server access or a dump from someone who has it).
