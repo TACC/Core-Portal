@@ -1,10 +1,6 @@
 # Customize a CMS
 
-Optional. You can develop Core-Portal without CMS customization.
-
-Settings: `server/conf/cms/settings/overwrites/` (same path in the CMS container).
-
-Seed optional files (`settings_default.py` is already committed):
+To seed standard CMS settings overwrites:
 
 ```sh
 BASE="https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites"
@@ -18,11 +14,7 @@ for name in settings_custom secrets settings_local; do
 done
 ```
 
-[Learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv) for test content.
-
 To emulate another project's CMS settings: copy its `cms.settings_custom.py` from [Core-Portal-Deployments](https://github.com/TACC/Core-Portal-Deployments/blob/main/) to `server/conf/cms/settings/overwrites/settings_custom.py`.
-
-Edit `server/conf/cms/settings/overwrites/secrets.py` for secrets. Edit `settings_local.py` in that folder for other settings.
 
 ## Advanced
 
