@@ -3,6 +3,7 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from 'utils/apiClient';
 import truncateMiddle from 'utils/truncateMiddle';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function moveFileUtil({
   api,
@@ -74,6 +75,13 @@ function useMove() {
           operation: 'move',
         },
       });
+      dispatch({
+        type: 'ADD_TOAST',
+        payload: {
+          pk: uuidv4(),
+          message: 'Starting move',
+        },
+      });
       return mutateAsync(
         {
           api: api,
@@ -101,11 +109,12 @@ function useMove() {
             dispatch({
               type: 'ADD_TOAST',
               payload: {
+                pk: uuidv4(),
                 message: `${
                   filteredSelected.length > 1
                     ? `${filteredSelected.length} files`
                     : 'File'
-                } moved to ${truncateMiddle(destPath, 20) || '/'}`,
+                } moved`,
               },
             });
             callback();
