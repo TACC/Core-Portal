@@ -9,13 +9,15 @@ CMS client settings live on the host at `server/conf/cms/settings/overwrites/` â
 **First-time setup** (optional files only; `settings_default.py` is already in the repo):
 
 ```sh
-mkdir -p server/conf/cms/settings/overwrites
-curl -fsSL "https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites/settings_custom.example.py" \
-  -o server/conf/cms/settings/overwrites/settings_custom.py
-curl -fsSL "https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites/secrets.example.py" \
-  -o server/conf/cms/settings/overwrites/secrets.py
-curl -fsSL "https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites/settings_local.example.py" \
-  -o server/conf/cms/settings/overwrites/settings_local.py
+BASE="https://raw.githubusercontent.com/TACC/Core-CMS/fix/1084-settings-overwrites/taccsite_cms/settings/overwrites"
+DIR="server/conf/cms/settings/overwrites"
+mkdir -p "$DIR"
+for name in settings_custom secrets settings_local; do
+  out="$DIR/${name}.py"
+  if [ ! -f "$out" ]; then
+    curl -fsSL "$BASE/${name}.example.py" -o "$out"
+  fi
+done
 ```
 
 To create your own CMS test **content**, [learn Django CMS as we use it](https://tacc-main.atlassian.net/wiki/x/phdv).
