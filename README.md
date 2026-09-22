@@ -111,7 +111,7 @@ After you clone the repository locally, there are several configuration steps re
 
 ##### CMS
 
-To populate or customize the CMS, read [Customize a CMS](./docs/customize-cms.md).
+Run `./server/conf/cms/setup-overwrites.sh` if you need local `settings_custom.py`, `secrets.py`, or `settings_local.py` (see [Customize a CMS](./docs/customize-cms.md)).
 
 #### Build the image for the portal's django container:
 
