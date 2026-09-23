@@ -105,28 +105,14 @@ def test_get_datacite_json_with_institution_and_authors():
             "nameType": "Personal",
             "givenName": "Ada",
             "familyName": "Lovelace",
-            "affiliation": [
-                {
-                    "name": "Test University",
-                    "schemeUri": None,
-                    "affiliationIdentifier": None,
-                    "affiliationIdentifierScheme": None,
-                }
-            ],
+            "affiliation": [{"name": "Test University"}],
         },
         {
             "name": "Turing, Alan",
             "nameType": "Personal",
             "givenName": "Alan",
             "familyName": "Turing",
-            "affiliation": [
-                {
-                    "name": "Test University",
-                    "schemeUri": None,
-                    "affiliationIdentifier": None,
-                    "affiliationIdentifierScheme": None,
-                }
-            ],
+            "affiliation": [{"name": "Test University"}],
         },
     ]
 
