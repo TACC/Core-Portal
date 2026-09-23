@@ -1,2 +1,11 @@
 User-agent: *
 Disallow: /admin/
+
+# Lets crawlers discover published-dataset landing pages (SitemapView, public_data/views.py)
+# without relying on them checking the conventional /sitemap.xml path on their own.
+# __SERVER_NAME__ is a literal placeholder, not a real hostname -- nginx.conf's `/robots.txt`
+# location substitutes it for nginx's own $server_name at request time (sub_filter), so this
+# line always reflects whichever domain that deployment's nginx.conf is actually configured
+# for (see its `server_name` directive) instead of a value hardcoded here that could drift
+# from it.
+Sitemap: https://__SERVER_NAME__/sitemap.xml
