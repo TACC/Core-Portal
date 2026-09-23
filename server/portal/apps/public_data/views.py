@@ -11,6 +11,7 @@ from django.utils.html import escape
 from django.views.generic.base import TemplateView, View
 
 from portal.apps.datafiles.views import TapisFilesView
+from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
@@ -29,16 +30,6 @@ REQUIRED_DATASET_FIELDS = ("name", "description")
 # see the comment there -- since their PORTAL_PUBLICATION_DATACITE_URL_PREFIX-driven fallback
 # means they're never actually empty/missing from the built dict the way these fields are.
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
-
-# The publication form's "license" field (settings_forms.py / dpmp.settings_forms.py) is a
-# fixed `select`, not free text, so its stored value should always be one of these known
-# labels. schema.org/Croissant expect `license` to be a URL (or CreativeWork), not a bare
-# label, so map known labels to their canonical license-deed URL. A label with no entry here
-# is treated as a misconfiguration by _get_license below -- see its docstring -- rather than
-# silently passed through as non-conformant bare text.
-LICENSE_URLS = {
-    "ODC-BY 1.0": "https://opendatacommons.org/licenses/by/1-0/",
-}
 
 # Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
 # anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
@@ -70,13 +61,11 @@ def _get_license(base_meta, project_id):
     license_value = base_meta.get("license")
     if not license_value:
         return license_value
-    if license_value.startswith("http://") or license_value.startswith("https://"):
-        return license_value
-    resolved = LICENSE_URLS.get(license_value)
+    resolved = resolve_license_url(license_value)
     if resolved is None:
         raise SchemaOrgValidationError(
             f"Publication {project_id} has license {license_value!r}, which has no entry in "
-            "LICENSE_URLS (portal/apps/public_data/views.py) and isn't itself a URL. "
+            "LICENSE_URLS (projects/schema_models/license_urls.py) and isn't itself a URL. "
             "schema.org/Croissant require `license` to be a URL, not free text -- add a "
             f"canonical license-deed URL for {license_value!r} to LICENSE_URLS."
         )
@@ -447,27 +436,6 @@ def _get_citation_pdf_url(base_meta, project_id, request):
     return None
 
 
-class PublicationFileDownloadView(View):
-    """Serve one published file at a URL nested under its publication's own landing-page path
-    (public_data/urls.py's `file_download` pattern), rather than the datafiles app's generic
-    `/api/datafiles/tapis/download/...` route -- so citation_pdf_url (built against this view via
-    _get_publication_file_url) can satisfy Google Scholar's requirement that citation_pdf_url
-    resolve in the same subdirectory as the citing landing page (see _get_configured_origin's
-    docstring), which the generic download route can't since it lives under a wholly separate
-    path tree from wherever a given deployment's landing page is served.
-
-    Just translates project_id into the published system id TapisFilesView expects and delegates
-    straight to it -- TapisFilesView already streams unauthenticated files off `public`-prefixed
-    Tapis systems (datafiles/views.py's PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX check), which is
-    exactly what a published project's system is, so there's no auth/streaming logic to
-    duplicate here.
-    """
-
-    def get(self, request, project_id, path):
-        system = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
-        return TapisFilesView.as_view()(request, operation="download", scheme="projects", system=system, path=path)
-
-
 def get_schema_org_json(pub, project_id, request):
     """Build a schema.org/Dataset JSON-LD object for a published project to embed directly in
     the page's <script type="application/ld+json"> tag for Google Dataset Search.
@@ -698,11 +666,6 @@ def dumps_json_ld(schema_org_json):
     return json.dumps(schema_org_json).translate(_JSON_LD_HTML_ESCAPES)
 
 
-class SchemaOrgValidationError(Exception):
-    """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
-    get_schema_org_json claims to emit."""
-
-
 class IndexView(TemplateView):
     """
     Main workbench view.
@@ -761,6 +724,32 @@ class IndexView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+class PublicationFileDownloadView(View):
+    """Serve one published file at a URL nested under its publication's own landing-page path
+    (public_data/urls.py's `file_download` pattern), rather than the datafiles app's generic
+    `/api/datafiles/tapis/download/...` route -- so citation_pdf_url (built against this view via
+    _get_publication_file_url) can satisfy Google Scholar's requirement that citation_pdf_url
+    resolve in the same subdirectory as the citing landing page (see _get_configured_origin's
+    docstring), which the generic download route can't since it lives under a wholly separate
+    path tree from wherever a given deployment's landing page is served.
+
+    Just translates project_id into the published system id TapisFilesView expects and delegates
+    straight to it -- TapisFilesView already streams unauthenticated files off `public`-prefixed
+    Tapis systems (datafiles/views.py's PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX check), which is
+    exactly what a published project's system is, so there's no auth/streaming logic to
+    duplicate here.
+    """
+
+    def get(self, request, project_id, path):
+        system = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
+        return TapisFilesView.as_view()(request, operation="download", scheme="projects", system=system, path=path)
+
+
+class SchemaOrgValidationError(Exception):
+    """Raised when a publication's metadata can't satisfy the schema.org/Croissant fields
+    get_schema_org_json claims to emit."""
 
 
 class SitemapView(View):

@@ -7,8 +7,8 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
+from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.public_data.views import (
-    LICENSE_URLS,
     PublicationFileDownloadView,
     SchemaOrgValidationError,
     _format_citation_author,

@@ -61,7 +61,10 @@ def test_get_datacite_json_minimal():
     ]
     assert result["types"] == {"resourceTypeGeneral": "Dataset"}
     assert result["prefix"] == "10.1234"
-    assert result["language"] == "English"
+    assert result["language"] == "en"
+    assert result["subjects"] == []
+    assert result["rightsList"] == []
+    assert "version" not in result
     assert result["identifiers"] == [
         {"identifierType": "Project ID", "identifier": "test.project.published.test.project-1"}
     ]
@@ -141,6 +144,101 @@ def test_get_datacite_json_raises_without_vanity_base_url():
     base_meta = minimal_base_meta()
     with pytest.raises(ValueError, match="VANITY_BASE_URL is not configured"):
         get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+
+# ---------------------------------------------------------------------------
+# get_datacite_json: subjects
+# ---------------------------------------------------------------------------
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_subjects_from_comma_separated_string():
+    base_meta = minimal_base_meta(keywords="genomics, RNA-seq ,  mouse")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["subjects"] == [
+        {"subject": "genomics"},
+        {"subject": "RNA-seq"},
+        {"subject": "mouse"},
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_subjects_from_list():
+    base_meta = minimal_base_meta(keywords=["genomics", "RNA-seq"])
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["subjects"] == [{"subject": "genomics"}, {"subject": "RNA-seq"}]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_subjects_empty_when_no_keywords():
+    base_meta = minimal_base_meta()
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["subjects"] == []
+
+
+# ---------------------------------------------------------------------------
+# get_datacite_json: rightsList
+# ---------------------------------------------------------------------------
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_resolves_known_label():
+    base_meta = minimal_base_meta(license="ODC-BY 1.0")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"] == [
+        {"rights": "ODC-BY 1.0", "rightsUri": "https://opendatacommons.org/licenses/by/1-0/"}
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_passes_through_existing_url():
+    base_meta = minimal_base_meta(license="https://example.com/license")
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"] == [
+        {"rights": "https://example.com/license", "rightsUri": "https://example.com/license"}
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_empty_when_no_license():
+    base_meta = minimal_base_meta()
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["rightsList"] == []
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_rights_list_raises_for_unmapped_label():
+    base_meta = minimal_base_meta(license="unmapped-license")
+    with pytest.raises(ValueError, match="unmapped-license"):
+        get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+
+# ---------------------------------------------------------------------------
+# get_datacite_json: version
+# ---------------------------------------------------------------------------
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_version_included_when_given():
+    base_meta = minimal_base_meta()
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1", version=3)
+    assert result["version"] == "3"
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_version_omitted_when_not_given():
+    base_meta = minimal_base_meta()
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert "version" not in result
 
 
 @DATACITE_SETTINGS

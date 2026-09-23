@@ -6,8 +6,56 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
+from portal.apps.projects.schema_models.license_urls import resolve_license_url
 
-def get_datacite_json(pub_graph: nx.DiGraph, project_id: str):
+
+def _get_subjects(base_meta):
+    """Build DataCite's `subjects` property -- a list of `{"subject": ...}` objects -- from the
+    publication's `keywords`.
+
+    Distinct shape from schema.org's `keywords` (public_data/views.py), which Google accepts as
+    a single comma-separated string. The DPMP publish form stores `keywords` as one free-text,
+    comma-separated string (matching the `str | list[str] | None` type on
+    BaseProjectMetadata.keywords), so this splits on "," for that case -- mirroring
+    get_citation_context's own keywords handling (public_data/views.py) -- while a list value
+    (the schema's other allowed shape) is used as-is.
+    """
+
+    keywords = base_meta.get("keywords") or []
+    if isinstance(keywords, str):
+        keywords = keywords.split(",")
+    return [{"subject": keyword.strip()} for keyword in keywords if keyword.strip()]
+
+
+def _get_rights_list(base_meta, project_id):
+    """Build DataCite's `rightsList` property from the publication's stored license selection.
+
+    Reuses the same LICENSE_URLS mapping (projects/schema_models/license_urls.py) that
+    public_data/views.py's `_get_license` resolves the schema.org/Croissant `license` field
+    from, so DataCite's record and this publication's own landing page never disagree about
+    what its license resolves to. `license` is optional on the publish form (unlike Croissant,
+    which requires it whenever a publication has files -- see REQUIRED_CROISSANT_FIELDS in
+    public_data/views.py), so an unset license just means no `rightsList` entry here, not a
+    fatal error. An unmapped *label* (present, but with no LICENSE_URLS entry) is still a
+    misconfiguration worth failing the DOI mint over -- the same reasoning `_get_license` uses --
+    rather than silently minting a DOI with a missing/bare-text rights URI.
+    """
+
+    license_value = base_meta.get("license")
+    if not license_value:
+        return []
+    license_url = resolve_license_url(license_value)
+    if license_url is None:
+        raise ValueError(
+            f"Publication {project_id} has license {license_value!r}, which has no entry in "
+            "LICENSE_URLS (projects/schema_models/license_urls.py) and isn't itself a URL. "
+            "DataCite's rightsList requires a resolvable rightsUri -- add a canonical "
+            f"license-deed URL for {license_value!r} to LICENSE_URLS."
+        )
+    return [{"rights": license_value, "rightsUri": license_url}]
+
+
+def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | None = None):
     """
     Generate datacite payload for a publishable entity. `pub_graph` is the output of
     either `get_publication_subtree` or `get_publication_full_tree`.
@@ -19,6 +67,11 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str):
     "cep.project.published.PRJ-123" or "...PRJ-123v2" -- see project_publish_operations.py's
     publish_project), which is a different string than the bare id the `index` route's
     `project_id` kwarg expects.
+
+    `version` is the same republish counter (project_publish_operations.py's publish_project
+    argument, mirrored onto Publication.version) that public_data/views.py's schema.org JSON-LD
+    already emits as `version` -- optional here (defaults to None, omitted from the payload)
+    since some callers/tests mint a DOI with no version context at all.
     """
 
     datacite_json = {}
@@ -75,6 +128,11 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str):
 
     datacite_json["publicationYear"] = datetime.datetime.now().year
 
+    datacite_json["subjects"] = _get_subjects(base_meta)
+    datacite_json["rightsList"] = _get_rights_list(base_meta, project_id)
+    if version is not None:
+        datacite_json["version"] = str(version)
+
     # DataCite requires `url` to be the DOI's actual resolvable landing page -- once minted,
     # this is what doi.org redirects to, so getting it wrong isn't a cosmetic SEO problem the
     # way public_data/views.py's landing-page URL used to be (see _get_landing_page_url's
@@ -94,7 +152,10 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str):
     datacite_json["url"] = f"{settings.VANITY_BASE_URL}{landing_page_path}"
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
 
-    datacite_json["language"] = "English"
+    # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here (e.g. "en"), not the
+    # language's English name -- matches the DC.language/`@language` value already emitted
+    # elsewhere for this same publication (public_data/views.py, base.html).
+    datacite_json["language"] = "en"
 
     datacite_json["identifiers"] = [
         {
