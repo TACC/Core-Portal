@@ -892,39 +892,6 @@ def test_index_view_omits_og_image_without_cover_image_configured(client, settin
 
 
 # ---------------------------------------------------------------------------
-# DataciteJsonPreviewView
-# ---------------------------------------------------------------------------
-
-
-def test_datacite_preview_view_renders_valid_publication(client, settings, publication):
-    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
-    url = reverse("publications:datacite_preview", kwargs={"project_id": publication.project_id})
-    response = client.get(url)
-
-    assert response.status_code == 200
-    assert response["Content-Type"] == "text/plain"
-    assert "schema.org/Dataset JSON-LD" in response.content.decode()
-    assert '"name": "Test Dataset"' in response.content.decode()
-
-
-def test_datacite_preview_view_shows_invalid_marker_for_incomplete_publication(client, publication):
-    publication.value = valid_base_meta(title=None)
-    publication.save()
-
-    url = reverse("publications:datacite_preview", kwargs={"project_id": publication.project_id})
-    response = client.get(url)
-
-    assert response.status_code == 200
-    assert "INVALID:" in response.content.decode()
-
-
-def test_datacite_preview_view_missing_publication_404s(client):
-    url = reverse("publications:datacite_preview", kwargs={"project_id": "test.project-999"})
-    response = client.get(url)
-    assert response.status_code == 404
-
-
-# ---------------------------------------------------------------------------
 # SitemapView
 # ---------------------------------------------------------------------------
 

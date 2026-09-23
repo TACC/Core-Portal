@@ -763,34 +763,6 @@ class IndexView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class DataciteJsonPreviewView(View):
-    """Plain-text preview of the DataCite payload and schema.org JSON-LD for a published project."""
-
-    def get(self, request, project_id, *args, **kwargs):
-        try:
-            pub = Publication.objects.get(project_id=project_id)
-        except Publication.DoesNotExist:
-            raise Http404(f"No publication found for project {project_id}")
-
-        # pub_tree = nx.node_link_graph(pub.tree)
-        # datacite_json = get_datacite_json(pub_tree, project_id)
-
-        try:
-            schema_org_body = json.dumps(get_schema_org_json(pub, project_id, request), indent=2)
-        except SchemaOrgValidationError as e:
-            schema_org_body = f"INVALID: {e}"
-
-        body = (
-            "# DataCite payload (submitted to DataCite on publish)\n"
-            # f"{json.dumps(datacite_json, indent=2)}\n"
-            # "\n"
-            "# schema.org/Dataset JSON-LD (for Google Dataset Search)\n"
-            f"{schema_org_body}\n"
-        )
-
-        return HttpResponse(body, content_type="text/plain")
-
-
 class SitemapView(View):
     """XML sitemap (https://www.sitemaps.org/protocol.html) enumerating every published
     dataset's landing-page URL, so crawlers -- and Google Dataset Search's own onboarding
