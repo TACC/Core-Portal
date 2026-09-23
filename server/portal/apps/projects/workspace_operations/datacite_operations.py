@@ -98,14 +98,10 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
                 "nameType": "Personal",
                 "givenName": first_name,
                 "familyName": last_name,
-                "affiliation": [
-                    {
-                        "name": institution,
-                        "schemeUri": None,
-                        "affiliationIdentifier": None,
-                        "affiliationIdentifierScheme": None,
-                    }
-                ],
+                # DataCite's schema types schemeUri/affiliationIdentifier/affiliationIdentifierScheme
+                # as strings only (no null variant) -- omit them rather than send explicit nulls,
+                # since there's no data source for them yet (only `institution`, a plain name).
+                "affiliation": [{"name": institution}],
             }
         )
         institutions.append(author.get("inst", ""))
