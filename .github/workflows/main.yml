@@ -14,28 +14,30 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      - name: Fetch base and install Poetry
-        run: |
-          git fetch origin ${{github.base_ref}}
-          pipx install poetry
+      - name: Fetch base
+        run: git fetch origin ${{github.base_ref}}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-          cache: "poetry"
 
-      - name: Install Python Packages
-        run: |
-          cd server
-          poetry install --with dev
+      - name: install uv
+        uses: astral-sh/setup-uv@v10.1.0
+        with:
+          version: 0.12.15
+          enable-cache: true
+
+      - name: install project
+        working-directory: ./server
+        run: uv sync --locked --all-extras --dev
+
 
       - name: Run Server-side unit tests and generate coverage report
+        working-directory: ./server
         run: |
-          cd server
           cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
-          poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+          uv run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -50,32 +52,31 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Fetch base and install Poetry
-        run: |
-          git fetch origin ${{github.base_ref}}
-          pipx install poetry
+      - name: Fetch base
+        run: git fetch origin ${{github.base_ref}}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-          cache: "poetry"
 
-      - name: Install Python Packages
-        run: |
-          cd server
-          poetry install --with dev
+      - name: install uv
+        uses: astral-sh/setup-uv@v10.1.0
+        with:
+          version: 0.12.15
+          enable-cache: true
+
+      - name: install project
+        working-directory: ./server
+        run: uv sync --locked --all-extras --dev
 
       - name: Run Ruff check
-        run: |
-          cd server
-          poetry run ruff check --output-format=github .
+        working-directory: ./server
+        run: uv run ruff check --output-format=github .
 
       - name: Run Ruff format check
-        run: |
-          cd server
-          poetry run ruff format --check .
+        working-directory: ./server
+        run: uv run ruff format --check .
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-24.04
@@ -83,20 +84,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v4
+        uses: pnpm/setup@v2
         with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: "**/package-lock.json"
+          version: 12
+          runtime: node@24
+          cache-dependency-path: "client/pnpm-lock.yaml"
+          package-json-file: "client/package.json"
 
       - name: npm ci
         run: |
           cd client
-          npm ci
+          pnpm ci
       - name: Client Side Unit Tests
         run: |
           cd client
-          npm run test
+          pnpm run test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -111,18 +113,19 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v4
+        uses: pnpm/setup@v2
         with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: "**/package-lock.json"
+          version: 12
+          runtime: node@24
+          cache-dependency-path: "client/pnpm-lock.yaml"
+          package-json-file: "client/package.json"
 
       - name: npm ci
         run: |
           cd client
-          npm ci
+          pnpm ci
 
       - name: Client Side Linting
         run: |
           cd client
-          npm run lint
+          pnpm run lint

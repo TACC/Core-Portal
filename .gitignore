@@ -56,7 +56,6 @@ db.sqlite3*
 
 # ignore various Python things
 __pycache__/
-.python-version
 *.py[cod]
 *$py.class
 *.so
@@ -118,7 +117,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-lib/
+server/**/lib/
 lib64/
 parts/
 sdist/

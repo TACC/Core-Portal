@@ -29,7 +29,7 @@ import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, children, disabled }) {
+function DataFilesLink({ path, children = null, disabled = false }) {
   const text = children || path;
   return (
     <NavLink
@@ -49,11 +49,6 @@ DataFilesLink.propTypes = {
   disabled: PropTypes.bool,
 };
 
-DataFilesLink.defaultProps = {
-  children: null,
-  disabled: false,
-};
-
 const reduceInputParameters = (data) =>
   data.reduce((acc, item) => {
     acc[item.label] = item.value;
@@ -62,8 +57,8 @@ const reduceInputParameters = (data) =>
 
 function JobHistoryContent({
   jobDetails,
-  jobDisplay,
-  jobName,
+  jobDisplay = {},
+  jobName = '',
   toggle,
   // TODOv3: dropV2Jobs
   version,
@@ -279,12 +274,7 @@ JobHistoryContent.propTypes = {
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-JobHistoryContent.defaultProps = {
-  jobName: '',
-  jobDisplay: {},
-};
-
-function JobHistoryModal({ uuid, version }) {
+function JobHistoryModal({ uuid, version = 'v3' }) {
   const { loading, loadingError, job, display } = useSelector((state) => {
     if (version === 'v3') {
       return state.jobDetail;
@@ -385,9 +375,4 @@ JobHistoryModal.propTypes = {
   // TODOv3: dropV2Jobs
   version: PropTypes.string.isRequired,
 };
-// TODOv3: dropV2Jobs
-JobHistoryModal.defaultProps = {
-  version: 'v3',
-};
-
 export default JobHistoryModal;

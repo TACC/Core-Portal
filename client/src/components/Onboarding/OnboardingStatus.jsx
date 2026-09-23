@@ -80,6 +80,4 @@ OnboardingStatus.propTypes = {
   step: stepPropType.isRequired,
 };
 
-OnboardingStatus.defaultProps = {};
-
 export default OnboardingStatus;

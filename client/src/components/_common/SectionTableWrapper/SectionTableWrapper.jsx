@@ -75,17 +75,17 @@ import styles from './SectionTableWrapper.module.css';
  * </SectionTableWrapper>
  */
 function SectionTableWrapper({
-  className,
-  children,
-  content,
-  contentClassName,
-  contentShouldScroll,
-  header,
-  headerActions,
-  headerClassName,
-  manualContent,
-  manualHeader,
-  tagName,
+  className = '',
+  children = '',
+  content = '',
+  contentClassName = '',
+  contentShouldScroll = false,
+  header = '',
+  headerActions = '',
+  headerClassName = '',
+  manualContent = undefined,
+  manualHeader = undefined,
+  tagName = 'article',
 }) {
   let styleName = '';
   const styleNameList = [styles['root']];
@@ -174,18 +174,4 @@ SectionTableWrapper.propTypes = {
   /** Override tag of the root element */
   tagName: PropTypes.string,
 };
-SectionTableWrapper.defaultProps = {
-  children: '',
-  className: '',
-  content: '',
-  contentClassName: '',
-  contentShouldScroll: false,
-  header: '',
-  headerActions: '',
-  headerClassName: '',
-  manualHeader: undefined,
-  manualContent: undefined,
-  tagName: 'article',
-};
-
 export default SectionTableWrapper;

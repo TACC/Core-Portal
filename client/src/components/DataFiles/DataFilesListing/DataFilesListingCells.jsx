@@ -58,7 +58,7 @@ export const FileNavCell = React.memo(
     api,
     scheme,
     href,
-    isPublic,
+    isPublic = false,
     basePath,
     length,
     metadata,
@@ -84,7 +84,7 @@ export const FileNavCell = React.memo(
     if (!basePath) basePath = isPublic ? '/public-data' : '/workbench/data';
 
     // encoding for % and # in path. Done twice due to react-router encoding bug. fixed in react router v6
-    path = path
+    const effectivePath = path
       .replace(/%/g, encodeURIComponent(encodeURIComponent('%')))
       .replace(/#/g, encodeURIComponent(encodeURIComponent('#')));
 
@@ -95,7 +95,7 @@ export const FileNavCell = React.memo(
             className="data-files-nav-link"
             to={`${basePath}/${api}/${scheme}${
               rootSystem ? '/' + rootSystem : ''
-            }/${system}/${path}/`.replace(
+            }/${system}/${effectivePath}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}
@@ -119,10 +119,6 @@ FileNavCell.propTypes = {
   isPublic: PropTypes.bool,
   length: PropTypes.number.isRequired,
 };
-FileNavCell.defaultProps = {
-  isPublic: false,
-};
-
 export const FileLengthCell = ({ cell }) => {
   const bytes = cell.value;
 
@@ -141,7 +137,7 @@ LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
 };
 
-export const FileIcon = ({ format, path }) => {
+export const FileIcon = ({ format, path = '' }) => {
   const isFolder = format === 'folder';
   const isTrash =
     path === '/' + useSelector((state) => state.workbench.config.trashPath);
@@ -161,10 +157,6 @@ FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
   path: PropTypes.string,
 };
-FileIcon.defaultProps = {
-  path: '',
-};
-
 export const FileIconCell = ({ cell }) => {
   return (
     <FileIcon format={cell.row.original.format} path={cell.row.original.path} />
