@@ -180,7 +180,7 @@ FormField.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  description: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  description: PropTypes.node,
   required: PropTypes.bool,
   tapisFile: PropTypes.bool,
   SelectModal: PropTypes.func,
