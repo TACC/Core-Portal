@@ -57,7 +57,7 @@ def test_get_datacite_json_minimal():
     assert result["creators"] == []
     assert result["titles"] == [{"title": "A Test Dataset"}]
     assert result["descriptions"] == [
-        {"descriptionType": "Abstract", "description": "A description of the test dataset.", "lang": "en-Us"}
+        {"descriptionType": "Abstract", "description": "A description of the test dataset.", "lang": "en"}
     ]
     assert result["types"] == {"resourceTypeGeneral": "Dataset"}
     assert result["prefix"] == "10.1234"
@@ -101,6 +101,7 @@ def test_get_datacite_json_with_institution_and_authors():
     ]
     assert result["creators"] == [
         {
+            "name": "Lovelace, Ada",
             "nameType": "Personal",
             "givenName": "Ada",
             "familyName": "Lovelace",
@@ -114,6 +115,7 @@ def test_get_datacite_json_with_institution_and_authors():
             ],
         },
         {
+            "name": "Turing, Alan",
             "nameType": "Personal",
             "givenName": "Alan",
             "familyName": "Turing",
@@ -136,6 +138,7 @@ def test_get_datacite_json_author_missing_name_parts_defaults_to_empty_string():
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
     assert result["creators"][0]["givenName"] == ""
     assert result["creators"][0]["familyName"] == ""
+    assert result["creators"][0]["name"] == ""
 
 
 @pytest.mark.django_db
