@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -28,8 +28,20 @@ import {
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
-import '@testing-library/jest-dom/extend-expect';
 import timekeeper from 'timekeeper';
+import { vi } from 'vitest';
+
+vi.mock('utils/fetchUtil', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    fetchUtil: vi.fn((options) =>
+      options.url.startsWith('/api/system-monitor/')
+        ? Promise.resolve([])
+        : actual.fetchUtil(options)
+    ),
+  };
+});
 
 const frozenDate = '2023-10-01';
 const mockStore = configureStore();

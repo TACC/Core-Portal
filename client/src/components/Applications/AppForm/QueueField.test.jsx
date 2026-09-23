@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { Formik } from 'formik';
 import { vi } from 'vitest';
 import { fetchUtil } from 'utils/fetchUtil';
