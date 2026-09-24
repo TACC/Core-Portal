@@ -13,10 +13,13 @@ const AllocationsTeamTable = ({ rawData = [], clickHandler, visible = {} }) => {
         Header: 'listing',
         accessor: (el) => el,
         Cell: (el) => {
-          const { firstName, lastName } = el.value;
+          const { firstName, lastName, username } = el.value;
           return (
             <span className={styles.content}>
-              {capitalize(firstName)} {capitalize(lastName)}
+              <span className={styles.name}>
+                {capitalize(firstName)} {capitalize(lastName)}
+              </span>
+              <span className={styles.username}>{username}</span>
             </span>
           );
         },
