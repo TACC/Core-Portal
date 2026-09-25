@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Link, Route, Routes, useParams } from 'react-router-dom';
 import { BrowserChecker, Section, SectionTableWrapper } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal } from '../Tickets';
@@ -70,31 +70,40 @@ function Dashboard() {
   );
 }
 
-function DashboardRoutes() {
+function TicketCreateRoute() {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({
+      type: 'TICKET_CREATE_OPEN_MODAL',
+    });
+  }, [dispatch]);
+  return null;
+}
 
+function TicketDetailRoute() {
+  const dispatch = useDispatch();
+  const { ticketId } = useParams();
+  useEffect(() => {
+    dispatch({
+      type: 'TICKET_DETAILED_VIEW_OPEN',
+      payload: { ticketId: Number(ticketId) },
+    });
+  }, [dispatch, ticketId]);
+  return <TicketModal />;
+}
+
+function DashboardRoutes() {
   return (
-    <Switch>
+    <Routes>
       <Route
-        exact
-        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-        render={() => {
-          dispatch({
-            type: 'TICKET_CREATE_OPEN_MODAL',
-          });
-        }}
+        path={`${ROUTES.TICKETS}/create`}
+        element={<TicketCreateRoute />}
       />
       <Route
-        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
-        render={({ match: { params } }) => {
-          dispatch({
-            type: 'TICKET_DETAILED_VIEW_OPEN',
-            payload: { ticketId: Number(params.ticketId) },
-          });
-          return <TicketModal />;
-        }}
+        path={`${ROUTES.TICKETS}/:ticketId`}
+        element={<TicketDetailRoute />}
       />
-    </Switch>
+    </Routes>
   );
 }
 

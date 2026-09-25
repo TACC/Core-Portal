@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import * as ROUTES from '../../../constants/routes';
 import HistoryBadge from '../../History/HistoryBadge';
@@ -8,8 +7,7 @@ import { Sidebar } from '_common';
 
 /** A navigation list for the application */
 const WorkbenchSidebar = ({ disabled, showUIPatterns, loading }) => {
-  let { path } = useRouteMatch();
-  if (path.includes('accounts')) path = ROUTES.WORKBENCH;
+  const path = ROUTES.WORKBENCH;
 
   const unread = useSelector((state) => state.notifications.list.unread);
   const hideApps = useSelector((state) => state.workbench.config.hideApps);

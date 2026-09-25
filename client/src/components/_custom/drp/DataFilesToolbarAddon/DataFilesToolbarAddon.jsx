@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Modal,
   ModalHeader,
@@ -17,7 +17,7 @@ import styles from './DataFilesToolbarAddon.module.scss';
 
 const DataFilesToolbarAddon = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -61,7 +61,7 @@ const DataFilesToolbarAddon = () => {
   }, {});
 
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);

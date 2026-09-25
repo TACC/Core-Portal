@@ -1,7 +1,7 @@
 /* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -26,11 +26,11 @@ export const DEFAULT_LAYOUT = 'default';
 export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 
 const DataFilesUploadModal = ({ className = '', layout = DEFAULT_LAYOUT }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const reloadCallback = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesUploadModalAddon } = useAddonComponents({ portalName });

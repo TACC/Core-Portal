@@ -10,7 +10,7 @@ import {
 import styles from './DataFilesSidebar.module.scss';
 import { Sidebar } from '_common';
 import { useTapisToken } from 'hooks/datafiles';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
 
@@ -113,7 +113,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
 
   const user = useSelector((state) => state.authenticatedUser.user);
 
-  const match = useRouteMatch();
+  const match = useMatch('/workbench/data/*');
 
   var sidebarItems = [];
 
@@ -121,7 +121,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
     if (sys.scheme === 'projects') {
       if (!sys.reviewProject || user.groups?.includes('PROJECT_REVIEWER')) {
         sidebarItems.push({
-          to: `${match.path}/${sys.api}/${sys.scheme}/${sys.system}`,
+          to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${sys.system}`,
           label: sys.name,
           iconName: sys.icon || 'my-data',
           disabled: false,
@@ -131,7 +131,7 @@ const DataFilesSidebar = ({ readOnly = false }) => {
       }
     } else {
       sidebarItems.push({
-        to: `${match.path}/${sys.api}/${sys.scheme}/${
+        to: `${match.pathnameBase}/${sys.api}/${sys.scheme}/${
           sys.system ? `${sys.system}${sys.homeDir || ''}/` : ''
         }`,
         label: sys.name,

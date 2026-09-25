@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  NavLink as RRNavLink,
-  useRouteMatch,
-  useLocation,
-} from 'react-router-dom';
+import { NavLink as RRNavLink, useLocation, useParams } from 'react-router-dom';
 import queryString from 'query-string';
 import { useSelector, shallowEqual } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
@@ -21,7 +17,7 @@ const findAppTab = (categoryDict, appId) => {
 const AppBrowser = () => {
   const location = useLocation();
   const { appVersion } = queryString.parse(location.search);
-  const { params } = useRouteMatch();
+  const params = useParams();
   const [activeTab, setActiveTab] = useState();
 
   const toggle = (tab) => {

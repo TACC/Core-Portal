@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useCallback } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -328,7 +328,8 @@ export const TicketHistory = () => {
   );
 };
 
-function TicketModal({ history }) {
+function TicketModal() {
+  const navigate = useNavigate();
   const modalAlwaysOpen = true;
   const ticketId = useSelector((state) => state.ticketDetailedView.ticketId);
   const ticketSubject = useSelector(
@@ -336,7 +337,7 @@ function TicketModal({ history }) {
   );
 
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    navigate(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
   };
 
   return (
@@ -366,8 +367,4 @@ function TicketModal({ history }) {
   );
 }
 
-TicketModal.propTypes = {
-  history: PropTypes.object.isRequired,
-};
-
-export default withRouter(TicketModal);
+export default TicketModal;

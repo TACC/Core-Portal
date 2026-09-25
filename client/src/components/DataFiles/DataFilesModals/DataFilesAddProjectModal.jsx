@@ -5,15 +5,15 @@ import { Formik, Form, FieldArray } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, InlineMessage } from '_common';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import { useAddonComponents, useFileListing } from 'hooks/datafiles';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 
 const DataFilesAddProjectModal = () => {
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
+  const match = useMatch('/workbench/data/*');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authenticatedUser);
   const [members, setMembers] = useState(
@@ -73,7 +73,7 @@ const DataFilesAddProjectModal = () => {
 
   const onCreate = (system) => {
     toggle();
-    history.push(`${match.path}/tapis/projects/${rootSystem}/${system}`);
+    navigate(`${match.pathnameBase}/tapis/projects/${rootSystem}/${system}`);
   };
 
   const addproject = ({ title, description, keywords, ...values }) => {

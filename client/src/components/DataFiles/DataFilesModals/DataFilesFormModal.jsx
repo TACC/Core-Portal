@@ -12,11 +12,11 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import styles from './DataFilesFormModal.module.scss';
 import { useFileListing, useSelectedFiles } from 'hooks/datafiles';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const DataFilesFormModal = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const reloadPage = (updatedPath = '') => {
@@ -30,7 +30,7 @@ const DataFilesFormModal = () => {
     const cleanProjectUrl = projectUrl.replace(/\/$/, '');
     const cleanUpdatedPath = updatedPath.replace(/^\/+/, '');
 
-    history.replace(`${cleanProjectUrl}/${cleanUpdatedPath}`);
+    navigate(`${cleanProjectUrl}/${cleanUpdatedPath}`, { replace: true });
   };
 
   const { form, selectedFile, formName, additionalData, useReloadCallback } =

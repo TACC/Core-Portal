@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSystems } from 'hooks/datafiles';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
 import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
@@ -60,22 +60,30 @@ function AppRouter() {
 
   return (
     <Router>
-      <Route path="/search/:filter?" component={SiteSearch} />
-      <Route path={ROUTES.WORKBENCH} component={Workbench} />
-      <Route path="/tickets/new" component={TicketStandaloneCreate} />
-      <Route path="/public-data" component={PublicData} />
+      <Routes>
+        <Route path="/search/:filter?" element={<SiteSearch />} />
+        <Route path={`${ROUTES.WORKBENCH}/*`} element={<Workbench />} />
+        <Route path="/tickets/new" element={<TicketStandaloneCreate />} />
+        <Route path="/public-data/*" element={<PublicData />} />
+        <Route path="/request-access" element={<RequestAccess />} />
+        <Route
+          path="/googledrive-privacy-policy"
+          element={<GoogleDrivePrivacyPolicy />}
+        />
+        {showUserNews && (
+          <Route path={ROUTES.USER_NEWS} element={<UserNewsBrowse />} />
+        )}
+        {showUserNews && (
+          <Route
+            path={`${ROUTES.USER_NEWS}/:id`}
+            element={<UserNewsDetail />}
+          />
+        )}
+      </Routes>
+      {/* Rendered as a sibling (not nested inside <Routes>) because each
+          portal's CustomRoutes defines its own <Routes>/<Route> tree, and
+          <Routes> only accepts <Route>/<Fragment> as direct children. */}
       {CustomRoutes && <CustomRoutes />}
-      <Route path="/request-access" component={RequestAccess} />
-      <Route
-        path="/googledrive-privacy-policy"
-        component={GoogleDrivePrivacyPolicy}
-      />
-      {showUserNews && (
-        <Route exact path={ROUTES.USER_NEWS} component={UserNewsBrowse} />
-      )}
-      {showUserNews && (
-        <Route path={`${ROUTES.USER_NEWS}/:id`} component={UserNewsDetail} />
-      )}
     </Router>
   );
 }

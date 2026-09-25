@@ -1,5 +1,8 @@
 import React from 'react';
-import { BrowserRouter, Router } from 'react-router-dom';
+import {
+  BrowserRouter,
+  unstable_HistoryRouter as Router,
+} from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

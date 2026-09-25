@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, LoadingSpinner, Section } from '_common';
 import { Button as ReactstrapButton } from 'reactstrap';
@@ -9,7 +9,7 @@ import OnboardingStep from './OnboardingStep';
 import styles from './OnboardingUser.module.scss';
 
 const OnboardingUser = () => {
-  const { params } = useRouteMatch();
+  const params = useParams();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.onboarding.user);
   const isStaff = useSelector((state) =>

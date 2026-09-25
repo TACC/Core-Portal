@@ -1,14 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, SectionMessage } from '_common';
 
 const DataFilesEmptyModal = React.memo(() => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const dispatch = useDispatch();

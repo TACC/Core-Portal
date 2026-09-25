@@ -10,12 +10,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import {
-  Link,
-  useRouteMatch,
-  generatePath,
-  useHistory,
-} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
@@ -39,8 +34,7 @@ export const isNearBottom = ({
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const { params, error: err, loading } = useFileListing(section);
-  const match = useRouteMatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const isPublicSystem = params?.scheme === 'public';
 
@@ -81,9 +75,9 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       type: 'UPDATE_STORAGE_SYSTEM_CONFIGURATION',
       payload: sys,
     });
-    const newPath = `${generatePath(match.path, sys)}${sys.homeDir || ''}`;
+    const newPath = `/workbench/data/${sys.api}/${sys.scheme}/${sys.system}${sys.homeDir || ''}`;
     window.location.href = newPath; // TODO: replace with history.push when system storage configuration is updated
-    history.push(newPath);
+    navigate(newPath);
   };
   const pushKeys = (e) => {
     e.preventDefault();

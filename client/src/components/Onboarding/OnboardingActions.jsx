@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, LoadingSpinner, Message } from '_common';
 import { Button as ReactstrapButton } from 'reactstrap';
@@ -29,7 +29,7 @@ const OnboardingActions = ({ step }) => {
   );
   const error = useSelector((state) => state.onboarding.action.error);
   const actionStep = useSelector((state) => state.onboarding.action.step);
-  const { params } = useRouteMatch();
+  const params = useParams();
   const authUsername = useSelector((state) =>
     state.authenticatedUser.user ? state.authenticatedUser.user.username : ''
   );

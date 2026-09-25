@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, InlineMessage } from '_common';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
 import { useExtract } from 'hooks/datafiles/mutations';
 
 const DataFilesExtractModal = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { extract, status, setStatus } = useExtract();
@@ -31,7 +31,7 @@ const DataFilesExtractModal = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
       setStatus({});
-      history.push(location.pathname);
+      navigate(location.pathname);
     }
   };
   const extractCallback = () => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '_common';
 import getFilePermissions from 'utils/filePermissions';
@@ -52,10 +52,10 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const { params } = useFileListing('FilesListing');
   const { trash } = useTrash();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const systemList = useSelector(

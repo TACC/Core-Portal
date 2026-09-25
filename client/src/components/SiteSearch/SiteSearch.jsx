@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import queryStringParser from 'query-string';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SiteSearchSidebar from './SiteSearchSidebar/SiteSearchSidebar';
 import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
@@ -13,7 +13,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { filter } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const {
     query_string,
     page,
@@ -35,7 +35,7 @@ export const SiteSearchComponent = ({ filterPriorityList }) => {
   useEffect(() => {
     if (completed && !filter) {
       const activeFilter = filterPriorityList.find((f) => results[f].count > 0);
-      history.push(
+      navigate(
         `/search/${activeFilter || filterPriorityList[0]}/${location.search}`
       );
     }
@@ -72,7 +72,7 @@ SiteSearchComponent.propTypes = {
 const SiteSearch = () => {
   const location = useLocation();
   const { filter } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const systems = useSelector((state) => state.systems.storage.configuration);
 
   const searchSystems = systems
@@ -82,7 +82,7 @@ const SiteSearch = () => {
   const filterPriorityList = ['cms'].concat(searchSystems);
 
   if (!filter || !filterPriorityList.includes(filter)) {
-    history.push(`/search/${filterPriorityList[0]}/${location.search}`);
+    navigate(`/search/${filterPriorityList[0]}/${location.search}`);
     return <></>;
   }
 

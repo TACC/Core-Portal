@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useSelectedFiles,
   useFileListing,
@@ -15,7 +15,7 @@ import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalLis
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 
 const DataFilesMoveModal = React.memo(() => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const { params } = useFileListing('FilesListing');
@@ -35,7 +35,7 @@ const DataFilesMoveModal = React.memo(() => {
   const selectedSystem = fetchSelectedSystem(params);
 
   const reloadPage = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
     fetchListing(modalParams);
   };
 

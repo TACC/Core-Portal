@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 
 import './DataFiles.global.css';
@@ -33,7 +33,7 @@ const DefaultSystemRedirect = () => {
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   useEffect(() => {
     if (systems.length === 0) return;
     const defaultSystem = systems[0];
@@ -46,14 +46,63 @@ const DefaultSystemRedirect = () => {
       path += `/${defaultSystem.system}${defaultSystem.homeDir || ''}/`;
     }
 
-    history.push(path);
-  }, [systems]);
+    navigate(path);
+  }, [navigate, systems]);
   return <></>;
 };
 
-const DataFilesSwitch = React.memo(() => {
-  const { path } = useRouteMatch();
+const ProjectPublishRoute = ({ Component }) => {
+  const { root_system: rootSystem, system } = useParams();
 
+  return (
+    <SectionTableWrapper contentShouldScroll>
+      <Component system={system} rootSystem={rootSystem} />
+    </SectionTableWrapper>
+  );
+};
+
+const ProjectRoute = ({ systems }) => {
+  const { system: systemName } = useParams();
+  const system = systems.find((item) => item.system === systemName);
+
+  if (system.publicationProject) {
+    return <DataFilesPublicationsList rootSystem={systemName} />;
+  }
+  if (system.reviewProject) {
+    return <DataFilesReviewProjectList rootSystem={systemName} />;
+  }
+
+  return <DataFilesProjectsList rootSystem={systemName} />;
+};
+
+const ProjectFileRoute = () => {
+  const { root_system: rootSystem, system, '*': filePath } = useParams();
+
+  return (
+    <DataFilesProjectFileListing
+      rootSystem={rootSystem}
+      system={system}
+      path={getDecodedPath(filePath)}
+    />
+  );
+};
+
+const DataFileRoute = () => {
+  const { api, scheme, system, '*': filePath } = useParams();
+
+  return (
+    <SectionTableWrapper className={styles['content']} manualContent>
+      <DataFilesListing
+        api={api}
+        scheme={scheme}
+        system={system}
+        path={filePath || '/'}
+      />
+    </SectionTableWrapper>
+  );
+};
+
+const DataFilesSwitch = React.memo(() => {
   const portalName = useSelector((state) => state.workbench.portalName);
 
   const { DataFilesProjectPublish, DataFilesProjectReview } =
@@ -65,85 +114,30 @@ const DataFilesSwitch = React.memo(() => {
   );
 
   return (
-    <Switch>
+    <Routes>
       {DataFilesProjectPublish && (
         <Route
-          path={`${path}/tapis/projects/:root_system/:system/publish`}
-          render={({ match: { params } }) => {
-            return (
-              <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectPublish
-                  system={params.system}
-                  rootSystem={params.root_system}
-                />
-              </SectionTableWrapper>
-            );
-          }}
+          path={`tapis/projects/:root_system/:system/publish`}
+          element={<ProjectPublishRoute Component={DataFilesProjectPublish} />}
         />
       )}
       {DataFilesProjectReview && (
         <Route
-          path={`${path}/tapis/projects/:root_system/:system/review`}
-          render={({ match: { params } }) => {
-            return (
-              <SectionTableWrapper contentShouldScroll>
-                <DataFilesProjectReview
-                  system={params.system}
-                  rootSystem={params.root_system}
-                />
-              </SectionTableWrapper>
-            );
-          }}
+          path={`tapis/projects/:root_system/:system/review`}
+          element={<ProjectPublishRoute Component={DataFilesProjectReview} />}
         />
       )}
       <Route
-        exact
-        path={`${path}/tapis/projects/:system`}
-        render={({ match: { params } }) => {
-          const system = systems.find((s) => s.system === params.system);
-
-          if (system.publicationProject) {
-            return <DataFilesPublicationsList rootSystem={params.system} />;
-          } else if (system.reviewProject) {
-            return <DataFilesReviewProjectList rootSystem={params.system} />;
-          }
-
-          return <DataFilesProjectsList rootSystem={params.system} />;
-        }}
+        path={`tapis/projects/:system`}
+        element={<ProjectRoute systems={systems} />}
       />
       <Route
-        path={`${path}/tapis/projects/:root_system/:system/:path*`}
-        render={({ match: { params } }) => {
-          const decodedPath = getDecodedPath(params.path);
-
-          return (
-            <DataFilesProjectFileListing
-              rootSystem={params.root_system}
-              system={params.system}
-              path={decodedPath}
-            />
-          );
-        }}
+        path={`tapis/projects/:root_system/:system/*`}
+        element={<ProjectFileRoute />}
       />
-      <Route
-        path={`${path}/:api/:scheme/:system/:path*`}
-        render={({ match: { params } }) => {
-          return (
-            <SectionTableWrapper className={styles['content']} manualContent>
-              <DataFilesListing
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-                path={params.path || '/'}
-              />
-            </SectionTableWrapper>
-          );
-        }}
-      />
-      <Route path={`${path}`}>
-        <DefaultSystemRedirect />
-      </Route>
-    </Switch>
+      <Route path={`:api/:scheme/:system/*`} element={<DataFileRoute />} />
+      <Route path={`*`} element={<DefaultSystemRedirect />} />
+    </Routes>
   );
 });
 
