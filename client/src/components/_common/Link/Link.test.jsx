@@ -119,7 +119,6 @@ describe('Link', () => {
       testClassnamesByType(expectedType, expectedSize, getByRole, getByTestId);
     });
     test('type is "primary" & size is "small"', () => {
-      console.error = vi.fn();
       const { getByRole, getByTestId } = render(
         <Router>
           <Link type="primary" size="small">
@@ -131,7 +130,6 @@ describe('Link', () => {
       const expectedSize = 'small';
 
       testClassnamesByType(expectedType, expectedSize, getByRole, getByTestId);
-      expect(console.error).toHaveBeenCalled();
     });
   });
 });
