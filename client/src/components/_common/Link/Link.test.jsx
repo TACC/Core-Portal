@@ -1,11 +1,8 @@
-// WARNING: Relies on `Icon` because of `getByRole('img')`
 import React from 'react';
 import { render } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Link, * as BTN from './Link';
 import { vi } from 'vitest';
-
-import '@testing-library/jest-dom/extend-expect';
 
 const TEST_TEXT = '…';
 const TEST_TYPE = 'Button';
