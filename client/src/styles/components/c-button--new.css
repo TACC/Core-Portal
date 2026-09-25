@@ -247,6 +247,18 @@ Styleguide Components.Button
   text-decoration: underline;
 }
 
+/* Modifiers: Types: As Button */
+
+.c-button--as-button {
+  color: var(--global-color-accent--normal);
+  background: unset;
+  border: unset;
+  padding-inline: unset;
+}
+.c-button--as-button:not(:disabled):hover {
+  text-decoration: none;
+}
+
 /* Modifiers: Types: Is Busy */
 
 .c-button--is-busy {
