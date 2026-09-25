@@ -6,7 +6,7 @@ import UserNewsDetail from './UserNewsDetail';
 import { waitForElementToBeRemoved } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '@tacc/test-fixtures';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 const mockStore = configureStore();
 
@@ -18,9 +18,9 @@ describe('UserNewsDetail', () => {
       initialEntries: ['/user-news/107637'],
     });
     const { getByTestId, queryByTestId } = renderComponent(
-      <Route path="/user-news/:id">
-        <UserNewsDetail />
-      </Route>,
+      <Routes>
+        <Route path="/user-news/:id" element={<UserNewsDetail />} />
+      </Routes>,
       store,
       history
     );
@@ -34,9 +34,9 @@ describe('UserNewsDetail', () => {
       initialEntries: ['/user-news/9999'],
     });
     const { findByText } = renderComponent(
-      <Route path="/user-news/:id">
-        <UserNewsDetail />
-      </Route>,
+      <Routes>
+        <Route path="/user-news/:id" element={<UserNewsDetail />} />
+      </Routes>,
       store,
       history
     );
@@ -56,9 +56,9 @@ describe('UserNewsDetail', () => {
     });
 
     const { findByText } = renderComponent(
-      <Route path="/user-news/:id">
-        <UserNewsDetail />
-      </Route>,
+      <Routes>
+        <Route path="/user-news/:id" element={<UserNewsDetail />} />
+      </Routes>,
       store,
       history
     );
@@ -72,9 +72,9 @@ describe('UserNewsDetail', () => {
       initialEntries: ['/user-news/107637'],
     });
     const { getByText, queryByTestId, findByText } = renderComponent(
-      <Route path="/user-news/:id">
-        <UserNewsDetail />
-      </Route>,
+      <Routes>
+        <Route path="/user-news/:id" element={<UserNewsDetail />} />
+      </Routes>,
       store,
       history
     );

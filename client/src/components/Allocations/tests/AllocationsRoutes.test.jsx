@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 
@@ -13,13 +13,15 @@ const PATH = ROUTES.WORKBENCH + ROUTES.ALLOCATIONS;
 describe('Allocations Routes', () => {
   it('should render content for the allocations routes', () => {
     const { container } = render(
-      <MemoryRouter initialEntries={[`${PATH}/fake`]}>
+      <MemoryRouter initialEntries={[`${PATH}/approved/fake`]}>
         <Provider
           store={mockStore({
             allocations: { loading: true },
           })}
         >
-          <AllocationsRoutes />
+          <Routes>
+            <Route path={`${PATH}/*`} element={<AllocationsRoutes />} />
+          </Routes>
         </Provider>
       </MemoryRouter>
     );

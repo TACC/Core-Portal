@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes as RouterRoutes } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -78,7 +78,13 @@ describe('History Routes', () => {
       workbench: { ...workbench, config: { hideDataFiles: false } },
     });
 
-    renderComponent(<Routes />, store, history);
+    renderComponent(
+      <RouterRoutes>
+        <Route path="/workbench/history/*" element={<Routes />} />
+      </RouterRoutes>,
+      store,
+      history
+    );
 
     expect(store.getActions()).toEqual([
       { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },

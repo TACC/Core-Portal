@@ -1,6 +1,7 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import renderComponent from 'utils/testing';
+import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import AppRouter from './index';
 
 const mockStore = configureStore();
@@ -21,7 +22,11 @@ describe('AppRouter', () => {
       },
     });
 
-    renderComponent(<AppRouter />, store);
+    render(
+      <Provider store={store}>
+        <AppRouter />
+      </Provider>
+    );
     expect(store.getActions()).toEqual([
       { type: 'FETCH_AUTHENTICATED_USER' },
       { type: 'FETCH_WORKBENCH' },
