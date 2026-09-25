@@ -1,7 +1,13 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, Route, Switch } from 'react-router-dom';
-import { BrowserChecker, Section, SectionTableWrapper } from '_common';
+import { Route, Switch } from 'react-router-dom';
+import {
+  BrowserChecker,
+  Section,
+  SectionTableWrapper,
+  Button,
+  Link,
+} from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
@@ -135,8 +141,9 @@ function DashboardTickets() {
       header="My Tickets"
       headerActions={
         <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-          className={styles['btn-new-ticket']}
+          type="button"
+          className="c-button c-button--secondary"
+          href={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
         >
           New Ticket
         </Link>
