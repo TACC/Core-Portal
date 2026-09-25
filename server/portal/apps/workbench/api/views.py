@@ -4,11 +4,15 @@ from django.http import JsonResponse
 
 def workbench_state(request):
     data = {
-        'config': settings.WORKBENCH_SETTINGS,
-        'portalName': settings.PORTAL_NAMESPACE,
-        'recaptchaSiteKey': settings.RECAPTCHA_SITE_KEY,
-        'isTACCPortal': settings.IS_TACC_PORTAL,
+        "config": {
+            **settings.WORKBENCH_SETTINGS,
+            "projectsEnableMetadata": settings.PORTAL_PROJECTS_ENABLE_METADATA,
+            "publisher": settings.PORTAL_PUBLICATION_PUBLISHER,
+        },
+        "portalName": settings.PORTAL_NAMESPACE,
+        "recaptchaSiteKey": settings.RECAPTCHA_SITE_KEY,
+        "isTACCPortal": settings.IS_TACC_PORTAL,
     }
     if request.user.is_authenticated:
-        data['setupComplete'] = request.user.profile.setup_complete
-    return JsonResponse({'response': data})
+        data["setupComplete"] = request.user.profile.setup_complete
+    return JsonResponse({"response": data})

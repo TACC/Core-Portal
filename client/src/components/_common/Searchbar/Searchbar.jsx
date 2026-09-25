@@ -8,18 +8,18 @@ import styles from './Searchbar.module.scss';
 
 const Searchbar = ({
   api,
-  scheme,
-  system,
-  path,
-  resultCount,
-  dataType,
+  scheme = '',
+  system = '',
+  path = '',
+  resultCount = 0,
+  dataType = '',
   filterTypes,
-  infiniteScroll,
+  infiniteScroll = true,
   forbidWhitespace,
-  className,
-  siteSearch,
+  className = '',
+  siteSearch = false,
   sectionName,
-  disabled,
+  disabled = false,
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
@@ -182,18 +182,6 @@ Searchbar.propTypes = {
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
   disabled: PropTypes.bool,
-};
-
-Searchbar.defaultProps = {
-  className: '',
-  scheme: '',
-  system: '',
-  path: '',
-  resultCount: 0,
-  siteSearch: false,
-  disabled: false,
-  infiniteScroll: true,
-  dataType: '',
 };
 
 export default Searchbar;

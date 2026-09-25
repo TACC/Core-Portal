@@ -1,9 +1,14 @@
 {
   "plugins": {
+    "@csstools/postcss-global-data": {
+      "files": [
+        "node_modules/@tacc/core-styles/src/lib/_imports/tools/media-queries.css",
+        "src/styles/tools/media-queries.css"
+      ]
+    },
     "postcss-preset-env": {
       "stage": false,
-      "features": { "custom-media-queries": true, "media-query-ranges": true },
-      "postcss-extend-rule": {}
+      "features": { "custom-media-queries": true, "media-query-ranges": true }
     }
   }
 }

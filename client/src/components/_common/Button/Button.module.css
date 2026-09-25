@@ -35,6 +35,10 @@
   composes: c-button--as-link from '../../../styles/components/c-button--new.css';
 }
 
+/* IMPORTANT: Intentionally `inherit`, like a real <a> tag would.
+              Do not hardcode size here, cuz it affects all instances.
+              Scope one-off sizing to button's own context instead.
+*/
 .root.as-link {
   font-size: inherit;
 }

@@ -5,7 +5,7 @@ import { DescriptionList } from '_common';
 import AllocationsUsageTable from '../AllocationsUsageTable';
 import styles from './AllocationsContactCard.module.scss';
 
-const AllocationsContactCard = ({ listing }) => {
+const AllocationsContactCard = ({ listing = {} }) => {
   if (!listing)
     return <span>Click on a user’s name to view their allocation usage.</span>;
   const { firstName, lastName, email, username } = listing;
@@ -38,6 +38,5 @@ AllocationsContactCard.propTypes = {
     usageData: arrayOf(shape({})).isRequired,
   }),
 };
-AllocationsContactCard.defaultProps = { listing: {} };
 
 export default AllocationsContactCard;

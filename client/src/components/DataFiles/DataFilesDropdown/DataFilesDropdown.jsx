@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '_common';
@@ -16,33 +17,46 @@ const BreadcrumbsDropdown = ({
   scheme,
   system,
   path,
+  basePath,
   section,
-  isPublic,
+  isPublic = false,
 }) => {
+  // encode path to handle special characters
+  path = path.split('/').map(encodeURIComponent).join('/');
+
   const paths = [];
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const location = useLocation();
   const pathParts = location.pathname.split('/');
+
   const projectId = pathParts.includes('projects')
+    ? pathParts[pathParts.indexOf('projects') + 2]
+    : null;
+
+  const rootProjectSystem = pathParts.includes('projects')
     ? pathParts[pathParts.indexOf('projects') + 1]
     : null;
 
   const handleNavigation = (targetPath) => {
-    const basePath = isPublic ? '/public-data' : '/workbench/data';
+    let effectiveBasePath = basePath;
+    if (!effectiveBasePath)
+      effectiveBasePath = isPublic ? '/public-data' : '/workbench/data';
     let url;
 
     if (scheme === 'projects' && targetPath === systemName) {
-      url = `${basePath}/${api}/projects/${projectId}/`;
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}/${projectId}/`;
     } else if (scheme === 'projects' && !targetPath) {
-      url = `${basePath}/${api}/projects/`;
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}`;
     } else if (api === 'googledrive' && !targetPath) {
-      url = `${basePath}/${api}/${scheme}/${system}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}/`;
     } else if (api === 'tapis' && scheme !== 'projects' && !targetPath) {
-      url = `${basePath}/${api}/${scheme}/${system}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}/`;
+    } else if (scheme === 'projects') {
+      url = `${effectiveBasePath}/${api}/projects/${rootProjectSystem}/${system}${targetPath}`;
     } else {
-      url = `${basePath}/${api}/${scheme}/${system}${targetPath}/`;
+      url = `${effectiveBasePath}/${api}/${scheme}/${system}${targetPath}/`;
     }
 
     return url;
@@ -62,6 +76,14 @@ const BreadcrumbsDropdown = ({
   const overlapIndex = pathComponents.findIndex(
     (component, index) => startingPathComponents[index] !== component
   );
+  const systems = useSelector(
+    (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
+    shallowEqual
+  );
+
+  const sharedWorkspacesDisplayName = systems.find(
+    (e) => e.scheme === 'projects' && e.system === rootProjectSystem
+  )?.name;
 
   let currentPath = startingPath;
   pathComponents.slice(overlapIndex).forEach((component) => {
@@ -72,7 +94,7 @@ const BreadcrumbsDropdown = ({
   const fullPath = paths.reverse();
   const displayPaths =
     scheme === 'projects' ? [...fullPath, systemName] : fullPath;
-  const sliceStart = scheme === 'projects' && systemName ? 0 : 1;
+  const sliceStart = 1;
   return (
     <div id="path-button-wrapper">
       <Dropdown
@@ -85,7 +107,13 @@ const BreadcrumbsDropdown = ({
           {displayPaths
             .slice(sliceStart, displayPaths.length)
             .map((path, index) => {
-              const folderName = path.split('/').pop();
+              let folderName = path.split('/').pop();
+
+              // decode folder name to remove URL encoding
+              try {
+                folderName = decodeURIComponent(folderName);
+              } catch {}
+
               return (
                 <Link
                   className="link-hover"
@@ -124,8 +152,8 @@ const BreadcrumbsDropdown = ({
               <i className="icon-my-data" />
               <span className="multiline-menu-item-wrapper">
                 {scheme === 'projects'
-                  ? 'Shared Workspaces'
-                  : systemName || 'Shared Workspaces'}
+                  ? sharedWorkspacesDisplayName
+                  : systemName || sharedWorkspacesDisplayName}
                 {homeDir ? <small>Root</small> : null}
               </span>
             </DropdownItem>
@@ -143,10 +171,6 @@ BreadcrumbsDropdown.propTypes = {
   path: PropTypes.string.isRequired,
   section: PropTypes.string,
   isPublic: PropTypes.bool,
-};
-
-BreadcrumbsDropdown.defaultProps = {
-  isPublic: false,
 };
 
 export default BreadcrumbsDropdown;

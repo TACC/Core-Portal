@@ -22,7 +22,7 @@ const BreadcrumbLink = ({
   path,
   children,
   section,
-  isPublic,
+  isPublic = false,
 }) => {
   const { fetchListing } = useFileListing(section);
   const onClick = (e) => {
@@ -72,10 +72,6 @@ BreadcrumbLink.propTypes = {
   children: PropTypes.element.isRequired,
   isPublic: PropTypes.bool,
 };
-BreadcrumbLink.defaultProps = {
-  isPublic: false,
-};
-
 const RootProjectsLink = ({ api, section, operation, label }) => {
   const { setProps } = useModal();
   if (section === 'modal') {
@@ -118,9 +114,9 @@ const DataFilesBreadcrumbs = ({
   system,
   path,
   section,
-  operation,
-  isPublic,
-  className,
+  operation = 'select',
+  isPublic = false,
+  className = '',
 }) => {
   const paths = [];
   const pathComps = [];
@@ -141,7 +137,7 @@ const DataFilesBreadcrumbs = ({
     });
   };
 
-  const { fetchSelectedSystem } = useSystems();
+  const { fetchSelectedSystem, isRootProjectSystem } = useSystems();
 
   const selectedSystem = fetchSelectedSystem({ scheme, system, path });
 
@@ -183,9 +179,7 @@ const DataFilesBreadcrumbs = ({
     <div className="breadcrumb-container">
       <div className={`breadcrumbs ${className}`}>
         {currentDirectory.length === 0 ? (
-          <span className="system-name">
-            {truncateMiddle(systemName || 'Shared Workspaces', 30)}
-          </span>
+          <span className="system-name">{truncateMiddle(systemName, 30)}</span>
         ) : (
           currentDirectory.map((pathComp, i) => {
             if (i === fullPath.length - 1) {
@@ -194,11 +188,13 @@ const DataFilesBreadcrumbs = ({
           })
         )}
       </div>
-      {systemName && api === 'tapis' && (
-        <Button type="link" onClick={openFullPathModal}>
-          View Full Path
-        </Button>
-      )}
+      {systemName &&
+        api === 'tapis' &&
+        !isRootProjectSystem(selectedSystem ?? '') && (
+          <Button type="link" onClick={openFullPathModal}>
+            View Full Path
+          </Button>
+        )}
     </div>
   );
 };
@@ -213,10 +209,4 @@ DataFilesBreadcrumbs.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
 };
-DataFilesBreadcrumbs.defaultProps = {
-  isPublic: false,
-  className: '',
-  operation: 'select',
-};
-
 export default DataFilesBreadcrumbs;

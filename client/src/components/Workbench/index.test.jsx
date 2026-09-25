@@ -1,6 +1,5 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import AppRouter from './index';
 
@@ -16,6 +15,9 @@ describe('AppRouter', () => {
           last_name: 'Name',
           email: 'user@name.com',
         },
+      },
+      workbench: {
+        config: {},
       },
     });
 

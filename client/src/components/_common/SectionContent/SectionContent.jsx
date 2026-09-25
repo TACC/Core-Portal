@@ -91,11 +91,11 @@ export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
  * </SectionContent>
  */
 function SectionContent({
-  className,
+  className = '',
   children,
   layoutName,
-  shouldScroll,
-  tagName,
+  shouldScroll = false,
+  tagName = 'div',
 }) {
   let styleName = '';
   const styleNameList = [styles['root'], layoutStyles['root']];
@@ -121,11 +121,6 @@ SectionContent.propTypes = {
   shouldScroll: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string,
-};
-SectionContent.defaultProps = {
-  className: '',
-  shouldScroll: false,
-  tagName: 'div',
 };
 
 export default SectionContent;
