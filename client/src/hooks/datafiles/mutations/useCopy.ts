@@ -3,7 +3,6 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import Cookies from 'js-cookie';
 import { apiClient } from 'utils/apiClient';
 import { useMutation } from '@tanstack/react-query';
-import truncateMiddle from 'utils/truncateMiddle';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function copyFileUtil({
@@ -109,14 +108,6 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      dispatch({
-        type: 'ADD_TOAST',
-        payload: {
-          pk: uuidv4(),
-          eventType: 'data_files',
-          message: 'Starting Copy',
-        },
-      });
       return mutateAsync(
         {
           api: file.api,
@@ -157,10 +148,9 @@ function useCopy() {
         type: 'ADD_TOAST',
         payload: {
           pk: uuidv4(),
-          eventType: 'data_files',
-          message: `${
+          message: `Copying ${
             copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
-          } copied`,
+          }`,
         },
       });
       callback();
