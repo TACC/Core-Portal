@@ -5,7 +5,6 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
-import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
 import WorkbenchSidebar from './index';
 
 const PUBLIC_PAGES = [
@@ -72,7 +71,6 @@ describe('workbench sidebar', () => {
           },
         },
         notifications,
-        ticketCreate,
       }),
       false
     );
@@ -98,7 +96,6 @@ describe('workbench sidebar', () => {
           },
         },
         notifications,
-        ticketCreate,
       }),
       false
     );
@@ -115,7 +112,6 @@ describe('workbench sidebar', () => {
           config: { hideApps: false, hideDataFiles: false },
         },
         notifications: { list: { unread: 1 } },
-        ticketCreate,
       }),
       false
     );
@@ -129,7 +125,6 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench,
         notifications,
-        ticketCreate,
       }),
       false
     );
@@ -148,7 +143,6 @@ describe('workbench sidebar', () => {
           },
         },
         notifications,
-        ticketCreate,
       }),
       true
     );
