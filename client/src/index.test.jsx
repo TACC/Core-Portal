@@ -7,7 +7,6 @@ import AppRouter from './components/Workbench';
 import { initialState as workbench } from './redux/reducers/workbench.reducers';
 import { initialState as profile } from './redux/reducers/profile.reducers';
 import { initialState as notifications } from './redux/reducers/notifications.reducers';
-import { initialTicketCreateState as ticketCreate } from './redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from './redux/reducers/authenticated_user.reducer';
 
 const mockStore = configureStore();
@@ -19,7 +18,6 @@ it('Renders index', () => {
         profile,
         workbench,
         notifications,
-        ticketCreate,
         authenticatedUser,
       })}
     >

@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import { initialState as profile } from '../../../redux/reducers/profile.reducers';
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
-import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
 import introMessageComponents from '../../../redux/reducers/portalMessages.reducers';
 import ManageAccountPage from '../index';
 
@@ -24,7 +23,6 @@ describe('Manage Account Page', () => {
           },
           notifications,
           introMessageComponents,
-          ticketCreate,
         })}
       >
         <BrowserRouter>

@@ -9,11 +9,7 @@ import { initialState as notifications } from '../../redux/reducers/notification
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 // TODOv3: dropV2Jobs
 import { initialStateV2 as jobsv2 } from '../../redux/reducers/jobs.reducers';
-import {
-  initialTicketList as ticketList,
-  initialTicketCreateState as ticketCreate,
-  initialTicketCreateModalState as ticketCreateModal,
-} from '../../redux/reducers/tickets.reducers';
+
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
@@ -30,10 +26,7 @@ const state = {
   // TODOv3: dropV2Jobs
   jobsv2,
   systemMonitor,
-  ticketList,
   systems,
-  ticketCreate,
-  ticketCreateModal,
 };
 
 describe('workbench', () => {

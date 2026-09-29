@@ -3,12 +3,7 @@ import { combineReducers } from 'redux';
 import { jobs, jobDetail, jobsv2 } from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
-import {
-  ticketList,
-  ticketDetailedView,
-  ticketCreate,
-  ticketCreateModal,
-} from './tickets.reducers';
+
 import requestAccess from './requestAccess.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import { allocations } from './allocations.reducers';
@@ -37,10 +32,6 @@ export default combineReducers({
   files,
   allocations,
   profile,
-  ticketList,
-  ticketDetailedView,
-  ticketCreate,
-  ticketCreateModal,
   requestAccess,
   authenticatedUser,
   app,
