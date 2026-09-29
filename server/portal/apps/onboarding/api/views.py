@@ -6,6 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.db.models import Q
 from django.http import (
     Http404,
     HttpResponseBadRequest,
@@ -250,6 +251,12 @@ class SetupAdminView(BaseApiView):
         if q:
             query = q_to_model_queries(q)
             results = results.filter(query)
+            results = results.exclude(
+                Q(email__icontains=q)
+                & ~Q(first_name__icontains=q)
+                & ~Q(last_name__icontains=q)
+                & ~Q(username__icontains=q)
+            )
         show_incomplete_only = request.GET.get("showIncompleteOnly", "False").lower()
         # Filter users based on the showIncompleteOnly parameter
         if show_incomplete_only == "true":
