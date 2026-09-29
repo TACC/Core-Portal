@@ -19,6 +19,7 @@
     "@niivue/nvreact": "^0.1.3",
     "@tacc/core-components": "workspace:*",
     "@tacc/core-hooks": "workspace:*",
+    "@tacc/core-queries": "workspace:*",
     "@tacc/test-fixtures": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "antd": "^5.29.3",

@@ -56,6 +56,9 @@ importers:
       '@tacc/core-hooks':
         specifier: workspace:*
         version: link:packages/core-hooks
+      '@tacc/core-queries':
+        specifier: workspace:*
+        version: link:packages/core-queries
       '@tacc/test-fixtures':
         specifier: workspace:*
         version: link:packages/test-fixtures
@@ -326,6 +329,22 @@ importers:
       vitest:
         specifier: ^5.0.1
         version: 5.0.2(@types/node@26.5.1)(@vitest/coverage-v8@5.0.2)(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@6.0.3))(vite@8.3.1(@types/node@26.5.1)(jiti@2.7.0)(sass-embedded@1.105.0)(sass@1.104.0)(yaml@2.9.0))
+
+  packages/core-queries:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.102.8(react@19.3.0)
+      axios:
+        specifier: 'catalog:'
+        version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.18
+        version: 4.1.11(@types/node@26.5.1)(@vitest/coverage-v8@5.0.0)(jsdom@30.0.1)(msw@2.15.0(@types/node@26.5.1)(typescript@5.9.3))(vite@6.4.3(@types/node@26.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.104.0)(sugarss@4.0.1(postcss@8.5.28))(yaml@2.9.0))
 
   packages/test-fixtures:
     dependencies:
