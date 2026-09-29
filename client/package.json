@@ -18,6 +18,7 @@
     "@niivue/niivue": "^0.32.0",
     "@tacc/core-components": "workspace:*",
     "@tacc/core-hooks": "workspace:*",
+    "@tacc/core-queries": "workspace:*",
     "@tacc/test-fixtures": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@types/react-router-dom": "^5.3.3",
