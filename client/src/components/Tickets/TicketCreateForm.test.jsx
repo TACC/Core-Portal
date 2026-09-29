@@ -1,9 +1,11 @@
 import React from 'react';
+import { findByText, fireEvent, screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
-import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
+import { server } from '@tacc/test-fixtures';
+import { http, HttpResponse } from 'msw';
 
 const mockStore = configureStore();
 
@@ -18,10 +20,28 @@ const exampleAuthenticatedUser = {
   isStaff: false,
 };
 
+async function fillOutForm(container) {
+  fireEvent.change(container.querySelector('input[name="subject"]'), {
+    target: { value: 'Unable to upload files' },
+  });
+  fireEvent.change(
+    container.querySelector('textarea[name="problem_description"]'),
+    {
+      target: { value: 'Uploading a file fails with an unexpected error.' },
+    }
+  );
+
+  const submitButton = screen.getByRole('button', { name: /add ticket/i });
+
+  // Wait for Formik's async validation to enable submission.
+  await waitFor(() => expect(submitButton).toBeEnabled());
+
+  fireEvent.click(submitButton);
+}
+
 describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
     const store = mockStore({
-      ticketCreate,
       workbench,
     });
 
@@ -34,9 +54,6 @@ describe('TicketCreateForm', () => {
 
   it('renders form with authenticated user information', () => {
     const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate,
-      },
       workbench,
     });
 
@@ -53,62 +70,71 @@ describe('TicketCreateForm', () => {
     expect(getAllByText(/Explain your steps/)).toBeDefined();
   });
 
-  it('renders spinner when creating a ticket', () => {
+  it('renders spinner when creating a ticket', async () => {
     const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate,
-        creating: true,
-      },
       workbench,
     });
 
-    const { getByTestId } = renderComponent(
+    const { container } = renderComponent(
       <TicketCreateForm
         authenticatedUser={exampleAuthenticatedUser}
         provideDashBoardLinkOnSuccess={true}
       />,
       store
     );
-    expect(getByTestId('loading-spinner'));
+    await fillOutForm(container);
+    expect(await screen.findByTestId('loading-spinner')).toBeInTheDocument;
+    expect(await screen.findByText(/1234/)).toBeInTheDocument();
   });
 
-  it('renders a ticket create ID upon success', () => {
+  it('renders a ticket create ID upon success', async () => {
     const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate,
-        creatingSuccess: true,
-        createdTicketId: 1234,
-      },
       workbench,
     });
 
-    const { getByText } = renderComponent(
+    const { container } = renderComponent(
       <TicketCreateForm
         authenticatedUser={exampleAuthenticatedUser}
         provideDashBoardLinkOnSuccess={true}
       />,
       store
     );
-    expect(getByText(/1234/)).toBeDefined();
+    await fillOutForm(container);
+    expect(await screen.findByText(/1234/)).toBeInTheDocument();
+    // Assert that fields are reset.
+    expect(container.querySelector('input[name="subject"]').value).toBe('');
+    expect(
+      container.querySelector('textarea[name="problem_description"]').value
+    ).toBe('');
   });
 
-  it('renders a ticket creation error', () => {
+  it('renders a ticket creation error', async () => {
     const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate,
-        creatingError: true,
-        creatingErrorMessage: 'Mock error',
-      },
       workbench,
     });
 
-    const { getByText } = renderComponent(
+    server.use(
+      http.post('/api/tickets/', () => new HttpResponse(null, { status: 403 }))
+    );
+
+    const { container } = renderComponent(
       <TicketCreateForm
         authenticatedUser={exampleAuthenticatedUser}
         provideDashBoardLinkOnSuccess={true}
       />,
       store
     );
-    expect(getByText(/Mock error/)).toBeDefined();
+
+    await fillOutForm(container);
+
+    expect(
+      await screen.findByText(/There was an error creating your ticket/i)
+    ).toBeInTheDocument();
+
+    // Assert that fields are reset.
+    expect(container.querySelector('input[name="subject"]').value).toBe('');
+    expect(
+      container.querySelector('textarea[name="problem_description"]').value
+    ).toBe('');
   });
 });

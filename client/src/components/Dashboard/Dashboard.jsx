@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 import { BrowserChecker, Section, SectionTableWrapper } from '_common';
 import JobsView from '../Jobs';
-import Tickets, { TicketModal } from '../Tickets';
+import Tickets, { TicketCreateModal, TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import UserNewsDashboard from '../UserNews';
 import * as ROUTES from '../../constants/routes';
@@ -72,25 +72,24 @@ function Dashboard() {
 
 function DashboardRoutes() {
   const dispatch = useDispatch();
-
   return (
     <Switch>
       <Route
         exact
         path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
         render={() => {
-          dispatch({
-            type: 'TICKET_CREATE_OPEN_MODAL',
-          });
+          return (
+            <TicketCreateModal
+              isModalOpen={true}
+              setIsModalOpen={() => null}
+              showAsModalOnDashboard
+            />
+          );
         }}
       />
       <Route
         path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
         render={({ match: { params } }) => {
-          dispatch({
-            type: 'TICKET_DETAILED_VIEW_OPEN',
-            payload: { ticketId: Number(params.ticketId) },
-          });
           return <TicketModal />;
         }}
       />
