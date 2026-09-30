@@ -896,6 +896,14 @@ def test_index_view_omits_og_image_without_cover_image_configured(client, settin
 # ---------------------------------------------------------------------------
 
 
+def test_sitemap_view_served_ahead_of_public_data_catch_all(client):
+    assert reverse("sitemap") == "/public-data/sitemap.xml"
+    response = client.get("/public-data/sitemap.xml")
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/xml"
+    assert "<urlset" in response.content.decode()
+
+
 def test_sitemap_view_lists_published_publications_in_order(client, settings):
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     Publication.objects.create(project_id="test.project-2", value=valid_base_meta(), tree={}, is_published=True)
