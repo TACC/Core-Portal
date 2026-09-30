@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
