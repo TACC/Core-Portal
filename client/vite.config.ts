@@ -1,21 +1,22 @@
-import eslint from '@rollup/plugin-eslint';
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import tailwindcss from "@tailwindcss/vite";
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
-// https://vitejs.dev/config/
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vitest/config';
+
 export default defineConfig({
   base: '/core/static/',
-  css: { preprocessorOptions: { scss: { charset: false, api: 'modern' } } },
-  plugins: [
-    {
-      ...eslint({ include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false }),
-      enforce: 'pre',
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        charset: false,
+        api: 'modern',
+      },
     },
-    react(),
-    tailwindcss()
-  ],
+  },
+
+  plugins: [react(), tailwindcss()],
 
   resolve: {
     alias: {
@@ -39,9 +40,10 @@ export default defineConfig({
       port: 3000,
     },
   },
+
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['vitest.setup.ts'],
+    setupFiles: ['./vitest.setup.ts'],
   },
 });
