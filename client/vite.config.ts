@@ -11,7 +11,6 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         charset: false,
-        api: 'modern',
       },
     },
   },
@@ -20,11 +19,11 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      _common: resolve(__dirname, 'src/components/_common'),
-      _custom: resolve(__dirname, 'src/components/_custom'),
-      hooks: resolve(__dirname, 'src/hooks'),
-      utils: resolve(__dirname, 'src/utils'),
-      styles: resolve(__dirname, 'src/styles'),
+      _common: resolve(import.meta.dirname, 'src/components/_common'),
+      _custom: resolve(import.meta.dirname, 'src/components/_custom'),
+      hooks: resolve(import.meta.dirname, 'src/hooks'),
+      utils: resolve(import.meta.dirname, 'src/utils'),
+      styles: resolve(import.meta.dirname, 'src/styles'),
     },
   },
 
