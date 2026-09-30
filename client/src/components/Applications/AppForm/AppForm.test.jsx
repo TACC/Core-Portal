@@ -29,19 +29,6 @@ import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { userFixture } from '../../../redux/sagas/fixtures/users.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import timekeeper from 'timekeeper';
-import { vi } from 'vitest';
-
-vi.mock('utils/fetchUtil', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    fetchUtil: vi.fn((options) =>
-      options.url.startsWith('/api/system-monitor/')
-        ? Promise.resolve([])
-        : actual.fetchUtil(options)
-    ),
-  };
-});
 
 const frozenDate = '2023-10-01';
 const mockStore = configureStore();
