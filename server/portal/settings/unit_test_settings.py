@@ -112,10 +112,11 @@ TEMPLATES = [
     },
 ]
 
-# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context processor above),
-# every `{{ settings.* }}` reference in a template (base.html's PORTAL_NAMESPACE/PORTAL_ICON_
-# FILENAME/PORTAL_CSS_FILENAMES, etc.) silently renders as an empty string under test settings,
-# since Django templates don't error on an undefined context variable.
+# Mirrors settings.py's own SETTINGS_EXPORT -- without this (and the context
+# processor above), every `{{ settings.* }}` reference in a template
+# (base.html's PORTAL_NAMESPACE/PORTAL_ICON_FILENAME/PORTAL_CSS_FILENAMES,
+# etc.) silently renders as an empty string under test settings, since Django
+# templates don't error on an undefined context variable.
 SETTINGS_EXPORT = [
     "PORTAL_ICON_FILENAME",
     "PORTAL_CSS_FILENAMES",

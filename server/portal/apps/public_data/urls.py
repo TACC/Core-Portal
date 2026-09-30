@@ -21,11 +21,12 @@ urlpatterns = [
         IndexView.as_view(),
         name="index",
     ),
-    # Nested under the same path `index` above matches, so a file served from here is always in
-    # the same subdirectory as the landing page that links to it -- see
-    # PublicationFileDownloadView's docstring for why that matters (Google Scholar's
-    # citation_pdf_url same-subdirectory requirement). Must come before the `index_fallback`
-    # catch-all below, which would otherwise swallow this pattern first.
+    # Nested under the same path `index` above matches, so a file served from
+    # here is always in the same subdirectory as the landing page that links to
+    # it -- see PublicationFileDownloadView's docstring for why that matters
+    # (Google Scholar's citation_pdf_url same-subdirectory requirement). Must
+    # come before the `index_fallback` catch-all below, which would otherwise
+    # swallow this pattern first.
     re_path(
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/files/(?P<path>.+)$",
         PublicationFileDownloadView.as_view(),
