@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, SectionTableWrapper } from '_common';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Wizard from '_common/Wizard';
 import { useProjectTree } from 'hooks/datafiles';
@@ -23,7 +23,7 @@ const PublicationWizard = ({
   onSubmit,
 }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const metadata = useSelector((state) => state.projects.metadata);
   const { projectId, publication_requests } = metadata;
@@ -39,9 +39,7 @@ const PublicationWizard = ({
       redirectOnPending &&
       publication_requests?.some((request) => request.status === 'PENDING')
     ) {
-      history.replace(
-        location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`
-      );
+      navigate(location.state?.from || `${ROUTES.WORKBENCH}${ROUTES.DATA}`);
     }
   }, [redirectOnPending, publication_requests, history]);
 

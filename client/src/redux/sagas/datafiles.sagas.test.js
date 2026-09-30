@@ -1,6 +1,4 @@
-import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
-import { vi } from 'vitest';
 import {
   removeDuplicateSlashes,
   fetchFiles,
@@ -31,14 +29,13 @@ import extractApp from './fixtures/extract.fixture';
 import systemsFixture from '../../components/DataFiles/fixtures/DataFiles.systems.fixture';
 import { useCompress } from 'hooks/datafiles/mutations';
 
-vi.mock('cross-fetch');
-
 describe('fetchSystems', () => {
   beforeEach(() => {
     const fm = fetchMock.sandbox().mock(`/api/datafiles/systems/list/`, {
       body: { private: 'test.private' },
       status: 200,
     });
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -90,6 +87,7 @@ describe('fetchFiles', () => {
           status: 200,
         }
       );
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -584,6 +582,7 @@ describe('copyFiles', () => {
         body: { data: '200 response' },
         status: 200,
       });
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
@@ -721,6 +720,7 @@ describe('makePublic', () => {
           status: 200,
         }
       );
+    global.fetch = vi.fn();
     fetch.mockImplementation(fm);
   });
 
