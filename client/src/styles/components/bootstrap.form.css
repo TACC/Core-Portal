@@ -21,7 +21,8 @@ textarea.form-control {
 .input-group-prepend {
   display: flex;
 }
-.input-group-prepend, .input-group button {
+.input-group-prepend,
+.input-group button {
   z-index: 1; /* so child button border is above sibling input border */
 }
 
