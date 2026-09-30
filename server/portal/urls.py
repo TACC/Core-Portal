@@ -98,14 +98,16 @@ urlpatterns = [
         include("portal.apps.googledrive_integration.urls", namespace="googledrive-privacy-policy"),
     ),
     path("workbench/", include("portal.apps.workbench.urls", namespace="workbench")),
+    path("public-data/", include("portal.apps.public_data.urls", namespace="public")),
     # sitemap (published datasets). Not at the conventional /sitemap.xml: Core-CMS
     # already serves that path (its CMSSitemap), and nginx routes it to the CMS.
-    # public-data/ is already proxied to this app in every nginx config, and a
-    # sitemap listed in robots.txt may list URLs outside its own directory. Must
-    # come before the public-data/ include, whose index_fallback catch-all would
-    # otherwise swallow it.
-    path("public-data/sitemap.xml", SitemapView.as_view(), name="sitemap"),
-    path("public-data/", include("portal.apps.public_data.urls", namespace="public")),
+    # Served from the same directory as the landing pages it lists, so it's valid
+    # under the sitemap protocol's same-path rule even without robots.txt. Reaches
+    # this app wherever /published-datasets is proxied here (local nginx.conf;
+    # a DPMP-specific location block on deployments). Must come before the
+    # published-datasets/ include, whose index_fallback catch-all would otherwise
+    # swallow it.
+    path("published-datasets/sitemap.xml", SitemapView.as_view(), name="sitemap"),
     path("published-datasets/", include("portal.apps.public_data.urls", namespace="publications")),
     path("request-access/", include("portal.apps.request_access.urls", namespace="request_access")),
     path("user-news/", include("portal.apps.news.urls", namespace="news")),

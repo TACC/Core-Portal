@@ -896,9 +896,9 @@ def test_index_view_omits_og_image_without_cover_image_configured(client, settin
 # ---------------------------------------------------------------------------
 
 
-def test_sitemap_view_served_ahead_of_public_data_catch_all(client):
-    assert reverse("sitemap") == "/public-data/sitemap.xml"
-    response = client.get("/public-data/sitemap.xml")
+def test_sitemap_view_served_ahead_of_published_datasets_catch_all(client):
+    assert reverse("sitemap") == "/published-datasets/sitemap.xml"
+    response = client.get("/published-datasets/sitemap.xml")
     assert response.status_code == 200
     assert response["Content-Type"] == "application/xml"
     assert "<urlset" in response.content.decode()
