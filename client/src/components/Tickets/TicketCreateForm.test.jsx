@@ -1,5 +1,6 @@
 import React from 'react';
-import { findByText, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { screen, waitFor } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
@@ -20,23 +21,29 @@ const exampleAuthenticatedUser = {
   isStaff: false,
 };
 
-async function fillOutForm(container) {
-  fireEvent.change(container.querySelector('input[name="subject"]'), {
-    target: { value: 'Unable to upload files' },
-  });
-  fireEvent.change(
-    container.querySelector('textarea[name="problem_description"]'),
-    {
-      target: { value: 'Uploading a file fails with an unexpected error.' },
-    }
+async function doFormCompletion(container, user) {
+  // Fill out and complete the "create ticket" form.
+  const nameInput = container.querySelector('input[name="subject"]');
+  await user.click(nameInput);
+  await user.keyboard('Unable to upload files');
+  // target: { value: 'Unable to upload files' },
+
+  const descriptionInput = container.querySelector(
+    'textarea[name="problem_description"]'
   );
+  await user.click(descriptionInput);
+  await user.keyboard('Uploading a file fails with an unexpected error.');
+
+  const attachmentInput = container.querySelector('input[type="file"]');
+  const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+  await user.upload(attachmentInput, file);
 
   const submitButton = screen.getByRole('button', { name: /add ticket/i });
 
   // Wait for Formik's async validation to enable submission.
   await waitFor(() => expect(submitButton).toBeEnabled());
 
-  fireEvent.click(submitButton);
+  await user.click(submitButton);
 }
 
 describe('TicketCreateForm', () => {
@@ -71,6 +78,7 @@ describe('TicketCreateForm', () => {
   });
 
   it('renders spinner when creating a ticket', async () => {
+    const user = userEvent.setup();
     const store = mockStore({
       workbench,
     });
@@ -82,12 +90,13 @@ describe('TicketCreateForm', () => {
       />,
       store
     );
-    await fillOutForm(container);
+    await doFormCompletion(container, user);
     expect(await screen.findByTestId('loading-spinner')).toBeInTheDocument;
     expect(await screen.findByText(/1234/)).toBeInTheDocument();
   });
 
   it('renders a ticket create ID upon success', async () => {
+    const user = userEvent.setup();
     const store = mockStore({
       workbench,
     });
@@ -99,7 +108,7 @@ describe('TicketCreateForm', () => {
       />,
       store
     );
-    await fillOutForm(container);
+    await doFormCompletion(container, user);
     expect(await screen.findByText(/1234/)).toBeInTheDocument();
     // Assert that fields are reset.
     expect(container.querySelector('input[name="subject"]').value).toBe('');
@@ -109,6 +118,7 @@ describe('TicketCreateForm', () => {
   });
 
   it('renders a ticket creation error', async () => {
+    const user = userEvent.setup();
     const store = mockStore({
       workbench,
     });
@@ -125,16 +135,18 @@ describe('TicketCreateForm', () => {
       store
     );
 
-    await fillOutForm(container);
+    await doFormCompletion(container, user);
 
     expect(
       await screen.findByText(/There was an error creating your ticket/i)
     ).toBeInTheDocument();
 
-    // Assert that fields are reset.
-    expect(container.querySelector('input[name="subject"]').value).toBe('');
+    // Assert that fields are NOT reset if there is an error.
+    expect(container.querySelector('input[name="subject"]').value).toBe(
+      'Unable to upload files'
+    );
     expect(
       container.querySelector('textarea[name="problem_description"]').value
-    ).toBe('');
+    ).toBe('Uploading a file fails with an unexpected error.');
   });
 });

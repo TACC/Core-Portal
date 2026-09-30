@@ -128,10 +128,8 @@ function TicketCreateForm({
         }
         try {
           await createTicket(formData);
-        } catch {
-        } finally {
           resetForm();
-        }
+        } catch {}
       }}
     >
       {({ isSubmitting, isValid, setFieldValue }) => {
