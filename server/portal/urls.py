@@ -110,8 +110,9 @@ urlpatterns = [
         "accounts/applications/googledrive/",
         include("portal.apps.googledrive_integration.urls", namespace="googledrive_integration"),
     ),
-    # sitemap (published datasets), at the conventional root path crawlers/Search Console check
-    # by default -- not nested under public-data/'s own catch-all SPA route.
+    # sitemap (published datasets), at the conventional root path crawlers/
+    # Search Console check by default -- not nested under public-data/'s own
+    # catch-all SPA route.
     path("sitemap.xml", SitemapView.as_view(), name="sitemap"),
     # version check.
     path("version/", portal_version),
