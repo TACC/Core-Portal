@@ -1,8 +1,6 @@
-import fetch from 'cross-fetch';
 import { expectSaga, testSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
-import { vi } from 'vitest';
 import { fetchUtil } from '../../utils/fetchUtil';
 import profileReducer, { initialState } from '../reducers/profile.reducers';
 import {
@@ -10,8 +8,6 @@ import {
   getProfileData,
   watchProfileData,
 } from './profile.sagas';
-
-vi.mock('cross-fetch');
 
 describe('Utility Functions', () => {
   it('should get the last date the password was changed', () => {

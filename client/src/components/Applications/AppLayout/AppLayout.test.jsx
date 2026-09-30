@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import AppsRoutes, { AppsLayout } from './AppLayout';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import filesFixture from '../../DataFiles/fixtures/DataFiles.files.fixture';
@@ -20,9 +20,9 @@ function renderAppsRoutes(store, appId) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[`/applications/${appId}`]}>
-        <Route path="/:appId?">
-          <AppsRoutes />
-        </Route>
+        <Routes>
+          <Route path="/applications/:appId?" element={<AppsRoutes />} />
+        </Routes>
       </MemoryRouter>
     </Provider>
   );
