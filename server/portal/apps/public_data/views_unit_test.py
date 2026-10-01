@@ -220,7 +220,7 @@ def test_get_distribution_builds_file_objects(rf):
             }
         ]
     }
-    distribution = _get_distribution(base_meta, "test.project-1", request)
+    distribution = _get_distribution(base_meta["fileObjs"], "test.project-1", request)
     assert len(distribution) == 1
     file_object = distribution[0]
     assert file_object["@type"] == "cr:FileObject"
@@ -244,13 +244,13 @@ def test_get_distribution_skips_non_file_and_incomplete_entries(rf):
             {"type": "file", "name": "no-path.csv", "path": ""},
         ]
     }
-    assert _get_distribution(base_meta, "test.project-1", request) == []
+    assert _get_distribution(base_meta["fileObjs"], "test.project-1", request) == []
 
 
 def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
     request = make_request(rf)
     base_meta = {"fileObjs": [{"type": "file", "name": "weird.unknownext", "path": "sub dir/data file.bin"}]}
-    distribution = _get_distribution(base_meta, "test.project-1", request)
+    distribution = _get_distribution(base_meta["fileObjs"], "test.project-1", request)
     file_object = distribution[0]
     assert file_object["@id"] == "sub%20dir/data%20file.bin"
     assert file_object["contentUrl"].endswith("/files/sub%20dir/data%20file.bin")
@@ -295,7 +295,7 @@ def test_get_record_sets_skips_missing_columns_or_path():
             {"columns": [{"name": "a"}], "path": ""},
         ]
     }
-    assert _get_record_sets(base_meta) == []
+    assert _get_record_sets(base_meta["fileObjs"]) == []
 
 
 def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
@@ -308,7 +308,7 @@ def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
             }
         ]
     }
-    record_sets = _get_record_sets(base_meta)
+    record_sets = _get_record_sets(base_meta["fileObjs"])
     assert len(record_sets) == 1
     record_set = record_sets[0]
     assert record_set["@type"] == "cr:RecordSet"
@@ -324,7 +324,7 @@ def test_get_record_sets_builds_fields_and_skips_unnamed_columns():
 
 def test_get_record_sets_default_data_type():
     base_meta = {"fileObjs": [{"name": "data.csv", "path": "/data.csv", "columns": [{"name": "col1"}]}]}
-    field = _get_record_sets(base_meta)[0]["field"][0]
+    field = _get_record_sets(base_meta["fileObjs"])[0]["field"][0]
     assert field["dataType"] == "sc:Text"
 
 
@@ -496,20 +496,20 @@ def test_get_citation_pdf_url_finds_first_pdf(rf):
             {"type": "file", "name": "other.pdf", "path": "/other.pdf"},
         ]
     }
-    url = _get_citation_pdf_url(base_meta, "test.project-1", request)
+    url = _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request)
     assert url == _get_publication_file_url("test.project-1", "paper.pdf", request)
 
 
 def test_get_citation_pdf_url_none_when_no_pdf(rf):
     request = make_request(rf)
     base_meta = {"fileObjs": [{"type": "file", "name": "readme.txt", "path": "/readme.txt"}]}
-    assert _get_citation_pdf_url(base_meta, "test.project-1", request) is None
+    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
 
 
 def test_get_citation_pdf_url_skips_incomplete_entries(rf):
     request = make_request(rf)
     base_meta = {"fileObjs": [{"type": "file", "name": "", "path": "/x.pdf"}, {"type": "dir", "name": "x.pdf"}]}
-    assert _get_citation_pdf_url(base_meta, "test.project-1", request) is None
+    assert _get_citation_pdf_url(base_meta["fileObjs"], "test.project-1", request) is None
 
 
 # ---------------------------------------------------------------------------
@@ -691,6 +691,53 @@ def test_file_download_route_is_matched_before_index_fallback(client, requests_m
 # ---------------------------------------------------------------------------
 
 
+def test_schema_org_and_citation_include_entity_node_files(rf, settings, publication):
+    """Files attached to entity nodes (most DRP data -- samples, digital datasets) live in
+    `Publication.tree`, not `pub.value`. distribution, recordSet and citation_pdf_url must list
+    them alongside root-level files, so the JSON-LD advertises exactly what the file route's
+    allow-list serves."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.tree = entity_tree(
+        {"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"},
+        {"type": "file", "name": "paper.pdf", "path": "/sample1/paper.pdf"},
+        {"type": "file", "name": "table.csv", "path": "/sample1/table.csv", "columns": [{"name": "x"}]},
+        {"type": "dir", "name": "raw", "path": "/sample1/raw"},
+    )
+    publication.save()
+    request = make_request(rf)
+
+    citation_meta, schema, _ = get_citation_context(publication, request)
+
+    distribution_ids = [file_object["@id"] for file_object in schema["distribution"]]
+    # Root-level data.csv first, then the entity's files; the directory isn't enumerated.
+    assert distribution_ids == ["data.csv", "sample1/scan.tif", "sample1/paper.pdf", "sample1/table.csv"]
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert {record_set["@id"] for record_set in schema["recordSet"]} == {
+        "data.csv/records",
+        "sample1/table.csv/records",
+    }
+    assert citation_meta["entities"][0]["pdf_url"] == _get_publication_file_url(
+        publication.project_id, "sample1/paper.pdf", request
+    )
+    # Everything advertised is something the file route will actually serve.
+    for file_object in schema["distribution"]:
+        assert _is_publication_file_path(publication, file_object["@id"].replace("%20", " "))
+
+
+def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, settings, publication):
+    """A publication whose files are all on entity nodes (nothing on the project root) used to
+    count as fileless: no distribution and no conformsTo."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.value = valid_base_meta(fileObjs=[])
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert [file_object["@id"] for file_object in schema["distribution"]] == ["sample1/scan.tif"]
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+
+
 def test_get_publication_file_objs_combines_root_and_entity_nodes_deduped_by_path(publication):
     publication.tree = entity_tree(
         {"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"},
@@ -832,11 +879,12 @@ def test_get_schema_org_json_missing_required_dataset_field_names_it(rf, publica
 
 @patch("portal.apps.public_data.views.logger")
 def test_get_schema_org_json_files_without_usable_distribution_drops_conforms_to(mock_logger, rf, publication):
-    """Files present (has_files True) but none carry a usable name/path, so `distribution` ends up
+    """Files present (has_files True) but none carry a usable name, so `distribution` ends up
     empty. That's no longer fatal: the plain Dataset is still emitted, just without the Croissant
-    claim, and the data bug is logged."""
+    claim, and the data bug is logged. (A file object with no path at all can't be identified or
+    served, so _get_publication_file_objs drops it outright -- it doesn't count as a file.)"""
     request = make_request(rf)
-    publication.value = valid_base_meta(fileObjs=[{"type": "file", "name": "", "path": ""}])
+    publication.value = valid_base_meta(fileObjs=[{"type": "file", "name": "", "path": "/unnamed.csv"}])
     publication.save()
 
     schema = get_schema_org_json(publication, publication.project_id, request)

@@ -150,16 +150,22 @@ def _format_content_size(num_bytes):
         size /= 1024
 
 
-def _get_distribution(base_meta, project_id, request):
+def _get_distribution(file_objs, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file)
-    from the publication's file_objs. Each `contentUrl` points at PublicationFileDownloadView,
-    which returns the file's own bytes -- Croissant consumers (and Google Dataset Search) fetch
+    from `file_objs` -- _get_publication_file_objs' combined list, so files attached to entity
+    nodes are listed alongside root-level ones, and every file listed here is one the
+    PublicationFileDownloadView allow-list serves. Each `contentUrl` points at that view, which
+    returns the file's own bytes -- Croissant consumers (and Google Dataset Search) fetch
     `contentUrl` expecting the file itself, not the datafiles app's generic download route, which
     returns a JSON envelope around a short-lived Tapis postit link for the SPA to follow.
+
+    Directory file objects are skipped: listing their contents would mean a Tapis listing call
+    on every page render. Files inside an associated directory are still downloadable (the
+    allow-list accepts them) but aren't enumerated here.
     """
 
     distribution = []
-    for file_obj in base_meta.get("fileObjs", []):
+    for file_obj in file_objs:
         if file_obj.get("type") != "file":
             continue
         name = file_obj.get("name")
@@ -216,17 +222,18 @@ def _get_cover_image_url(base_meta, project_id, request):
     return f"{_get_configured_origin(request)}{url_path}"
 
 
-def _get_record_sets(base_meta):
+def _get_record_sets(file_objs):
     """Build the Croissant `recordSet` list (one cr:RecordSet per tabular file that has known
-    columns) from the publication's file_objs. This only ever reads metadata already stored
-    on `fileObjs` (the `columns` field, populated at publish time for recognized tabular
-    formats) -- it does no file I/O of its own, since this runs on every page request. Files
-    with no known columns are simply skipped, so a publication with no extracted schemas yet
-    degrades to no `recordSet` at all rather than a broken one.
+    columns) from `file_objs` -- the same combined list `distribution` is built from, so every
+    recordSet's `source.fileObject` resolves to a `distribution` entry. This only ever reads
+    metadata already stored on `fileObjs` (the `columns` field, populated at publish time for
+    recognized tabular formats) -- it does no file I/O of its own, since this runs on every
+    page request. Files with no known columns are simply skipped, so a publication with no
+    extracted schemas yet degrades to no `recordSet` at all rather than a broken one.
     """
 
     record_sets = []
-    for file_obj in base_meta.get("fileObjs", []):
+    for file_obj in file_objs:
         columns = file_obj.get("columns")
         path = (file_obj.get("path") or "").lstrip("/")
         if not columns or not path:
@@ -407,16 +414,16 @@ def _format_citation_date(date_value):
     return date_value
 
 
-def _get_citation_pdf_url(base_meta, project_id, request):
-    """Pick the first PDF out of the publication's fileObjs, for Google Scholar's
-    citation_pdf_url.
+def _get_citation_pdf_url(file_objs, project_id, request):
+    """Pick the first PDF out of `file_objs` (_get_publication_file_objs' combined list, so a PDF
+    attached to an entity node is found too), for Google Scholar's citation_pdf_url.
 
     Scholar requires citation_pdf_url to resolve in the same subdirectory as the citing landing
     page, which _get_publication_file_url's `file_download` route guarantees -- the same route
     `distribution`/`contentUrl` is built against, so the two always agree.
     """
 
-    for file_obj in base_meta.get("fileObjs", []):
+    for file_obj in file_objs:
         if file_obj.get("type") != "file":
             continue
         name = file_obj.get("name")
@@ -436,11 +443,13 @@ def get_schema_org_json(pub, project_id, request):
 
     base_meta = pub.value
     doi = base_meta.get("doi")
+    # Root-level and entity-node files together -- see _get_publication_file_objs.
+    file_objs = _get_publication_file_objs(pub)
 
     # A metadata-only / externally-hosted publication can legitimately have no files at all, and
     # so is never a Croissant candidate. Having files that failed to make it into `distribution`
     # (missing name/path on every fileObj) is a data bug instead -- worth a warning below.
-    has_files = any(file_obj.get("type") == "file" for file_obj in base_meta.get("fileObjs", []))
+    has_files = any(file_obj.get("type") == "file" for file_obj in file_objs)
 
     # An unmapped license label is a misconfiguration (see _get_license), but not one worth
     # dropping the whole page from search over: log it, and emit the Dataset without `license`
@@ -540,8 +549,8 @@ def get_schema_org_json(pub, project_id, request):
             "@type": "DataCatalog",
             "name": settings.PORTAL_PUBLICATION_PUBLISHER,
         },
-        "distribution": _get_distribution(base_meta, project_id, request),
-        "recordSet": _get_record_sets(base_meta),
+        "distribution": _get_distribution(file_objs, project_id, request),
+        "recordSet": _get_record_sets(file_objs),
     }
 
     # Drop empty/unset fields so the JSON-LD stays clean
@@ -636,7 +645,7 @@ def get_citation_context(pub, request):
             "citation_authors": [name for name in (_format_citation_author(author) for author in authors) if name],
             "publication_date": publication_date,
             "citation_date": _format_citation_date(publication_date),
-            "pdf_url": _get_citation_pdf_url(base_meta, pub.project_id, request),
+            "pdf_url": _get_citation_pdf_url(_get_publication_file_objs(pub), pub.project_id, request),
             "abstract_url": schema_org_json.get("url"),
         }
     ]
