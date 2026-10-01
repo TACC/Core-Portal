@@ -24,10 +24,12 @@ from portal.apps.public_data.views import (
     _get_landing_page_url,
     _get_license,
     _get_orcid_same_as,
+    _get_publication_file_objs,
     _get_publication_file_url,
     _get_record_sets,
     dumps_json_ld,
     get_citation_context,
+    _is_publication_file_path,
     get_schema_org_json,
 )
 from portal.apps.publications.models import Publication
@@ -537,9 +539,37 @@ def test_dumps_json_ld_escapes_html_sensitive_chars():
 TAPIS_CONTENT_URL = "https://example.tapis.io/v3/files/content"
 
 
+def entity_tree(*file_objs):
+    """A minimal networkx node_link_data tree: the project root plus one entity node whose value
+    carries `file_objs` -- the shape publish_project stores in Publication.tree."""
+    return {
+        "directed": True,
+        "multigraph": False,
+        "graph": {},
+        "nodes": [
+            {"id": "NODE_ROOT", "name": "drp.project", "value": {"title": "Test Dataset"}},
+            {"id": "entity-1", "name": "drp.project.sample", "value": {"title": "Sample", "fileObjs": list(file_objs)}},
+        ],
+        "edges": [{"source": "NODE_ROOT", "target": "entity-1"}],
+    }
+
+
 @pytest.fixture
 def v1_publication(db):
-    return Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, version=1)
+    """Version-1 publication whose declared files cover every path the file-route tests request:
+    data.csv on the project root, the rest on an entity node in `tree`, plus an `a` directory."""
+    return Publication.objects.create(
+        project_id="test.project-1",
+        value=valid_base_meta(),
+        tree=entity_tree(
+            {"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"},
+            {"type": "file", "name": "data file.bin", "path": "/sub dir/data file.bin"},
+            {"type": "file", "name": "missing.csv", "path": "/missing.csv"},
+            {"type": "file", "name": "a.csv", "path": "/a.csv"},
+            {"type": "dir", "name": "a", "path": "/a"},
+        ),
+        version=1,
+    )
 
 
 def test_publication_file_download_view_streams_file_bytes(rf, requests_mock, v1_publication):
@@ -610,6 +640,27 @@ def test_publication_file_download_view_404s_for_unknown_publication(rf, request
     assert not requests_mock.called
 
 
+def test_publication_file_download_view_404s_for_undeclared_path_without_calling_tapis(
+    rf, requests_mock, v1_publication
+):
+    """A file on the published system that the publication never declared (e.g. uploaded without
+    metadata) isn't served, and the request never reaches Tapis."""
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="undeclared.csv")
+    assert not requests_mock.called
+
+
+def test_publication_file_download_view_serves_root_level_file(rf, requests_mock, v1_publication):
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/data.csv", content=b"root")
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="data.csv")
+
+    assert b"".join(response.streaming_content) == b"root"
+
+
 def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock, v1_publication):
     requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a.csv", status_code=500)
     request = make_request(rf)
@@ -633,6 +684,55 @@ def test_file_download_route_is_matched_before_index_fallback(client, requests_m
     assert response.status_code == 200
     assert response["Content-Type"] == "text/csv"
     assert b"".join(response.streaming_content) == b"a,b\n1,2\n"
+
+
+# ---------------------------------------------------------------------------
+# _get_publication_file_objs / _is_publication_file_path
+# ---------------------------------------------------------------------------
+
+
+def test_get_publication_file_objs_combines_root_and_entity_nodes_deduped_by_path(publication):
+    publication.tree = entity_tree(
+        {"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"},
+        # Same file as the root's data.csv, with/without a leading slash -- listed once.
+        {"type": "file", "name": "data.csv", "path": "data.csv"},
+    )
+
+    paths = sorted(file_obj["path"].strip("/") for file_obj in _get_publication_file_objs(publication))
+
+    assert paths == ["data.csv", "files/paper.pdf"]
+
+
+def test_get_publication_file_objs_tolerates_empty_tree_and_valueless_nodes(publication):
+    publication.tree = {"nodes": [{"id": "NODE_ROOT"}, {"id": "x", "value": None}]}
+    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
+
+    publication.tree = {}
+    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
+
+
+@pytest.mark.parametrize(
+    "path,allowed",
+    [
+        ("data.csv", True),  # root-level file object
+        ("files/paper.pdf", True),  # entity-node file object
+        ("a/b.csv", True),  # inside a directory file object
+        ("a/nested/c.csv", True),
+        ("a", False),  # the directory itself isn't a file
+        ("undeclared.csv", False),
+        ("files/other.pdf", False),
+        ("a/../secret.csv", False),  # would escape the declared directory
+        ("./data.csv", False),
+        ("a//b.csv", False),
+        ("ab/c.csv", False),  # shares a prefix with `a` but isn't inside it
+    ],
+)
+def test_is_publication_file_path(v1_publication, path, allowed):
+    v1_publication.tree = entity_tree(
+        {"type": "file", "name": "paper.pdf", "path": "/files/paper.pdf"},
+        {"type": "dir", "name": "a", "path": "/a"},
+    )
+    assert _is_publication_file_path(v1_publication, path) is allowed
 
 
 # ---------------------------------------------------------------------------

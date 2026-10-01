@@ -711,6 +711,48 @@ class IndexView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+def _get_publication_file_objs(pub):
+    """Every file object associated anywhere in the publication, deduplicated by path.
+
+    Files are associated with whichever project-graph node their folder belongs to
+    (libs/agave/operations.py's upload: an entity's own `fileObjs` when the folder is an entity,
+    the project root's otherwise), and publish_project's _add_values_to_tree copies each entity's
+    value into its node in `Publication.tree`. So `pub.value["fileObjs"]` alone only covers files
+    attached directly to the project root -- the entity nodes in `pub.tree` hold the rest.
+    """
+
+    file_objs = list(pub.value.get("fileObjs") or [])
+    # `tree` is networkx node_link_data: {"nodes": [{"id": ..., "value": {...}}, ...], ...}
+    for node in (pub.tree or {}).get("nodes", []):
+        file_objs.extend((node.get("value") or {}).get("fileObjs") or [])
+
+    by_path = {}
+    for file_obj in file_objs:
+        path = (file_obj.get("path") or "").strip("/")
+        if path:
+            by_path.setdefault(path, file_obj)
+    return list(by_path.values())
+
+
+def _is_publication_file_path(pub, path):
+    """Whether `path` (relative to the published system) is a file this publication declares:
+    either a file object's own path, or a path inside a directory file object. Anything else --
+    files on the published system that were never associated with the publication, the
+    directory paths themselves, or `.`/`..`/empty segments that could resolve somewhere other
+    than they appear to -- is rejected.
+    """
+
+    if any(segment in ("", ".", "..") for segment in path.split("/")):
+        return False
+    for file_obj in _get_publication_file_objs(pub):
+        file_obj_path = file_obj["path"].strip("/")
+        if file_obj.get("type") == "file" and path == file_obj_path:
+            return True
+        if file_obj.get("type") == "dir" and path.startswith(f"{file_obj_path}/"):
+            return True
+    return False
+
+
 def _get_published_system_id(project_id, version):
     """Return the Tapis system a publication's current version was published to. Must match
     publish_project (project_publish_operations.py): version 1 publishes to
@@ -777,12 +819,19 @@ class PublicationFileDownloadView(View):
     citation_pdf_url to resolve in the same subdirectory as the citing landing page, and every
     consumer of citation_pdf_url/`contentUrl` expects the file itself -- see
     _stream_published_file's docstring for why the generic route can't provide that.
+
+    Only serves paths the publication itself declares (_is_publication_file_path), checked
+    before any Tapis call: this route reads with the service account's token, so without the
+    check it would relay any path on the published system -- including files never associated
+    with the publication -- and send every crawler-guessed URL on to Tapis.
     """
 
     def get(self, request, project_id, path):
         pub = Publication.objects.filter(project_id=project_id).first()
         if pub is None:
             raise Http404(f"No publication found for project {project_id}")
+        if not _is_publication_file_path(pub, path):
+            raise Http404(f"Publication {project_id} has no file at {path}")
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
 
 
