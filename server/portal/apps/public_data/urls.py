@@ -8,7 +8,7 @@ import re
 from django.conf import settings
 from django.urls import re_path
 
-from portal.apps.public_data.views import IndexView, PublicationFileDownloadView
+from portal.apps.public_data.views import IndexView, PublicationCoverImageView, PublicationFileDownloadView
 
 app_name = "public_data"
 
@@ -31,6 +31,12 @@ urlpatterns = [
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/files/(?P<path>.+)$",
         PublicationFileDownloadView.as_view(),
         name="file_download",
+    ),
+    # og:image/twitter:image for the landing page above. Also before `index_fallback`.
+    re_path(
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/cover-image$",
+        PublicationCoverImageView.as_view(),
+        name="cover_image",
     ),
     re_path(r"^.*$", IndexView.as_view(), name="index_fallback"),
 ]

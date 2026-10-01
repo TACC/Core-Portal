@@ -1,16 +1,18 @@
 import json
 import logging
 import mimetypes
+import posixpath
 import re
 from urllib.parse import quote, urlsplit
 
+import requests
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, StreamingHttpResponse
 from django.urls import reverse
 from django.utils.html import escape
+from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
-from portal.apps.datafiles.views import TapisFilesView
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
 from portal.apps.publications.models import Publication
 
@@ -45,6 +47,11 @@ _JSON_LD_HTML_ESCAPES = {
 # Matches the standard ORCID iD checksum format -- 16 digits in four hyphenated groups, the
 # last character optionally "X" -- e.g. the canonical example "0000-0002-1825-0097".
 _ORCID_ID_RE = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
+
+# Published files are relayed to the client in chunks of this size rather than buffered whole
+# (tapipy's files.getContents returns the entire file as one bytes object), since a published
+# dataset's files can run to multiple GB.
+_FILE_STREAM_CHUNK_SIZE = 64 * 1024
 
 
 def _get_license(base_meta, project_id):
@@ -112,12 +119,10 @@ def _get_configured_origin(request):
     pre-existing behavior) when the prefix is unset or isn't itself an absolute URL, matching
     `_get_landing_page_url`'s own fallback for the same setting.
 
-    This only guarantees the two land on the same *host* -- it says nothing about path, so it
-    doesn't by itself satisfy Google Scholar's stricter requirement that citation_pdf_url live in
-    the same subdirectory as the citing landing page (distribution/contentUrl's `/api/datafiles/
-    tapis/download/...` path tree is unrelated to wherever the landing page itself is served).
-    That's handled separately, by routing citation_pdf_url through `_get_publication_file_url`
-    instead -- see its docstring.
+    This only guarantees the two land on the same *host* -- it says nothing about path. Google
+    Scholar's stricter requirement that citation_pdf_url live in the same subdirectory as the
+    citing landing page is handled separately, by building every published-file URL through
+    `_get_publication_file_url` -- see its docstring.
     """
 
     url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
@@ -145,14 +150,11 @@ def _format_content_size(num_bytes):
 
 def _get_distribution(base_meta, project_id, request):
     """Build the Croissant/schema.org `distribution` list (one cr:FileObject per published file)
-    from the publication's file_objs, pointing at the existing public, unauthenticated Tapis
-    download route for the published project system.
+    from the publication's file_objs. Each `contentUrl` points at PublicationFileDownloadView,
+    which returns the file's own bytes -- Croissant consumers (and Google Dataset Search) fetch
+    `contentUrl` expecting the file itself, not the datafiles app's generic download route, which
+    returns a JSON envelope around a short-lived Tapis postit link for the SPA to follow.
     """
-
-    published_system_id = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
-    # Resolved once and reused for every file below -- see _get_configured_origin's docstring
-    # for why this can't just be request.build_absolute_uri.
-    origin = _get_configured_origin(request)
 
     distribution = []
     for file_obj in base_meta.get("fileObjs", []):
@@ -163,19 +165,16 @@ def _get_distribution(base_meta, project_id, request):
         if not name or not path:
             continue
 
-        # Percent-encoded once and reused for both `@id` and `contentUrl` below. `@id` is a
-        # JSON-LD identifier that (per the Croissant spec's own examples) doubles as an IRI
-        # reference resolved against this document's own URL -- leaving it as the raw path
-        # while `contentUrl` already percent-encodes the same path would let the two diverge,
-        # and would make `@id` an invalid IRI for any path containing characters (spaces, etc.)
-        # that aren't legal unescaped in one.
-        encoded_path = quote(path)
-        content_url = f"{origin}/api/datafiles/tapis/download/projects/{published_system_id}/{encoded_path}/"
+        # `@id` is a JSON-LD identifier that (per the Croissant spec's own examples) doubles as
+        # an IRI reference resolved against this document's own URL, so it's percent-encoded
+        # the same way reverse() encodes this path inside `contentUrl` -- otherwise it would be
+        # an invalid IRI for any path containing characters (spaces, etc.) that aren't legal
+        # unescaped in one. `contentUrl` takes the raw path; reverse() does its own encoding.
         file_object = {
             "@type": "cr:FileObject",
-            "@id": encoded_path,
+            "@id": quote(path),
             "name": name,
-            "contentUrl": content_url,
+            "contentUrl": _get_publication_file_url(project_id, path, request),
         }
 
         # Croissant requires encodingFormat on every FileObject -- fall back to the generic
@@ -195,28 +194,24 @@ def _get_distribution(base_meta, project_id, request):
     return distribution
 
 
-def _get_cover_image_url(base_meta, request):
-    """Build an absolute download URL for the publication's cover image, for og:image/
-    twitter:image (link-unfurl preview cards in Slack/Discord/LinkedIn/X/iMessage).
+def _get_cover_image_url(base_meta, project_id, request):
+    """Build an absolute URL for the publication's cover image, for og:image/twitter:image
+    (link-unfurl preview cards in Slack/Discord/LinkedIn/X/iMessage).
 
-    Deliberately doesn't reuse _get_distribution's published_system_id (the per-project
-    `{PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}` system): the cover image isn't
-    transferred there. project_publish_operations.py's _transfer_cover_image copies it onto
-    PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME instead -- a single shared root system, at the
-    same relative path stored in `coverImage` -- so the download URL has to point there. Same
-    public, unauthenticated Tapis download route otherwise (datafiles/urls.py's
-    tapis/<operation>/<scheme>/<system>/<path> takes any system id, not just per-project
-    ones), and the same _get_configured_origin used for every other file URL in this module,
-    so this can't end up on a different host than `url`/`distribution` either.
+    Points at PublicationCoverImageView (public_data/urls.py's `cover_image` pattern) rather
+    than the datafiles app's generic download route: unfurlers fetch og:image expecting image
+    bytes, and that route returns a JSON envelope around a Tapis postit link instead. The view
+    reads the stored `coverImage` path itself, so the URL only needs the project_id.
+    Returns None when there's no cover image to serve, so the template omits the tags.
     """
 
-    cover_image_path = (base_meta.get("coverImage") or "").lstrip("/")
-    root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
-    if not cover_image_path or not root_system:
+    if not (base_meta.get("coverImage") or "").lstrip("/"):
+        return None
+    if not settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME:
         return None
 
-    origin = _get_configured_origin(request)
-    return f"{origin}/api/datafiles/tapis/download/projects/{root_system}/{quote(cover_image_path)}/"
+    url_path = reverse("publications:cover_image", kwargs={"project_id": project_id})
+    return f"{_get_configured_origin(request)}{url_path}"
 
 
 def _get_record_sets(base_meta):
@@ -296,9 +291,9 @@ def _get_publication_file_url(project_id, path, request):
     data/urls.py's `file_download` pattern -- nested directly under the same path `_get_landing_
     page_url` resolves `index` against, so a file served from here can never end up outside the
     landing page's own subdirectory the way the datafiles app's generic `/api/datafiles/tapis/
-    download/...` route (used for Croissant's `distribution`/`contentUrl`, which carries no such
-    requirement) can. See PublicationFileDownloadView's docstring for why that distinction
-    matters -- this is only meant for citation_pdf_url.
+    download/...` route can. Used for both citation_pdf_url and Croissant's `distribution`/
+    `contentUrl`, so a crawler following either one gets the file's own bytes -- see
+    PublicationFileDownloadView's docstring.
 
     `path` must be the file's raw (not percent-encoded) path: reverse() percent-encodes its own
     kwargs, so passing an already-quote()'d path here would double-encode it.
@@ -414,13 +409,9 @@ def _get_citation_pdf_url(base_meta, project_id, request):
     """Pick the first PDF out of the publication's fileObjs, for Google Scholar's
     citation_pdf_url.
 
-    Deliberately doesn't reuse `distribution`'s own `contentUrl` the way this used to -- Scholar
-    (unlike Croissant, which has no such rule) requires citation_pdf_url to resolve in the same
-    subdirectory as the citing landing page, which `distribution`'s generic `/api/datafiles/
-    tapis/download/...` download links don't guarantee (see _get_configured_origin's docstring).
-    _get_publication_file_url's `file_download` route does, so this re-walks fileObjs (the same
-    way _get_distribution does) to build that URL instead. `distribution`/`contentUrl` is left
-    alone since Croissant doesn't need this.
+    Scholar requires citation_pdf_url to resolve in the same subdirectory as the citing landing
+    page, which _get_publication_file_url's `file_download` route guarantees -- the same route
+    `distribution`/`contentUrl` is built against, so the two always agree.
     """
 
     for file_obj in base_meta.get("fileObjs", []):
@@ -621,7 +612,7 @@ def get_citation_context(pub, request):
     citation_meta["keywords"] = ", ".join(kw) if isinstance(kw, list) else kw
     # Page-level (not per-entity, like `keywords` above) since og:image/twitter:image are
     # single tags in <head>, not part of the citation_* block.
-    citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, request)
+    citation_meta["cover_image_url"] = _get_cover_image_url(base_meta, pub.project_id, request)
     citation_meta["entities"] = [
         {
             "title": base_meta.get("title"),
@@ -726,25 +717,83 @@ class IndexView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class PublicationFileDownloadView(View):
-    """Serve one published file at a URL nested under its publication's own landing-page path
-    (public_data/urls.py's `file_download` pattern), rather than the datafiles app's generic
-    `/api/datafiles/tapis/download/...` route -- so citation_pdf_url (built against this view via
-    _get_publication_file_url) can satisfy Google Scholar's requirement that citation_pdf_url
-    resolve in the same subdirectory as the citing landing page (see _get_configured_origin's
-    docstring), which the generic download route can't since it lives under a wholly separate
-    path tree from wherever a given deployment's landing page is served.
+def _stream_published_file(system, path):
+    """Relay one published file's bytes from the Tapis Files content endpoint as a streaming
+    response, so a crawler (Scholar, Croissant/Dataset Search consumers, link unfurlers) that
+    follows a published-file URL gets the file itself.
 
-    Just translates project_id into the published system id TapisFilesView expects and delegates
-    straight to it -- TapisFilesView already streams unauthenticated files off `public`-prefixed
-    Tapis systems (datafiles/views.py's PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX check), which is
-    exactly what a published project's system is, so there's no auth/streaming logic to
-    duplicate here.
+    The datafiles app's `download` operation (TapisFilesView) can't be reused for this: it
+    creates a Tapis postit link and returns it inside a JSON envelope for the SPA's own
+    JavaScript to follow, which a crawler never does. Uses the service account's token, the same
+    credentials TapisFilesView already falls back to for anonymous reads of published systems.
+    """
+
+    try:
+        upstream = requests.get(
+            f"{settings.TAPIS_TENANT_BASEURL}/v3/files/content/{system}/{quote(path)}",
+            headers={"X-Tapis-Token": settings.TAPIS_ADMIN_JWT},
+            stream=True,
+            timeout=(10, 60),
+        )
+    except requests.RequestException:
+        logger.exception(f"Failed to reach Tapis for published file {system}/{path}")
+        return HttpResponse(status=502)
+
+    if not upstream.ok:
+        upstream.close()
+        # 404 for a missing path, 400 for a directory (the content endpoint only serves
+        # directories as a zip on request) -- neither is a servable file.
+        if upstream.status_code in (400, 404):
+            raise Http404(f"No published file at {system}/{path}")
+        logger.error(f"Tapis returned {upstream.status_code} for published file {system}/{path}")
+        return HttpResponse(status=502)
+
+    def body():
+        try:
+            yield from upstream.iter_content(chunk_size=_FILE_STREAM_CHUNK_SIZE)
+        finally:
+            upstream.close()
+
+    file_name = posixpath.basename(path)
+    content_type, _ = mimetypes.guess_type(file_name)
+    response = StreamingHttpResponse(body(), content_type=content_type or "application/octet-stream")
+    # inline, not attachment: a PDF or cover image should render in the browser/unfurler.
+    response["Content-Disposition"] = content_disposition_header(False, file_name)
+    if upstream.headers.get("Content-Length"):
+        response["Content-Length"] = upstream.headers["Content-Length"]
+    return response
+
+
+class PublicationFileDownloadView(View):
+    """Serve one published file's bytes at a URL nested under its publication's own
+    landing-page path (public_data/urls.py's `file_download` pattern), rather than the datafiles
+    app's generic `/api/datafiles/tapis/download/...` route. Two reasons: Google Scholar requires
+    citation_pdf_url to resolve in the same subdirectory as the citing landing page, and every
+    consumer of citation_pdf_url/`contentUrl` expects the file itself -- see
+    _stream_published_file's docstring for why the generic route can't provide that.
     """
 
     def get(self, request, project_id, path):
         system = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
-        return TapisFilesView.as_view()(request, operation="download", scheme="projects", system=system, path=path)
+        return _stream_published_file(system, path)
+
+
+class PublicationCoverImageView(View):
+    """Serve a publication's cover image bytes, for og:image/twitter:image. The image lives on
+    the shared PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME system (project_publish_operations.py's
+    _transfer_cover_image copies it there), not the per-project published system
+    PublicationFileDownloadView reads from, so it gets its own route. The path is read from the
+    stored publication rather than the URL, so this can't be used to read anything else off that
+    shared system.
+    """
+
+    def get(self, request, project_id):
+        root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
+        pub = Publication.objects.filter(project_id=project_id).first()
+        cover_image_path = ((pub.value.get("coverImage") if pub else None) or "").lstrip("/")
+        if not root_system or not cover_image_path:
+            raise Http404(f"No cover image for publication {project_id}")
+        return _stream_published_file(root_system, cover_image_path)
 
 
 class SchemaOrgValidationError(Exception):

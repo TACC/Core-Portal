@@ -1,14 +1,15 @@
 import json
 import re
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-from django.http import HttpResponse
+from django.http import Http404
 from django.test import RequestFactory
 from django.urls import reverse
 
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.public_data.views import (
+    PublicationCoverImageView,
     PublicationFileDownloadView,
     SchemaOrgValidationError,
     _format_citation_author,
@@ -225,7 +226,7 @@ def test_get_distribution_builds_file_objects(rf):
     assert file_object["name"] == "data.csv"
     assert (
         file_object["contentUrl"]
-        == "http://testserver/api/datafiles/tapis/download/projects/test.project.published.test.project-1/data.csv/"
+        == "http://testserver/published-datasets/test.project.published.test.project-1/files/data.csv"
     )
     assert file_object["encodingFormat"] == "text/csv"
     assert file_object["contentSize"] == "2.0 KB"
@@ -250,7 +251,7 @@ def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
     distribution = _get_distribution(base_meta, "test.project-1", request)
     file_object = distribution[0]
     assert file_object["@id"] == "sub%20dir/data%20file.bin"
-    assert file_object["contentUrl"].endswith("/sub%20dir/data%20file.bin/")
+    assert file_object["contentUrl"].endswith("/files/sub%20dir/data%20file.bin")
     assert file_object["encodingFormat"] == "application/octet-stream"
     assert "contentSize" not in file_object
     assert "sha256" not in file_object
@@ -264,20 +265,20 @@ def test_get_distribution_percent_encodes_path_and_defaults_encoding_format(rf):
 def test_get_cover_image_url_none_without_cover_image(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     request = make_request(rf)
-    assert _get_cover_image_url({}, request) is None
+    assert _get_cover_image_url({}, "test.project-1", request) is None
 
 
 def test_get_cover_image_url_none_without_root_system(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = None
     request = make_request(rf)
-    assert _get_cover_image_url({"coverImage": "/cover.png"}, request) is None
+    assert _get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request) is None
 
 
 def test_get_cover_image_url_builds_url(rf, settings):
     settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
     request = make_request(rf)
-    url = _get_cover_image_url({"coverImage": "/cover.png"}, request)
-    assert url == "http://testserver/api/datafiles/tapis/download/projects/root.system/cover.png/"
+    url = _get_cover_image_url({"coverImage": "/cover.png"}, "test.project-1", request)
+    assert url == "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
 
 
 # ---------------------------------------------------------------------------
@@ -533,44 +534,112 @@ def test_dumps_json_ld_escapes_html_sensitive_chars():
 # ---------------------------------------------------------------------------
 
 
-def test_publication_file_download_view_delegates_to_tapis_files_view(rf, settings):
-    request = make_request(rf)
-    mock_response = MagicMock()
-    mock_dispatch = MagicMock(return_value=mock_response)
-    with patch("portal.apps.public_data.views.TapisFilesView.as_view", return_value=mock_dispatch) as mock_as_view:
-        response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="a/b.csv")
+TAPIS_CONTENT_URL = "https://example.tapis.io/v3/files/content"
 
-    mock_as_view.assert_called_once()
-    mock_dispatch.assert_called_once_with(
-        request,
-        operation="download",
-        scheme="projects",
-        system="test.project.published.test.project-1",
-        path="a/b.csv",
+
+def test_publication_file_download_view_streams_file_bytes(rf, requests_mock):
+    """The response body is the file itself, not the JSON-wrapped postit link the datafiles
+    app's generic download route returns -- that's what crawlers following citation_pdf_url or
+    Croissant's contentUrl need."""
+    requests_mock.get(
+        f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/files/paper.pdf",
+        content=b"%PDF-1.7 bytes",
+        headers={"Content-Length": "14"},
     )
-    assert response is mock_response
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="files/paper.pdf")
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert response["Content-Disposition"] == 'inline; filename="paper.pdf"'
+    assert response["Content-Length"] == "14"
+    assert b"".join(response.streaming_content) == b"%PDF-1.7 bytes"
+    assert requests_mock.last_request.headers["X-Tapis-Token"] == "test"
 
 
-def test_file_download_route_is_matched_before_index_fallback(client):
+def test_publication_file_download_view_percent_encodes_tapis_path(rf, requests_mock):
+    requests_mock.get(
+        f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/sub%20dir/data%20file.bin",
+        content=b"bytes",
+    )
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="sub dir/data file.bin")
+
+    assert response["Content-Type"] == "application/octet-stream"
+    assert b"".join(response.streaming_content) == b"bytes"
+
+
+@pytest.mark.parametrize("tapis_status", [400, 404])
+def test_publication_file_download_view_404s_for_missing_file_or_directory(rf, requests_mock, tapis_status):
+    requests_mock.get(
+        f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/missing.csv", status_code=tapis_status
+    )
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="missing.csv")
+
+
+def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock):
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a.csv", status_code=500)
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="a.csv")
+
+    assert response.status_code == 502
+
+
+def test_file_download_route_is_matched_before_index_fallback(client, requests_mock):
     """public_data/urls.py's `file_download` pattern is listed before the catch-all
     `index_fallback` (r"^.*$") specifically so a `/files/...` URL reaches
     PublicationFileDownloadView instead of being swallowed by the SPA-shell fallback -- exercise
     that ordering through the real URL resolver (client.get), not by calling the view directly.
     """
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a/b.csv", content=b"a,b\n1,2\n")
     url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "a/b.csv"})
-    tapis_response = HttpResponse(b"file bytes", content_type="text/csv")
-    mock_dispatch = MagicMock(return_value=tapis_response)
 
-    with patch("portal.apps.public_data.views.TapisFilesView.as_view", return_value=mock_dispatch):
-        response = client.get(url)
+    response = client.get(url)
 
-    assert response is tapis_response
-    mock_dispatch.assert_called_once()
-    _, call_kwargs = mock_dispatch.call_args
-    assert call_kwargs["operation"] == "download"
-    assert call_kwargs["scheme"] == "projects"
-    assert call_kwargs["system"] == "test.project.published.test.project-1"
-    assert call_kwargs["path"] == "a/b.csv"
+    assert response.status_code == 200
+    assert response["Content-Type"] == "text/csv"
+    assert b"".join(response.streaming_content) == b"a,b\n1,2\n"
+
+
+# ---------------------------------------------------------------------------
+# PublicationCoverImageView
+# ---------------------------------------------------------------------------
+
+
+def test_cover_image_route_streams_stored_cover_image(client, settings, publication, requests_mock):
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/root.system/cover.png", content=b"\x89PNG bytes")
+    url = reverse("publications:cover_image", kwargs={"project_id": publication.project_id})
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "image/png"
+    assert b"".join(response.streaming_content) == b"\x89PNG bytes"
+
+
+def test_cover_image_view_404s_without_cover_image(rf, settings, publication):
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    publication.value = {**publication.value, "coverImage": None}
+    publication.save()
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationCoverImageView.as_view()(request, project_id=publication.project_id)
+
+
+def test_cover_image_view_404s_for_unknown_publication(rf, settings, db):
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationCoverImageView.as_view()(request, project_id="test.project-999")
 
 
 # ---------------------------------------------------------------------------
@@ -702,7 +771,7 @@ def test_get_citation_context_cover_image_url_when_configured(rf, settings, publ
     citation_meta, _, _ = get_citation_context(publication, request)
     assert (
         citation_meta["cover_image_url"]
-        == "http://testserver/api/datafiles/tapis/download/projects/root.system/cover.png/"
+        == "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
     )
 
 
@@ -871,7 +940,7 @@ def test_index_view_renders_og_image_when_cover_image_configured(client, setting
     url = reverse("publications:index", kwargs={"project_id": publication.project_id})
     body = client.get(url).content.decode()
 
-    expected_url = "http://testserver/api/datafiles/tapis/download/projects/root.system/cover.png/"
+    expected_url = "http://testserver/published-datasets/test.project.published.test.project-1/cover-image"
     assert f'<meta property="og:image" content="{expected_url}">' in body
     assert f'<meta name="twitter:image" content="{expected_url}">' in body
     card_match = re.search(r'<meta name="twitter:card" content="([^"]*)">', body)
