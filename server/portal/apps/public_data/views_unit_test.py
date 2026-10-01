@@ -537,7 +537,12 @@ def test_dumps_json_ld_escapes_html_sensitive_chars():
 TAPIS_CONTENT_URL = "https://example.tapis.io/v3/files/content"
 
 
-def test_publication_file_download_view_streams_file_bytes(rf, requests_mock):
+@pytest.fixture
+def v1_publication(db):
+    return Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, version=1)
+
+
+def test_publication_file_download_view_streams_file_bytes(rf, requests_mock, v1_publication):
     """The response body is the file itself, not the JSON-wrapped postit link the datafiles
     app's generic download route returns -- that's what crawlers following citation_pdf_url or
     Croissant's contentUrl need."""
@@ -558,7 +563,7 @@ def test_publication_file_download_view_streams_file_bytes(rf, requests_mock):
     assert requests_mock.last_request.headers["X-Tapis-Token"] == "test"
 
 
-def test_publication_file_download_view_percent_encodes_tapis_path(rf, requests_mock):
+def test_publication_file_download_view_percent_encodes_tapis_path(rf, requests_mock, v1_publication):
     requests_mock.get(
         f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/sub%20dir/data%20file.bin",
         content=b"bytes",
@@ -572,7 +577,9 @@ def test_publication_file_download_view_percent_encodes_tapis_path(rf, requests_
 
 
 @pytest.mark.parametrize("tapis_status", [400, 404])
-def test_publication_file_download_view_404s_for_missing_file_or_directory(rf, requests_mock, tapis_status):
+def test_publication_file_download_view_404s_for_missing_file_or_directory(
+    rf, requests_mock, tapis_status, v1_publication
+):
     requests_mock.get(
         f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/missing.csv", status_code=tapis_status
     )
@@ -582,7 +589,28 @@ def test_publication_file_download_view_404s_for_missing_file_or_directory(rf, r
         PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="missing.csv")
 
 
-def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock):
+def test_publication_file_download_view_reads_republished_versions_system(rf, requests_mock, publication):
+    """A republish (version > 1) lands on its own `...v{version}` system (publish_project), so
+    the file route has to read from there -- the unsuffixed system only holds version 1's files,
+    which would contradict the current version's metadata on the landing page."""
+    assert publication.version == 3
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1v3/data.csv", content=b"v3 bytes")
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="data.csv")
+
+    assert b"".join(response.streaming_content) == b"v3 bytes"
+
+
+def test_publication_file_download_view_404s_for_unknown_publication(rf, requests_mock):
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationFileDownloadView.as_view()(request, project_id="test.project-999", path="data.csv")
+    assert not requests_mock.called
+
+
+def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock, v1_publication):
     requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a.csv", status_code=500)
     request = make_request(rf)
 
@@ -591,7 +619,7 @@ def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock):
     assert response.status_code == 502
 
 
-def test_file_download_route_is_matched_before_index_fallback(client, requests_mock):
+def test_file_download_route_is_matched_before_index_fallback(client, requests_mock, v1_publication):
     """public_data/urls.py's `file_download` pattern is listed before the catch-all
     `index_fallback` (r"^.*$") specifically so a `/files/...` URL reaches
     PublicationFileDownloadView instead of being swallowed by the SPA-shell fallback -- exercise

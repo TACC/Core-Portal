@@ -717,6 +717,18 @@ class IndexView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
+def _get_published_system_id(project_id, version):
+    """Return the Tapis system a publication's current version was published to. Must match
+    publish_project (project_publish_operations.py): version 1 publishes to
+    `{prefix}.{project_id}`, every republish to its own `{prefix}.{project_id}v{version}` system.
+    Publication.version is the version publish_project last wrote, so this always points at the
+    files the landing page's metadata describes -- not version 1's.
+    """
+
+    suffix = f"v{version}" if version and version > 1 else ""
+    return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}{suffix}"
+
+
 def _stream_published_file(system, path):
     """Relay one published file's bytes from the Tapis Files content endpoint as a streaming
     response, so a crawler (Scholar, Croissant/Dataset Search consumers, link unfurlers) that
@@ -774,8 +786,10 @@ class PublicationFileDownloadView(View):
     """
 
     def get(self, request, project_id, path):
-        system = f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}"
-        return _stream_published_file(system, path)
+        pub = Publication.objects.filter(project_id=project_id).first()
+        if pub is None:
+            raise Http404(f"No publication found for project {project_id}")
+        return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
 
 
 class PublicationCoverImageView(View):
