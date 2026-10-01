@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import OnboardingUser from './OnboardingUser';
 import { onboardingUserFixture } from '../../redux/sagas/fixtures/onboarding.fixture';
 import { initialState as initialMockState } from '../../redux/reducers/onboarding.reducers';
-import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 
 const mockStore = configureStore();
 
@@ -31,7 +30,6 @@ const genericState = (error, loading) => {
       },
     },
     authenticatedUser: {},
-    ticketCreate,
     workbench: {
       config: {},
     },
