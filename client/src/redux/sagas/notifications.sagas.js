@@ -1,7 +1,16 @@
-import { call, takeEvery, takeLatest, put, select } from 'redux-saga/effects';
+import {
+  call,
+  delay,
+  fork,
+  takeEvery,
+  takeLatest,
+  put,
+  select,
+} from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
+import { parse } from 'query-string';
 
 export const createNotificationsSocket = () =>
   new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
@@ -13,6 +22,48 @@ export function socketEmitter(socket) {
     });
     return () => socket.close();
   });
+}
+
+const COPY_TOAST_DELAY_MS = 750;
+const pendingCopyToasts = new Map();
+
+const normalizePath = (path = '') => path.replace(/^\/+|\/+$/g, '');
+
+const getTransferDestination = (response) =>
+  normalizePath(response.path).split('/').slice(0, -1).join('/');
+
+const getCopyToastKey = (action) => {
+  const { response } = action.extra;
+  return `${response.systemId}:${getTransferDestination(response)}`;
+};
+
+function* flushCopyToast(key) {
+  yield delay(COPY_TOAST_DELAY_MS);
+  const pending = pendingCopyToasts.get(key);
+  if (!pending) return;
+  pendingCopyToasts.delete(key);
+  yield put({
+    type: 'ADD_TOAST',
+    payload: {
+      ...pending.action,
+      extra: {
+        ...pending.action.extra,
+        copy_count: pending.count,
+      },
+    },
+  });
+}
+
+function* queueCopyToast(action) {
+  const key = getCopyToastKey(action);
+  const pending = pendingCopyToasts.get(key);
+  if (pending) {
+    pending.count += 1;
+    pending.action = action;
+    return;
+  }
+  pendingCopyToasts.set(key, { action, count: 1 });
+  yield fork(flushCopyToast, key);
 }
 
 export function* watchSocket() {
@@ -47,7 +98,39 @@ export function* handleSocket(action) {
     case 'setup_event':
       yield put({ type: 'ONBOARDING_EVENT', payload: action });
       break;
-    case 'data_files':
+    case 'data_files': {
+      if (action.extra?.transfer_complete && action.status === 'SUCCESS') {
+        yield queueCopyToast(action);
+        const { response } = action.extra;
+        const destination = getTransferDestination(response);
+        const params = yield select((state) => state.files.params);
+        const { query_string: queryString, filter } = parse(
+          window.location.search
+        );
+        for (const section of ['FilesListing', 'modal']) {
+          const current = params[section];
+          if (
+            current?.api === 'tapis' &&
+            current.system === response.systemId &&
+            normalizePath(current.path) === destination
+          ) {
+            yield put({
+              type: section === 'modal' ? 'FETCH_FILES_MODAL' : 'FETCH_FILES',
+              payload: {
+                ...current,
+                section,
+                limit: 100,
+                queryString: section === 'FilesListing' ? queryString : null,
+                filter: section === 'FilesListing' ? filter : null,
+              },
+            });
+          }
+        }
+      } else {
+        yield put({ type: 'ADD_TOAST', payload: action });
+      }
+      break;
+    }
     case 'projects':
       yield put({ type: 'ADD_TOAST', payload: action });
       break;
