@@ -1,14 +1,11 @@
 import React from 'react';
 import { vi } from 'vitest';
 import { createMemoryHistory } from 'history';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { default as TicketModal, TicketHistory } from './TicketModal';
-import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import renderComponent from 'utils/testing';
-import { server } from '@tacc/test-fixtures';
-import { http, HttpResponse } from 'msw';
 
 const mockStore = configureStore();
 
@@ -22,15 +19,7 @@ const ticketAttachmentSettings = {
 };
 
 function renderTicketsModalComponent(store) {
-  const modalHistory = createMemoryHistory();
-  modalHistory.push('/workbench/dashboard/tickets/120055');
-  return renderComponent(
-    <Route path="/workbench/dashboard/tickets/:ticketId">
-      <TicketModal />
-    </Route>,
-    store,
-    modalHistory
-  );
+  return renderComponent(<TicketModal ticketId={120055} />, store);
 }
 function renderTicketsHistoryComponent(store) {
   return renderComponent(<TicketHistory ticketId="120055" />, store);
