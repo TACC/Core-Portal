@@ -18,20 +18,22 @@ from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
 
-# Properties every schema.org/Dataset must have for Google Dataset Search to consider the page
-# eligible for a dataset rich result, Croissant conformance aside. If either ends up
-# missing/empty for a publication, get_schema_org_json raises rather than silently emitting a
-# Dataset that fails Google's own baseline requirements.
+# The only properties Google Dataset Search hard-requires on a schema.org/Dataset. These are
+# the only fields whose absence makes get_schema_org_json raise -- which leaves the landing
+# page noindex with no JSON-LD and out of the sitemap -- since without them there's no valid
+# Dataset to emit at all.
 REQUIRED_DATASET_FIELDS = ("name", "description")
 
 # Properties Croissant (http://mlcommons.org/croissant/1.0) additionally requires on a
-# conformant Dataset, on top of REQUIRED_DATASET_FIELDS above. If any of these end up
-# missing/empty for a publication, that publication cannot honestly claim `conformsTo` and
-# get_schema_org_json raises rather than silently dropping the field.
-# `url`/`identifier` are also hard-required, but checked separately in get_schema_org_json --
-# see the comment there -- since their PORTAL_PUBLICATION_DATACITE_URL_PREFIX-driven fallback
-# means they're never actually empty/missing from the built dict the way these fields are.
+# conformant Dataset. When any of these is missing, get_schema_org_json still emits the plain
+# schema.org Dataset -- it's still valid, and still eligible for Dataset Search -- but drops
+# the `conformsTo` claim rather than asserting Croissant conformance it doesn't have.
+# `url`/`identifier` are also Croissant-required, but always present: they come from
+# _get_landing_page_url, which can't return an empty value (see the comment in
+# get_schema_org_json).
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
+
+CROISSANT_1_0 = "http://mlcommons.org/croissant/1.0"
 
 # Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
 # anywhere inside a JSON string literal, so it can't corrupt the JSON, but it neutralizes the
@@ -435,10 +437,19 @@ def get_schema_org_json(pub, project_id, request):
     base_meta = pub.value
     doi = base_meta.get("doi")
 
-    # A metadata-only / externally-hosted publication can legitimately have no files at all --
-    # that's different from having files that failed to make it into `distribution` (missing
-    # name/path on every fileObj), which is still a data bug. Only the latter should raise.
+    # A metadata-only / externally-hosted publication can legitimately have no files at all, and
+    # so is never a Croissant candidate. Having files that failed to make it into `distribution`
+    # (missing name/path on every fileObj) is a data bug instead -- worth a warning below.
     has_files = any(file_obj.get("type") == "file" for file_obj in base_meta.get("fileObjs", []))
+
+    # An unmapped license label is a misconfiguration (see _get_license), but not one worth
+    # dropping the whole page from search over: log it, and emit the Dataset without `license`
+    # (which also withholds `conformsTo` below, since Croissant requires it).
+    try:
+        license_url = _get_license(base_meta, project_id)
+    except SchemaOrgValidationError as e:
+        logger.error(f"{e} Emitting this publication's Dataset without `license` or `conformsTo` meanwhile.")
+        license_url = None
 
     creators = []
     for author in base_meta.get("authors", []):
@@ -480,17 +491,16 @@ def get_schema_org_json(pub, project_id, request):
         },
         "@type": "Dataset",
         "name": base_meta.get("title"),
-        # Croissant hard-requires `distribution`, so only claim conformance when there's at
-        # least one file to back it -- a fileless publication is still a valid plain
-        # schema.org/Dataset, just not a Croissant one.
-        "conformsTo": "http://mlcommons.org/croissant/1.0" if has_files else None,
+        # Provisional -- removed below unless every REQUIRED_CROISSANT_FIELDS entry made it into
+        # the final document. Set here only to keep its position in the serialized output.
+        "conformsTo": CROISSANT_1_0,
         "description": base_meta.get("description"),
         "citeAs": _get_cite_as(base_meta, doi, project_id, request),
         # Distinct from `citeAs` above -- see _get_citations' docstring. Optional/recommended
         # per Google's own Dataset structured-data guidance, not Croissant-required, so an empty
         # list here is fine and gets dropped by the empty-field cleanup below like `keywords`.
         "citation": _get_citations(base_meta),
-        "license": _get_license(base_meta, project_id),
+        "license": license_url,
         # Every publication this view serves is published to the public, unauthenticated Tapis
         # download route built in _get_distribution -- there's no embargo/access-tier concept in
         # the publish workflow, so this is unconditionally true rather than sourced from
@@ -537,53 +547,37 @@ def get_schema_org_json(pub, project_id, request):
     # Drop empty/unset fields so the JSON-LD stays clean
     schema_org_json = {k: v for k, v in schema_org_json.items() if v not in (None, [], "")}
 
-    # `distribution` is only required when the publication actually has files to list -- see
-    # the `has_files` note above. REQUIRED_DATASET_FIELDS (name/description) apply either way --
-    # they're baseline Google Dataset Search requirements, not a Croissant-specific claim.
-    required_fields = list(REQUIRED_DATASET_FIELDS) + (
-        list(REQUIRED_CROISSANT_FIELDS)
-        if has_files
-        else [field for field in REQUIRED_CROISSANT_FIELDS if field != "distribution"]
-    )
-    missing = [field for field in required_fields if field not in schema_org_json]
-
     # `url` (and `identifier`, when there's no DOI to use instead) used to fall back to
     # PORTAL_PUBLICATION_DATACITE_URL_PREFIX directly, which could silently degrade to a
     # technically-absolute-but-meaningless URL when that setting was unset/blank -- not
-    # something the empty-value check above would catch. _get_landing_page_url now always
+    # something the empty-value checks below would catch. _get_landing_page_url now always
     # reverses public_data/urls.py's own `index` route instead (see its docstring), which can't
     # produce that kind of meaningless value: it's either a real, working landing-page URL, or
     # reverse() raises NoReverseMatch outright. So there's nothing left for this function to
     # separately guard against here.
 
+    missing = [field for field in REQUIRED_DATASET_FIELDS if field not in schema_org_json]
     if missing:
-        # Only blame the Croissant claim specifically when a Croissant-only field is what's
-        # actually missing -- a missing name/description fails Google's baseline Dataset
-        # requirements regardless of whether this publication has files to be Croissant about.
-        reason = (
-            "it cannot honestly claim conformsTo http://mlcommons.org/croissant/1.0"
-            if has_files and any(field in missing for field in REQUIRED_CROISSANT_FIELDS)
-            else "its published Dataset metadata is incomplete"
-        )
-        fix_hints = {
-            "name": "the publication's title",
-            "description": "the publication's description",
-            "distribution": "its file listing",
-            "url": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
-            "identifier": "the PORTAL_PUBLICATION_DATACITE_URL_PREFIX setting",
-        }
-        # dict.fromkeys dedupes while keeping order, so when `url` and `identifier` are
-        # missing for the same underlying reason (an unconfigured prefix), the hint only
-        # names that setting once instead of twice.
-        hints = ", ".join(dict.fromkeys(fix_hints[field] for field in missing if field in fix_hints))
-        where = f" (check {hints})" if hints else ""
-        if "identifier" in missing and not doi:
-            where += " or give the publication a DOI"
+        fix_hints = {"name": "the publication's title", "description": "the publication's description"}
         raise SchemaOrgValidationError(
             f"Publication {project_id} is missing required schema.org Dataset field(s) "
-            f"{', '.join(missing)}; {reason}. Fix the publication's metadata{where} before "
-            "this page's JSON-LD can be trusted."
+            f"{', '.join(missing)}; its published Dataset metadata is incomplete. Fix the "
+            f"publication's metadata (check {', '.join(fix_hints[field] for field in missing)}) "
+            "before this page can be indexed."
         )
+
+    # Only claim Croissant conformance when every field Croissant requires actually made it in.
+    # Otherwise this is still a valid plain schema.org Dataset, so it's emitted without the claim.
+    croissant_missing = [field for field in REQUIRED_CROISSANT_FIELDS if field not in schema_org_json]
+    if croissant_missing:
+        del schema_org_json["conformsTo"]
+        # A fileless publication was never a Croissant candidate, so there's nothing to report.
+        if has_files:
+            logger.warning(
+                f"Publication {project_id} has files but is missing Croissant-required field(s) "
+                f"{', '.join(croissant_missing)}, so its Dataset is emitted without conformsTo "
+                f"{CROISSANT_1_0}."
+            )
 
     return schema_org_json
 

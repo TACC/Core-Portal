@@ -720,16 +720,89 @@ def test_get_schema_org_json_missing_non_croissant_field_raises(rf, publication)
         get_schema_org_json(publication, publication.project_id, request)
 
 
-def test_get_schema_org_json_missing_croissant_field_raises_with_croissant_reason(rf, publication):
+@pytest.mark.parametrize("field", ["description", "title"])
+def test_get_schema_org_json_missing_required_dataset_field_names_it(rf, publication, field):
     request = make_request(rf)
-    # Files present (has_files True) but none carry a usable name/path, so `distribution` ends up
-    # empty and is dropped -- and, unlike the no-files case, it's still required here.
+    publication.value = valid_base_meta(**{field: ""})
+    publication.save()
+
+    with pytest.raises(SchemaOrgValidationError, match="name" if field == "title" else "description"):
+        get_schema_org_json(publication, publication.project_id, request)
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_files_without_usable_distribution_drops_conforms_to(mock_logger, rf, publication):
+    """Files present (has_files True) but none carry a usable name/path, so `distribution` ends up
+    empty. That's no longer fatal: the plain Dataset is still emitted, just without the Croissant
+    claim, and the data bug is logged."""
+    request = make_request(rf)
     publication.value = valid_base_meta(fileObjs=[{"type": "file", "name": "", "path": ""}])
     publication.save()
 
-    with pytest.raises(SchemaOrgValidationError, match="conformsTo") as excinfo:
-        get_schema_org_json(publication, publication.project_id, request)
-    assert "distribution" in str(excinfo.value)
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert schema["@type"] == "Dataset"
+    assert schema["name"] == "Test Dataset"
+    assert "conformsTo" not in schema
+    assert "distribution" not in schema
+    mock_logger.warning.assert_called_once()
+    assert "distribution" in mock_logger.warning.call_args.args[0]
+
+
+@pytest.mark.parametrize(
+    "overrides,missing_field",
+    [
+        ({"license": None}, "license"),
+        ({"authors": []}, "creator"),
+        ({"publicationDate": None}, "datePublished"),
+    ],
+)
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_missing_croissant_field_still_emits_plain_dataset(
+    mock_logger, rf, publication, overrides, missing_field
+):
+    request = make_request(rf)
+    publication.value = valid_base_meta(**overrides)
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert schema["@type"] == "Dataset"
+    assert schema["name"] == "Test Dataset"
+    assert schema["description"] == "A dataset for testing"
+    assert missing_field not in schema
+    assert "conformsTo" not in schema
+    # Everything not tied to the missing field is still emitted.
+    assert len(schema["distribution"]) == 1
+    mock_logger.warning.assert_called_once()
+    assert missing_field in mock_logger.warning.call_args.args[0]
+
+
+def test_get_schema_org_json_fileless_publication_missing_croissant_fields_logs_nothing(rf, publication):
+    request = make_request(rf)
+    publication.value = valid_base_meta(fileObjs=[], license=None, authors=[])
+    publication.save()
+
+    with patch("portal.apps.public_data.views.logger") as mock_logger:
+        schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert "conformsTo" not in schema
+    mock_logger.warning.assert_not_called()
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_unmapped_license_logs_and_omits_license(mock_logger, rf, publication):
+    request = make_request(rf)
+    publication.value = valid_base_meta(license="unmapped-license")
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, request)
+
+    assert "license" not in schema
+    assert "conformsTo" not in schema
+    assert schema["name"] == "Test Dataset"
+    mock_logger.error.assert_called_once()
+    assert "unmapped-license" in mock_logger.error.call_args.args[0]
 
 
 def test_get_schema_org_json_creator_without_institution_or_orcid(rf, publication):
@@ -1027,7 +1100,7 @@ def test_sitemap_view_omits_and_logs_publications_whose_metadata_fails(mock_logg
     Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
     Publication.objects.create(
         project_id="test.project-2",
-        value=valid_base_meta(license="unmapped-license"),
+        value=valid_base_meta(description=""),
         tree={},
         is_published=True,
     )
@@ -1049,7 +1122,7 @@ def test_sitemap_omitted_publication_is_noindex_on_its_landing_page(client, sett
     settings.DEBUG = True
     pub = Publication.objects.create(
         project_id="test.project-2",
-        value=valid_base_meta(license="unmapped-license"),
+        value=valid_base_meta(description=""),
         tree={},
         is_published=True,
     )
@@ -1060,6 +1133,32 @@ def test_sitemap_omitted_publication_is_noindex_on_its_landing_page(client, sett
     assert robots_match is not None
     assert robots_match.group(1).strip() == "noindex, follow"
     assert "test.project-2" not in client.get(reverse("sitemap")).content.decode()
+
+
+def test_publication_without_license_is_indexable_and_in_sitemap(client, settings):
+    """A missing license used to fail the whole page closed (noindex, no JSON-LD, out of the
+    sitemap). It's optional on the publish form, so it now only withholds the Croissant claim."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.DEBUG = True
+    pub = Publication.objects.create(
+        project_id="test.project-2",
+        value=valid_base_meta(license=None),
+        tree={},
+        is_published=True,
+    )
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": pub.project_id})).content.decode()
+
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert robots_match.group(1).strip() == "index, follow, max-image-preview:large"
+    json_ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S)
+    assert json_ld is not None
+    schema = json.loads(json_ld.group(1))
+    assert schema["@type"] == "Dataset"
+    assert "conformsTo" not in schema
+    assert "license" not in schema
+    assert "test.project-2" in client.get(reverse("sitemap")).content.decode()
 
 
 def test_sitemap_view_empty_when_no_publications(client):
