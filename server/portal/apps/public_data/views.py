@@ -816,6 +816,14 @@ class SitemapView(View):
     some deployments point at a different host entirely. Reusing that same helper keeps every
     <loc> here byte-identical to the `url`/canonical link the corresponding page already claims
     for itself, instead of adding a second, independently-drifting way to build the same URL.
+
+    Only lists publications whose landing page will actually be indexable. When
+    get_citation_context fails for a publication (e.g. an unmapped license), IndexView logs it
+    and renders that page as the generic `noindex` shell with no JSON-LD -- so listing it here
+    would submit a URL Search Console then reports as "Submitted URL marked noindex". Running the
+    same get_citation_context call IndexView makes, with the same broad except, keeps the two in
+    step; each omission is logged at ERROR so the broken publication gets noticed and fixed
+    instead of silently dropping out of search.
     """
 
     def get(self, request, *args, **kwargs):
@@ -825,6 +833,15 @@ class SitemapView(View):
 
         entries = []
         for pub in publications:
+            try:
+                get_citation_context(pub, request)
+            except Exception:
+                logger.exception(
+                    f"Sitemap omitted publication {pub.project_id}: its landing-page metadata failed "
+                    "to build, so the page renders noindex with no JSON-LD. Fix the publication's "
+                    "metadata to restore it to search."
+                )
+                continue
             loc = escape(_get_landing_page_url(pub.project_id, request))
             lastmod = (pub.last_updated or pub.created).date().isoformat()
             entries.append(f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>")

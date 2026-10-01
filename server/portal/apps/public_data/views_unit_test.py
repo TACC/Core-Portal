@@ -991,6 +991,49 @@ def test_sitemap_view_lists_published_publications_in_order(client, settings):
     assert "test.project-3" not in body
 
 
+@patch("portal.apps.public_data.views.logger")
+def test_sitemap_view_omits_and_logs_publications_whose_metadata_fails(mock_logger, client, settings):
+    """A publication IndexView would render noindex (its JSON-LD fails to build) mustn't be
+    submitted to crawlers via the sitemap, and the omission must be logged so it gets fixed."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
+    Publication.objects.create(
+        project_id="test.project-2",
+        value=valid_base_meta(license="unmapped-license"),
+        tree={},
+        is_published=True,
+    )
+
+    body = client.get(reverse("sitemap")).content.decode()
+
+    assert body.count("<url>") == 1
+    assert "test.project-1" in body
+    assert "test.project-2" not in body
+    mock_logger.exception.assert_called_once()
+    assert "test.project-2" in mock_logger.exception.call_args.args[0]
+
+
+def test_sitemap_omitted_publication_is_noindex_on_its_landing_page(client, settings):
+    """The sitemap's omission rule and IndexView's noindex fallback have to agree -- confirm the
+    same broken publication really does render noindex, so the sitemap isn't dropping a page
+    that's actually indexable."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.DEBUG = True
+    pub = Publication.objects.create(
+        project_id="test.project-2",
+        value=valid_base_meta(license="unmapped-license"),
+        tree={},
+        is_published=True,
+    )
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": pub.project_id})).content.decode()
+
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert robots_match.group(1).strip() == "noindex, follow"
+    assert "test.project-2" not in client.get(reverse("sitemap")).content.decode()
+
+
 def test_sitemap_view_empty_when_no_publications(client):
     response = client.get(reverse("sitemap"))
     body = response.content.decode()
