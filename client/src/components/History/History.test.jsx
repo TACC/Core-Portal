@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes as RouterRoutes } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -79,25 +79,21 @@ describe('History Routes', () => {
     });
 
     renderComponent(
-      <MemoryRouter
-        initialEntries={[
-          '/workbench/history/jobs/793e9e90-53c3-4168-a26b-17230e2e4156-007',
-        ]}
-      >
-        <Routes />
-      </MemoryRouter>,
+      <RouterRoutes>
+        <Route path="/workbench/history/*" element={<Routes />} />
+      </RouterRoutes>,
       store,
       history
     );
 
     expect(store.getActions()).toEqual([
+      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
       {
         type: 'GET_JOB_DETAILS',
         payload: {
           jobUuid: '793e9e90-53c3-4168-a26b-17230e2e4156-007',
         },
       },
-      { type: 'GET_JOBS', params: { offset: 0, queryString: '' } },
     ]);
   });
 });

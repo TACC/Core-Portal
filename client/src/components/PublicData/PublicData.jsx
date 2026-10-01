@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import {
-  useHistory,
-  Switch,
+  useNavigate,
+  Routes,
   Route,
   useParams,
   useLocation,
@@ -22,7 +22,7 @@ import '../../styles/components/dropdown-menu.css';
 import CombinedBreadcrumbs from '../DataFiles/CombinedBreadcrumbs/CombinedBreadcrumbs';
 
 const PublicData = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const publicDataSystem = useSelector(
@@ -49,7 +49,7 @@ const PublicData = () => {
   useEffect(() => {
     const pathLength = location.pathname.split('/').length;
     if (publicDataSystem.system && pathLength < 6) {
-      history.push(
+      navigate(
         `/public-data/tapis/public/${publicDataSystem.system}${publicDataSystem.homeDir}`
       );
     }
@@ -57,20 +57,21 @@ const PublicData = () => {
 
   return (
     <>
-      <Switch>
-        <Route path="/public-data/:api/:scheme/:system/:path*">
-          {publicDataSystem.system ? (
-            <>
+      <Routes>
+        <Route
+          path="/public-data/:api/:scheme/:system/*"
+          element={
+            publicDataSystem.system ? (
               <PublicDataListing
                 canDownload={canDownload}
                 downloadCallback={download}
               />
-            </>
-          ) : (
-            <LoadingSpinner />
-          )}
-        </Route>
-      </Switch>
+            ) : (
+              <LoadingSpinner />
+            )
+          }
+        />
+      </Routes>
       <DataFilesPreviewModal />
       <DataFilesShowPathModal />
     </>

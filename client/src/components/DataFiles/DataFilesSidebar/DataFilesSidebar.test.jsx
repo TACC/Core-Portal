@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -44,9 +43,7 @@ describe('DataFilesSidebar', () => {
     });
 
     const { getByText, queryByText } = renderComponent(
-      <Route path="/workbench/data">
-        <DataFilesSidebar />
-      </Route>,
+      <DataFilesSidebar />,
       store,
       history
     );
@@ -82,13 +79,7 @@ describe('DataFilesSidebar', () => {
       systems: systemsFixture,
     });
 
-    const { container } = renderComponent(
-      <Route path="/workbench/data/tapis/projects/">
-        <DataFilesSidebar />
-      </Route>,
-      store,
-      history
-    );
+    const { container } = renderComponent(<DataFilesSidebar />, store, history);
 
     expect(
       Array.from(container.querySelectorAll('.dropdown-item')).find((el) =>
