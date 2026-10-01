@@ -66,4 +66,7 @@ def tapis_put_handler(client, scheme, system, path, operation, body=None, tapis_
 
     op = getattr(operations, operation)
 
+    if operation == "copy":
+        body = {**body, "defer_transfer_indexing": True}
+
     return op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)

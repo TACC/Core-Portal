@@ -188,3 +188,102 @@ describe('getToastMessage', () => {
     expect(getToastMessage(dataFilesError)).toEqual('Move failed');
   });
 });
+
+it('renders the completed transfer message instead of started copying', () => {
+  expect(
+    getToastMessage(
+      {
+        event_type: 'data_files',
+        operation: 'copy',
+        status: 'SUCCESS',
+        message: 'File copied to shared',
+        extra: { transfer_complete: true },
+      },
+      [],
+      []
+    )
+  ).toBe('File copied to shared');
+});
+
+it.each([
+  ['file.txt', 'Research Workspace/'],
+  ['/file.txt', 'Research Workspace/'],
+  ['/results/file.txt', 'Research Workspace/results'],
+])(
+  'names the destination workspace for completed copies to %s',
+  (path, destination) => {
+    expect(
+      getToastMessage(
+        {
+          event_type: 'data_files',
+          status: 'SUCCESS',
+          operation: 'copy',
+          message: 'File copied to /',
+          extra: {
+            transfer_complete: true,
+            response: { systemId: 'workspace-id', path },
+          },
+        },
+        [],
+        [{ id: 'workspace-id', title: 'Research Workspace' }]
+      )
+    ).toBe(`File copied to ${destination}`);
+  }
+);
+
+it('uses the storage name or system ID when no workspace title is loaded', () => {
+  const notification = {
+    event_type: 'data_files',
+    status: 'SUCCESS',
+    operation: 'copy',
+    extra: {
+      transfer_complete: true,
+      response: { systemId: 'storage-id', path: 'folder/file.txt' },
+    },
+  };
+  expect(
+    getToastMessage(
+      notification,
+      [{ system: 'storage-id', name: 'My Data' }],
+      []
+    )
+  ).toBe('File copied to My Data/folder');
+  expect(getToastMessage(notification, [], [])).toBe(
+    'File copied to storage-id/folder'
+  );
+});
+
+it('pluralizes completed transfer notifications with an aggregate count', () => {
+  expect(
+    getToastMessage(
+      {
+        event_type: 'data_files',
+        status: 'SUCCESS',
+        operation: 'copy',
+        extra: {
+          transfer_complete: true,
+          copy_count: 3,
+          response: { systemId: 'workspace-id', path: 'folder/file.txt' },
+        },
+      },
+      [],
+      [{ id: 'workspace-id', title: 'Research Workspace' }]
+    )
+  ).toBe('3 Files copied to Research Workspace/folder');
+});
+
+it('preserves transfer failure and timeout messages', () => {
+  expect(
+    getToastMessage(
+      {
+        event_type: 'data_files',
+        status: 'WARNING',
+        operation: 'copy',
+        extra: { transfer_complete: true },
+        message: 'Unable to confirm file copy completion.',
+      },
+      [],
+      []
+    )
+  ).toBe('Unable to confirm file copy completion.');
+});

@@ -245,6 +245,17 @@ class TapisFilesView(BaseApiView):
             response = tapis_put_handler(
                 client, scheme, system, path, operation, body, tapis_tracking_id=f"portals.{session_key_hash}"
             )
+            if operation == "copy" and isinstance(response, dict) and response.get("pending"):
+                from portal.apps.datafiles.tasks import monitor_transfer
+
+                monitor_transfer.apply_async(
+                    kwargs={
+                        "username": request.user.username,
+                        "source_system": system,
+                        "response": response,
+                    },
+                    countdown=5,
+                )
         except Exception as exc:
             operation in NOTIFY_ACTIONS and notify(request.user.username, operation, "error", {})
             raise exc
