@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader } from 'reactstrap';
 import TicketCreateForm from './TicketCreateForm';
 import * as ROUTES from '../../constants/routes';
@@ -13,13 +13,11 @@ function TicketCreateModal({
   showAsModalOnDashboard,
   provideDashBoardLinkOnSuccess,
 }) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const authenticatedUser = useSelector(
     (state) => state.authenticatedUser.user
   );
-
-  //const [modalOpen, setModalOpen] = useState(initialOpenState);
 
   useEffect(() => {
     if (
@@ -28,7 +26,7 @@ function TicketCreateModal({
       location.path !==
         `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
     ) {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
       );
     }
@@ -38,7 +36,7 @@ function TicketCreateModal({
     setIsModalOpen(false);
 
     if (showAsModalOnDashboard) {
-      history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+      navigate(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
     }
   };
 

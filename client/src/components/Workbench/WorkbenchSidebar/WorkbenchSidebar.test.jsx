@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
@@ -40,9 +40,17 @@ function renderSideBar(store, showUIPatterns) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
-        <Route path="/workbench">
-          <WorkbenchSidebar showUIPatterns={showUIPatterns} loading={false} />
-        </Route>
+        <Routes>
+          <Route
+            path="/workbench/*"
+            element={
+              <WorkbenchSidebar
+                showUIPatterns={showUIPatterns}
+                loading={false}
+              />
+            }
+          />
+        </Routes>
       </MemoryRouter>
     </Provider>
   );

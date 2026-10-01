@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { shape, arrayOf, number, string } from 'prop-types';
 import { Badge } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,10 +32,10 @@ Title.propTypes = {
 
 export const Team = ({ cell: { value } }) => {
   const { projectId, page } = value;
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <>
-      <Button onClick={() => history.push(`${page}/${projectId}`)} size="small">
+      <Button onClick={() => navigate(`${page}/${projectId}`)} size="small">
         View Team
       </Button>
     </>

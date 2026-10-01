@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { useParams, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import {
@@ -124,7 +124,6 @@ function TicketHistoryReply({ ticketId }) {
   const { isLoading, isError } = useQuery(
     ticketsQueries.getTicketHistory(ticketId)
   );
-  console.log(isLoading);
 
   const maxSizeMessage = useSelector(
     (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
@@ -150,7 +149,6 @@ function TicketHistoryReply({ ticketId }) {
       }}
     >
       {({ isSubmitting, isValid }) => {
-        console.log(isSubmitting);
         return (
           <Form className="ticket-reply-form">
             <FormField
@@ -321,14 +319,15 @@ export const TicketHistory = ({ ticketId }) => {
   );
 };
 
-function TicketModal({ history }) {
+function TicketModal({ ticketId }) {
+  const navigate = useNavigate();
   const modalAlwaysOpen = true;
-  const ticketId = parseInt(useParams().ticketId ?? '');
+  //const ticketId = parseInt(useParams().ticketId ?? '');
   const { data: ticketData } = useQuery(ticketsQueries.getTicket(ticketId));
   const ticketSubject = ticketData?.Subject;
 
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    navigate(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
   };
 
   return (
@@ -358,8 +357,4 @@ function TicketModal({ history }) {
   );
 }
 
-TicketModal.propTypes = {
-  history: PropTypes.object.isRequired,
-};
-
-export default withRouter(TicketModal);
+export default TicketModal;

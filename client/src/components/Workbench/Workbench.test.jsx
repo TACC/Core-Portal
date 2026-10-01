@@ -14,6 +14,7 @@ import { initialState as authenticatedUser } from '../../redux/reducers/authenti
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialIntroMessageComponents as introMessageComponents } from '../../redux/reducers/portalMessages.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
+import { Route, Routes } from 'react-router-dom';
 
 /* state required to render workbench/dashboard */
 const state = {
@@ -32,7 +33,7 @@ const state = {
 describe('workbench', () => {
   const mockStore = configureStore();
   it('renders workbench for onboarding)', () => {
-    const history = createMemoryHistory();
+    const history = createMemoryHistory({ initialEntries: ['/workbench'] });
     const store = mockStore({
       ...state,
       workbench: {
@@ -41,7 +42,13 @@ describe('workbench', () => {
         loading: false,
       },
     });
-    const { getByText } = renderComponent(<Workbench />, store, history);
+    const { getByText } = renderComponent(
+      <Routes>
+        <Route path="/workbench/*" element={<Workbench />} />
+      </Routes>,
+      store,
+      history
+    );
     expect(
       getByText(
         /The following steps must be completed before accessing the portal/
@@ -49,7 +56,7 @@ describe('workbench', () => {
     ).toBeDefined();
   });
   it('renders workbench for user who has already completed onboarding)', () => {
-    const history = createMemoryHistory();
+    const history = createMemoryHistory({ initialEntries: ['/workbench'] });
     const store = mockStore({
       ...state,
       workbench: {
@@ -59,12 +66,18 @@ describe('workbench', () => {
       },
     });
 
-    const { getByText } = renderComponent(<Workbench />, store, history);
+    const { getByText } = renderComponent(
+      <Routes>
+        <Route path="/workbench/*" element={<Workbench />} />
+      </Routes>,
+      store,
+      history
+    );
     expect(getByText(/My Recent Jobs/)).toBeDefined();
     expect(getByText(/My Tickets/)).toBeDefined();
   });
   it('shows loading spinner if systems request not finished', () => {
-    const history = createMemoryHistory();
+    const history = createMemoryHistory({ initialEntries: ['/workbench'] });
     const store = mockStore({
       ...state,
       systems: {
@@ -75,7 +88,13 @@ describe('workbench', () => {
         },
       },
     });
-    const { getByTestId } = renderComponent(<Workbench />, store, history);
+    const { getByTestId } = renderComponent(
+      <Routes>
+        <Route path="/workbench/*" element={<Workbench />} />
+      </Routes>,
+      store,
+      history
+    );
     expect(getByTestId(/loading-spinner/)).toBeDefined();
   });
 });
