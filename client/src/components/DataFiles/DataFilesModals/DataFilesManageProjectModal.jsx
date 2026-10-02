@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Message } from '_common';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
@@ -11,7 +11,7 @@ const NOT_LOADING_OR_ERRORED = { loading: false, error: false };
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [transferMode, setTransferMode] = useState(false);
   const isOpen = useSelector((state) => state.files.modals.manageproject);
   const { members, projectId } = useSelector(
@@ -90,7 +90,7 @@ const DataFilesManageProjectModal = () => {
       });
       if (removedUser.user.username === user.username) {
         toggle();
-        history.push('/workbench/data/tapis/projects');
+        navigate('/workbench/data/tapis/projects');
       }
     },
     [projectId, dispatch, history, toggle]

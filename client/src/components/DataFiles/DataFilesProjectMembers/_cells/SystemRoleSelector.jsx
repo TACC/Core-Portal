@@ -2,7 +2,6 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import fetch from 'cross-fetch';
 import DropdownSelector from '_common/DropdownSelector';
 import { Button } from '_common';
 import styles from '../DataFilesProjectMembers.module.scss';

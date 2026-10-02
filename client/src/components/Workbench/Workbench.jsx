@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import { useSystems, useTapisToken } from 'hooks/datafiles';
@@ -24,7 +24,6 @@ import '../../index.css';
 import { useRedirectOnSessionExpired } from 'hooks/auth';
 
 function Workbench() {
-  const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const { loading: loadingSystems } = useSystems();
 
@@ -102,79 +101,85 @@ function Workbench() {
         ) : (
           <>
             {setupComplete ? (
-              <Switch>
-                <Route path={`${path}${ROUTES.DASHBOARD}`}>
-                  <Dashboard />
-                </Route>
+              <Routes>
+                <Route path={`${ROUTES.DASHBOARD}/*`} element={<Dashboard />} />
                 {!hideManageAccount && (
                   <Route
-                    path={`${path}${ROUTES.ACCOUNT}`}
-                    component={ManageAccount}
+                    path={`${ROUTES.ACCOUNT}`}
+                    element={<ManageAccount />}
                   />
                 )}
                 {!hideDataFiles && (
-                  <Route path={`${path}${ROUTES.DATA}`}>
-                    <DataFiles />
-                  </Route>
+                  <Route path={`${ROUTES.DATA}/*`} element={<DataFiles />} />
                 )}
                 {!hideApps && (
                   <Route
-                    path={`${path}${ROUTES.APPLICATIONS}`}
-                    component={Applications}
+                    path={`${ROUTES.APPLICATIONS}/*`}
+                    element={<Applications />}
                   />
                 )}
                 {!hideAllocations && (
                   <Route
-                    path={`${path}${ROUTES.ALLOCATIONS}`}
-                    component={Allocations}
+                    path={`${ROUTES.ALLOCATIONS}/*`}
+                    element={<Allocations />}
                   />
                 )}
                 {showSubmissions && (
                   <Route
-                    path={`${path}${ROUTES.SUBMISSIONS}`}
-                    component={Submissions}
+                    path={`${ROUTES.SUBMISSIONS}`}
+                    element={<Submissions />}
                   />
                 )}
                 {!hideApps && (
-                  <Route
-                    path={`${path}${ROUTES.HISTORY}`}
-                    component={History}
-                  />
+                  <Route path={`${ROUTES.HISTORY}/*`} element={<History />} />
                 )}
                 {!hideOnboarding && (
                   <Route
-                    path={`${path}${ROUTES.ONBOARDING}`}
-                    component={Onboarding}
+                    path={`${ROUTES.ONBOARDING}/*`}
+                    element={<Onboarding />}
                   />
                 )}
                 {isStaff && !hideOnboarding && (
                   <Route
-                    path={`${path}${ROUTES.ONBOARDINGADMIN}`}
-                    component={OnboardingAdmin}
+                    path={`${ROUTES.ONBOARDINGADMIN}`}
+                    element={<OnboardingAdmin />}
                   />
                 )}
                 {!hideSystemStatus && (
                   <Route
-                    path={`${path}${ROUTES.SYSTEM_STATUS}`}
-                    component={SystemStatus}
+                    path={`${ROUTES.SYSTEM_STATUS}/*`}
+                    element={<SystemStatus />}
                   />
                 )}
                 {showUIPatterns && (
-                  <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
+                  <Route path={`${ROUTES.UI}`} element={<UIPatterns />} />
                 )}
-                <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
-              </Switch>
-            ) : (
-              <Switch>
                 <Route
-                  path={`${path}${ROUTES.ONBOARDING}`}
-                  component={Onboarding}
+                  path="*"
+                  element={
+                    <Navigate
+                      to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`}
+                      replace
+                    />
+                  }
                 />
-                <Redirect
-                  from={`${path}`}
-                  to={`${path}${ROUTES.ONBOARDING}/setup/`}
+              </Routes>
+            ) : (
+              <Routes>
+                <Route
+                  path={`${ROUTES.ONBOARDING}/*`}
+                  element={<Onboarding />}
                 />
-              </Switch>
+                <Route
+                  path="*"
+                  element={
+                    <Navigate
+                      to={`${ROUTES.WORKBENCH}${ROUTES.ONBOARDING}/setup/`}
+                      replace
+                    />
+                  }
+                />
+              </Routes>
             )}
           </>
         )}
