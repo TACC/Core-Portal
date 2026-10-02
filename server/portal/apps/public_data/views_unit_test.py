@@ -688,6 +688,78 @@ def test_file_download_route_is_matched_before_index_fallback(client, requests_m
     assert b"".join(response.streaming_content) == b"a,b\n1,2\n"
 
 
+WEB_BASE_URL = "https://web.example.org/published"
+
+
+def test_publication_file_download_view_redirects_to_web_mirror(rf, settings, requests_mock, v1_publication):
+    """With a web mirror configured (web.corral on DRP), the file route redirects there instead of
+    relaying bytes through Tapis -- the mirror serves byte ranges and multi-GB files directly, so no
+    uWSGI worker is held for the download."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="files/paper.pdf")
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/files/paper.pdf"
+    assert not requests_mock.called
+
+
+def test_publication_file_download_view_redirects_into_republished_versions_directory(
+    rf, settings, requests_mock, publication
+):
+    """Each republish has its own `{project_id}v{version}` directory under the published root, the
+    same suffix as its Tapis system."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = f"{WEB_BASE_URL}/"
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="data.csv")
+
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1v3/data.csv"
+    assert not requests_mock.called
+
+
+def test_publication_file_download_view_web_redirect_percent_encodes_path(rf, settings, db):
+    """Spaces (as in DRP's real "Greyscale Stack .TIF/..." paths) and `#`/`?` are percent-encoded,
+    so a stored path can't add a fragment/query or move the redirect off the mirror's host."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    path = "Greyscale Stack .TIF/scan #1?.tif"
+    Publication.objects.create(
+        project_id="test.project-1",
+        value=valid_base_meta(fileObjs=[{"type": "file", "name": "scan #1?.tif", "path": f"/{path}"}]),
+        tree={},
+        version=1,
+    )
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path=path)
+
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/Greyscale%20Stack%20.TIF/scan%20%231%3F.tif"
+
+
+@pytest.mark.parametrize("path", ["undeclared.csv", "a/../../other-project/secret.csv"])
+def test_publication_file_download_view_404s_instead_of_redirecting_undeclared_paths(
+    rf, settings, v1_publication, path
+):
+    """The allow-list still applies with a web mirror configured, so the route can't be used as a
+    redirect to arbitrary paths on the mirror."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    request = make_request(rf)
+
+    with pytest.raises(Http404):
+        PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path=path)
+
+
+def test_file_download_route_redirects_to_web_mirror_through_url_resolver(client, settings, v1_publication):
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "a/b.csv"})
+
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/a/b.csv"
+
+
 # ---------------------------------------------------------------------------
 # _get_publication_file_objs / _is_publication_file_path
 # ---------------------------------------------------------------------------
@@ -799,6 +871,19 @@ def test_cover_image_route_streams_stored_cover_image(client, settings, publicat
     assert response.status_code == 200
     assert response["Content-Type"] == "image/png"
     assert b"".join(response.streaming_content) == b"\x89PNG bytes"
+
+
+def test_cover_image_route_redirects_to_web_mirror(client, settings, publication, requests_mock):
+    """The cover image lives on the published root system, whose rootDir is the mirror's root."""
+    settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "root.system"
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    url = reverse("publications:cover_image", kwargs={"project_id": publication.project_id})
+
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{WEB_BASE_URL}/cover.png"
+    assert not requests_mock.called
 
 
 def test_cover_image_view_404s_without_cover_image(rf, settings, publication):

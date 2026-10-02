@@ -7,7 +7,7 @@ from urllib.parse import quote
 
 import requests
 from django.conf import settings
-from django.http import Http404, HttpResponse, StreamingHttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.http import content_disposition_header
@@ -759,6 +759,17 @@ def _is_publication_file_path(pub, path):
     return False
 
 
+def _get_published_workspace_id(project_id, version):
+    """Return the `{project_id}` / `{project_id}v{version}` id publish_project
+    (project_publish_operations.py) gives a version's published workspace -- the suffix of its
+    Tapis system id, and its directory under PORTAL_PROJECTS_PUBLISHED_ROOT_DIR. Version 1 has no
+    suffix; every republish gets its own `v{version}` workspace.
+    """
+
+    suffix = f"v{version}" if version and version > 1 else ""
+    return f"{project_id}{suffix}"
+
+
 def _get_published_system_id(project_id, version):
     """Return the Tapis system a publication's current version was published to. Must match
     publish_project (project_publish_operations.py): version 1 publishes to
@@ -767,14 +778,29 @@ def _get_published_system_id(project_id, version):
     files the landing page's metadata describes -- not version 1's.
     """
 
-    suffix = f"v{version}" if version and version > 1 else ""
-    return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{project_id}{suffix}"
+    return f"{settings.PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX}.{_get_published_workspace_id(project_id, version)}"
+
+
+def _get_published_web_url(path):
+    """Return the public HTTP URL for `path` (relative to PORTAL_PROJECTS_PUBLISHED_ROOT_DIR) on
+    the deployment's web mirror of that directory -- PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL, e.g.
+    web.corral -- or None when no mirror is configured. Every segment is percent-encoded, so a
+    stored path can't change the redirect's host or add a query string/fragment.
+    """
+
+    base_url = settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL
+    if not base_url:
+        return None
+    return f"{base_url.rstrip('/')}/{quote(path.lstrip('/'))}"
 
 
 def _stream_published_file(system, path):
     """Relay one published file's bytes from the Tapis Files content endpoint as a streaming
     response, so a crawler (Scholar, Croissant/Dataset Search consumers, link unfurlers) that
-    follows a published-file URL gets the file itself.
+    follows a published-file URL gets the file itself. Only used when the deployment has no
+    PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL mirror to redirect to instead (see
+    PublicationFileDownloadView) -- relaying a multi-GB file holds a uWSGI worker for the whole
+    download.
 
     The datafiles app's `download` operation (TapisFilesView) can't be reused for this: it
     creates a Tapis postit link and returns it inside a JSON envelope for the SPA's own
@@ -826,10 +852,15 @@ class PublicationFileDownloadView(View):
     consumer of citation_pdf_url/`contentUrl` expects the file itself -- see
     _stream_published_file's docstring for why the generic route can't provide that.
 
+    When PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL is configured, this redirects (302) to the file
+    on that public web mirror (e.g. web.corral), which serves byte ranges and multi-GB files
+    directly -- the URL in citation_pdf_url/`contentUrl` stays under the landing page's own path
+    either way. Otherwise it falls back to relaying the bytes from Tapis.
+
     Only serves paths the publication itself declares (_is_publication_file_path), checked
-    before any Tapis call: this route reads with the service account's token, so without the
-    check it would relay any path on the published system -- including files never associated
-    with the publication -- and send every crawler-guessed URL on to Tapis.
+    before any redirect or Tapis call: without the check this route would relay (with the
+    service account's token) or point at any path on the published system -- including files
+    never associated with the publication -- and send every crawler-guessed URL onward.
     """
 
     def get(self, request, project_id, path):
@@ -838,6 +869,9 @@ class PublicationFileDownloadView(View):
             raise Http404(f"No publication found for project {project_id}")
         if not _is_publication_file_path(pub, path):
             raise Http404(f"Publication {project_id} has no file at {path}")
+        web_url = _get_published_web_url(f"{_get_published_workspace_id(project_id, pub.version)}/{path}")
+        if web_url:
+            return HttpResponseRedirect(web_url)
         return _stream_published_file(_get_published_system_id(project_id, pub.version), path)
 
 
@@ -847,7 +881,8 @@ class PublicationCoverImageView(View):
     _transfer_cover_image copies it there), not the per-project published system
     PublicationFileDownloadView reads from, so it gets its own route. The path is read from the
     stored publication rather than the URL, so this can't be used to read anything else off that
-    shared system.
+    shared system. Redirects to the web mirror when one is configured, the same way
+    PublicationFileDownloadView does -- the root system's rootDir is the mirror's root.
     """
 
     def get(self, request, project_id):
@@ -856,6 +891,9 @@ class PublicationCoverImageView(View):
         cover_image_path = ((pub.value.get("coverImage") if pub else None) or "").lstrip("/")
         if not root_system or not cover_image_path:
             raise Http404(f"No cover image for publication {project_id}")
+        web_url = _get_published_web_url(cover_image_path)
+        if web_url:
+            return HttpResponseRedirect(web_url)
         return _stream_published_file(root_system, cover_image_path)
 
 
