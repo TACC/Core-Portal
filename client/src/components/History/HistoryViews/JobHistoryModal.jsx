@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  useHistory,
+  useNavigate,
   useLocation,
   NavLink as RRNavLink,
 } from 'react-router-dom';
@@ -300,25 +300,29 @@ function JobHistoryModal({ uuid, version = 'v3' }) {
 
   const query = queryStringParser.parse(useLocation().search);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const close = () => {
     // TODOv3: dropV2Jobs
     if (version === 'v3') {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     } else {
-      history.push(
+      navigate(
         `${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBSV2}${
           query.query_string ? `?query_string=${query.query_string}` : ''
         }`,
         {
-          fromJobHistoryModal: true,
+          state: {
+            fromJobHistoryModal: true,
+          },
         }
       );
     }

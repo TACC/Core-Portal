@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink as RRNavLink } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 import Icon from '_common/Icon';
 import styles from './Sidebar.module.css';
 import emptyStringValidator from '_common/CommonUtils';
@@ -16,12 +16,12 @@ const SidebarItem = ({
 }) => {
   return (
     <NavItem>
-      <NavLink
-        tag={RRNavLink}
+      <RRNavLink
         to={to}
-        disabled={disabled}
-        className={styles['link']}
-        activeClassName={styles['link--active']}
+        aria-disabled={disabled}
+        className={({ isActive }) =>
+          `nav-link ${styles['link']} ${isActive ? styles['link--active'] : ''}`
+        }
       >
         <div
           className={`${disabled ? styles['disabled'] : ''} ${
@@ -32,7 +32,7 @@ const SidebarItem = ({
           <span className={styles['text']}>{label}</span>
           {children}
         </div>
-      </NavLink>
+      </RRNavLink>
     </NavItem>
   );
 };

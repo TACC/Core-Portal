@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import * as ROUTES from '../../../../constants/routes';
 import {
   PublishedDatasetsBrowse,
@@ -8,40 +8,44 @@ import {
   PublishedDatasetsLayout,
 } from '.';
 
+const PublishedDatasetEntityDetailRoute = () => {
+  const params = useParams();
+  return (
+    <PublishedDatasetsLayout params={{ ...params, page_type: 'entityDetail' }}>
+      <PublishedDatasetEntityDetail params={params} />
+    </PublishedDatasetsLayout>
+  );
+};
+
+const PublishedDatasetDetailRoute = () => {
+  const params = useParams();
+  return (
+    <PublishedDatasetsLayout params={{ ...params, page_type: 'datasetDetail' }}>
+      <PublishedDatasetDetail params={params} />
+    </PublishedDatasetsLayout>
+  );
+};
+
 // DRP-specific published-datasets routes
 const PublishedDatasetsRoutes = () => (
-  <>
+  <Routes>
     <Route
       path={ROUTES.PUBLICATIONS}
-      exact
-      render={() => (
+      element={
         <PublishedDatasetsLayout params={{ page_type: 'browse' }}>
           <PublishedDatasetsBrowse />
         </PublishedDatasetsLayout>
-      )}
+      }
     />
     <Route
       path={`${ROUTES.PUBLICATIONS}/:system/:entity_type/:entity_id`}
-      render={({ match: { params } }) => (
-        <PublishedDatasetsLayout
-          params={{ ...params, page_type: 'entityDetail' }}
-        >
-          <PublishedDatasetEntityDetail params={params} />
-        </PublishedDatasetsLayout>
-      )}
+      element={<PublishedDatasetEntityDetailRoute />}
     />
     <Route
       path={`${ROUTES.PUBLICATIONS}/:system`}
-      exact
-      render={({ match: { params } }) => (
-        <PublishedDatasetsLayout
-          params={{ ...params, page_type: 'datasetDetail' }}
-        >
-          <PublishedDatasetDetail params={params} />
-        </PublishedDatasetsLayout>
-      )}
+      element={<PublishedDatasetDetailRoute />}
     />
-  </>
+  </Routes>
 );
 
 export default PublishedDatasetsRoutes;
