@@ -128,11 +128,32 @@ def test_get_datacite_json_author_missing_name_parts_defaults_to_empty_string():
 
 
 @pytest.mark.django_db
-@override_settings(VANITY_BASE_URL="")
-def test_get_datacite_json_raises_without_vanity_base_url():
+@override_settings(VANITY_BASE_URL="", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="")
+def test_get_datacite_json_raises_without_any_configured_origin():
     base_meta = minimal_base_meta()
-    with pytest.raises(ValueError, match="VANITY_BASE_URL is not configured"):
+    with pytest.raises(ValueError, match="nor VANITY_BASE_URL is configured"):
         get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+
+@pytest.mark.django_db
+@override_settings(
+    VANITY_BASE_URL="https://prod.internal.example.org",
+    PORTAL_PUBLICATION_DATACITE_URL_PREFIX="https://vanity.example.org/published-datasets",
+)
+def test_get_datacite_json_url_prefers_datacite_url_prefix_origin_over_vanity():
+    # DRP prod shape: VANITY_BASE_URL falls back to the internal _WH_BASE_URL host, while the
+    # prefix (and so the landing page's canonical/JSON-LD/sitemap URLs) uses the vanity domain.
+    result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")
+    expected_path = reverse("publications:index", kwargs={"project_id": "test.project-1"})
+    assert result["url"] == f"https://vanity.example.org{expected_path}"
+
+
+@pytest.mark.django_db
+@override_settings(VANITY_BASE_URL="https://vanity.example.org", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="/just/a/path")
+def test_get_datacite_json_url_falls_back_to_vanity_when_prefix_not_absolute():
+    result = get_datacite_json(make_pub_graph(minimal_base_meta()), "test.project-1")
+    expected_path = reverse("publications:index", kwargs={"project_id": "test.project-1"})
+    assert result["url"] == f"https://vanity.example.org{expected_path}"
 
 
 # ---------------------------------------------------------------------------

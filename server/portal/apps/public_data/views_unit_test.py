@@ -2,12 +2,14 @@ import json
 import re
 from unittest.mock import patch
 
+import networkx as nx
 import pytest
 from django.http import Http404
 from django.test import RequestFactory
 from django.urls import reverse
 
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
+from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
 from portal.apps.public_data.views import (
     PublicationCoverImageView,
     PublicationFileDownloadView,
@@ -1315,3 +1317,24 @@ def test_sitemap_view_empty_when_no_publications(client):
     assert response.status_code == 200
     assert "<url>" not in body
     assert "<urlset" in body
+
+
+def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
+    """The DOI must resolve to the exact URL the landing page claims (canonical/JSON-LD `url`) and
+    the sitemap lists -- even when VANITY_BASE_URL falls back to a different, internal host, as it
+    does on DRP prod (_WH_BASE_URL)."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.VANITY_BASE_URL = "https://prod.internal.example.org"
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://vanity.example.org/published-datasets"
+    base_meta = valid_base_meta()
+    pub = Publication.objects.create(project_id="test.project-1", value=base_meta, tree={}, is_published=True)
+    pub_graph = nx.DiGraph()
+    pub_graph.add_node("NODE_ROOT", value={**base_meta, "projectId": "test.project.published.test.project-1"})
+
+    datacite_url = get_datacite_json(pub_graph, pub.project_id)["url"]
+    landing_page_url = _get_landing_page_url(pub.project_id, make_request(RequestFactory()))
+    sitemap_locs = re.findall(r"<loc>(.*?)</loc>", client.get(reverse("sitemap")).content.decode())
+
+    assert datacite_url.startswith("https://vanity.example.org/")
+    assert datacite_url == landing_page_url
+    assert sitemap_locs == [datacite_url]

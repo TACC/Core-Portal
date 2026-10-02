@@ -3,7 +3,7 @@ import logging
 import mimetypes
 import posixpath
 import re
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote
 
 import requests
 from django.conf import settings
@@ -14,6 +14,7 @@ from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
+from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
 
 logger = logging.getLogger(__name__)
@@ -127,11 +128,7 @@ def _get_configured_origin(request):
     `_get_publication_file_url` -- see its docstring.
     """
 
-    url_prefix = settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX or ""
-    parsed = urlsplit(url_prefix)
-    if parsed.scheme and parsed.netloc:
-        return f"{parsed.scheme}://{parsed.netloc}"
-    return request.build_absolute_uri("/").rstrip("/")
+    return get_configured_origin() or request.build_absolute_uri("/").rstrip("/")
 
 
 def _format_content_size(num_bytes):

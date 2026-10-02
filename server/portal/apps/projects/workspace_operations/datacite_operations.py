@@ -7,6 +7,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
+from portal.apps.public_data.origin import get_configured_origin
 
 
 def _get_subjects(base_meta):
@@ -156,18 +157,22 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     # _get_landing_page_url now is -- reversing public_data/urls.py's own
     # `index` route, rather than hand-concatenating
     # PORTAL_PUBLICATION_DATACITE_URL_PREFIX, which doesn't reliably point at
-    # that route. There's no `request` available here to fall back an origin
-    # against the way _get_configured_origin does -- this runs from a Celery
-    # task (publish_project), not a view -- so the origin comes from
-    # VANITY_BASE_URL instead, the same request-independent absolute-URL
-    # setting webhooks/utils.py already uses for the same reason.
-    if not settings.VANITY_BASE_URL:
+    # that route. The origin comes from the same get_configured_origin() the
+    # landing page's canonical/JSON-LD/sitemap URLs use, so the DOI can't be
+    # registered against a different host than the page claims for itself
+    # (VANITY_BASE_URL alone can fall back to an internal hostname, e.g.
+    # _WH_BASE_URL). There's no `request` here to fall back on the way the
+    # views do -- this runs from a Celery task (publish_project) -- so
+    # VANITY_BASE_URL is only the fallback when the prefix isn't absolute.
+    origin = get_configured_origin() or settings.VANITY_BASE_URL
+    if not origin:
         raise ValueError(
-            "VANITY_BASE_URL is not configured -- refusing to mint a DataCite "
+            "Neither PORTAL_PUBLICATION_DATACITE_URL_PREFIX (as an absolute URL) "
+            "nor VANITY_BASE_URL is configured -- refusing to mint a DataCite "
             "DOI without a real landing-page URL to register it against."
         )
     landing_page_path = reverse("publications:index", kwargs={"project_id": project_id})
-    datacite_json["url"] = f"{settings.VANITY_BASE_URL}{landing_page_path}"
+    datacite_json["url"] = f"{origin}{landing_page_path}"
     datacite_json["prefix"] = settings.PORTAL_PUBLICATION_DATACITE_SHOULDER
 
     # DataCite's schema requires an IETF BCP-47 / ISO 639-1 code here
