@@ -27,9 +27,9 @@ from portal.apps.public_data.views import (
     _get_publication_file_objs,
     _get_publication_file_url,
     _get_record_sets,
+    _is_publication_file_path,
     dumps_json_ld,
     get_citation_context,
-    _is_publication_file_path,
     get_schema_org_json,
 )
 from portal.apps.publications.models import Publication
