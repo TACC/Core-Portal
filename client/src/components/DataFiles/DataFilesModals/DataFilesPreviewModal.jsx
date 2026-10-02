@@ -1,27 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
-import { Niivue } from '@niivue/niivue';
 import { useModal, useAddonComponents } from 'hooks/datafiles';
-
-const NiiVue = ({ imageUrl, fileName }) => {
-  const canvas = useRef();
-  useEffect(() => {
-    const volumeList = [
-      {
-        url: imageUrl,
-        name: fileName,
-      },
-    ];
-    const nv = new Niivue();
-    nv.attachToCanvas(canvas.current);
-    nv.loadVolumes(volumeList);
-  }, [imageUrl]);
-
-  return <canvas ref={canvas} height={480} width={640} />;
-};
+const NvPreview = lazy(() => import('./DataFilesPreviewNiiview'));
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
@@ -39,10 +22,6 @@ const DataFilesPreviewModal = () => {
 
   const portalName = useSelector((state) => state.workbench.portalName);
   const { DataFilesPreviewModalAddon } = useAddonComponents({ portalName });
-
-  useEffect(() => {
-    if (previewUsingBrainmap) setIsFrameLoading(false);
-  }, [previewUsingBrainmap]);
 
   const { toggle } = useModal();
 
@@ -119,7 +98,15 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {previewUsingBrainmap && (
-          <NiiVue imageUrl={href} fileName={params.path}></NiiVue>
+          <Suspense
+            fallback={
+              <div className={styles['loading-style']}>
+                <LoadingSpinner />
+              </div>
+            }
+          >
+            <NvPreview url={href} name={params.path} />
+          </Suspense>
         )}
         {previewUsingHref && !previewUsingBrainmap && (
           <div className="ratio ratio-4x3">

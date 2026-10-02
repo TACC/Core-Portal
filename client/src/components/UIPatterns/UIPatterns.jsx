@@ -10,7 +10,7 @@ import UIPatternsPaginator from './UIPatternsPaginator';
 import UIPatternsButton from './UIPatternsButton';
 import styles from './UIPatterns.module.scss';
 import UIPatternsSidebar from './UIPatternsSidebar';
-import { Button } from '@tacc/core-components/components/ui/button';
+import { Button } from '@tacc/core-components/button';
 
 const BUTTON_VARIANTS = [
   'default',
