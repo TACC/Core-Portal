@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from io import StringIO
 
 import networkx as nx
@@ -23,6 +24,26 @@ from portal.apps.search.tasks import index_publication
 from portal.libs.agave.utils import service_account, user_account
 
 logger = logging.getLogger(__name__)
+
+# The archive job (PORTAL_PUBLICATION_ARCHIVE_APP_ID) hashes every published file on the storage
+# system itself -- no file passes through the portal -- and writes `sha256sum` output here, relative
+# to PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME. From app version 0.0.3 it's only written when every
+# file hashed successfully, so a manifest that exists can be trusted in full.
+_SHA256_MANIFEST_PATH = "archive/{workspace_id}/manifest-sha256.txt"
+
+# One `sha256sum` output line: hex digest, a space, a mode flag (" " text / "*" binary), then the
+# path. GNU coreutils prefixes the line with "\\" when it had to escape a backslash/newline/CR in
+# the path.
+_SHA256_MANIFEST_LINE = re.compile(r"(\\?)([0-9a-fA-F]{64}) [ *](.+)")
+
+# checksumOnly (manifests only; no ZIP, no Ranch transfer) only exists from archive app 0.0.3. An
+# older app ignores the variable and re-runs the full archive, so it's refused below.
+_CHECKSUM_ONLY_MIN_APP_VERSION = (0, 0, 3)
+
+_TERMINAL_JOB_STATES = ("FINISHED", "CANCELLED", "FAILED")
+_ARCHIVE_JOB_POLL_SECONDS = 60
+# The archive app's own limit is 120 minutes (maxMinutes); this also allows for time queued.
+_ARCHIVE_JOB_MAX_POLLS = 6 * 60
 
 
 def _transfer_files(client, source_system_id, dest_system_id):
@@ -87,15 +108,167 @@ def _add_values_to_tree(project_id):
     return publication_tree
 
 
-def publish_project_callback(review_project_id, published_project_id, archive_project_id):
+def publish_project_callback(
+    review_project_id, published_project_id, archive_project_id, project_id=None, version=None
+):
     service_client = service_account()
     update_and_cleanup_review_project(review_project_id, PublicationRequest.Status.APPROVED)
 
     # Make system public for listing
     service_client.systems.shareSystemPublic(systemId=published_project_id)
 
-    # Create ZIP archive of published files
-    archive_publication_files(archive_project_id)
+    # Create ZIP archive of published files (the same job writes the sha256 manifest)
+    archive_job = archive_publication_files(archive_project_id)
+
+    # `project_id`/`version` are absent for a transfer poll queued before this step existed -- that
+    # publication can be backfilled with the compute_publication_checksums management command.
+    if project_id:
+        poll_publication_archive_job.apply_async(
+            args=[archive_job.uuid, project_id, version], countdown=_ARCHIVE_JOB_POLL_SECONDS
+        )
+
+
+def _get_published_workspace_id(project_id, version):
+    """The `{project_id}` / `{project_id}v{version}` id publish_project gives a version's published
+    workspace -- also its directory name under the published root, and in the archive job's paths."""
+
+    suffix = f"v{version}" if version and version > 1 else ""
+    return f"{project_id}{suffix}"
+
+
+def _get_publication_file_objs(publication):
+    """Every file object in a Publication -- root-level `value.fileObjs` plus each entity node's
+    `value.fileObjs` in `tree` -- as the same dicts stored on it, so they can be updated in place."""
+
+    file_objs = list(publication.value.get("fileObjs") or [])
+    for node in (publication.tree or {}).get("nodes", []):
+        file_objs.extend((node.get("value") or {}).get("fileObjs") or [])
+    return file_objs
+
+
+def _unescape_manifest_path(path):
+    """Undo GNU `sha256sum`'s escaping of a path containing a backslash, newline or CR."""
+
+    return re.sub(r"\\(.)", lambda m: {"n": "\n", "r": "\r"}.get(m.group(1), m.group(1)), path)
+
+
+def _parse_sha256_manifest(content, workspace_id):
+    """Map each file's path (relative to its published system, i.e. matching FileObj.path once
+    stripped of slashes) to its lowercase hex sha256, from the archive job's manifest. Manifest
+    paths are relative to the published root -- `{workspace_id}/<path>` -- so that prefix is
+    removed; lines for any other directory, or that don't parse, are skipped.
+    """
+
+    prefix = f"{workspace_id}/"
+    hashes = {}
+    # split("\n"), not splitlines(): splitlines() also breaks on characters that are legal in
+    # filenames (\x0b, \x1c, ...); real newlines in a path are escaped by sha256sum.
+    for line in content.split("\n"):
+        match = _SHA256_MANIFEST_LINE.fullmatch(line)
+        if not match:
+            continue
+        escaped, digest, path = match.groups()
+        if escaped:
+            path = _unescape_manifest_path(path)
+        if path.startswith(prefix):
+            hashes[path[len(prefix) :]] = digest.lower()
+    return hashes
+
+
+def _read_sha256_manifest(workspace_id):
+    """Fetch and parse a published workspace's sha256 manifest, or return None if there isn't one
+    (archive app older than 0.0.3, a file failed to hash, or the job didn't get that far)."""
+
+    path = _SHA256_MANIFEST_PATH.format(workspace_id=workspace_id)
+    try:
+        content = service_account().files.getContents(
+            systemId=settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, path=path
+        )
+    except Exception as e:
+        logger.info(f"No sha256 manifest at {settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME}/{path}: {e}")
+        return None
+    return _parse_sha256_manifest(content.decode("utf-8", errors="replace"), workspace_id)
+
+
+@shared_task(bind=True, queue="default")
+def load_publication_file_checksums(self, project_id: str, version: int | None = None):
+    """Store each published file's sha256 -- read from the manifest the archive job computed on the
+    storage system -- on its file object in Publication.value/tree (FileObj.sha256), so the landing
+    page's Croissant `distribution` carries the per-file checksum Croissant requires (see
+    public_data/views.py's CROISSANT_FILE_CHECKSUM_FIELDS). Files missing from the manifest are
+    left unhashed; the page then just omits conformsTo.
+    """
+
+    publication = Publication.objects.get(project_id=project_id)
+    version = version or publication.version
+    hashes = _read_sha256_manifest(_get_published_workspace_id(project_id, version))
+    if not hashes:
+        logger.warning(
+            f"No sha256 checksums available for publication {project_id} v{version}; its files stay "
+            "unhashed (and its landing page without Croissant conformsTo) until the archive job's "
+            "manifest exists -- see the compute_publication_checksums management command."
+        )
+        return
+
+    with transaction.atomic():
+        publication = Publication.objects.select_for_update().get(project_id=project_id)
+        # The manifest describes one version's files; don't attach it to a newer version's.
+        if publication.version != version:
+            logger.warning(
+                f"Publication {project_id} is now v{publication.version}; discarding v{version}'s checksums."
+            )
+            return
+        stored, unhashed = 0, set()
+        for file_obj in _get_publication_file_objs(publication):
+            path = (file_obj.get("path") or "").strip("/")
+            if file_obj.get("type") != "file" or not path:
+                continue
+            if path in hashes:
+                if file_obj.get("sha256") != hashes[path]:
+                    file_obj["sha256"] = hashes[path]
+                    stored += 1
+            else:
+                unhashed.add(path)
+        if stored:
+            publication.save(update_fields=["value", "tree", "last_updated"])
+
+    logger.info(f"Stored {stored} sha256 checksum(s) for publication {project_id} v{version}.")
+    if unhashed:
+        logger.warning(
+            f"{len(unhashed)} file(s) of publication {project_id} v{version} aren't in its sha256 "
+            f"manifest (e.g. {sorted(unhashed)[0]}) and stay unhashed."
+        )
+
+
+@shared_task(bind=True, queue="default")
+def poll_publication_archive_job(self, job_uuid, project_id, version=None, attempt=1):
+    """Wait for a publication's archive job to end, then load the sha256 manifest it wrote. The
+    manifest is read whatever the job's final status: it's only written when every file hashed, so
+    if it exists it's complete even when a later step (the ZIP, the Ranch transfer) failed.
+    """
+
+    try:
+        status = service_account().jobs.getJobStatus(jobUuid=job_uuid).status
+    except Exception as e:
+        logger.warning(f"Could not get status of archive job {job_uuid} for publication {project_id}: {e}")
+        status = None
+
+    if status in _TERMINAL_JOB_STATES:
+        if status != "FINISHED":
+            logger.warning(f"Archive job {job_uuid} for publication {project_id} ended {status}.")
+        load_publication_file_checksums(project_id, version)
+        return
+
+    if attempt >= _ARCHIVE_JOB_MAX_POLLS:
+        logger.error(
+            f"Gave up waiting for archive job {job_uuid} (last status {status}) for publication "
+            f"{project_id}; load its checksums later with `compute_publication_checksums "
+            f"--load-only {project_id}`."
+        )
+        return
+    self.apply_async(
+        args=[job_uuid, project_id, version], kwargs={"attempt": attempt + 1}, countdown=_ARCHIVE_JOB_POLL_SECONDS
+    )
 
 
 def publication_request_callback(
@@ -155,10 +328,25 @@ def upload_metadata_file(project_id: str, project_json: str):
     logger.debug("Created metadata file for %s at tapis://%s/%s", project_id, published_root, upload_full_path)
 
 
-def archive_publication_files(project_id: str):
+def archive_publication_files(project_id: str, checksum_only: bool = False):
     """
-    Run a Tapis job to create a ZIP archive of published files that includes metadata.
+    Run a Tapis job to create a ZIP archive of published files that includes metadata, plus the
+    sha512/sha256 checksum manifests. With `checksum_only`, the job writes the manifests only (no
+    ZIP, no Ranch transfer) -- for backfilling checksums on an already-archived publication.
     """
+
+    if checksum_only:
+        app_version = settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION or ""
+        try:
+            supported = tuple(int(part) for part in app_version.split(".")) >= _CHECKSUM_ONLY_MIN_APP_VERSION
+        except ValueError:
+            supported = False
+        if not supported:
+            raise ValueError(
+                f"Archive app version {app_version!r} doesn't support checksumOnly (needs "
+                f"{'.'.join(map(str, _CHECKSUM_ONLY_MIN_APP_VERSION))}+) and would re-run the full "
+                "archive and Ranch transfer instead."
+            )
 
     client = service_account()
     published_root_system = settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME
@@ -184,6 +372,7 @@ def archive_publication_files(project_id: str):
                     "key": "ranchArchiveRootDir",
                     "value": "/",
                 },
+                *([{"key": "checksumOnly", "value": "true"}] if checksum_only else []),
             ],
         },
         "tags": [f"portalName:{settings.PORTAL_NAMESPACE.lower()}"],
@@ -277,6 +466,8 @@ def publish_project(self, project_id: str, version: int | None = 1):
                 "review_project_id": review_system_id,
                 "published_project_id": published_system_id,
                 "archive_project_id": published_workspace_id,
+                "project_id": project_id,
+                "version": version,
             },
             countdown=30,
         )

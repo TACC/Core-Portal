@@ -18,12 +18,17 @@ from portal.apps.projects.schema_models import constants
 from portal.apps.projects.workspace_operations.project_publish_operations import (
     _add_values_to_tree,
     _check_transfer_status,
+    _get_published_workspace_id,
+    _parse_sha256_manifest,
+    _read_sha256_manifest,
     _transfer_cover_image,
     _transfer_files,
     archive_publication_files,
     copy_graph_and_files_for_review_system,
     get_project_user_emails,
     get_reviewer_emails,
+    load_publication_file_checksums,
+    poll_publication_archive_job,
     poll_tapis_file_transfer,
     publication_request_callback,
     publish_project,
@@ -179,16 +184,32 @@ def test_add_values_to_tree_embeds_entity_values_and_clears_uuid(mocker):
 # ---------------------------------------------------------------------------
 
 
-def test_publish_project_callback_orchestrates_cleanup_share_and_archive(mocker):
+def test_publish_project_callback_orchestrates_cleanup_share_archive_and_checksum_poll(mocker):
     mock_service_account = mocker.patch(f"{DIR}.service_account")
     mock_cleanup = mocker.patch(f"{DIR}.update_and_cleanup_review_project")
-    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files", return_value=SimpleNamespace(uuid="job-1"))
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
 
-    publish_project_callback("review-1", "published-1", "archive-1")
+    publish_project_callback("review-1", "published-1", "archive-1", project_id="test.project-1", version=2)
 
     mock_cleanup.assert_called_once_with("review-1", PublicationRequest.Status.APPROVED)
     mock_service_account.return_value.systems.shareSystemPublic.assert_called_once_with(systemId="published-1")
     mock_archive.assert_called_once_with("archive-1")
+    mock_poll.assert_called_once_with(args=["job-1", "test.project-1", 2], countdown=60)
+
+
+def test_publish_project_callback_without_project_id_skips_checksum_poll(mocker):
+    """A transfer poll queued before the checksum step existed calls back without project_id/version
+    -- it must still finish publishing, just without waiting on the archive job for checksums."""
+    mocker.patch(f"{DIR}.service_account")
+    mocker.patch(f"{DIR}.update_and_cleanup_review_project")
+    mock_archive = mocker.patch(f"{DIR}.archive_publication_files")
+    mock_poll = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    publish_project_callback("review-1", "published-1", "archive-1")
+
+    mock_archive.assert_called_once_with("archive-1")
+    mock_poll.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -280,6 +301,33 @@ def test_archive_publication_files_submits_job(mocker, settings):
     assert env_vars["publishedRootDir"] == "/published/root"
     assert env_vars["projectId"] == "test.project-1"
     assert env_vars["ranchSystemId"] == settings.PORTAL_PUBLICATION_RANCH_SYSTEM_ID
+    # A normal publish runs the full archive: no checksumOnly, so older app versions are unaffected.
+    assert "checksumOnly" not in env_vars
+
+
+def test_archive_publication_files_checksum_only_sets_env_var(mocker, settings):
+    settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = "0.0.3"
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.systems.getSystem.return_value = SimpleNamespace(rootDir="/published/root")
+
+    archive_publication_files("test.project-1v2", checksum_only=True)
+
+    _, kwargs = client.jobs.submitJob.call_args
+    env_vars = {v["key"]: v["value"] for v in kwargs["parameterSet"]["envVariables"]}
+    assert env_vars["checksumOnly"] == "true"
+    assert env_vars["projectId"] == "test.project-1v2"
+
+
+@pytest.mark.parametrize("app_version", ["0.0.2", "0.0.1", None, "latest"])
+def test_archive_publication_files_checksum_only_refuses_old_app(mocker, settings, app_version):
+    """An app older than 0.0.3 ignores checksumOnly and would re-run the full ZIP and Ranch transfer
+    -- for DRP-1149 alone an 89 GB archive -- so no job is submitted."""
+    settings.PORTAL_PUBLICATION_ARCHIVE_APP_VERSION = app_version
+    client = mocker.patch(f"{DIR}.service_account").return_value
+
+    with pytest.raises(ValueError, match="doesn't support checksumOnly"):
+        archive_publication_files("test.project-1", checksum_only=True)
+    client.jobs.submitJob.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -345,6 +393,10 @@ def test_publish_project_success_creates_publication_and_updates_doi(mocker, set
     mock_apply_async.assert_called_once()
     _, apply_kwargs = mock_apply_async.call_args
     assert apply_kwargs["args"] == ("transfer-uuid-1", False)
+    # Passed through poll_tapis_file_transfer to publish_project_callback, which queues the
+    # checksum task for exactly this publication version.
+    assert apply_kwargs["kwargs"]["project_id"] == "test.project-1"
+    assert apply_kwargs["kwargs"]["version"] == 1
 
 
 def test_publish_project_reuses_existing_doi(mocker, settings):
@@ -682,3 +734,304 @@ def test_send_publication_submitted_for_review_email_to_reviewers_no_recipients(
     send_publication_submitted_for_review_email_to_reviewers("test.project-1")
 
     mock_send_mail.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# sha256 manifest: _parse_sha256_manifest / _read_sha256_manifest
+# ---------------------------------------------------------------------------
+
+
+H1 = "a" * 64
+H2 = "b" * 64
+H3 = "c" * 64
+
+
+def test_get_published_workspace_id():
+    assert _get_published_workspace_id("DRP-1149", 1) == "DRP-1149"
+    assert _get_published_workspace_id("DRP-1149", None) == "DRP-1149"
+    assert _get_published_workspace_id("DRP-1129", 2) == "DRP-1129v2"
+
+
+def test_parse_sha256_manifest_maps_paths_relative_to_workspace():
+    """Lines are `sha256sum` output for paths under the published root; the `{workspace}/` prefix is
+    removed so keys match FileObj paths on that version's published system."""
+    manifest = "\n".join(
+        [
+            f"{H1}  DRP-1149/Mount Gambier Limestone/Greyscale Stack .TIF/scan.tif",
+            f"{H2.upper()} *DRP-1149/data.csv",  # binary-mode marker; uppercase hex
+            f"{H3}  DRP-1149v2/other-version.bin",  # different workspace
+            f"{H3}  DRP-11490/prefix-lookalike.bin",
+            "not a manifest line",
+            f"{'d' * 63}  DRP-1149/short-hash.bin",
+            "",
+        ]
+    )
+
+    assert _parse_sha256_manifest(manifest, "DRP-1149") == {
+        "Mount Gambier Limestone/Greyscale Stack .TIF/scan.tif": H1,
+        "data.csv": H2,
+    }
+
+
+def test_parse_sha256_manifest_unescapes_gnu_escaped_paths():
+    """GNU sha256sum prefixes a line with a backslash and escapes the path when it contains a
+    backslash or newline."""
+    manifest = "\n".join(
+        [
+            "\\" + H1 + "  DRP-1149/back\\\\slash.txt",
+            "\\" + H2 + "  DRP-1149/new\\nline.txt",
+            f"{H3}  DRP-1149/odd\x0bchar.txt",  # legal filename char splitlines() would break on
+        ]
+    )
+
+    assert _parse_sha256_manifest(manifest, "DRP-1149") == {
+        "back\\slash.txt": H1,
+        "new\nline.txt": H2,
+        "odd\x0bchar.txt": H3,
+    }
+
+
+def test_read_sha256_manifest_fetches_from_published_root_system(mocker, settings):
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = f"{H1}  DRP-1129v2/a.bin\n".encode()
+
+    assert _read_sha256_manifest("DRP-1129v2") == {"a.bin": H1}
+    client.files.getContents.assert_called_once_with(
+        systemId=settings.PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME, path="archive/DRP-1129v2/manifest-sha256.txt"
+    )
+
+
+def test_read_sha256_manifest_returns_none_when_missing(mocker):
+    mocker.patch(f"{DIR}.service_account").return_value.files.getContents.side_effect = Exception("404")
+
+    assert _read_sha256_manifest("DRP-1149") is None
+
+
+# ---------------------------------------------------------------------------
+# load_publication_file_checksums
+# ---------------------------------------------------------------------------
+
+
+def node_link_tree(*entity_file_objs):
+    return {
+        "directed": True,
+        "multigraph": False,
+        "graph": {},
+        "nodes": [
+            {"id": "NODE_ROOT", "value": {"title": "Root"}},
+            {"id": "entity-1", "value": {"title": "Sample", "fileObjs": list(entity_file_objs)}},
+        ],
+        "edges": [{"source": "NODE_ROOT", "target": "entity-1"}],
+    }
+
+
+@pytest.fixture
+def mock_manifest(mocker):
+    """Patch the manifest fetch; set `.return_value` to the parsed {path: sha256} mapping."""
+    return mocker.patch(f"{DIR}._read_sha256_manifest")
+
+
+def test_load_publication_file_checksums_stores_root_and_entity_hashes(mock_manifest):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "data.csv", "path": "/data.csv"}]},
+        tree=node_link_tree(
+            {"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"},
+            {"type": "file", "name": "data.csv", "path": "data.csv"},
+            {"type": "dir", "name": "raw", "path": "/sample1/raw"},
+        ),
+    )
+    mock_manifest.return_value = {
+        "data.csv": H1,
+        "sample1/scan.tif": H2,
+        "sample1/raw/inside-dir.bin": H3,  # not a declared file object; ignored
+    }
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_manifest.assert_called_once_with("test.project-1")
+    publication = Publication.objects.get(project_id="test.project-1")
+    assert publication.value["fileObjs"][0]["sha256"] == H1
+    entity_files = {f["path"]: f.get("sha256") for f in publication.tree["nodes"][1]["value"]["fileObjs"]}
+    assert entity_files == {"/sample1/scan.tif": H2, "data.csv": H1, "/sample1/raw": None}
+
+
+def test_load_publication_file_checksums_reads_republished_versions_manifest(mock_manifest):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=3,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+
+    load_publication_file_checksums("test.project-1")  # version defaults to the current one
+
+    mock_manifest.assert_called_once_with("test.project-1v3")
+    assert Publication.objects.get(project_id="test.project-1").value["fileObjs"][0]["sha256"] == H1
+
+
+def test_load_publication_file_checksums_manifest_replaces_stale_hash(mock_manifest):
+    """The manifest was computed from the files actually on the published system, so it wins."""
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin", "sha256": "old"}]},
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    assert Publication.objects.get(project_id="test.project-1").value["fileObjs"][0]["sha256"] == H1
+
+
+def test_load_publication_file_checksums_warns_about_files_missing_from_manifest(mocker, mock_manifest):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={
+            "title": "T",
+            "fileObjs": [
+                {"type": "file", "name": "a.bin", "path": "/a.bin"},
+                {"type": "file", "name": "late.bin", "path": "/late.bin"},
+            ],
+        },
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+    mock_logger = mocker.patch(f"{DIR}.logger")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    file_objs = Publication.objects.get(project_id="test.project-1").value["fileObjs"]
+    assert {f["name"]: f.get("sha256") for f in file_objs} == {"a.bin": H1, "late.bin": None}
+    assert "late.bin" in mock_logger.warning.call_args.args[0]
+
+
+@pytest.mark.parametrize("manifest", [None, {}])
+def test_load_publication_file_checksums_without_manifest_changes_nothing(mocker, mock_manifest, manifest):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = manifest
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_not_called()
+
+
+def test_load_publication_file_checksums_discards_manifest_after_republish(mock_manifest):
+    """A manifest describes one version's files: if the publication was republished before it was
+    loaded, it isn't attached to the new version's file objects."""
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=2,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin"}]},
+        tree={},
+    )
+    mock_manifest.return_value = {"a.bin": H1}
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_manifest.assert_called_once_with("test.project-1")  # v1's manifest
+    assert "sha256" not in Publication.objects.get(project_id="test.project-1").value["fileObjs"][0]
+
+
+# ---------------------------------------------------------------------------
+# poll_publication_archive_job
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def job_status(mocker):
+    """Patch the Tapis job-status lookup; set `.return_value`/`.side_effect` on the returned mock."""
+    return mocker.patch(f"{DIR}.service_account").return_value.jobs.getJobStatus
+
+
+@pytest.mark.parametrize("status", ["PENDING", "RUNNING", "ARCHIVING", "BLOCKED"])
+def test_poll_publication_archive_job_reschedules_until_terminal(mocker, job_status, status):
+    job_status.return_value = SimpleNamespace(status=status)
+    mock_load = mocker.patch(f"{DIR}.load_publication_file_checksums")
+    mock_reschedule = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    poll_publication_archive_job("job-1", "test.project-1", 2, attempt=5)
+
+    job_status.assert_called_once_with(jobUuid="job-1")
+    mock_load.assert_not_called()
+    mock_reschedule.assert_called_once_with(args=["job-1", "test.project-1", 2], kwargs={"attempt": 6}, countdown=60)
+
+
+@pytest.mark.parametrize("status", ["FINISHED", "FAILED", "CANCELLED"])
+def test_poll_publication_archive_job_loads_manifest_on_any_terminal_state(mocker, job_status, status):
+    """The manifest is only written when every file hashed, so it's trustworthy even when a later
+    step of the job (ZIP, Ranch transfer) failed -- it's loaded whatever the final status."""
+    job_status.return_value = SimpleNamespace(status=status)
+    mock_load = mocker.patch(f"{DIR}.load_publication_file_checksums")
+    mock_reschedule = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    poll_publication_archive_job("job-1", "test.project-1", 2)
+
+    mock_load.assert_called_once_with("test.project-1", 2)
+    mock_reschedule.assert_not_called()
+
+
+def test_poll_publication_archive_job_keeps_polling_through_status_errors(mocker, job_status):
+    job_status.side_effect = Exception("tapis unavailable")
+    mock_load = mocker.patch(f"{DIR}.load_publication_file_checksums")
+    mock_reschedule = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    poll_publication_archive_job("job-1", "test.project-1", 1)
+
+    mock_load.assert_not_called()
+    mock_reschedule.assert_called_once()
+
+
+def test_poll_publication_archive_job_gives_up_after_max_polls(mocker, job_status):
+    job_status.return_value = SimpleNamespace(status="RUNNING")
+    mock_logger = mocker.patch(f"{DIR}.logger")
+    mock_reschedule = mocker.patch.object(poll_publication_archive_job, "apply_async")
+
+    poll_publication_archive_job("job-1", "test.project-1", 1, attempt=6 * 60)
+
+    mock_reschedule.assert_not_called()
+    assert "compute_publication_checksums --load-only test.project-1" in mock_logger.error.call_args.args[0]
+
+
+# ---------------------------------------------------------------------------
+# End to end with public_data/views.py
+# ---------------------------------------------------------------------------
+
+
+def test_loaded_checksums_make_landing_page_croissant_conformant(mocker, rf, settings):
+    """Once the archive job's manifest is loaded, the schema.org Dataset carries each file's sha256
+    in `distribution` and claims Croissant conformance again."""
+    from portal.apps.public_data.views import get_schema_org_json
+
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = ""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    meta = {
+        "title": "T",
+        "description": "D",
+        "license": "ODC-BY 1.0",
+        "authors": [{"first_name": "Ada", "last_name": "Lovelace"}],
+        "publicationDate": "2024-05-01",
+        "fileObjs": [{"type": "file", "name": "a b.bin", "path": "/dir/a b.bin", "length": 3}],
+    }
+    publication = Publication.objects.create(project_id="test.project-1", version=1, value=meta, tree={})
+    request = rf.get("/")
+    assert "conformsTo" not in get_schema_org_json(publication, publication.project_id, request)
+    client = mocker.patch(f"{DIR}.service_account").return_value
+    client.files.getContents.return_value = f"{H1}  test.project-1/dir/a b.bin\n".encode()
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    publication.refresh_from_db()
+    schema = get_schema_org_json(publication, publication.project_id, request)
+    assert schema["distribution"][0]["sha256"] == H1
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
