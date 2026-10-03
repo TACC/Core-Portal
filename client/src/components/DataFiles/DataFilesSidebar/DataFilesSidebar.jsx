@@ -13,6 +13,7 @@ import { useTapisToken } from 'hooks/datafiles';
 import { useMatch } from 'react-router-dom';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import './DataFilesSidebar.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesAddButton = ({ readOnly }) => {
   const { data: tapisToken } = useTapisToken();
@@ -33,9 +34,12 @@ const DataFilesAddButton = ({ readOnly }) => {
     (state) => state.systems.storage.configuration.filter((s) => !s.hidden),
     shallowEqual
   );
-  const maxSizeLabel = useSelector(
-    (state) => state.workbench.config.uploadModalMaxSizeLabel
-  );
+
+  const {
+    data: {
+      config: { uploadModalMaxSizeLabel: maxSizeLabel = '2GB' },
+    },
+  } = useWorkbenchConfig();
 
   const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
 

@@ -10,6 +10,8 @@ import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
   return standardApps.length + optionalApps.length + customApps.length;
@@ -17,11 +19,16 @@ function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
 
 function Dashboard() {
   const {
-    hideApps,
-    hideManageAccount,
-    showUserNews = false,
-    customDashboardSection,
-  } = useSelector((state) => state.workbench.config);
+    data: {
+      config: {
+        hideApps,
+        hideManageAccount,
+        showUserNews = false,
+        customDashboardSection,
+      },
+    },
+  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(
     ['DashboardTickets', ...(showUserNews ? ['DashboardUserNews'] : [])],

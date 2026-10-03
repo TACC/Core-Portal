@@ -5,11 +5,17 @@ import { PropTypes, shape, string, arrayOf } from 'prop-types';
 import { useTable } from 'react-table';
 import { Table } from 'reactstrap';
 import styles from './CustomDashboardSection.module.scss';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 function CustomDashboardSection({ className }) {
-  const { header, links } = useSelector(
-    (state) => state.workbench.config.customDashboardSection
-  );
+  const {
+    data: {
+      config: {
+        customDashboardSection: { header, links },
+      },
+    },
+  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
   const columns = useMemo(
     () => [
       {

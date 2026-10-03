@@ -26,6 +26,7 @@ import { getStatusText } from '../../Jobs/JobsStatus';
 import * as ROUTES from '../../../constants/routes';
 import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const placeHolder = '...';
 
@@ -65,9 +66,11 @@ function JobHistoryContent({
 }) {
   const dispatch = useDispatch();
 
-  const hideDataFiles = useSelector(
-    (state) => state.workbench.config.hideDataFiles
-  );
+  const {
+    data: {
+      config: { hideDataFiles },
+    },
+  } = useWorkbenchConfig();
 
   // TODOv3: dropV2Jobs
   const outputLocation =

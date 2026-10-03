@@ -17,6 +17,7 @@ import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import getDefaultProjectSystem from 'utils/getDefaultProjectSystem';
 import getSharedWorkspaceDisplayName from 'utils/getSharedWorkspaceDisplayName';
 import styles from './DataFilesProjectFileListing.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectFileListing = ({
   rootSystem,
@@ -30,7 +31,9 @@ const DataFilesProjectFileListing = ({
   if (!basePath) basePath = '/workbench/data';
 
   // logic to render addonComponents for DRP
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const {
     DataFilesProjectFileListingAddon,
     DataFilesProjectFileListingMetadataAddon,
@@ -56,17 +59,19 @@ const DataFilesProjectFileListing = ({
   const folderMetadata = useSelector(
     (state) => state.files.folderMetadata?.FilesListing
   );
-  const enableWorkspaceKeywords =
-    useSelector((state) => state.workbench.config.enableWorkspaceKeywords) ??
-    true;
+
+  const {
+    data: {
+      config: { enableWorkspaceKeywords = true, projectsEnableMetadata },
+    },
+  } = useWorkbenchConfig();
+
   const sharedWorkspacesDisplayName = useSelector((state) =>
     getSharedWorkspaceDisplayName(
       getDefaultProjectSystem(state.systems.storage.configuration)?.name
     )
   );
-  const projectMembersLabel = useSelector((state) =>
-    state.workbench.config.projectsEnableMetadata ? 'Authors' : 'Team'
-  );
+  const projectMembersLabel = projectsEnableMetadata ? 'Authors' : 'Team';
 
   const canEditSystem = useSelector(
     (state) =>

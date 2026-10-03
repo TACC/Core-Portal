@@ -8,6 +8,7 @@ import OnboardingStep from './OnboardingStep';
 import TicketCreateModal from '../Tickets/TicketCreateModal';
 
 import styles from './OnboardingUser.module.scss';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const OnboardingUser = () => {
   const params = useParams();
@@ -18,9 +19,12 @@ const OnboardingUser = () => {
   );
   const loading = useSelector((state) => state.onboarding.user.loading);
   const error = useSelector((state) => state.onboarding.user.error);
-  const onboardingCompleteRedirect = useSelector(
-    (state) => state.workbench.config.onboardingCompleteRedirect
-  );
+  const {
+    data: {
+      config: { onboardingCompleteRedirect },
+    },
+  } = useWorkbenchConfig();
+
   const continueLink = onboardingCompleteRedirect || '/workbench/';
   const [isTicketModalOpen, setIsTicketModalOpen] = React.useState(false);
   useEffect(() => {

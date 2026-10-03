@@ -12,7 +12,6 @@ async function postTicketReply({
     `/api/tickets/${ticketId}/history`,
     formData
   );
-  console.log(result.data);
   return result.data;
 }
 

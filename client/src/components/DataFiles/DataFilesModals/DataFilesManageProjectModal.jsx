@@ -6,6 +6,7 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 import styles from './DataFilesManageProject.module.scss';
 import { useAddonComponents } from 'hooks/datafiles';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const NOT_LOADING_OR_ERRORED = { loading: false, error: false };
 
@@ -40,10 +41,12 @@ const DataFilesManageProjectModal = () => {
     return projectSystem?.readOnly || !canEditSystem;
   });
 
-  const portalName = useSelector((state) => state.workbench.portalName);
-  const projectsEnableMetadata = useSelector(
-    (state) => state.workbench.config.projectsEnableMetadata
-  );
+  const {
+    data: {
+      portalName,
+      config: { projectsEnableMetadata = false },
+    },
+  } = useWorkbenchConfig();
 
   const { DataFilesManageProjectModalAddon } = useAddonComponents({
     portalName,

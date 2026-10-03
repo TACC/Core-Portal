@@ -22,6 +22,8 @@ import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
 import { useRedirectOnSessionExpired } from 'hooks/auth';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 function Workbench() {
   const dispatch = useDispatch();
@@ -35,37 +37,27 @@ function Workbench() {
 
   // showUIPatterns: Show some entries only in local development
   const {
-    loading,
-    setupComplete,
-    showUIPatterns,
-    isStaff,
-    hideApps,
-    hideDataFiles,
-    hideAllocations,
-    showSubmissions,
-    hideManageAccount,
-    hideSystemStatus,
-    hideOnboarding,
-    isTACCPortal,
-  } = useSelector(
-    (state) => ({
-      loading: state.workbench.loading || loadingSystems,
-      setupComplete: state.workbench.setupComplete,
-      showUIPatterns: state.workbench.config.debug,
-      isStaff:
-        state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
-      hideApps: state.workbench.config.hideApps,
-      hideDataFiles: state.workbench.config.hideDataFiles,
-      hideAllocations: state.workbench.config.hideAllocations,
-      showSubmissions: state.workbench.config.showSubmissions,
-      hideManageAccount: state.workbench.config.hideManageAccount,
-      hideSystemStatus: state.workbench.config.hideSystemStatus,
-      hideOnboarding: state.workbench.config.hideOnboarding,
-      isTACCPortal: state.workbench.isTACCPortal,
-    }),
-    shallowEqual
-  );
+    data: {
+      setupComplete,
+      config: {
+        loading,
+        showUIPatterns,
+        hideApps,
+        hideDataFiles,
+        hideAllocations,
+        showSubmissions,
+        hideManageAccount,
+        hideSystemStatus,
+        hideOnboarding,
+        isTACCPortal,
+      },
+    },
+  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
 
+  const isStaff = useSelector(
+    (state) =>
+      state.authenticatedUser.user && state.authenticatedUser.user.isStaff
+  );
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({

@@ -47,7 +47,8 @@ describe('workbench', () => {
         <Route path="/workbench/*" element={<Workbench />} />
       </Routes>,
       store,
-      history
+      history,
+      { ...workbench, setupComplete: false }
     );
     expect(
       getByText(

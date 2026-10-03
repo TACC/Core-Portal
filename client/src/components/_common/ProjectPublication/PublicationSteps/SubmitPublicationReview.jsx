@@ -5,6 +5,8 @@ import { SectionTableWrapper, Section, Button } from '_common';
 import styles from '../PublicationWizard.module.scss';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 // Reviewer step: approve/publish, publish a new version, or reject a request.
 const SubmitPublicationReview = ({ callbackUrl, contact }) => {
@@ -16,9 +18,11 @@ const SubmitPublicationReview = ({ callbackUrl, contact }) => {
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  const { canPublish = false } =
-    useSelector((state) => state.workbench.config) || {};
-
+  const {
+    data: {
+      config: { canPublish = false },
+    },
+  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
   const {
     isApproveLoading,
     isRejectLoading,

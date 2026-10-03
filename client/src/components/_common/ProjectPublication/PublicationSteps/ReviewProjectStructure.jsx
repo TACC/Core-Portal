@@ -5,11 +5,15 @@ import styles from '../PublicationWizard.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAddonComponents } from 'hooks/datafiles';
 import { useFormikContext } from 'formik';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 // Review the project's data tree before publication.
 const ReviewProjectStructure = ({ projectId }) => {
   const dispatch = useDispatch();
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
   const { DataFilesProjectTree } = useAddonComponents({ portalName });
 
   const { errors } = useFormikContext();

@@ -44,15 +44,14 @@ import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
 import { watchPublications } from './publications.sagas';
+import { queryClient } from '../../queryClient';
 
 function* watchStartCustomSaga() {
   yield takeEvery('START_CUSTOM_SAGA', startCustomSaga);
 }
 
 function* startCustomSaga(action) {
-  const portalName = yield select((state) => {
-    return state.workbench.portalName;
-  });
+  const portalName = action.payload.portalName;
 
   const { default: customSaga } = yield import(
     `./_custom/${portalName.toLowerCase()}.sagas.js`

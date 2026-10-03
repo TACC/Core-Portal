@@ -4,6 +4,8 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 import { useModal, useAddonComponents } from 'hooks/datafiles';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
+
 const NvPreview = lazy(() => import('./DataFilesPreviewNiiview'));
 
 const DataFilesPreviewModal = () => {
@@ -25,7 +27,9 @@ const DataFilesPreviewModal = () => {
     fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
-  const portalName = useSelector((state) => state.workbench.portalName);
+  const {
+    data: { portalName },
+  } = useWorkbenchConfig();
   const { DataFilesPreviewModalAddon } = useAddonComponents({ portalName });
 
   const { toggle } = useModal();

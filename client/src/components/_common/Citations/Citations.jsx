@@ -1,9 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Citations.module.scss';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { workbenchConfigQueries } from '@tacc/core-queries';
 
 const usePublisher = () =>
-  useSelector((state) => state.workbench.config.publisher);
+  useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig()).data.config
+    .publisher;
 
 const DOILink = ({ project }) => {
   const projectUrl = project.doi

@@ -38,6 +38,7 @@ import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ticketsMutations, ticketsQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required'),
@@ -124,13 +125,15 @@ function TicketHistoryReply({ ticketId }) {
   const { isLoading, isError } = useQuery(
     ticketsQueries.getTicketHistory(ticketId)
   );
+  const {
+    data: {
+      config: {
+        ticketAttachmentMaxSizeMessage: maxSizeMessage = '3MB',
+        ticketAttachmentMaxSize: maxSize = 3145728,
+      },
+    },
+  } = useWorkbenchConfig();
 
-  const maxSizeMessage = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSizeMessage
-  );
-  const maxSize = useSelector(
-    (state) => state.workbench.config.ticketAttachmentMaxSize
-  );
   return (
     <Formik
       enableReinitialize

@@ -17,7 +17,10 @@ describe('RequestAccess', () => {
       },
     });
 
-    const { getByText } = renderComponent(<RequestAccess />, store);
+    const { getByText } = renderComponent(<RequestAccess />, store, undefined, {
+      ...workbench,
+      portalName: 'Test Portal',
+    });
     expect(getByText(/Request Access to the Test Portal/)).toBeInTheDocument();
   });
 });
