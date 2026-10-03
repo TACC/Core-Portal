@@ -772,9 +772,15 @@ def test_schema_org_and_citation_include_entity_node_files(rf, settings, publica
     allow-list serves."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     publication.tree = entity_tree(
-        {"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"},
-        {"type": "file", "name": "paper.pdf", "path": "/sample1/paper.pdf"},
-        {"type": "file", "name": "table.csv", "path": "/sample1/table.csv", "columns": [{"name": "x"}]},
+        {"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif", "sha256": "aa11"},
+        {"type": "file", "name": "paper.pdf", "path": "/sample1/paper.pdf", "sha256": "bb22"},
+        {
+            "type": "file",
+            "name": "table.csv",
+            "path": "/sample1/table.csv",
+            "sha256": "cc33",
+            "columns": [{"name": "x"}],
+        },
         {"type": "dir", "name": "raw", "path": "/sample1/raw"},
     )
     publication.save()
@@ -803,7 +809,7 @@ def test_entity_only_files_still_make_publication_a_croissant_candidate(rf, sett
     count as fileless: no distribution and no conformsTo."""
     settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
     publication.value = valid_base_meta(fileObjs=[])
-    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif", "sha256": "aa11"})
     publication.save()
 
     schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
@@ -1038,6 +1044,69 @@ def test_get_schema_org_json_unmapped_license_logs_and_omits_license(mock_logger
     assert schema["name"] == "Test Dataset"
     mock_logger.error.assert_called_once()
     assert "unmapped-license" in mock_logger.error.call_args.args[0]
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_get_schema_org_json_unhashed_file_omits_conforms_to(mock_logger, rf, settings, publication):
+    """Croissant requires an md5/sha256 checksum on every cr:FileObject, so a single unhashed file
+    withholds the conformsTo claim -- while the rest of the Dataset (including that file's
+    distribution entry) is still emitted. Logged at debug only: until a publish-time hashing step
+    exists this applies to every publication with files, on every render."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif"})
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert "conformsTo" not in schema
+    assert schema["@type"] == "Dataset"
+    assert [file_object["@id"] for file_object in schema["distribution"]] == ["data.csv", "sample1/scan.tif"]
+    assert schema["distribution"][0]["sha256"] == "abc123"
+    assert "sha256" not in schema["distribution"][1]
+    # Unrelated Croissant fields are untouched.
+    assert schema["license"] == LICENSE_URLS["ODC-BY 1.0"]
+    assert len(schema["recordSet"]) == 1
+    mock_logger.warning.assert_not_called()
+    mock_logger.debug.assert_called_once()
+    assert "sample1/scan.tif" in mock_logger.debug.call_args.args[0]
+
+
+def test_get_schema_org_json_every_file_hashed_keeps_conforms_to(rf, settings, publication):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    publication.tree = entity_tree({"type": "file", "name": "scan.tif", "path": "/sample1/scan.tif", "sha256": "aa11"})
+    publication.save()
+
+    schema = get_schema_org_json(publication, publication.project_id, make_request(rf))
+
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    assert [file_object["sha256"] for file_object in schema["distribution"]] == ["abc123", "aa11"]
+
+
+def test_publication_with_unhashed_files_is_indexable_and_in_sitemap(client, settings):
+    """Withholding conformsTo only drops the Croissant claim: the landing page is still indexable
+    with its schema.org Dataset JSON-LD, and still listed in the sitemap."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.DEBUG = True
+    unhashed_file = {"type": "file", "name": "data.csv", "path": "/data.csv", "length": 2048}
+    pub = Publication.objects.create(
+        project_id="test.project-2",
+        value=valid_base_meta(fileObjs=[unhashed_file]),
+        tree={},
+        is_published=True,
+    )
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": pub.project_id})).content.decode()
+
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match is not None
+    assert robots_match.group(1).strip() == "index, follow, max-image-preview:large"
+    json_ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S)
+    assert json_ld is not None
+    schema = json.loads(json_ld.group(1))
+    assert schema["@type"] == "Dataset"
+    assert "conformsTo" not in schema
+    assert len(schema["distribution"]) == 1
+    assert "test.project-2" in client.get(reverse("sitemap")).content.decode()
 
 
 def test_get_schema_org_json_creator_without_institution_or_orcid(rf, publication):

@@ -34,6 +34,11 @@ REQUIRED_DATASET_FIELDS = ("name", "description")
 # get_schema_org_json).
 REQUIRED_CROISSANT_FIELDS = ("license", "creator", "datePublished", "distribution")
 
+# Croissant also requires a content checksum on every cr:FileObject in `distribution` -- either of
+# these properties satisfies it (mlcroissant: "At least one of these properties should be defined:
+# ['md5', 'sha256']"). A Dataset with any unhashed file is emitted without `conformsTo` too.
+CROISSANT_FILE_CHECKSUM_FIELDS = ("md5", "sha256")
+
 CROISSANT_1_0 = "http://mlcommons.org/croissant/1.0"
 
 # Same characters, same \uXXXX escaping Django's own `json_script` filter applies -- valid
@@ -584,6 +589,19 @@ def get_schema_org_json(pub, project_id, request):
                 f"{', '.join(croissant_missing)}, so its Dataset is emitted without conformsTo "
                 f"{CROISSANT_1_0}."
             )
+    # Every cr:FileObject also needs a checksum, or Croissant validators reject the whole Dataset.
+    # Logged at debug, not warning: no publish-time hashing step populates FileObj.sha256 yet, so
+    # today this applies to every publication with files, on every page render and sitemap build.
+    elif unhashed := [
+        file_object["@id"]
+        for file_object in schema_org_json["distribution"]
+        if not any(file_object.get(field) for field in CROISSANT_FILE_CHECKSUM_FIELDS)
+    ]:
+        del schema_org_json["conformsTo"]
+        logger.debug(
+            f"Publication {project_id} has {len(unhashed)} file(s) with no md5/sha256 checksum (e.g. "
+            f"{unhashed[0]}), so its Dataset is emitted without conformsTo {CROISSANT_1_0}."
+        )
 
     return schema_org_json
 
