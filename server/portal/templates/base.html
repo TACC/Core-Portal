@@ -1,19 +1,34 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
+    <!-- Analytics as early as possible in <head> (per Google's own gtag.js placement guidance), but after charset -- charset must be the first thing in <head> so the browser never has to re-parse the document if anything before it isn't plain ASCII. -->
+    {% include 'includes/analytics.html' %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="description" content="{{ site.description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block meta_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    <!-- public_data/urls.py's catch-all `index_fallback` route (r"^.*$") serves this same generic app shell -- same title/description, no unique content -- for literally any URL that isn't a publication landing page, since the workbench itself is a client-rendered, authenticated-by-default SPA with nothing server-rendered for a crawler to index. Defaulting to noindex here (and letting only the publication route  back in, via IndexView's per-page block override below) keeps Search from indexing  unbounded number of near-duplicate, contentless shell pages that would otherwise dilute relevance for the actual dataset pages this app wants ranked. "follow" (rather than "nofollow") is kept so link equity still flows through this shell's real static links (header/footer nav, docs, etc). -->
+    <meta name="robots" content="{% block robots %}noindex, follow{% endblock %}">
+    <!-- Open Graph / Twitter Card, so links shared externally (Slack, Discord, LinkedIn, X/ Twitter, iMessage) get a title+description(+image) preview card. og:image/twitter:image are emitted per-page (og_image block below, publication route only) from that publication's own coverImage, since there's no portal-wide image worth using as a fallback here (see PORTAL_ICON_FILENAME below: a .ico favicon per deployment, which most unfurlers won't render as a card image) -- the generic app-shell route this template otherwise renders just omits the tags. Twitter's own Card parser falls back to og:title/og:description/og:image when the twitter:* equivalents are absent, and no other unfurler reads twitter:* tags at all, so twitter:image/twitter:card are the only Twitter-specific tags needed here. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ settings.PORTAL_NAMESPACE }}">
+    <!-- Matches the `<html lang="en">` above (and DC.language/@language elsewhere in this document) -- og:locale wants the longer language_TERRITORY form, not a bare language code, so "en" becomes "en_US" here rather than being reused verbatim. -->
+    <meta property="og:locale" content="en_US">
+    <!-- `canonical_url` (set by public_data's IndexView, publication route only) is the same _get_landing_page_url-derived value already used for this page's JSON-LD `url` -- falls back to the current request's own URL everywhere else, so og:url/canonical never claim a URL that disagrees with the page's own structured data (a stale ?vN revision link, or a deployment where the DataCite URL prefix points at a different host than the one serving this request). -->
+    <meta property="og:url" content="{{ canonical_url|default:request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}{{ settings.PORTAL_NAMESPACE }} Workbench{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Explore published research datasets and computational tools on {{ settings.PORTAL_NAMESPACE }}.{% endblock %}">
+    {% block og_image %}{% endblock %}
+    <!-- "summary_large_image" only makes sense once there's an actual image (og_image block above) to render large -- otherwise it's the same plain title+description card as "summary", just requesting a layout the unfurler has nothing to fill. -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary{% endblock %}">
     {% if settings.PORTAL_ICON_FILENAME %}
     <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
     {% else %}
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     {% endif %}
-    <link rel="canonical" href="{{request.get_full_path}}">
+    <link rel="canonical" href="{{ canonical_url|default:request.build_absolute_uri }}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <style>
@@ -29,9 +44,6 @@
       {% endfor %}
     {% endif %}
     {% block styles %}{% endblock %}
-    <!-- used in general search -->
-    <meta name="keywords" content=""> <!-- related experiements, subject; used in search -->
-    <meta name="author" content=""> <!-- author names -->
     <!-- used in google citation -->
     {% block google_citation_meta %}{% endblock %}
   </head>

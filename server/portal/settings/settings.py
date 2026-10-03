@@ -538,6 +538,10 @@ PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = getattr(
     settings_custom, "_PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME", None
 )
 
+# Public HTTP mirror of PORTAL_PROJECTS_PUBLISHED_ROOT_DIR (e.g. web.corral). When set, published
+# file/cover-image routes redirect here instead of relaying bytes through Tapis.
+PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = getattr(settings_custom, "_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL", None)
+
 PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = getattr(settings_custom, "_PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME", None)
 
 PROJECT_ADMIN_GROUP = getattr(settings_custom, "_PROJECT_ADMIN_GROUP", "Project Admin")

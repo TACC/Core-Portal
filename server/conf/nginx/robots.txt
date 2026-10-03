@@ -1,2 +1,16 @@
 User-agent: *
 Disallow: /admin/
+
+# Two sitemaps: /sitemap.xml is Core-CMS's (CMS pages), and
+# /published-datasets/sitemap.xml is this portal's SitemapView
+# (published-dataset landing pages, public_data/views.py). Crawlers only
+# find the second one through this file, since it isn't at the
+# conventional root path.
+# __SERVER_NAME__ is a literal placeholder, not a real hostname.
+# nginx.conf's `/robots.txt` location substitutes it for nginx's own
+# $server_name at request time (sub_filter), so this line always reflects
+# whichever domain that deployment's nginx.conf is actually configured
+# for (see its `server_name` directive) instead of a value hardcoded here
+# that could drift from it.
+Sitemap: https://__SERVER_NAME__/sitemap.xml
+Sitemap: https://__SERVER_NAME__/published-datasets/sitemap.xml

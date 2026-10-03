@@ -1,6 +1,6 @@
 """
 .. module:: portal.apps.site_search.urls
-   :synopsis: Site Search URLs
+    :synopsis: Site Search URLs
 """
 
 import re
@@ -8,7 +8,7 @@ import re
 from django.conf import settings
 from django.urls import re_path
 
-from portal.apps.public_data.views import IndexView
+from portal.apps.public_data.views import IndexView, PublicationCoverImageView, PublicationFileDownloadView
 
 app_name = "public_data"
 
@@ -20,6 +20,26 @@ urlpatterns = [
         rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)(v(?P<revision>[0-9]+))?/?$",
         IndexView.as_view(),
         name="index",
+    ),
+    # Nested under the same path `index` above matches, so a file served from
+    # here is always in the same subdirectory as the landing page that links to
+    # it -- see PublicationFileDownloadView's docstring for why that matters
+    # (Google Scholar's citation_pdf_url same-subdirectory requirement). Must
+    # come before the `index_fallback` catch-all below, which would otherwise
+    # swallow this pattern first. `path` is [\s\S]+, not .+: `.` never matches a newline,
+    # which is legal in a filename -- with .+, reverse() raised for a name with a newline
+    # inside it (failing the landing page's whole JSON-LD), and URLs for a name ending in one
+    # reversed fine but never resolved.
+    re_path(
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/files/(?P<path>[\s\S]+)$",
+        PublicationFileDownloadView.as_view(),
+        name="file_download",
+    ),
+    # og:image/twitter:image for the landing page above. Also before `index_fallback`.
+    re_path(
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/cover-image$",
+        PublicationCoverImageView.as_view(),
+        name="cover_image",
     ),
     re_path(r"^.*$", IndexView.as_view(), name="index_fallback"),
 ]
