@@ -8,7 +8,7 @@ from urllib.parse import quote
 import requests
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.html import escape
 from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
@@ -180,11 +180,14 @@ def _get_distribution(file_objs, project_id, request):
         # the same way reverse() encodes this path inside `contentUrl` -- otherwise it would be
         # an invalid IRI for any path containing characters (spaces, etc.) that aren't legal
         # unescaped in one. `contentUrl` takes the raw path; reverse() does its own encoding.
+        content_url = _get_publication_file_url(project_id, path, request)
+        if content_url is None:
+            continue
         file_object = {
             "@type": "cr:FileObject",
             "@id": quote(path),
             "name": name,
-            "contentUrl": _get_publication_file_url(project_id, path, request),
+            "contentUrl": content_url,
         }
 
         # Croissant requires encodingFormat on every FileObject -- fall back to the generic
@@ -308,9 +311,18 @@ def _get_publication_file_url(project_id, path, request):
 
     `path` must be the file's raw (not percent-encoded) path: reverse() percent-encodes its own
     kwargs, so passing an already-quote()'d path here would double-encode it.
+
+    Returns None (and logs) if the route can't express `path`, and callers skip that one file:
+    a NoReverseMatch escaping from here would fail the whole page's JSON-LD -- leaving the
+    landing page noindex and out of the sitemap -- over a single file. The route accepts any
+    character (see public_data/urls.py), so this is a guard against future pattern changes.
     """
 
-    url_path = reverse("publications:file_download", kwargs={"project_id": project_id, "path": path})
+    try:
+        url_path = reverse("publications:file_download", kwargs={"project_id": project_id, "path": path})
+    except NoReverseMatch:
+        logger.warning(f"Publication {project_id}: no file_download URL for {path!r}; omitting that file.")
+        return None
     return f"{_get_configured_origin(request)}{url_path}"
 
 
@@ -434,7 +446,9 @@ def _get_citation_pdf_url(file_objs, project_id, request):
             continue
         encoding_format, _ = mimetypes.guess_type(name)
         if encoding_format == "application/pdf":
-            return _get_publication_file_url(project_id, path, request)
+            pdf_url = _get_publication_file_url(project_id, path, request)
+            if pdf_url:
+                return pdf_url
     return None
 
 

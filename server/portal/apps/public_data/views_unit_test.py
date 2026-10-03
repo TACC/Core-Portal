@@ -1,12 +1,13 @@
 import json
 import re
 from unittest.mock import patch
+from urllib.parse import unquote
 
 import networkx as nx
 import pytest
 from django.http import Http404
 from django.test import RequestFactory
-from django.urls import reverse
+from django.urls import NoReverseMatch, resolve, reverse
 
 from portal.apps.projects.schema_models.license_urls import LICENSE_URLS
 from portal.apps.projects.workspace_operations.datacite_operations import get_datacite_json
@@ -1492,3 +1493,119 @@ def test_datacite_url_matches_landing_page_url_and_sitemap(client, settings):
     assert datacite_url.startswith("https://vanity.example.org/")
     assert datacite_url == landing_page_url
     assert sitemap_locs == [datacite_url]
+
+
+# ---------------------------------------------------------------------------
+# Filenames with characters the file_download route used to reject (newlines)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "path",
+    ["new\nline.txt", "trailing-newline\n", "dir/sub dir/tab\there.txt", "back\\slash.txt", "plain.csv"],
+)
+def test_file_download_url_round_trips_any_filename(path):
+    """Every legal filename reverses to a URL that resolves back to file_download with the identical
+    path. With the old `.+` pattern a newline inside a name made reverse() raise, and a trailing
+    newline reversed to a URL that never resolved (a dead contentUrl)."""
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": path})
+
+    match = resolve(unquote(url))
+
+    assert match.url_name == "file_download"
+    assert match.kwargs == {"project_id": "test.project-1", "path": path}
+
+
+def test_newline_filename_keeps_landing_page_indexable_with_json_ld(client, settings):
+    """Regression: one file whose name contains a newline used to fail the whole page's JSON-LD
+    (NoReverseMatch), leaving it noindex with no structured data and out of the sitemap."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.DEBUG = True
+    file_objs = [
+        {"type": "file", "name": "data.csv", "path": "/data.csv", "sha256": "abc123"},
+        {"type": "file", "name": "new\nline.pdf", "path": "/docs/new\nline.pdf", "sha256": "def456"},
+    ]
+    pub = Publication.objects.create(
+        project_id="test.project-2", value=valid_base_meta(fileObjs=file_objs), tree={}, is_published=True
+    )
+
+    body = client.get(reverse("publications:index", kwargs={"project_id": pub.project_id})).content.decode()
+
+    robots_match = re.search(r'<meta name="robots" content="([^"]*)">', body)
+    assert robots_match.group(1).strip() == "index, follow, max-image-preview:large"
+    schema = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', body, re.S).group(1))
+    assert schema["conformsTo"] == "http://mlcommons.org/croissant/1.0"
+    newline_file = schema["distribution"][1]
+    assert newline_file["@id"] == "docs/new%0Aline.pdf"
+    assert newline_file["contentUrl"].endswith("/files/docs/new%0Aline.pdf")
+    # The only PDF is the newline-named one, so it's also citation_pdf_url.
+    assert 'name="citation_pdf_url" content="' in body
+    assert "test.project-2" in client.get(reverse("sitemap")).content.decode()
+
+
+def test_newline_filename_download_redirects_to_web_mirror(client, settings):
+    """The advertised contentUrl actually serves the file: the request resolves to file_download,
+    passes the allow-list, and redirects with the newline percent-encoded (no raw newline in the
+    Location header)."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value=valid_base_meta(fileObjs=[{"type": "file", "name": "a\nb.bin", "path": "/dir/a\nb.bin"}]),
+        tree={},
+    )
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "dir/a\nb.bin"})
+
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{WEB_BASE_URL}/test.project-1/dir/a%0Ab.bin"
+
+
+def test_newline_filename_download_streams_from_tapis_without_mirror(client, requests_mock, v1_publication):
+    v1_publication.value = valid_base_meta(fileObjs=[{"type": "file", "name": "a\nb.bin", "path": "/a\nb.bin"}])
+    v1_publication.save()
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a%0Ab.bin", content=b"bytes")
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "a\nb.bin"})
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert b"".join(response.streaming_content) == b"bytes"
+    # Django encodes the non-quotable name as filename*= rather than putting a raw newline in a header.
+    assert response["Content-Disposition"] == "inline; filename*=utf-8''a%0Ab.bin"
+
+
+def test_undeclared_newline_path_is_still_404(client, settings, v1_publication):
+    """Accepting newlines in the route doesn't widen what's served: the allow-list still applies."""
+    settings.PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = WEB_BASE_URL
+    url = reverse("publications:file_download", kwargs={"project_id": "test.project-1", "path": "data.csv\n"})
+
+    assert client.get(url).status_code == 404
+
+
+@patch("portal.apps.public_data.views.logger")
+def test_unreversible_file_is_skipped_not_fatal(mock_logger, rf, settings, publication):
+    """Guard for any future route change: a file whose URL can't be built is omitted -- from
+    distribution and as citation_pdf_url -- and logged, instead of failing the page's JSON-LD."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    file_objs = [
+        {"type": "file", "name": "bad.pdf", "path": "/bad.pdf"},
+        {"type": "file", "name": "good.pdf", "path": "/good.pdf"},
+    ]
+    real_reverse = reverse
+
+    def reverse_rejecting_bad(viewname, kwargs=None, **extra):
+        if kwargs and kwargs.get("path") == "bad.pdf":
+            raise NoReverseMatch("simulated")
+        return real_reverse(viewname, kwargs=kwargs, **extra)
+
+    request = make_request(rf)
+    with patch("portal.apps.public_data.views.reverse", side_effect=reverse_rejecting_bad):
+        distribution = _get_distribution(file_objs, "test.project-1", request)
+        pdf_url = _get_citation_pdf_url(file_objs, "test.project-1", request)
+        assert _get_publication_file_url("test.project-1", "bad.pdf", request) is None
+
+    assert [file_object["@id"] for file_object in distribution] == ["good.pdf"]
+    assert pdf_url.endswith("/files/good.pdf")
+    assert "bad.pdf" in mock_logger.warning.call_args.args[0]

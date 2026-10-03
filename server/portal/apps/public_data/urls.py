@@ -26,9 +26,12 @@ urlpatterns = [
     # it -- see PublicationFileDownloadView's docstring for why that matters
     # (Google Scholar's citation_pdf_url same-subdirectory requirement). Must
     # come before the `index_fallback` catch-all below, which would otherwise
-    # swallow this pattern first.
+    # swallow this pattern first. `path` is [\s\S]+, not .+: `.` never matches a newline,
+    # which is legal in a filename -- with .+, reverse() raised for a name with a newline
+    # inside it (failing the landing page's whole JSON-LD), and URLs for a name ending in one
+    # reversed fine but never resolved.
     re_path(
-        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/files/(?P<path>.+)$",
+        rf"^{published_prefix}\.(?P<project_id>{id_prefix}-[0-9]+)/files/(?P<path>[\s\S]+)$",
         PublicationFileDownloadView.as_view(),
         name="file_download",
     ),
