@@ -100,7 +100,7 @@ function useCopy() {
     callback: any;
   }) => {
     const filteredSelected = selected
-      .filter((f: any) => status[f.id] !== 'SUCCESS')
+      .filter((f: any) => !['SUCCESS', 'ACCEPTED'].includes(status[f.id]))
       .map((f: any) => ({ ...f, api: srcApi }));
     const copyCalls: Promise<any>[] = filteredSelected.map((file: any) => {
       // Copy File
@@ -108,51 +108,75 @@ function useCopy() {
         type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
         payload: { status: 'RUNNING', key: file.id, operation: 'copy' },
       });
-      return mutateAsync(
-        {
-          api: file.api,
-          scheme: scheme,
-          system: file.system,
-          path: file.path,
-          filename: file.name,
-          filetype: file.type,
-          destApi,
-          destSystem,
-          destPath,
-          destPathName: name,
-          metadata: file.metadata,
+      return mutateAsync({
+        api: file.api,
+        scheme,
+        system: file.system,
+        path: file.path,
+        filename: file.name,
+        filetype: file.type,
+        destApi,
+        destSystem,
+        destPath,
+        destPathName: name,
+        metadata: file.metadata,
+      }).then(
+        (response) => {
+          const pending = response.data?.pending === true;
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: {
+              status: pending ? 'ACCEPTED' : 'SUCCESS',
+              key: file.id,
+              operation: 'copy',
+            },
+          });
+          return { pending };
         },
-        {
-          onSuccess: () => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'SUCCESS', key: file.id, operation: 'copy' },
-            });
-          },
-          onError: (error: any) => {
-            dispatch({
-              type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-              payload: { status: 'ERROR', key: file.id, operation: 'copy' },
-            });
-          },
+        (error) => {
+          dispatch({
+            type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+            payload: { status: 'ERROR', key: file.id, operation: 'copy' },
+          });
+          throw error;
         }
       );
     });
-    // Result
-    Promise.all(copyCalls).then(() => {
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'copy', props: {} },
-      });
-      dispatch({
-        type: 'ADD_TOAST',
-        payload: {
-          message: `${
-            copyCalls.length > 1 ? `${copyCalls.length} files` : 'File'
-          } copied to ${truncateMiddle(`${destPath}`, 20) || '/'}`,
-        },
-      });
-      callback();
+    return Promise.allSettled(copyCalls).then((results) => {
+      const completed = results.filter(
+        (r) => r.status === 'fulfilled' && !r.value.pending
+      ).length;
+      const pending = results.filter(
+        (r) => r.status === 'fulfilled' && r.value.pending
+      ).length;
+      if (results.every((r) => r.status === 'fulfilled')) {
+        dispatch({
+          type: 'DATA_FILES_TOGGLE_MODAL',
+          payload: { operation: 'copy', props: {} },
+        });
+      }
+      if (pending) {
+        const fileLabel = pending === 1 ? 'file' : 'files';
+        dispatch({
+          type: 'ADD_TOAST',
+          payload: {
+            status: 'INFO',
+            message: `Copy started for ${pending} ${fileLabel}. You will be notified when complete.`,
+          },
+        });
+      }
+      if (completed) {
+        const fileLabel = completed === 1 ? 'File' : 'Files';
+        dispatch({
+          type: 'ADD_TOAST',
+          payload: {
+            message: `${fileLabel} copied to ${
+              truncateMiddle(destPath, 20) || '/'
+            }`,
+          },
+        });
+        callback();
+      }
     });
   };
   return { copy, status, setStatus };
