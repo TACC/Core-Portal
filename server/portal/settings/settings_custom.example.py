@@ -235,6 +235,11 @@ _PORTAL_PROJECTS_ROOT_REVIEW_SYSTEM_NAME = "cep.project.review"
 _PORTAL_PROJECTS_PUBLISHED_SYSTEM_PREFIX = "cep.project.published"
 _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR = "/corral/tacc/aci/CEP/projects/published"
 _PORTAL_PROJECTS_PUBLISHED_ROOT_SYSTEM_NAME = "cep.project.published"
+# Public HTTP mirror of _PORTAL_PROJECTS_PUBLISHED_ROOT_DIR (e.g. web.corral). When set, published
+# file and cover-image URLs on landing pages 302-redirect here instead of streaming bytes through
+# Tapis and uWSGI. Leave as None to stream from Tapis (fine for local dev; slow for large files).
+# e.g. "https://web.corral.tacc.utexas.edu/digitalporousmedia"
+_PORTAL_PROJECTS_PUBLISHED_WEB_BASE_URL = None
 
 _PORTAL_PUBLICATION_REVIEWERS_GROUP_NAME = "PROJECT_REVIEWER"
 _PROJECT_ADMIN_GROUP = "Project Admin"
