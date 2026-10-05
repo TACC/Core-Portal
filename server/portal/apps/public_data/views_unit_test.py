@@ -2,9 +2,11 @@ import json
 import re
 from unittest.mock import patch
 from urllib.parse import unquote
+from xml.etree import ElementTree
 
 import networkx as nx
 import pytest
+import requests
 from django.http import Http404
 from django.test import RequestFactory
 from django.urls import NoReverseMatch, resolve, reverse
@@ -673,6 +675,21 @@ def test_publication_file_download_view_502s_on_tapis_error(rf, requests_mock, v
     assert response.status_code == 502
 
 
+@pytest.mark.parametrize("exc", [requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout])
+@patch("portal.apps.public_data.views.logger")
+def test_publication_file_download_view_502s_when_tapis_unreachable(
+    mock_logger, rf, requests_mock, v1_publication, exc
+):
+    requests_mock.get(f"{TAPIS_CONTENT_URL}/test.project.published.test.project-1/a.csv", exc=exc)
+    request = make_request(rf)
+
+    response = PublicationFileDownloadView.as_view()(request, project_id="test.project-1", path="a.csv")
+
+    assert response.status_code == 502
+    mock_logger.exception.assert_called_once()
+    assert "test.project.published.test.project-1/a.csv" in mock_logger.exception.call_args.args[0]
+
+
 def test_file_download_route_is_matched_before_index_fallback(client, requests_mock, v1_publication):
     """public_data/urls.py's `file_download` pattern is listed before the catch-all
     `index_fallback` (r"^.*$") specifically so a `/files/...` URL reaches
@@ -829,6 +846,16 @@ def test_get_publication_file_objs_combines_root_and_entity_nodes_deduped_by_pat
     paths = sorted(file_obj["path"].strip("/") for file_obj in _get_publication_file_objs(publication))
 
     assert paths == ["data.csv", "files/paper.pdf"]
+
+
+def test_get_publication_file_objs_skips_file_objects_without_a_path(publication):
+    publication.tree = entity_tree(
+        {"type": "file", "name": "no-path.bin"},
+        {"type": "file", "name": "empty.bin", "path": ""},
+        {"type": "file", "name": "root.bin", "path": "/"},
+    )
+
+    assert [file_obj["path"] for file_obj in _get_publication_file_objs(publication)] == ["/data.csv"]
 
 
 def test_get_publication_file_objs_tolerates_empty_tree_and_valueless_nodes(publication):
@@ -1395,6 +1422,51 @@ def test_sitemap_view_lists_published_publications_in_order(client, settings):
     second_index = body.index("test.project-2")
     assert first_index < second_index
     assert "test.project-3" not in body
+
+
+def test_sitemap_view_is_well_formed_sitemap_protocol_xml(client, settings):
+    """Parse the body as XML (not substring checks): every <url> has an absolute, same-origin
+    <loc> matching the landing page's canonical URL and a W3C-date <lastmod>."""
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://data.example.org/published-datasets"
+    pubs = [
+        Publication.objects.create(project_id=f"test.project-{n}", value=valid_base_meta(), tree={}, is_published=True)
+        for n in (1, 2)
+    ]
+
+    response = client.get(reverse("sitemap"))
+
+    ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    root = ElementTree.fromstring(response.content)
+    assert root.tag == f"{{{ns['sm']}}}urlset"
+    urls = root.findall("sm:url", ns)
+    assert len(urls) == len(pubs)
+    for url, pub in zip(urls, pubs, strict=True):
+        loc = url.findtext("sm:loc", namespaces=ns)
+        assert loc == f"https://data.example.org{reverse('publications:index', kwargs={'project_id': pub.project_id})}"
+        assert url.findtext("sm:lastmod", namespaces=ns) == pub.last_updated.date().isoformat()
+        assert set(child.tag for child in url) == {f"{{{ns['sm']}}}loc", f"{{{ns['sm']}}}lastmod"}
+
+
+def test_sitemap_view_escapes_xml_special_characters_in_loc(client, settings):
+    settings.PORTAL_PUBLICATION_PUBLISHER = "Test Publisher"
+    settings.PORTAL_PUBLICATION_DATACITE_URL_PREFIX = "https://a&b.example.org/published-datasets"
+    Publication.objects.create(project_id="test.project-1", value=valid_base_meta(), tree={}, is_published=True)
+
+    response = client.get(reverse("sitemap"))
+
+    assert b"a&amp;b.example.org" in response.content
+    loc = ElementTree.fromstring(response.content).findtext(
+        "sm:url/sm:loc", namespaces={"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    )
+    assert loc.startswith("https://a&b.example.org/")
+
+
+def test_sitemap_view_empty_urlset_is_well_formed(client):
+    root = ElementTree.fromstring(client.get(reverse("sitemap")).content)
+
+    assert root.tag == "{http://www.sitemaps.org/schemas/sitemap/0.9}urlset"
+    assert list(root) == []
 
 
 @patch("portal.apps.public_data.views.logger")

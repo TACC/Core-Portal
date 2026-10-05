@@ -887,6 +887,38 @@ def test_load_publication_file_checksums_manifest_replaces_stale_hash(mock_manif
     assert Publication.objects.get(project_id="test.project-1").value["fileObjs"][0]["sha256"] == H1
 
 
+def test_load_publication_file_checksums_skips_save_when_hashes_unchanged(mocker, mock_manifest):
+    """Re-loading the same manifest (e.g. a backfill rerun) mustn't save -- that would bump
+    last_updated, and with it the landing page's dateModified and the sitemap's <lastmod>."""
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin", "sha256": H1}]},
+        tree=node_link_tree({"type": "file", "name": "b.bin", "path": "/b.bin", "sha256": H2}),
+    )
+    mock_manifest.return_value = {"a.bin": H1, "b.bin": H2}
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_not_called()
+
+
+def test_load_publication_file_checksums_saves_only_value_tree_and_last_updated(mocker, mock_manifest):
+    Publication.objects.create(
+        project_id="test.project-1",
+        version=1,
+        value={"title": "T", "fileObjs": [{"type": "file", "name": "a.bin", "path": "/a.bin", "sha256": H1}]},
+        tree=node_link_tree({"type": "file", "name": "b.bin", "path": "/b.bin"}),
+    )
+    mock_manifest.return_value = {"a.bin": H1, "b.bin": H2}
+    mock_save = mocker.patch.object(Publication, "save")
+
+    load_publication_file_checksums("test.project-1", 1)
+
+    mock_save.assert_called_once_with(update_fields=["value", "tree", "last_updated"])
+
+
 def test_load_publication_file_checksums_warns_about_files_missing_from_manifest(mocker, mock_manifest):
     Publication.objects.create(
         project_id="test.project-1",
