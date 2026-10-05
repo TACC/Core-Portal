@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '_common';
@@ -12,10 +12,10 @@ import { fetchUtil } from 'utils/fetchUtil';
 import * as ROUTES from '../../constants/routes';
 
 export const SubmissionsUpload = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadCallback = () => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const { data: allSystems } = useSystems();

@@ -18,10 +18,11 @@ FROM ghcr.io/pnpm/pnpm:12 AS node_build
 RUN pnpm runtime set node 24 -g
 WORKDIR /client
 
-COPY client/package.json client/pnpm-lock.yaml client/pnpm-workspace.yaml ./
-RUN --mount=type=cache,id=pnpm-core,target=/pnpm/store pnpm install --frozen-lockfile
-
 COPY ./client/ ./
+
+RUN --mount=type=cache,id=pnpm-core,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
 RUN pnpm run build
 
 

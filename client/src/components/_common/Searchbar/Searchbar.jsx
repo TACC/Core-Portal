@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, DropdownSelector } from '_common';
 import { useSystemDisplayName } from 'hooks/datafiles';
@@ -23,7 +23,7 @@ const Searchbar = ({
 }) => {
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { query_string: hasQuery, filter: filterType } = queryString.parse(
     location.search
@@ -42,7 +42,7 @@ const Searchbar = ({
       filter: newFilter || undefined,
       page: !infiniteScroll ? 1 : undefined,
     });
-    history.push(`${location.pathname}?${updatedQuery}`);
+    navigate(`${location.pathname}?${updatedQuery}`);
   };
 
   const routeSearch = () => {
@@ -52,7 +52,7 @@ const Searchbar = ({
       query_string: query?.trim() || undefined,
       page: !infiniteScroll ? 1 : undefined,
     });
-    history.push(`${location.pathname}?${updatedQuery}`);
+    navigate(`${location.pathname}?${updatedQuery}`);
 
     if (siteSearch) window.dispatchEvent(new Event('portal.search'));
   };
@@ -73,7 +73,7 @@ const Searchbar = ({
       applyFilter(undefined);
     }
     setQuery('');
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const getValidationMessage = (value) => {
