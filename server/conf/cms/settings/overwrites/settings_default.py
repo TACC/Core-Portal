@@ -1,12 +1,15 @@
 ########################
-# DJANGO SETTINGS
+# DJANGO
 ########################
 
-SECRET_KEY = "replacethiswithareallysecureandcomplexsecretkeystring"
+CSRF_TRUSTED_ORIGINS = ["https://cep.test"]
+
 LOGIN_REDIRECT_URL = "/workbench/dashboard/"
 
+SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
+
 ########################
-# ELASTICSEARCH
+# SEARCH
 ########################
 
 ES_AUTH = "username:password"
@@ -23,21 +26,3 @@ HAYSTACK_CONNECTIONS = {
         "KWARGS": {"http_auth": ES_AUTH},
     }
 }
-
-########################
-# RECAPTCHA SETTINGS
-########################
-
-RECAPTCHA_PUBLIC_KEY = ""
-RECAPTCHA_PRIVATE_KEY = ""
-SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
-
-########################
-# REDMINE TRACKER AUTH
-########################
-
-RT_HOST = ""
-RT_UN = ""
-RT_PW = ""
-RT_QUEUE = ""
-RT_TAG = ""
