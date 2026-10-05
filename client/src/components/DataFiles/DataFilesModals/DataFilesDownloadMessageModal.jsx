@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { Button, FormField, InlineMessage, SectionMessage } from '_common';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useCompress } from 'hooks/datafiles/mutations';
 import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesDownloadMessageModal = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { compress, status, setStatus } = useCompress();
@@ -35,7 +35,7 @@ const DataFilesDownloadMessageModal = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
       setStatus({});
-      history.push(location.pathname);
+      navigate(location.pathname);
     }
   };
 

@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik';
 import { SectionTableWrapper, Section, Button } from '_common';
 import styles from '../PublicationWizard.module.scss';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Reviewer step: approve/publish, publish a new version, or reject a request.
 const SubmitPublicationReview = ({ callbackUrl, contact }) => {
@@ -12,7 +12,7 @@ const SubmitPublicationReview = ({ callbackUrl, contact }) => {
 
   const { doi } = useSelector((state) => state.projects.metadata);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -38,7 +38,7 @@ const SubmitPublicationReview = ({ callbackUrl, contact }) => {
     if (isApproveSuccess || isRejectSuccess) {
       setSubmitDisabled(false);
       resetForm();
-      history.replace(callbackUrl);
+      navigate(callbackUrl, { replace: true });
     }
   }, [isApproveSuccess, isRejectSuccess]);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from '_common';
 import * as Yup from 'yup';
@@ -22,10 +22,10 @@ const DataFilesRenameModal = () => {
   const toggle = () => toggleModal({ operation: 'rename', props: {} });
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const reloadPage = (name, newPath) => {
-    history.push(location.pathname);
+    navigate(location.pathname);
   };
 
   const validationSchema = Yup.object().shape({

@@ -1,10 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { pushSystemKeys } from '../sagas/systems.sagas';
 import { fetchUtil } from 'utils/fetchUtil';
-import { vi } from 'vitest';
-
-// Mocks the cross-fetch
-vi.mock('cross-fetch');
 
 // Test the pushSystemKeys function
 describe('pushSystemKeys', () => {
