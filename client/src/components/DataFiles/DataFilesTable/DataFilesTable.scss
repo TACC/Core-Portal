@@ -46,6 +46,29 @@
   padding-right: 15px;
   flex-grow: 1;
 }
+.td:has(
+  .loading-icon,     /* <LoadingSpinner> */
+  [role="checkbox"], /* <Checkbox> */
+  [type="checkbox"]  /* <input type="checkbox"> */
+) {
+  flex-grow: 0;
+  padding-right: unset;
+  padding-left: unset;
+  width: 45px;
+  text-align: center;
+}
+.td:has(
+  > .icon              /* <Icon name={iconName}> */
+) {
+  flex-grow: 0;
+  padding-left: unset;
+  padding-right: 10px;
+}
+.td:has(
+  .data-files-name
+) {
+  padding-left: unset;
+}
 
 /* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
 .listing-placeholder {
