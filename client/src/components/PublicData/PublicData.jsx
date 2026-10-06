@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { parse } from 'query-string';
+import queryStringParser from 'query-string';
 import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
 import { useSelectedFiles } from 'hooks/datafiles';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -81,7 +81,9 @@ const PublicData = () => {
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
   const { api, scheme, system, path } = useParams();
   const dispatch = useDispatch();
-  const { query_string: queryString, filter } = parse(useLocation().search);
+  const { query_string: queryString, filter } = queryStringParser.parse(
+    useLocation().search
+  );
   useLayoutEffect(() => {
     dispatch({
       type: 'FETCH_FILES',
