@@ -20,7 +20,7 @@ export const handlers = [
     return HttpResponse.json({});
   }),
   http.post('/api/tickets/', async ({ request }) => {
-    await delay(10);
+    await delay();
     return HttpResponse.json({ ticket_id: 1234 });
   }),
 ];
