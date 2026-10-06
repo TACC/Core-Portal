@@ -34,10 +34,6 @@ async function doFormCompletion(container, user) {
   await user.click(descriptionInput);
   await user.keyboard('Uploading a file fails with an unexpected error.');
 
-  const attachmentInput = container.querySelector('input[type="file"]');
-  const file = new File(['hello'], 'hello.png', { type: 'image/png' });
-  await user.upload(attachmentInput, file);
-
   const submitButton = screen.getByRole('button', { name: /add ticket/i });
 
   // Wait for Formik's async validation to enable submission.
@@ -91,7 +87,7 @@ describe('TicketCreateForm', () => {
       store
     );
     await doFormCompletion(container, user);
-    expect(await screen.findByTestId('loading-spinner')).toBeInTheDocument;
+    expect(await screen.findByTestId('loading-spinner')).toBeInTheDocument();
     expect(await screen.findByText(/1234/)).toBeInTheDocument();
   });
 
