@@ -87,7 +87,7 @@ describe('TicketCreateForm', () => {
       store
     );
     await doFormCompletion(container, user);
-    expect(await screen.findByTestId('loading-spinner')).toBeInTheDocument();
+    expect(await screen.findByTestId('loading-spinner'));
     expect(await screen.findByText(/1234/)).toBeInTheDocument();
   });
 
