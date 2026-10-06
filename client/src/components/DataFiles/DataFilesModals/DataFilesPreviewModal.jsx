@@ -15,9 +15,14 @@ const DataFilesPreviewModal = () => {
   );
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
-  const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
+  const previewUsingHref =
+    isOpen && !isLoading && !hasError && !previewUsingTextContent;
   const previewUsingBrainmap =
-    !isLoading && !hasError && params.path && fileType == 'brainmap';
+    isOpen &&
+    !isLoading &&
+    !hasError &&
+    !!params.path &&
+    fileType == 'brainmap';
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
   const portalName = useSelector((state) => state.workbench.portalName);
