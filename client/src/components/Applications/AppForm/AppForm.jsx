@@ -11,6 +11,7 @@ import {
   SectionMessage,
 } from '_common';
 import * as Yup from 'yup';
+import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
@@ -133,7 +134,7 @@ export const AppDetail = () => {
       {!app.definition && <AppPlaceholder apps={hasApps} />}
       {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.definition.html)}
+          {parse(DOMPurify.sanitize(app.definition.html))}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -231,7 +232,7 @@ const AppInfo = ({ app }) => {
     <div className="appInfo-wrapper">
       <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.definition.description || '')}
+        {parse(DOMPurify.sanitize(app.definition.description || ''))}
       </div>
       {app.definition.notes.helpUrl ? (
         <a
