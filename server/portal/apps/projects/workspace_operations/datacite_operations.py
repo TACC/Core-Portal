@@ -7,6 +7,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
+from portal.apps.projects.schema_models.orcid import ORCID_URL_PREFIX, orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 
 
@@ -118,13 +119,16 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
         if institution:
             creator["affiliation"] = [{"name": institution}]
 
-        orcid_id = (author.get("orcid_id") or "").strip()
-        if orcid_id:
+        # Normalized the same way the landing page's `sameAs` is (projects/schema_models/
+        # orcid.py): a stored URL, a lowercase "x" or an unhyphenated iD all register as the
+        # same canonical URL, and an invalid value is left out rather than sent to DataCite.
+        author_orcid_url = orcid_url(author.get("orcid_id"))
+        if author_orcid_url:
             creator["nameIdentifiers"] = [
                 {
-                    "nameIdentifier": f"https://orcid.org/{orcid_id}",
+                    "nameIdentifier": author_orcid_url,
                     "nameIdentifierScheme": "ORCID",
-                    "schemeUri": "https://orcid.org",
+                    "schemeUri": ORCID_URL_PREFIX.rstrip("/"),
                 }
             ]
 

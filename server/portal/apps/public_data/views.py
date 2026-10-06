@@ -14,6 +14,7 @@ from django.utils.http import content_disposition_header
 from django.views.generic.base import TemplateView, View
 
 from portal.apps.projects.schema_models.license_urls import resolve_license_url
+from portal.apps.projects.schema_models.orcid import orcid_url
 from portal.apps.public_data.origin import get_configured_origin
 from portal.apps.publications.models import Publication
 
@@ -56,10 +57,6 @@ _JSON_LD_HTML_ESCAPES = {
     ord("&"): "\\u0026",
 }
 
-# Matches the standard ORCID iD checksum format -- 16 digits in four hyphenated groups, the
-# last character optionally "X" -- e.g. the canonical example "0000-0002-1825-0097".
-_ORCID_ID_RE = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
-
 # Published files are relayed to the client in chunks of this size rather than buffered whole
 # (tapipy's files.getContents returns the entire file as one bytes object), since a published
 # dataset's files can run to multiple GB.
@@ -93,23 +90,16 @@ def _get_license(base_meta, project_id):
 
 def _get_orcid_same_as(author):
     """Resolve an author's `orcid_id` (set by get_project_user from the user's profile, or by
-    the publish form's AddOrcidModal) to its canonical https://orcid.org/ profile URL, for that
-    creator's `sameAs` -- or None if the author has no (validly formed) ORCID. Same key
-    datacite_operations.get_datacite_json reads for `nameIdentifiers`.
+    the publish form's AddOrcidModal) to its canonical https://orcid.org/ URL, for that
+    creator's `sameAs`, or None if it has no valid ORCID. Normalized by projects/
+    schema_models/orcid.py, the same function datacite_operations.get_datacite_json uses for
+    `nameIdentifiers`, so both always agree.
 
     Unlike `license` (a REQUIRED_CROISSANT_FIELDS entry), a malformed ORCID isn't worth failing
-    the whole page's JSON-LD over -- it's just dropped, the same way _format_citation_date
-    degrades rather than raises.
+    the whole page's JSON-LD over: it's just left out.
     """
 
-    orcid = (author.get("orcid_id") or "").strip()
-    if not orcid:
-        return None
-    if orcid.startswith("http://") or orcid.startswith("https://"):
-        return orcid
-    if _ORCID_ID_RE.fullmatch(orcid):
-        return f"https://orcid.org/{orcid}"
-    return None
+    return orcid_url(author.get("orcid_id"))
 
 
 def _get_configured_origin(request):

@@ -185,6 +185,38 @@ def test_get_datacite_json_author_with_blank_orcid_omits_name_identifiers(orcid_
     assert "nameIdentifiers" not in result["creators"][0]
 
 
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "orcid_id,expected",
+    [
+        # A stored URL must not be prefixed a second time.
+        ("https://orcid.org/0000-0002-1825-0097", "https://orcid.org/0000-0002-1825-0097"),
+        ("0000-0002-9079-593x", "https://orcid.org/0000-0002-9079-593X"),
+        ("0000000218250097", "https://orcid.org/0000-0002-1825-0097"),
+    ],
+)
+def test_get_datacite_json_normalizes_orcid_name_identifier(orcid_id, expected):
+    base_meta = minimal_base_meta(
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", "orcid_id": orcid_id}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["creators"][0]["nameIdentifiers"] == [
+        {"nameIdentifier": expected, "nameIdentifierScheme": "ORCID", "schemeUri": "https://orcid.org"}
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("orcid_id", ["not-an-orcid", "0000-0002-1825-0098", "https://example.com/0000-0002-1825-0097"])
+def test_get_datacite_json_invalid_orcid_omits_name_identifiers(orcid_id):
+    base_meta = minimal_base_meta(
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", "orcid_id": orcid_id}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert "nameIdentifiers" not in result["creators"][0]
+
+
 @pytest.mark.django_db
 @override_settings(VANITY_BASE_URL="", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="")
 def test_get_datacite_json_raises_without_any_configured_origin():

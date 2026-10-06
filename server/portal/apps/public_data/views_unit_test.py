@@ -141,12 +141,18 @@ def test_get_license_falsy_passthrough(base_meta):
 # ---------------------------------------------------------------------------
 
 
-def test_get_orcid_same_as_url_passthrough():
-    author = {"orcid_id": "https://orcid.org/0000-0002-1825-0097"}
-    assert _get_orcid_same_as(author) == "https://orcid.org/0000-0002-1825-0097"
+@pytest.mark.parametrize(
+    "orcid", ["https://orcid.org/0000-0002-1825-0097", "http://www.orcid.org/0000-0002-1825-0097/"]
+)
+def test_get_orcid_same_as_normalizes_url(orcid):
+    assert _get_orcid_same_as({"orcid_id": orcid}) == "https://orcid.org/0000-0002-1825-0097"
 
 
-@pytest.mark.parametrize("orcid", ["0000-0002-1825-0097", "0000-0002-1825-000X"])
+def test_get_orcid_same_as_rejects_non_orcid_url():
+    assert _get_orcid_same_as({"orcid_id": "https://example.com/0000-0002-1825-0097"}) is None
+
+
+@pytest.mark.parametrize("orcid", ["0000-0002-1825-0097", "0000-0002-9079-593X"])
 def test_get_orcid_same_as_valid_raw_id(orcid):
     assert _get_orcid_same_as({"orcid_id": orcid}) == f"https://orcid.org/{orcid}"
 
