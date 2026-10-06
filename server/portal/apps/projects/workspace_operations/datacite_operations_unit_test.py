@@ -119,6 +119,37 @@ def test_get_datacite_json_with_institution_and_authors():
 
 @DATACITE_SETTINGS
 @pytest.mark.django_db
+@pytest.mark.parametrize("institution", [None, "", "   "])
+def test_get_datacite_json_omits_affiliation_without_institution(institution):
+    """The DPMP publish form has no institution field. DataCite rejects a null
+    affiliation name, so affiliation is left out instead of sent as {"name": null}."""
+    base_meta = minimal_base_meta(
+        authors=[{"first_name": "Ada", "last_name": "Lovelace"}],
+        **({} if institution is None else {"institution": institution}),
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+    assert result["creators"] == [
+        {"name": "Lovelace, Ada", "nameType": "Personal", "givenName": "Ada", "familyName": "Lovelace"}
+    ]
+    assert "contributors" not in result
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_strips_institution_whitespace():
+    base_meta = minimal_base_meta(
+        institution="  Test University  ",
+        authors=[{"first_name": "Ada", "last_name": "Lovelace"}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+
+    assert result["creators"][0]["affiliation"] == [{"name": "Test University"}]
+    assert result["contributors"][0]["name"] == "Test University"
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
 def test_get_datacite_json_author_missing_name_parts_defaults_to_empty_string():
     base_meta = minimal_base_meta(authors=[{}])
     result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")

@@ -92,7 +92,8 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
     author_attr = []
     institutions = []
 
-    institution = base_meta.get("institution")
+    # Whitespace-only counts as unset too, so it can't become a blank affiliation name.
+    institution = (base_meta.get("institution") or "").strip() or None
 
     for author in base_meta.get("authors", []):
         first_name = author.get("first_name", "")
@@ -107,12 +108,15 @@ def get_datacite_json(pub_graph: nx.DiGraph, project_id: str, version: int | Non
             "nameType": "Personal",
             "givenName": first_name,
             "familyName": last_name,
-            # DataCite's schema types schemeUri/affiliationIdentifier/
-            # affiliationIdentifierScheme as strings only (no null variant)
-            # -- omit them rather than send explicit nulls, since there's
-            # no data source for them yet (only `institution`).
-            "affiliation": [{"name": institution}],
         }
+        # DataCite requires `name` on every affiliation, and allows only strings
+        # (no null) for it and for schemeUri/affiliationIdentifier/
+        # affiliationIdentifierScheme. So `affiliation` is left out entirely when
+        # there's no institution (the DPMP publish form doesn't collect one),
+        # rather than sent as [{"name": null}]. The identifier fields are always
+        # left out: nothing supplies them yet.
+        if institution:
+            creator["affiliation"] = [{"name": institution}]
 
         orcid_id = (author.get("orcid_id") or "").strip()
         if orcid_id:
