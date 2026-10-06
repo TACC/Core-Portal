@@ -12,9 +12,10 @@
     "#/lib/*": "./lib/*.ts"
   },
   "exports": {
+    "./components/*": "./components/*.tsx",
     "./hooks/*": "./hooks/*.ts",
-    "./styles/*": "./styles/*",
-    "./*": "./components/ui/*.tsx"
+    "./components/ui/*": "./components/ui/*.tsx",
+    "./styles/*": "./styles/*"
   },
   "keywords": [],
   "author": "",
