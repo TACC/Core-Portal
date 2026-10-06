@@ -48,18 +48,15 @@
 }
 .td:nth-child(1) /* checkbox/loading */ {
   flex-grow: 0;
-  padding-right: unset;
-  padding-left: unset;
+  padding-inline: unset;
   width: 45px;
   text-align: center;
 }
 .td:nth-child(2) /* file icon */ {
   flex-grow: 0;
   padding-left: unset;
-  padding-right: 10px;
 }
 .td:nth-child(3) /* file name */ {
-  flex-grow: 1;
   padding-left: unset;
 }
 
