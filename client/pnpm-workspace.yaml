@@ -1,5 +1,5 @@
 allowBuilds:
-  "@parcel/watcher": true
+  '@parcel/watcher': true
   esbuild: true
   msw: true
 
@@ -8,13 +8,13 @@ minimumReleaseAgeExclude:
   - '@tacc/core-styles'
 
 packages:
-  - "packages/*"
+  - 'packages/*'
 
 catalog:
   react: ^19.3.0
-  "@tanstack/react-query": "^5.102.8"
-  "axios": "^1.20.0"
-  "typescript": "^5.9.3"
+  '@tanstack/react-query': '^5.102.8'
+  'axios': '^1.20.0'
+  'typescript': '^6.0.3'
   msw: ^2.15.0
   '@tailwindcss/vite': ^4.3.3
   tailwindcss: ^4.3.3

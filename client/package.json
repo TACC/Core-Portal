@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^6.1.1",
     "@mui/x-tree-view": "^7.26.0",
-    "@niivue/niivue": "^0.32.0",
+    "@niivue/niivue": "^0.69.0",
     "@tacc/core-components": "workspace:*",
     "@tacc/core-hooks": "workspace:*",
     "@tacc/test-fixtures": "workspace:*",
@@ -30,7 +30,7 @@
     "lodash": "^4.18.1",
     "mock-socket": "^9.3.1",
     "prop-types": "^15.8.1",
-    "query-string": "^6.9.0",
+    "query-string": "^9.5.1",
     "react": "catalog:",
     "react-copy-to-clipboard": "^5.1.1",
     "react-dom": "^19.3.0",
@@ -51,7 +51,8 @@
     "yup": "^0.28.1"
   },
   "scripts": {
-    "lint": "pnpm run lint:js && pnpm run lint:css && pnpm run prettier:check",
+    "lint": "pnpm run typecheck && pnpm run lint:js && pnpm run lint:css && pnpm run prettier:check",
+    "typecheck": "tsc --noEmit",
     "lint:js": "eslint .",
     "lint:css": "stylelint '{src,packages}/**/*.{css,scss,sass}'",
     "lint:css:fix": "stylelint '{src,packages}/**/*.{css,scss,sass}' --fix",
@@ -81,16 +82,18 @@
     "@eslint-react/eslint-plugin": "^5.20.8",
     "@eslint/compat": "^2.1.1",
     "@eslint/js": "^10.0.1",
-    "@tacc/core-styles": "^2.58.3",
+    "@tacc/core-styles": "^2.58.4",
     "@tailwindcss/vite": "catalog:",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@types/history": "^4.7.11",
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/redux-mock-store": "^1.5.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/coverage-v8": "^5.0.1",
+    "@vitest/coverage-v8": "^5.0.2",
     "baseline-browser-mapping": "^2.11.22",
     "eslint": "^10.11.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -114,7 +117,7 @@
     "timekeeper": "^2.3.1",
     "typescript": "catalog:",
     "typescript-eslint": "^8.70.1",
-    "vite": "^8.3.0",
-    "vitest": "^5.0.1"
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
   }
 }

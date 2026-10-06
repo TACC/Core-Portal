@@ -2,11 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useRename } from './mutations';
-import { parse } from 'query-string';
+import queryStringParser from 'query-string';
 
 function useFileListing(section = 'FilesListing') {
   const dispatch = useDispatch();
-  const { query_string: queryString, filter } = parse(useLocation().search);
+  const { query_string: queryString, filter } = queryStringParser.parse(
+    useLocation().search
+  );
   const { status: renameStatus } = useRename();
 
   const rawListing = useSelector((state) => state?.files?.listing?.[section]);

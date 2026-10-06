@@ -76,12 +76,12 @@ import styles from './SectionTableWrapper.module.css';
  */
 function SectionTableWrapper({
   className = '',
-  children = '',
-  content = '',
+  children = /** @type {React.ReactNode} */ (''),
+  content = /** @type {React.ReactNode} */ (''),
   contentClassName = '',
   contentShouldScroll = false,
-  header = '',
-  headerActions = '',
+  header = /** @type {React.ReactNode} */ (''),
+  headerActions = /** @type {React.ReactNode} */ (''),
   headerClassName = '',
   manualContent = undefined,
   manualHeader = undefined,
