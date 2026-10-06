@@ -31,14 +31,7 @@
   background: var(--global-color-accent--weak);
 }
 .tr-disabled {
-  color: var(--global-color-primary--light);
-}
-.tr-disabled .data-files-nav-link {
-  color: var(--global-color-primary--light);
-  pointer-events: none;
-}
-.tr-disabled .btn.btn-sm {
-  color: var(--global-color-primary--light);
+  opacity: 0.75;
   pointer-events: none;
 }
 .td {
