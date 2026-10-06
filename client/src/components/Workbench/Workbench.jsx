@@ -22,8 +22,7 @@ import './Workbench.scss';
 // Core Styles needs to be imported last for Rollup to compile the CSS correctly.
 import '../../index.css';
 import { useRedirectOnSessionExpired } from 'hooks/auth';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function Workbench() {
   const dispatch = useDispatch();
@@ -52,7 +51,7 @@ function Workbench() {
         isTACCPortal,
       },
     },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const isStaff = useSelector(
     (state) =>

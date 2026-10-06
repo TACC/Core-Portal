@@ -11,8 +11,7 @@ import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy'
 import SiteSearch from '../SiteSearch';
 import UserNewsBrowse from '../UserNews/UserNewsBrowse';
 import UserNewsDetail from '../UserNews/UserNewsDetail';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function AppRouter() {
   const {
@@ -20,7 +19,7 @@ function AppRouter() {
       config: { showUserNews, hasCustomSagas },
       portalName,
     },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const dispatch = useDispatch();
   const { fetchSystems } = useSystems();

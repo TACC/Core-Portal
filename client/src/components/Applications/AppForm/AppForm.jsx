@@ -49,8 +49,7 @@ import {
 
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const appShape = PropTypes.shape({
   loading: PropTypes.bool,
@@ -272,7 +271,7 @@ export const AppSchemaForm = ({ app }) => {
       isTACCPortal,
       config: { hideManageAccount },
     },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const {
     allocations,

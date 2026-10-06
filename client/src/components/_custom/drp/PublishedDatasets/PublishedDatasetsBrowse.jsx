@@ -8,8 +8,7 @@ import queryStringParser from 'query-string';
 import { useLocation } from 'react-router-dom';
 
 import styles from './PublishedDatasetsBrowse.module.css';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const BASE_ASSET_URL = 'https://web.corral.tacc.utexas.edu/digitalporousmedia';
 
@@ -20,7 +19,7 @@ function PublishedDatasetsBrowse() {
     data: {
       config: { debug: isDebug },
     },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const [filteredPublications, setFilteredPublications] = useState([]);
   const [filteredPublicationsLoading, setFilteredPublicationsLoading] =

@@ -7,14 +7,13 @@ import { ProjectTree as CoreProjectTree } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import { EXCLUDED_METADATA_FIELDS } from '../constants/metadataFields';
 import styles from './DataFilesProjectTree.module.scss';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 // DRP's tree = the generic core tree + a per-node Edit action for dataset entities
 export const ProjectTree = ({ projectId, readOnly = false }) => {
   const {
     data: { portalName },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
   const { params } = useFileListing('FilesListing');
   const { createSampleModal, createOriginDataModal, createAnalysisDataModal } =
     useDrpDatasetModals(projectId, portalName, false);

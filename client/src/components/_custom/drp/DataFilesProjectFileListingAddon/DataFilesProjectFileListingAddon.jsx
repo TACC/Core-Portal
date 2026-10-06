@@ -5,15 +5,14 @@ import { useSelectedFiles } from 'hooks/datafiles';
 import { ProjectFileListingActions } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
 import styles from './DataFilesProjectFileListingAddon.module.scss';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 // DRP's toolbar = the generic core publication toolbar + per-entity dataset
 // add/edit actions (sample / digital dataset / analysis data) in the slot.
 const DataFilesProjectFileListingAddon = ({ rootSystem, system }) => {
   const {
     data: { portalName },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { selectedFiles } = useSelectedFiles();
 

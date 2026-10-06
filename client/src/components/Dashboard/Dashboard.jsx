@@ -10,8 +10,7 @@ import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
 import styles from './Dashboard.module.css';
 import CustomDashboardSection from './CustomDashboardSection';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 function getPanelCount(standardApps = [], optionalApps = [], customApps = []) {
   return standardApps.length + optionalApps.length + customApps.length;
@@ -27,7 +26,7 @@ function Dashboard() {
         customDashboardSection,
       },
     },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const { hideSystemMonitor } = useSelector((state) => state.systemMonitor);
   const panelCount = getPanelCount(

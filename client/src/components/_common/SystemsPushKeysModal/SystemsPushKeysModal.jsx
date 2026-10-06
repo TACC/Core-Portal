@@ -7,8 +7,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
 import InlineMessage from '../InlineMessage';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -17,7 +16,7 @@ const SystemsPushKeysModal = () => {
 
   const {
     data: { isTACCPortal },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
 
   const {
     error,

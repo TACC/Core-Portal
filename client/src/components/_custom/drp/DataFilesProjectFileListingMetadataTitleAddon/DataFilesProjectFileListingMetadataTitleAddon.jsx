@@ -5,8 +5,7 @@ import { Button } from '_common';
 import { useFileListing } from 'hooks/datafiles';
 import { MetadataTitle } from '_common/ProjectMetadata';
 import useDrpDatasetModals from '../utils/hooks/useDrpDatasetModals';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { workbenchConfigQueries } from '@tacc/core-queries';
+import { useWorkbenchConfig } from '@tacc/core-hooks';
 
 const DataFilesProjectFileListingMetadataTitleAddon = ({
   folderMetadata,
@@ -16,7 +15,7 @@ const DataFilesProjectFileListingMetadataTitleAddon = ({
 }) => {
   const {
     data: { portalName },
-  } = useSuspenseQuery(workbenchConfigQueries.getWorkbenchConfig());
+  } = useWorkbenchConfig();
   const { projectId } = useSelector((state) => state.projects.metadata);
   const { loading } = useFileListing('FilesListing');
 

@@ -325,6 +325,9 @@ importers:
 
   packages/core-hooks:
     dependencies:
+      '@tacc/core-queries':
+        specifier: 'workspace:'
+        version: link:../core-queries
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.104.0(react@19.3.0)
