@@ -127,6 +127,33 @@ def test_get_datacite_json_author_missing_name_parts_defaults_to_empty_string():
     assert result["creators"][0]["name"] == ""
 
 
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+def test_get_datacite_json_author_with_orcid_adds_name_identifier():
+    base_meta = minimal_base_meta(
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", "orcid_id": "0000-0002-1825-0097"}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert result["creators"][0]["nameIdentifiers"] == [
+        {
+            "nameIdentifier": "https://orcid.org/0000-0002-1825-0097",
+            "nameIdentifierScheme": "ORCID",
+            "schemeUri": "https://orcid.org",
+        }
+    ]
+
+
+@DATACITE_SETTINGS
+@pytest.mark.django_db
+@pytest.mark.parametrize("orcid_id", [None, "", "   "])
+def test_get_datacite_json_author_with_blank_orcid_omits_name_identifiers(orcid_id):
+    base_meta = minimal_base_meta(
+        authors=[{"first_name": "Ada", "last_name": "Lovelace", "orcid_id": orcid_id}],
+    )
+    result = get_datacite_json(make_pub_graph(base_meta), "test.project-1")
+    assert "nameIdentifiers" not in result["creators"][0]
+
+
 @pytest.mark.django_db
 @override_settings(VANITY_BASE_URL="", PORTAL_PUBLICATION_DATACITE_URL_PREFIX="")
 def test_get_datacite_json_raises_without_any_configured_origin():
