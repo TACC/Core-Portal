@@ -44,7 +44,6 @@ describe('AppRouter', () => {
     );
     expect(store.getActions()).toEqual([
       { type: 'FETCH_AUTHENTICATED_USER' },
-      { type: 'FETCH_WORKBENCH' },
       { type: 'FETCH_SYSTEMS' },
       { type: 'FETCH_INTRO' },
       { type: 'FETCH_CUSTOM_MESSAGES' },

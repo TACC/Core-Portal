@@ -39,7 +39,6 @@ function Workbench() {
     data: {
       setupComplete,
       config: {
-        loading,
         showUIPatterns,
         hideApps,
         hideDataFiles,
@@ -84,96 +83,86 @@ function Workbench() {
       <WorkbenchSidebar
         disabled={!setupComplete}
         showUIPatterns={showUIPatterns}
-        loading={loading}
+        loading={false}
       />
       <div className="workbench-content">
-        {loading ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            {setupComplete ? (
-              <Routes>
-                <Route path={`${ROUTES.DASHBOARD}/*`} element={<Dashboard />} />
-                {!hideManageAccount && (
-                  <Route
-                    path={`${ROUTES.ACCOUNT}`}
-                    element={<ManageAccount />}
-                  />
-                )}
-                {!hideDataFiles && (
-                  <Route path={`${ROUTES.DATA}/*`} element={<DataFiles />} />
-                )}
-                {!hideApps && (
-                  <Route
-                    path={`${ROUTES.APPLICATIONS}/*`}
-                    element={<Applications />}
-                  />
-                )}
-                {!hideAllocations && (
-                  <Route
-                    path={`${ROUTES.ALLOCATIONS}/*`}
-                    element={<Allocations />}
-                  />
-                )}
-                {showSubmissions && (
-                  <Route
-                    path={`${ROUTES.SUBMISSIONS}`}
-                    element={<Submissions />}
-                  />
-                )}
-                {!hideApps && (
-                  <Route path={`${ROUTES.HISTORY}/*`} element={<History />} />
-                )}
-                {!hideOnboarding && (
-                  <Route
-                    path={`${ROUTES.ONBOARDING}/*`}
-                    element={<Onboarding />}
-                  />
-                )}
-                {isStaff && !hideOnboarding && (
-                  <Route
-                    path={`${ROUTES.ONBOARDINGADMIN}`}
-                    element={<OnboardingAdmin />}
-                  />
-                )}
-                {!hideSystemStatus && (
-                  <Route
-                    path={`${ROUTES.SYSTEM_STATUS}/*`}
-                    element={<SystemStatus />}
-                  />
-                )}
-                {showUIPatterns && (
-                  <Route path={`${ROUTES.UI}`} element={<UIPatterns />} />
-                )}
+        <>
+          {setupComplete ? (
+            <Routes>
+              <Route path={`${ROUTES.DASHBOARD}/*`} element={<Dashboard />} />
+              {!hideManageAccount && (
+                <Route path={`${ROUTES.ACCOUNT}`} element={<ManageAccount />} />
+              )}
+              {!hideDataFiles && (
+                <Route path={`${ROUTES.DATA}/*`} element={<DataFiles />} />
+              )}
+              {!hideApps && (
                 <Route
-                  path="*"
-                  element={
-                    <Navigate
-                      to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`}
-                      replace
-                    />
-                  }
+                  path={`${ROUTES.APPLICATIONS}/*`}
+                  element={<Applications />}
                 />
-              </Routes>
-            ) : (
-              <Routes>
+              )}
+              {!hideAllocations && (
+                <Route
+                  path={`${ROUTES.ALLOCATIONS}/*`}
+                  element={<Allocations />}
+                />
+              )}
+              {showSubmissions && (
+                <Route
+                  path={`${ROUTES.SUBMISSIONS}`}
+                  element={<Submissions />}
+                />
+              )}
+              {!hideApps && (
+                <Route path={`${ROUTES.HISTORY}/*`} element={<History />} />
+              )}
+              {!hideOnboarding && (
                 <Route
                   path={`${ROUTES.ONBOARDING}/*`}
                   element={<Onboarding />}
                 />
+              )}
+              {isStaff && !hideOnboarding && (
                 <Route
-                  path="*"
-                  element={
-                    <Navigate
-                      to={`${ROUTES.WORKBENCH}${ROUTES.ONBOARDING}/setup/`}
-                      replace
-                    />
-                  }
+                  path={`${ROUTES.ONBOARDINGADMIN}`}
+                  element={<OnboardingAdmin />}
                 />
-              </Routes>
-            )}
-          </>
-        )}
+              )}
+              {!hideSystemStatus && (
+                <Route
+                  path={`${ROUTES.SYSTEM_STATUS}/*`}
+                  element={<SystemStatus />}
+                />
+              )}
+              {showUIPatterns && (
+                <Route path={`${ROUTES.UI}`} element={<UIPatterns />} />
+              )}
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`}
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path={`${ROUTES.ONBOARDING}/*`} element={<Onboarding />} />
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={`${ROUTES.WORKBENCH}${ROUTES.ONBOARDING}/setup/`}
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          )}
+        </>
       </div>
     </div>
   );

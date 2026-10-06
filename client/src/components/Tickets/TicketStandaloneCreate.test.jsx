@@ -2,7 +2,6 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import initialIntroMessageComponents from '../../redux/reducers/portalMessages.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
@@ -16,7 +15,6 @@ describe('TicketStandaloneCreate', () => {
         ...initialIntroMessageComponents,
         TICKETS: true,
       },
-      workbench,
     });
 
     const { getByRole } = renderComponent(<TicketStandaloneCreate />, store);
@@ -32,7 +30,6 @@ describe('TicketStandaloneCreate', () => {
         ...initialIntroMessageComponents,
         TICKETS: false,
       },
-      workbench,
     });
 
     const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);

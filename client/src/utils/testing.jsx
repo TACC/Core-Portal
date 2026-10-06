@@ -8,6 +8,8 @@ import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { workbenchJSON } from '@tacc/test-fixtures';
 
+export const workbenchConfig = workbenchJSON.response;
+
 export default function renderComponent(
   component,
   store,

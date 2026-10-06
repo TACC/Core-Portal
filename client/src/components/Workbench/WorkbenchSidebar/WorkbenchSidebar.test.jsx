@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import WorkbenchSidebar from './index';
 import renderComponent from 'utils/testing';
@@ -101,9 +100,6 @@ describe('workbench sidebar', () => {
   it('should have a notification badge', () => {
     const { getByRole } = renderSideBar(
       mockStore({
-        workbench: {
-          ...workbench,
-        },
         notifications: { list: { unread: 1 } },
       }),
       false
@@ -116,7 +112,6 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is not available', (page) => {
     const { queryByText } = renderSideBar(
       mockStore({
-        workbench,
         notifications,
       }),
       false
@@ -127,9 +122,6 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is available in debug mode', (page) => {
     const { getByText } = renderSideBar(
       mockStore({
-        workbench: {
-          status: { debug: true },
-        },
         notifications,
       }),
       true

@@ -28,7 +28,6 @@ import watchProfile from './profile.sagas';
 
 import { watchPostRequestAccess } from './requestAccess.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
-import { watchWorkbench } from './workbench.sagas';
 import {
   watchFetchIntroMessageComponents,
   watchSaveIntroMessageComponents,
@@ -44,7 +43,6 @@ import { watchProjects } from './projects.sagas';
 import { watchUsers } from './users.sagas';
 import { watchSiteSearch } from './siteSearch.sagas';
 import { watchPublications } from './publications.sagas';
-import { queryClient } from '../../queryClient';
 
 function* watchStartCustomSaga() {
   yield takeEvery('START_CUSTOM_SAGA', startCustomSaga);
@@ -92,7 +90,6 @@ export default function* rootSaga() {
     watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
-    watchWorkbench(),
     watchFetchIntroMessageComponents(),
     watchFetchCustomMessages(),
     watchSaveIntroMessageComponents(),

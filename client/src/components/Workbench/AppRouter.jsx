@@ -43,7 +43,6 @@ function AppRouter() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
-    dispatch({ type: 'FETCH_WORKBENCH' });
     fetchSystems();
   }, []);
 

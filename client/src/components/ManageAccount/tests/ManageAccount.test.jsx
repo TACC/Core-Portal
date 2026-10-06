@@ -1,7 +1,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import { initialState as profile } from '../../../redux/reducers/profile.reducers';
-import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import introMessageComponents from '../../../redux/reducers/portalMessages.reducers';
 import ManageAccountPage from '../index';
@@ -15,10 +14,6 @@ describe('Manage Account Page', () => {
       <ManageAccountPage />,
       mockStore({
         profile,
-        workbench: {
-          ...workbench,
-          config: { hideDataFiles: false },
-        },
         notifications,
         introMessageComponents,
       })

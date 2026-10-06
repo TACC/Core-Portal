@@ -7,7 +7,6 @@ import {
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import AppRouter from './components/Workbench';
-import { initialState as workbench } from './redux/reducers/workbench.reducers';
 import { initialState as profile } from './redux/reducers/profile.reducers';
 import { initialState as notifications } from './redux/reducers/notifications.reducers';
 import { initialState as authenticatedUser } from './redux/reducers/authenticated_user.reducer';
@@ -25,7 +24,6 @@ it('Renders index', async () => {
         <Provider
           store={mockStore({
             profile,
-            workbench,
             notifications,
             authenticatedUser,
           })}
