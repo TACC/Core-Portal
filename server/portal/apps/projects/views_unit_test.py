@@ -84,6 +84,7 @@ def project_list(authenticated_user):
                 "name": "PRJ-123",
                 "owner": {
                     "email": authenticated_user.email,
+                    "orcid_id": authenticated_user.profile.orcid_id,
                     "first_name": authenticated_user.first_name,
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
@@ -99,6 +100,7 @@ def project_list(authenticated_user):
                 "name": "PRJ-456",
                 "owner": {
                     "email": authenticated_user.email,
+                    "orcid_id": authenticated_user.profile.orcid_id,
                     "first_name": authenticated_user.first_name,
                     "last_name": authenticated_user.last_name,
                     "username": authenticated_user.username,
@@ -338,6 +340,7 @@ def test_project_instance_get_by_id(authenticated_user, client, mock_tapis_clien
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 }
@@ -368,6 +371,7 @@ def test_project_instance_get_by_system(authenticated_user, client, mock_tapis_c
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 }
@@ -412,6 +416,7 @@ def test_project_instance_patch(authenticated_user, client, mock_tapis_client, p
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 }
@@ -548,6 +553,7 @@ def test_members_view_add(authenticated_user, client, mock_tapis_client, project
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 },
@@ -557,6 +563,7 @@ def test_members_view_add(authenticated_user, client, mock_tapis_client, project
                         "first_name": "",
                         "last_name": "",
                         "email": "",
+                        "orcid_id": None,
                     },
                     "access": "edit",
                 },
@@ -618,6 +625,7 @@ def test_members_view_add_setfacl_job(
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 },
@@ -627,6 +635,7 @@ def test_members_view_add_setfacl_job(
                         "first_name": "",
                         "last_name": "",
                         "email": "",
+                        "orcid_id": None,
                     },
                     "access": "edit",
                 },
@@ -688,6 +697,7 @@ def test_members_view_remove(client, mock_service_account, mock_tapis_client, pr
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 }
@@ -734,6 +744,7 @@ def test_members_view_remove_setfacl_job(client, mock_service_account, mock_tapi
                         "first_name": "Firstname",
                         "last_name": "Lastname",
                         "email": "user@user.com",
+                        "orcid_id": None,
                     },
                     "access": "owner",
                 }
